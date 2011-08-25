@@ -18,7 +18,7 @@ FILES_${PN}-dbg += " ${libdir}/xorg/modules/drivers/.debug"
 EXTRA_OECONF_armv7a = " --enable-neon "
 CFLAGS += " -I${STAGING_INCDIR}/xorg "
 
-S = "${WORKDIR}/xserver-xorg-video-imx-${REL}"
+S = "${WORKDIR}/xserver-xorg-video-imx-${PV}"
 
 do_install_append () {
     # driver's la files are not packaged
