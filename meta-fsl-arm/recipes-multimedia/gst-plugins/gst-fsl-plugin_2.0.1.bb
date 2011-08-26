@@ -6,8 +6,8 @@ inherit autotools pkgconfig
 DESCRIPTION = "Gstreamer freescale plugins"
 LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
-DEPENDS = "gstreamer fsl-mm-codeclib imx-lib"
-PR = "r0"
+DEPENDS = "gstreamer gst-plugins-base fsl-mm-codeclib imx-lib"
+PR = "r1"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
