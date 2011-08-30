@@ -4,7 +4,7 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPL"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r0"
+PR = "r1"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(imx53qsb|imx53ard)"
@@ -20,11 +20,13 @@ SRC_URI[source.sha256sum] = "19983d5daee9053e49303041365be7c55bbaf08941aea07dc83
 SRC_URI[patchs.md5sum] = "e6c24894017f3b5977ecfa07e28dc69e"
 SRC_URI[patchs.sha256sum] = "20b6f1adb14613c1eda1d7e353e169753ad45c7544e2bc590bf3b9a998d61984"
 
-do_patch () {
+do_apply_dist_patchs () {
 # Apply distributed kernel patchs
     cd ${S}
     tar xf ${WORKDIR}/linux-${PV}-imx_${REL}
     ./patches/patch-kernel.sh
 }
+
+addtask apply_dist_patchs after do_unpack before do_patch
 
 S = "${WORKDIR}/linux-${PV}"
