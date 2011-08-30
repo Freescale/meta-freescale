@@ -4,7 +4,8 @@
 DESCRIPTION = "Platform specific libraries for imx platform"
 LICENSE = "LGPL"
 SECTION = "multimedia"
-PR = "r1"
+DEPENDS = "virtual/kernel"
+PR = "r2"
 
 LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
 
