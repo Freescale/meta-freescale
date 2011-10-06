@@ -7,7 +7,7 @@ DESCRIPTION = "Gstreamer freescale plugins"
 LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 DEPENDS = "gstreamer gst-plugins-base fsl-mm-codeclib imx-lib"
-PR = "r1"
+PR = "r2"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
@@ -20,6 +20,11 @@ SRC_URI[sha256sum] = "99668788886d7a9223c5cc2a408631d6fbf9094894da34c6c00036a9fe
 # Todo add a mechanism to map posible build targets
 EXTRA_OECONF = "PLATFORM=MX53 --disable-valgrind --disable-examples"
 
-FILES_${PN} += "${libdir}/gstreamer-0.10/*.so"
+INSANE_SKIP = "True"
+FILES_${PN} += "${bindir}/gplay \
+                ${libdir}/gstreamer-0.10/*.so* \
+                ${libdir}/*.so*"
 FILES_${PN}-dbg += "${libdir}/gstreamer-0.10/.debug"
-FILES_${PN}-dev += "${libdir}/gstreamer-0.10/*.la ${libdir}/gstreamer-0.10/*.a"
+FILES_${PN}-staticdev += "${libdir}/gstreamer-0.10/*.la \
+    ${libdir}/gstreamer-0.10/*.a \
+    ${libdir}/*.a ${libdir}/*.la"
