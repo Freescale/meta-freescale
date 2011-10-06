@@ -5,7 +5,7 @@ DESCRIPTION = "Platform specific libraries for imx platform"
 LICENSE = "LGPL"
 SECTION = "multimedia"
 DEPENDS = "virtual/kernel"
-PR = "r2"
+PR = "r3"
 
 LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
 
@@ -29,4 +29,4 @@ do_install () {
 
 FILES_${PN} += "${libdir}/*.so"
 FILES_${PN}-dbg  += "${libdir}/.debug"
-FILES_${PN}-dev  += "${libdir}/*.la ${libdir}/*.a"
+FILES_${PN}-devstatic  += "${libdir}/*.la ${libdir}/*.a"
