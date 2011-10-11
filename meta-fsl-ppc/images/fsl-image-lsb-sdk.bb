@@ -6,6 +6,8 @@ IMAGE_INSTALL = "\
     ${POKY_BASE_INSTALL} \
     task-core-basic \
     task-core-lsb \
+    git \
+    dtc \
     "
 
 inherit core-image
