@@ -5,7 +5,7 @@ DESCRIPTION = "Freescale mm codec libs"
 LICENSE = "MIT"
 SECTION = "multimedia"
 DEPENDS = "pkgconfig"
-PR = "r1"
+PR = "r2"
 
 LIC_FILES_CHKSUM = "file://docs/EULA.txt;md5=ab04419c277bdd149cb4702b89ee31ff"
 
@@ -37,7 +37,7 @@ do_install () {
 }
 
 INSANE_SKIP = "True"
-FILES_${PN} += "${libdir}/*.so* ${libdir}/pkgconfig/*.pc"
+FILES_${PN} += "${libdir}/*.so ${libdir}/pkgconfig/*.pc"
 FILES_${PN}-dev += "${includedir}/mm_ghdr/*.h \
     ${includedir}/mm_ghdr/aac_parser/*.h \
     ${includedir}/mm_ghdr/common/*.h \
