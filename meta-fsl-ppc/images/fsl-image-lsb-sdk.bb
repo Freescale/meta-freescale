@@ -9,6 +9,7 @@ IMAGE_INSTALL = "\
     dtc \
     flex \
     bison \
+    ccache \
     "
 
 inherit core-image
