@@ -1,0 +1,147 @@
+From 91732b83137039597b1cd0d747626d70e59d252d Mon Sep 17 00:00:00 2001
+From: Adrian Alonso <aalonso@freescale.com>
+Date: Tue, 1 Nov 2011 14:57:32 -0600
+Subject: [PATCH] imx-lib: remove shared libs symlinks
+
+* Remove shared libs symlinks creation
+
+Signed-off-by: Adrian Alonso <aalonso@freescale.com>
+---
+ ipu/Makefile         |    5 +----
+ pxp/Makefile         |    5 +----
+ rng/Makefile         |    5 +----
+ sahara2/Makefile     |    5 +----
+ screenlayer/Makefile |    5 +----
+ sim/Makefile         |    5 +----
+ vpu/Makefile         |    5 +----
+ 7 files changed, 7 insertions(+), 28 deletions(-)
+
+diff --git a/ipu/Makefile b/ipu/Makefile
+index 97241e3..654f650 100644
+--- a/ipu/Makefile
++++ b/ipu/Makefile
+@@ -27,12 +27,9 @@ all install:
+ 	@echo "Not support platform, will not complile"
+ endif
+ 
+-$(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
++$(LIBNAME).so: $(OBJS)
+ 	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -lpthread
+ 
+-$(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+-	ln -s $< $@
+-
+ %.o: %.c
+ ifeq "$(PLATFORM)" ""
+ 	$(error "Unspecified PLATFORM variable")
+diff --git a/pxp/Makefile b/pxp/Makefile
+index c2bb59d..70bb508 100644
+--- a/pxp/Makefile
++++ b/pxp/Makefile
+@@ -27,12 +27,9 @@ endif
+ %.o: %.c
+ 	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -O2 -fPIC -c $^ -o $@
+ 
+-$(LIBNAME).so.$(SONAMEVERSION): $(OBJ)
++$(LIBNAME).so: $(OBJ)
+ 	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@
+ 
+-$(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+-	ln -s $< $@
+-
+ $(LIBNAME).a: $(OBJ)
+ 	$(AR) -rc $@  $^
+ 
+diff --git a/rng/Makefile b/rng/Makefile
+index 4b1dd5c..b5dd2e1 100644
+--- a/rng/Makefile
++++ b/rng/Makefile
+@@ -30,12 +30,9 @@ install_headers:
+ $(LIBNAME).a: $(OBJS)
+ 	$(AR) $@ $^
+ 
+-$(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
++$(LIBNAME).so: $(OBJS)
+ 	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^
+ 
+-$(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+-	ln -s $< $@
+-
+ .PHONY: clean
+ clean:
+ 	@rm -f *.o $(LIBNAME).*
+diff --git a/sahara2/Makefile b/sahara2/Makefile
+index 106d932..dd9550e 100644
+--- a/sahara2/Makefile
++++ b/sahara2/Makefile
+@@ -49,12 +49,9 @@ endif
+ $(LIBNAME).a: $(OBJS)
+ 	$(AR) $@ $^
+ 
+-$(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
++$(LIBNAME).so: $(OBJS)
+ 	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^
+ 
+-$(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+-	ln -s $< $@
+-
+ .PHONY: clean
+ clean:
+ 	@rm -f $(OBJS) $(LIBNAME).*
+diff --git a/screenlayer/Makefile b/screenlayer/Makefile
+index a90d4d5..a4f36ae 100644
+--- a/screenlayer/Makefile
++++ b/screenlayer/Makefile
+@@ -23,12 +23,9 @@ all install:
+ 	@echo "Not support platform, will not complile"
+ endif
+ 
+-$(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
++$(LIBNAME).so: $(OBJS)
+ 	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -L../ipu -lipu
+ 
+-$(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+-	ln -s $< $@
+-
+ %.o: %.c
+ 	$(CC) $(INC) -Wall -O2 -fPIC -c $^ -o $@
+ 
+diff --git a/sim/Makefile b/sim/Makefile
+index 7685e32..5e31e6a 100644
+--- a/sim/Makefile
++++ b/sim/Makefile
+@@ -20,12 +20,9 @@ install:
+ 	@mkdir -p $(DEST_DIR)/usr/include
+ 	cp iso7816-3.h $(DEST_DIR)/usr/include
+ 
+-$(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
++$(LIBNAME).so: $(OBJS)
+ 	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -lpthread
+ 
+-$(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+-	ln -s $< $@
+-
+ %.o: %.c
+ 	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -O2 -fPIC -c $^ -o $@
+ 
+diff --git a/vpu/Makefile b/vpu/Makefile
+index ab6ccf1..8f3ce8e 100644
+--- a/vpu/Makefile
++++ b/vpu/Makefile
+@@ -35,12 +35,9 @@ endif
+ %.o: %.c
+ 	$(CC) -D$(PLATFORM) -Wall -O2 -fPIC -c $^ -o $@
+ 
+-$(LIBNAME).so.$(SONAMEVERSION): $(OBJ)
++$(LIBNAME).so: $(OBJ)
+ 	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@
+ 
+-$(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+-	ln -s $< $@
+-
+ $(LIBNAME).a: $(OBJ)
+ 	$(AR) -rc $@  $^
+ 
+-- 
+1.7.5.4
+

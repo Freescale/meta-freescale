@@ -5,13 +5,14 @@ DESCRIPTION = "Platform specific libraries for imx platform"
 LICENSE = "LGPL"
 SECTION = "multimedia"
 DEPENDS = "virtual/kernel"
-PR = "r3"
+PR = "r0"
 
 LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
 
-SRC_URI = "http://auslxsc01.mtwk.freescale.net/ppp/${PN}-${PV}.tar.gz"
-SRC_URI[md5sum] = "67e1be286abbee3529fc55cdf2b4cd51"
-SRC_URI[sha256sum] = "063e722e8abc6f2e90afde1338f213b92bc1187a7a741ec04df22851cc952e29"
+SRC_URI = "file://${PN}-${PV}.tar.gz \
+           file://imx-lib-remove-shared-libs-symlinks.patch"
+SRC_URI[md5sum] = "45574f8f32f7000ca11d585fa60dea8c"
+SRC_URI[sha256sum] = "f151a8bb3099b596b5834a1139c19e526802e6a0aa965018d16375e7e1f48f27"
 
 # override parallel make flags
 PARALLEL_MAKE="-j 1"
@@ -28,5 +29,5 @@ do_install () {
 }
 
 FILES_${PN} += "${libdir}/*.so"
-FILES_${PN}-dbg  += "${libdir}/.debug"
-FILES_${PN}-devstatic  += "${libdir}/*.la ${libdir}/*.a"
+FILES_${PN}-dbg += "${libdir}/.debug"
+FILES_${PN}-dev += "${libdir}/*.la ${libdir}/*.a"
