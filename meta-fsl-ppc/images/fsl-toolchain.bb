@@ -8,11 +8,4 @@ TOOLCHAIN_TARGET_TASK += " \
 TOOLCHAIN_HOST_TASK += " \
 	dtc-nativesdk \
 	qemu-nativesdk \
-	mux-server-nativesdk \
 	"
-
-TOOLCHAIN_HOST_TASK_append_e500v2 = " \
-	boot-format-nativesdk \
-	boot-format-nativesdk-config \
-	"
-
