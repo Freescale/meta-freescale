@@ -5,13 +5,13 @@ DESCRIPTION = "Freescale mm codec libs"
 LICENSE = "MIT"
 SECTION = "multimedia"
 DEPENDS = "pkgconfig"
-PR = "r2"
+PR = "r0"
 
-LIC_FILES_CHKSUM = "file://docs/EULA.txt;md5=ab04419c277bdd149cb4702b89ee31ff"
+LIC_FILES_CHKSUM = "file://docs/EULA.txt;md5=ea4d5c069d7aef0838a110409ea78a01"
 
-SRC_URI = "http://auslxsc01.mtwk.freescale.net/ppp/${PN}-${PV}.tar.gz"
-SRC_URI[md5sum] = "c4cd79a2a658aacbe8d574d6e4e5d56d"
-SRC_URI[sha256sum] = "0ed15d1f246ec5c83a5b90672e52916dbfc5e683bd9358bdcbb08a30c8f76daf"
+SRC_URI = "file://${PN}-${PV}.tar.gz"
+SRC_URI[md5sum] = "e06bcaae6a7f5162caaa4ae5a56bf067"
+SRC_URI[sha256sum] = "5f1ec8200469d886dfbe82a22a63033914dc690c545c74a27ababb24fd53952a"
 
 do_install () {
     install -d ${D}${libdir}
