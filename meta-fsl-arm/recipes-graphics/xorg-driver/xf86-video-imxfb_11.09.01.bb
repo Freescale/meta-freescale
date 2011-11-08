@@ -10,8 +10,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=f7bdc0c63080175d1667091b864cb12c"
 inherit autotools pkgconfig
 
 PR = "r0"
-SRC_URI = "http://opensource.freescale.com/pub/scm/imx/xserver-xorg-video-imx-${PV}.tar.gz \
+SRC_URI = "file://xserver-xorg-video-imx-${PV}.tar.gz \
            file://xf86-video-imxfb-fix-m4-hardcodded-paths.patch"
+SRC_URI[md5sum] = "d19148399b5d1c4dab90d0cc6f2c4789"
+SRC_URI[sha256sum] = "d7d85e9f13c6dd58addab89847f3a8a67f6382a54135c7978c9a95368af024d4"
 
 FILES_${PN} += " ${libdir}/xorg/modules/drivers/*.so"
 FILES_${PN}-dbg += " ${libdir}/xorg/modules/drivers/.debug"
