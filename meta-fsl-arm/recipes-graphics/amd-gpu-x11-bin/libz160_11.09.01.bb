@@ -4,14 +4,14 @@
 DESCRIPTION = "AMD libz160 gpu driver"
 LICENSE = "MIT"
 SECTION = "libs"
-PR = "r1"
+PR = "r0"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/z160.h;endline=28;md5=65dd44cd769091092f38e34cd52cc271"
 
-SRC_URI = "http://auslxsc01.mtwk.freescale.net/ppp/${PN}-bin-${PV}.tar.gz"
-SRC_URI[md5sum] = "f934ab967285aad10ec4bb0263ad549f"
-SRC_URI[sha256sum] = "ead4aab7eecad85a591e72996f785057846a7f9801e86ad6441c47862cceac93"
+SRC_URI = "file://${PN}-bin-${PV}.tar.gz"
+SRC_URI[md5sum] = "49b6d51e2ea6651107b08f43715c8c2e"
+SRC_URI[sha256sum] = "43b1bebb2656d0c868c10f66ddc064c6324b74694daedfb3f542f93f438232c5"
 
 do_install () {
     install -d ${D}${libdir}
