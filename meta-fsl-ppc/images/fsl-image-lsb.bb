@@ -4,6 +4,7 @@ IMAGE_INSTALL = "\
     ${POKY_BASE_INSTALL} \
     task-core-basic \
     task-core-lsb \
+    u-boot \
     "
 
 inherit core-image

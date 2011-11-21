@@ -10,6 +10,7 @@ IMAGE_INSTALL = "\
     flex \
     bison \
     ccache \
+    u-boot \
     "
 
 inherit core-image
