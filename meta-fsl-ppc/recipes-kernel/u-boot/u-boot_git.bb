@@ -15,7 +15,7 @@ SRCREV = "348d8fceba39e5622d315ffda7d72ff6bbcf05ec"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git \
 		"
 
-EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
+EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${CC}"'
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 USRC ?= ""
