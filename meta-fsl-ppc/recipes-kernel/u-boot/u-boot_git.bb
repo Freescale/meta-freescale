@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r5"
+PR = "r6"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc"
 
@@ -16,6 +16,8 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git \
 		"
 
 EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${CC}"'
+EXTRA_OEMAKE_e5500-64b = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${CC} -m32" LD="${LD} -melf32ppc"'
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 USRC ?= ""
