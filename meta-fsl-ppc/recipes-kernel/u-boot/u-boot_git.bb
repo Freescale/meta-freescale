@@ -65,6 +65,7 @@ do_install(){
 		esac
 
 		if [ -f ${S}/${UBOOT_TARGET}.bin ]; then
+			mkdir -p ${S}/${board}/${UBOOT_TARGET}.bin ${D}/boot/
 			install ${S}/${board}/${UBOOT_TARGET}.bin ${D}/boot/${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin
 			ln -sf ${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin ${D}/boot/${UBOOT_TARGET}.bin
 		fi
