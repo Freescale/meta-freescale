@@ -29,6 +29,7 @@ do_configure () {
 	cp ${KERNEL_DEFCONFIG} ${B}/.config
 	oe_runmake oldconfig ARCH=${ARCH}
 }
+do_configure[vardepsexclude] += "KERNEL_DEFCONFIG"
 
 do_compile () {
 }
