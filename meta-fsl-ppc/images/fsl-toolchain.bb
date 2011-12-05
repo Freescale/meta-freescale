@@ -4,7 +4,7 @@ require fsl-toolchain-bare.bb
 
 TOOLCHAIN_OUTPUTNAME = "${SDK_NAME}-toolchain-${DISTRO_VERSION}"
 TOOLCHAIN_TARGET_TASK += " \
-	gtk+-dev \
+	glib-2.0 \
 	dtc \
 	"
 
