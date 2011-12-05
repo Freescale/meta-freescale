@@ -1,3 +1,3 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR .= "+{DISTRO}"
+PR .= "+${DISTRO}"
