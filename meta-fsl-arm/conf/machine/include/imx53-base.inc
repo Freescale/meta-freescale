@@ -29,7 +29,7 @@ MACHINE_EXTRA_RRECOMMENDS += "imx-lib imx-audio \
 
 EXTRA_IMAGE_DEPENDS = "u-boot-imx"
 
-IMAGE_FSTYPES += "tar.bz2 jffs2"
+IMAGE_FSTYPES ?= "tar.bz2 jffs2"
 EXTRA_IMAGECMD_jffs2 = "-lnp "
 
 SERIAL_CONSOLE = "115200 ttymxc0"
