@@ -4,11 +4,12 @@
 DESCRIPTION = "GPU driver and apps for x11 on mx51"
 LICENSE = "MIT"
 SECTION = "libs"
-PR = "r0"
+PR = "r1"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
 DEPENDS = "virtual/libx11 libz160"
+RDEPENDS = "libz160"
 
 SRC_URI = "file://${PN}-${PV}.tar.gz"
 SRC_URI[md5sum] = "499a2cc08dd48a6c5f7db8d231428548"
