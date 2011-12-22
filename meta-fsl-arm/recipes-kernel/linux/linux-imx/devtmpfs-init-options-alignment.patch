@@ -1,0 +1,38 @@
+Make the devtmpfs options static. This works around an issue that is still
+under investigation.
+
+The toolchain assumes it can generate unaligned accesses for ARMv6+, as these
+cores can handle this, PROVIDED the bit is set in the CP15 control register.
+
+However, Linux sets this bit lazely (upon first trap), which does not work for
+kernel space code.
+
+There was a lengthy thread over this, the agreement was the kernel should not
+have non-aligned structures on stacks anyway.
+
+Forcing this structure to be aligned on the stack did not help, unsure why.
+This requires further investigation.
+
+This fixes a kernel failure if devtmpfs was enabled in the kernel config.
+
+Signed-off-by: Leon Woestenberg <leon@sidebranch.com>
+diff -Nur orig/drivers/base/devtmpfs.c git/drivers/base/devtmpfs.c
+--- orig/drivers/base/devtmpfs.c	2011-12-22 15:11:18.752904263 +0100
++++ git/drivers/base/devtmpfs.c	2011-12-22 18:03:09.060928840 +0100
+@@ -365,6 +365,8 @@
+ 	return err;
+ }
+ 
++static char options[] = "mode=0755";
++
+ /*
+  * Create devtmpfs instance, driver-core devices will add their device
+  * nodes here.
+@@ -373,7 +375,6 @@
+ {
+ 	int err;
+ 	struct vfsmount *mnt;
+-	char options[] = "mode=0755";
+ 
+ 	err = register_filesystem(&dev_fs_type);
+ 	if (err) {
