@@ -5,7 +5,8 @@ PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore \
              ${PN}-libme ${PN}-libgstbufmeta ${PN}-libmfwba \
              ${PN}-libfwvss ${PN}-gplay"
 
-FILES_${PN} = "${libdir}/gstreamer-0.10/*.so"
+FILES_${PN} = "${libdir}/gstreamer-0.10/*.so \
+    ${datadir}"
 FILES_${PN}-dbg = "${libdir}/gstreamer-0.10/.debug \
     ${libdir}/.debug"
 FILES_${PN}-dev = "${libdir}/gstreamer-0.10/*.la \
