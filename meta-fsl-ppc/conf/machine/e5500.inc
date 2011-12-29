@@ -6,7 +6,7 @@ MACHINE_FEATURES = "kernel26 keyboard pci ext2 ext3 serial"
 MACHINE_FEATURES_RRECOMMENDS = ""
 
 
-#PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq-sdk"
+PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq-sdk"
 PREFERRED_VERSION_virtual/kernel ?= "3.0.1"
 PREFERRED_PROVIDER_linux-libc-headers ?= "linux-qoriq-sdk-headers"
 
