@@ -1,7 +1,7 @@
 DESCRIPTION = "Hypervisor Config"
 SECTION = "hv-cfg"
 LICENSE = "BSD"
-PR = "r1"
+PR = "r2"
 
 LIC_FILES_CHKSUM = " \
 	file://p2041rdb/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
@@ -10,6 +10,8 @@ LIC_FILES_CHKSUM = " \
 	file://p4080ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
 	file://p5020ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
 "
+
+DEPENDS += "dtc-native"
 
 # this package is specific to the machine itself
 INHIBIT_DEFAULT_DEPS = "1"
