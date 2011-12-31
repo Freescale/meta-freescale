@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r8"
+PR = "r9"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc"
 
@@ -96,6 +96,13 @@ do_deploy(){
 			cd ${DEPLOY_DIR_IMAGE}
 			rm -f ${UBOOT_TARGET}-${MACHINE}.bin
 			ln -sf ${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin ${UBOOT_TARGET}-${MACHINE}.bin
+
+			mkdir -p ${DEPLOYDIR}
+			install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin
+
+			cd ${DEPLOYDIR}
+			rm -f ${UBOOT_TARGET}-${MACHINE}.bin
+                        ln -sf ${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin ${UBOOT_TARGET}-${MACHINE}.bin
 		fi
 	done
 }
