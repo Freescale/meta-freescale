@@ -1,7 +1,7 @@
 DESCRIPTION = "Reset Control Words (RCW)"
 SECTION = "rcw"
 LICENSE = "BSD"
-PR = "r1"
+PR = "r2"
 
 LIC_FILES_CHKSUM = " \
 	file://p2041rdb/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
@@ -28,6 +28,9 @@ do_deploy () {
 	M=`echo ${MACHINE} | sed s/-64b//g`
 	mkdir -p ${DEPLOY_DIR_IMAGE}/rcw
 	cp -r ${S}/${M}/${M} ${DEPLOY_DIR_IMAGE}/rcw
+
+	install -d ${DEPLOYDIR}/rcw
+	cp -r ${S}/${M}/${M} ${DEPLOYDIR}/rcw
 }
 addtask deploy after do_install
 
