@@ -1,0 +1,41 @@
+From b33793cbdf0b24f61398dfb98718ac9377e2b046 Mon Sep 17 00:00:00 2001
+From: Liu Ying <Ying.Liu@freescale.com>
+Date: Fri, 30 Sep 2011 16:00:09 +0800
+Subject: [PATCH] ENGR00158480 IPUv3:Set IDMAC LOCK for SDC display channels
+
+Set IDMAC_LOCK_EN_1 to make SDC display channels to generate
+eight AXI bursts upon the assertion of the DMA request.
+This change fixes the random garbage lines when showing
+NV12 frames decoded by VPU with V4L2 output on
+XGA@60 display's overlay framebuffer. V4L2 output uses
+MEM_PP_MEM to do 180 degree rotation.
+
+The issue can be reproduced by the following VPU unit test
+on MX53 SMD platform:
+/unit_tests/mxc_vpu_test.out -D
+'-i /1920x1080_H264_AAC5.1ch.2.1ch_track1.h264 -f 2 -w 1024
+-h 768 -r 180 -u 1 -t 1'
+
+Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+(cherry picked from commit 50f969030c25bc33cf0f05a6a5cad98c52afd858)
+---
+ drivers/mxc/ipu3/ipu_common.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/mxc/ipu3/ipu_common.c b/drivers/mxc/ipu3/ipu_common.c
+index 8dfa54f..4b12905 100644
+--- a/drivers/mxc/ipu3/ipu_common.c
++++ b/drivers/mxc/ipu3/ipu_common.c
+@@ -385,6 +385,9 @@ static int ipu_probe(struct platform_device *pdev)
+ 	/* Set sync refresh channels and CSI->mem channel as high priority */
+ 	__raw_writel(0x18800001L, IDMAC_CHA_PRI(0));
+ 
++	/* AXI burst setting for sync refresh channels */
++	__raw_writel(0x003F0000, IDMAC_CH_LOCK_EN_1);
++
+ 	/* Set MCU_T to divide MCU access window into 2 */
+ 	__raw_writel(0x00400000L | (IPU_MCU_T_DEFAULT << 18), IPU_DISP_GEN);
+ 
+-- 
+1.5.4.4
+
