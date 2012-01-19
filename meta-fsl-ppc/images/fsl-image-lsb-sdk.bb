@@ -14,3 +14,5 @@ IMAGE_INSTALL = "\
     "
 
 inherit core-image
+
+IMAGE_FSTYPES ?= "nfsroot"

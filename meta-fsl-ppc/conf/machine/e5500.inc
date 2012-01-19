@@ -11,7 +11,6 @@ PREFERRED_VERSION_virtual/kernel ?= "3.0.1"
 PREFERRED_PROVIDER_linux-libc-headers ?= "linux-qoriq-sdk-headers"
 
 KERNEL_IMAGETYPE = "uImage"
-IMAGE_FSTYPES ?= "tar.gz ext2.gz.u-boot"
 # disable the images below for now
 #		ext2.bz2 ext2.lzma \
 #		ext2.gz.u-boot ext2.bz2.u-boot ext2.lzma.u-boot"

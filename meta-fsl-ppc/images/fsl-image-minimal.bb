@@ -12,3 +12,5 @@ IMAGE_ROOTFS_SIZE = "8192"
 
 # remove not needed ipkg informations
 ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
+
+IMAGE_FSTYPES ?= "tar.gz ext2.gz.u-boot"
