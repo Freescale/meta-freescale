@@ -1,0 +1,52 @@
+From fb5ee30ae43d97665229c646f0441cc6f8270145 Mon Sep 17 00:00:00 2001
+From: Chen Liangjun <b36089@freescale.com>
+Date: Thu, 15 Dec 2011 14:20:16 +0800
+Subject: [PATCH 3/3] ENGR00162747 fix asrc sample rate convert issue
+
+The original code assume that when input file length reach 0, the output
+length should reach 0 too. Because of precision of algorithm calculating
+the output file length, when convert 96k to 88.2k, the output file
+length does not reach 0 when input length is 0. So the delete queue operation
+of output buffer is blocked when there is no input buffer setuped and a
+timeout error happens.
+
+The new code break out of the "while(info->data_length>=0)" before the delete
+queue operation of output buffer to make sure every time a delete output
+queue operation happens, there is a input buffer set already.
+
+Signed-off-by: Chen Liangjun <b36089@freescale.com>
+
+diff --git a/test/mxc_asrc_test/mxc_asrc_test.c b/test/mxc_asrc_test/mxc_asrc_test.c
+index 8e29fd2..e34fe95 100644
+--- a/test/mxc_asrc_test/mxc_asrc_test.c
++++ b/test/mxc_asrc_test/mxc_asrc_test.c
+@@ -252,6 +252,8 @@ int play_file(int fd_asrc, struct audio_info_s *info)
+ 
+ 		if ((err = ioctl(fd_asrc, ASRC_STATUS, &flags)) < 0)
+ 			goto ERROR;
++		if (info->data_len == 0)
++			break;
+ 
+ 		if ((err = ioctl(fd_asrc, ASRC_DQ_OUTBUF, &outbuf)) < 0)
+ 			goto ERROR;
+@@ -348,6 +350,8 @@ int play_file(int fd_asrc, struct audio_info_s *info)
+ 		memcpy(output_p, p, outbuf.length);
+ 		output_p = output_p + outbuf.length;
+ 		info->output_data_len -= outbuf.length;
++		if (info->output_data_len == 0)
++			break;
+ 		if ((err = ioctl(fd_asrc, ASRC_Q_OUTBUF, &outbuf)) < 0)
+ 			goto ERROR;
+ 		if ((err = ioctl(fd_asrc, ASRC_DQ_INBUF, &inbuf)) < 0)
+@@ -357,6 +361,8 @@ int play_file(int fd_asrc, struct audio_info_s *info)
+ 
+ 		if ((err = ioctl(fd_asrc, ASRC_Q_INBUF, &inbuf)) < 0)
+ 			goto ERROR;
++		if ((err = ioctl(fd_asrc, ASRC_START_CONV, &inbuf)) < 0)
++			goto ERROR;
+ 	}
+ 	err = ioctl(fd_asrc, ASRC_STOP_CONV, &pair_index);
+ 
+-- 
+1.7.1
+
