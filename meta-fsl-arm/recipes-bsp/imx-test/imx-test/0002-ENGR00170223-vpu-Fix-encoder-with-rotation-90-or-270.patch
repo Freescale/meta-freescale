@@ -1,0 +1,34 @@
+From 5dd6dccd751ea754f78a4a57d359625a82bf4018 Mon Sep 17 00:00:00 2001
+From: Sammy He <r62914@freescale.com>
+Date: Thu, 15 Dec 2011 21:43:18 +0800
+Subject: [PATCH 2/3] ENGR00170223 vpu: Fix encoder with rotation 90 or 270 incorrect issue
+
+The source stride isn't set correctly, this cause rotation 90 or 270
+is wrong. The patch will fix it.
+
+Signed-off-by: Sammy He <r62914@freescale.com>
+
+diff --git a/test/mxc_vpu_test/enc.c b/test/mxc_vpu_test/enc.c
+index 02cd118..b0bde05 100644
+--- a/test/mxc_vpu_test/enc.c
++++ b/test/mxc_vpu_test/enc.c
+@@ -346,13 +346,11 @@ encoder_allocate_framebuffer(struct encode *enc)
+ 	}
+ 
+ 	/* Must be a multiple of 16 */
+-	if (enc->cmdl->rot_angle == 90 || enc->cmdl->rot_angle == 270) {
++	if (enc->cmdl->rot_angle == 90 || enc->cmdl->rot_angle == 270)
+ 		enc_stride = (enc->enc_picheight + 15 ) & ~15;
+-		src_stride = (enc->src_picheight + 15 ) & ~15;
+-	} else {
++	else
+ 		enc_stride = (enc->enc_picwidth + 15) & ~15;
+-		src_stride = (enc->src_picwidth + 15 ) & ~15;
+-	}
++	src_stride = (enc->src_picwidth + 15 ) & ~15;
+ 
+ 	ret = vpu_EncRegisterFrameBuffer(handle, fb, fbcount, enc_stride, src_stride,
+ 					    subSampBaseA, subSampBaseB);
+-- 
+1.7.1
+

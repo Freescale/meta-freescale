@@ -1,0 +1,36 @@
+From 57e5a741c5bef4ac5afd820979a93808ecc97c64 Mon Sep 17 00:00:00 2001
+From: Sammy He <r62914@freescale.com>
+Date: Mon, 21 Nov 2011 23:08:18 +0800
+Subject: [PATCH 2/3] ENGR00162690 vpu: Fix the issue of rotation 180 degree in encoder
+
+There may be mosaic if rotation is 180 degree in vpu encoder on mx5.
+This patch fixed it, same solution is applied to mx6 platform.
+
+Signed-off-by: Sammy He <r62914@freescale.com>
+---
+ vpu/vpu_lib.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+diff --git a/vpu/vpu_lib.c b/vpu/vpu_lib.c
+index 32d44b2..0fcf5d5 100644
+--- a/vpu/vpu_lib.c
++++ b/vpu/vpu_lib.c
+@@ -1306,7 +1306,6 @@ RetCode vpu_EncStartOneFrame(EncHandle handle, EncParam * param)
+ 		return RETCODE_FAILURE_TIMEOUT;
+ 
+ 	if (pEncInfo->rotationEnable) {
+-		rotMirEnable = 0x10;	/* Enable rotator */
+ 		switch (pEncInfo->rotationAngle) {
+ 		case 0:
+ 			rotMirMode |= 0x0;
+@@ -1326,7 +1325,6 @@ RetCode vpu_EncStartOneFrame(EncHandle handle, EncParam * param)
+ 		}
+ 	}
+ 	if (pEncInfo->mirrorEnable) {
+-		rotMirEnable = 0x10;	/* Enable mirror */
+ 		switch (pEncInfo->mirrorDirection) {
+ 		case MIRDIR_NONE:
+ 			rotMirMode |= 0x0;
+-- 
+1.7.1
+

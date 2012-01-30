@@ -1,0 +1,43 @@
+From f19b8f13079c5593c31a5eb381ba5ac734779f84 Mon Sep 17 00:00:00 2001
+From: Liu Ying <Ying.Liu@freescale.com>
+Date: Tue, 15 Nov 2011 16:21:25 +0800
+Subject: [PATCH] ENGR00162195 IPUv3M:Clear IDMAC_LOCK_EN_1 for tough single display
+
+This patch clears IDMAC_LOCK_EN_1 for tough single display(dmfc=3).
+For example, 1080P50/1080P60 with 32bpp fb.
+
+Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+(cherry picked from commit 204a5fb6af1426c499332224dff00f52bdbef39b)
+---
+ drivers/mxc/ipu3/ipu_common.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/mxc/ipu3/ipu_common.c b/drivers/mxc/ipu3/ipu_common.c
+index baf22dd..18d46b3 100644
+--- a/drivers/mxc/ipu3/ipu_common.c
++++ b/drivers/mxc/ipu3/ipu_common.c
+@@ -991,7 +991,9 @@ void ipu_uninit_channel(ipu_channel_t channel)
+ 	__raw_writel(ipu_conf, IPU_CONF);
+ 
+ 	/* Restore IDMAC_LOCK_EN when we don't use dual display */
++	/* and the video mode for single display is not tough */
+ 	if (!(ipu_di_use_count[0] && ipu_di_use_count[1]) &&
++	    dmfc_type_setup != DMFC_HIGH_RESOLUTION_ONLY_DP &&
+ 	    _ipu_is_dmfc_chan(in_dma) && g_ipu_hw_rev == 3)
+ 		__raw_writel(0x003F0000, IDMAC_CH_LOCK_EN_1);
+ 
+@@ -1807,8 +1809,10 @@ int32_t ipu_enable_channel(ipu_channel_t channel)
+ 	__raw_writel(ipu_conf, IPU_CONF);
+ 
+ 	/* Clear IDMAC_LOCK_EN to workaround black flash for dual display */
++	/* and for tough video mode of single display */
+ 	if (g_ipu_hw_rev == 3 && _ipu_is_dmfc_chan(in_dma)) {
+-		if (ipu_di_use_count[1] && ipu_di_use_count[0])
++		if ((ipu_di_use_count[1] && ipu_di_use_count[0]) ||
++		    (dmfc_type_setup == DMFC_HIGH_RESOLUTION_ONLY_DP))
+ 			__raw_writel(0x0, IDMAC_CH_LOCK_EN_1);
+ 		else
+ 			__raw_writel(0x003F0000, IDMAC_CH_LOCK_EN_1);
+-- 
+1.5.4.4
+

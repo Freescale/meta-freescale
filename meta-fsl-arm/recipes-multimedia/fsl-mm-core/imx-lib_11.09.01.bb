@@ -10,7 +10,9 @@ PR = "r1"
 LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
 
 SRC_URI = "file://${PN}-${PV}.tar.gz \
-           file://imx-lib-remove-shared-libs-symlinks.patch"
+           file://imx-lib-remove-shared-libs-symlinks.patch \
+           file://0001-ENGR00156800-vpu-Fix-decoding-mp4PackedPBFrame-strea.patch \
+           file://0002-ENGR00162690-vpu-Fix-the-issue-of-rotation-180-degre.patch"
 SRC_URI[md5sum] = "45574f8f32f7000ca11d585fa60dea8c"
 SRC_URI[sha256sum] = "f151a8bb3099b596b5834a1139c19e526802e6a0aa965018d16375e7e1f48f27"
 

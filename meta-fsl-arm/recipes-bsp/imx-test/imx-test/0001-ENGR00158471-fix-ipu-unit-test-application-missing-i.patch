@@ -1,0 +1,3355 @@
+From ac950224284d2b7d47d935783bb0fabcc8b9c866 Mon Sep 17 00:00:00 2001
+From: Lily Zhang <r58066@freescale.com>
+Date: Mon, 12 Dec 2011 08:51:43 +0800
+Subject: [PATCH 1/3] ENGR00158471 fix ipu unit test application missing issue
+
+Revert "ENGR00155135 ipudev test: test for processing driver".
+ENGR00155135 should not be applied to 2.6.35 11.09 release since
+ipu processing driver is not integrated into MX53 2.6.35 kernel.
+This patch is only for imx_2.6.35_11.09.01 branch
+
+Signed-off-by: Lily Zhang <r58066@freescale.com>
+
+diff --git a/test/mxc_ipudev_test/Makefile b/test/mxc_ipudev_test/Makefile
+index 813393f..12c7889 100644
+--- a/test/mxc_ipudev_test/Makefile
++++ b/test/mxc_ipudev_test/Makefile
+@@ -1,8 +1,8 @@
+ # list of platforms which want this test case
+-INCLUDE_LIST:=IMX51 IMX53 IMX6Q
++INCLUDE_LIST:=IMX31_3STACK IMX35_3STACK IMX37_3STACK IMX51 IMX53
+ 
+-SRCS = mxc_ipudev_test.c utils.c
+-CFLAGS += -lm -lrt
++SRCS = mxc_ipudev_test.c utils.c test_pattern.c
++CFLAGS += -lipu -lIpuScreenLayer -lm -lrt
+ 
+ ifeq ($(PLATFORM),$(findstring $(PLATFORM),$(INCLUDE_LIST)))
+ OBJS = $(OBJDIR)/mxc_ipudev_test.out
+diff --git a/test/mxc_ipudev_test/ipudev_config_file b/test/mxc_ipudev_test/ipudev_config_file
+index 6541b13..d6fe358 100644
+--- a/test/mxc_ipudev_test/ipudev_config_file
++++ b/test/mxc_ipudev_test/ipudev_config_file
+@@ -27,35 +27,22 @@
+ #	IPU_ROTATE_90_RIGHT_HFLIP = 6,
+ #	IPU_ROTATE_90_LEFT = 7,
+ #
+-# priority ref:
+-#	IPU_TASK_PRIORITY_NORMAL = 0
+-#	IPU_TASK_PRIORITY_HIGH = 1
++# mode ref:
++# 	TASK_ENC = 0x1
++# 	TASK_VF = 0x2
++# 	TASK_PP = 0x4
++# 	TASK_VDI_VF = 0x8
++# 	NORMAL_MODE = 0x10
++# 	STREAM_MODE = 0x20
+ #
+-# task_id ref:
+-#	IPU_TASK_ID_ANY	= 0
+-#	IPU_TASK_ID_VF	= 1
+-#	IPU_TASK_ID_PP	= 2
+-#
+-# timeout: ms
+-#
+-# de-interlace motion ref:
++# video de-interlace motion ref:
+ #	MEDIUM_MOTION = 0
+ #	LOW_MOTION = 1
+ #	HIGH_MOTION = 2
+ #
+-# overlay alpha mode ref:
+-#	IPU_ALPHA_MODE_GLOBAL =	0
+-#	IPU_ALPHA_MODE_LOCAL  =	1
+-#
+-
+-#### priority
+-priority=0
+-
+-#### task_id
+-task_id=0
+ 
+-#### timeout
+-timeout=1000
++#### mode
++mode=0x24
+ 
+ #### operation frame count
+ fcount=50
+@@ -70,45 +57,20 @@ in_fmt=I420
+ #input crop
+ in_posx=0
+ in_posy=0
+-in_crop_w=0
+-in_crop_h=0
+-#deinterlace
+-deinterlace_en=0
++in_win_w=0
++in_win_h=0
++#input motion(video de-interlace)
+ motion_sel=0
+ 
+-#### overlay
+-overlay_en=0
+-ov_width=320
+-ov_height=240
+-ov_fmt=I420
+-#overlay crop
+-ov_posx=0
+-ov_posy=0
+-ov_crop_w=0
+-ov_crop_h=0
+-#overlay alpha
+-alpha_mode=0
+-alpha_value=0
+-#overlay colorkey
+-colorkey_en=0
+-colorkey_value=0x555555
+-
+ #### output
+ out_width=1024
+ out_height=768
+ out_fmt=UYVY
+ out_rot=0
+-#output crop
++#output to framebuffer
++out_to_fb=1
++out_fb_num=2
+ out_posx=0
+ out_posy=0
+-out_crop_w=0
+-out_crop_h=0
+-
+-#output target
+-out_to_fb=1
+-#if out_to_fb == 1, then out_filename ref to fb
+-#	ipu0 1st display overlay:	ipu0-1st-ovfb
+-#	ipu0 2nd display:		ipu0-2nd-fb
+-#	ipu1 1st display overlay:	ipu1-1st-ovfb
+-#	ipu1 2nd display:		ipu1-2nd-fb
+-out_filename=ipu0-1st-ovfb
++#output to file
++out_filename=output.dat
+diff --git a/test/mxc_ipudev_test/mxc_ipudev_test.c b/test/mxc_ipudev_test/mxc_ipudev_test.c
+index 7f916f7..4823171 100644
+--- a/test/mxc_ipudev_test/mxc_ipudev_test.c
++++ b/test/mxc_ipudev_test/mxc_ipudev_test.c
+@@ -21,154 +21,130 @@
+  */
+ 
+ #include <stdio.h>
+-#include <fcntl.h>
+ #include <stdlib.h>
+-#include <stdint.h>
++#include <errno.h>
+ #include <unistd.h>
++#include <fcntl.h>
++#include <stdint.h>
+ #include <string.h>
+ #include <signal.h>
+-#include <sys/ioctl.h>
+-#include <sys/mman.h>
+-#include <sys/types.h>
+-#include <sys/stat.h>
+-#include <linux/mxcfb.h>
+ #include "mxc_ipudev_test.h"
+ 
+-#define FB_BUFS 3
+ int ctrl_c_rev = 0;
++
+ void ctrl_c_handler(int signum, siginfo_t *info, void *myact)
+ {
+ 	ctrl_c_rev = 1;
+ }
+ 
+-int process_cmdline(int argc, char **argv, ipu_test_handle_t *test_handle)
++void output_to_file_cb(void * arg, int index)
++{
++	ipu_test_handle_t * test_handle = (ipu_test_handle_t *)arg;
++
++	if (test_handle->file_out)
++		if(fwrite(test_handle->ipu_handle->outbuf_start[index], 1,
++				test_handle->ipu_handle->ofr_size,
++				test_handle->file_out) < test_handle->ipu_handle->ofr_size) {
++			printf("Can not write enough data into output file!\n");
++		}
++}
++
++int process_cmdline(int argc, char **argv, ipu_test_handle_t * test_handle)
+ {
+ 	int i;
+-	struct ipu_task *t = &test_handle->task;
+ 
+ 	if (argc == 1)
+ 		return -1;
+ 
+-	for (i = 1; i < argc; i++)
+-		if (strcmp(argv[i], "-C") == 0)
++	for (i = 1; i < argc; i++) {
++		if (strcmp(argv[i], "-C") == 0) {
+ 			parse_config_file(argv[++i], test_handle);
++		} else if (strcmp(argv[i], "-P") == 0) {
++			test_handle->test_pattern = atoi(argv[++i]);
++		} else if (strcmp(argv[i], "-bw") == 0) {
++			test_handle->block_width = atoi(argv[++i]);
++			if (test_handle->block_width < 16)
++				test_handle->block_width = 16;
++		} else if (strcmp(argv[i], "-Q") == 0)
++			test_handle->query_task = 1;
++		else if (strcmp(argv[i], "-K") == 0) {
++			test_handle->kill_task = 1;
++			test_handle->kill_task_idx = atoi(argv[++i]);
++		}
++	}
++
++	if (test_handle->test_pattern)
++		return 0;
++	if (test_handle->query_task || test_handle->kill_task)
++		return 0;
+ 
+-	if ((t->input.width == 0) || (t->input.height == 0) ||
+-			(t->output.width == 0) ||
+-			(t->output.height == 0)
++	if ((test_handle->input.width == 0) || (test_handle->input.height == 0) ||
++			(test_handle->output.width == 0) ||
++			(test_handle->output.height == 0)
+ 			|| (test_handle->fcount < 1))
+ 		return -1;
+ 
+ 	return 0;
+ }
+ 
+-static unsigned int fmt_to_bpp(unsigned int pixelformat)
++int query_ipu_task(void)
+ {
+-        unsigned int bpp;
+-
+-        switch (pixelformat)
+-        {
+-                case IPU_PIX_FMT_RGB565:
+-                /*interleaved 422*/
+-                case IPU_PIX_FMT_YUYV:
+-                case IPU_PIX_FMT_UYVY:
+-                /*non-interleaved 422*/
+-                case IPU_PIX_FMT_YUV422P:
+-                case IPU_PIX_FMT_YVU422P:
+-                        bpp = 16;
+-                        break;
+-                case IPU_PIX_FMT_BGR24:
+-                case IPU_PIX_FMT_RGB24:
+-                case IPU_PIX_FMT_YUV444:
+-                        bpp = 24;
+-                        break;
+-                case IPU_PIX_FMT_BGR32:
+-                case IPU_PIX_FMT_BGRA32:
+-                case IPU_PIX_FMT_RGB32:
+-                case IPU_PIX_FMT_RGBA32:
+-                case IPU_PIX_FMT_ABGR32:
+-                        bpp = 32;
+-                        break;
+-                /*non-interleaved 420*/
+-                case IPU_PIX_FMT_YUV420P:
+-                case IPU_PIX_FMT_YVU420P:
+-                case IPU_PIX_FMT_YUV420P2:
+-                case IPU_PIX_FMT_NV12:
+-                        bpp = 12;
+-                        break;
+-                default:
+-                        bpp = 8;
+-                        break;
+-        }
+-        return bpp;
++	int i;
++	ipu_lib_ctl_task_t task;
++
++	for (i = 0; i< MAX_TASK_NUM; i++) {
++		task.index = i;
++		mxc_ipu_lib_task_control(IPU_CTL_TASK_QUERY, (void *)(&task), NULL);
++		if (task.task_pid) {
++			printf("\ntask %d:\n", i);
++			printf("\tpid: %d\n", task.task_pid);
++			printf("\tmode:\n");
++			if (task.task_mode & IC_ENC)
++				printf("\t\tIC_ENC\n");
++			if (task.task_mode & IC_VF)
++				printf("\t\tIC_VF\n");
++			if (task.task_mode & IC_PP)
++				printf("\t\tIC_PP\n");
++			if (task.task_mode & ROT_ENC)
++				printf("\t\tROT_ENC\n");
++			if (task.task_mode & ROT_VF)
++				printf("\t\tROT_VF\n");
++			if (task.task_mode & ROT_PP)
++				printf("\t\tROT_PP\n");
++			if (task.task_mode & VDI_IC_VF)
++				printf("\t\tVDI_IC_VF\n");
++		}
++	}
++
++	return 0;
+ }
+ 
+-static void dump_ipu_task(struct ipu_task *t)
++int kill_ipu_task(int index)
+ {
+-	printf("====== ipu task ======\n");
+-	printf("input:\n");
+-	printf("\tforamt: 0x%x\n", t->input.format);
+-	printf("\twidth: %d\n", t->input.width);
+-	printf("\theight: %d\n", t->input.height);
+-	printf("\tcrop.w = %d\n", t->input.crop.w);
+-	printf("\tcrop.h = %d\n", t->input.crop.h);
+-	printf("\tcrop.pos.x = %d\n", t->input.crop.pos.x);
+-	printf("\tcrop.pos.y = %d\n", t->input.crop.pos.y);
+-	if (t->input.deinterlace.enable) {
+-		printf("deinterlace enabled with:\n");
+-		if (t->input.deinterlace.motion != HIGH_MOTION)
+-			printf("\tlow/medium motion\n");
+-		else
+-			printf("\thigh motion\n");
+-	}
+-	printf("output:\n");
+-	printf("\tforamt: 0x%x\n", t->output.format);
+-	printf("\twidth: %d\n", t->output.width);
+-	printf("\theight: %d\n", t->output.height);
+-	printf("\troate: %d\n", t->output.rotate);
+-	printf("\tcrop.w = %d\n", t->output.crop.w);
+-	printf("\tcrop.h = %d\n", t->output.crop.h);
+-	printf("\tcrop.pos.x = %d\n", t->output.crop.pos.x);
+-	printf("\tcrop.pos.y = %d\n", t->output.crop.pos.y);
+-	if (t->overlay_en) {
+-		printf("overlay:\n");
+-		printf("\tforamt: 0x%x\n", t->overlay.format);
+-		printf("\twidth: %d\n", t->overlay.width);
+-		printf("\theight: %d\n", t->overlay.height);
+-		printf("\tcrop.w = %d\n", t->overlay.crop.w);
+-		printf("\tcrop.h = %d\n", t->overlay.crop.h);
+-		printf("\tcrop.pos.x = %d\n", t->overlay.crop.pos.x);
+-		printf("\tcrop.pos.y = %d\n", t->overlay.crop.pos.y);
+-		if (t->overlay.alpha.mode == IPU_ALPHA_MODE_LOCAL)
+-			printf("combine with local alpha\n");
+-		else
+-			printf("combine with global alpha %d\n", t->overlay.alpha.gvalue);
+-		if (t->overlay.colorkey.enable)
+-			printf("colorkey enabled with 0x%x\n", t->overlay.colorkey.value);
+-	}
++	ipu_lib_ctl_task_t task;
++
++	task.index = index;
++	mxc_ipu_lib_task_control(IPU_CTL_TASK_KILL, (void *)(&task), NULL);
++
++	return 0;
+ }
+ 
+ int main(int argc, char *argv[])
+ {
+-	ipu_test_handle_t test_handle;
+-	struct ipu_task *t = &test_handle.task;
+-	int ret = 0, done_cnt = 0;
++	int ret = 0, next_update_idx = 0, done_cnt = 0, first_time = 1;
+ 	int done_loop = 0, total_cnt = 0;
+-	struct sigaction act;
++	ipu_lib_handle_t ipu_handle;
++	ipu_test_handle_t test_handle;
+ 	FILE * file_in = NULL;
+-	FILE * file_out = NULL;
++	struct sigaction act;
+ 	struct timeval begin, end;
+ 	int sec, usec, run_time = 0;
+-	int fd_ipu = 0, fd_fb = 0;
+-	int isize = 0, ovsize = 0;
+-	int alpsize = 0, osize = 0;
+-	void *inbuf = NULL, *vdibuf = NULL;
+-	void *ovbuf = NULL, *alpbuf = NULL;
+-	void *outbuf = NULL;
+-	dma_addr_t outpaddr[FB_BUFS];
+-	struct fb_var_screeninfo fb_var;
+-	struct fb_fix_screeninfo fb_fix;
+-	int blank;
++
++	memset(&ipu_handle, 0, sizeof(ipu_lib_handle_t));
++	memset(&test_handle, 0, sizeof(ipu_test_handle_t));
++	test_handle.ipu_handle = &ipu_handle;
++	test_handle.mode = OP_NORMAL_MODE;
++	test_handle.block_width = 80;
+ 
+ 	/*for ctrl-c*/
+ 	sigemptyset(&act.sa_mask);
+@@ -177,270 +153,127 @@ int main(int argc, char *argv[])
+ 
+ 	if((ret = sigaction(SIGINT, &act, NULL)) < 0) {
+ 		printf("install sigal error\n");
+-		return ret;
++		goto done;
+ 	}
+ 
+-	memset(&test_handle, 0, sizeof(ipu_test_handle_t));
+-
+ 	if (process_cmdline(argc, argv, &test_handle) < 0) {
+ 		printf("\nMXC IPU device Test\n\n" \
+-			"Usage: %s -C <config file> <input raw file>\n",
+-			argv[0]);
++				"Usage: %s\n" \
++				"-C <config file>\n" \
++				"-P <test pattern>\n" \
++				"[-bw <block width for pattern 3>]\n" \
++				"<input raw file>\n\n" \
++				"Query ipu task runing:\n" \
++				"-Q\n\n" \
++				"Kill ipu task:\n" \
++				"-K <task_index>\n", argv[0]);
++		printf("\ntest pattern:\n" \
++			"1: video pattern with user define dma buffer queue, one full-screen output\n" \
++			"2: hopping block screen save\n" \
++			"3: color bar + hopping block\n" \
++			"4: color bar IC global alpha overlay\n" \
++			"5: color bar IC separate local alpha overlay\n" \
++			"6: color bar IC local alpha within pixel overlay\n" \
++			"7: ipu dma copy test\n" \
++			"8: 2 screen layer test using IC global alpha blending\n" \
++			"9: 3 screen layer test using IC global alpha blending\n" \
++			"10: 2 screen layer test using IC local alpha blending with alpha value in separate buffer\n" \
++			"11: 3 screen layer test using IC local alpha blending with alpha value in separate buffer\n" \
++			"12: 2 screen layer test using IC local alpha blending with alpha value in pixel\n" \
++			"13: 3 screen layer test using IC local alpha blending with alpha value in pixel\n" \
++			"14: 2 screen layer test IPC ProcessA + ProcessB with globla alpha blending\n" \
++			"15: 2 screen layer test IPC ProcessA + ProcessB with local alpha blending\n" \
++			"16: 3 screen layer test IPC ProcessA(first_layer + sencond_layer) + ProcessB(third_layer) with globla alpha blending\n" \
++			"17: 3 screen layer test IPC ProcessA(first_layer + sencond_layer) + ProcessB(third_layer) with local alpha blending\n" \
++			"18: 3 screen layer test IPC ProcessA(first_layer) ProcessB(sencond_layer) ProcessC(third_layer) with local alpha blending\n" \
++			"19: 2 screen layer test IPC ProcessA(first_layer) ProcessB(sencond_layer) with local alpha blending plus tv copy\n\n");
+ 		return -1;
+ 	}
+ 
+-	file_in = fopen(argv[argc-1], "rb");
+-	if (file_in == NULL){
+-		printf("there is no such file for reading %s\n", argv[argc-1]);
+-		ret = -1;
+-		goto err0;
+-	}
+-
+-	fd_ipu = open("/dev/mxc_ipu", O_RDWR, 0);
+-	if (fd_ipu < 0) {
+-		printf("open ipu dev fail\n");
+-		ret = -1;
+-		goto err1;
+-	}
+-
+-	isize = t->input.paddr =
+-		t->input.width * t->input.height
+-		* fmt_to_bpp(t->input.format)/8;
+-	ret = ioctl(fd_ipu, IPU_ALLOC, &t->input.paddr);
+-	if (ret < 0) {
+-		printf("ioctl IPU_ALLOC fail\n");
+-		goto err2;
+-	}
+-	inbuf = mmap(0, isize, PROT_READ | PROT_WRITE,
+-		MAP_SHARED, fd_ipu, t->input.paddr);
+-	if (!inbuf) {
+-		printf("mmap fail\n");
+-		ret = -1;
+-		goto err3;
+-	}
++	system("echo 0,0 > /sys/class/graphics/fb0/pan");
+ 
+-	if (t->input.deinterlace.enable &&
+-		(t->input.deinterlace.motion != HIGH_MOTION)) {
+-		t->input.paddr_n = isize;
+-		ret = ioctl(fd_ipu, IPU_ALLOC, &t->input.paddr_n);
+-		if (ret < 0) {
+-			printf("ioctl IPU_ALLOC fail\n");
+-			goto err4;
+-		}
+-		vdibuf = mmap(0, isize, PROT_READ | PROT_WRITE,
+-				MAP_SHARED, fd_ipu, t->input.paddr_n);
+-		if (!vdibuf) {
+-			printf("mmap fail\n");
+-			ret = -1;
+-			goto err5;
++	if (test_handle.test_pattern) {
++		ret = run_test_pattern(test_handle.test_pattern, &test_handle);
++		system("echo 0,0 > /sys/class/graphics/fb0/pan");
++		return ret;
++	} else if (argc < 4) {
++		if (test_handle.query_task)
++			return query_ipu_task();
++		else if (test_handle.kill_task)
++			return kill_ipu_task(test_handle.kill_task_idx);
++		else {
++			printf("Pls set input file\n");
++			return -1;
+ 		}
+ 	}
+ 
+-	if (t->overlay_en) {
+-		ovsize = t->overlay.paddr =
+-			t->overlay.width * t->overlay.height
+-			* fmt_to_bpp(t->overlay.format)/8;
+-		ret = ioctl(fd_ipu, IPU_ALLOC, &t->overlay.paddr);
+-		if (ret < 0) {
+-			printf("ioctl IPU_ALLOC fail\n");
+-			goto err6;
+-		}
+-		ovbuf = mmap(0, ovsize, PROT_READ | PROT_WRITE,
+-				MAP_SHARED, fd_ipu, t->overlay.paddr);
+-		if (!ovbuf) {
+-			printf("mmap fail\n");
+-			ret = -1;
+-			goto err7;
+-		}
+-
+-		/*fill overlay buffer with dedicated data*/
+-		memset(ovbuf, 0x00, ovsize/4);
+-		memset(ovbuf+ovsize/4, 0x55, ovsize/4);
+-		memset(ovbuf+ovsize/2, 0xaa, ovsize/4);
+-		memset(ovbuf+ovsize*3/4, 0xff, ovsize/4);
+-
+-		if (t->overlay.alpha.mode == IPU_ALPHA_MODE_LOCAL) {
+-			alpsize = t->overlay.alpha.loc_alp_paddr =
+-				t->overlay.width * t->overlay.height;
+-			ret = ioctl(fd_ipu, IPU_ALLOC, &t->overlay.alpha.loc_alp_paddr);
+-			if (ret < 0) {
+-				printf("ioctl IPU_ALLOC fail\n");
+-				goto err8;
+-			}
+-			alpbuf = mmap(0, alpsize, PROT_READ | PROT_WRITE,
+-					MAP_SHARED, fd_ipu, t->overlay.alpha.loc_alp_paddr);
+-			if (!alpbuf) {
+-				printf("mmap fail\n");
+-				ret = -1;
+-				goto err9;
+-			}
+-
+-			/*fill loc alpha buffer with dedicated data*/
+-			memset(alpbuf, 0x00, alpsize/4);
+-			memset(alpbuf+alpsize/4, 0x55, alpsize/4);
+-			memset(alpbuf+alpsize/2, 0xaa, alpsize/4);
+-			memset(alpbuf+alpsize*3/4, 0xff, alpsize/4);
++	if (test_handle.mode & OP_STREAM_MODE) {
++		if (test_handle.fcount == 1) {
++			test_handle.mode &= ~(OP_STREAM_MODE);
++			test_handle.mode |= OP_NORMAL_MODE;
+ 		}
+ 	}
+ 
+-	if (test_handle.show_to_fb) {
+-		int found = 0, i;
+-		char fb_dev[] = "/dev/fb0";
+-		char fb_name[16];
+-
+-		if (!strcmp(test_handle.outfile, "ipu0-1st-ovfb"))
+-			memcpy(fb_name, "DISP3 FG", 9);
+-		if (!strcmp(test_handle.outfile, "ipu0-2nd-fb"))
+-			memcpy(fb_name, "DISP3 BG - DI1", 15);
+-		if (!strcmp(test_handle.outfile, "ipu1-1st-ovfb"))
+-			memcpy(fb_name, "DISP4 FG", 9);
+-		if (!strcmp(test_handle.outfile, "ipu1-2nd-fb"))
+-			memcpy(fb_name, "DISP4 BG - DI1", 15);
+-
+-		for (i=0; i<5; i++) {
+-			fb_dev[7] = '0';
+-			fb_dev[7] += i;
+-			fd_fb = open(fb_dev, O_RDWR, 0);
+-			if (fd_fb > 0) {
+-				ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix);
+-				if (!strcmp(fb_fix.id, fb_name)) {
+-					printf("found fb dev %s\n", fb_dev);
+-					found = 1;
+-					break;
+-				} else
+-					close(fd_fb);
+-			}
+-		}
+-
+-		if (!found) {
+-			printf("can not find fb dev %s\n", fb_name);
+-			ret = -1;
+-			goto err10;
+-		}
++	file_in = fopen(argv[argc-1], "rb");
++	if (file_in == NULL){
++		printf("there is no such file for reading %s\n", argv[argc-1]);
++		return -1;
++	}
+ 
+-		ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var);
+-		fb_var.xres = t->output.width;
+-		fb_var.xres_virtual = fb_var.xres;
+-		fb_var.yres = t->output.height;
+-		fb_var.yres_virtual = fb_var.yres * FB_BUFS;
+-		fb_var.activate |= FB_ACTIVATE_FORCE;
+-		fb_var.nonstd = t->output.format;
+-		fb_var.bits_per_pixel = fmt_to_bpp(t->output.format);
+-
+-		ret = ioctl(fd_fb, FBIOPUT_VSCREENINFO, &fb_var);
+-		if (ret < 0) {
+-			printf("fb ioctl FBIOPUT_VSCREENINFO fail\n");
+-			goto err11;
+-		}
+-		ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var);
+-		ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix);
+-
+-		for (i=0; i<FB_BUFS; i++)
+-			outpaddr[i] = fb_fix.smem_start +
+-				i * fb_var.yres * fb_fix.line_length;
+-
+-		blank = FB_BLANK_UNBLANK;
+-		ioctl(fd_fb, FBIOBLANK, blank);
+-	} else {
+-		osize = t->output.paddr =
+-			t->output.width * t->output.height
+-			* fmt_to_bpp(t->output.format)/8;
+-		ret = ioctl(fd_ipu, IPU_ALLOC, &t->output.paddr);
+-		if (ret < 0) {
+-			printf("ioctl IPU_ALLOC fail\n");
+-			goto err10;
+-		}
+-		outbuf = mmap(0, osize, PROT_READ | PROT_WRITE,
+-				MAP_SHARED, fd_ipu, t->output.paddr);
+-		if (!outbuf) {
+-			printf("mmap fail\n");
+-			ret = -1;
+-			goto err11;
+-		}
++	if (test_handle.outfile && !test_handle.output.show_to_fb)
++		test_handle.file_out = fopen(test_handle.outfile, "wb");
+ 
+-		file_out = fopen(test_handle.outfile, "wb");
+-		if (file_out == NULL) {
+-			printf("can not open output file %s\n", test_handle.outfile);
+-			ret = -1;
+-			goto err12;
+-		}
++	ret = mxc_ipu_lib_task_init(&(test_handle.input), NULL, &(test_handle.output),
++			test_handle.mode, test_handle.ipu_handle);
++	if (ret < 0) {
++		printf("mxc_ipu_lib_task_init failed!\n");
++		goto done;
+ 	}
+ 
+ again:
+-	ret = ioctl(fd_ipu, IPU_CHECK_TASK, t);
+-	if (ret != IPU_CHECK_OK) {
+-		if (ret > IPU_CHECK_ERR_MIN) {
+-			if (ret == IPU_CHECK_ERR_SPLIT_INPUTW_OVER) {
+-				t->input.crop.w -= 8;
+-				goto again;
+-			}
+-			if (ret == IPU_CHECK_ERR_SPLIT_INPUTH_OVER) {
+-				t->input.crop.h -= 8;
+-				goto again;
+-			}
+-			if (ret == IPU_CHECK_ERR_SPLIT_OUTPUTW_OVER) {
+-				t->output.crop.w -= 8;
+-				goto again;
+-			}
+-			if (ret == IPU_CHECK_ERR_SPLIT_OUTPUTH_OVER) {
+-				t->output.crop.h -= 8;
+-				goto again;
+-			}
+-			ret = -1;
+-			printf("ipu task check fail\n");
+-			goto err13;
+-		}
+-	}
+-	dump_ipu_task(t);
+-
+-task_begin:
+-	if (t->input.deinterlace.enable &&
+-		(t->input.deinterlace.motion != HIGH_MOTION))
+-		if (fread(vdibuf, 1, isize, file_in) < isize) {
+-			ret = -1;
+-			printf("Can not read enough data from input file\n");
+-			goto err13;
+-		}
+-
+ 	while((done_cnt < test_handle.fcount) && (ctrl_c_rev == 0)) {
+ 		gettimeofday(&begin, NULL);
+-
+-		if (t->input.deinterlace.enable &&
+-			(t->input.deinterlace.motion != HIGH_MOTION)) {
+-			memcpy(inbuf, vdibuf, isize);
+-			ret = fread(vdibuf, 1, isize, file_in);
+-		} else
+-			ret = fread(inbuf, 1, isize, file_in);
+-		if (ret < isize) {
++		if (fread(test_handle.ipu_handle->inbuf_start[next_update_idx], 1, test_handle.ipu_handle->ifr_size, file_in)
++				< test_handle.ipu_handle->ifr_size) {
+ 			ret = -1;
+-			printf("Can not read enough data from input file\n");
+-			break;
+-		}
+-
+-		if (test_handle.show_to_fb)
+-			t->output.paddr = outpaddr[done_cnt % FB_BUFS];
+-
+-		ret = ioctl(fd_ipu, IPU_QUEUE_TASK, t);
+-		if (ret < 0) {
+-			printf("ioct IPU_QUEUE_TASK fail\n");
++			printf("Can not read enough data from input file!\n");
+ 			break;
+ 		}
+-
+-		if (test_handle.show_to_fb) {
+-			fb_var.yoffset = (done_cnt % FB_BUFS) * fb_var.yres;
+-			ret = ioctl(fd_fb, FBIOPAN_DISPLAY, &fb_var);
+-			if (ret < 0) {
+-				printf("fb ioct FBIOPAN_DISPLAY fail\n");
++		if (first_time && (test_handle.mode == (TASK_VDI_VF_MODE | OP_NORMAL_MODE)) && (test_handle.input.motion_sel != HIGH_MOTION)) {
++			if (fread(test_handle.ipu_handle->inbuf_start[1], 1, test_handle.ipu_handle->ifr_size, file_in)
++					< test_handle.ipu_handle->ifr_size) {
++				ret = -1;
++				printf("Can not read enough data from input file!\n");
+ 				break;
+ 			}
+-		} else {
+-			ret = fwrite(outbuf, 1, osize, file_out);
+-			if (ret < osize) {
++			first_time = 0;
++			done_cnt++;
++			total_cnt++;
++		}
++		if (first_time && (test_handle.mode & OP_STREAM_MODE)) {
++			if (fread(test_handle.ipu_handle->inbuf_start[1], 1, test_handle.ipu_handle->ifr_size, file_in)
++					< test_handle.ipu_handle->ifr_size) {
+ 				ret = -1;
+-				printf("Can not write enough data into output file\n");
++				printf("Can not read enough data from input file!\n");
+ 				break;
+ 			}
++			if ((test_handle.mode & TASK_VDI_VF_MODE) && (test_handle.input.motion_sel != HIGH_MOTION)) {
++				if (fread(test_handle.ipu_handle->inbuf_start[2], 1, test_handle.ipu_handle->ifr_size, file_in)
++						< test_handle.ipu_handle->ifr_size) {
++					ret = -1;
++					printf("Can not read enough data from input file!\n");
++					break;
++				}
++				done_cnt++;
++				total_cnt++;
++			}
++			first_time = 0;
++			done_cnt++;
++			total_cnt++;
+ 		}
++		next_update_idx = mxc_ipu_lib_task_buf_update(test_handle.ipu_handle, 0, 0, 0, output_to_file_cb, &test_handle);
++		if (next_update_idx < 0)
++			break;
+ 		done_cnt++;
+ 		total_cnt++;
+ 
+@@ -455,63 +288,23 @@ task_begin:
+ 		run_time += (sec * 1000000) + usec;
+ 	}
+ 
+-	if (ret >= 0) {
+-		done_loop++;
+-		if ((done_loop < test_handle.loop_cnt) && (ctrl_c_rev == 0)) {
+-			done_cnt = 0;
+-			fseek(file_in, 0L, SEEK_SET);
+-			goto task_begin;
+-		}
++	done_loop++;
++	if ((done_loop < test_handle.loop_cnt) && (ctrl_c_rev == 0)) {
++		done_cnt = 0;
++		fseek(file_in, 0L, SEEK_SET);
++		goto again;
+ 	}
+ 
+-	printf("total frame count %d avg frame time %d us, fps %f\n",
+-			total_cnt, run_time/total_cnt, total_cnt/(run_time/1000000.0));
++	printf("total frame count %d avg frame time %d us, fps %f\n", total_cnt, run_time/total_cnt, total_cnt/(run_time/1000000.0));
++
++	mxc_ipu_lib_task_uninit(test_handle.ipu_handle);
++
++done:
++	fclose(file_in);
++	if (test_handle.file_out)
++		fclose(test_handle.file_out);
++
++	system("echo 0,0 > /sys/class/graphics/fb0/pan");
+ 
+-err13:
+-	if (fd_fb) {
+-		blank = FB_BLANK_POWERDOWN;
+-		ioctl(fd_fb, FBIOBLANK, blank);
+-	}
+-	if (file_out)
+-		fclose(file_out);
+-err12:
+-	if (outbuf)
+-		munmap(outbuf, osize);
+-err11:
+-	if (fd_fb)
+-		close(fd_fb);
+-	if (t->output.paddr)
+-		ioctl(fd_ipu, IPU_FREE, &t->output.paddr);
+-err10:
+-	if (alpbuf)
+-		munmap(alpbuf, alpsize);
+-err9:
+-	if (t->overlay.alpha.loc_alp_paddr)
+-		ioctl(fd_ipu, IPU_FREE, &t->overlay.alpha.loc_alp_paddr);
+-err8:
+-	if (ovbuf)
+-		munmap(ovbuf, ovsize);
+-err7:
+-	if (t->overlay.paddr)
+-		ioctl(fd_ipu, IPU_FREE, &t->overlay.paddr);
+-err6:
+-	if (vdibuf)
+-		munmap(vdibuf, isize);
+-err5:
+-	if (t->input.paddr_n)
+-		ioctl(fd_ipu, IPU_FREE, &t->input.paddr_n);
+-err4:
+-	if (inbuf)
+-		munmap(inbuf, isize);
+-err3:
+-	if (t->input.paddr)
+-		ioctl(fd_ipu, IPU_FREE, &t->input.paddr);
+-err2:
+-	if (fd_ipu)
+-		close(fd_ipu);
+-err1:
+-	if (file_in)
+-		fclose(file_in);
+-err0:
+ 	return ret;
+ }
+diff --git a/test/mxc_ipudev_test/mxc_ipudev_test.h b/test/mxc_ipudev_test/mxc_ipudev_test.h
+index 6ccfbcf..b985b30 100644
+--- a/test/mxc_ipudev_test/mxc_ipudev_test.h
++++ b/test/mxc_ipudev_test/mxc_ipudev_test.h
+@@ -23,15 +23,35 @@
+ #define __MXC_IPUDEV_TEST_H__
+ 
+ #include <linux/ipu.h>
++#include <linux/videodev.h>
++#include "mxc_ipu_hl_lib.h"
+ 
+ typedef struct {
+-	struct ipu_task task;
++	ipu_lib_handle_t * ipu_handle;
+ 	int fcount;
+ 	int loop_cnt;
+-	int show_to_fb;
++	int mode;
++	int test_pattern;
++	int block_width;
++	int query_task;
++	int kill_task;
++	int kill_task_idx;
+ 	char outfile[128];
++	FILE * file_out;
++	ipu_lib_input_param_t input;
++	ipu_lib_output_param_t output;
+ } ipu_test_handle_t;
+ 
++enum {
++	NO_OV = 0x00,
++	IC_GLB_ALP_OV = 0x01,
++	IC_LOC_SEP_ALP_OV = 0x02,
++	IC_LOC_PIX_ALP_OV = 0x04,
++	DP_LOC_SEP_ALP_OV = 0x08,
++	COPY_TV = 0x10,
++};
++
+ extern int parse_config_file(char *file_name, ipu_test_handle_t *test_handle);
++int run_test_pattern(int pattern, ipu_test_handle_t * test_handle);
+ 
+ #endif
+diff --git a/test/mxc_ipudev_test/test_pattern.c b/test/mxc_ipudev_test/test_pattern.c
+new file mode 100644
+index 0000000..c968548
+--- /dev/null
++++ b/test/mxc_ipudev_test/test_pattern.c
+@@ -0,0 +1,2014 @@
++/*
++ * Copyright 2009-2011 Freescale Semiconductor, Inc. All Rights Reserved.
++ *
++ */
++
++/*
++ * The code contained herein is licensed under the GNU Lesser General
++ * Public License.  You may obtain a copy of the GNU Lesser General
++ * Public License Version 2.1 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/lgpl-license.html
++ * http://www.gnu.org/copyleft/lgpl.html
++ */
++
++/*!
++ * @file test_pattern.c
++ *
++ * @brief IPU device lib test pattern implementation
++ *
++ * @ingroup IPU
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <fcntl.h>
++#include <string.h>
++#include <stdint.h>
++#include <unistd.h>
++#include <time.h>
++#include <errno.h>
++#include <pthread.h>
++#include <math.h>
++#include <semaphore.h>
++#include <sys/mman.h>
++#include <sys/ioctl.h>
++#include <sys/stat.h>
++#include <linux/mxcfb.h>
++#include "mxc_ipudev_test.h"
++#ifndef BUILD_FOR_ANDROID
++#include "ScreenLayer.h"
++#endif
++
++/*
++       Y = R *  .299 + G *  .587 + B *  .114;
++       U = R * -.169 + G * -.332 + B *  .500 + 128.;
++       V = R *  .500 + G * -.419 + B * -.0813 + 128.;*/
++
++#define red(x) (((x & 0xE0) >> 5) * 0x24)
++#define green(x) (((x & 0x1C) >> 2) * 0x24)
++#define blue(x) ((x & 0x3) * 0x55)
++#define y(rgb) ((red(rgb)*299L + green(rgb)*587L + blue(rgb)*114L) / 1000)
++#define u(rgb) ((((blue(rgb)*500L) - (red(rgb)*169L) - (green(rgb)*332L)) / 1000))
++#define v(rgb) (((red(rgb)*500L - green(rgb)*419L - blue(rgb)*81L) / 1000))
++#define BUF_CNT		5
++
++extern int ctrl_c_rev;
++
++static int get_system_rev(unsigned int * system_rev)
++{
++        FILE *fp;
++        char buf[1024];
++        int nread;
++        char *tmp, *rev;
++        int ret = -1;
++
++        fp = fopen("/proc/cpuinfo", "r");
++        if (fp == NULL) {
++                printf("Open /proc/cpuinfo failed!\n");
++                return ret;
++        }
++
++        nread = fread(buf, 1, sizeof(buf), fp);
++        fclose(fp);
++        if ((nread == 0) || (nread == sizeof(buf))) {
++                fclose(fp);
++                return ret;
++        }
++
++        buf[nread] = '\0';
++
++        tmp = strstr(buf, "Revision");
++        if (tmp != NULL) {
++                rev = index(tmp, ':');
++                if (rev != NULL) {
++                        rev++;
++                        *system_rev = strtoul(rev, NULL, 16);
++                        ret = 0;
++                }
++        }
++
++        return ret;
++}
++
++void gen_fill_pattern(char * buf, int in_width, int in_height)
++{
++	int y_size = in_width * in_height;
++	int h_step = in_height / 16;
++	int w_step = in_width / 16;
++	int h, w;
++	uint32_t y_color = 0;
++	int32_t u_color = 0;
++	int32_t v_color = 0;
++	uint32_t rgb = 0;
++	static int32_t alpha = 0;
++	static int inc_alpha = 1;
++
++	for (h = 0; h < in_height; h++) {
++		int32_t rgb_temp = rgb;
++
++		for (w = 0; w < in_width; w++) {
++			if (w % w_step == 0) {
++				y_color = y(rgb_temp);
++				y_color = (y_color * alpha) / 255;
++
++				u_color = u(rgb_temp);
++				u_color = (u_color * alpha) / 255;
++				u_color += 128;
++
++				v_color = v(rgb_temp);
++				v_color = (v_color * alpha) / 255;
++				v_color += 128;
++
++				rgb_temp++;
++				if (rgb_temp > 255)
++					rgb_temp = 0;
++			}
++			buf[(h*in_width) + w] = y_color;
++			if (!(h & 0x1) && !(w & 0x1)) {
++				buf[y_size + (((h*in_width)/4) + (w/2)) ] = u_color;
++				buf[y_size + y_size/4 + (((h*in_width)/4) + (w/2))] = v_color;
++			}
++		}
++		if ((h > 0) && (h % h_step == 0)) {
++			rgb += 16;
++			if (rgb > 255)
++				rgb = 0;
++		}
++
++	}
++	if (inc_alpha) {
++		alpha+=4;
++		if (alpha >= 255) {
++			inc_alpha = 0;
++		}
++	} else {
++		alpha-=4;
++		if (alpha <= 0) {
++			inc_alpha = 1;
++		}
++	}
++}
++
++void gen_fill_alpha_in_separate_buffer(void * alpha_buf, int alpha_size,
++				       char alpha)
++{
++	memset(alpha_buf, alpha, alpha_size);
++}
++
++void fill_alpha_buffer(char *alpha_buf, int left, int top,
++		       int right, int bottom, int disp_w, char alpha_val)
++{
++	char *pPointAlphaValue;
++	int x, y;
++
++	for (y = top; y < bottom; y++) {
++		for (x = left; x < right; x++) {
++			pPointAlphaValue = (char *)(alpha_buf +
++					    disp_w * y + x);
++			*pPointAlphaValue = alpha_val;
++		}
++	}
++}
++
++void gen_fill_alpha_in_pixel(void * buf, unsigned int pixel_format,
++			     int buf_size, char alpha)
++{
++	int i;
++	char* p_alpha;
++
++	if (pixel_format == v4l2_fourcc('R', 'G', 'B', 'A') ||
++	    pixel_format == v4l2_fourcc('B', 'G', 'R', 'A')) {
++		for (i = 0; i < buf_size; i++) {
++			if (i % 4 == 3) {
++				p_alpha = (char *)(buf + i);
++				*p_alpha = alpha;
++			}
++		}
++	} else if (pixel_format == v4l2_fourcc('A', 'B', 'G', 'R')) {
++		for (i = 0; i < buf_size; i++) {
++			if (i % 4 == 0) {
++				p_alpha = (char *)(buf + i);
++				*p_alpha = alpha;
++			}
++		}
++	} else {
++		printf("Unsupported pixel format with alpha value!\n");
++	}
++}
++
++void gen_fill_alpha_in_pixel_for_point(void * buf, unsigned int pixel_format,
++			     int sl_width, int x, int y, char alpha)
++{
++	unsigned char* p_alpha;
++
++	if (pixel_format == v4l2_fourcc('R', 'G', 'B', 'A') ||
++	    pixel_format == v4l2_fourcc('B', 'G', 'R', 'A')) {
++		p_alpha = (unsigned char *)(buf + 4*sl_width*y + 4*x + 3);
++	} else if (pixel_format == v4l2_fourcc('A', 'B', 'G', 'R')) {
++		p_alpha = (unsigned char *)(buf + 4*sl_width*y + 4*x);
++	} else {
++		printf("Unsupported pixel format with alpha value!\n");
++		return;
++	}
++	*p_alpha = alpha;
++}
++
++int foreground_fb(void)
++{
++	int fd_fb;
++	struct fb_fix_screeninfo fb_fix;
++
++	fd_fb = open("/dev/fb2", O_RDWR, 0);
++	ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix);
++	if (strcmp(fb_fix.id, "DISP3 FG") == 0) {
++		close(fd_fb);
++		return 2;
++	}
++
++	fd_fb = open("/dev/fb1", O_RDWR, 0);
++	ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix);
++	if (strcmp(fb_fix.id, "DISP3 FG") == 0) {
++		close(fd_fb);
++		return 1;
++	}
++
++	return 0;
++}
++
++int dc_fb(void)
++{
++	int fd_fb;
++	struct fb_fix_screeninfo fb_fix;
++
++	fd_fb = open("/dev/fb0", O_RDWR, 0);
++	ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix);
++	if (strcmp(fb_fix.id, "DISP3 BG - DI1") == 0) {
++		close(fd_fb);
++		return 0;
++	}
++
++	fd_fb = open("/dev/fb1", O_RDWR, 0);
++	ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix);
++	if (strcmp(fb_fix.id, "DISP3 BG - DI1") == 0) {
++		close(fd_fb);
++		return 1;
++	}
++
++	return -1;
++}
++
++int fd_fb_alloc = 0;
++
++int dma_memory_alloc(int size, int cnt, dma_addr_t paddr[], void * vaddr[])
++{
++	int i, ret = 0;
++
++	if ((fd_fb_alloc = open("/dev/fb0", O_RDWR, 0)) < 0) {
++		printf("Unable to open /dev/fb0\n");
++		ret = -1;
++		goto done;
++	}
++
++	for (i=0;i<cnt;i++) {
++		/*alloc mem from DMA zone*/
++		/*input as request mem size */
++		paddr[i] = size;
++		if ( ioctl(fd_fb_alloc, FBIO_ALLOC, &(paddr[i])) < 0) {
++			printf("Unable alloc mem from /dev/fb0\n");
++			close(fd_fb_alloc);
++			if ((fd_fb_alloc = open("/dev/fb1", O_RDWR, 0)) < 0) {
++				printf("Unable to open /dev/fb1\n");
++				if ((fd_fb_alloc = open("/dev/fb2", O_RDWR, 0)) < 0) {
++					printf("Unable to open /dev/fb2\n");
++					ret = -1;
++					goto done;
++				} else if ( ioctl(fd_fb_alloc, FBIO_ALLOC, &(paddr[i])) < 0) {
++					printf("Unable alloc mem from /dev/fb2\n");
++					ret = -1;
++					goto done;
++				}
++			} else if ( ioctl(fd_fb_alloc, FBIO_ALLOC, &(paddr[i])) < 0) {
++				printf("Unable alloc mem from /dev/fb1\n");
++				close(fd_fb_alloc);
++				if ((fd_fb_alloc = open("/dev/fb2", O_RDWR, 0)) < 0) {
++					printf("Unable to open /dev/fb2\n");
++					ret = -1;
++					goto done;
++				} else if ( ioctl(fd_fb_alloc, FBIO_ALLOC, &(paddr[i])) < 0) {
++					printf("Unable alloc mem from /dev/fb2\n");
++					ret = -1;
++					goto done;
++				}
++			}
++		}
++
++		vaddr[i] = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED,
++				fd_fb_alloc, paddr[i]);
++		if (vaddr[i] == MAP_FAILED) {
++			printf("mmap failed!\n");
++			ret = -1;
++			goto done;
++		}
++	}
++done:
++	return ret;
++}
++
++void dma_memory_free(int size, int cnt, dma_addr_t paddr[], void * vaddr[])
++{
++	int i;
++
++	for (i=0;i<cnt;i++) {
++		if (vaddr[i])
++			munmap(vaddr[i], size);
++		if (paddr[i])
++			ioctl(fd_fb_alloc, FBIO_FREE, &(paddr[i]));
++	}
++}
++
++int copy_test(ipu_test_handle_t * test_handle)
++{
++	int ret = 0, fd_fb = 0, screen_size;
++	struct fb_var_screeninfo fb_var;
++	struct fb_fix_screeninfo fb_fix;
++	void * fake_fb[1];
++	int fake_fb_paddr[1], done_cnt = 0;
++
++	if ((fd_fb = open("/dev/fb0", O_RDWR, 0)) < 0) {
++		printf("Unable to open /dev/fb0\n");
++		ret = -1;
++		goto done;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var) < 0) {
++		printf("Get FB var info failed!\n");
++		ret = -1;
++		goto done;
++	}
++	if ( ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix) < 0) {
++		printf("Get FB fix info failed!\n");
++		ret = -1;
++		goto done;
++	}
++	screen_size = fb_var.yres * fb_fix.line_length;
++	ret = dma_memory_alloc(screen_size, 1, fake_fb_paddr, fake_fb);
++	if ( ret < 0) {
++		printf("dma_memory_alloc failed\n");
++		goto done;
++	}
++
++	test_handle->mode = OP_NORMAL_MODE | TASK_PP_MODE;
++	test_handle->fcount = 10;
++	test_handle->input.width = fb_var.xres;
++	test_handle->input.height = fb_var.yres;
++	test_handle->output.width = fb_var.xres;
++	test_handle->output.height = fb_var.yres;
++	if (fb_var.bits_per_pixel == 24) {
++		test_handle->output.fmt = v4l2_fourcc('B', 'G', 'R', '3');
++		test_handle->input.fmt = v4l2_fourcc('B', 'G', 'R', '3');
++	} else {
++		test_handle->output.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++		test_handle->input.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++	}
++	test_handle->input.user_def_paddr[0] = fake_fb_paddr[0];
++	test_handle->output.user_def_paddr[0] = fb_fix.smem_start;
++
++	ret = mxc_ipu_lib_task_init(&(test_handle->input), NULL, &(test_handle->output),
++				test_handle->mode, test_handle->ipu_handle);
++	if (ret < 0) {
++		printf("mxc_ipu_lib_task_init failed!\n");
++		goto err;
++	}
++
++	while((done_cnt < test_handle->fcount) && (ctrl_c_rev == 0)) {
++		static int j = 0;
++		if ((j % 3) == 0)
++			memset(fake_fb[0], 0, screen_size);
++		if ((j % 3) == 1)
++			memset(fake_fb[0], 0x80, screen_size);
++		if ((j % 3) == 2)
++			memset(fake_fb[0], 0xff, screen_size);
++		j++;
++		if (mxc_ipu_lib_task_buf_update(test_handle->ipu_handle, 0, 0, 0, NULL, NULL) < 0)
++			break;
++		done_cnt++;
++		sleep(1);
++	}
++
++	mxc_ipu_lib_task_uninit(test_handle->ipu_handle);
++
++err:
++	dma_memory_free(screen_size, 1, fake_fb_paddr, fake_fb);
++done:
++	return ret;
++}
++
++int color_bar(int overlay, ipu_test_handle_t * test_handle)
++{
++	int ret = 0, fd_fb = 0, size = 0, i, k = 0, done_cnt = 0, fcount = 0;
++	void * buf[BUF_CNT] = {0}, * fb[3];
++	void * ov_fake_fb = 0, * ov_alpha_fake_fb = 0;
++	int ov_fake_fb_paddr = 0, ov_alpha_fake_fb_paddr = 0;
++	int paddr[BUF_CNT] = {0};
++	struct fb_var_screeninfo fb_var;
++	struct fb_fix_screeninfo fb_fix;
++	struct mxcfb_gbl_alpha g_alpha;
++	unsigned int system_rev = 0, ipu_version;
++	ipu_lib_overlay_param_t ov;
++	int screen_size, ov_fake_fb_size = 0, ov_alpha_fake_fb_size = 0;
++
++	get_system_rev(&system_rev);
++	if (((system_rev & 0xff000) == 0x37000) ||
++		(((system_rev & 0xff000) == 0x51000)) ||
++		(((system_rev & 0xff000) == 0x53000)))
++		ipu_version = 3;
++	else
++		ipu_version = 1;
++
++	if (ipu_version == 1) {
++		printf("ipuv1 can not support dispaly 2 output together!\n");
++		printf("because ipuv1 ENC channel can not be linked to disp channel!\n");
++		ret = -1;
++		goto done;
++	}
++	if ((ipu_version == 1) && overlay) {
++		printf("currently ipuv1 would not support overlay!\n");
++		ret = -1;
++		goto done;
++	}
++
++	if ((fd_fb = open("/dev/fb0", O_RDWR, 0)) < 0) {
++		printf("Unable to open /dev/fb0\n");
++		ret = -1;
++		goto done;
++	}
++
++	g_alpha.alpha = 128;
++	g_alpha.enable = 1;
++	if (ioctl(fd_fb, MXCFB_SET_GBL_ALPHA, &g_alpha) < 0) {
++		printf("Set global alpha failed\n");
++		ret = -1;
++		goto done;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var) < 0) {
++		printf("Get FB var info failed!\n");
++		ret = -1;
++		goto done;
++	}
++	if ( ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix) < 0) {
++		printf("Get FB fix info failed!\n");
++		ret = -1;
++		goto done;
++	}
++
++	if(fb_var.yres_virtual != 3*fb_var.yres)
++	{
++		fb_var.yres_virtual = 3*fb_var.yres;
++		if ( ioctl(fd_fb, FBIOPUT_VSCREENINFO, &fb_var) < 0) {
++			printf("Get FB var info failed!\n");
++			ret = -1;
++			goto done;
++		}
++	}
++
++	screen_size = fb_var.yres * fb_fix.line_length;
++	fb[0] = mmap(NULL, 3 * screen_size, PROT_READ | PROT_WRITE, MAP_SHARED,
++			fd_fb, 0);
++	if (fb[0] == MAP_FAILED) {
++		printf("fb buf0 mmap failed, errno %d!\n", errno);
++		ret = -1;
++		goto done;
++	}
++	/* ipu use fb base+screen_size as buf0 */
++	fb[1] = (void *)((char *)fb[0]);
++	fb[0] = (void *)((char *)fb[1] + screen_size);
++	fb[2] = (void *)((char *)fb[1] + 2*screen_size);
++
++	/* use I420 input format as fix*/
++	test_handle->mode = OP_STREAM_MODE;
++	test_handle->fcount = fcount = 511;
++	test_handle->input.width = 320;
++	test_handle->input.height = 240;
++	test_handle->input.fmt = v4l2_fourcc('I', '4', '2', '0');
++	if (fb_var.bits_per_pixel == 24)
++		test_handle->output.fmt = v4l2_fourcc('B', 'G', 'R', '3');
++	else
++		test_handle->output.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++	test_handle->output.show_to_fb = 1;
++	test_handle->output.fb_disp.fb_num = 0;
++	/* ipuv1 only support display on PP & VF task mode */
++	if (ipu_version == 1)
++		test_handle->mode |= TASK_PP_MODE;
++	test_handle->output.rot = 3;
++	if (overlay){
++		/* overlay case -- fake fb+overlay show to fb0*/
++		ov.width = fb_var.xres;
++		ov.height = fb_var.yres;
++		if (fb_var.bits_per_pixel == 24)
++			ov.fmt = v4l2_fourcc('B', 'G', 'R', '3');
++		else
++			ov.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++
++		if (overlay == IC_LOC_SEP_ALP_OV) {
++			ov.ov_crop_win.pos.x = fb_var.xres/4;
++			ov.ov_crop_win.pos.y = fb_var.yres/4;
++			ov.ov_crop_win.win_w = fb_var.xres/2;
++			ov.ov_crop_win.win_h = fb_var.yres/2;
++			ov.local_alpha_en = 1;
++			ov.global_alpha_en = 0;
++			ov_fake_fb_size = screen_size;
++			ov_alpha_fake_fb_size = ov.width * ov.height;
++
++			test_handle->output.width = fb_var.xres/2;
++			test_handle->output.height = fb_var.yres/2;
++			test_handle->output.fb_disp.pos.x = fb_var.xres/4;
++			test_handle->output.fb_disp.pos.y = fb_var.yres/4;
++		} else if (overlay == IC_GLB_ALP_OV) {
++			ov.ov_crop_win.pos.x = fb_var.xres/4;
++			ov.ov_crop_win.pos.y = fb_var.yres/4;
++			ov.ov_crop_win.win_w = fb_var.xres/2;
++			ov.ov_crop_win.win_h = fb_var.yres/2;
++			ov.local_alpha_en = 0;
++			ov.global_alpha_en = 1;
++			ov_fake_fb_size = screen_size;
++
++			test_handle->output.width = fb_var.xres/2;
++			test_handle->output.height = fb_var.yres/2;
++			test_handle->output.fb_disp.pos.x = fb_var.xres/4;
++			test_handle->output.fb_disp.pos.y = fb_var.yres/4;
++		} else if (overlay == IC_LOC_PIX_ALP_OV) {
++			ov.fmt = v4l2_fourcc('R', 'G', 'B', 'A');
++			ov.ov_crop_win.pos.x = 0;
++			ov.ov_crop_win.pos.y = 0;
++			ov.ov_crop_win.win_w = fb_var.xres;
++			ov.ov_crop_win.win_h = fb_var.yres;
++			ov.global_alpha_en = 0;
++			ov.local_alpha_en = 0;
++			ov_fake_fb_size = ov.width * ov.height * 4;
++
++			/*
++			 * RGB32A is not the pixel format of FB0(RGB565),
++			 * so we cannot do memory copy from graphic plane to
++			 * FB0. We choose to set graphic plane and video plane
++			 * to be the same resolution with FB0.
++			 */
++			test_handle->output.width = fb_var.xres;
++			test_handle->output.height = fb_var.yres;
++			test_handle->output.fb_disp.pos.x = 0;
++			test_handle->output.fb_disp.pos.y = 0;
++		}
++		ov.key_color_en = 0;
++		ov.alpha = 128;
++		ov.key_color = 0x808080;
++	} else {
++		/* one output case -- full screen */
++		test_handle->output.width = fb_var.xres;
++		test_handle->output.height = fb_var.yres;
++	}
++
++	/*allocate dma buffers from fb dev*/
++	size = test_handle->input.width * test_handle->input.height * 3/2;
++	ret = dma_memory_alloc(size, BUF_CNT, paddr, buf);
++	if ( ret < 0) {
++		printf("dma_memory_alloc failed\n");
++		goto done;
++	}
++
++	if (overlay) {
++		ov_fake_fb_paddr = ov_fake_fb_size;
++		if ( ioctl(fd_fb, FBIO_ALLOC, &(ov_fake_fb_paddr)) < 0) {
++			printf("Unable alloc mem from /dev/fb0\n");
++			ret = -1;
++			goto done;
++		}
++		ov_fake_fb = mmap(NULL, ov_fake_fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
++				fd_fb, ov_fake_fb_paddr);
++		if (ov_fake_fb == MAP_FAILED) {
++			printf("mmap failed!\n");
++			ret = -1;
++			goto done;
++		}
++		ov.user_def_paddr[0] = ov_fake_fb_paddr;
++		ov.user_def_paddr[1] = ov.user_def_paddr[0];
++
++		if (overlay == IC_LOC_SEP_ALP_OV) {
++			ov_alpha_fake_fb_paddr = ov_alpha_fake_fb_size;
++			if (ioctl(fd_fb, FBIO_ALLOC,
++				  &(ov_alpha_fake_fb_paddr)) < 0) {
++				printf("Unable alloc mem from /dev/fb0\n");
++				ret = -1;
++				goto done;
++			}
++			ov_alpha_fake_fb = mmap(NULL, ov_alpha_fake_fb_size,
++						PROT_READ | PROT_WRITE,
++						MAP_SHARED,
++						fd_fb,
++						ov_alpha_fake_fb_paddr);
++			if (ov_alpha_fake_fb == MAP_FAILED) {
++				printf("mmap failed!\n");
++				ret = -1;
++				goto done;
++			}
++			ov.user_def_alpha_paddr[0] = ov_alpha_fake_fb_paddr;
++			ov.user_def_alpha_paddr[1] = ov_alpha_fake_fb_paddr;
++		}
++	}
++
++	/* we are using stream mode and we set dma addr by ourselves*/
++	test_handle->input.user_def_paddr[0] = paddr[0];
++	test_handle->input.user_def_paddr[1] = paddr[1];
++	gen_fill_pattern(buf[0], test_handle->input.width, test_handle->input.height);
++	gen_fill_pattern(buf[1], test_handle->input.width, test_handle->input.height);
++	done_cnt = i = 1;
++
++	if (overlay)
++		ret = mxc_ipu_lib_task_init(&(test_handle->input), &ov, &(test_handle->output),
++				test_handle->mode, test_handle->ipu_handle);
++	else
++		ret = mxc_ipu_lib_task_init(&(test_handle->input), NULL, &(test_handle->output),
++				test_handle->mode, test_handle->ipu_handle);
++	if (ret < 0) {
++		printf("mxc_ipu_lib_task_init failed!\n");
++		goto done;
++	}
++
++	while((done_cnt < test_handle->fcount) && (ctrl_c_rev == 0)) {
++		if (overlay) {
++			if (overlay == IC_GLB_ALP_OV) {
++				if (done_cnt % 50 == 0) {
++					static int j = 0;
++					if ((j % 3) == 0)
++						memset(ov_fake_fb, 0,
++						       ov_fake_fb_size);
++					if ((j % 3) == 1)
++						memset(ov_fake_fb, 0x80,
++						       ov_fake_fb_size);
++					if ((j % 3) == 2)
++						memset(ov_fake_fb, 0xff,
++						       ov_fake_fb_size);
++					j++;
++				}
++				/* fb show sequence should be 0->1->2->0 */
++				memcpy(fb[done_cnt%3], ov_fake_fb,
++				       ov_fake_fb_size);
++				if (mxc_ipu_lib_task_buf_update(test_handle->ipu_handle, paddr[i], ov_fake_fb_paddr, 0, NULL, NULL) < 0)
++					break;
++			} else if (overlay == IC_LOC_PIX_ALP_OV) {
++				if (done_cnt == 1) {
++					/* RGBA32 red */
++					/* 2 planes */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 0)
++							memset(ov_fake_fb + k,
++							       0xFF, 1);
++						else
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0x80, 1);
++					}
++				} else if (done_cnt == 1*fcount/9) {
++					/* video plane */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++					}
++				} else if (done_cnt == 2*fcount/9) {
++					/* graphic plane */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0xFF, 1);
++					}
++				} else if (done_cnt == fcount/3) {
++					/* RGBA32 green */
++					/* 2 planes */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 1)
++							memset(ov_fake_fb + k,
++							       0xFF, 1);
++						else
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0x80, 1);
++					}
++				} else if (done_cnt == 4*fcount/9) {
++					/* video plane */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++					}
++				} else if (done_cnt == 5*fcount/9) {
++					/* graphic plane */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0xFF, 1);
++					}
++				} else if (done_cnt == 2*fcount/3) {
++					/* RGBA32 blue */
++					/* 2 planes */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 2)
++							memset(ov_fake_fb + k,
++							       0xFF, 1);
++						else
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0x80, 1);
++					}
++				} else if (done_cnt == 7*fcount/9) {
++					/* video plane */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++					}
++				} else if (done_cnt == 8*fcount/9) {
++					/* graphic plane */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 4 == 3)
++							memset(ov_fake_fb + k,
++							       0xFF, 1);
++					}
++				}
++				if (mxc_ipu_lib_task_buf_update(test_handle->ipu_handle, paddr[i], ov_fake_fb_paddr, 0, NULL, NULL) < 0)
++					break;
++			} else if (overlay == IC_LOC_SEP_ALP_OV) {
++				if (done_cnt == 1) {
++					/* RGB565 red */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 2 == 1)
++							memset(ov_fake_fb + k,
++							       0xF8, 1);
++						else
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++					}
++					/* 2 planes */
++					memset(ov_alpha_fake_fb, 0x80,
++				      	       ov_alpha_fake_fb_size);
++				} else if (done_cnt == 1*fcount/9) {
++					/* video plane */
++					memset(ov_alpha_fake_fb, 0x00,
++				      	       ov_alpha_fake_fb_size);
++				} else if (done_cnt == 2*fcount/9) {
++					/* graphic plane */
++					memset(ov_alpha_fake_fb, 0xFF,
++				      	       ov_alpha_fake_fb_size);
++				} else if (done_cnt == fcount/3) {
++					/* RGB565 green */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 2 == 1)
++							memset(ov_fake_fb + k,
++							       0x07, 1);
++						else
++							memset(ov_fake_fb + k,
++							       0xE0, 1);
++					}
++					/* 2 planes */
++					memset(ov_alpha_fake_fb, 0x80,
++					       ov_alpha_fake_fb_size);
++				} else if (done_cnt == 4*fcount/9) {
++					/* video plane */
++					memset(ov_alpha_fake_fb, 0x00,
++				      	       ov_alpha_fake_fb_size);
++				} else if (done_cnt == 5*fcount/9) {
++					/* graphic plane */
++					memset(ov_alpha_fake_fb, 0xFF,
++				      	       ov_alpha_fake_fb_size);
++				} else if (done_cnt == 2*fcount/3) {
++					/* RGB565 blue */
++					for (k = 0; k < ov_fake_fb_size; k++) {
++						if (k % 2 == 0)
++							memset(ov_fake_fb + k,
++							       0x1F, 1);
++						else
++							memset(ov_fake_fb + k,
++							       0x00, 1);
++					}
++					/* 2 planes */
++					memset(ov_alpha_fake_fb, 0x80,
++					       ov_alpha_fake_fb_size);
++				} else if (done_cnt == 7*fcount/9) {
++					/* video plane */
++					memset(ov_alpha_fake_fb, 0x00,
++				      	       ov_alpha_fake_fb_size);
++				} else if (done_cnt == 8*fcount/9) {
++					/* graphic plane */
++					memset(ov_alpha_fake_fb, 0xFF,
++				      	       ov_alpha_fake_fb_size);
++				}
++				memcpy(fb[done_cnt%3], ov_fake_fb,
++				       ov_fake_fb_size);
++				if (mxc_ipu_lib_task_buf_update(test_handle->ipu_handle, paddr[i], ov_fake_fb_paddr, ov_alpha_fake_fb_paddr, NULL, NULL) < 0)
++					break;
++			}
++		} else {
++			if (mxc_ipu_lib_task_buf_update(test_handle->ipu_handle, paddr[i], 0, 0, NULL, NULL) < 0)
++				break;
++		}
++
++		i++;
++		if (i == BUF_CNT)
++			i = 0;
++		done_cnt++;
++		gen_fill_pattern(buf[i], test_handle->input.width, test_handle->input.height);
++		/* make the input framerate < 60Hz*/
++		usleep(15000);
++	}
++
++	mxc_ipu_lib_task_uninit(test_handle->ipu_handle);
++
++done:
++	dma_memory_free(size, BUF_CNT, paddr, buf);
++	if (fd_fb)
++		close(fd_fb);
++
++	return ret;
++}
++
++int update_block_pos(int *x, int *y, int angle_start, int block_width,
++	int limit_w, int limit_h, int fd_fb)
++{
++	static int angle = 0;
++	static double steps = 0.0;
++	struct mxcfb_pos pos;
++	int need_change = 0;
++	double ra;
++	double nx, ny;
++
++	if (angle == 0)
++		angle = angle_start;
++	steps += 0.1;
++	ra = ((double)angle)*3.1415926/180.0;
++	nx = *x + steps*cos(ra);
++	ny = *y + steps*sin(ra);
++	if (nx < 0) {
++		if (ny < *y) /* x+, y-*/
++			angle = 360 - angle_start;
++		else /* x+, y+ */
++			angle = angle_start;
++		need_change = 1;
++	} else if (nx > (limit_w - block_width)) {
++		if (ny < *y) /* x-, y-*/
++			angle = 180 + angle_start;
++		else /* x-, y+ */
++			angle = 180 - angle_start;
++		need_change = 1;
++	} else if (ny < 0) {
++		if (nx < *x) /* x-, y+*/
++			angle = 180 - angle_start;
++		else /* x+, y+ */
++			angle = angle_start;
++		need_change = 1;
++	} else if (ny > (limit_h - block_width)) {
++		if (nx < *x) /* x-, y-*/
++			angle = 180 + angle_start;
++		else /* x+, y- */
++			angle = 360 - angle_start;
++		need_change = 1;
++	}
++
++	if (need_change) {
++		steps = 0.0;
++		ra = ((double)angle)*3.1415926/180.0;
++		nx = *x;
++		ny = *y;
++		//printf("change angle to %d\n", angle);
++		//printf("pos %d, %d\n", *x, *y);
++	}
++
++	pos.x = nx;
++	pos.y = ny;
++	ioctl(fd_fb, MXCFB_SET_OVERLAY_POS, &pos);
++	*x = nx;
++	*y = ny;
++
++	return need_change;
++}
++
++/*
++ * This call-back function provide one method to update
++ * framebuffer by pan_display.
++ */
++void hop_block_output_cb(void * arg, int index)
++{
++	int fd_fb = *((int *)arg);
++	struct fb_var_screeninfo fb_var;
++
++	ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var);
++	/* for buf index 0, its phyaddr is fb buf1*/
++	/* for buf index 1, its phyaddr is fb buf0*/
++	/* for buf index 2, its phyaddr is fb buf2*/
++	if (index == 0)
++		fb_var.yoffset = fb_var.yres;
++	else if (index == 1)
++		fb_var.yoffset = 0;
++	else
++		fb_var.yoffset = 2 * fb_var.yres;
++
++	ioctl(fd_fb, FBIOPAN_DISPLAY, &fb_var);
++}
++
++int hop_block(ipu_test_handle_t * test_handle)
++{
++	int ret = 0, x = 0, y = 0, fd_fb = 0, next_update_idx = 0;
++	int lcd_w, lcd_h;
++	int blank;
++	char random_color;
++	int start_angle, screen_size;
++	void * buf;
++	struct mxcfb_pos pos;
++	struct fb_var_screeninfo fb_var;
++	struct fb_fix_screeninfo fb_fix;
++
++	/* clear background fb, get the lcd frame info */
++	if ((fd_fb = open("/dev/fb0", O_RDWR, 0)) < 0) {
++		printf("Unable to open /dev/fb0\n");
++		ret = -1;
++		goto done;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix) < 0) {
++		printf("Get FB fix info failed!\n");
++		ret = -1;
++		goto done;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var) < 0) {
++		printf("Get FB var info failed!\n");
++		ret = -1;
++		goto done;
++	}
++	lcd_w = fb_var.xres;
++	lcd_h = fb_var.yres;
++	screen_size = fb_var.yres_virtual * fb_fix.line_length;
++
++	buf = mmap(NULL, screen_size, PROT_READ | PROT_WRITE, MAP_SHARED,
++			fd_fb, 0);
++	if (buf == MAP_FAILED) {
++		printf("mmap failed!\n");
++		ret = -1;
++		goto done;
++	}
++	memset(buf, 0, screen_size);
++	close(fd_fb);
++
++	/* display hop block to overlay */
++	if (foreground_fb() == 2) {
++		if ((fd_fb = open("/dev/fb2", O_RDWR, 0)) < 0) {
++			printf("Unable to open /dev/fb2\n");
++			ret = -1;
++			goto done;
++		}
++	} else {
++		if ((fd_fb = open("/dev/fb1", O_RDWR, 0)) < 0) {
++			printf("Unable to open /dev/fb1\n");
++			ret = -1;
++			goto done;
++		}
++	}
++
++	fb_var.xres = test_handle->block_width
++			- test_handle->block_width%8;
++	fb_var.xres_virtual = fb_var.xres;
++	fb_var.yres = test_handle->block_width;
++	fb_var.yres_virtual = fb_var.yres * 3;
++	if ( ioctl(fd_fb, FBIOPUT_VSCREENINFO, &fb_var) < 0) {
++		printf("Set FB var info failed!\n");
++		ret = -1;
++		goto done;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix) < 0) {
++		printf("Get FB fix info failed!\n");
++		ret = -1;
++		goto done;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var) < 0) {
++		printf("Get FB var info failed!\n");
++		ret = -1;
++		goto done;
++	}
++	blank = FB_BLANK_UNBLANK;
++	if ( ioctl(fd_fb, FBIOBLANK, blank) < 0) {
++		printf("UNBLANK FB failed!\n");
++		ret = -1;
++		goto done;
++	}
++
++	test_handle->mode = OP_STREAM_MODE;
++	test_handle->input.width = 400;
++	test_handle->input.height = 400;
++	test_handle->input.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++	test_handle->output.width = test_handle->block_width
++					- test_handle->block_width%8;
++	test_handle->output.height = test_handle->block_width;
++	if (fb_var.bits_per_pixel == 24)
++		test_handle->output.fmt = v4l2_fourcc('B', 'G', 'R', '3');
++	else
++		test_handle->output.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++	test_handle->output.show_to_fb = 0;
++	screen_size = fb_var.yres * fb_fix.line_length;
++	test_handle->output.user_def_paddr[0] = fb_fix.smem_start + screen_size;
++	test_handle->output.user_def_paddr[1] = fb_fix.smem_start;
++	test_handle->output.user_def_paddr[2] = fb_fix.smem_start + 2*screen_size;
++
++	ret = mxc_ipu_lib_task_init(&(test_handle->input), NULL, &(test_handle->output),
++			test_handle->mode, test_handle->ipu_handle);
++	if (ret < 0) {
++		printf("mxc_ipu_lib_task_init failed!\n");
++		goto done;
++	}
++
++	srand((unsigned int)time(0));
++	random_color = (char)(rand()%255);
++	/* for stream mode, fill two input frame to prepare */
++	memset(test_handle->ipu_handle->inbuf_start[0], random_color, test_handle->ipu_handle->ifr_size);
++	memset(test_handle->ipu_handle->inbuf_start[1], random_color, test_handle->ipu_handle->ifr_size);
++	start_angle = rand()%90;
++	if (start_angle == 90) start_angle = 89;
++	if (start_angle == 0) start_angle = 1;
++	printf("Start angle is %d\n", start_angle);
++
++	/* start first frame */
++	if((next_update_idx = mxc_ipu_lib_task_buf_update(test_handle->ipu_handle, 0, 0, 0, hop_block_output_cb, &fd_fb)) < 0)
++		goto err;
++
++	while(ctrl_c_rev == 0) {
++		usleep(100000);
++		/* update frame if only hop block hit the LCD frame */
++		if(update_block_pos(&x, &y, start_angle, test_handle->block_width, lcd_w, lcd_h, fd_fb)) {
++			random_color = (char)(rand()%255);
++			memset(test_handle->ipu_handle->inbuf_start[next_update_idx], random_color,
++					test_handle->ipu_handle->ifr_size);
++			if((next_update_idx = mxc_ipu_lib_task_buf_update(test_handle->ipu_handle, 0, 0, 0, hop_block_output_cb, &fd_fb)) < 0)
++				break;
++		}
++	}
++
++	/* ipu need reset position to 0,0 */
++	pos.x = 0;
++	pos.y = 0;
++	ioctl(fd_fb, MXCFB_SET_OVERLAY_POS, &pos);
++
++	blank = FB_BLANK_POWERDOWN;
++	if ( ioctl(fd_fb, FBIOBLANK, blank) < 0) {
++		printf("POWERDOWN FB failed!\n");
++		ret = -1;
++		goto done;
++	}
++err:
++	mxc_ipu_lib_task_uninit(test_handle->ipu_handle);
++
++done:
++	if (fd_fb)
++		close(fd_fb);
++	return ret;
++}
++
++void * thread_func_color_bar(void *arg)
++{
++	int ret;
++	ipu_test_handle_t test_handle;
++	ipu_lib_handle_t ipu_handle;
++
++	memset(&ipu_handle, 0, sizeof(ipu_lib_handle_t));
++	memset(&test_handle, 0, sizeof(ipu_test_handle_t));
++
++	test_handle.ipu_handle = &ipu_handle;
++	ret = color_bar(NO_OV, &test_handle);
++
++	pthread_exit((void*)ret);
++
++	return NULL;
++}
++
++void * thread_func_hop_block(void *arg)
++{
++	int ret;
++
++	ret = hop_block((ipu_test_handle_t *)arg);
++
++	pthread_exit((void*)ret);
++
++	return NULL;
++}
++
++#ifndef BUILD_FOR_ANDROID
++#define PRIMARYFBDEV	"/dev/fb0"
++#define OVERLAYFBDEV	"/dev/fb2"
++#define	BUFCNT_1ST	1
++#define BUFCNT_2ND	3
++#define BUFCNT_3TH	5
++#define FRM_CNT		511
++/* variables for semaphore */
++sem_t *         semIDUnit;
++const char*     semNameUnit="IPU_SL_unit_test";
++
++/* Vittual address of shared memory in current process */
++int * vshmUnitTest =NULL;
++
++int getFBInfor(int * pfbWidth, int * pfbHeight, int * pfbBPP )
++{
++	int ret, fd_fb;
++	struct fb_var_screeninfo fb_var;
++	struct fb_fix_screeninfo fb_fix;
++
++	ret = 0;
++	/* get fb info */
++	if ((fd_fb = open(PRIMARYFBDEV, O_RDWR, 0)) < 0) {
++		printf("Unable to open /dev/fb0\n");
++		ret = -1;
++		goto getFBInfor_err1;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_FSCREENINFO, &fb_fix) < 0) {
++		printf("Get FB fix info failed!\n");
++		ret = -1;
++		goto getFBInfor_err2;
++	}
++
++	if ( ioctl(fd_fb, FBIOGET_VSCREENINFO, &fb_var) < 0) {
++		printf("Get FB var info failed!\n");
++		ret = -1;
++		goto getFBInfor_err2;
++	}
++	*pfbWidth	= fb_var.xres;
++	*pfbHeight	= fb_var.yres;
++	*pfbBPP		= fb_var.bits_per_pixel;
++getFBInfor_err2:
++	close(fd_fb);
++getFBInfor_err1:
++	return ret;
++}
++void * first_layer_thread_func(void *arg)
++{
++	int i, ret;
++	ScreenLayer first_layer;
++	int fb_width, fb_height, fb_bpp;
++	int op_type = NO_OV;
++
++	if(arg)
++		op_type = *((int *)arg);
++
++	ret = getFBInfor(&fb_width, &fb_height, &fb_bpp);
++	if(ret == -1)
++	{
++		printf("Can not get fb information. \n");
++		goto err;
++	}
++
++	memset(&first_layer, 0, sizeof(ScreenLayer));
++	if (fb_bpp == 24)
++		first_layer.fmt = v4l2_fourcc('B', 'G', 'R', '3');
++	else
++		first_layer.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++
++	if (op_type & COPY_TV)
++		first_layer.fmt = v4l2_fourcc('U', 'Y', 'V', 'Y');
++
++	memcpy(first_layer.fbdev, PRIMARYFBDEV, strlen(PRIMARYFBDEV)+1);
++	first_layer.pPrimary = NULL;
++	if ((ret = CreateScreenLayer(&first_layer, BUFCNT_1ST))
++		!= E_RET_SUCCESS) {
++		printf("CreateScreenLayer first layer err %d\n", ret);
++		goto err;
++	}
++
++	i = 0;
++	while (i < 50 && !ctrl_c_rev) {
++		if (i % 3 == 0)
++			memset(first_layer.bufVaddr[0], 0x0, first_layer.bufSize);
++		else if (i % 3 == 1)
++			memset(first_layer.bufVaddr[0], 0x80, first_layer.bufSize);
++		else if (i % 3 == 2)
++			memset(first_layer.bufVaddr[0], 0xff, first_layer.bufSize);
++		i++;
++		if (op_type & DP_LOC_SEP_ALP_OV) {
++			if ((ret = UpdateScreenLayer(&first_layer)) != E_RET_SUCCESS) {
++				printf("UpdateScreenLayer err %d\n",ret);
++				goto err1;
++			}
++		} else {
++			sem_wait(semIDUnit);
++			if (!vshmUnitTest[1] && !vshmUnitTest[2]) {
++				if ((ret = UpdateScreenLayer(&first_layer)) != E_RET_SUCCESS) {
++					printf("UpdateScreenLayer err %d\n",ret);
++					goto err1;
++				}
++			}
++			sem_post(semIDUnit);
++		}
++		sleep(2);
++	}
++err1:
++	while(vshmUnitTest[1] || vshmUnitTest[2])sleep(1);
++	DestoryScreenLayer(&first_layer);
++err:
++	printf("First layer has been destroyed! \n");
++	return NULL;
++}
++
++void * second_layer_thread_func(void *arg)
++{
++	ScreenLayer second_layer;
++	LoadParam param;
++	LoadParam sec_param;
++	dma_addr_t paddr_2nd[BUFCNT_2ND];
++	void * buf_2nd[BUFCNT_2ND];
++	MethodAlphaData alpha_data;
++	MethodColorKeyData colorkey_data;
++	int buf_size, alpha_buf_size, x, y, i, ret, op_type = *((int *)arg);
++	int SL_width, SL_height;
++	char alpha_val;
++	int fb_width, fb_height, fb_bpp;
++	int show_time = 0;
++	int load_time = 0;
++	int update_time = 0;
++	int bufcnt = BUFCNT_2ND;
++
++	ret = getFBInfor(&fb_width, &fb_height, &fb_bpp);
++	if(ret == -1)
++	{
++		printf("Can not get fb information. \n");
++		goto err;
++	}
++
++	memset(&second_layer, 0, sizeof(ScreenLayer));
++
++	i=100;
++	while(i)
++	{
++		i--;
++		second_layer.pPrimary = GetPrimarySLHandle(PRIMARYFBDEV);
++		if(second_layer.pPrimary == NULL)
++			usleep(200*1000);
++		else
++			break;
++	}
++	if(i==0)
++	{
++		printf("Should create primary layer firstly. \n");
++		ret = -1;
++		goto err;
++	}
++
++	alpha_buf_size = 0;
++	memset(&alpha_data, 0, sizeof(MethodAlphaData));
++	memset(&colorkey_data, 0, sizeof(MethodColorKeyData));
++	second_layer.screenRect.left = 0;
++	second_layer.screenRect.top = 0;
++	second_layer.screenRect.right = fb_width;
++	second_layer.screenRect.bottom = fb_height;
++	SL_width = second_layer.screenRect.right - second_layer.screenRect.left;
++	SL_height = second_layer.screenRect.bottom - second_layer.screenRect.top;
++	if (op_type & IC_LOC_PIX_ALP_OV)
++		second_layer.fmt = v4l2_fourcc('R', 'G', 'B', 'A');
++	else if (op_type & COPY_TV) /* for better performance */
++		second_layer.fmt = v4l2_fourcc('U', 'Y', 'V', 'Y');
++	else
++		second_layer.fmt = v4l2_fourcc('B', 'G', 'R', '3');
++	if (op_type & IC_LOC_SEP_ALP_OV)
++		second_layer.supportSepLocalAlpha = 1;
++	if ((ret = CreateScreenLayer(&second_layer, bufcnt))
++		!= E_RET_SUCCESS) {
++		printf("CreateScreenLayer second layer err %d\n", ret);
++		goto err;
++	}
++	/* set alpha and key color */
++	if (op_type & IC_GLB_ALP_OV) {
++		alpha_data.globalAlphaEnable = 1;
++		alpha_data.alpha = 255;
++	} else if (op_type & IC_LOC_SEP_ALP_OV)
++		alpha_data.sepLocalAlphaEnable = 1;
++	colorkey_data.enable = 0;
++	colorkey_data.keyColor = 0;
++	if ((ret = SetScreenLayer(&second_layer, E_SET_ALPHA, &alpha_data))
++		!= E_RET_SUCCESS) {
++		printf("SetScreenLayer E_SET_ALPHA for second layer err %d\n", ret);
++		goto err1;
++	}
++	if ((ret = SetScreenLayer(&second_layer, E_SET_COLORKEY, &colorkey_data))
++		!= E_RET_SUCCESS) {
++		printf("SetScreenLayer E_SET_COLORKEY for second layer err %d\n", ret);
++		goto err1;
++	}
++
++	if (op_type & COPY_TV) {
++		MethodTvoutData tvout;
++		tvout.tvMode = TVOUT_NTSC;
++		tvout.lcd2tvRotation = 0;
++		if ((ret = SetScreenLayer(&second_layer, E_COPY_TVOUT, &tvout))
++				!= E_RET_SUCCESS) {
++			printf("SetScreenLayer E_ENABLE_TVTOU for second layer err %d\n", ret);
++			goto err1;
++		}
++	}
++
++	param.srcWidth = 320;
++	param.srcHeight = 240;
++	param.srcFmt = v4l2_fourcc('I', '4', '2', '0');
++	param.srcRect.left = 0;
++	param.srcRect.top = 0;
++	param.srcRect.right = 320;
++	param.srcRect.bottom = 240;
++	param.destRect.left = 0;
++	param.destRect.top = 0;
++	param.destRect.right = second_layer.screenRect.right - second_layer.screenRect.left;
++	param.destRect.bottom = second_layer.screenRect.bottom - second_layer.screenRect.top;
++	param.destRot = 0;
++
++	/* just add third layer to this screenlayer to show the performance*/
++	if (op_type & COPY_TV){
++		sec_param.srcWidth = 320;
++		sec_param.srcHeight = 240;
++		sec_param.srcFmt = v4l2_fourcc('I', '4', '2', '0');
++		sec_param.srcRect.left = 0;
++		sec_param.srcRect.top = 0;
++		sec_param.srcRect.right = 320;
++		sec_param.srcRect.bottom = 240;
++		sec_param.destRect.left = (second_layer.screenRect.right - second_layer.screenRect.left)/2;
++		sec_param.destRect.top = 0;
++		sec_param.destRect.right = second_layer.screenRect.right - second_layer.screenRect.left;
++		sec_param.destRect.bottom = (second_layer.screenRect.bottom - second_layer.screenRect.top)/2;
++		sec_param.destRot = 0;
++	}
++
++	buf_size = param.srcWidth * param.srcHeight * 3/2;
++	if (op_type & IC_LOC_SEP_ALP_OV)
++		alpha_buf_size = SL_width * SL_height;
++	ret = dma_memory_alloc(buf_size, bufcnt, paddr_2nd, buf_2nd);
++	if ( ret < 0) {
++		printf("dma_memory_alloc failed\n");
++		goto err1;
++	}
++
++	for (i=0;i<FRM_CNT;i++) {
++		struct timeval frame_begin,frame_end;
++		struct timeval load_begin,load_end;
++		struct timeval update_begin,update_end;
++                int sec, usec;
++
++		if (ctrl_c_rev)
++			break;
++
++		param.srcPaddr = paddr_2nd[i%bufcnt];
++		gen_fill_pattern(buf_2nd[i%bufcnt], param.srcWidth, param.srcHeight);
++
++		gettimeofday(&frame_begin, NULL);
++		gettimeofday(&load_begin, NULL);
++
++		if ((ret = LoadScreenLayer(&second_layer, &param, i%bufcnt)) != E_RET_SUCCESS) {
++			printf("LoadScreenLayer err %d\n", ret);
++			goto err2;
++		}
++
++		if (op_type & COPY_TV){
++			sec_param.srcPaddr = paddr_2nd[i%bufcnt];
++			if ((ret = LoadScreenLayer(&second_layer, &sec_param, i%bufcnt)) != E_RET_SUCCESS) {
++				printf("LoadScreenLayer sec err %d\n", ret);
++				goto err2;
++			}
++		}
++		gettimeofday(&load_end, NULL);
++
++		sec = load_end.tv_sec - load_begin.tv_sec;
++		usec = load_end.tv_usec - load_begin.tv_usec;
++
++		if (usec < 0) {
++			sec--;
++			usec = usec + 1000000;
++		}
++		load_time += (sec * 1000000) + usec;
++
++		gettimeofday(&frame_end, NULL);
++
++                sec = frame_end.tv_sec - frame_begin.tv_sec;
++                usec = frame_end.tv_usec - frame_begin.tv_usec;
++
++                if (usec < 0) {
++                        sec--;
++                        usec = usec + 1000000;
++                }
++                show_time += (sec * 1000000) + usec;
++
++		/* Fill local alpha buffer */
++		if (op_type & IC_LOC_SEP_ALP_OV) {
++			gen_fill_alpha_in_separate_buffer(second_layer.bufAlphaVaddr[i%bufcnt], alpha_buf_size, 0x80);
++			if (i < FRM_CNT/3) {
++				alpha_val = 0x80;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						LoadAlphaPoint(&second_layer, x, y, alpha_val, i%bufcnt);
++			} else if (i < 2*FRM_CNT/3) {
++				alpha_val = 0x00;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						LoadAlphaPoint(&second_layer, x, y, alpha_val, i%bufcnt);
++			} else if (i < FRM_CNT) {
++				alpha_val = 0xFF;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						LoadAlphaPoint(&second_layer, x, y, alpha_val, i%bufcnt);
++			}
++		}
++		/* Change local alpha value in pixel */
++		else if (op_type & IC_LOC_PIX_ALP_OV) {
++			gen_fill_alpha_in_pixel(second_layer.bufVaddr[i%bufcnt], second_layer.fmt, second_layer.bufSize, 0x80);
++			if (i < FRM_CNT/3) {
++				alpha_val = 0x80;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						gen_fill_alpha_in_pixel_for_point(second_layer.bufVaddr[i%bufcnt], second_layer.fmt, SL_width, x, y, alpha_val);
++			} else if (i < 2*FRM_CNT/3) {
++				alpha_val = 0x00;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						gen_fill_alpha_in_pixel_for_point(second_layer.bufVaddr[i%bufcnt], second_layer.fmt, SL_width, x, y, alpha_val);
++			} else if (i < FRM_CNT) {
++				alpha_val = 0xFF;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						gen_fill_alpha_in_pixel_for_point(second_layer.bufVaddr[i%bufcnt], second_layer.fmt, SL_width, x, y, alpha_val);
++			}
++		}
++
++		gettimeofday(&frame_begin, NULL);
++		gettimeofday(&update_begin, NULL);
++
++		if ((ret = FlipScreenLayerBuf(&second_layer, i%bufcnt)) != E_RET_SUCCESS) {
++			printf("FlipScreenLayerBuf err %d\n", ret);
++			goto err2;
++		}
++
++		sem_wait(semIDUnit);
++		if (!vshmUnitTest[2]) {
++			if ((ret = UpdateScreenLayer(&second_layer)) != E_RET_SUCCESS) {
++				printf("UpdateScreenLayer err %d\n",ret);
++				goto err2;
++			}
++		}
++		sem_post(semIDUnit);
++
++		gettimeofday(&update_end, NULL);
++
++		sec = update_end.tv_sec - update_begin.tv_sec;
++		usec = update_end.tv_usec - update_begin.tv_usec;
++
++		if (usec < 0) {
++			sec--;
++			usec = usec + 1000000;
++		}
++		update_time += (sec * 1000000) + usec;
++
++		gettimeofday(&frame_end, NULL);
++
++                sec = frame_end.tv_sec - frame_begin.tv_sec;
++                usec = frame_end.tv_usec - frame_begin.tv_usec;
++
++                if (usec < 0) {
++                        sec--;
++                        usec = usec + 1000000;
++                }
++                show_time += (sec * 1000000) + usec;
++	}
++
++	printf("2nd layer load avg frame time %d us\n", load_time/i);
++	printf("2nd layer update avg frame time %d us\n", update_time/i);
++	printf("2nd layer avg frame time %d us\n", show_time/i);
++
++err2:
++	dma_memory_free(buf_size, bufcnt, paddr_2nd, buf_2nd);
++err1:
++	DestoryScreenLayer(&second_layer);
++err:
++	sem_wait(semIDUnit);
++	vshmUnitTest[1] = 0;
++	sem_post(semIDUnit);
++	printf("Second layer has been destroyed! \n");
++	return NULL;
++}
++
++void * third_layer_thread_func(void *arg)
++{
++	ScreenLayer third_layer;
++	LoadParam param;
++	dma_addr_t paddr_3th[BUFCNT_3TH];
++	void * buf_3th[BUFCNT_3TH];
++	MethodAlphaData alpha_data;
++	MethodColorKeyData colorkey_data;
++	int buf_size, alpha_buf_size, i, ret, x, y, op_type = *((int *)arg);
++	int SL_width, SL_height;
++	char alpha_val;
++	int fb_width, fb_height, fb_bpp;
++	int show_time = 0;
++
++	ret = getFBInfor(&fb_width, &fb_height, &fb_bpp);
++	if(ret == -1)
++	{
++		printf("Can not get fb information. \n");
++		goto err;
++	}
++
++	alpha_buf_size = 0;
++	memset(&third_layer, 0, sizeof(ScreenLayer));
++	memset(&alpha_data, 0, sizeof(MethodAlphaData));
++	memset(&colorkey_data, 0, sizeof(MethodColorKeyData));
++	third_layer.screenRect.left = fb_width*1/4;
++	third_layer.screenRect.top = fb_height*1/4;
++	third_layer.screenRect.right = fb_width*3/4;
++	third_layer.screenRect.bottom = fb_height*3/4;
++	SL_width = third_layer.screenRect.right - third_layer.screenRect.left;
++	SL_height = third_layer.screenRect.bottom - third_layer.screenRect.top;
++	if (op_type & IC_LOC_PIX_ALP_OV)
++		third_layer.fmt = v4l2_fourcc('R', 'G', 'B', 'A');
++	else
++		third_layer.fmt = v4l2_fourcc('R', 'G', 'B', 'P');
++	i=100;
++	while(i)
++	{
++		i--;
++		third_layer.pPrimary = GetPrimarySLHandle(PRIMARYFBDEV);
++		if(third_layer.pPrimary == NULL)
++			usleep(20*1000);
++		else
++			break;
++	}
++	if(i==0)
++		printf("Should create primary layer firstly. \n");
++	if (op_type & IC_LOC_SEP_ALP_OV)
++		third_layer.supportSepLocalAlpha = 1;
++	if ((ret = CreateScreenLayer(&third_layer, BUFCNT_3TH))
++		!= E_RET_SUCCESS) {
++		printf("CreateScreenLayer third layer err %d\n", ret);
++		goto err;
++	}
++	/* set alpha and key color */
++	if (op_type & IC_GLB_ALP_OV) {
++		alpha_data.globalAlphaEnable = 1;
++		alpha_data.alpha = 255;
++	} else if (op_type & IC_LOC_SEP_ALP_OV)
++		alpha_data.sepLocalAlphaEnable = 1;
++	colorkey_data.enable = 0;
++	colorkey_data.keyColor = 0;
++	if ((ret = SetScreenLayer(&third_layer, E_SET_ALPHA, &alpha_data))
++		!= E_RET_SUCCESS) {
++		printf("SetScreenLayer E_SET_ALPHA for third layer err %d\n", ret);
++		goto err1;
++	}
++	if ((ret = SetScreenLayer(&third_layer, E_SET_COLORKEY, &colorkey_data))
++		!= E_RET_SUCCESS) {
++		printf("SetScreenLayer E_SET_COLORKEY for third layer err %d\n", ret);
++		goto err1;
++	}
++
++	param.srcWidth = 320;
++	param.srcHeight = 240;
++	param.srcFmt = v4l2_fourcc('I', '4', '2', '0');
++	param.srcRect.left = 0;
++	param.srcRect.top = 0;
++	param.srcRect.right = 320;
++	param.srcRect.bottom = 240;
++	param.destRect.left = 0;
++	param.destRect.top = 0;
++	param.destRect.right = third_layer.screenRect.right - third_layer.screenRect.left;
++	param.destRect.bottom = third_layer.screenRect.bottom - third_layer.screenRect.top;
++	param.destRot = 0;
++	buf_size = param.srcWidth * param.srcHeight * 3/2;
++	if (op_type & IC_LOC_SEP_ALP_OV)
++		alpha_buf_size = SL_width * SL_height;
++	ret = dma_memory_alloc(buf_size, BUFCNT_3TH, paddr_3th, buf_3th);
++	if ( ret < 0) {
++		printf("dma_memory_alloc failed\n");
++		goto err1;
++	}
++
++	for (i=0;i<FRM_CNT;i++) {
++		struct timeval frame_begin,frame_end;
++                int sec, usec;
++
++		if (ctrl_c_rev)
++			break;
++
++		param.srcPaddr = paddr_3th[i%BUFCNT_3TH];
++		gen_fill_pattern(buf_3th[i%BUFCNT_3TH], param.srcWidth, param.srcHeight);
++
++		gettimeofday(&frame_begin, NULL);
++
++		if ((ret = LoadScreenLayer(&third_layer, &param, i%BUFCNT_3TH)) != E_RET_SUCCESS) {
++			printf("LoadScreenLayer err %d\n", ret);
++			goto err2;
++		}
++
++		gettimeofday(&frame_end, NULL);
++
++                sec = frame_end.tv_sec - frame_begin.tv_sec;
++                usec = frame_end.tv_usec - frame_begin.tv_usec;
++
++                if (usec < 0) {
++                        sec--;
++                        usec = usec + 1000000;
++                }
++                show_time += (sec * 1000000) + usec;
++
++		/* Fill local alpha buffer */
++		if (op_type & IC_LOC_SEP_ALP_OV) {
++			if(i < FRM_CNT/3)
++				gen_fill_alpha_in_separate_buffer(third_layer.bufAlphaVaddr[i%BUFCNT_3TH], alpha_buf_size, 0x80);
++			else if(i < 2*FRM_CNT/3)
++				gen_fill_alpha_in_separate_buffer(third_layer.bufAlphaVaddr[i%BUFCNT_3TH], alpha_buf_size, 0x00);
++			else if(i < FRM_CNT)
++				gen_fill_alpha_in_separate_buffer(third_layer.bufAlphaVaddr[i%BUFCNT_3TH], alpha_buf_size, 0xFF);
++		}
++		/* Change local alpha value in pixel */
++		else if (op_type & IC_LOC_PIX_ALP_OV) {
++			gen_fill_alpha_in_pixel(third_layer.bufVaddr[i%BUFCNT_3TH], third_layer.fmt, third_layer.bufSize, 0x80);
++			if (i < FRM_CNT/3) {
++				alpha_val = 0x80;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						gen_fill_alpha_in_pixel_for_point(third_layer.bufVaddr[i%BUFCNT_3TH], third_layer.fmt, SL_width, x, y, alpha_val);
++			} else if (i < 2*FRM_CNT/3) {
++				alpha_val = 0x00;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						gen_fill_alpha_in_pixel_for_point(third_layer.bufVaddr[i%BUFCNT_3TH], third_layer.fmt, SL_width, x, y, alpha_val);
++			} else if (i < FRM_CNT) {
++				alpha_val = 0xFF;
++				for (x=SL_width/4; x<3*SL_width/4; x++)
++					for (y=SL_height/4; y<3*SL_height/4; y++)
++						gen_fill_alpha_in_pixel_for_point(third_layer.bufVaddr[i%BUFCNT_3TH], third_layer.fmt, SL_width, x, y, alpha_val);
++			}
++		}
++
++		gettimeofday(&frame_begin, NULL);
++
++		if ((ret = FlipScreenLayerBuf(&third_layer, i%BUFCNT_3TH)) != E_RET_SUCCESS) {
++			printf("FlipScreenLayerBuf err %d\n", ret);
++			goto err2;
++		}
++
++		if ((ret = UpdateScreenLayer(&third_layer)) != E_RET_SUCCESS) {
++			printf("UpdateScreenLayer err %d\n",ret);
++			goto err2;
++		}
++
++		gettimeofday(&frame_end, NULL);
++
++                sec = frame_end.tv_sec - frame_begin.tv_sec;
++                usec = frame_end.tv_usec - frame_begin.tv_usec;
++
++                if (usec < 0) {
++                        sec--;
++                        usec = usec + 1000000;
++                }
++                show_time += (sec * 1000000) + usec;
++
++                /* screenlayer should not update fast than lcd refresh rate*/
++                usleep(10000);
++	}
++
++	printf("3rd layer avg frame time %d us\n", show_time/i);
++
++err2:
++	dma_memory_free(buf_size, BUFCNT_3TH, paddr_3th, buf_3th);
++err1:
++	DestoryScreenLayer(&third_layer);
++err:
++	sem_wait(semIDUnit);
++	vshmUnitTest[2] = 0;
++	sem_post(semIDUnit);
++	printf("Third layer has been destroyed! \n");
++	return NULL;
++}
++
++int screenlayer_test(int three_layer, int op_type)
++{
++	pthread_t first_layer_thread;
++	pthread_t second_layer_thread;
++	pthread_t third_layer_thread;
++	int ret;
++        int shmIDUnit;
++        struct stat shmStat;
++        char shmNameUnit[32]="shm_name_unit_test";
++
++        ret = 0;
++        semIDUnit = sem_open(semNameUnit, O_CREAT, 0666, 1);
++        if(SEM_FAILED == semIDUnit){
++                printf("can not open the semaphore for SL IPC Unit test!\n");
++                ret = -1;
++                goto done;
++        }
++
++        shmIDUnit = shm_open(shmNameUnit, O_RDWR|O_CREAT, 0666);
++        if(shmIDUnit == -1){
++                printf("can not open the shared memory for SL IPC Unit test!\n");
++                ret = -1;
++                sem_close(semIDUnit);
++                goto done;
++        }
++        /* Get special size shm */
++        ftruncate(shmIDUnit,3 * sizeof(int));
++        /* Connect to the shm */
++        fstat(shmIDUnit, &shmStat);
++
++        if(vshmUnitTest == NULL)
++                vshmUnitTest = (int *)mmap(NULL,shmStat.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,shmIDUnit,0);
++
++        if(vshmUnitTest == MAP_FAILED || vshmUnitTest ==NULL)
++        {
++                ret = -1;
++                sem_close(semIDUnit);
++                shm_unlink(shmNameUnit);
++                goto done;
++        }
++	memset(vshmUnitTest, 0, 3 *sizeof(int));
++
++	/* create first layer */
++	printf("Display to primary layer!\n");
++	pthread_create(&first_layer_thread, NULL, first_layer_thread_func, NULL);
++
++	/* create second layer */
++	printf("Add second layer!\n");
++	vshmUnitTest[1] = 1;
++	pthread_create(&second_layer_thread, NULL, second_layer_thread_func, &op_type);
++
++	if (three_layer) {
++		/* create third layer */
++		printf("Add third layer!\n");
++		vshmUnitTest[2] = 1;
++		pthread_create(&third_layer_thread, NULL, third_layer_thread_func, &op_type);
++	}
++
++	while(!ctrl_c_rev)usleep(100000);
++
++	if (three_layer)
++		pthread_join(third_layer_thread, NULL);
++	pthread_join(second_layer_thread, NULL);
++	pthread_join(first_layer_thread, NULL);
++
++	sem_unlink(semNameUnit);
++	shm_unlink(shmNameUnit);
++done:
++	return ret;
++}
++/*
++**	ProcessA: First_layer & second_layer
++**	ProcessB: Third_layer
++*/
++int screenlayer_test_ipc(int process_num, int three_layer, int op_type)
++{
++	pthread_t first_layer_thread;
++	pthread_t second_layer_thread;
++	pthread_t third_layer_thread;
++	int ret;
++	int shmIDUnit;
++	struct stat shmStat;
++	char shmNameUnit[32]="shm_name_unit_test";
++
++	ret = 0;
++	semIDUnit = sem_open(semNameUnit, O_CREAT, 0666, 1);
++	if(SEM_FAILED == semIDUnit){
++                printf("can not open the semaphore for SL IPC Unit test!\n");
++                ret = -1;
++                goto done;
++        }
++
++	shmIDUnit = shm_open(shmNameUnit, O_RDWR|O_CREAT, 0666);
++        if(shmIDUnit == -1){
++                printf("can not open the shared memory for SL IPC Unit test!\n");
++                ret = -1;
++                sem_close(semIDUnit);
++                goto done;
++        }
++        /* Get special size shm */
++        ftruncate(shmIDUnit,3 * sizeof(int));
++        /* Connect to the shm */
++        fstat(shmIDUnit, &shmStat);
++
++        if(vshmUnitTest == NULL)
++		vshmUnitTest = (int *)mmap(NULL,shmStat.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,shmIDUnit,0);
++
++	if(vshmUnitTest == MAP_FAILED || vshmUnitTest ==NULL)
++	{
++		ret = -1;
++		sem_close(semIDUnit);
++		shm_unlink(shmNameUnit);
++		goto done;
++	}
++	memset(vshmUnitTest, 0, 3 *sizeof(int));
++	vshmUnitTest[1] = 1;
++
++	/* Two process cases*/
++	if(process_num == 2)
++	{
++		if(three_layer) vshmUnitTest[2]  = 1;
++		/* Process A */
++		if(fork() != 0)
++		{
++			/* create first layer */
++			printf("Display to primary layer!\n");
++			pthread_create(&first_layer_thread, NULL, first_layer_thread_func, &op_type);
++
++			if(three_layer)
++			{
++				/* create second layer */
++				sleep(2);
++				printf("Add second layer!\n");
++				pthread_create(&second_layer_thread, NULL, second_layer_thread_func, &op_type);
++				pthread_join(second_layer_thread, NULL);
++			}
++
++			pthread_join(first_layer_thread, NULL);
++			sem_unlink(semNameUnit);
++			shm_unlink(shmNameUnit);
++			printf("SL IPC: Process A has been exited. \n");
++			exit(0);
++		}else{
++			/* Process B */
++			sleep(2);
++			if(three_layer)
++			{
++				/* create third layer */
++				printf("Add third layer!\n");
++				pthread_create(&third_layer_thread, NULL, third_layer_thread_func, &op_type);
++				pthread_join(third_layer_thread, NULL);
++			} else
++			{
++				/* create second layer */
++		                printf("Add second layer(two layers case)!\n");
++                        	pthread_create(&second_layer_thread, NULL, second_layer_thread_func, &op_type);
++		                pthread_join(second_layer_thread, NULL);
++			}
++			printf("SL IPC: Process B has been exited. \n");
++		}
++		sem_unlink(semNameUnit);
++		shm_unlink(shmNameUnit);
++		exit(0);
++	}else if(process_num ==3)
++	{
++		vshmUnitTest[2]  = 1;
++		/* Process A */
++                if(fork()!=0)
++                {
++                        /* create first layer */
++                        printf("Display to primary layer!\n");
++                        pthread_create(&first_layer_thread, NULL, first_layer_thread_func, NULL);
++                        pthread_join(first_layer_thread, NULL);
++                        sem_unlink(semNameUnit);
++                        shm_unlink(shmNameUnit);
++                        printf("SL IPC: Process A has been exited. \n");
++                        exit(0);
++                }else{
++			/* Process B */
++			if(fork()==0)
++			{
++                                /* create second layer */
++				sleep(2);
++                                printf("Add second layer!\n");
++                                pthread_create(&second_layer_thread, NULL, second_layer_thread_func, &op_type);
++				pthread_join(second_layer_thread, NULL);
++				sem_unlink(semNameUnit);
++	                        shm_unlink(shmNameUnit);
++        	                printf("SL IPC: Process B has been exited. \n");
++                	        exit(0);
++			}
++			else
++			{
++				/* Process C */
++				/* create third layer */
++				sleep(2);
++				printf("Add third layer!\n");
++				pthread_create(&third_layer_thread, NULL, third_layer_thread_func, &op_type);
++				pthread_join(third_layer_thread, NULL);
++				sem_unlink(semNameUnit);
++	                        shm_unlink(shmNameUnit);
++        	                printf("SL IPC: Process C has been exited. \n");
++                	        exit(0);
++			}
++
++		}
++	}
++
++done:
++	return ret;
++}
++#endif
++
++int run_test_pattern(int pattern, ipu_test_handle_t * test_handle)
++{
++	if (pattern == 1) {
++		printf("Color bar test with full-screen:\n");
++		return color_bar(NO_OV, test_handle);
++	}
++	if (pattern == 2) {
++		printf("Hopping block test:\n");
++		return hop_block(test_handle);
++	}
++	if (pattern == 3) {
++		int ret=0;
++		int ret1=0;
++		int ret2=0;
++		pthread_t thread1;
++		pthread_t thread2;
++
++		printf("Hopping block + color bar thread test:\n");
++
++		pthread_create(&thread2, NULL, thread_func_hop_block, test_handle);
++		pthread_create(&thread1, NULL, thread_func_color_bar, NULL);
++
++		sleep(1);
++		pthread_join(thread1, (void*)(&ret1));
++		pthread_join(thread2, (void*)(&ret2));
++		printf("Hopping block + color bar threads has joied:\n");
++		if(ret1==0 && ret2==0)
++			ret = 0;
++		else
++			ret = -1;
++		return ret;
++	}
++	if (pattern == 4) {
++		printf("Color bar IC global alpha overlay test:\n");
++		return color_bar(IC_GLB_ALP_OV, test_handle);
++	}
++	if (pattern == 5) {
++		printf("Color bar IC separate local alpha overlay test:\n");
++		return color_bar(IC_LOC_SEP_ALP_OV, test_handle);
++	}
++	if (pattern == 6) {
++		printf("Color bar IC local alpha within pixel overlay test:\n");
++		return color_bar(IC_LOC_PIX_ALP_OV, test_handle);
++	}
++	if (pattern == 7) {
++		printf("Copy test:\n");
++		return copy_test(test_handle);
++	}
++#ifndef BUILD_FOR_ANDROID
++	if (pattern == 8) {
++		printf("Screen layer with 2 layers test using IC global alpha blending:\n");
++		return screenlayer_test(0, IC_GLB_ALP_OV);
++	}
++	if (pattern == 9) {
++		printf("Screen layer with 3 layers test using IC global alpha blending:\n");
++		return screenlayer_test(1, IC_GLB_ALP_OV);
++	}
++	if (pattern == 10) {
++		printf("Screen layer with 2 layers test using IC local alpha blending with alpha value in separate buffer:\n");
++		return screenlayer_test(0, IC_LOC_SEP_ALP_OV);
++	}
++	if (pattern == 11) {
++		printf("Screen layer with 3 layers test using IC local alpha blending with alpha value in separate buffer:\n");
++		return screenlayer_test(1, IC_LOC_SEP_ALP_OV);
++ 	}
++	if (pattern == 12) {
++		printf("Screen layer with 2 layers test using IC local alpha blending with alpha value in pixel:\n");
++		return screenlayer_test(0, IC_LOC_PIX_ALP_OV);
++	}
++	if (pattern == 13) {
++		printf("Screen layer with 3 layers test using IC local alpha blending with alpha value in pixel:\n");
++		return screenlayer_test(1, IC_LOC_PIX_ALP_OV);
++ 	}
++	if (pattern == 14){
++		printf("Screen layer IPC(global alpha): ProcessA(first_layer ) ProcessB(second_layer):\n");
++		return screenlayer_test_ipc(2, 0, IC_GLB_ALP_OV);
++	}
++	if (pattern == 15){
++		printf("Screen layer IPC(local alpha): ProcessA(first_layer ) ProcessB(second_layer):\n");
++		return screenlayer_test_ipc(2, 0, IC_LOC_SEP_ALP_OV);
++	}
++	if (pattern == 16){
++		printf("Screen layer IPC(global alpha): ProcessA(first_layer + second_layer) ProcessB(third_layer):\n");
++		return screenlayer_test_ipc(2, 1, IC_GLB_ALP_OV);
++	}
++	if (pattern == 17){
++		printf("Screen layer IPC(local alpha): ProcessA(first_layer + second_layer) ProcessB(third_layer):\n");
++		return screenlayer_test_ipc(2, 1, IC_LOC_SEP_ALP_OV);
++	}
++	if (pattern == 18){
++		printf("Screen layer IPC(local alpha): ProcessA(first_layer) ProcessB(second_layer) ProcessC(third_layer):\n");
++		return screenlayer_test_ipc(3, 1, IC_LOC_SEP_ALP_OV);
++	}
++	if (pattern == 19){
++		printf("[No mandatory test]Screen layer IPC(local alpha + tvout): ProcessA(first_layer) ProcessB(second_layer):\n");
++		return screenlayer_test_ipc(2, 0, IC_LOC_SEP_ALP_OV | COPY_TV);
++	}
++#endif
++
++	printf("No such test pattern %d\n", pattern);
++	return -1;
++}
+diff --git a/test/mxc_ipudev_test/utils.c b/test/mxc_ipudev_test/utils.c
+index 3c8e11e..504c2af 100644
+--- a/test/mxc_ipudev_test/utils.c
++++ b/test/mxc_ipudev_test/utils.c
+@@ -51,44 +51,17 @@ char * skip_unwanted(char *ptr)
+ 
+ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ {
+-	struct ipu_task *t = &test_handle->task;
+ 	char *str;
+ 
+ 	/* general */
+-	str = strstr(buf, "priority");
++	str = strstr(buf, "mode");
+ 	if (str != NULL) {
+ 		str = index(buf, '=');
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->priority = strtol(str, NULL, 10);
+-				printf("priority\t= %d\n", t->priority);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "task_id");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->task_id = strtol(str, NULL, 10);
+-				printf("task_id\t\t= %d\n", t->task_id);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "timeout");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->timeout = strtol(str, NULL, 10);
+-				printf("timeout\t\t= %d\n", t->timeout);
++				test_handle->mode = strtol(str, NULL, 16);
++				printf("mode\t\t= 0x%x\n", test_handle->mode);
+ 			}
+ 			return 0;
+ 		}
+@@ -127,8 +100,8 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.width = strtol(str, NULL, 10);
+-				printf("in_width\t= %d\n", t->input.width);
++				test_handle->input.width = strtol(str, NULL, 10);
++				printf("in_width\t= %d\n", test_handle->input.width);
+ 			}
+ 			return 0;
+ 		}
+@@ -140,8 +113,8 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.height = strtol(str, NULL, 10);
+-				printf("in_height\t= %d\n", t->input.height);
++				test_handle->input.height = strtol(str, NULL, 10);
++				printf("in_height\t= %d\n", test_handle->input.height);
+ 			}
+ 			return 0;
+ 		}
+@@ -153,7 +126,7 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.format =
++				test_handle->input.fmt =
+ 					v4l2_fourcc(str[0], str[1], str[2], str[3]);
+ 				printf("in_fmt\t\t= %s\n", str);
+ 			}
+@@ -167,10 +140,10 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.crop.pos.x =
++				test_handle->input.input_crop_win.pos.x =
+ 					strtol(str, NULL, 10);
+ 				printf("in_posx\t\t= %d\n",
+-					t->input.crop.pos.x);
++					test_handle->input.input_crop_win.pos.x);
+ 			}
+ 			return 0;
+ 		}
+@@ -182,55 +155,40 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.crop.pos.y =
++				test_handle->input.input_crop_win.pos.y =
+ 					strtol(str, NULL, 10);
+ 				printf("in_posy\t\t= %d\n",
+-					t->input.crop.pos.y);
++					test_handle->input.input_crop_win.pos.y);
+ 			}
+ 			return 0;
+ 		}
+ 	}
+ 
+-	str = strstr(buf, "in_crop_w");
++	str = strstr(buf, "in_win_w");
+ 	if (str != NULL) {
+ 		str = index(buf, '=');
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.crop.w =
++				test_handle->input.input_crop_win.win_w =
+ 					strtol(str, NULL, 10);
+-				printf("in_crop_w\t= %d\n",
+-					t->input.crop.w);
++				printf("in_win_w\t= %d\n",
++					test_handle->input.input_crop_win.win_w);
+ 			}
+ 			return 0;
+ 		}
+ 	}
+ 
+-	str = strstr(buf, "in_crop_h");
++	str = strstr(buf, "in_win_h");
+ 	if (str != NULL) {
+ 		str = index(buf, '=');
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.crop.h =
++				test_handle->input.input_crop_win.win_h =
+ 					strtol(str, NULL, 10);
+-				printf("in_crop_h\t= %d\n",
+-					t->input.crop.h);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "deinterlace_en");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->input.deinterlace.enable =
+-					strtol(str, NULL, 10);
+-				printf("deinterlace_en\t= %d\n",
+-					t->input.deinterlace.enable);
++				printf("in_win_h\t= %d\n",
++					test_handle->input.input_crop_win.win_h);
+ 			}
+ 			return 0;
+ 		}
+@@ -242,184 +200,10 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->input.deinterlace.motion =
++				test_handle->input.motion_sel =
+ 					strtol(str, NULL, 10);
+ 				printf("motion_sel\t= %d\n",
+-					t->input.deinterlace.motion);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	/* overlay */
+-	str = strstr(buf, "overlay_en");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay_en = strtol(str, NULL, 10);
+-				printf("overlay_en\t= %d\n", t->overlay_en);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "ov_width");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.width = strtol(str, NULL, 10);
+-				printf("ov_width\t= %d\n", t->overlay.width);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "ov_height");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.height = strtol(str, NULL, 10);
+-				printf("ov_height\t= %d\n", t->overlay.height);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "ov_fmt");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.format =
+-					v4l2_fourcc(str[0], str[1], str[2], str[3]);
+-				printf("ov_fmt\t\t= %s\n", str);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "ov_posx");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.crop.pos.x =
+-					strtol(str, NULL, 10);
+-				printf("ov_posx\t\t= %d\n",
+-					t->overlay.crop.pos.x);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "ov_posy");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.crop.pos.y =
+-					strtol(str, NULL, 10);
+-				printf("ov_posy\t\t= %d\n",
+-					t->overlay.crop.pos.y);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "ov_crop_w");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.crop.w =
+-					strtol(str, NULL, 10);
+-				printf("ov_crop_w\t= %d\n",
+-					t->overlay.crop.w);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "ov_crop_h");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.crop.h =
+-					strtol(str, NULL, 10);
+-				printf("ov_crop_h\t= %d\n",
+-					t->overlay.crop.h);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "alpha_mode");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.alpha.mode =
+-					strtol(str, NULL, 10);
+-				printf("alpha_mode\t= %d\n",
+-					t->overlay.alpha.mode);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "alpha_value");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.alpha.gvalue =
+-					strtol(str, NULL, 10);
+-				printf("alpha_value\t= %d\n",
+-					t->overlay.alpha.gvalue);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "colorkey_en");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.colorkey.enable =
+-					strtol(str, NULL, 10);
+-				printf("colorkey_en\t= %d\n",
+-					t->overlay.colorkey.enable);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "colorkey_value");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->overlay.colorkey.value =
+-					strtol(str, NULL, 16);
+-				printf("colorkey_value\t= 0x%x\n",
+-					t->overlay.colorkey.value);
++					test_handle->input.motion_sel);
+ 			}
+ 			return 0;
+ 		}
+@@ -432,8 +216,8 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->output.width = strtol(str, NULL, 10);
+-				printf("out_width\t= %d\n", t->output.width);
++				test_handle->output.width = strtol(str, NULL, 10);
++				printf("out_width\t= %d\n", test_handle->output.width);
+ 			}
+ 			return 0;
+ 		}
+@@ -445,8 +229,8 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->output.height = strtol(str, NULL, 10);
+-				printf("out_height\t= %d\n", t->output.height);
++				test_handle->output.height = strtol(str, NULL, 10);
++				printf("out_height\t= %d\n", test_handle->output.height);
+ 			}
+ 			return 0;
+ 		}
+@@ -458,7 +242,7 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->output.format =
++				test_handle->output.fmt =
+ 					v4l2_fourcc(str[0], str[1], str[2], str[3]);
+ 				printf("out_fmt\t\t= %s\n", str);
+ 			}
+@@ -472,77 +256,60 @@ int parse_options(char *buf, ipu_test_handle_t *test_handle)
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->output.rotate = strtol(str, NULL, 10);
+-				printf("out_rot\t\t= %d\n", t->output.rotate);
+-			}
+-			return 0;
+-		}
+-	}
+-
+-	str = strstr(buf, "out_posx");
+-	if (str != NULL) {
+-		str = index(buf, '=');
+-		if (str != NULL) {
+-			str++;
+-			if (*str != '\0') {
+-				t->output.crop.pos.x = strtol(str, NULL, 10);
+-				printf("out_posx\t= %d\n", t->output.crop.pos.x);
++				test_handle->output.rot = strtol(str, NULL, 10);
++				printf("out_rot\t\t= %d\n", test_handle->output.rot);
+ 			}
+ 			return 0;
+ 		}
+ 	}
+ 
+-	str = strstr(buf, "out_posy");
++	str = strstr(buf, "out_to_fb");
+ 	if (str != NULL) {
+ 		str = index(buf, '=');
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->output.crop.pos.y = strtol(str, NULL, 10);
+-				printf("out_posy\t= %d\n", t->output.crop.pos.y);
++				test_handle->output.show_to_fb = strtol(str, NULL, 10);
++				printf("out_to_fb\t= %d\n", test_handle->output.show_to_fb);
+ 			}
+ 			return 0;
+ 		}
+ 	}
+ 
+-	str = strstr(buf, "out_crop_w");
++	str = strstr(buf, "out_fb_num");
+ 	if (str != NULL) {
+ 		str = index(buf, '=');
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->output.crop.w =
+-					strtol(str, NULL, 10);
+-				printf("out_crop_w\t= %d\n",
+-					t->output.crop.w);
++				test_handle->output.fb_disp.fb_num = strtol(str, NULL, 10);
++				printf("out_fb_num\t= %d\n", test_handle->output.fb_disp.fb_num);
+ 			}
+ 			return 0;
+ 		}
+ 	}
+ 
+-	str = strstr(buf, "out_crop_h");
++	str = strstr(buf, "out_posx");
+ 	if (str != NULL) {
+ 		str = index(buf, '=');
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				t->output.crop.h =
+-					strtol(str, NULL, 10);
+-				printf("out_crop_h\t= %d\n",
+-					t->output.crop.h);
++				test_handle->output.fb_disp.pos.x = strtol(str, NULL, 10);
++				printf("out_posx\t= %d\n", test_handle->output.fb_disp.pos.x);
+ 			}
+ 			return 0;
+ 		}
+ 	}
+ 
+-	str = strstr(buf, "out_to_fb");
++	str = strstr(buf, "out_posy");
+ 	if (str != NULL) {
+ 		str = index(buf, '=');
+ 		if (str != NULL) {
+ 			str++;
+ 			if (*str != '\0') {
+-				test_handle->show_to_fb = strtol(str, NULL, 10);
+-				printf("out_to_fb\t= %d\n", test_handle->show_to_fb);
++				test_handle->output.fb_disp.pos.y = strtol(str, NULL, 10);
++				printf("out_posy\t= %d\n", test_handle->output.fb_disp.pos.y);
+ 			}
+ 			return 0;
+ 		}
+-- 
+1.7.1
+
