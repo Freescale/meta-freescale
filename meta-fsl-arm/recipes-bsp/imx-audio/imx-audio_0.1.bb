@@ -4,7 +4,7 @@ SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=3f40d7994397109285ec7b81fdeb3b58"
 
-PR = "r1"
+PR = "r2"
 
 inherit update-rc.d
 
@@ -15,7 +15,7 @@ SRC_URI = "file://imx-audio"
 INITSCRIPT_NAME = "imx-audio"
 INITSCRIPT_PARAMS = "defaults 90"
 
-COMPATIBLE_MACHINE = "(imx53ard|imx53qsb)"
+COMPATIBLE_MACHINE = "(imx53ard|imx53qsb|imx51evk)"
 INHIBIT_DEFAULT_DEPS = "1"
 
 do_install() {
