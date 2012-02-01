@@ -3,13 +3,13 @@ DESCRIPTION = "Freescale IMX firmware such as for the VPU"
 SECTION = "base"
 LICENSE = "Freescale"
 LIC_FILES_CHKSUM = "file://licenses/vpu/EULA;md5=6469a8514eed615d6bf8c09f41846d8f"
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "file://firmware-imx-11.09.01.tar.gz \
            file://vpu_fw_imx51.bin \
            file://vpu_fw_imx53.bin"
 
-COMPATIBLE_MACHINE = "(imx53ard|imx53qsb)"
+COMPATIBLE_MACHINE = "(imx53ard|imx53qsb|imx51evk)"
 
 S = "${WORKDIR}/firmware-imx-11.09.01"
 
