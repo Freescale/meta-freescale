@@ -1,6 +1,4 @@
-# Provides the i.MX53 common settings
-
-include conf/machine/include/tune-cortexa8.inc
+# Provides the i.MX common settings
 
 include conf/distro/include/fsl-default-versions.inc
 include conf/distro/include/fsl-default-revisions.inc
@@ -27,7 +25,7 @@ MACHINE_EXTRA_RRECOMMENDS += "imx-lib imx-audio \
                               fsl-mm-codeclib \
                               gst-fsl-plugin"
 
-EXTRA_IMAGE_DEPENDS = "u-boot-imx"
+EXTRA_IMAGEDEPENDS = "u-boot-imx"
 
 IMAGE_FSTYPES ?= "tar.bz2 jffs2"
 EXTRA_IMAGECMD_jffs2 = "-lnp "
@@ -36,7 +34,4 @@ SERIAL_CONSOLE = "115200 ttymxc0"
 
 KERNEL_IMAGETYPE = "uImage"
 
-UBOOT_ENTRYPOINT = "0x70800000"
-UBOOT_LOADADDRESS = "0x70800000"
-
-MACHINE_FEATURES = "kernel26 apm usbgadget usbhost vfat alsa touchscreen"
+MACHINE_FEATURES = "apm usbgadget usbhost vfat alsa touchscreen"
