@@ -4,9 +4,9 @@ SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=3f40d7994397109285ec7b81fdeb3b58"
 
-PR = "r1"
+PR = "r2"
 
-COMPATIBLE_MACHINE = "(imx53ard|imx53qsb)"
+COMPATIBLE_MACHINE = "(imx53ard|imx53qsb|imx51evk)"
 
 SRC_URI = "file://imx-test-11.09.01.tar.gz \
            file://0001-ENGR00158471-fix-ipu-unit-test-application-missing-i.patch \
