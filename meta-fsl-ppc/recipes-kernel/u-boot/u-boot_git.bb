@@ -42,8 +42,8 @@ do_compile () {
 		oe_runmake O=${board} all
 
 		case "${board}" in
-		*SDCARD*)	UBOOT_TARGET="u-bootx-sd";;
-		*SPIFLASH*)	UBOOT_TARGET="u-bootx-spi";;
+		*SDCARD*)	UBOOT_TARGET="u-boot-sd";;
+		*SPIFLASH*)	UBOOT_TARGET="u-boot-spi";;
 		*)		UBOOT_TARGET="";;
 		esac
 
@@ -62,16 +62,16 @@ do_install(){
 
 	for board in ${UBOOT_MACHINES}; do
 		case "${board}" in
-		*SDCARD*)	UBOOT_TARGET="u-bootx-sd";;
-		*SPIFLASH*)	UBOOT_TARGET="u-bootx-spi";;
+		*SDCARD*)	UBOOT_TARGET="u-boot-sd";;
+		*SPIFLASH*)	UBOOT_TARGET="u-boot-spi";;
 		*NAND*)		UBOOT_TARGET="u-boot-nand";;
 		*)		UBOOT_TARGET="u-boot";;
 		esac
 
 		if [ -f ${S}/${UBOOT_TARGET}.bin ]; then
 			mkdir -p ${D}/boot/
-			install ${S}/${board}/${UBOOT_TARGET}.bin ${D}/boot/${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin
-			ln -sf ${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin ${D}/boot/${UBOOT_TARGET}.bin
+			install ${S}/${board}/${UBOOT_TARGET}.bin ${D}/boot/${UBOOT_TARGET}-${board}-${PV}-${PR}.bin
+			ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${D}/boot/${UBOOT_TARGET}.bin
 		fi
 	done
 }
@@ -83,8 +83,8 @@ do_deploy(){
 
 	for board in ${UBOOT_MACHINES}; do
 		case "${board}" in
-		*SDCARD*)	UBOOT_TARGET="u-bootx-sd";;
-		*SPIFLASH*)	UBOOT_TARGET="u-bootx-spi";;
+		*SDCARD*)	UBOOT_TARGET="u-boot-sd";;
+		*SPIFLASH*)	UBOOT_TARGET="u-boot-spi";;
 		*NAND*)		UBOOT_TARGET="u-boot-nand";;
 		*)		UBOOT_TARGET="u-boot";;
 		esac
@@ -94,15 +94,15 @@ do_deploy(){
 	        	install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOY_DIR_IMAGE}/${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin
 
 			cd ${DEPLOY_DIR_IMAGE}
-			rm -f ${UBOOT_TARGET}-${MACHINE}.bin
-			ln -sf ${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin ${UBOOT_TARGET}-${MACHINE}.bin
+			rm -f ${UBOOT_TARGET}-${board}.bin
+			ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${UBOOT_TARGET}-${board}.bin
 
 			mkdir -p ${DEPLOYDIR}
-			install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin
+			install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${board}-${PV}-${PR}.bin
 
 			cd ${DEPLOYDIR}
-			rm -f ${UBOOT_TARGET}-${MACHINE}.bin
-                        ln -sf ${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin ${UBOOT_TARGET}-${MACHINE}.bin
+			rm -f ${UBOOT_TARGET}-${board}.bin
+                        ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${UBOOT_TARGET}-${board}.bin
 		fi
 	done
 }
