@@ -1,0 +1,24 @@
+OpenEmbedded/Yocto BSP layer for Freescale's ARM platforms
+==========================================================
+
+This layer provides support for Freescale's ARM platforms for use with
+OpenEmbedded and/or Yocto.
+
+This layer depends on:
+
+URI: git://git.openembedded.org/openembedded-core
+branch: master
+revision: HEAD
+
+URI: git://git.openembedded.net/meta-openembedded
+branch: master
+revision: HEAD
+
+Contributing
+------------
+
+To contribute to this layer you should the patches for review to the
+mailing list.
+
+Mailing list: http://groups.google.com/group/meta-fsl-arm
+Source code: https://github.com/Freescale/meta-fsl-arm
