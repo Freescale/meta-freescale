@@ -1,0 +1,30 @@
+commit 4ac884455c992c7250eae2cdbd6ad1fbbe5d1dc0
+Author: Phil Endecott <git@chezphil.org>
+Date:   Mon Oct 31 20:23:38 2011 +0000
+
+    Add accept4 syscall
+
+diff --git a/arch/arm/include/asm/unistd.h b/arch/arm/include/asm/unistd.h
+index dd2bf53..d02cfb6 100644
+--- a/arch/arm/include/asm/unistd.h
++++ b/arch/arm/include/asm/unistd.h
+@@ -392,6 +392,7 @@
+ #define __NR_rt_tgsigqueueinfo		(__NR_SYSCALL_BASE+363)
+ #define __NR_perf_event_open		(__NR_SYSCALL_BASE+364)
+ #define __NR_recvmmsg			(__NR_SYSCALL_BASE+365)
++#define __NR_accept4			(__NR_SYSCALL_BASE+366)
+ 
+ /*
+  * The following SWIs are ARM private.
+diff --git a/arch/arm/kernel/calls.S b/arch/arm/kernel/calls.S
+index 37ae301..afeb71f 100644
+--- a/arch/arm/kernel/calls.S
++++ b/arch/arm/kernel/calls.S
+@@ -375,6 +375,7 @@
+ 		CALL(sys_rt_tgsigqueueinfo)
+ 		CALL(sys_perf_event_open)
+ /* 365 */	CALL(sys_recvmmsg)
++		CALL(sys_accept4)
+ #ifndef syscalls_counted
+ .equ syscalls_padding, ((NR_syscalls + 3) & ~3) - NR_syscalls
+ #define syscalls_counted
