@@ -1,6 +1,6 @@
 TARGET_FPU = "hard"
 
-require conf/machine/include/tune-ppce5500-32b.inc
+require conf/machine/include/tune-ppce5500.inc
 
 MACHINE_FEATURES = "kernel26 keyboard pci ext2 ext3 serial"
 MACHINE_FEATURES_RRECOMMENDS = ""
