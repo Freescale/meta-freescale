@@ -1,0 +1,95 @@
+From f0256fb16d37061e04ca966da9d51d8eb205bc89 Mon Sep 17 00:00:00 2001
+From: Denys Vlasenko <vda.linux@googlemail.com>
+Date: Tue, 26 Jul 2011 11:42:12 +0000
+Subject: *: work around sysinfo.h versus linux/*.h problems
+
+Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
+---
+ include/libbb.h |   10 ++++++----
+ init/init.c     |    3 ++-
+ procps/free.c   |    3 +++
+ procps/ps.c     |    3 +++
+ procps/uptime.c |    4 ++++
+ 5 files changed, 18 insertions(+), 5 deletions(-)
+
+diff --git a/include/libbb.h b/include/libbb.h
+index afe3b61..9fcd770 100644
+--- a/include/libbb.h
++++ b/include/libbb.h
+@@ -44,10 +44,12 @@
+ #ifdef HAVE_SYS_STATFS_H
+ # include <sys/statfs.h>
+ #endif
+-/* struct sysinfo is linux-specific */
+-#ifdef __linux__
+-# include <sys/sysinfo.h>
+-#endif
++/* Don't do this here:
++ * #include <sys/sysinfo.h>
++ * Some linux/ includes pull in conflicting definition
++ * of struct sysinfo (only in some toolchanins), which breaks build.
++ * Include sys/sysinfo.h only in those files which need it.
++ */
+ #if ENABLE_SELINUX
+ # include <selinux/selinux.h>
+ # include <selinux/context.h>
+diff --git a/init/init.c b/init/init.c
+index 0a0d503..5121b94 100644
+--- a/init/init.c
++++ b/init/init.c
+@@ -113,7 +113,8 @@
+ #include <paths.h>
+ #include <sys/resource.h>
+ #ifdef __linux__
+-#include <linux/vt.h>
++# include <linux/vt.h>
++# include <sys/sysinfo.h>
+ #endif
+ #if ENABLE_FEATURE_UTMP
+ # include <utmp.h> /* DEAD_PROCESS */
+diff --git a/procps/free.c b/procps/free.c
+index efbac5b..706be1b 100644
+--- a/procps/free.c
++++ b/procps/free.c
+@@ -10,6 +10,9 @@
+ /* getopt not needed */
+ 
+ #include "libbb.h"
++#ifdef __linux__
++# include <sys/sysinfo.h>
++#endif
+ 
+ struct globals {
+ 	unsigned mem_unit;
+diff --git a/procps/ps.c b/procps/ps.c
+index 48b55a7..e9e6ca9 100644
+--- a/procps/ps.c
++++ b/procps/ps.c
+@@ -16,6 +16,9 @@ enum { MAX_WIDTH = 2*1024 };
+ 
+ #if ENABLE_DESKTOP
+ 
++#ifdef __linux__
++# include <sys/sysinfo.h>
++#endif
+ #include <sys/times.h> /* for times() */
+ #ifndef AT_CLKTCK
+ #define AT_CLKTCK 17
+diff --git a/procps/uptime.c b/procps/uptime.c
+index 5c48795..eda782c 100644
+--- a/procps/uptime.c
++++ b/procps/uptime.c
+@@ -16,6 +16,10 @@
+ /* getopt not needed */
+ 
+ #include "libbb.h"
++#ifdef __linux__
++# include <sys/sysinfo.h>
++#endif
++
+ 
+ #ifndef FSHIFT
+ # define FSHIFT 16              /* nr of bits of precision */
+-- 
+1.7.5
+
