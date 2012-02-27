@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r9"
+PR = "r10"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc"
 
@@ -15,9 +15,9 @@ SRCREV = "348d8fceba39e5622d315ffda7d72ff6bbcf05ec"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git \
 		"
 DEPENDS_append_e5500-64b = " lib32-gcc-cross"
-PATH_append_e5500-64b = ":${STAGING_BINDIR_NATIVE}/powerpc-${DISTRO}mllib32-${HOST_OS}/"
+PATH_append_e5500-64b = ":${STAGING_BINDIR_NATIVE}/${DEFAULTTUNE_virtclass-multilib-lib32}${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}/"
 TOOLCHAIN_OPTIONS_append_e5500-64b = "/../lib32-${MACHINE}"
-WRAP_TARGET_PREFIX_e5500-64b = "powerpc-${DISTRO}mllib32-${HOST_OS}-"
+WRAP_TARGET_PREFIX_e5500-64b = "powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}-"
 
 WRAP_TARGET_PREFIX = "${TARGET_PREFIX}"
 EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
