@@ -21,5 +21,5 @@ SRC_URI[sha256sum] = "ee024e6fe94ce309b10dc89ab247d1bbcf8ae9cc8006178c96101ce2d4
 
 # Todo add a mechanism to map posible build targets
 INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include"
-EXTRA_OEMAKE = INCLUDES="${INCLUDE_DIR}"
+EXTRA_OEMAKE = "INCLUDES="${INCLUDE_DIR}"
 EXTRA_OECONF = "PLATFORM=MX51 --disable-valgrind --disable-examples --disable-debug"
