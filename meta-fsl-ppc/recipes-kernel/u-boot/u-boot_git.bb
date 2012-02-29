@@ -25,7 +25,7 @@ EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 USRC ?= ""
-S = ${@base_conditional("USRC", "", "${WORKDIR}/git", "${USRC}", d)}
+S = '${@base_conditional("USRC", "", "${WORKDIR}/git", "${USRC}", d)}'
 
 do_compile () {
 	unset LDFLAGS
@@ -110,4 +110,4 @@ addtask deploy after do_install
 
 FILES_${PN} += "/boot"
 
-ALLOW_EMPTY = 1 
+ALLOW_EMPTY = "1"

@@ -10,10 +10,10 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
 	  "
 
 KSRC ?= ""
-S = ${@base_conditional("KSRC", "", "${WORKDIR}/git", "${KSRC}", d)}
+S = '${@base_conditional("KSRC", "", "${WORKDIR}/git", "${KSRC}", d)}'
 
 # make everything compatible for the time being
-COMPATIBLE_MACHINE_$MACHINE = $MACHINE
+COMPATIBLE_MACHINE_$MACHINE = "$MACHINE"
 
 # only powerpc and powerpc64 are compatible
 COMPATIBLE_HOST = "(powerpc|powerpc64)"
