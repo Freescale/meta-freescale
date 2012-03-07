@@ -1,17 +1,39 @@
 diff --git a/Makefile b/Makefile
-index 554683d..7b4fe94 100644
+index 554683d..087e0c0 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -333,10 +333,10 @@ CHECK		= sparse
- CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
- 		  -Wbitwise -Wno-return-void $(CF)
- MODFLAGS	= -DMODULE
--CFLAGS_MODULE   = $(MODFLAGS)
-+CFLAGS_MODULE   = $(MODFLAGS) -mno-unaligned-access
- AFLAGS_MODULE   = $(MODFLAGS)
- LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
--CFLAGS_KERNEL	=
-+CFLAGS_KERNEL	= -mno-unaligned-access
- AFLAGS_KERNEL	=
- CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
+@@ -535,6 +535,9 @@ else
+ KBUILD_CFLAGS	+= -O2
+ endif
  
++# conserve stack if available
++KBUILD_CFLAGS   += $(call cc-option,-fconserve-stack)
++
+ include $(srctree)/arch/$(SRCARCH)/Makefile
+ 
+ ifneq ($(CONFIG_FRAME_WARN),0)
+@@ -579,9 +582,6 @@ KBUILD_CFLAGS += $(call cc-option,-Wno-pointer-sign,)
+ # disable invalid "can't wrap" optimizations for signed / pointers
+ KBUILD_CFLAGS	+= $(call cc-option,-fno-strict-overflow)
+ 
+-# conserve stack if available
+-KBUILD_CFLAGS   += $(call cc-option,-fconserve-stack)
+-
+ # Add user supplied CPPFLAGS, AFLAGS and CFLAGS as the last assignments
+ # But warn user when we do so
+ warn-assign = \
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 767874d..cdf3529 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -93,6 +93,10 @@ ifeq ($(CONFIG_ARM_UNWIND),y)
+ CFLAGS_ABI	+=-funwind-tables
+ endif
+ 
++ifeq ($(CONFIG_ALIGMENT_TRAP),y)
++CFLAGS_ABI	+=$(call cc-option,-mno-unaligned-access,)
++endif
++
+ ifeq ($(CONFIG_THUMB2_KERNEL),y)
+ AFLAGS_AUTOIT	:=$(call as-option,-Wa$(comma)-mimplicit-it=always,-Wa$(comma)-mauto-it)
+ AFLAGS_NOWARN	:=$(call as-option,-Wa$(comma)-mno-warn-deprecated,-Wa$(comma)-W)
