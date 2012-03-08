@@ -1,0 +1,459 @@
+From cafc72b3292a6820a01b6c5baed4c821ba2e62e7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>
+Date: Tue, 21 Feb 2012 01:00:29 +0100
+Subject: [PATCH 2/7] mfd: add mc34708 driver
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+this driver is a copie of the mc13892 one
+
+Signed-off-by: Eric Bénard <eric@eukrea.com>
+---
+Upstream-Status: Applied for 2012.04.0
+
+ drivers/mfd/Kconfig   |    4 +
+ drivers/mfd/Makefile  |    1 +
+ drivers/mfd/mc34708.c |  294 +++++++++++++++++++++++++++++++++++++++++++++++++
+ include/mfd/mc34708.h |  102 +++++++++++++++++
+ 4 files changed, 401 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/mfd/mc34708.c
+ create mode 100644 include/mfd/mc34708.h
+
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 87797de..b080c1c 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -8,6 +8,10 @@ config I2C_MC34704
+ 	depends on I2C
+ 	bool "MC34704 PMIC driver"
+ 
++config I2C_MC34708
++	depends on I2C
++	bool "MC34708 PMIC driver"
++
+ config I2C_MC9SDZ60
+ 	depends on I2C
+ 	bool "MC9SDZ60 driver"
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 1171335..bc9e0e8 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -1,5 +1,6 @@
+ obj-$(CONFIG_I2C_MC13892) += mc13892.o
+ obj-$(CONFIG_I2C_MC34704) += mc34704.o
++obj-$(CONFIG_I2C_MC34708) += mc34708.o
+ obj-$(CONFIG_I2C_MC9SDZ60) += mc9sdz60.o
+ obj-$(CONFIG_I2C_LP3972) += lp3972.o
+ obj-$(CONFIG_I2C_TWLCORE) += twl-core.o
+diff --git a/drivers/mfd/mc34708.c b/drivers/mfd/mc34708.c
+new file mode 100644
+index 0000000..e7f40c0
+--- /dev/null
++++ b/drivers/mfd/mc34708.c
+@@ -0,0 +1,294 @@
++/*
++ * Copyright (C) 2007 Sascha Hauer, Pengutronix
++ *               2009 Marc Kleine-Budde <mkl@pengutronix.de>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ *
++ */
++
++#include <common.h>
++#include <init.h>
++#include <driver.h>
++#include <xfuncs.h>
++#include <errno.h>
++#include <spi/spi.h>
++#include <malloc.h>
++
++#include <i2c/i2c.h>
++#include <mfd/mc34708.h>
++
++#define DRIVERNAME		"mc34708"
++
++#define to_mc34708(a)		container_of(a, struct mc34708, cdev)
++
++static struct mc34708 *mc_dev;
++
++struct mc34708 *mc34708_get(void)
++{
++	if (!mc_dev)
++		return NULL;
++
++	return mc_dev;
++}
++EXPORT_SYMBOL(mc34708_get);
++
++#ifdef CONFIG_SPI
++static int spi_rw(struct spi_device *spi, void * buf, size_t len)
++{
++	int ret;
++
++	struct spi_transfer t = {
++		.tx_buf = (const void *)buf,
++		.rx_buf = buf,
++		.len = len,
++		.cs_change = 0,
++		.delay_usecs = 0,
++	};
++	struct spi_message m;
++
++	spi_message_init(&m);
++	spi_message_add_tail(&t, &m);
++
++	if ((ret = spi_sync(spi, &m)))
++		return ret;
++	return 0;
++}
++
++#define MXC_PMIC_REG_NUM(reg)	(((reg) & 0x3f) << 25)
++#define MXC_PMIC_WRITE		(1 << 31)
++
++static int mc34708_spi_reg_read(struct mc34708 *mc34708, enum mc34708_reg reg, u32 *val)
++{
++	uint32_t buf;
++
++	buf = MXC_PMIC_REG_NUM(reg);
++
++	spi_rw(mc34708->spi, &buf, 4);
++
++	*val = buf;
++
++	return 0;
++}
++
++static int mc34708_spi_reg_write(struct mc34708 *mc34708, enum mc34708_reg reg, u32 val)
++{
++	uint32_t buf = MXC_PMIC_REG_NUM(reg) | MXC_PMIC_WRITE | (val & 0xffffff);
++
++	spi_rw(mc34708->spi, &buf, 4);
++
++	return 0;
++}
++#endif
++
++#ifdef CONFIG_I2C
++static int mc34708_i2c_reg_read(struct mc34708 *mc34708, enum mc34708_reg reg, u32 *val)
++{
++	u8 buf[3];
++	int ret;
++
++	ret = i2c_read_reg(mc34708->client, reg, buf, 3);
++	*val = buf[0] << 16 | buf[1] << 8 | buf[2] << 0;
++
++	return ret == 3 ? 0 : ret;
++}
++
++static int mc34708_i2c_reg_write(struct mc34708 *mc34708, enum mc34708_reg reg, u32 val)
++{
++	u8 buf[] = {
++		val >> 16,
++		val >>  8,
++		val >>  0,
++	};
++	int ret;
++
++	ret = i2c_write_reg(mc34708->client, reg, buf, 3);
++
++	return ret == 3 ? 0 : ret;
++}
++#endif
++
++int mc34708_reg_write(struct mc34708 *mc34708, enum mc34708_reg reg, u32 val)
++{
++#ifdef CONFIG_I2C
++	if (mc34708->mode == MC34708_MODE_I2C)
++		return mc34708_i2c_reg_write(mc34708, reg, val);
++#endif
++#ifdef CONFIG_SPI
++	if (mc34708->mode == MC34708_MODE_SPI)
++		return mc34708_spi_reg_write(mc34708, reg, val);
++#endif
++	return -EINVAL;
++}
++EXPORT_SYMBOL(mc34708_reg_write);
++
++int mc34708_reg_read(struct mc34708 *mc34708, enum mc34708_reg reg, u32 *val)
++{
++#ifdef CONFIG_I2C
++	if (mc34708->mode == MC34708_MODE_I2C)
++		return mc34708_i2c_reg_read(mc34708, reg, val);
++#endif
++#ifdef CONFIG_SPI
++	if (mc34708->mode == MC34708_MODE_SPI)
++		return mc34708_spi_reg_read(mc34708, reg, val);
++#endif
++	return -EINVAL;
++}
++EXPORT_SYMBOL(mc34708_reg_read);
++
++int mc34708_set_bits(struct mc34708 *mc34708, enum mc34708_reg reg, u32 mask, u32 val)
++{
++	u32 tmp;
++	int err;
++
++	err = mc34708_reg_read(mc34708, reg, &tmp);
++	tmp = (tmp & ~mask) | val;
++
++	if (!err)
++		err = mc34708_reg_write(mc34708, reg, tmp);
++
++	return err;
++}
++EXPORT_SYMBOL(mc34708_set_bits);
++
++static ssize_t mc_read(struct cdev *cdev, void *_buf, size_t count, ulong offset, ulong flags)
++{
++	struct mc34708 *priv = to_mc34708(cdev);
++	u32 *buf = _buf;
++	size_t i = count >> 2;
++	int err;
++
++	offset >>= 2;
++
++	while (i) {
++		err = mc34708_reg_read(priv, offset, buf);
++		if (err)
++			return (ssize_t)err;
++		buf++;
++		i--;
++		offset++;
++	}
++
++	return count;
++}
++
++static ssize_t mc_write(struct cdev *cdev, const void *_buf, size_t count, ulong offset, ulong flags)
++{
++	struct mc34708 *mc34708 = to_mc34708(cdev);
++	const u32 *buf = _buf;
++	size_t i = count >> 2;
++	int err;
++
++	offset >>= 2;
++
++	while (i) {
++		err = mc34708_reg_write(mc34708, offset, *buf);
++		if (err)
++			return (ssize_t)err;
++		buf++;
++		i--;
++		offset++;
++	}
++
++	return count;
++}
++
++static struct file_operations mc_fops = {
++	.lseek	= dev_lseek_default,
++	.read	= mc_read,
++	.write	= mc_write,
++};
++
++static int mc34708_query_revision(struct mc34708 *mc34708)
++{
++	unsigned int rev_id;
++	int rev;
++
++	mc34708_reg_read(mc34708, 7, &rev_id);
++
++	if (rev_id > 0xFFF)
++		return -EINVAL;
++
++	rev = rev_id & 0xFFF;
++
++	dev_info(mc_dev->cdev.dev, "MC34708 ID: 0x%04x\n", rev);
++
++	mc34708->revision = rev;
++
++	return rev;
++}
++
++static int mc_probe(struct device_d *dev, enum mc34708_mode mode)
++{
++	int rev;
++
++	if (mc_dev)
++		return -EBUSY;
++
++	mc_dev = xzalloc(sizeof(struct mc34708));
++	mc_dev->mode = mode;
++	mc_dev->cdev.name = DRIVERNAME;
++	if (mode == MC34708_MODE_I2C) {
++		mc_dev->client = to_i2c_client(dev);
++	}
++	if (mode == MC34708_MODE_SPI) {
++		mc_dev->spi = dev->type_data;
++		mc_dev->spi->mode = SPI_MODE_0 | SPI_CS_HIGH;
++		mc_dev->spi->bits_per_word = 32;
++	}
++	mc_dev->cdev.size = 256;
++	mc_dev->cdev.dev = dev;
++	mc_dev->cdev.ops = &mc_fops;
++
++	rev = mc34708_query_revision(mc_dev);
++	if (rev < 0) {
++		free(mc_dev);
++		mc_dev = NULL;
++		return -EINVAL;
++	}
++
++	devfs_create(&mc_dev->cdev);
++
++	return 0;
++}
++
++static int mc_i2c_probe(struct device_d *dev)
++{
++	return mc_probe(dev, MC34708_MODE_I2C);
++}
++
++static int mc_spi_probe(struct device_d *dev)
++{
++	return mc_probe(dev, MC34708_MODE_SPI);
++}
++
++static struct driver_d mc_i2c_driver = {
++	.name  = "mc34708-i2c",
++	.probe = mc_i2c_probe,
++};
++
++static struct driver_d mc_spi_driver = {
++	.name  = "mc34708-spi",
++	.probe = mc_spi_probe,
++};
++
++static int mc_init(void)
++{
++        register_driver(&mc_i2c_driver);
++        register_driver(&mc_spi_driver);
++        return 0;
++}
++
++device_initcall(mc_init);
+diff --git a/include/mfd/mc34708.h b/include/mfd/mc34708.h
+new file mode 100644
+index 0000000..f384c62
+--- /dev/null
++++ b/include/mfd/mc34708.h
+@@ -0,0 +1,102 @@
++/*
++ * Copyright (C) 2009 Marc Kleine-Budde <mkl@pengutronix.de>
++ *
++ * This file is released under the GPLv2
++ *
++ * Derived from:
++ * - arch-mxc/pmic_external.h --  contains interface of the PMIC protocol driver
++ *   Copyright 2008-2009 Freescale Semiconductor, Inc. All Rights Reserved.
++ *
++ */
++
++#ifndef __ASM_ARCH_MC34708_H
++#define __ASM_ARCH_MC34708_H
++
++enum mc34708_reg {
++	MC34708_REG_INT_STATUS0		= 0x00,
++	MC34708_REG_INT_MASK0		= 0x01,
++	MC34708_REG_INT_SENSE0		= 0x02,
++	MC34708_REG_INT_STATUS1		= 0x03,
++	MC34708_REG_INT_MASK1		= 0x04,
++	MC34708_REG_INT_SENSE1		= 0x05,
++	MC34708_REG_PU_MODE_S		= 0x06,
++	MC34708_REG_IDENTIFICATION	= 0x07,
++	MC34708_REG_REG_FAULT_S		= 0x08,
++	MC34708_REG_ACC0		= 0x09,
++	MC34708_REG_ACC1		= 0x0a,
++	MC34708_REG_ACC2		= 0x0b,
++	MC34708_REG_UNUSED0		= 0x0c,
++	MC34708_REG_POWER_CTL0		= 0x0d,
++	MC34708_REG_POWER_CTL1		= 0x0e,
++	MC34708_REG_POWER_CTL2		= 0x0f,
++	MC34708_REG_MEM_A		= 0x10,
++	MC34708_REG_MEM_B		= 0x11,
++	MC34708_REG_MEM_C		= 0x12,
++	MC34708_REG_MEM_D		= 0x13,
++	MC34708_REG_RTC_TIME		= 0x14,
++	MC34708_REG_RTC_ALARM		= 0x15,
++	MC34708_REG_RTC_DAY		= 0x16,
++	MC34708_REG_RTC_DAY_ALARM	= 0x17,
++	MC34708_REG_1			= 0x18,
++	MC34708_REG_2_3			= 0x19,
++	MC34708_REG_4			= 0x1a,
++	MC34708_REG_5			= 0x1b,
++	MC34708_REG_1_2_MODE		= 0x1c,
++	MC34708_REG_3_4_5_MODE		= 0x1d,
++	MC34708_REG_SETTING_0		= 0x1e,
++	MC34708_REG_SWBST_CTRL		= 0x1f,
++	MC34708_REG_MODE_0		= 0x20,
++	MC34708_REG_GPIOLV0_CTRL	= 0x21,
++	MC34708_REG_GPIOLV1_CTRL	= 0x22,
++	MC34708_REG_GPIOLV2_CTRL	= 0x23,
++	MC34708_REG_GPIOLV3_CTRL	= 0x24,
++	MC34708_REG_USB_TIMING		= 0x25,
++	MC34708_REG_USB_BUTTON		= 0x26,
++	MC34708_REG_USB_CTRL		= 0x27,
++	MC34708_REG_USB_DEVTYPE		= 0x28,
++	MC34708_REG_UNUSED1		= 0x29,
++	MC34708_REG_UNUSED2		= 0x2a,
++	MC34708_REG_ADC0		= 0x2b,
++	MC34708_REG_ADC1		= 0x2c,
++	MC34708_REG_ADC2		= 0x2d,
++	MC34708_REG_ADC3		= 0x2e,
++	MC34708_REG_ADC4		= 0x2f,
++	MC34708_REG_ADC5		= 0x30,
++	MC34708_REG_ADC6		= 0x31,
++	MC34708_REG_ADC7		= 0x32,
++	MC34708_REG_BAT_PROFILE		= 0x33,
++	MC34708_REG_CHRG_DEBOUNCE	= 0x34,
++	MC34708_REG_CHRG_SOURCE		= 0x35,
++	MC34708_REG_CHRG_LED_CTRL	= 0x36,
++	MC34708_REG_PWM_CTRL		= 0x37,
++	MC34708_REG_UNUSED3		= 0x38,
++	MC34708_REG_UNUSED4		= 0x39,
++	MC34708_REG_UNUSED5		= 0x3a,
++	MC34708_REG_UNUSED6		= 0x3b,
++	MC34708_REG_UNUSED7		= 0x3c,
++	MC34708_REG_UNUSED8		= 0x3d,
++	MC34708_REG_UNUSED9		= 0x3e,
++	MC34708_REG_UNUSED10		= 0x3f,
++};
++
++
++enum mc34708_mode {
++	MC34708_MODE_I2C,
++	MC34708_MODE_SPI,
++};
++
++struct mc34708 {
++	struct cdev		cdev;
++	struct i2c_client	*client;
++	struct spi_device	*spi;
++	enum mc34708_mode	mode;
++	unsigned int		revision;
++};
++
++extern struct mc34708 *mc34708_get(void);
++
++extern int mc34708_reg_read(struct mc34708 *mc34708, enum mc34708_reg reg, u32 *val);
++extern int mc34708_reg_write(struct mc34708 *mc34708, enum mc34708_reg reg, u32 val);
++extern int mc34708_set_bits(struct mc34708 *mc34708, enum mc34708_reg reg, u32 mask, u32 val);
++
++#endif /* __ASM_ARCH_MC34708_H */
+-- 
+1.7.7.6
+

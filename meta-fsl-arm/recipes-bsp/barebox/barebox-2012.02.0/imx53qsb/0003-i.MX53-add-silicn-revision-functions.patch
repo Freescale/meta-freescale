@@ -1,0 +1,90 @@
+From 2feeb3198c6d9771f20c03bc1363db40241fd8f5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>
+Date: Tue, 21 Feb 2012 01:05:43 +0100
+Subject: [PATCH 3/7] i.MX53: add silicn revision functions
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Eric Bénard <eric@eukrea.com>
+---
+Upstream-Status: Applied for 2012.04.0
+
+ arch/arm/mach-imx/imx53.c                   |   45 +++++++++++++++++++++++++++
+ arch/arm/mach-imx/include/mach/imx53-regs.h |    5 +++
+ 2 files changed, 50 insertions(+), 0 deletions(-)
+
+diff --git a/arch/arm/mach-imx/imx53.c b/arch/arm/mach-imx/imx53.c
+index 2fb18e7..ad45be3 100644
+--- a/arch/arm/mach-imx/imx53.c
++++ b/arch/arm/mach-imx/imx53.c
+@@ -37,6 +37,51 @@ void *imx_gpio_base[] = {
+ 
+ int imx_gpio_count = ARRAY_SIZE(imx_gpio_base) * 32;
+ 
++#define SI_REV 0x48
++
++static u32 mx53_silicon_revision;
++static char *mx53_rev_string = "unknown";
++
++int imx_silicon_revision(void)
++{
++	return mx53_silicon_revision;
++}
++
++static int query_silicon_revision(void)
++{
++	void __iomem *rom = MX53_IROM_BASE_ADDR;
++	u32 rev;
++
++	rev = readl(rom + SI_REV);
++	switch (rev) {
++	case 0x10:
++		mx53_silicon_revision = MX53_CHIP_REV_1_0;
++		mx53_rev_string = "1.0";
++		break;
++	case 0x20:
++		mx53_silicon_revision = MX53_CHIP_REV_2_0;
++		mx53_rev_string = "2.0";
++		break;
++	case 0x21:
++		mx53_silicon_revision = MX53_CHIP_REV_2_1;
++		mx53_rev_string = "2.1";
++		break;
++	default:
++		mx53_silicon_revision = 0;
++	}
++
++	return 0;
++}
++core_initcall(query_silicon_revision);
++
++static int imx53_print_silicon_rev(void)
++{
++	printf("detected i.MX53 rev %s\n", mx53_rev_string);
++
++	return 0;
++}
++device_initcall(imx53_print_silicon_rev);
++
+ static int imx53_init(void)
+ {
+ 	add_generic_device("imx_iim", 0, NULL, MX53_IIM_BASE_ADDR, SZ_4K,
+diff --git a/arch/arm/mach-imx/include/mach/imx53-regs.h b/arch/arm/mach-imx/include/mach/imx53-regs.h
+index 8fefc54..065bf08 100644
+--- a/arch/arm/mach-imx/include/mach/imx53-regs.h
++++ b/arch/arm/mach-imx/include/mach/imx53-regs.h
+@@ -135,5 +135,10 @@
+ #define MX53_CS2_96MB_BASE_ADDR		0xF6000000
+ #define MX53_CS3_BASE_ADDR		0xF6000000
+ 
++/* silicon revisions specific to i.MX53 */
++#define MX53_CHIP_REV_1_0	0x10
++#define MX53_CHIP_REV_2_0	0x20
++#define MX53_CHIP_REV_2_1	0x21
++
+ #endif /* __MACH_IMX53_REGS_H */
+ 
+-- 
+1.7.7.6
+

@@ -1,0 +1,51 @@
+From fdfefcad6edda451b0fd44b0e622f4dfe9699040 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>
+Date: Tue, 21 Feb 2012 01:24:14 +0100
+Subject: [PATCH 7/7] mx53-loco: update defconfig
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Eric Bénard <eric@eukrea.com>
+---
+Upstream-Status: Applied for 2012.04.0
+
+ arch/arm/configs/freescale_mx53_loco_defconfig |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+diff --git a/arch/arm/configs/freescale_mx53_loco_defconfig b/arch/arm/configs/freescale_mx53_loco_defconfig
+index b4e872d..bd2bdbe 100644
+--- a/arch/arm/configs/freescale_mx53_loco_defconfig
++++ b/arch/arm/configs/freescale_mx53_loco_defconfig
+@@ -21,7 +21,6 @@ CONFIG_DEBUG_INFO=y
+ CONFIG_CMD_EDIT=y
+ CONFIG_CMD_SLEEP=y
+ CONFIG_CMD_SAVEENV=y
+-CONFIG_CMD_LOADENV=y
+ CONFIG_CMD_EXPORT=y
+ CONFIG_CMD_PRINTENV=y
+ CONFIG_CMD_READLINE=y
+@@ -46,6 +45,7 @@ CONFIG_CMD_MAGICVAR=y
+ CONFIG_CMD_MAGICVAR_HELP=y
+ CONFIG_CMD_GPIO=y
+ CONFIG_CMD_UNCOMPRESS=y
++CONFIG_CMD_I2C=y
+ CONFIG_NET=y
+ CONFIG_NET_DHCP=y
+ CONFIG_NET_NFS=y
+@@ -55,9 +55,12 @@ CONFIG_NET_TFTP_PUSH=y
+ CONFIG_NET_NETCONSOLE=y
+ CONFIG_DRIVER_NET_FEC_IMX=y
+ # CONFIG_SPI is not set
++CONFIG_I2C=y
++CONFIG_I2C_IMX=y
+ CONFIG_MCI=y
+ CONFIG_MCI_STARTUP=y
+ CONFIG_MCI_IMX_ESDHC=y
++CONFIG_I2C_MC34708=y
+ CONFIG_FS_FAT=y
+ CONFIG_FS_FAT_WRITE=y
+ CONFIG_FS_FAT_LFN=y
+-- 
+1.7.7.6
+
