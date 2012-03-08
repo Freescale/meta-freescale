@@ -11,9 +11,23 @@ DEFAULT_PREFERENCE = "-1"
 inherit kernel
 COMPATIBLE_MACHINE = "(imx53qsb|imx53ard)"
 
-SRC_URI = "git://opensource.freescale.com/pub/scm/imx/linux-2.6-imx.git;tag=rel_imx_2.6.38_11.11.01;protocol=http \
+SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.38_12.01.01 \
            file://egalax_ts-enable-single-event-support.patch \
            file://defconfig \
           "
 
 S = "${WORKDIR}/git"
+
+# install nedded headers for imx-test compilation
+do_install_append() {
+	# bounds.h may be used by a module and is currently missing
+	if [ -d include/generated ]; then
+		cp include/generated/* $kerneldir/include/generated/
+	fi
+	# scripts/basic/fixdep is used in imx-test
+	mkdir -p $kerneldir/scripts/basic/
+	cp scripts/basic/fixdep $kerneldir/scripts/basic/
+	# scripts/mod/modpost is used in imx-test
+	mkdir -p $kerneldir/scripts/mod
+	cp scripts/mod/modpost $kerneldir/scripts/mod
+}
