@@ -1,0 +1,13 @@
+--- gettext-0.16.1/gettext-runtime/tests/test-lock.c-orig	2011-07-22 12:51:14.734334073 -0500
++++ gettext-0.16.1/gettext-runtime/tests/test-lock.c	2011-07-22 12:43:59.962333864 -0500
+@@ -106,7 +106,9 @@
+ }
+ static inline void * gl_thread_self (void)
+ {
+-  return (void *) pthread_self ();
++  pthread_t x;
++  x =  pthread_self ();
++  return (void *)&x;
+ }
+ #endif
+ #if TEST_PTH_THREADS

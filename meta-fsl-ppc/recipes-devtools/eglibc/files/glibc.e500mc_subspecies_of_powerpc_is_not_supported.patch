@@ -1,0 +1,11 @@
+--- a/configure	2012-03-05 07:00:49.600200254 -0600
++++ b/configure	2012-03-05 07:01:13.249394037 -0600
+@@ -4581,7 +4581,7 @@
+ if test -z "$submachine_used" && test -n "$submachine"; then
+   { { $as_echo "$as_me:$LINENO: error: The $submachine subspecies of $host_cpu is not supported." >&5
+ $as_echo "$as_me: error: The $submachine subspecies of $host_cpu is not supported." >&2;}
+-   { (exit 1); exit 1; }; }
++  }
+ fi
+ 
+ 

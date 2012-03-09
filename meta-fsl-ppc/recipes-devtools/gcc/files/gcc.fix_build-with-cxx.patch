@@ -1,0 +1,39 @@
+gcc.fix_build-with-cxx
+
+On native builds, when linking cc1 with static libraries (ppl cloog,
+gmp, mpfr), there is c++ code brought in by libppl. Normally cc1 is
+linked through "gcc", but in this case it should be linked with "g++".
+
+To work around this, gcc is configured with --enable-build-with-cxx,
+which compiles and links the entire compiler with g++. Since g++ is
+more rigorous about the use of the "const" keyword, there is a couple
+of places that we get syntax errors. This patch fixes them.
+
+--- gcc-4.6.0/gcc/config/rs6000/rs6000.c-orig	2011-05-09 10:35:55.627190744 -0500
++++ gcc-4.6.0/gcc/config/rs6000/rs6000.c	2011-05-09 10:39:09.232814653 -0500
+@@ -22502,11 +22502,12 @@
+ rs6000_xcoff_strip_dollar (const char *name)
+ {
+   char *strip, *p;
++  const char *q;
+   int len;
+ 
+-  p = strchr (name, '$');
++  q = strchr (name, '$');
+ 
+-  if (p == 0 || p == name)
++  if (q == 0 || q == name)
+     return name;
+ 
+   len = strlen (name);
+--- gcc-4.6.0/gcc/objc/objc-next-runtime-abi-02.c-orig	2011-05-11 13:46:44.559065173 -0500
++++ gcc-4.6.0/gcc/objc/objc-next-runtime-abi-02.c	2011-05-11 13:48:34.956939829 -0500
+@@ -1878,7 +1878,7 @@
+ static const char *
+ newabi_append_ro (const char *name)
+ {
+-  char *dollar;
++  const char *dollar;
+   char *p;
+   static char string[BUFSIZE];
+   dollar = strchr (name, '$');

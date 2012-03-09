@@ -1,0 +1,32 @@
+diff -ruN gcc-4.4.0/gcc/config/rs6000/rs6000.c gcc-4.4.0-e500mc64/gcc/config/rs6000/rs6000.c
+--- gcc-4.4.0/gcc/config/rs6000/rs6000.c	2009-03-17 15:18:21.000000000 -0500
++++ gcc-4.4.0-e500mc64/gcc/config/rs6000/rs6000.c	2009-12-04 10:36:44.000000000 -0600
+@@ -11032,6 +11059,14 @@
+ 	  mode = SImode;
+ 	  gen_func.mov = gen_movsi;
+ 	}
++      else if (TARGET_COPY_UNALIGNED && bytes == 3 && offset > 0)
++	{
++	  /* We generate a single unaligned SI move instead of 2 (HI, QI) */
++	  move_bytes = 3;
++	  mode = SImode;
++	  gen_func.mov = gen_movsi;
++	  offset--;
++	}
+       else if (bytes >= 2 && (align >= 16 || !STRICT_ALIGNMENT))
+ 	{			/* move 2 bytes */
+ 	  move_bytes = 2;
+diff -ruN gcc-4.4.0/gcc/config/rs6000/rs6000.opt gcc-4.4.0-e500mc64/gcc/config/rs6000/rs6000.opt
+--- gcc-4.4.0/gcc/config/rs6000/rs6000.opt	2009-02-20 09:20:38.000000000 -0600
++++ gcc-4.4.0-e500mc64/gcc/config/rs6000/rs6000.opt	2009-09-30 13:51:17.000000000 -0500
+@@ -201,6 +201,10 @@
+ Target RejectNegative Joined
+ -misel=yes/no	Deprecated option.  Use -misel/-mno-isel instead
+ 
++mcopy-unaligned
++Target Report Var(TARGET_COPY_UNALIGNED)
++Generate unaligned word load and stores to move 3 bytes
++
+ mspe
+ Target
+ Generate SPE SIMD instructions on E500

@@ -1,0 +1,24 @@
+--- gcc-4_6-branch/gcc/extelim.c.orig	2012-03-05 21:42:53.984215949 -0600
++++ gcc-4_6-branch/gcc/extelim.c	2012-03-05 21:43:27.884394659 -0600
+@@ -922,8 +922,7 @@
+       && GET_MODE (exp) != HImode
+       && GET_MODE (exp) != SImode 
+       && GET_MODE (exp) != DImode
+-      && GET_MODE (exp) != CCmode
+-      && GET_MODE (exp) != CCUNSmode)
++      && GET_MODE (exp) != CCmode)
+     return false;
+ 
+   return true;
+@@ -1653,9 +1652,9 @@
+      For our targets, there is no 'cmph' insn, so we bail out 
+      if we see a comparison of sizes less than a word (SI). */
+   if (REG_P (dest)
+-      && (GET_MODE (dest) == CCmode || GET_MODE (dest) == CCUNSmode)
++      && (GET_MODE (dest) == CCmode)
+       && GET_CODE (src) == COMPARE
+-      && (GET_MODE (src) == CCmode || GET_MODE (src) == CCUNSmode))
++      && (GET_MODE (src) == CCmode))
+     {
+       rtx compare_op0 = XEXP (src, 0);
+       rtx compare_op1 = XEXP (src, 1);

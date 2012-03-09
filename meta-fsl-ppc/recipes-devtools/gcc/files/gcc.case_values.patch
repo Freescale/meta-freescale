@@ -1,0 +1,65 @@
+--- gcc-4.6.0/gcc/params.def-orig	2011-06-16 11:39:42.412634260 -0500
++++ gcc-4.6.0/gcc/params.def	2011-06-16 11:41:29.457630886 -0500
+@@ -39,6 +39,11 @@
+ 
+    Be sure to add an entry to invoke.texi summarizing the parameter.  */
+ 
++DEFPARAM (PARAM_CASE_VALUES_THRESHOLD,
++	  "case-values-threshold",
++	  "Minimum number of case statements for each a jump table will be used",
++	  4, 4, 1000)
++
+ /* The threshold ratio between current and hottest structure counts.
+    We say that if the ratio of the current structure count,
+    calculated by profiling, to the hottest structure count
+--- gcc-4.6.0/gcc/config/rs6000/rs6000.c-orig	2011-06-16 12:24:03.440630751 -0500
++++ gcc-4.6.0/gcc/config/rs6000/rs6000.c	2011-06-16 12:24:51.450630163 -0500
+@@ -1282,6 +1282,7 @@
+ 					    struct cl_target_option *);
+ static bool rs6000_can_inline_p (tree, tree);
+ static void rs6000_set_current_function (tree);
++static unsigned int rs6000_case_values_threshold (void);
+ 
+ 
+ /* Default register names.  */
+--- gcc-4.6.0/gcc/config/rs6000/rs6000.c-orig	2011-06-16 11:18:27.131631000 -0500
++++ gcc-4.6.0/gcc/config/rs6000/rs6000.c	2011-06-16 11:38:15.225631714 -0500
+@@ -1704,6 +1704,9 @@
+ #undef TARGET_SET_CURRENT_FUNCTION
+ #define TARGET_SET_CURRENT_FUNCTION rs6000_set_current_function
+ 
++#undef TARGET_CASE_VALUES_THRESHOLD
++#define TARGET_CASE_VALUES_THRESHOLD rs6000_case_values_threshold
++
+ struct gcc_target targetm = TARGET_INITIALIZER;
+ 
+ 
+@@ -28179,6 +28182,12 @@
+ }
+ 
+ 
++static unsigned int
++rs6000_case_values_threshold (void)
++{
++  return PARAM_VALUE (PARAM_CASE_VALUES_THRESHOLD);
++}
++
+ /* Save the current options */
+ 
+ static void
+--- gcc-4.6.0/gcc/config/rs6000/rs6000.c-orig	2011-06-17 12:19:00.463631000 -0500
++++ gcc-4.6.0/gcc/config/rs6000/rs6000.c	2011-06-17 12:06:28.904630840 -0500
+@@ -2906,6 +2906,13 @@
+   if (rs6000_block_move_inline_limit < (TARGET_POWERPC64 ? 64 : 32))
+     rs6000_block_move_inline_limit = (TARGET_POWERPC64 ? 64 : 32);
+ 
++  if ((rs6000_cpu == PROCESSOR_PPC8540
++       || rs6000_cpu == PROCESSOR_PPCE500MC
++       || rs6000_cpu == PROCESSOR_PPCE5500
++       || rs6000_cpu == PROCESSOR_PPCE6500)
++      && global_options_set.x_param_values[(int) PARAM_CASE_VALUES_THRESHOLD] != true)
++    global_options.x_param_values[(int) PARAM_CASE_VALUES_THRESHOLD] = 8;
++    
+   if (global_init_p)
+     {
+       /* If the appropriate debug option is enabled, replace the target hooks

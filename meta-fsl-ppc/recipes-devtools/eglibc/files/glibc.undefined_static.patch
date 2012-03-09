@@ -1,0 +1,37 @@
+glibc.undefined_static
+
+This works around an old binutils bug, which would delete static
+constants out of the code, thus causing undefined symbols. Not sure if
+this patch is still needed.
+
+diff -rc libc-orig/stdio-common/psiginfo-define.h libc-new/stdio-common/psiginfo-define.h
+*** libc-orig/stdio-common/psiginfo-define.h	2009-04-09 08:12:53.000000000 -0500
+--- libc-new/stdio-common/psiginfo-define.h	2009-04-09 08:20:36.000000000 -0500
+***************
+*** 1,4 ****
+! static const union C(codestrs_t_, NOW) {
+    struct {
+  #define P(n, s) char MF(__LINE__)[sizeof (s)];
+  #include "psiginfo-data.h"
+--- 1,4 ----
+! const union C(codestrs_t_, NOW) {
+    struct {
+  #define P(n, s) char MF(__LINE__)[sizeof (s)];
+  #include "psiginfo-data.h"
+***************
+*** 8,14 ****
+  #define P(n, s) s,
+  #include "psiginfo-data.h"
+    } };
+! static const uint8_t C(codes_, NOW)[] = {
+  #define P(n, s) [(n) - 1] = offsetof (union C(codestrs_t_, NOW), MF(__LINE__)),
+  #include "psiginfo-data.h"
+  };
+--- 8,14 ----
+  #define P(n, s) s,
+  #include "psiginfo-data.h"
+    } };
+! const uint8_t C(codes_, NOW)[] = {
+  #define P(n, s) [(n) - 1] = offsetof (union C(codestrs_t_, NOW), MF(__LINE__)),
+  #include "psiginfo-data.h"
+  };

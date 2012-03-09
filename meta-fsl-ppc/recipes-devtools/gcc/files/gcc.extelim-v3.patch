@@ -1,0 +1,3491 @@
+Eliminate sign and zero extensions in PPC generated code
+A new module is introduced 'extelim.c' and a new RTL pass is introduced.
+The '-f[no-]extelim' flag controls this pass and is enabled at -O2 and above.
+The algorithm is based on the paper "Effective Sign Extension Elimination", Kawahito, et. al.
+More details on implementation in the extelim.c module.
+
+--- gcc-4.6-branch-clean/gcc/opts.c	2011-07-27 12:02:02.483850879 -0500
++++ gcc-4.6-branch/gcc/opts.c	2011-07-25 17:59:00.911975444 -0500
+@@ -492,6 +492,7 @@
+     { OPT_LEVELS_2_PLUS, OPT_falign_jumps, NULL, 1 },
+     { OPT_LEVELS_2_PLUS, OPT_falign_labels, NULL, 1 },
+     { OPT_LEVELS_2_PLUS, OPT_falign_functions, NULL, 1 },
++    { OPT_LEVELS_2_PLUS, OPT_fextelim, NULL, 1 },
+ 
+     /* -O3 optimizations.  */
+     { OPT_LEVELS_3_PLUS, OPT_ftree_loop_distribute_patterns, NULL, 1 },
+--- gcc-4.6-branch-clean/gcc/tree-pass.h	2011-07-27 12:02:02.485981448 -0500
++++ gcc-4.6-branch/gcc/tree-pass.h	2011-07-25 17:59:00.912976334 -0500
+@@ -483,6 +483,7 @@
+ extern struct rtl_opt_pass pass_initial_value_sets;
+ extern struct rtl_opt_pass pass_unshare_all_rtl;
+ extern struct rtl_opt_pass pass_instantiate_virtual_regs;
++extern struct rtl_opt_pass pass_rtl_extelim;
+ extern struct rtl_opt_pass pass_rtl_fwprop;
+ extern struct rtl_opt_pass pass_rtl_fwprop_addr;
+ extern struct rtl_opt_pass pass_jump2;
+--- gcc-4.6-branch-clean/gcc/timevar.def	2011-07-27 12:02:02.487999008 -0500
++++ gcc-4.6-branch/gcc/timevar.def	2011-07-25 17:59:00.913979563 -0500
+@@ -180,6 +180,7 @@
+ DEFTIMEVAR (TV_VARCONST              , "varconst")
+ DEFTIMEVAR (TV_LOWER_SUBREG	     , "lower subreg")
+ DEFTIMEVAR (TV_JUMP                  , "jump")
++DEFTIMEVAR (TV_EXTELIM               , "extension elimination")
+ DEFTIMEVAR (TV_FWPROP                , "forward prop")
+ DEFTIMEVAR (TV_CSE                   , "CSE")
+ DEFTIMEVAR (TV_DCE                   , "dead code elimination")
+--- gcc-4.6-branch-clean/gcc/common.opt	2011-07-27 12:02:02.490978128 -0500
++++ gcc-4.6-branch/gcc/common.opt	2011-07-25 17:59:00.915979093 -0500
+@@ -996,6 +996,10 @@
+ Common Report Var(flag_eliminate_dwarf2_dups)
+ Perform DWARF2 duplicate elimination
+ 
++fextelim
++Common Report Var(flag_extelim)
++Perform zero/sign extension removal
++
+ fipa-sra
+ Common Report Var(flag_ipa_sra) Init(0) Optimization
+ Perform interprocedural reduction of aggregates
+--- gcc-4.6-branch-clean/gcc/Makefile.in	2011-07-27 12:02:02.498976606 -0500
++++ gcc-4.6-branch/gcc/Makefile.in	2011-07-25 17:59:00.919975303 -0500
+@@ -1233,6 +1233,7 @@
+ 	explow.o \
+ 	expmed.o \
+ 	expr.o \
++	extelim.o \
+ 	final.o \
+ 	fixed-value.o \
+ 	fold-const.o \
+@@ -2891,6 +2892,11 @@
+    reload.h langhooks.h intl.h $(TM_P_H) $(TARGET_H) \
+    tree-iterator.h gt-expr.h $(MACHMODE_H) $(TIMEVAR_H) $(TREE_FLOW_H) \
+    $(TREE_PASS_H) $(DF_H) $(DIAGNOSTIC_H) vecprim.h $(SSAEXPAND_H)
++extelim.o : extelim.c $(CONFIG_H) $(SYSTEM_H) coretypes.h $(TM_H) $(RTL_H) \
++   $(TREE_H) $(TM_P_H) $(FLAGS_H) $(REGS_H) hard-reg-set.h $(BASIC_BLOCK_H) \
++   insn-config.h $(FUNCTION_H) $(EXPR_H) $(INSN_ATTR_H) $(RECOG_H) \
++   toplev.h $(TARGET_H) $(TIMEVAR_H) $(OPTABS_H) insn-codes.h  \
++   output.h $(PARAMS_H) $(TREE_PASS_H) $(CGRAPH_H)
+ dojump.o : dojump.c $(CONFIG_H) $(SYSTEM_H) coretypes.h $(TM_H) $(RTL_H) $(TREE_H) \
+    $(FLAGS_H) $(FUNCTION_H) $(EXPR_H) $(OPTABS_H) $(INSN_ATTR_H) insn-config.h \
+    langhooks.h $(GGC_H) gt-dojump.h vecprim.h $(BASIC_BLOCK_H) output.h
+--- gcc-4.6-branch-clean/gcc/passes.c	2011-07-27 12:02:02.502976386 -0500
++++ gcc-4.6-branch/gcc/passes.c	2011-07-25 17:59:00.922975752 -0500
+@@ -990,6 +990,7 @@
+       NEXT_PASS (pass_web);
+       NEXT_PASS (pass_rtl_cprop);
+       NEXT_PASS (pass_cse2);
++      NEXT_PASS (pass_rtl_extelim);
+       NEXT_PASS (pass_rtl_dse1);
+       NEXT_PASS (pass_rtl_fwprop_addr);
+       NEXT_PASS (pass_inc_dec);
+--- gcc-4.6.1-clean/gcc/extelim.c	1969-12-31 18:00:00.000000000 -0600
++++ gcc-4.6.1/gcc/extelim.c	2011-11-14 15:43:10.041143996 -0600
+@@ -0,0 +1,3407 @@
++/* Redundant extension elimination 
++   Copyright (C) 2010 Free Software Foundation, Inc.
++   Contributed by John Russo (john.russo@freescale.com)
++
++This file is part of GCC.
++
++GCC is free software; you can redistribute it and/or modify it under
++the terms of the GNU General Public License as published by the Free
++Software Foundation; either version 3, or (at your option) any later
++version.
++
++GCC is distributed in the hope that it will be useful, but WITHOUT ANY
++WARRANTY; without even the implied warranty of MERCHANTABILITY or
++FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++for more details.
++
++You should have received a copy of the GNU General Public License
++along with GCC; see the file COPYING3.  If not see
++<http://www.gnu.org/licenses/>.  */
++
++/*
++PURPOSE: Implement a method for eliminating redundant and superflous sign
++extension instructions from 64-bit PPC e5500 generated code.
++
++MOTIVATING EXAMPLE:
++The Nullstone loop_6.c kernel looks like:
++  int i;
++  int a[100];
++  
++  ref_int_p (&a[0]);
++  
++  for (i=2; i<100; i++)
++    a[i] = a[i-1] + a[i-2];
++  
++The final, generated code for the loop body is:
++
++32-bit                  64-bit
++add     r25,r11,r0	add     r5,r5,r8
++add     r26,r0,r25	addi    r4,r4,12
++stw     r25,0(r9)	add     r27,r5,r8
++add     r27,r25,r26	stw     r5,0(r9)
++stw     r26,4(r9)	extsw   r12,r27       <===
++add     r28,r26,r27	stw     r27,4(r9)
++stw     r27,8(r9)	add     r6,r5,r12
++add     r29,r27,r28	add     r28,r6,r12
++stw     r28,12(r9)	stw     r6,8(r9)
++add     r30,r28,r29	extsw   r0,r28        <===
++stw     r29,16(r9)	stw     r28,12(r9)
++add     r12,r29,r30	add     r7,r6,r0
++stw     r30,20(r9)	add     r29,r7,r0
++add     r3,r30,r12	stw     r7,16(r9)
++stw     r12,24(r9)	extsw   r3,r29        <===
++add     r4,r12,r3	stw     r29,20(r9)
++stw     r3,28(r9)	add     r10,r7,r3
++add     r5,r3,r4	add     r30,r10,r3
++stw     r4,32(r9)	stw     r10,24(r9)
++add     r6,r4,r5	extsw   r8,r30        <===
++stw     r5,36(r9)	stw     r30,28(r9)
++add     r7,r5,r6	add     r11,r10,r8
++stw     r6,40(r9)	add     r12,r11,r8
++add     r8,r6,r7	stw     r11,32(r9)
++stw     r7,44(r9)	extsw   r26,r12       <===
++add     r10,r7,r8	stw     r12,36(r9)
++stw     r8,48(r9)	add     r0,r11,r26
++add     r11,r8,r10	add     r3,r0,r26
++stw     r10,52(r9)	stw     r0,40(r9)
++add     r0,r10,r11	subfic  r26,r4,100
++stw     r11,56(r9)	stw     r3,44(r9)
++stw     r0,60(r9)	extsw   r5,r0         <===
++addi    r9,r9,64	extsw   r8,r3         <===
++bdnz+   10000640        extsw   r4,r4         <===
++                        clrldi  r26,r26,32
++                        addi    r9,r9,48
++                        bdnz+   10000890 
++
++GENERAL APPROACH:
++Consider a machine whose native register size is 64-bits
++
++0          3132         63
++|-----------||-----------|
++
++where bit 63 is the LSB and bit 0 is the MSB of a long int
++and bit 63 is the LSB and bit 32 is the MSB of an int.
++
++Sign and zero extension are inserted to RTL to preserve the
++operation's semantics when the operands used are not the 
++native register size since normally the machine only performs
++the operation using a native register size. In practice, many
++of the inserted extensions are not necessary.
++
++First, the extension may simply be redundant. That is, the 
++same operation is performed on the same operands. The redundant
++extensions can be eliminated.
++
++Secondly, if the extended portion of the register (the "upper" bits)
++are not essential to the calculations performed on the output of the
++extension, then the extension is not necessary. For example, given
++int (32-bit) inputs and outputs:
++
++c = a + b
++d = sxt(c)
++e = d + 1; 
++
++The "upper" bits of d (bit 0-31) do not affect the calculation
++of e. It doesn't matter what the "upper" bits of d are, the int result
++e is the same regardless of the sxt instruction.
++
++Thirdly, the extensions may not be necessary if the operands are
++already extended and the operation preserves the extended bits.
++
++a = mem[&b] ; sign extending load
++c = a + 1
++d = sxt(c)
++
++Here, a is generated by a sign extending load, the operation
++does nothing to invalidate the extension to c, thus the extension
++on c to d is not necessary.
++
++In each case, the redundant extension must be replaced by a copy,
++with the copy to be optimized out in later phases.
++
++The three cases described above form the general idea behind the
++algorithms implemented here to eliminate redundant and unneccessary
++extensions. 
++
++Sign extensions do not have to be preserved for overflow conditions
++since signed overflow behavior is not defined in C. For example,
++take a 16-bit variable in a 32-bit register. It is ok
++for 0x0000_7fff to overflow to 0x0000_8000 and not 0xffff_8000.
++This implies that it is not necessary to preserve the sign
++extension.
++
++Unsigned overflow extension need to be preserved because 
++unsigned overflow is modulo. For example, a 16-bit unsigned 
++overflow of 0x0000_FFFF must be 0x0000_0000 in a 32-bit register, 
++not 0x0001_0000. In order to remove the unsigned zero extension,
++we would need to range check the variable to be sure it doesn't
++overflow.  
++
++RTL ANALYSIS:
++I looked at the RTL representation after RTL generation (.expand) and
++after the first forward propagation (.fwprop1). Since RTL is not compact
++when printing out, I reduced the .fwprop1 RTL to this pseudocode:
++
++(note: sxt,zxt mean double word length, 64-bit, extension).
++
++(1)     r198 = m[r113+ #112]     ; load a[0]
++(2)     r174 = sxt(r198)
++(3)     r199 = m[r113+ #116]     ; load a[1] 
++(4)     r186 = sxt(r199)
++(5)     r181 = r113 + #120       ; load &a[2]
++(6)     r180 = 2                 ; i = 2
++(7)     L1:
++(8)     r200 = r174 + r186       ; t1 = a[i-1] + a[i-2]
++(9)     r174 = sxt(r200)
++(10)    m[r181] = r200           ; a[i] = t1
++(11)    r201 = r200 + r186       ; t2 = t1 + a[i-1]
++(12)    r186 = sxt(r201)
++(13)    m[r181+4] = r201         ; a[i+1] = t2
++(14)    r202 = r180 + 2          ; i += 2
++(14.1)  r180 = sxt(r202)     
++(15)    r203 = 100 - r202        ; used to calc loop remainder
++(16)    r185 = zxt(r203)         ; used to calc loop remainder
++(17)    r181 = r181 + 8          ; address induction var
++(18)    ccr204 = cmp(r202,#98)   ; set CC
++(19)    BNE ccr204,L1            ; branch 
++
++In the pseudo-code, you see several sign extension candidates: (2),(4),
++(9), (12), (14.1), (16).  
++
++ALGORITHM:
++To eliminate the extra sign ext you have to look at (1) the definitions
++of the source of the sign extensions and/or (2) look at the uses of the target
++of the sign extensions. In either case, if doing a global elimination
++pass, you'll need def-use chain information. 
++
++The algorithms are recursive. Using the use/def and def/use chains
++we attempt to find ultimately whether the extension is relevant
++or not. 
++
++
++Example 1.
++Extensions (2) and (4) are not put in the candidate list because
++they are combined into a load/ext pair that is ultimately generated
++as sign extending loads.
++
++Take the sign extension at (9), r174 = sxt(r200).
++Def analysis shows that r200 is defined by 2 registers, thus no
++further def analysis recursion can occur.
++Use analysis. Find all the uses of r174. There is 1 use at (8) r200 = r174 + r186. 
++The extension does not affect the add operation results. Continuing, we look at
++the uses of r200 to see if the results of operations on r200 need the sign extended bits.
++We see 2 uses of r200 at (10) and (11). (10) is a 32-bit store of r200,
++so the sign extended bits are irrelevant. (11), however, is an unknown,
++so we must look that the uses of this result, r201. A similar sequence
++occurs for r201 when it defines r186. Looking at the uses of r186 at 
++(8) and (11), we have already visited those statements so they have
++been covered already. So it appears that the sxt to r174 at (9) ultimately
++dead-ends to a store instruction that doesn't case about the sign extended
++bits. The sxt at (9) can be removed.
++
++The remaining extensions are processed similarly.
++
++PROGRAM STRUCTURE:
++
++extension elimination                            -- main entry point
++ find extensions                                 -- identify extension candidates
++ extension duplication                           -- insert extension at strategic points to
++                                                    enable removal of extensions at more frequently
++                                                    executed points.
++ find extensions                                 -- recreate extension candidate list
++ sort extensions                                 -- sort extension candidate list by loop depth
++ for each ext in list                            -- process each extension candidate
++  eliminate one extension
++ replace marked candidates with copy             -- optimize the extension
++
++PSEUDOCODE:
++
++Create working list of sign extensions, sxt_list
++
++For each insn, insn_sxt,  in sxt_list 
++   ext_needed = true 
++   For all insns, insn_def, that DEFINE and REACH the SOURCE_REG(insn_sxt)
++     ext_needed = analyze_def(insn_def, insn_sxt)
++     if (ext_needed)
++       break;
++   end_loop
++   if (ext_needed)
++     For all insns, insn_use, that USE and are REACHED by the DEST_REG(insn_sxt)
++       ext_needed = analyze_use(insn_use, insn_sxt)
++       if (ext_needed)
++         break;
++     end_loop
++    
++   if (!ext_needed)
++     mark_for_replace_with_copy(I)
++end_loop
++
++For each insn, insn_sxt, in sxt_list
++   if (insn_sxt is marked for replacement)
++     replace_insn_with_copy(insn_sxt)
++end_loop
++
++--------------------------
++function: analyze_def(def)
++---------------------------
++return true if extension is needed, false otherwise.
++
++destination_operand = defined operand of source 
++source_operand = source operand of def 
++
++if (have_seen_this_insn_already (def))
++ return true;
++
++set_seen_this_insn_flag (def)
++
++analysis_result = analyze_result_def (def)
++switch (analysis_result)
++ case source_operand_is_extended:
++  return false
++ case stop_recursion:
++  return true
++ case continue_recursion: 
++  break;
++
++ext_needed = true;
++
++For all insns, insn_def, that USE and REACHED by the register of destination_operand 
++ ext_needed = analyze_def(insn_def))
++ if (ext_needed)
++  break;
++end_loop
++
++return ext_needed 
++
++--------------------------
++function: analyze_use(use)
++---------------------------
++return true if extension is needed, false otherwise.
++
++destination_operand = destination operand of use
++source_operand = source operand of use
++
++if (have_seen_this_insn_already (use))
++ return false;
++
++set_seen_this_insn_flag (use)
++
++analysis_result = analyze_result_use (use)
++switch (analysis_result)
++ case low_bits_not_affected_by_use:
++  return false
++ case low_bits_affected_by_use:
++  return true
++ case look_at_uses_of_destination_operand
++  break;
++
++ext_needed = true;
++For all insns, insn_use, that USE the register of destination_operand 
++    ext_needed = analyze_use(insn_use))
++    if (ext_needed)
++     break;
++end_loop
++
++return ext_needed 
++
++REFERENCES:
++
++"Effective Sign Extension Elimination", Kawahito, Komatsu, Nakatani. 
++IBM Tokyo Researc Laboratory.
++
++"New sign/zero extension elimination pass", deVries.
++http://gcc.gnu.org/ml/gcc-patches/2010-10/msg01529.html
++*/
++
++/*
++Iteration 4: pre-ZERO_EXTEND version, duplicates sign_extend at uses
++Iteration 5: begin supporting ZERO_EXTEND, crashes on Coremark.
++Iteration 6: revert to 4, support SI:HI sign_extensions.
++Iteration 7: Add support for zero extend. This version deletes
++ "inserted" duplicate extensions when redundant and propagates
++ the copied value. This propagate fails in other_tests/test2.sh.
++ I am reverting back to replacing the "inserted" extension to a copy.
++ Copy propagation should always be able to eliminate this copy.
++ Coremark was stable, however.
++Iteration 8: Revert to change extensions to copy, regardless of whether
++ the extension was duplicated or not. 
++ Refactor setting of dest,src in analyze_ext_use, analyze_ext_def, now
++ handled with a single function.
++Iteration 9: 
++ Inserted redundant extensions at function return points.
++ Sorted the order that extensions are processed by loop depth.
++ Additional cases in upper_bits_do_not_affect_dest
++Iteration 10:
++ Fixes for test failures. A major problem was uncovered where
++ the "visited" flag was not properly cleared. This meant that
++ each time a new extension was processed, it appeared that some
++ extensions were visited already and there were not. The result
++ was false removals. This fix significantly affects the benchmark.
++ Another change was to comment out the duplicate_exts_at_uses. This
++ seemed to have little effect now that the visited flag issue is
++ fixed. 
++Iteration 11:
++ Cleanup warnings during build.
++Iteration 12:
++ QImode support started.
++Iteration 13:
++ Redesign and refactor analyze_ext_use, analyze_ext_def
++Iteration 14:
++ Continue redesign and refactor of analyze_ext_use, analyze_ext_def
++ Debugging paper_example.c
++Iteration 15:
++ cond_c fix
++Iteration 16: (not tested)
++ Refactor check_compare code 
++ Refactor action decision in PARALLEL 
++ Allow pass-thru on insns that are marked for replace copy 
++ instead of stopping recursion if we see a marked insn.
++ Examining lshiftrt.c program (signed and unsigned).
++Iteration 17: 
++ Refactor mostly complete. Passed all local testing including
++ nas and perfect. Best coremark results so far.
++Iteration 18:
++ Oops. analyze_ext_def was disabled. Enabling it improves
++ Coremark. Passed coremark, perfect.
++Iteration 19:
++ Local tests are passing. Tested with glibc.
++ Added statistics.
++ Fixed elimination from CALL output in operand_is_extended.
++  This impacted Coremark went from 6300 to 6170. But is necessary.
++ More safety for used regs in analyze_ext_def.
++ More safety for the types of extensions.
++Iteration 20:
++ Fixes for various tests.
++Iteration 21:
++ pr43017 -funroll_loops fix.
++Iteration 22:
++ Fixes for AND immediate in operand_is_extended.
++ Cosmetic cleanup.
++Iteration 23:
++ Fixes for consumer-2,spec2k,spec2k6. Handle 
++ SUBREG_PROMOTED_VAR_P flags on operands whose
++ dependent extension has been eliminated.
++Iteration 24:
++ Fixed problem in native build during bootstrapping.
++ Extelim was considering debug_insns and should have
++ ignored them. This resulted in a compare fail between
++ stage2 and stage3.
++Iteration 25:
++ - Post-release 4.6.1 development
++ - Full duplication of extensions at uses turned on.
++ - Recursion into original extension no longer kills optimization (analyze_ext_def only)
++ - Allow some duplication into the same block if it enables insn selection
++ - Allow CCmode and CCUNSmode into mode_supported_p
++Iteration 26:
++ - Solve ICEs due to null df-ref.
++Iteration 27:
++ - Fixed issue with duplication of extension at a self-assign.
++ - Some fixes for copying flags during duplication
++ - Some fixes for counting register uses.
++Iteration 28:
++ - Fixed issue with duplication of extension when use has multiple
++   reaching definitions.
++Iteration 29:
++ - Release candidate for Q42011 release iteration.
++Iteration 30:
++ - Turn off extension duplication - minimally effective
++ 
++*/
++
++#include "config.h"
++#include "system.h"
++#include "coretypes.h"
++#include "tm.h"
++#include "rtl.h"
++#include "tree.h"
++#include "tm_p.h"
++#include "flags.h"
++#include "regs.h"
++#include "hard-reg-set.h"
++#include "basic-block.h"
++#include "insn-config.h"
++#include "function.h"
++#include "expr.h"
++#include "insn-attr.h"
++#include "recog.h"
++#include "toplev.h"
++#include "target.h"
++#include "timevar.h"
++#include "optabs.h"
++#include "insn-codes.h"
++#include "rtlhooks-def.h"
++#include "output.h"
++#include "params.h"
++#include "timevar.h"
++#include "tree-pass.h"
++#include "cgraph.h"
++#include "df.h"
++#include "vec.h"
++
++/* Feature flags */
++/* Duplicate extensions at each immediate use */
++#define EXTELIM_DUPLICATE_EXTS_AT_USES 0
++/* Dump DF information also in dump */
++#define EXTELIM_DF_DUMP 0
++
++
++/* Typedefs */
++typedef unsigned int insn_flag_t;       /* Insn flags type */
++typedef int extelim_uid_t;      /* UID type */
++DEF_VEC_I (insn_flag_t);        /* Define vector type and allocation type */
++DEF_VEC_ALLOC_I (insn_flag_t, heap);
++
++typedef struct GTY (()) ext_record
++{
++  rtx ext;                      /* The extension insn */
++  VEC (rtx, heap) * ext_uses;   /* List of use records for this extension. For some
++                                   some extensions, we will duplicate the extension
++                                   at these use points. */
++  VEC (rtx, heap) * ext_updates;/* List of rtx that need to be updated if the extension
++                                   is to be eliminated. For example, SUBREG_PROMOTED flags
++                                   on SUBREG uses defined by this extension should
++                                   be reset since the extension is eliminated. The PROMOTED
++                                   flag is no longer valid. */
++} *ext_record_t;
++
++typedef struct regspec_cb_data
++{
++  unsigned int regno;
++  rtx exp;
++} regspec_cb_data_t;
++
++/* Static variables */
++DEF_VEC_P (ext_record_t);
++DEF_VEC_ALLOC_P (ext_record_t, heap);
++VEC (ext_record_t, heap) * extensions;  /* Vector holding all extension records */
++VEC (insn_flag_t, heap) * insn_flags;   /* Vector holding flags for all insns */
++VEC (rtx, heap) * returns;      /* Vector holding return insns for this function */
++
++     static extelim_uid_t max_uid;      /* Max UID insn value for insn_flags allocation */
++     static ext_record_t current_ext_record; /* Current extension record being processed */
++
++/* Statistics */
++     static int num_cand;       /* Number of extensions detected */
++     static int num_cand_ignored;       /* Number of extensions ignored */
++     static int num_cand_transformed;   /* Number of extensions transformed to copy */
++
++/* Basic information about the extension being processed */
++     enum machine_mode ext_to_mode;     /* Mode extended to */
++     enum machine_mode ext_from_mode;   /* Mode extended from */
++     enum rtx_code ext_code;    /* Sign or zero extend */
++
++/* Insn use analysis possible results */
++     enum insn_use_results
++     {
++       EXTELIM_ANALYSIS_RESULT_LOWBITS_NOT_AFFECTED,
++       EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED,
++       EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION
++     };
++
++/* Insn def analysis possible results */
++     enum insn_def_results
++     {
++       EXTELIM_ANALYSIS_RESULT_DEF_EXTENDED,
++       EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION,
++       EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION
++     };
++
++/* Insn flags for this pass */
++#define       EXTELIM_NONE           0
++#define       EXTELIM_SEEN           (1<<0)     /* Mark insn as visited during DF traversal */
++#define       EXTELIM_REPLACE_COPY   (1<<1)     /* Mark ext insn as replace with copy */
++#define       EXTELIM_INSERTED       (1<<2)     /* Mark ext insn as algorithmically inserted */
++#define       EXTELIM_INSERTED_FOR   (1<<3)     /* Mark use insn for which ext has been inserted */
++
++
++/* Query the insn flag */
++
++     static bool insn_flag_p (insn_flag_t set_p, extelim_uid_t uid)
++{
++  insn_flag_t flags;
++
++  if (((flags = VEC_index (insn_flag_t, insn_flags, uid)) & set_p) == set_p)
++    return true;
++
++  return false;
++}
++
++/* Set the insn flags */
++
++static void
++insn_flag_set (insn_flag_t flags, extelim_uid_t uid)
++{
++  insn_flag_t set;
++  set = VEC_index (insn_flag_t, insn_flags, uid);
++  set |= flags;
++  VEC_replace (insn_flag_t, insn_flags, uid, set);
++}
++
++/* Clear insn flags */
++
++static void
++insn_flag_clear (insn_flag_t flags, extelim_uid_t uid)
++{
++  insn_flag_t clear;
++  clear = VEC_index (insn_flag_t, insn_flags, uid);
++  clear &= ~flags;
++  VEC_replace (insn_flag_t, insn_flags, uid, clear);
++}
++
++/* Set static variable max_uid to the largest
++   insn uid found in the module plus 1. This will be the
++   size of the vector for insn flags. */
++
++static void
++set_max_uid (void)
++{
++  basic_block bb;
++  rtx insn;
++  extelim_uid_t lmax_uid = 0;
++
++  FOR_EACH_BB (bb) FOR_BB_INSNS (bb, insn)
++  {
++    if (INSN_P (insn))
++      {
++        if (INSN_UID (insn) > lmax_uid)
++          lmax_uid = INSN_UID (insn);
++      }
++  }
++  max_uid = lmax_uid + 1;
++}
++
++/* Re-initializes the requested insn flags to their reset state */
++
++static void
++reinit_insn_flags (insn_flag_t flags_to_be_reset)
++{
++  extelim_uid_t i;
++
++  /* Account for new insns */
++  set_max_uid ();
++
++  for (i = 0; i < max_uid; i++)
++    {
++      insn_flag_clear (flags_to_be_reset, i);
++    }
++}
++
++/* Init the vector for insn flags. One
++   vector element per insn is created.
++   The flags are init'd to EXTELIM_NONE. */
++
++static void
++init_flags_vector (void)
++{
++  extelim_uid_t i;
++  /* Get the maximum uid value. We'll use this
++     information to set up a vector of max_uid
++     length. Each element of the vector will hold
++     the pass-specific flags for each insn. */
++  max_uid = 0;
++  set_max_uid ();
++
++  /* Allocate the vector of insn flags */
++  insn_flags = VEC_alloc (insn_flag_t, heap, max_uid);
++
++  /* Initialize the insn flags vector */
++  for (i = 0; i < max_uid; i++)
++    {
++      VEC_quick_insert (insn_flag_t, insn_flags, i, EXTELIM_NONE);
++    }
++}
++
++/* Initialize this pass */
++
++static void
++init_pass (void)
++{
++  /* Init insn flags vector */
++  init_flags_vector ();
++
++  /* This pass requires def-use chain information */
++  df_chain_add_problem (DF_DU_CHAIN + DF_UD_CHAIN);
++  df_analyze ();
++}
++
++static void
++free_extensions (void)
++{
++  ext_record_t ext_record;
++  unsigned i;
++
++  FOR_EACH_VEC_ELT (ext_record_t, extensions, i, ext_record)
++  {
++    if (!VEC_empty (rtx, ext_record->ext_uses))
++      VEC_free (rtx, heap, ext_record->ext_uses);
++
++    if (!VEC_empty (rtx, ext_record->ext_updates))
++      VEC_free (rtx, heap, ext_record->ext_updates);
++  }
++  VEC_free (ext_record_t, heap, extensions);
++}
++
++/* Clean up this pass */
++
++static void
++finish_pass (void)
++{
++  free_extensions ();
++  VEC_free (insn_flag_t, heap, insn_flags);
++  VEC_free (rtx, heap, returns);
++}
++
++static void
++update_uid_vectors (extelim_uid_t uid)
++{
++  VEC_safe_grow_cleared (insn_flag_t, heap, insn_flags, uid + 1);
++}
++
++/* Emit a insn before a given insn, update vector lengths
++   of those vectors that are indexed by uid. Return uid
++   of the inserted insn. */
++
++static extelim_uid_t
++extelim_emit_before (rtx new_insn, rtx before_insn)
++{
++  rtx seq;
++  extelim_uid_t new_uid;
++
++  start_sequence ();
++  emit_insn (new_insn);
++  seq = get_insns ();
++  end_sequence ();
++  new_insn = emit_insn_before (seq, before_insn);
++
++  /* Expand the flags vector to hold the new insn and set the
++     inserted flag on the insn. */
++  new_uid = INSN_UID (new_insn);
++  update_uid_vectors (new_uid);
++  return new_uid;
++}
++
++/* Utility function to find the REG exp 
++   given an rtx */
++
++static rtx
++register_exp (rtx exp)
++{
++  if (REG_P (exp))
++    {
++      return exp;
++    }
++  else if (GET_CODE (exp) == SUBREG)
++    {
++      return SUBREG_REG (exp);
++    }
++  else
++    return NULL;
++}
++
++/* Check whether this is a sign extension.  */
++
++static bool
++extension_p (rtx insn, rtx * dest, rtx * inner, int *preserved_size)
++{
++  rtx src, op0;
++
++  /* Detect set of reg.  */
++  if (GET_CODE (PATTERN (insn)) != SET)
++    return false;
++
++  src = SET_SRC (PATTERN (insn));
++  *dest = SET_DEST (PATTERN (insn));
++
++  if (!REG_P (*dest))
++    return false;
++
++  if (GET_CODE (src) == SIGN_EXTEND || GET_CODE (src) == ZERO_EXTEND)
++    {
++      op0 = XEXP (src, 0);
++
++      /* Determine amount of least significant bits preserved by operation.  */
++      if (GET_CODE (src) == AND)
++        *preserved_size = ctz_hwi (~UINTVAL (XEXP (src, 1)));
++      else
++        *preserved_size = GET_MODE_BITSIZE (GET_MODE (op0));
++
++      if (GET_CODE (op0) == SUBREG)
++        {
++          if (subreg_lsb (op0) != 0)
++            return false;
++
++          *inner = SUBREG_REG (op0);
++          return true;
++        }
++      else if (REG_P (op0))
++        {
++          *inner = op0;
++          return true;
++        }
++    }
++
++  return false;
++}
++
++/* Return true if this is the last use of a
++   register, false otherwise.  */
++
++static bool
++reg_is_dead_p (rtx insn, rtx reg_expr)
++{
++  rtx link;
++  gcc_assert (REG_P (reg_expr));
++
++  for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
++    {
++      if (REG_NOTE_KIND (link) == REG_DEAD && REG_P (XEXP (link, 0)))
++        {
++          if (REGNO (XEXP (link, 0)) == REGNO (reg_expr))
++            return true;
++        }
++    }
++  return false;
++}
++
++/* Return true if we don't want to place this
++   extension in the candidate extensions list because of the
++   previous insn. Return false otherwise. */
++
++static bool
++ignore_extension_prev_p (rtx ext_insn, rtx prev_insn)
++{
++  rtx prev_dest, prev_src, prev = PATTERN (prev_insn);
++  rtx ext_src, ext = PATTERN (ext_insn);
++
++  /* It's OK to allow extension with no accompanying prev real insn */
++  if (!NONDEBUG_INSN_P (prev_insn) || NOTE_P (prev_insn))
++    return false;
++
++  if (GET_CODE (prev) != SET)
++    return false;
++
++  if (GET_CODE (ext) != SET)
++    return false;
++
++  prev_dest = SET_DEST (prev);
++  prev_src = SET_SRC (prev);
++
++  /* Source register of sign extension */
++  ext_src = XEXP (SET_SRC (ext), 0);
++
++  /* Check previous insns */
++
++  /* Previous insn is a load whose dest is the
++     extension's source  and the dest reg is
++     dead */
++  if (MEM_P (prev_src) && (prev_dest = register_exp (prev_dest)))
++    {
++      if ((ext_src = register_exp (ext_src)))
++        {
++          if ((REGNO (prev_dest) == REGNO (ext_src))
++              && reg_is_dead_p (ext_insn, ext_src))
++            return true;
++        }
++    }
++  return false;
++}
++
++/* Return true if we don't want to place this
++   extension in the candidate extensions list because of the
++   next insn. Return false otherwise. */
++
++static bool
++ignore_extension_next_p (rtx ext_insn, rtx next_insn)
++{
++  rtx next = PATTERN (next_insn);
++  rtx ext_src, ext = PATTERN (ext_insn);
++
++  if (GET_CODE (ext) != SET)
++    return false;
++
++  /* Check next insns */
++  if (!NONDEBUG_INSN_P (next_insn) || NOTE_P (next_insn))
++    return false;
++
++  if (GET_CODE (next) != SET)
++    return false;
++
++  /* zero-extend followed by left shift by 1 -- this sequence will be
++     detected by the insn selection. */
++  if (GET_CODE (SET_SRC (ext)) == ZERO_EXTEND)
++    {
++      if (GET_CODE (SET_SRC (next)) == ASHIFT
++          && CONST_INT_P (XEXP (SET_SRC (next), 1))
++          && UINTVAL (XEXP (SET_SRC (next), 1)) == 0x1)
++        return true;
++    }
++
++  return false;
++}
++
++/* Find extensions and store them in the extensions vector.  */
++
++static bool
++find_extensions (void)
++{
++  basic_block bb;
++  rtx insn, dest, inner;
++  int preserved_size;
++  ext_record_t extrec;
++
++  /* For all insns, call note_use for each use in insn.  */
++  FOR_EACH_BB (bb)
++  {
++    FOR_BB_INSNS (bb, insn)
++    {
++      if (!NONDEBUG_INSN_P (insn))
++        continue;
++
++      if (!extension_p (insn, &dest, &inner, &preserved_size))
++        {
++          continue;
++        }
++
++      /* We do not consider extensions that follow a load for
++         this target, as the code selector optimizes the sequence
++         to a load with sign extend or load with zero extend. */
++      if (PREV_INSN (insn)
++          && ignore_extension_prev_p (insn, PREV_INSN (insn)))
++        {
++          if (dump_file)
++            fprintf (dump_file, "extension at uid=%d ignored\n",
++                     INSN_UID (insn));
++          num_cand_ignored++;
++          continue;
++        }
++      /* We don't consider certain sequences that are picked up by
++         insn selection. */
++      if (NEXT_INSN (insn)
++          && ignore_extension_next_p (insn, NEXT_INSN (insn)))
++        {
++          if (dump_file)
++            fprintf (dump_file, "extension at uid=%d ignored\n",
++                     INSN_UID (insn));
++          num_cand_ignored++;
++          continue;
++        }
++
++      /* Only looking at sign extensions to DImode, SImode, or HImode  */
++      if (GET_MODE_BITSIZE (SImode) != preserved_size
++          && GET_MODE_BITSIZE (HImode) != preserved_size
++          && GET_MODE_BITSIZE (QImode) != preserved_size)
++        continue;
++
++      extrec = (ext_record_t) xmalloc (sizeof (struct ext_record));
++      extrec->ext = insn;
++      extrec->ext_uses = NULL;
++      extrec->ext_updates = NULL;
++      VEC_safe_push (ext_record_t, heap, extensions, extrec);
++      num_cand++;
++    }
++  }
++
++  if (dump_file)
++    {
++      if (!VEC_empty (ext_record_t, extensions))
++        fprintf (dump_file, "\n");
++      else
++        fprintf (dump_file, "no extensions found.\n");
++    }
++
++  return !VEC_empty (ext_record_t, extensions);
++}
++
++/* Return true if the rtx mode is a supported mode for
++   this optimization, false otherwise. */
++
++static bool
++mode_supported_p (rtx exp)
++{
++  if (GET_MODE (exp) != QImode
++      && GET_MODE (exp) != HImode
++      && GET_MODE (exp) != SImode 
++      && GET_MODE (exp) != DImode
++      && GET_MODE (exp) != CCmode
++      && GET_MODE (exp) != CCUNSmode)
++    return false;
++
++  return true;
++}
++
++/* Return true if the rtx is a function return expr, false otherwise */
++
++static bool
++return_val_p (rtx dest)
++{
++  if ((REG_P (dest) || GET_CODE (dest) == PARALLEL) &&
++      REG_FUNCTION_VALUE_P (dest))
++    {
++      return true;
++    }
++  return false;
++}
++
++
++/* A 'for_each_rtx' callback returning 1 if the rtx is a
++   REG or SUBREG rtx. The first matching rtx found stops the 
++   rtx traversal. */
++
++static int
++reg_or_subreg_rtx (rtx * x, void *data)
++{
++  regspec_cb_data_t *ldata = (regspec_cb_data_t *) data;
++
++  if (REG_P (*x))
++    {
++      ldata->exp = *x;
++      return 1;
++    }
++
++  if (GET_CODE (*x) == SUBREG)
++    {
++      ldata->exp = SUBREG_REG (*x);
++      return 1;
++    }
++
++  return 0;
++}
++
++/* A 'for_each_rtx' callback returning 1 if the rtx is a
++   REG or SUBREG rtx whose register number is that passed
++   in the data parameter. Data parameter's rtx value is
++   set to the matching rtx if found. */
++
++static int
++reg_or_subreg_rtx_regno (rtx * x, void *data)
++{
++  regspec_cb_data_t *ldata = (regspec_cb_data_t *) data;
++
++  if (REG_P (*x) && (REGNO (*x) == ldata->regno))
++    {
++      ldata->exp = *x;
++      return 1;
++    }
++  if (GET_CODE (*x) == SUBREG && (REGNO (SUBREG_REG (*x)) == ldata->regno))
++    {
++      ldata->exp = SUBREG_REG (*x);
++      return 1;
++    }
++  return 0;
++}
++
++/* Callback that counts the number of register operands
++   in an expression. Return 0 to allow all rtxs to be
++   traversed. */
++
++static int
++count_reg_operands (rtx * x, void *data)
++{
++  regspec_cb_data_t *ldata = (regspec_cb_data_t *) data;
++
++  if (register_exp (*x) != NULL)
++    {
++      ldata->regno++;
++    }
++  return 0;
++}
++
++/* Count the number of register operands in an expression.
++   We use the regspec_cb_data_t regno field as the number
++   of register operands we found in an expression. */
++
++static int
++num_reg_operands (rtx x)
++{
++  int rv;
++  regspec_cb_data_t data;
++  data.regno = 0;
++  data.exp = NULL_RTX;
++
++  if ((rv = for_each_rtx (&x, count_reg_operands, (void *) &data)) == 0)
++    return (data.regno);        /* contains the count */
++  else
++    return 0;
++}
++
++/* Find the SUBREG or REG rtx corresponding to regno in the given rtx.
++   Return NULL_RTX if the regno rtx is not found. */
++
++static rtx
++find_regspec_regno (unsigned int regno, rtx x)
++{
++  int rv;
++  regspec_cb_data_t data;
++  data.regno = regno;
++  data.exp = NULL_RTX;
++
++  if ((rv = for_each_rtx (&x, reg_or_subreg_rtx_regno, (void *) &data)) != 0)
++    return (data.exp);
++  else
++    return NULL_RTX;
++}
++
++/* Find a REG or SUBREG rtx, starting at expr x.
++   Return NULL_RTX if no REG or SUBREG rtx is found.
++   If found, the rtx returned is a REG (not SUBREG) */
++
++static rtx
++find_regspec (rtx x)
++{
++  int rv;
++  regspec_cb_data_t data;
++  data.regno = -1;              /* not used */
++  data.exp = NULL_RTX;
++
++  if ((rv = for_each_rtx (&x, reg_or_subreg_rtx, (void *) &data)) != 0)
++    return (data.exp);
++  else
++    return NULL_RTX;
++}
++
++/* Return true if the expression defines single register, regno. */
++
++static bool
++expr_defines_regno_p (rtx insn, unsigned int regno)
++{
++  rtx reg;
++  if (GET_CODE (insn) == SET)
++    {
++      reg = SET_DEST (insn);
++      if (find_regspec_regno (regno, reg) != NULL_RTX)
++        return true;
++    }
++  return false;
++}
++
++/* Return true if the insn defines a single register, regno.
++   Return false otherwise */
++
++static bool
++defines_regno_p (rtx insn_insn, unsigned int regno, int indent)
++{
++  extelim_uid_t uid = INSN_UID (insn_insn);
++  df_ref *p_def;
++
++  /* Get the operands defined */
++  p_def = DF_INSN_UID_DEFS (uid);
++
++  if (!p_def)
++    return false;
++
++  if (*(p_def + 1) != NULL)
++    {
++      if (dump_file)
++        fprintf (dump_file, "%*suid=%d defines multiple registers\n",
++                 indent, " ", uid);
++      return false;
++    }
++
++  if (DF_REF_REGNO (*p_def) != regno)
++    {
++      if (dump_file)
++        fprintf (dump_file, "%*suid=%d defines does not define %d\n",
++                 indent, " ", uid, regno);
++      return false;
++    }
++
++  return true;
++}
++
++/* The operand is already extended and the extension is compatible with
++   the originating extension with respect to type and size.
++   E.g. zero_extend:HI meets and AND r,#0xffff. Another example
++   is LSHIFT:SI left or right and zero_extend:SI, because the 
++   instruction selected is rlwinm and clears the upper 32 bits.
++   Other examples in the code. Return true if a compatible extension
++   is found, false otherwise. */
++
++static bool
++operand_is_extended (rtx dest, rtx srcexp, int indent)
++{
++  /* Output of a CALL is already extended. 
++     To ensure that the return value is not modified by the extend,
++     the extend from mode size must be at least the size of the CALL output. 
++     Example - this is redundant since output of CALL is extended.
++     X:SI = CALL ...
++     Y:DI = sign_extend:DI (X:SI) */
++  if (GET_CODE (srcexp) == CALL
++      && (GET_MODE_BITSIZE (ext_from_mode)) >=
++      GET_MODE_BITSIZE (GET_MODE (dest)))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...is extended already (CALL insn output)\n", indent,
++                 " ");
++      return true;
++    }
++
++  /* Output is load immediate or load constant */
++  if (CONST_INT_P (srcexp))
++    {
++      bool is_extended;
++      if (ext_from_mode == QImode && (UINTVAL (srcexp) <= 0xff))
++        is_extended = true;
++      else if (ext_from_mode == HImode && (UINTVAL (srcexp) <= 0xffff))
++        is_extended = true;
++      else if (ext_from_mode == SImode && (UINTVAL (srcexp) <= 0xffffffff))
++        is_extended = true;
++      else
++        is_extended = false;
++
++      if (is_extended)
++        {
++          if (dump_file)
++            fprintf (dump_file,
++                     "%*s... is extended already (CONST_INT load)\n", indent,
++                     " ");
++          return true;
++        }
++    }
++
++  /* Sign extension of the same type as the originating extension.
++     Here the candidate defines the register used in the originating extension.
++     The originating extension will be replaced by a copy if it is found to be
++     redundant with respect to the candidate extension. 
++     The candidate (this extension dest,src) must write the at least the same bits as the 
++     originating extension in order to be redundant. So, we follow these rules:
++
++     cand_to_mode == machine mode of the destination for this candidate extension
++     cand_from_mode == machine mode of the source for this candidate extension
++     ext_to_mode == machine mode of the originating extension output
++     ext_from_mode == machine mode of the originating extension input
++
++     SIZE(cand_to_mode) >= SIZE(extend_to_mode) && SIZE(cand_from_mode) <= SIZE(extend_from_mode)
++
++     Example 1:
++     Candidate (HI->SI extension)
++     DI       SI   HI QI 0
++     |        |<---|  |  |
++
++     Originating (SI->DI)
++     DI       SI   HI QI 0
++     |<-------|    |  |  |
++
++     Not redundant, candidate does not cover the original bits:
++     SIZE(cand_to_mode)[SI] !>= SIZE(extend_to_mode)[DI]
++
++     Example 2:
++     Candidate (QI->DI extension)
++     DI       SI   HI QI 0
++     |<-------|----|--|  |
++
++     Originating (HI->SI)
++     DI       SI   HI QI 0
++     |        |<---|  |  |
++
++     Redundant, candidate covers the original bits:
++     SIZE(cand_to_mode) [DI] >= SIZE(extend_to_mode) [SI]
++     AND
++     SIZE(cand_from_mode) [QI] <= SIZE(extend_from_mode) [HI]
++   */
++  if (GET_CODE (srcexp) == ext_code)
++    {
++      enum machine_mode cand_from_mode = GET_MODE (XEXP (srcexp, 0));
++      enum machine_mode cand_to_mode = GET_MODE (dest);
++      if ((GET_MODE_BITSIZE (cand_to_mode) >= GET_MODE_BITSIZE (ext_to_mode))
++          && (GET_MODE_BITSIZE (cand_from_mode) <=
++              GET_MODE_BITSIZE (ext_from_mode)))
++        {
++          if (dump_file)
++            fprintf (dump_file,
++                     "%*s...is already extended (redundant extension)\n",
++                     indent, " ");
++          return true;
++        }
++    }
++
++  /* Encountered an insn with the same effect as extension, e.g.
++     AND (regspec) (const_int). E.g. AND (reg:SI) (0x7fff) is equivalent
++     to ZERO_EXTEND:DI (reg:HI) or SIGN_EXTEND:DI (reg:HI). The code selection
++     for AND zero extends the entire register, so we don't have to
++     check that srcexp extends to at least ext_to_mode size. */
++  if ((GET_CODE (srcexp) == AND) && CONST_INT_P (XEXP (srcexp, 1)))
++    {
++      if (ext_from_mode == QImode && (UINTVAL (XEXP (srcexp, 1)) <= 0x7f))
++        return true;
++      else if (ext_from_mode == HImode
++               && (UINTVAL (XEXP (srcexp, 1)) <= 0x7fff))
++        return true;
++      else if (ext_from_mode == SImode
++               && (UINTVAL (XEXP (srcexp, 1)) <= 0x7fffffff))
++        return true;
++    }
++
++  return false;
++}
++
++/* Determine if the operation allows us to continue the propagation. 
++   We kill the propagation for all operations except copy. This
++   ensures that the extended operand that we may find eventually
++   is not modified by insns in the def-use chain. It's harsh,
++   but it's safest eliminate all but the most benign (copy) operations
++   in the propagation chain. */
++
++static bool
++continue_def_propagation (rtx dest, rtx srcexp, rtx src_operand, int indent)
++{
++  /* Only continue if its a copy -- that is, the srcexp is a register expression */
++  if ( register_exp (srcexp) )
++    return true;
++
++  return false;
++}
++
++/* Helper for insn_def_analysis_result.
++   The register operand, src is set here. Recall we
++   can only handle one register operand in the src expression.
++   We one of 3 states:
++   1) Determine the operand is extended, ...DEF_EXTENDED returned.
++   2) Determine the propagation can continue, ...DEF_CONTINUE_RECURSION returned. 
++   3) Otherwise, ...DEF_STOP_RECURSION is returned. */
++static enum insn_def_results
++insn_def_analysis_result_1 (rtx insn, bool treat_as_copy,
++                            unsigned int regno_def ATTRIBUTE_UNUSED,
++                            rtx * src, int indent)
++{
++  rtx dest, srcexp;
++  int num_operands;
++
++  /* Insn has to be an expression we can analyze */
++  if (GET_CODE (insn) != SET)
++    {
++      if (dump_file)
++        fprintf (dump_file, "%*s...is not a SET expression\n", indent, " ");
++      return EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION;
++    }
++  dest = SET_DEST (insn);
++  srcexp = SET_SRC (insn);
++
++  /* Dest must be a reg, not expression */
++  if (!REG_P (dest))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...dest is not a simple register\n", indent, " ");
++      return EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION;
++    }
++
++  /* First check whether the operand is extended already. If so,
++     we can leave immediately successfully. */
++  if (operand_is_extended (dest, srcexp, indent) && !treat_as_copy)
++    return (EXTELIM_ANALYSIS_RESULT_DEF_EXTENDED);
++
++
++  /* Failing to determine that the operand is already extended, 
++     we have to validate that we have register operands to propagate. */
++  num_operands = num_reg_operands (srcexp);
++
++  /* At least one register operand required for propagation. */
++  if (num_operands == 0)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...no register operands in RHS\n", indent, " ");
++      return EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION;
++    }
++
++  /* Only one register operand is allowed in the RHS since we can't
++     can't propagate more than one register. */
++  if (num_operands > 1)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...found multiple register operands in RHS\n", indent,
++                 " ");
++      return EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION;
++    }
++
++  /* Find the used operand in the src expression */
++  *src = find_regspec (srcexp);
++  if (*src == NULL_RTX || !mode_supported_p (*src))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...src operand reg=%d cannot be found or is unsupported mode\n",
++                 indent, " ", regno_def);
++      return EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION;
++    }
++
++  /* This is an extension, but it is previously marked to be transformed to a copy.
++     We just treat it as a copy even though it hasn't been transformed yet. So 
++     continue the propagation. */
++  if (treat_as_copy)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...%s is treated as a copy (marked for replace)\n",
++                 indent, " ", GET_RTX_NAME (GET_CODE (srcexp)));
++      return (EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION);
++    }
++
++  /* Validate that it's ok to continue propagation with this operand. */
++  if (continue_def_propagation (dest, srcexp, *src, indent))
++    return (EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION);
++
++  /* Else we default to halting the search for a redundant extension */
++  return (EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION);
++}
++
++/* Determine if the insn extends it's destination register in
++   a manner such that the original extension is redundant. */
++
++static enum insn_def_results
++insn_def_analysis_result (rtx insn_insn, unsigned int regno_def, rtx * src,
++                          int indent)
++{
++  bool treat_as_copy = false;
++
++  /* Insn must only define one output */
++  if (!defines_regno_p (insn_insn, regno_def, indent))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...defines more than 1 output\n", indent, " ");
++      return EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION;
++    }
++
++  /* We want to treat this extension as a copy and continue propagation.
++     Otherwise, it would be detected again as redundant. */
++  if (insn_flag_p (EXTELIM_REPLACE_COPY, INSN_UID (insn_insn)))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*suse at uid=%d is marked to transform to copy\n", indent,
++                 " ", INSN_UID (insn_insn));
++      treat_as_copy = true;
++    }
++
++  /* Do the analysis */
++  return (insn_def_analysis_result_1
++          (PATTERN (insn_insn), treat_as_copy, regno_def, src, indent));
++}
++
++/* Analyze each of the expressions in a PARALLEL expression. As each of
++   the expressions may yield a different state, select the most conservative
++   state to return. */
++
++static enum insn_def_results
++insn_def_analysis_2 (rtx insn_def, unsigned int regno_def, rtx * src,
++                     int indent)
++{
++  int i;
++  rtx insn = PATTERN (insn_def);
++  enum insn_def_results action;
++  enum insn_def_results return_action =
++    EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION;
++
++  gcc_assert (GET_CODE (insn) == PARALLEL);
++
++  for (i = XVECLEN (insn, 0) - 1; i >= 0; i--)
++    {
++      rtx body = XVECEXP (insn, 0, i);
++      /* Only act on the expressions that define regno_def */
++      if (!expr_defines_regno_p (body, regno_def))
++        continue;
++      /* Determine the next action */
++      action = insn_def_analysis_result_1 (body, false /* treat_as_copy */ ,
++                                           regno_def, src, indent);
++      /* The result of this expression stops the recursion, i.e. no
++         longer reasonable to continue looking at further recursion. */
++      if (action == EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION)
++        return action;
++      /* Only return EXTENDED if there are no other different actions
++         in the series. Otherwise, CONTINUE_RECURSION is returned. */
++      if (action == EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION)
++        return_action = action;
++      else if (return_action ==
++               EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION)
++        return_action = EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION;
++      else
++        return_action = action;
++    }
++  return (return_action);
++}
++
++/* Helper 1 for insn_def_analysis */
++
++static enum insn_def_results
++insn_def_analysis_1 (rtx insn_def, unsigned int regno_def, rtx * src,
++                     int indent)
++{
++  rtx def = PATTERN (insn_def);
++  enum insn_def_results action;
++
++  switch (GET_CODE (def))
++    {
++    case PARALLEL:
++      action = insn_def_analysis_2 (insn_def, regno_def, src, indent);
++      break;
++    default:
++      action = insn_def_analysis_result (insn_def, regno_def, src, indent);
++      break;
++    }
++  return action;
++}
++
++/* We look at the definition of a register that is either the
++   sign or zero extend source register or a definition that that
++   has been propagated to here via analyze_ext_def. The objective
++   is to determine, by looking at the operation and operands, whether
++   the register is sign/zero extended by virtue of the operation and/or
++   operands. If so, the original extension is redundant.
++   The function returns one of 3 possible states after analyzing the
++   insn:
++   1. EXTELIM_ANALYSIS_RESULT_DEF_EXTENDED - we determined that the
++   insn does indeed extend the original source extension register.
++   analyze_ext_def returns FALSE, therefore, ending the recursion
++   and propagation.
++   2. EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION - we determined that 
++   the insn does not meet the criteria to continue the recursive search.
++   Some conditions causing this may be multiple operands defining this
++   register (we only propagate on a single input operand) or the insn
++   defines more than one output or the operation does not allow
++   a previous extension to propagate, e.g. an arithmetic shift on
++   a SI value clears the upper bits using rlwinm. MUL, DIV, MOD
++   stop recursion because the result is longer than the input size,
++   thus impacting the possible previous extension.
++   3. EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION - we found an
++   operation with one register operand and the operation will not
++   affect a previous extension if one exists. ADD, SUB are examples.
++   We continue looking up the chain at the definition of the operand
++   for an extended result. 
++   If we run into a previous extension marked for replacement during
++   recursion, we treat it as a copy (CONTINUE_RECURSION since the
++   extension is preserved by the copy). */
++
++static enum insn_def_results
++insn_def_analysis (rtx insn_def, unsigned int regno_def, rtx * src,
++                   int indent)
++{
++  return (insn_def_analysis_1 (insn_def, regno_def, src, indent));
++}
++
++/* Analyze the insn defining the source of the sign extension.
++   If it can be determined that the definition is already
++   sign extended, return false. Otherwise, return true if 
++   extension is needed. */
++
++static bool
++analyze_ext_def (rtx insn_def, unsigned int regno_def, int indent)
++{
++  extelim_uid_t uid;
++  rtx def = PATTERN (insn_def);
++  rtx src;
++  df_ref df_def, *p_use;
++  bool ext_needed, indent_once;
++  struct df_link *link;
++  enum insn_def_results analysis_result;
++
++  gcc_assert (def != NULL);
++
++  uid = INSN_UID (insn_def);
++
++  /* If we seen the originating extension again, return false (ext not needed) */
++  if (current_ext_record->ext == insn_def)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*sdef at uid=%d is original extension\n", indent, " ", uid);
++      return false;
++    }
++
++  /* The recursion has to definitively end with an operand being
++     extended (and compatible with the originating extension). If
++     we see the insn again, this could return a faulty positive (false),
++     so we return true here instead of false. See pr43017 (-funroll-loops)
++     as an example. */
++  if (insn_flag_p (EXTELIM_SEEN, uid))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*sdef at uid=%d is visited already\n", indent, " ", uid);
++      return true;
++    }
++
++  /* Mark this insn as seen */
++  insn_flag_set (EXTELIM_SEEN, uid);
++
++  analysis_result = insn_def_analysis (insn_def, regno_def, &src, indent);
++  switch (analysis_result)
++    {
++      /* We know conclusively that the register defined in this expression
++         is already extended. */
++    case EXTELIM_ANALYSIS_RESULT_DEF_EXTENDED:
++      if (dump_file)
++        fprintf (dump_file, "%*sdef at uid=%d is extended\n", indent, " ",
++                 uid);
++      return false;
++      break;
++      /* We know conclusively that we cannot continue the recursion. Perhaps 
++         the expression defines multiple registers, etc. */
++    case EXTELIM_ANALYSIS_RESULT_DEF_STOP_RECURSION:
++      if (dump_file)
++        fprintf (dump_file, "%*sdef at uid=%d cannot be propagated\n", indent,
++                 " ", uid);
++      return true;
++      break;
++      /* Continue to look at the operands of this expression. They may be extended
++         already. */
++    case EXTELIM_ANALYSIS_RESULT_DEF_CONTINUE_RECURSION:
++      break;
++    default:
++      gcc_unreachable ();
++    }
++
++  /* This is the operand for which we want to find definitions. There should
++     only be one operand as we have previously checked for operations with only
++     one register operand as the src previously. */
++  p_use = DF_INSN_UID_USES (uid);
++  gcc_assert (p_use != NULL);
++
++  /* Make sure that this use is the one returned in src. Otherwise we simply
++     stop the propagation. Note the DF_INSN_UID_USES works at the insn
++     level, so a PARALLEL pattern may return many uses, hence the need
++     to validate the correct use here. */
++  if ((*p_use == NULL) || (DF_REF_REGNO (*p_use) != REGNO (src)))
++    return true;
++
++  ext_needed = true;
++  indent_once = true;
++  for (link = DF_REF_CHAIN (*p_use); link; link = link->next)
++    {
++      rtx insn_def;
++      df_def = link->ref;
++      if (!df_def)
++        continue;
++      /* Link must be to a definition of the use */
++      if (!DF_REF_REG_DEF_P (df_def))
++        continue;
++      /* Ignore ARTIFICIAL defs */
++      if (DF_REF_IS_ARTIFICIAL (df_def))
++        continue;
++      insn_def = DF_REF_INSN (df_def);
++      /* Don't consider debug_insns */
++      if (!NONDEBUG_INSN_P (insn_def))
++        continue;
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*sdef of reg=%d at uid=%d\n", indent, " ",
++                 DF_REF_REGNO (df_def), INSN_UID (insn_def));
++      /* Set indent for dump formatting */
++      if (indent_once)
++        {
++          ++indent;
++          indent_once = false;
++        }
++      ext_needed = analyze_ext_def (insn_def, DF_REF_REGNO (df_def), indent);
++      if (ext_needed)
++        break;
++    }
++
++  if (dump_file)
++    fprintf (dump_file,
++             "%*sext %s needed\n", indent, " ", ext_needed ? "" : "not");
++
++  return ext_needed;
++}
++
++/* Determine whether the expression needs to be saved for this extension.
++   The expression will be updated in some way if the extension is ultimately
++   eliminated. */
++
++static bool
++exp_needs_update_p (rtx exp)
++{
++  if (GET_CODE (exp) == SUBREG
++      && (SUBREG_PROMOTED_VAR_P (exp)))
++    {
++      return true;
++    }
++  return false;
++}
++
++/* Some expressions may need to be updated if the originating extension
++   is eliminated. For example, SUBREG_PROMOTED flags on uses are no longer
++   valid if the extension is eliminated. Save the expression here. */
++
++static void
++save_ext_update (ext_record_t extrec, rtx exp)
++{
++  /* Save this expression to be updated if the extension is eliminated. */
++  VEC_safe_push (rtx, heap, extrec->ext_updates, exp);
++}
++
++/* Check a compare operation to determine whether the operands
++   of the compare use the upper bits of the extension. Return
++   true if the upper bits are not relevant in the compare, false
++   otherwise. */
++
++static bool
++check_compare (rtx dest, rtx src)
++{
++  /* Detect 
++     (set (reg:CC r0) (compare:CC (REGSPEC) (REGSPEC)))
++     or
++     (set (reg:CC r0) (compare:CC (REGSPEC) (CONST)))
++     where REGSPEC is (reg:mm r) or (subreg:mm (reg:MM r) n) 
++     CONST is a constant integer.
++     The mode size of compare ops must be less than the
++     mode of the original extension for the upper bits to
++     be irrelevant. 
++     An exception is made for mode sizes less than a word size.
++     For our targets, there is no 'cmph' insn, so we bail out 
++     if we see a comparison of sizes less than a word (SI). */
++  if (REG_P (dest)
++      && (GET_MODE (dest) == CCmode || GET_MODE (dest) == CCUNSmode)
++      && GET_CODE (src) == COMPARE
++      && (GET_MODE (src) == CCmode || GET_MODE (src) == CCUNSmode))
++    {
++      rtx compare_op0 = XEXP (src, 0);
++      rtx compare_op1 = XEXP (src, 1);
++
++      /* Check the first operand, op0, size. */
++      if ((REG_P (compare_op0) || GET_CODE (compare_op0) == SUBREG)
++          && (GET_MODE_BITSIZE (GET_MODE (compare_op0)) <=
++              GET_MODE_BITSIZE (ext_from_mode)))
++        {
++          /* Half word compares and smaller are performed as word compares, so upper bits are used. */
++          if (GET_MODE_BITSIZE (GET_MODE (compare_op0)) < SImode)
++            return false;
++
++          /* Now check the other operand, op1. */
++          if ((REG_P (compare_op1) || GET_CODE (compare_op1) == SUBREG)
++              && (GET_MODE_BITSIZE (GET_MODE (compare_op1)) <=
++                  GET_MODE_BITSIZE (ext_from_mode)))
++            return true;
++
++          /* Compare to constant, we know op0 already meets size constraints. */
++          if (CONST_INT_P (compare_op1))
++            return true;
++        }
++    }
++  return false;
++}
++
++/* Determine condition a, whether the upper bits are relevant to the operation.
++   Return false if we prove the upper bits are not relevant in the operation,
++   true otherwise. */
++
++static bool
++operation_uses_upper_bits (rtx dest, rtx src, unsigned int regno_use,
++                           int indent ATTRIBUTE_UNUSED)
++{
++  rtx regspec_src = find_regspec_regno (regno_use, src);
++
++  if (check_compare (dest, src))
++    return false;
++
++  /* Store of regno to mem, size stored is the same or smaller than the extended from size */
++  if (MEM_P (dest)
++      && (GET_MODE_BITSIZE (GET_MODE (dest)) <=
++          GET_MODE_BITSIZE (ext_from_mode))
++      /* Ensure the used register is being stored and not used in another capacity, say, as a pointer. */
++      && (regspec_src))
++    return false;
++
++  /* Operation operand size is the same or smaller than the extended from size */
++  if (regspec_src)
++    {
++      if (GET_MODE_BITSIZE (GET_MODE (regspec_src)) <=
++          GET_MODE_BITSIZE (ext_from_mode))
++        return false;
++    }
++
++  /* Default to the safest result */
++  return true;
++}
++
++/* Determine if this insn also extends to the size or greater of the original extension.
++   Sign extend can propagate to zero extend and vice-versa because the upper bits
++   haven't affected the low bits up to now throughout the propagation. */
++
++static bool
++operation_extends_to_upper_bits_size (rtx src, int indent ATTRIBUTE_UNUSED)
++{
++  /* Sign extension of the same type as the originating extension.
++     Here the candidate uses the register defined by the originating extension.
++     If the candidate is found to be redundant, the originating extension is
++     replaced with a copy.
++
++     We follow these rules:
++
++     dest_mode == machine mode of the destination for this candidate extension
++     (it's the same mode as the src, e,g, reg:DI = sign_extend:DI ...)
++     src_mode == machine mode of the source for this candidate extension
++     (the mode of the used register, SI in this case, e.g. reg:DI = sign_extend:DI (subreg:SI (reg:DI))
++     ext_to_mode == machine mode of the originating extension output
++     ext_from_mode == machine mode of the originating extension input
++
++     SIZE(cand_from_mode) >= SIZE(extend_from_mode) && SIZE(cand_to_mode) <= SIZE(extend_to_mode)  
++
++     Example 1:
++     Originating (SI->DI)
++     DI       SI   HI QI 0
++     |<-------|    |  |  |
++
++     Candidate (HI->SI extension)
++     DI       SI   HI QI 0
++     |        |<---|  |  |
++
++     Not redundant, candidate does not cover the original bits:
++     SIZE(dest_mode)[SI] !<= SIZE(extend_to_mode)[DI]
++
++     Example 2:
++     Originating (HI->SI)
++     DI       SI   HI QI 0
++     |        |<---|  |  |
++
++     Candidate (QI->DI extension)
++     DI       SI   HI QI 0
++     |<-------|----|--|  |
++
++     Redundant, candidate covers the original bits:
++     SIZE(cand_to_mode) [DI] >= SIZE(extend_to_mode) [SI]
++     AND
++     SIZE(cand_from_mode) [QI] <= SIZE(extend_from_mode) [HI] */
++  if (GET_CODE (src) == ext_code)
++    {
++      /* Extend is redundant if we don't overwrite the source of the
++         previous extension and extends to at least the extent of the original. */
++      enum machine_mode cand_from_mode = GET_MODE (XEXP (src, 0));
++      enum machine_mode cand_to_mode = GET_MODE (src);
++      if (GET_MODE_BITSIZE (cand_from_mode) >=
++          GET_MODE_BITSIZE (ext_from_mode)
++          && (GET_MODE_BITSIZE (cand_to_mode) <=
++              GET_MODE_BITSIZE (ext_to_mode)))
++        return true;
++    }
++
++  /* Encountered an insn with the same effect as extension, e.g.
++     AND (regspec) (const_int). E.g. AND (reg:SI) (0xffff) is equivalent
++     to ZERO_EXTEND:DI (reg:HI) */
++  if ((GET_CODE (src) == AND) && CONST_INT_P (XEXP (src, 1)))
++    {
++      /* Extends to at least the original extension size */
++      if (GET_MODE_BITSIZE (GET_MODE (src)) >= GET_MODE_BITSIZE (ext_to_mode))
++        {
++          if (ext_from_mode == QImode && (UINTVAL (XEXP (src, 1)) <= 0xff))
++            return true;
++          else if (ext_from_mode == HImode
++                   && (UINTVAL (XEXP (src, 1)) <= 0xffff))
++            return true;
++          else if (ext_from_mode == SImode
++                   && (UINTVAL (XEXP (src, 1)) <= 0xffffffff))
++            return true;
++          else
++            return false;
++        }
++    }
++  return false;
++}
++
++/* Determine whether the operation's upper bits subtly or overtly affects the low bits. */
++
++static bool
++operation_implicitly_affects_lowbits (rtx dest, rtx src,
++                                      unsigned int regno_use, int indent)
++{
++  rtx regspec = find_regspec_regno (regno_use, src);
++
++  /* First, a return expression must be assumed to affect the lowbits as the return value
++     must be extended properly. */
++  if (return_val_p (dest))
++    {
++      if (dump_file)
++        {
++          fprintf (dump_file, "%*sDestination is a return value\n", indent,
++                   " ");
++        }
++      return true;
++    }
++
++  /* These operations implicitly affect the lowbits, except where noted. */
++  switch (GET_CODE (src))
++    {
++    case MULT:
++    case DIV:
++    case UDIV:
++    case UMOD:
++    case MOD:
++      /* Normally, yes, these operations return true (affects low bits). But when the 
++         the operand size is less than or equal to the "low bits" size AND the operation size
++         is the same as the operand size, the operation is performed only on the "low bits"
++         and the "upper bits" do not contribute to the output. */
++      if (regspec
++          && (GET_MODE_BITSIZE (GET_MODE (regspec)) <=
++              GET_MODE_BITSIZE (ext_from_mode))
++          && GET_MODE_BITSIZE (GET_MODE (src)) ==
++          GET_MODE_BITSIZE (GET_MODE (regspec)))
++        return false;
++      return true;
++
++      break;
++      /* Shift rights normally affect the low bits. There can be special cases where this
++         is not true, such a the operand size is smaller than the extended from size, e.g.
++         set (reg:SI Y) (zero_extend:SI (subreg:HI (reg:SI X)))
++         set (reg:QI Z) (lshiftrt (subreg:QI (reg:SI Y))
++         The shift of the QI data is not affected by the extension of HI data unless the
++         shift is large enough to encroach into the QI bits. This seems rare and I do not
++         check for it. */
++    case LSHIFTRT:
++    case ASHIFTRT:
++      return true;
++      break;
++      /* Other operations are known not to impact the low bits */
++    default:
++      return false;
++    }
++
++}
++
++/* The operation directly defines a propagatable output. Several
++   operations do not define such output. E.g. MEM (loads) do not
++   define an output based on the operation. USE is another example,
++   as it isn't a real operation. */
++
++static bool
++operation_directly_defines_an_output (rtx dest, rtx src,
++                                      int indent ATTRIBUTE_UNUSED)
++{
++  switch (GET_CODE (src))
++    {
++    case REG:
++    case SUBREG:
++    case PLUS:
++    case MINUS:
++    case NEG:
++    case MULT:
++    case DIV:
++    case MOD:
++    case UDIV:
++    case UMOD:
++    case AND:
++    case IOR:
++    case XOR:
++    case NOT:
++    case ASHIFT:
++    case ROTATE:
++    case ASHIFTRT:
++    case LSHIFTRT:
++    case ROTATERT:
++    case SIGN_EXTEND:
++    case ZERO_EXTEND:
++    case TRUNCATE:
++      return true;
++      break;
++      /* OK to propagate if the output of IF_THEN_ELSE is a register */
++    case IF_THEN_ELSE:
++      if (REG_P (dest))
++        return true;
++      break;
++      /* All others are assumed not to generate a normal output */
++    default:
++      break;
++    }
++  return false;
++}
++
++/* Helper for insn_use_analysis_result */
++
++static enum insn_use_results
++insn_use_analysis_result_1 (rtx insn, bool treat_as_copy,
++                            unsigned int regno_use, rtx * dest, int indent)
++{
++  rtx src;
++  bool cond_a, cond_b, cond_c, cond_d;
++
++  if (GET_CODE (insn) != SET)
++    return EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED;
++
++  *dest = SET_DEST (insn);
++  src = SET_SRC (insn);
++
++  /* Bail out on inline assembly also */
++  if (GET_CODE (src) == ASM_INPUT || GET_CODE (src) == ASM_OPERANDS)
++    return EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED;
++
++  /* Bail out on non supported types */
++  if (!mode_supported_p (*dest))
++    return EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED;
++
++  /* First, we determine cond_c (is a redundant extension) because it gates the
++     other conditions. */
++  if ((cond_c = operation_extends_to_upper_bits_size (src, indent)))
++    {
++      if (treat_as_copy)
++        {
++          if (dump_file)
++            fprintf (dump_file,
++                     "%*s...%s is treated as a copy (marked for replace)\n",
++                     indent, " ", GET_RTX_NAME (GET_CODE (src)));
++          return EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION;
++        }
++
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...%s is a redundant extension\n",
++                 indent, " ", GET_RTX_NAME (GET_CODE (src)));
++      return EXTELIM_ANALYSIS_RESULT_LOWBITS_NOT_AFFECTED;
++    }
++
++  cond_a = operation_uses_upper_bits (*dest, src, regno_use, indent);
++
++  cond_b =
++    operation_implicitly_affects_lowbits (*dest, src, regno_use, indent);
++
++  cond_d = operation_directly_defines_an_output (*dest, src, indent);
++
++  /* Operation implicitly affects low bits */
++  if (cond_b)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...%s implicitly affects low bits\n",
++                 indent, " ", GET_RTX_NAME (GET_CODE (src)));
++      return EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED;
++    }
++
++  /* Neither cond_a nor cond_b affects the low bits */
++  if (!cond_a)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...%s does not use upper bits\n",
++                 indent, " ", GET_RTX_NAME (GET_CODE (src)));
++      return EXTELIM_ANALYSIS_RESULT_LOWBITS_NOT_AFFECTED;
++    }
++
++  /* To continue recursion, the operation must define a 
++     meaningful output. */
++  if (!cond_d)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*s...%s does not define a propagatable output\n",
++                 indent, " ", GET_RTX_NAME (GET_CODE (src)));
++      return EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED;
++    }
++
++  /* This leaves cond_a, meaning we need to continue down the chain
++     to see if the low bits are ultimately affected by the upper bits. */
++  return EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION;
++}
++
++/* Determine the action based on the insn conditions. The truth table is
++   simplified using if statements. Insns previously marked for replace by copy
++   are identified, these will be essentially be treated as copies now and not
++   be detected as redundant for this use. */
++static enum insn_use_results
++insn_use_analysis_result (rtx insn_insn, unsigned int regno_use, rtx * dest,
++                          int indent)
++{
++  bool treat_as_copy = false;
++  if (insn_flag_p (EXTELIM_REPLACE_COPY, INSN_UID (insn_insn)))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*suse at uid=%d is marked to transform to copy\n", indent,
++                 " ", INSN_UID (insn_insn));
++      treat_as_copy = true;
++    }
++  return (insn_use_analysis_result_1
++          (PATTERN (insn_insn), treat_as_copy, regno_use, dest, indent));
++}
++
++/* We have to analyze each expression action in a PARALLEL series.
++   Return the appropriate action for a series of expressions in a PARALLEL insn. 
++   LOWBITS_AFFECTED stops the loop. This leaves only CONTINUE_RECURSION
++   or LOWBITS_NOT_AFFECTED. LOWBITS_NOT_AFFECTED is only returned
++   if there are no other different actions in the series (no CONTINUE_RECURSION
++   states). For each CONTINUE_RECURSION action we encounter, the destination
++   registers must be identical since we can only propagate one use (one definition
++   of dest) should CONTINUE_RECURSION be returned. */
++
++static enum insn_use_results
++analyze_action (enum insn_use_results cur_action,
++                enum insn_use_results prev_action,
++                rtx * dest, rtx * prev_dest)
++{
++  enum insn_use_results return_action;
++
++  if (cur_action == EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED)
++    return cur_action;
++
++  if (cur_action == EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION)
++    return_action = cur_action;
++  else if (prev_action == EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION)
++    return_action = EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION;
++  else
++    return_action = cur_action;
++
++  if (return_action == EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION)
++    {
++      if (*prev_dest)
++        {
++          /* All bets off if the series defines multiple outputs */
++          if (*prev_dest != *dest)
++            return_action = EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED;
++        }
++    }
++  /* Set prev_dest */
++  *prev_dest = *dest;
++
++  return return_action;
++}
++
++/* Helper 2 for insn_use_analysis. Return the appropriate action
++   for a series of expressions in a PARALLEL insn. */
++
++static enum insn_use_results
++insn_use_analysis_2 (rtx insn_use, unsigned int regno_use, rtx * dest,
++                     int indent)
++{
++  int i;
++  rtx insn = PATTERN (insn_use);
++  rtx prev_dest = NULL_RTX;
++  enum insn_use_results action;
++  enum insn_use_results return_action =
++    EXTELIM_ANALYSIS_RESULT_LOWBITS_NOT_AFFECTED;
++
++  gcc_assert (GET_CODE (insn) == PARALLEL);
++
++  /* We make a quick decision about call_insns here. Since the use reached
++     a call, we assume it's an outgoing parameter and thus must be extended
++     as per the ABI. */
++  if (CALL_P (insn_use))
++    {
++      if (dump_file)
++        fprintf (dump_file, "%*s...is a call parameter\n", indent, " ");
++      return EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED;
++    }
++
++  for (i = XVECLEN (insn, 0) - 1; i >= 0; i--)
++    {
++      rtx body = XVECEXP (insn, 0, i);
++      /* Only act on the expressions containing a use of regno_use. */
++      if (regno_use_in (regno_use, body) == NULL_RTX)
++        continue;
++
++      /* Determine the next action */
++      action = insn_use_analysis_result_1 (body, false /* treat as copy */ ,
++                                           regno_use, dest, indent);
++
++      /* Here we make a decision on the return action based on the previous actions.
++         This is done to accomodate different actions from different elements in the
++         PARALLEL series of expressions. */
++      return_action =
++        analyze_action (action, return_action, dest, &prev_dest);
++
++      /* The result of this expression stops the recursion, i.e.  "low bits"
++         are affected by the operation. */
++      if (return_action == EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED)
++        break;
++    }
++  return (return_action);
++}
++
++/* Helper 1 for insn_use_analysis */
++
++static enum insn_use_results
++insn_use_analysis_1 (rtx insn_use, unsigned int regno_use, rtx * dest,
++                     int indent)
++{
++  rtx use = PATTERN (insn_use);
++  enum insn_use_results action;
++
++  switch (GET_CODE (use))
++    {
++    case PARALLEL:
++      action = insn_use_analysis_2 (insn_use, regno_use, dest, indent);
++      break;
++    default:
++      action = insn_use_analysis_result (insn_use, regno_use, dest, indent);
++      break;
++    }
++
++  return action;
++}
++
++/* Analyze the insn and determine the next course of action in the
++   use analysis loop.
++   There are several conditions to consider:
++
++   1. The "extended from" mode. This is an enum machine_mode value
++   that determines what is the size extended. It is derived from the
++   source of the original extension. It is the "low bits" value.
++   It is these range of bits that cannot be affected by the operation's
++   "upper bits" in order to determine whether the extend is useful or not.
++   Examples: 
++   (1) set (reg:DI Y (zero_extend:DI (subreg:QI (reg:DI X))) ==> low bits = QI
++   (2) set (reg:SI Y (sign_extend:SI (reg:HI X) ==> low bits = HI
++
++   2. The "extend to" mode. This is the size extended to in the original
++   extension. It is the "upper bits" value. The entire extended to size may 
++   be used subsequently or it may be subreg'd to a smaller or larger sizes 
++   later in the propagation.
++   For example (1) above, "upper bits" is DI, and (2) "upper bits" is SI.
++
++   3. The code, ext_code, of the original extension, either ZERO_EXTEND or SIGN_EXTEND.
++
++   4. Operation code. For an insn, the actual operation code corresponding to
++   a machine instruction. For certain codes, we know that the "low bits" of the
++   result are modified by the insn because of the values in the "upper bits" of the
++   input operand. We say the operation implicitly uses the "upper bits" to modify the
++   "low bits". For other codes, the "upper bits" do not affect the output result
++   in the "low bits". 
++
++   If the operation does implicitly use the "upper bits" to modify
++   the "low bits", it is instantly a deal killer. The original extension must be 
++   preserved. 
++
++   If the operation does not implicitly use "upper bits" to modify the "low bits",
++   then the action to take depends on the operation operand size relative to 
++   "low bits" size.
++
++   We only want to deal with codes that map to real instructions,
++   like ADD, SUB, MULT, LSHIFTRT, etc. Codes such as PARALLEL, etc. do not map to
++   instruction and must be dissected to extract the real instructions.
++
++   Furthermode, for recursion to continue, the operation and operand must define
++   an output related to the input operand (the use register). This doesn't happen
++   for operations such as "mem" where the output is indirectly related to the
++   input operand. 
++
++   5. Operation mode. The operation mode of the operation code. This sometimes impacts
++   the effect of the operation. For example MULT:SI and MULT:DI map to two different
++   machine instructions and both may have operands of SI mode. However, the MULT:SI 
++   results will be oblivious to the upper bits of the DI register whereas, SI part of
++   MULT:DI result will be affected by the upper bits of the DI register.
++
++   Several conditions determine the action to take based on the various inputs.
++
++   The truth table inputs are A, B, and C. The truth table output is the action to take. 
++
++   A. True if the used operand mode size is greater than the extended_from ("low bits") mode size.
++   B. True if the operation implicitly uses upper bits to define the low bits  
++   C. True if the operation also extends the output to upper bits size
++   D. True if the operation and input operand directly define an output operand.
++
++   Condition A. means the upper bits are in use in the operation. The extend _may_ be needed, 
++   all things being equal, so the action would be to continue recursion to the use of the
++   defined operand, i.e. return CONTINUE_RECURSION.
++
++   Condition B. means the "low bits" are modified by the extended portion of the register
++   by virtue of the operation. For example, logical shift right, where the extended
++   portion is shifted into the "low bits". Another example, multiply, where the machine
++   uses the extended portion implicitly to calculate the results, some of which are 
++   reflected in the "low bits" of the result. The extension is definitely needed in these 
++   cases for this use, so return LOWBITS_AFFECTED. Recursion is stopped and analysis of 
++   this extension is halted.
++
++   Condition C. means the operation and it's operands perform the same extension as
++   the originating extension. The operation must extend to the same size _or higher_ of
++   the original extension. In this case, the original extension is truly redundant and
++   we return LOWBITS_NOT_AFFECTED for this use.
++
++   Condtion D. means the operation and operand directly define an output operand. For most
++   arithmetic and unary operations this is true. For mem and other internal operations,
++   e.g. USE, this is false.
++
++      Condition                      Action                 Comments
++    ==================================================================
++    A.     B.     C.     D.
++    ------------------------------------------------------------------
++    X      X      true   true     LOW_BITS_NOT_AFFECTED  extend is redundant
++    ------------------------------------------------------------------
++    false  false  false  X        LOW_BITS_NOT_AFFECTED  used operand is smaller than "low bits"
++    ------------------------------------------------------------------
++    false  true   false  true     LOW_BITS_AFFECTED      "low bits" modified implicitly by operation
++    ------------------------------------------------------------------
++    true   false  false  true     CONTINUE_RECURSION     "low bits" _may_ be impacted by next uses
++    ------------------------------------------------------------------
++    true   true   false  true     LOW_BITS_AFFECTED      "low bits" modified implicitly by operation */
++
++static enum insn_use_results
++insn_use_analysis (rtx insn_use, unsigned int regno_use, rtx * dest,
++                   int indent)
++{
++  return (insn_use_analysis_1 (insn_use, regno_use, dest, indent));
++}
++
++/* Analyze the operation and operands of this use of a sign extension
++   target register. If the target register's upper bits do not
++   affect the result of the operation, then the sign extension is
++   useless. Returns true if the extension is needed, false 
++   otherwise. */
++
++static bool
++analyze_ext_use (rtx insn_use, unsigned int regno_use, int indent)
++{
++  bool ext_needed, indent_once;
++  unsigned int dest_target_regno;
++  extelim_uid_t uid;
++  rtx use = PATTERN (insn_use), dest;
++  df_ref df_use, *p_def;
++  struct df_link *link;
++  enum insn_use_results analysis_result;
++
++  gcc_assert (use != NULL);
++
++  uid = INSN_UID (insn_use);
++
++  if (insn_flag_p (EXTELIM_SEEN, uid))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*suse at uid=%d is visited already\n", indent, " ", uid);
++      return false;
++    }
++
++  /* Mark this insn as seen */
++  insn_flag_set (EXTELIM_SEEN, uid);
++
++  analysis_result = insn_use_analysis (insn_use, regno_use, &dest, indent);
++  switch (analysis_result)
++    {
++      /* We know conclusively that the "upper bits" of the extended
++         entity do not impact the "low bits" of the output of the operation. */
++    case EXTELIM_ANALYSIS_RESULT_LOWBITS_NOT_AFFECTED:
++      if (dump_file)
++        fprintf (dump_file, "%*suse at uid=%d is not affected\n", indent, " ",
++                 uid);
++      return false;
++      break;
++      /* We know conclusively that the "upper bits" of the extended
++         entity _do_ impact the "low bits" of the output of the operation. */
++    case EXTELIM_ANALYSIS_RESULT_LOWBITS_AFFECTED:
++      if (dump_file)
++        fprintf (dump_file, "%*suse at uid=%d is affected\n", indent, " ",
++                 uid);
++      return true;
++      break;
++      /* Continue to look at the uses of the result to determine the impact
++         of the "upper bits" */
++    case EXTELIM_ANALYSIS_RESULT_CONTINUE_RECURSION:
++      break;
++    default:
++      gcc_unreachable ();
++    }
++
++  /* We reach here because the action taken is CONTINUE_RECURSION.
++     Continue to look at the uses of the destination register recursively. 
++     If the propagation ultimately ends where the upper bits are not significant 
++     to the final output, then the extension can be removed. */
++  if (!REG_P (dest))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*sdest of uid=%d (SET) is not a register\n", indent, " ",
++                 uid);
++      return true;
++    }
++
++  dest_target_regno = REGNO (dest);
++
++  /* What this insn defines */
++  p_def = DF_INSN_UID_DEFS (uid);
++
++  /* Ref must be valid and there must be only one definition and it must be the
++     destination */
++  if ((*p_def == NULL) || (*(p_def + 1) != NULL))
++    return true;
++
++  gcc_assert (DF_REF_REGNO (*p_def) == dest_target_regno);
++
++  ext_needed = true;
++  indent_once = true;
++  for (link = DF_REF_CHAIN (*p_def); link; link = link->next)
++    {
++      rtx insn_use, use_exp;
++      df_use = link->ref;
++      if (!df_use)
++        continue;
++      /* Link must be a USE of the DEF */
++      if (!DF_REF_REG_USE_P (df_use))
++        continue;
++      /* Ignore ARTIFICIAL USES */
++      if (DF_REF_IS_ARTIFICIAL (df_use))
++        continue;
++      insn_use = DF_REF_INSN (df_use);
++      /* Don't consider debug_insns */
++      if (!NONDEBUG_INSN_P (insn_use))
++        continue;
++      use_exp = DF_REF_REG (df_use);
++
++      if (exp_needs_update_p (use_exp))
++        {
++          if (dump_file)
++            fprintf (dump_file,
++                     "%*ssaved reg=%d expression for update\n", indent, " ", DF_REF_REGNO (df_use));
++          save_ext_update (current_ext_record, use_exp);
++        }
++
++      if (dump_file)
++        fprintf (dump_file,
++                 "%*suse at uid=%d of reg=%d\n", indent, " ",
++                 INSN_UID (insn_use), DF_REF_REGNO (df_use));
++      /* Set indent for dump formatting */
++      if (indent_once)
++        {
++          ++indent;
++          indent_once = false;
++        }
++      ext_needed = analyze_ext_use (insn_use, DF_REF_REGNO (df_use), indent);
++      if (ext_needed)
++        break;
++    }
++
++  if (dump_file)
++    fprintf (dump_file,
++             "%*sext %s needed\n", indent, " ", ext_needed ? "" : "not");
++
++  return ext_needed;
++}
++
++/* Set a flag on an insn indicating that it is
++   marked for replacement by a copy insn or for
++   deletion. */
++
++static void
++mark_replace_with_copy (rtx ext)
++{
++  extelim_uid_t uid = INSN_UID (ext);
++  insn_flag_set (EXTELIM_REPLACE_COPY, uid);
++}
++
++/* Get the mode that we are sign/zero extending from */
++
++static enum machine_mode
++get_ext_from_mode (rtx src)
++{
++  rtx regexp;
++  gcc_assert (GET_CODE (src) == ZERO_EXTEND || GET_CODE (src) == SIGN_EXTEND);
++
++  /* The SUBREG or REG mode of the extend operand */
++  regexp = XEXP (src, 0);
++  return (GET_MODE (regexp));
++}
++
++/* Perform the action on the expression. Return true
++   if any action performed, false otherwise. */
++
++static bool 
++process_ext_update (rtx exp)
++{
++  /* Reset SUBREG_PROMOTED state to false */
++  if (GET_CODE (exp) == SUBREG
++      && SUBREG_PROMOTED_VAR_P (exp))
++    {
++      SUBREG_PROMOTED_VAR_P (exp) = 0;
++      return true;
++    }
++
++  return false;
++}
++
++/* Process the current extension record, looking at all the
++   the expressions that need to be updated because this
++   extension will be replaced by a copy. */
++
++static void
++process_ext_updates (ext_record_t extrec)
++{
++  unsigned i;
++  rtx exp;
++  bool updated=false;
++
++
++  FOR_EACH_VEC_ELT (rtx, extrec->ext_updates, i, exp)
++    {
++      updated |= process_ext_update (exp);
++    }
++
++  if (dump_file && updated)
++    fprintf (dump_file, " updates processed for extension at uid=%d\n",
++             INSN_UID (extrec->ext));
++}
++
++/* Try to eliminate the sign extension by examining the
++   definitions of the extension source and the uses
++   of the extension destination. */
++
++static void
++eliminate_one_extend (rtx ext)
++{
++  rtx src, dest, regexp;
++  df_ref df_use, df_def, *ext_use, *ext_def;
++  unsigned int ext_dest_regno, ext_src_regno, def_use_count = 1;
++  bool ext_needed = true;
++  extelim_uid_t uid = INSN_UID (ext);
++  struct df_link *link;
++  const char *inserted =
++    insn_flag_p (EXTELIM_INSERTED, uid) ? "inserted" : "";
++
++  /* Reset desired per insn flags for each extension analyzed */
++  reinit_insn_flags (EXTELIM_SEEN);
++
++  gcc_assert (GET_CODE (PATTERN (ext)) == SET);
++  src = SET_SRC (PATTERN (ext));
++  dest = SET_DEST (PATTERN (ext));
++
++  /* Save the basic information about the extension in a file global */
++  ext_to_mode = GET_MODE (dest);
++  ext_from_mode = get_ext_from_mode (src);
++  ext_code = GET_CODE (src);
++
++  /* Also mark this original extension as "SEEN" so we don't recurse into it. */
++  insn_flag_set (EXTELIM_SEEN, INSN_UID (ext));
++
++  /* Find the target of the extension */
++  if (!REG_P (dest))
++    return;
++  ext_dest_regno = REGNO (dest);
++
++  /* Find the source of the extension: set (REG:MODE (sign_extend (REG|SUBREG:MODE ... */
++  if ((regexp = register_exp (XEXP (src, 0))) == NULL)
++    return;
++  ext_src_regno = REGNO (regexp);
++
++  /* Iterate through the reaching definitions of the source of the extension 
++     recursively. If the source if already sign extended, mark the 
++     extension for replacement with a copy or deletion (deletion if it was
++     inserted in the duplication pass). */
++  ext_use = DF_INSN_UID_USES (uid);
++  /* There is only one use in a sign/zero extension insn and it must be the
++     source register */
++  gcc_assert (*(ext_use + 1) == NULL);
++  gcc_assert (DF_REF_REGNO (*ext_use) == ext_src_regno);
++
++  /* Now look at all the reaching definitions of this use */
++  for (link = DF_REF_CHAIN (*ext_use); link; link = link->next)
++    {
++      rtx insn_def;
++      df_def = link->ref;
++      if (!df_def)
++        continue;
++      /* Link must be to a definition of the use */
++      if (!DF_REF_REG_DEF_P (df_def))
++        continue;
++      /* Ignore ARTIFICIAL defs */
++      if (DF_REF_IS_ARTIFICIAL (df_def))
++        continue;
++      insn_def = DF_REF_INSN (df_def);
++      /* Don't consider debug_insns */
++      if (!NONDEBUG_INSN_P (insn_def))
++        continue;
++      if (dump_file)
++        fprintf (dump_file,
++                 " analyze def #%d of reg=%d at uid=%u\n",
++                 def_use_count, DF_REF_REGNO (*ext_use), INSN_UID (insn_def));
++      ext_needed = analyze_ext_def (insn_def, DF_REF_REGNO (*ext_use), 2);
++      if (ext_needed)
++        break;
++      def_use_count++;
++    }
++
++  /* Try the def-use chains if the extension wasn't marked by the
++     previous pass. */
++  if (ext_needed)
++    {
++      /* Defs of the sign extension */
++      ext_def = DF_INSN_UID_DEFS (uid);
++      /* There is only one def in a sign extension insn and it must be the
++         destination */
++      gcc_assert (*(ext_def + 1) == NULL);
++      gcc_assert (DF_REF_REGNO (*ext_def) == ext_dest_regno);
++
++      /* Counter for debug dump */
++      def_use_count = 1;
++      /* Reset desired per insn flags for each extension analyzed */
++      reinit_insn_flags (EXTELIM_SEEN);
++      /* Also mark this original extension as "SEEN" so we don't recurse into it. */
++      insn_flag_set (EXTELIM_SEEN, INSN_UID (ext));
++
++      /* Iterate over the reached uses of extension destination register recursively.
++         If the destination register's upper bits are ultimately not
++         relevant, the extension can be marked for replacement with a
++         copy. */
++      for (link = DF_REF_CHAIN (*ext_def); link; link = link->next)
++        {
++          rtx insn_use, use_exp;
++          df_use = link->ref;
++          if (!df_use)
++            continue;
++          /* Link must be a USE of the DEF */
++          if (!DF_REF_REG_USE_P (df_use))
++            continue;
++          /* Ignore ARTIFICIAL USES */
++          if (DF_REF_IS_ARTIFICIAL (df_use))
++            continue;
++          insn_use = DF_REF_INSN (df_use);
++          /* Don't consider debug_insns */
++          if (!NONDEBUG_INSN_P (insn_use))
++            continue;
++          use_exp = DF_REF_REG (df_use);
++
++          if (exp_needs_update_p (use_exp))
++            {
++              if (dump_file)
++                fprintf (dump_file,
++                         " saved reg=%d expression for update\n", DF_REF_REGNO (df_use));
++              save_ext_update (current_ext_record, use_exp);
++            }
++            
++          if (dump_file)
++            fprintf (dump_file,
++                     " analyze use #%d at uid=%u of reg=%d\n",
++                     def_use_count, INSN_UID (insn_use),
++                     DF_REF_REGNO (*ext_def));
++          ext_needed = analyze_ext_use (insn_use, DF_REF_REGNO (*ext_def), 2);
++          if (ext_needed)
++            break;
++          def_use_count++;
++        }
++    }
++
++  /* The extension is not needed. The rtl for the extension is marked
++     for replace by copy. */
++  if (!ext_needed)
++    {
++      process_ext_updates (current_ext_record);
++
++      if (dump_file)
++        fprintf (dump_file,
++                 ":) mark %s extension insn uid=%d for copy replacement\n",
++                 inserted, INSN_UID (ext));
++      mark_replace_with_copy (ext);
++      num_cand_transformed++;
++    }
++  else
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 ":( %s extension insn uid=%d is needed\n", inserted,
++                 INSN_UID (ext));
++    }
++}
++
++/* Replace the sign extension with a copy instruction
++
++   example 1:
++   from:
++        dest              src
++   (set (reg:DI destreg) (sign_extend:DI (reg:SI srcreg)))
++   to:
++   (clobber (reg:DI destreg))
++   (set (subreg:SI (reg:DI destreg) 4) (reg:SI srcreg)) 
++
++   or
++
++   example 2:
++   from:
++        dest             src
++   (set (reg:DI destreg) (sign_extend:DI (subreg:SI (reg:DI srcreg) 4)))
++   to:
++   (clobber (reg:DI destreg))
++   (set (subreg:SI (reg:DI destreg) 4) (subreg:SI (reg:DI srcreg) 4)) 
++
++   or
++
++   example 3:
++   from:
++        dest             src
++   (set (reg:SI destreg) (sign_extend:SI (subreg:HI (reg:SI srcreg) 2)))
++   to:
++   (clobber (reg:SI destreg))
++   (set (subreg:HI (reg:SI destreg) 2) (subreg:HI (reg:SI srcreg) 2)) */
++
++static void
++replace_with_copy (rtx ext)
++{
++  rtx extension = PATTERN (ext);
++  rtx ext_op, src, dest, insns, cp_dest, cp_src;
++  enum machine_mode inner_mode;
++  gcc_assert (GET_CODE (extension) == SET);
++
++  dest = SET_DEST (extension);
++  src = SET_SRC (extension);
++
++  /* The sign extension operand */
++  ext_op = XEXP (src, 0);
++  /* Get the inner mode */
++  inner_mode = GET_MODE (ext_op);
++  gcc_assert (inner_mode == SImode || inner_mode == HImode
++              || inner_mode == QImode);
++
++  /* Make dest a SUBREG:mm */
++  cp_dest = gen_lowpart_SUBREG (inner_mode, dest);
++
++  /* Copy src is the sign extension target register */
++  cp_src = ext_op;
++
++  /* ??? clobber is needed for rtl consistency, don't know why */
++  start_sequence ();
++  emit_clobber (dest);
++  emit_move_insn (cp_dest, cp_src);
++  insns = get_insns ();
++  end_sequence ();
++  emit_insn_before (insns, ext);
++
++  delete_insn (ext);
++}
++
++/* Iterate through extensions, replace those extensions
++   that are marked as so with a copy insn. */
++
++static void
++replace_ext_with_copy (void)
++{
++  ext_record_t extrec;
++  unsigned i;
++
++  FOR_EACH_VEC_ELT (ext_record_t, extensions, i, extrec)
++  {
++    const char *inserted = insn_flag_p (EXTELIM_INSERTED,
++                                        INSN_UID (extrec->
++                                                  ext)) ? "inserted" : "";
++    if (insn_flag_p (EXTELIM_REPLACE_COPY, INSN_UID (extrec->ext)))
++      {
++        if (dump_file)
++          fprintf (dump_file,
++                   " replace %s extension uid=%d with a copy\n", inserted,
++                   INSN_UID (extrec->ext));
++        replace_with_copy (extrec->ext);
++      }
++  }
++}
++
++
++/* Copy the RTX flags from old to new */
++
++static void
++copy_flags (rtx oldrtx, rtx newrtx)
++{
++  if (RTX_FLAG (oldrtx, in_struct))
++    RTX_FLAG (newrtx, in_struct) = true;
++
++  if (RTX_FLAG (oldrtx, volatil))
++    RTX_FLAG (newrtx, volatil) = true;
++
++  if (RTX_FLAG (oldrtx, unchanging))
++    RTX_FLAG (newrtx, unchanging) = true;
++
++  if (RTX_FLAG (oldrtx, frame_related))
++    RTX_FLAG (newrtx, frame_related) = true;
++
++  if (RTX_FLAG (oldrtx, jump))
++    RTX_FLAG (newrtx, jump) = true;
++
++  if (RTX_FLAG (oldrtx, call))
++    RTX_FLAG (newrtx, call) = true;
++
++  if (RTX_FLAG (oldrtx, return_val))
++    RTX_FLAG (newrtx, return_val) = true;
++}
++
++/* Iterate through the insn notes looking for 'kind'. If 
++   found replace the register rtx with the new rtx. */
++
++static void
++update_notes (enum reg_note kind, rtx insn, rtx reg, rtx new_reg)
++{
++  rtx link;
++  for (link = REG_NOTES (insn); link; link = XEXP (link, 1))
++    if (REG_NOTE_KIND (link) == kind)
++      {
++        rtx op0 = XEXP (link, 0);
++        if (kind == REG_DEAD)
++          if (REG_P (op0) && op0 == reg)
++            XEXP (link, 0) = new_reg;
++      }
++}
++
++
++
++#if EXTELIM_DUPLICATE_EXTS_AT_USES
++/* Insert a duplicate sign extension at the use point.
++   Add a flag indicating this extension is algorithmically
++   added. Since the "inserted" extensions have the form
++   regX = sign_extend (subreg:mm (reg:MM regX), offset), 
++   they can simply be deleted if they are redundant since we 
++   are at a reaching use of the original definition. We also 
++   mark the use insn where the insert occurs so we don't insert 
++   the same extension from another def at this use. */
++
++static void
++insert_duplicate_ext_at_use (rtx ext_insn, rtx use_insn)
++{
++  rtx ext = PATTERN (ext_insn), ext_src, ext_dest;
++  rtx new_ext_src_inner, new_ext_src_outer, new_ext_part;
++  rtx new_ext_dest, new_ext_insn;
++  extelim_uid_t new_uid;
++  df_ref *p_df_uses;
++  unsigned int ext_dest_regno;
++  enum machine_mode inner_mode;
++  bool sign_extend_p =
++    GET_CODE (SET_SRC (PATTERN (ext_insn))) == SIGN_EXTEND ? true : false;
++
++  /* This new extension must be of the form:
++     set (reg:MM X (sign_extend:MM (subreg:mm (reg:MM X)))) 
++     where mm is smaller than MM. */
++  ext_dest = SET_DEST (ext);
++  ext_src = SET_SRC (ext);
++
++  gcc_assert (REG_P (register_exp (ext_dest)));
++
++  /* A copy of the extend destination register to a new virtual register */
++  new_ext_dest = gen_reg_rtx (GET_MODE (ext_dest));
++  /* A copy of the extend source (same reg as dest), REG_P */
++  new_ext_src_inner = copy_rtx (ext_dest);
++  /* Get inner mode, either mm for SUBREG:mm (REG:MM) or MM for (REG:MM) */
++  if (GET_CODE (XEXP (ext_src, 0)) == SUBREG)
++    inner_mode = GET_MODE (XEXP (ext_src, 0));
++  else if (REG_P (XEXP (ext_src, 0)))
++    inner_mode = GET_MODE (XEXP (ext_src, 0));
++  else
++    /* Can't determine sign_extend operand */
++    gcc_unreachable ();
++
++  /* Make a subreg rtx */
++  new_ext_src_outer = gen_lowpart_SUBREG (inner_mode, new_ext_src_inner);
++  /* Make a sign/zero extend insn */
++  new_ext_part = sign_extend_p
++    ? gen_rtx_SIGN_EXTEND (GET_MODE (ext_dest), new_ext_src_outer)
++    : gen_rtx_ZERO_EXTEND (GET_MODE (ext_dest), new_ext_src_outer);
++  /* (set (new:MM (sign_extend:MM (subreg:mm (reg:MM ext_dest))))) */
++  new_ext_insn = gen_rtx_SET (VOIDmode, new_ext_dest, new_ext_part);
++
++  /* Now update the use */
++  /* Operands used by this the use_insn */
++  ext_dest_regno = REGNO (register_exp (ext_dest));
++  for (p_df_uses = DF_INSN_UID_USES (INSN_UID (use_insn)); *p_df_uses;
++       p_df_uses++)
++    {
++      if (DF_REF_REGNO (*p_df_uses) == ext_dest_regno)
++        {
++          rtx use_reg = DF_REF_REG (*p_df_uses);
++
++          /*  Replace the register use in use_insn with the new register. If the use
++             is a subreg pattern, replace the innermost reg. */
++          replace_rtx (PATTERN (use_insn), register_exp (use_reg),
++                       new_ext_dest);
++          /* Update flags on new dest reg */
++          copy_flags (register_exp (use_reg), new_ext_dest);
++          /* Update any notes associated with use reg and use_insn */
++          update_notes (REG_DEAD, use_insn, register_exp (use_reg), new_ext_dest);
++          /* DF info must be updated since existing insn is changed */
++          df_insn_rescan (use_insn);
++        }
++    }
++
++  new_uid = extelim_emit_before (new_ext_insn, use_insn);
++  insn_flag_set (EXTELIM_INSERTED, new_uid);
++}
++
++/* Allow the duplication of the extension even if the extension
++   and the duplication use are in the same block. */
++
++static bool
++allow_same_block_duplication_p (rtx ext_insn, rtx use_insn)
++{
++  rtx ext = PATTERN (ext_insn);
++  rtx use = PATTERN (use_insn);
++
++  if (GET_CODE (SET_SRC (use)) == ASHIFT && GET_CODE (SET_SRC (ext)) == ZERO_EXTEND)
++    return true;
++  return false;
++}
++
++/* Determine if the extension should be duplicated at this use point.
++   Return true if yes, false otherwise. */
++
++static bool
++save_ext_use_p (ext_record_t extrec, rtx use_insn)
++{
++  rtx ext_insn, ext, ext_dest, use = PATTERN (use_insn), use_src;
++  df_ref df_use;
++
++  ext_insn = extrec->ext;
++  ext = PATTERN (ext_insn);
++  ext_dest = SET_DEST (ext);
++
++  if (GET_CODE (use) != SET)
++    {
++      if (dump_file)
++        fprintf (dump_file, "  no -- use is not a SET code\n");
++      return false;
++    }
++
++  /* Check for obviousness */
++  /* 1. The use is only reached by the a single definition of the extension.
++     Otherwise, it wouldn't be legal to insert a duplicate extension
++     as other defs reaching this use may not need it. Certainly not all
++     other defs may reach here, but this is the conservative approximation. 
++     Found in nof/muldf3.c */
++  df_use = df_find_use (use_insn, ext_dest);
++  if ( df_use && DF_REF_CHAIN (df_use)->next)
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "  no -- there are multiple definitions of reg=%d reaching this use\n",
++                 (REGNO (register_exp (ext_dest))));
++      return false;
++    }
++
++  /* 2. The extension and use are in the same block. Since
++     this is a reached use, it's obvious we don't need another
++     extension. The exception is this -- we are trying to set
++     up a specific extension,insn pattern that will be recognized
++     by the insn selector. This pattern will also be ignored when
++     the next extension candidate list is created in the next pass. */
++  if (INSN_P (ext_insn) && INSN_P (use_insn))
++    {
++      if (BLOCK_FOR_INSN (ext_insn) == BLOCK_FOR_INSN (use_insn))
++        {
++          if (allow_same_block_duplication_p (ext_insn, use_insn))
++            ;
++          else
++            {
++              if (dump_file)
++                fprintf (dump_file,
++                         "  no -- ext and use are in the same block\n");
++              return false;
++            }
++        }
++    }
++
++  /* 3. The use is a sign extension of the extension destination reg */
++  use_src = SET_SRC (use);
++  if (GET_CODE (use_src) == SIGN_EXTEND
++      && REG_P (register_exp (XEXP (use_src, 0)))
++      && REG_P (register_exp (ext_dest)))
++    if (GET_MODE (use_src) == GET_MODE (ext_dest)
++        && REGNO (register_exp (XEXP (use_src, 0))) ==
++        REGNO (register_exp (ext_dest)))
++      {
++        if (dump_file)
++          fprintf (dump_file,
++                   "  no -- the use is a sign extension of reg=%d\n",
++                   REGNO (register_exp (XEXP (use_src, 0))));
++        return false;
++      }
++
++  /* 4. The use already has an extension inserted and one of the use's operands
++     is a register matching the reaching definition. So don't reinsert the same
++     extension. */
++  if (insn_flag_p (EXTELIM_INSERTED_FOR, INSN_UID (use_insn)))
++    {
++      df_ref *p_df_uses;
++      /* Operands used by this the use_insn */
++      for (p_df_uses = DF_INSN_UID_USES (INSN_UID (use_insn)); *p_df_uses;
++           p_df_uses++)
++        {
++          if (REG_P (register_exp (ext_dest)) &&
++              DF_REF_REGNO (*p_df_uses) == REGNO (register_exp (ext_dest)))
++            {
++              if (dump_file)
++                fprintf (dump_file,
++                         "  no -- this use is marked for sign extension insertion already\n");
++              return false;
++            }
++        }
++    }
++
++  /* 5. There is also a definition of the ext dest register at this use (as can occur in self assignment). */
++  if (register_exp (SET_DEST (use)) && REG_P (ext_dest) 
++       && REGNO (register_exp (SET_DEST (use))) == REGNO (ext_dest))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "  no -- this use also assigns the used register\n");
++      return false;
++    }
++
++
++  if (dump_file)
++    fprintf (dump_file, "  yes\n");
++  return true;
++}
++
++/* Save the use insn in the extension records list of
++   uses. At the next phase, we will duplicate the extension
++   at these use points. */
++
++static void
++save_ext_use (ext_record_t extrec, rtx use_insn)
++{
++  /* Mark the use insn, it will have a duplicate inserted */
++  insn_flag_set (EXTELIM_INSERTED_FOR, INSN_UID (use_insn));
++  /* Save use to the list of uses to be duplicated for this extension. */
++  VEC_safe_push (rtx, heap, extrec->ext_uses, use_insn);
++}
++
++
++/* Save the qualified use of an extension to a list */
++
++static void
++gather_ext_uses_info (ext_record_t extrec)
++{
++  rtx ext;
++  df_ref *ext_def, df_use;
++  unsigned int def_use_count = 1;
++  extelim_uid_t uid;
++  struct df_link *link;
++
++  gcc_assert (extrec != NULL);
++  ext = extrec->ext;
++  uid = INSN_UID (ext);
++
++  /* Insn level defs of the sign extension */
++  ext_def = DF_INSN_UID_DEFS (uid);
++  /* There is only one def in a sign extension insn */
++  gcc_assert (*(ext_def + 1) == NULL);
++
++  /* Iterate over the reached uses of extension destination register.
++     Duplicate the extension at the use point. */
++  for (link = DF_REF_CHAIN (*ext_def); link; link = link->next)
++    {
++      rtx insn_use;
++      df_use = link->ref;
++      if (!df_use)
++        continue;
++      /* Link must be a USE of the DEF */
++      if (!DF_REF_REG_USE_P (df_use))
++        continue;
++      /* Ignore ARTIFICIAL USES */
++      if (DF_REF_IS_ARTIFICIAL (df_use))
++        continue;
++      insn_use = DF_REF_INSN (df_use);
++
++      /* Don't consider debug_insns */
++      if (!NONDEBUG_INSN_P (insn_use))
++        continue;
++
++      if (dump_file)
++        fprintf (dump_file,
++                 " use #%d duplicate ext of reg=%d at uid=%u?\n",
++                 def_use_count, DF_REF_REGNO (*ext_def), INSN_UID (insn_use));
++      if (save_ext_use_p (extrec, insn_use))
++        save_ext_use (extrec, insn_use);
++      def_use_count++;
++    }
++}
++
++/* At each use point of the sign extension, unless the 
++   use is obviously already sign extended, insert a 
++   sign extension insn before the use. We do this in two
++   passes to avoid confusing the dataflow information. */
++
++static void
++duplicate_exts_at_uses (void)
++{
++  unsigned i, j;
++  ext_record_t extrec;
++  rtx use_insn;
++
++  /* Get the uses where the extensions will be duplicated */
++  FOR_EACH_VEC_ELT (ext_record_t, extensions, i, extrec)
++  {
++    if (dump_file)
++      fprintf (dump_file, "gathering extension uid=%u use information\n",
++               INSN_UID (extrec->ext));
++    gather_ext_uses_info (extrec);
++  }
++
++  /* Now duplicate the extensions at the appropriate use points */
++  FOR_EACH_VEC_ELT (ext_record_t, extensions, i, extrec)
++  {
++    if (dump_file)
++      fprintf (dump_file, "extension uid=%u\n", INSN_UID (extrec->ext));
++
++    FOR_EACH_VEC_ELT (rtx, extrec->ext_uses, j, use_insn)
++    {
++      if (dump_file)
++        fprintf (dump_file, " duplicated at use uid=%u\n",
++                 INSN_UID (use_insn));
++      insert_duplicate_ext_at_use (extrec->ext, use_insn);
++    }
++  }
++}
++#endif /* EXTELIM_DUPLICATE_EXTS_AT_USES */
++
++/* Determine if an instruction is a return insn */
++
++static rtx
++return_p (rtx rtn_insn)
++{
++  rtx rtn = PATTERN (rtn_insn), dest;
++  int i;
++
++  if (GET_CODE (rtn) != SET)
++    return false;
++
++  dest = SET_DEST (rtn);
++
++  /* Is a return value? */
++  if ((REG_P (dest) || GET_CODE (dest) == PARALLEL) &&
++      REG_FUNCTION_VALUE_P (dest))
++    {
++      /* Simple SET, return the insn */
++      if (REG_P (dest))
++        return rtn_insn;
++      /* PARALLEL, find the embedded rtx */
++      if (GET_CODE (dest) == PARALLEL)
++        for (i = XVECLEN (rtn_insn, 0) - 1; i >= 0; i--)
++          {
++            rtx body = XVECEXP (rtn_insn, 0, i);
++            if (GET_CODE (body) == SET)
++              {
++                dest = SET_DEST (body);
++                if (REG_FUNCTION_VALUE_P (dest))
++                  return body;
++              }
++          }
++    }
++  /* Not a return */
++  return NULL;
++}
++
++/* Find all return RTLs in the function and save them in
++   a list. */
++
++static bool
++find_returns (void)
++{
++  basic_block bb;
++  rtx insn, rtn_insn;
++  bool found = false;
++
++  /* For all insns  */
++  FOR_EACH_BB (bb)
++  {
++    FOR_BB_INSNS (bb, insn)
++    {
++      if (!NONDEBUG_INSN_P (insn))
++        continue;
++
++      if ((rtn_insn = return_p (insn)) == NULL)
++        {
++          continue;
++        }
++      if (dump_file)
++        fprintf (dump_file, " found return at uid=%u\n", INSN_UID (rtn_insn));
++
++      VEC_safe_push (rtx, heap, returns, rtn_insn);
++      found = true;
++    }
++  }
++
++  return (found);
++}
++
++/* Get the signedness and machine mode of the function */
++
++static bool
++get_return_info (bool * signed_p, enum machine_mode *return_mode)
++{
++  tree rtninfo;
++
++  if ((rtninfo = DECL_RESULT (current_function_decl)) != NULL)
++    {
++      *signed_p = !TYPE_UNSIGNED (TREE_TYPE (rtninfo));
++      *return_mode = DECL_MODE (rtninfo);
++      return true;
++    }
++  return false;
++}
++
++/* If the dest mode of the return is larger than
++   the function return mode, we can subreg the return
++   insn to the return mode and extend to the destination.
++   E.g. unsigned, return mode: HImode
++   set (reg/i:DI Y) (reg:DI X) 
++   becomes
++   set (reg:DI new) (zero_extend:DI (subreg:HI (reg:DI X)))
++   set (reg/i:DI Y) (reg:DI new) */
++
++static void
++make_ext_at_rtn (rtx rtn_insn, bool fun_signed_p, enum machine_mode fun_mode)
++{
++  rtx rtn = PATTERN (rtn_insn);
++  rtx dest, src, new_ext_dest, new_ext_src, new_ext_outer, new_ext_part,
++    new_ext_insn;
++  extelim_uid_t new_uid;
++  gcc_assert (GET_CODE (rtn) == SET);
++
++  dest = SET_DEST (rtn);
++  src = SET_SRC (rtn);
++
++  /* Deal with scalar rtn values only */
++  if (fun_mode != DImode
++      && fun_mode != SImode && fun_mode != HImode && fun_mode != QImode)
++    {
++      if (dump_file)
++        fprintf (dump_file, "failed-- not scalar return mode\n");
++      return;
++    }
++
++  /* Dest and src have to have the same mode. This should always be
++     true for well formed rtl, but we check anyway. */
++  if (GET_MODE (dest) != GET_MODE (src))
++    {
++      if (dump_file)
++        fprintf (dump_file, "failed-- dest and src modes differ\n");
++      return;
++    }
++
++  /* Also check that we are dealing with simple regs here. */
++  if (!REG_P (dest) || !REG_P (src))
++    {
++      if (dump_file)
++        fprintf (dump_file, "failed-- dest or src is not REG_P\n");
++      return;
++    }
++
++  /* The return reg mode should never be smaller than fun return mode. If the
++     same size, however, we can't subreg either, so return */
++  if (GET_MODE_BITSIZE (GET_MODE (dest)) <= GET_MODE_BITSIZE (fun_mode))
++    {
++      if (dump_file)
++        fprintf (dump_file,
++                 "failed-- dest size mode is smaller or equal to function mode size\n");
++      return;
++    }
++
++  /* From here we should be able to build a subreg since the function return mode
++     size is smaller than the return register mode size */
++  new_ext_dest = gen_reg_rtx (GET_MODE (src));  /*  set (reg:MM new) */
++  new_ext_src = copy_rtx (src); /*  copy of X, copyX */
++  new_ext_outer = gen_lowpart_SUBREG (fun_mode, new_ext_src);   /*  subreg:mm (reg:MM copyX) */
++  new_ext_part = fun_signed_p   /*  extend:MM (subreg:mm (reg:MM copyX)) */
++    ? gen_rtx_SIGN_EXTEND (GET_MODE (src), new_ext_outer)
++    : gen_rtx_ZERO_EXTEND (GET_MODE (src), new_ext_outer);
++  /* Put it together */
++  new_ext_insn = gen_rtx_SET (VOIDmode, new_ext_dest, new_ext_part);
++
++  /* Modify src of return insn to use new pseudo */
++  replace_rtx (PATTERN (rtn_insn), src, new_ext_dest);
++  /* Update flags on new dest reg */
++  copy_flags (src, new_ext_dest);
++  /* Update any notes associated with replaced register */
++  update_notes (REG_DEAD, rtn_insn, src, new_ext_dest);
++  /* Rescan the modified insn */
++  df_insn_rescan (rtn_insn);
++  /* Insert the new insn */
++  new_uid = extelim_emit_before (new_ext_insn, rtn_insn);
++
++  if (dump_file)
++    fprintf (dump_file, "success\n");
++}
++
++/* Insert extensions at return points. Scan the RTL
++   for the return statements. Determine if the RTL 
++   can be modified to insert an extension. Modify the
++   return to insert the extension. */
++
++static void
++insert_ext_at_returns (void)
++{
++  bool signed_p;
++  enum machine_mode return_mode;
++  rtx rtn_insn;
++  int i;
++
++  /* Generate list of return rtls for the function */
++  if (dump_file)
++    fprintf (dump_file, "gathering return insns...\n");
++
++  if (!find_returns ())
++    return;
++
++  if (!get_return_info (&signed_p, &return_mode))
++    return;
++
++  /* For each return instruction, generate a sign/zero extend
++     if the current return size is larger than the function
++     return mode. */
++  FOR_EACH_VEC_ELT (rtx, returns, i, rtn_insn)
++  {
++    if (dump_file)
++      fprintf (dump_file, " making extension at return uid=%u...",
++               INSN_UID (rtn_insn));
++    make_ext_at_rtn (rtn_insn, signed_p, return_mode);
++  }
++}
++
++/* Compare two extension records by loop depth.
++   Used by VEC_qsort to sort the order in which extensions
++   are processed. */
++
++static int
++ext_record_compare (const void *p_er1, const void *p_er2)
++{
++  const ext_record_t er1 = *(const ext_record_t *) p_er1;
++  const ext_record_t er2 = *(const ext_record_t *) p_er2;
++  basic_block bb1, bb2;
++  rtx ext1, ext2;
++
++  if (er1 == er2)
++    return 0;
++
++  ext1 = er1->ext;
++  ext2 = er2->ext;
++
++  bb1 = BLOCK_FOR_INSN (ext1);
++  bb2 = BLOCK_FOR_INSN (ext2);
++
++  /* Sort high to low */
++  return (bb2->loop_depth - bb1->loop_depth);
++}
++
++/* The main interface to this optimization. */
++
++static void
++extension_elimination (void)
++{
++  ext_record_t ext;
++  unsigned i;
++
++  init_pass ();
++
++  /* Find initial sign extension candidates */
++  if (!find_extensions ())
++    {
++      finish_pass ();
++      return;
++    }
++
++  /* Insert sign extension at return points in
++     the function. */
++  insert_ext_at_returns ();
++
++  /* Duplicate the sign extensions at their use
++     points unless the use is already obviously sign
++     extended or extension is already added. */
++#if EXTELIM_DUPLICATE_EXTS_AT_USES
++  duplicate_exts_at_uses ();
++#endif
++
++  /* Update DF information since now have new insns. */
++  df_finish_pass (true);
++  df_chain_add_problem (DF_DU_CHAIN + DF_UD_CHAIN);
++  df_analyze ();
++
++#if EXTELIM_DF_DUMP
++  if (dump_file)
++    df_dump (dump_file);
++#endif
++
++  /* Init statistics */
++  num_cand = 0;
++  num_cand_ignored = 0;
++  num_cand_transformed = 0;
++
++  /* Free old extensions list, generate new one that includes
++     the new extensions. */
++  free_extensions ();
++
++ if (!find_extensions ())
++    {
++      finish_pass ();
++      return;
++    }
++
++  if (dump_file)
++    {
++      fprintf (dump_file, "\nRTL After Extension Duplication\n");
++      print_rtl (dump_file, get_insns ());
++    }
++
++  if (dump_file)
++    fprintf (dump_file, "Begin extension elimination analysis\n");
++
++  /* Sort the extensions by loop depth. We want to try to eliminate
++     those in innermost loops (highest loop depth) first. */
++  VEC_qsort (ext_record_t, extensions, ext_record_compare);
++
++  /* Iterate through extension worklist */
++  FOR_EACH_VEC_ELT (ext_record_t, extensions, i, ext)
++  {
++    rtx ext_insn = ext->ext;
++    rtx ext_src = SET_SRC (PATTERN (ext_insn));
++    const char *ext_name =
++      GET_CODE (ext_src) == SIGN_EXTEND ? "sign" : "zero";
++    const char *inserted =
++      insn_flag_p (EXTELIM_INSERTED, INSN_UID (ext_insn)) ? "inserted" : "";
++    extelim_uid_t uid = INSN_UID (ext_insn);
++
++    if (dump_file)
++      fprintf (dump_file,
++               "<analyzing %s %s extension uid=%u> (loop_depth=%d)\n",
++               inserted, ext_name, uid,
++               BLOCK_FOR_INSN (ext_insn)->loop_depth);
++
++    current_ext_record = ext;
++    eliminate_one_extend (ext->ext);
++  }
++
++  if (dump_file)
++    fprintf (dump_file, "Begin extension elimination transformations\n");
++
++  replace_ext_with_copy ();
++
++  if (dump_file)
++    fprintf (dump_file, "\nRTL After Extension Elimination\n");
++
++  finish_pass ();
++
++  /* Print statistics */
++  if (dump_file)
++    {
++      fprintf (dump_file,
++               "Number of extensions ignored: %d (of %d candidiates)\nDETECTION EFFECTIVENESS: %f%%\n",
++               num_cand_ignored, num_cand,
++               ((float) (num_cand - num_cand_ignored) / (float) num_cand) *
++               100);
++      fprintf (dump_file,
++               "Number of extensions converted to copy: %d (of %d candidiates)\nCONVERSION EFFECTIVENESS: %f%%\n",
++               num_cand_transformed, num_cand,
++               ((float) num_cand_transformed / (float) num_cand) * 100);
++    }
++}
++
++/* Remove redundant extensions.  */
++
++static unsigned int
++rest_of_handle_extelim (void)
++{
++  extension_elimination ();
++  return 0;
++}
++
++/* Run extelim pass when flag_extelim is set at optimization level > 0.  */
++
++static bool
++gate_handle_extelim (void)
++{
++  return (optimize > 0 && flag_extelim);
++}
++
++struct rtl_opt_pass pass_rtl_extelim = {
++  {
++   RTL_PASS,
++   "extelim",                   /* name */
++   gate_handle_extelim,         /* gate */
++   rest_of_handle_extelim,      /* execute */
++   NULL,                        /* sub */
++   NULL,                        /* next */
++   0,                           /* static_pass_number */
++   TV_EXTELIM,                  /* tv_id */
++   0,                           /* properties_required */
++   0,                           /* properties_provided */
++   0,                           /* properties_destroyed */
++   0,                           /* todo_flags_start */
++   TODO_ggc_collect | TODO_dump_func | TODO_df_finish | TODO_verify_rtl_sharing,        /* todo_flags_finish */
++   }
++};

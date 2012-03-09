@@ -1,0 +1,38 @@
+diff -ruN libc-orig/elf/dl-runtime.c libc-e5500/elf/dl-runtime.c
+--- libc-orig/elf/dl-runtime.c	2011-12-08 04:25:09.201995061 -0600
++++ libc-e5500/elf/dl-runtime.c	2011-12-08 04:26:12.760996794 -0600
+@@ -156,7 +156,7 @@
+ }
+ #endif
+ 
+-#if !defined PROF && !defined ELF_MACHINE_NO_PLT && !__BOUNDED_POINTERS__
++#if !defined ELF_MACHINE_NO_PLT && !__BOUNDED_POINTERS__
+ DL_FIXUP_VALUE_TYPE
+ __attribute ((noinline)) ARCH_FIXUP_ATTRIBUTE
+ _dl_profile_fixup (
+@@ -425,7 +425,7 @@
+   return value;
+ }
+ 
+-#endif /* PROF && ELF_MACHINE_NO_PLT */
++#endif /* ELF_MACHINE_NO_PLT */
+ 
+ 
+ #include <stdio.h>
+diff -ruN libc-orig/sysdeps/powerpc/powerpc32/dl-trampoline.S libc-e5500/sysdeps/powerpc/powerpc32/dl-trampoline.S
+--- libc-orig/sysdeps/powerpc/powerpc32/dl-trampoline.S	2011-12-08 04:25:12.103998210 -0600
++++ libc-e5500/sysdeps/powerpc/powerpc32/dl-trampoline.S	2011-12-08 04:26:19.310748350 -0600
+@@ -71,7 +71,6 @@
+ 	cfi_endproc
+ 	.size	 _dl_runtime_resolve,.-_dl_runtime_resolve
+ 
+-#ifndef PROF
+ 	.align 2
+ 	.globl _dl_prof_resolve
+ 	.type _dl_prof_resolve,@function
+@@ -183,4 +182,4 @@
+ 	bctr
+ 	cfi_endproc
+ 	.size	 _dl_prof_resolve,.-_dl_prof_resolve
+-#endif
++

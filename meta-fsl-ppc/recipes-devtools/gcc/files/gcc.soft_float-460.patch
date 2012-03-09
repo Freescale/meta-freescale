@@ -1,0 +1,190 @@
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_data_map_rand.cc	2011-05-11 20:03:39.000000000 -0500
+@@ -46,17 +46,17 @@
+ 
+ #ifndef ITERATIONS
+ # ifdef _GLIBCXX_DEBUG
+-#  define ITERATIONS 100
++#  define ITERATIONS 2
+ # else
+-#  define ITERATIONS 5000
++#  define ITERATIONS 2
+ #endif
+ #endif
+ 
+ #ifndef KEYS
+ # ifdef _GLIBCXX_DEBUG
+-#  define KEYS 200
++#  define KEYS 5
+ # else
+-#  define KEYS 10000
++#  define KEYS 5
+ # endif
+ #endif
+ 
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_no_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_no_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_no_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/hash_no_data_map_rand.cc	2011-05-11 20:04:00.000000000 -0500
+@@ -46,17 +46,17 @@
+ 
+ #ifndef ITERATIONS
+ # ifdef _GLIBCXX_DEBUG
+-#  define ITERATIONS 100
++#  define ITERATIONS 2
+ # else
+-#  define ITERATIONS 5000
++#  define ITERATIONS 2
+ #endif
+ #endif
+ 
+ #ifndef KEYS
+ # ifdef _GLIBCXX_DEBUG
+-#  define KEYS 200
++#  define KEYS 5
+ # else
+-#  define KEYS 10000
++#  define KEYS 5
+ # endif
+ #endif
+ 
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_data_map_rand.cc	2011-05-11 20:02:23.000000000 -0500
+@@ -47,7 +47,7 @@
+   using namespace __gnu_pbds::test;
+   typedef lu_map_tl_t map_tl_t;
+ 
+-  return rand_regression_test(50, 10, 
++  return rand_regression_test(2, 5, 
+ 			      "lu_data_map_rand_regression_test",
+ 			      map_tl_t());
+ }
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_no_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_no_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_no_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/list_update_no_data_map_rand.cc	2011-05-11 20:02:23.000000000 -0500
+@@ -47,7 +47,7 @@
+   using namespace __gnu_pbds::test;
+   typedef lu_set_tl_t map_tl_t;
+ 
+-  return rand_regression_test(50, 10,
++  return rand_regression_test(2, 5,
+ 			      "lu_no_data_map_rand_regression_test",
+ 			      map_tl_t());
+ }
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/priority_queue_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/priority_queue_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/priority_queue_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/priority_queue_rand.cc	2011-05-11 20:02:23.000000000 -0500
+@@ -45,10 +45,10 @@
+ #include <regression/common_type.hpp>
+ 
+ #ifndef ITERATIONS
+-#define ITERATIONS 5000
++#define ITERATIONS 2
+ #endif
+ #ifndef KEYS
+-#define KEYS 10000
++#define KEYS 5
+ #endif
+ int
+ main(int argc, char* a_p_argv[])
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_data_map_rand.cc	2011-05-11 20:04:21.000000000 -0500
+@@ -46,17 +46,17 @@
+ 
+ #ifndef ITERATIONS
+ # ifdef _GLIBCXX_DEBUG
+-#  define ITERATIONS 100
++#  define ITERATIONS 2
+ # else
+-#  define ITERATIONS 5000
++#  define ITERATIONS 2
+ #endif
+ #endif
+ 
+ #ifndef KEYS
+ # ifdef _GLIBCXX_DEBUG
+-#  define KEYS 200
++#  define KEYS 5
+ # else
+-#  define KEYS 10000
++#  define KEYS 5
+ # endif
+ #endif
+ 
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_no_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_no_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_no_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/tree_no_data_map_rand.cc	2011-05-11 20:04:41.000000000 -0500
+@@ -47,17 +47,17 @@
+ 
+ #ifndef ITERATIONS
+ # ifdef _GLIBCXX_DEBUG
+-#  define ITERATIONS 100
++#  define ITERATIONS 2
+ # else
+-#  define ITERATIONS 5000
++#  define ITERATIONS 2
+ #endif
+ #endif
+ 
+ #ifndef KEYS
+ # ifdef _GLIBCXX_DEBUG
+-#  define KEYS 200
++#  define KEYS 5
+ # else
+-#  define KEYS 10000
++#  define KEYS 5
+ # endif
+ #endif
+ 
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_data_map_rand.cc	2011-05-11 20:05:34.000000000 -0500
+@@ -46,17 +46,17 @@
+ 
+ #ifndef ITERATIONS
+ # ifdef _GLIBCXX_DEBUG
+-#  define ITERATIONS 100
++#  define ITERATIONS 2
+ # else
+-#  define ITERATIONS 5000
++#  define ITERATIONS 2
+ #endif
+ #endif
+ 
+ #ifndef KEYS
+ # ifdef _GLIBCXX_DEBUG
+-#  define KEYS 200
++#  define KEYS 5
+ # else
+-#  define KEYS 10000
++#  define KEYS 5
+ # endif
+ #endif
+ 
+diff -u gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_no_data_map_rand.cc gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_no_data_map_rand.cc
+--- gcc-4.6.0-orig/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_no_data_map_rand.cc	2011-05-11 20:01:58.000000000 -0500
++++ gcc-4.6.0/libstdc++-v3/testsuite/ext/pb_ds/regression/trie_no_data_map_rand.cc	2011-05-11 20:05:50.000000000 -0500
+@@ -46,17 +46,17 @@
+ 
+ #ifndef ITERATIONS
+ # ifdef _GLIBCXX_DEBUG
+-#  define ITERATIONS 100
++#  define ITERATIONS 2
+ # else
+-#  define ITERATIONS 5000
++#  define ITERATIONS 2
+ #endif
+ #endif
+ 
+ #ifndef KEYS
+ # ifdef _GLIBCXX_DEBUG
+-#  define KEYS 200
++#  define KEYS 5
+ # else
+-#  define KEYS 10000
++#  define KEYS 5
+ # endif
+ #endif
+ 

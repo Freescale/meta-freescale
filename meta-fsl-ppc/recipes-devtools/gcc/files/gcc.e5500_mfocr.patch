@@ -1,0 +1,181 @@
+# Problem: Although gcc is prepared to avoid "mfocr" instructions
+  (which takes 5 cycles in our parts and 2 cycles on IBM parts). This
+  instruction is used on the mentioned program. What is suspicious
+  about it, is that the code compiled for 32 bits does not use the
+  instruction. So, it could be a omission in the previous
+  implementation, or a bug, or a new opportunity.
+# Reported by: Performance team (PARC)
+# Owned by: Ping Hu
+# Action:
+    * 'mfocr' flag problem: that 'mfocr' flag was uncorrectly set for E5500,
+      which caused the 'mfocr' instructions generated even on E5500.
+    * avoid generating 'mfcr' and 'mfocr' instructions: due to the fact
+      that both instructions are expensive on Freescale processors.
+    * A target specific flag, -mslow-mfocr, can be used to avoid generating
+      'mfcr' and 'mfocr' instructions in 64-bit mode, thus restoring legacy
+      operations if desired.
+
+diff -ruN gcc-4.6.2-clean/gcc/config/rs6000/rs6000.c gcc-4.6.2/gcc/config/rs6000/rs6000.c
+--- gcc-4.6.2-clean/gcc/config/rs6000/rs6000.c	2011-11-22 11:11:47.479144000 -0600
++++ gcc-4.6.2/gcc/config/rs6000/rs6000.c	2011-11-29 16:23:45.074279998 -0600
+@@ -1885,6 +1885,7 @@
+    POWERPC_BASE_MASK | MASK_PPC_GFXOPT | MASK_POWERPC64}
+ };
+ 
++
+ /* Look up a processor name for -mcpu=xxx and -mtune=xxx.  Return -1 if the
+    name is invalid.  */
+ 
+@@ -2902,6 +2903,10 @@
+       || rs6000_cpu == PROCESSOR_PPCE6500)
+     target_flags &= ~MASK_PPC_GPOPT;
+ 
++  if (rs6000_cpu == PROCESSOR_PPCE5500)
++      target_flags &= ~MASK_MFCRF;
++
++
+   /* store_one_arg depends on expand_block_move to handle at least the
+      size of reg_parm_stack_space.  */
+   if (rs6000_block_move_inline_limit < (TARGET_POWERPC64 ? 64 : 32))
+diff -ruN gcc-4.6.2-clean/gcc/config/rs6000/rs6000.md gcc-4.6.2/gcc/config/rs6000/rs6000.md
+--- gcc-4.6.2-clean/gcc/config/rs6000/rs6000.md	2011-11-22 11:11:47.036144001 -0600
++++ gcc-4.6.2/gcc/config/rs6000/rs6000.md	2011-11-29 16:24:04.705280001 -0600
+@@ -215,6 +215,8 @@
+ ; (one with a '.') will compare; and the size used for arithmetic carries.
+ (define_mode_iterator P [(SI "TARGET_32BIT") (DI "TARGET_64BIT")])
+ 
++(define_mode_iterator P2 [(SI "TARGET_32BIT || TARGET_SLOW_MFOCR") (DI "TARGET_64BIT")])
++
+ ; Any hardware-supported floating-point mode
+ (define_mode_iterator FP [
+   (SF "TARGET_HARD_FLOAT 
+@@ -2208,9 +2210,9 @@
+ 
+ (define_insn ""
+   [(set (match_operand:CC 0 "cc_reg_operand" "=x,?y")
+-	(compare:CC (neg:P (match_operand:P 1 "gpc_reg_operand" "r,r"))
++	(compare:CC (neg:P2 (match_operand:P2 1 "gpc_reg_operand" "r,r"))
+ 		    (const_int 0)))
+-   (clobber (match_scratch:P 2 "=r,r"))]
++   (clobber (match_scratch:P2 2 "=r,r"))]
+   ""
+   "@
+    neg. %2,%1
+@@ -2220,12 +2222,12 @@
+ 
+ (define_split
+   [(set (match_operand:CC 0 "cc_reg_not_cr0_operand" "")
+-	(compare:CC (neg:P (match_operand:P 1 "gpc_reg_operand" ""))
++	(compare:CC (neg:P2 (match_operand:P2 1 "gpc_reg_operand" ""))
+ 		    (const_int 0)))
+-   (clobber (match_scratch:P 2 ""))]
++   (clobber (match_scratch:P2 2 ""))]
+   "reload_completed"
+   [(set (match_dup 2)
+-	(neg:P (match_dup 1)))
++	(neg:P2 (match_dup 1)))
+    (set (match_dup 0)
+ 	(compare:CC (match_dup 2)
+ 		    (const_int 0)))]
+@@ -2233,10 +2235,10 @@
+ 
+ (define_insn ""
+   [(set (match_operand:CC 2 "cc_reg_operand" "=x,?y")
+-	(compare:CC (neg:P (match_operand:P 1 "gpc_reg_operand" "r,r"))
++	(compare:CC (neg:P2 (match_operand:P2 1 "gpc_reg_operand" "r,r"))
+ 		    (const_int 0)))
+-   (set (match_operand:P 0 "gpc_reg_operand" "=r,r")
+-	(neg:P (match_dup 1)))]
++   (set (match_operand:P2 0 "gpc_reg_operand" "=r,r")
++	(neg:P2 (match_dup 1)))]
+   ""
+   "@
+    neg. %0,%1
+@@ -2246,13 +2248,13 @@
+ 
+ (define_split
+   [(set (match_operand:CC 2 "cc_reg_not_cr0_operand" "")
+-	(compare:CC (neg:P (match_operand:P 1 "gpc_reg_operand" ""))
++	(compare:CC (neg:P2 (match_operand:P2 1 "gpc_reg_operand" ""))
+ 		    (const_int 0)))
+-   (set (match_operand:P 0 "gpc_reg_operand" "")
+-	(neg:P (match_dup 1)))]
++   (set (match_operand:P2 0 "gpc_reg_operand" "")
++	(neg:P2 (match_dup 1)))]
+   "reload_completed"
+   [(set (match_dup 0)
+-	(neg:P (match_dup 1)))
++	(neg:P2 (match_dup 1)))
+    (set (match_dup 2)
+ 	(compare:CC (match_dup 0)
+ 		    (const_int 0)))]
+@@ -15286,31 +15288,31 @@
+   [(set_attr "length" "12")])
+ 
+ (define_insn_and_split "*gtu<mode>"
+-  [(set (match_operand:P 0 "gpc_reg_operand" "=r")
+-	(gtu:P (match_operand:P 1 "gpc_reg_operand" "r")
+-	       (match_operand:P 2 "reg_or_short_operand" "rI")))]
++  [(set (match_operand:P2 0 "gpc_reg_operand" "=r")
++	(gtu:P2 (match_operand:P2 1 "gpc_reg_operand" "r")
++	        (match_operand:P2 2 "reg_or_short_operand" "rI")))]
+   ""
+   "#"
+   ""
+-  [(set (match_dup 0) (neg:P (gtu:P (match_dup 1) (match_dup 2))))
+-   (set (match_dup 0) (neg:P (match_dup 0)))]
++  [(set (match_dup 0) (neg:P2 (gtu:P2 (match_dup 1) (match_dup 2))))
++   (set (match_dup 0) (neg:P2 (match_dup 0)))]
+   "")
+ 
+ (define_insn_and_split "*gtu<mode>_compare"
+   [(set (match_operand:CC 3 "cc_reg_operand" "=x,?y")
+ 	(compare:CC
+-	 (gtu:P (match_operand:P 1 "gpc_reg_operand" "r,r")
+-		 (match_operand:P 2 "reg_or_short_operand" "rI,rI"))
++	 (gtu:P2 (match_operand:P2 1 "gpc_reg_operand" "r,r")
++		 (match_operand:P2 2 "reg_or_short_operand" "rI,rI"))
+ 	 (const_int 0)))
+-   (set (match_operand:P 0 "gpc_reg_operand" "=r,r")
+-	(gtu:P (match_dup 1) (match_dup 2)))]
++   (set (match_operand:P2 0 "gpc_reg_operand" "=r,r")
++	(gtu:P2 (match_dup 1) (match_dup 2)))]
+   ""
+   "#"
+   ""
+-  [(set (match_dup 0) (neg:P (gtu:P (match_dup 1) (match_dup 2))))
++  [(set (match_dup 0) (neg:P2 (gtu:P2 (match_dup 1) (match_dup 2))))
+    (parallel [(set (match_dup 3)
+-		   (compare:CC (neg:P (match_dup 0)) (const_int 0)))
+-	      (set (match_dup 0) (neg:P (match_dup 0)))])]
++		   (compare:CC (neg:P2 (match_dup 0)) (const_int 0)))
++	      (set (match_dup 0) (neg:P2 (match_dup 0)))])]
+   "")
+ 
+ (define_insn_and_split "*plus_gtu<mode>"
+@@ -15345,9 +15347,9 @@
+   "")
+ 
+ (define_insn "*neg_gtu<mode>"
+-  [(set (match_operand:P 0 "gpc_reg_operand" "=r")
+-	(neg:P (gtu:P (match_operand:P 1 "gpc_reg_operand" "r")
+-		      (match_operand:P 2 "reg_or_short_operand" "rI"))))]
++  [(set (match_operand:P2 0 "gpc_reg_operand" "=r")
++	(neg:P2 (gtu:P2 (match_operand:P2 1 "gpc_reg_operand" "r")
++		      	(match_operand:P2 2 "reg_or_short_operand" "rI"))))]
+   ""
+   "{sf%I2|subf%I2c} %0,%1,%2\;{sfe|subfe} %0,%0,%0"
+   [(set_attr "type" "two")
+--- gcc-4.6.2-clean/gcc/config/rs6000/rs6000.opt	2011-11-22 11:11:47.480143999 -0600
++++ gcc-4.6.2/gcc/config/rs6000/rs6000.opt	2011-11-29 16:24:16.322280634 -0600
+@@ -381,6 +381,10 @@
+ Target
+ Generate SPE SIMD instructions on E500
+ 
++mslow-mfocr
++Target Report Var(TARGET_SLOW_MFOCR)
++Generate slow mfocr instructions
++
+ mpaired
+ Target Var(rs6000_paired_float) Save
+ Generate PPC750CL paired-single instructions

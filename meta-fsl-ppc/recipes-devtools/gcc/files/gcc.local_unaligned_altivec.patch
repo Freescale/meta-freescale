@@ -1,0 +1,18 @@
+gcc.local_unaligned_altivec
+
+Optimization:
+On Altivec targets, make all char arrays 128 bits aligned (instead of
+32 bits aligned)
+
+--- gcc-4.5.0/gcc/config/rs6000/rs6000.h-orig	2010-10-20 10:23:52.000000000 -0500
++++ gcc-4.5.0/gcc/config/rs6000/rs6000.h	2010-10-20 10:39:14.000000000 -0500
+@@ -768,7 +768,8 @@
+       ? 64								\
+       : (TREE_CODE (TYPE) == ARRAY_TYPE					\
+ 	 && TYPE_MODE (TREE_TYPE (TYPE)) == QImode			\
+-	 && (ALIGN) < BITS_PER_WORD) ? BITS_PER_WORD : (ALIGN)))
++	 && (ALIGN) < (TARGET_ALTIVEC ? 128 : BITS_PER_WORD))           \
++            ? (TARGET_ALTIVEC ? 128 : BITS_PER_WORD) : (ALIGN)))
+ 
+ /* Nonzero if move instructions will actually fail to work
+    when given unaligned data.  */

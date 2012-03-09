@@ -1,0 +1,12 @@
+diff -Naur gcc-4.6.2/gcc/config/rs6000/rs6000.c gcc-4.6.2-loop_invariant/gcc/config/rs6000/rs6000.c
+--- gcc-4.6.2/gcc/config/rs6000/rs6000.c	2011-11-24 00:03:49.709144001 -0600
++++ gcc-4.6.2-loop_invariant/gcc/config/rs6000/rs6000.c	2011-12-12 23:49:27.901487730 -0600
+@@ -2723,7 +2723,7 @@
+      calculation works better for RTL loop invariant motion on targets
+      with enough (>= 32) registers.  It is an expensive optimization.
+      So it is on only for peak performance.  */
+-  if (optimize >= 3 && global_init_p)
++  if (optimize >= 3 && global_init_p && !global_options_set.x_flag_ira_loop_pressure)
+     flag_ira_loop_pressure = 1;
+ 
+   /* Set the pointer size.  */

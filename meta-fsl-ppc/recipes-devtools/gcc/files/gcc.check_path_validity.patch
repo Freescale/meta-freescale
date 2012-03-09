@@ -1,0 +1,12 @@
+--- gcc-4_6-branch/gcc/Makefile.in.orig	2012-03-06 01:10:15.277196930 -0600
++++ gcc-4_6-branch/gcc/Makefile.in	2012-03-06 01:10:54.083378912 -0600
+@@ -4170,6 +4170,9 @@
+ 	else \
+ 	  set -e; for ml in `cat fixinc_list`; do \
+ 	    sysroot_headers_suffix=`echo $${ml} | sed -e 's/;.*$$//'`; \
++            if test "x$${sysroot_headers_suffix}" = "x"; then \
++              continue; \
++            fi; \
+ 	    multi_dir=`echo $${ml} | sed -e 's/^[^;]*;//'`; \
+ 	    fix_dir=include-fixed$${multi_dir}; \
+ 	    if ! $(inhibit_libc) && test ! -d ${SYSTEM_HEADER_DIR}; then \

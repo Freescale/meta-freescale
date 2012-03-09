@@ -1,0 +1,11 @@
+--- gcc-4_6-branch/gcc/config/host-linux.c.orig	2012-03-08 02:18:57.282190580 -0600
++++ gcc-4_6-branch/gcc/config/host-linux.c	2012-03-08 02:19:30.930158694 -0600
+@@ -17,6 +17,8 @@
+    along with GCC; see the file COPYING3.  If not see
+    <http://www.gnu.org/licenses/>.  */
+ 
++#include <bits/posix1_lim.h>
++
+ #include "config.h"
+ #include "system.h"
+ #include "coretypes.h"

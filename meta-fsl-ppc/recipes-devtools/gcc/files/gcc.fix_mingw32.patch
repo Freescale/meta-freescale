@@ -1,0 +1,11 @@
+--- gcc-4.6.0/gcc/configure~	2011-02-28 09:36:37.000000000 -0600
++++ gcc-4.6.0/gcc/configure	2011-06-28 10:07:22.430630818 -0500
+@@ -10898,7 +10898,7 @@
+ 	saved_CFLAGS="${CFLAGS}"
+ 	CC="${CC_FOR_BUILD}" CFLAGS="${CFLAGS_FOR_BUILD}" \
+ 	LDFLAGS="${LDFLAGS_FOR_BUILD}" \
+-	${realsrcdir}/configure \
++	${realsrcdir}/configure --with-gnu-ld --with-gnu-as --enable-targets=all \
+ 		--enable-languages=${enable_languages-all} \
+ 		--target=$target_alias --host=$build_alias --build=$build_alias
+ 	CFLAGS="${saved_CFLAGS}"

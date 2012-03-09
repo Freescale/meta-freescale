@@ -1,0 +1,9 @@
+diff -Naur gcc-4.6.2/gcc/config/rs6000/sysv4.h gcc-4.6.2-MTWX51204-dwarf-vector-reg/gcc/config/rs6000/sysv4.h
+--- gcc-4.6.2/gcc/config/rs6000/sysv4.h	2011-03-07 01:50:23.000000000 -0600
++++ gcc-4.6.2-MTWX51204-dwarf-vector-reg/gcc/config/rs6000/sysv4.h	2011-12-16 09:44:18.469039002 -0600
+@@ -1035,5 +1035,3 @@
+ 
+ /* This target uses the sysv4.opt file.  */
+ #define TARGET_USES_SYSV4_OPT 1
+-
+-#undef DBX_REGISTER_NUMBER

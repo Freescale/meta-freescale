@@ -1,0 +1,16 @@
+gcc.fix_longversionstring
+
+Freescale version string is really long, and it can overflow a
+buffer. This patch extends the size of the buffer.
+
+--- gcc-4.6.0/gcc/dwarf2out.c-orig	2011-03-18 11:22:01.000000000 -0500
++++ gcc-4.6.0/gcc/dwarf2out.c	2011-05-06 10:24:24.114277925 -0500
+@@ -20005,7 +20005,7 @@
+ gen_compile_unit_die (const char *filename)
+ {
+   dw_die_ref die;
+-  char producer[250];
++  char producer[2500];
+   const char *language_string = lang_hooks.name;
+   int language;
+ 

@@ -1,0 +1,32 @@
+gcc.ld_unaligned-460
+
+Optimization:
+Allows a "ld" of an address that is world aligned. There is a penalty
+performance, but it still beats a pair of "lwz".
+
+Index: gcc-4.4-e500mc64-20090322/gcc/config/rs6000/rs6000.c
+===================================================================
+--- gcc-4.4-e500mc64-20090322/gcc/config/rs6000/rs6000.c	(revision 137727)
++++ gcc-4.4-e500mc64-20090322/gcc/config/rs6000/rs6000.c	(working copy)
+@@ -10640,7 +10667,9 @@
+       else if (bytes >= 8 && TARGET_POWERPC64
+ 	       /* 64-bit loads and stores require word-aligned
+ 		  displacements.  */
+-	       && (align >= 64 || (!STRICT_ALIGNMENT && align >= 32)))
++	       && (align >= 64 || (!STRICT_ALIGNMENT && align >= 32)
++		   || rs6000_cpu == PROCESSOR_PPCE5500
++		   || rs6000_cpu == PROCESSOR_PPCE6500))
+ 	{
+ 	  clear_bytes = 8;
+ 	  mode = DImode;
+@@ -10775,7 +10808,9 @@
+       else if (bytes >= 8 && TARGET_POWERPC64
+ 	       /* 64-bit loads and stores require word-aligned
+ 		  displacements.  */
+-	       && (align >= 64 || (!STRICT_ALIGNMENT && align >= 32)))
++	       && (align >= 64 || (!STRICT_ALIGNMENT && align >= 32)
++		   || rs6000_cpu == PROCESSOR_PPCE5500
++		   || rs6000_cpu == PROCESSOR_PPCE6500))
+ 	{
+ 	  move_bytes = 8;
+ 	  mode = DImode;

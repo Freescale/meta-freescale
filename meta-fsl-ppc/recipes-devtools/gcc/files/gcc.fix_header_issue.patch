@@ -1,0 +1,12 @@
+--- gcc-4_6-branch/gcc/limitx.h.orig	2012-03-08 01:11:23.024440826 -0600
++++ gcc-4_6-branch/gcc/limitx.h	2012-03-08 01:13:44.372515706 -0600
+@@ -30,6 +30,7 @@
+ #define _GCC_LIMITS_H_
+ 
+ #ifndef _LIBC_LIMITS_H_
+-/* Use "..." so that we find syslimits.h only in this same directory.  */
+-#include "syslimits.h"
++#define _GCC_NEXT_LIMITS_H              /* tell gcc's limits.h to recurse */
++#include_next <limits.h>
++#undef _GCC_NEXT_LIMITS_H
+ #endif

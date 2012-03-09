@@ -1,0 +1,18 @@
+gcc.fix_cloogstatic2
+
+When only static libraries are available (so we can build cc1 without
+depending on extras libraries), we get a bunch of undefined symbols
+that are defined in libpwl. This patch explicitly adds libpwl to the
+linker command.
+
+--- gcc-trunk/configure.orig	2011-03-10 12:48:29.433528020 -0600
++++ gcc-trunk/configure	2011-03-10 12:52:11.342145967 -0600
+@@ -5770,7 +5770,7 @@
+     LDFLAGS="$saved_LDFLAGS"
+   fi
+ 
+-  ppllibs="$ppllibs -lppl_c -lppl $pwllib -lgmpxx"
++  ppllibs="$ppllibs -lppl_c -lppl -lpwl $pwllib -lgmpxx"
+ 
+   if test "$enable_ppl_version_check" != no; then
+     saved_CFLAGS="$CFLAGS"

@@ -1,0 +1,43 @@
+For altivec targets, 32 bits, the spec2k-gap bmk does not build.  The
+reason is that at some point the vectorizer creates an CONST_VECTOR
+rtl, where the elements are SYMBOL_REFs.
+
+Gcc ICE on simplify_immed_subreg, where it checks that CONST_VECTORS
+can be only made of CONST_INT, CONST_DOUBLE, or CONST_FIXED.
+
+I really don't understand what that function does, but since the
+vectorizer will bailout later anyway, I think it is safe to treat
+SYMBOL_REFs as CONST_INT. (NOT for FSF submission, as I really don't
+have a clue)
+
+This problem does not exists on gcc-4.5
+
+This problem does not exists on 64 bits, since there is no altivec
+type that can support 64bit elements.
+
+Here is a simplified test case:
+
+typedef void f_t (void);
+extern f_t f;
+extern f_t *A[12];
+extern f_t *B[12];
+void bad_vector ()
+{                                                                                                                                                    
+  int i;                                                                                                                                             
+                                                                                                                                                     
+  for (i = 0; i < 12; i++ ) {                                                                                                                        
+    A[i] = f;                                                                                                                                        
+    B[i] = f;                                                                                                                                        
+  }                                                                                                                                                  
+}                                                                                                                                                    
+
+--- gcc-4.6.2/gcc/simplify-rtx.c~	2011-12-28 12:28:01.700039002 -0600
++++ gcc-4.6.2/gcc/simplify-rtx.c	2011-12-28 12:38:22.287039002 -0600
+@@ -5001,6 +5001,7 @@
+       switch (GET_CODE (el))
+ 	{
+ 	case CONST_INT:
++        case SYMBOL_REF:
+ 	  for (i = 0;
+ 	       i < HOST_BITS_PER_WIDE_INT && i < elem_bitsize;
+ 	       i += value_bit)

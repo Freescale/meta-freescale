@@ -1,0 +1,1059 @@
+diff -ruN gcc-4.6.0-orig/gcc/config/rs6000/rs6000-builtin.def gcc-4.6.0-new/gcc/config/rs6000/rs6000-builtin.def
+--- gcc-4.6.0-orig/gcc/config/rs6000/rs6000-builtin.def	2011-02-21 15:38:21.000000000 -0600
++++ gcc-4.6.0-new/gcc/config/rs6000/rs6000-builtin.def	2011-07-25 12:32:26.626006000 -0500
+@@ -750,6 +750,71 @@
+ RS6000_BUILTIN(SPE_BUILTIN_MFSPEFSCR,			RS6000_BTC_MISC)
+ RS6000_BUILTIN(SPE_BUILTIN_BRINC,			RS6000_BTC_MISC)
+ 
++/* ISEL builtins.  */
++/* Generic versions that get resolved to specific builtins.  */
++RS6000_BUILTIN(RS6000_BUILTIN_ISELEQ,                  RS6000_BTC_PURE)
++RS6000_BUILTIN_EQUATE(ISEL_BUILTIN_OVERLOADED_FIRST,
++                     RS6000_BUILTIN_ISELEQ)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELGT,                  RS6000_BTC_PURE)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELLT,                  RS6000_BTC_PURE)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELGTU,                 RS6000_BTC_PURE)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELLTU,                 RS6000_BTC_PURE)
++/* Same deal, but for 64-bit comparisons.  */
++RS6000_BUILTIN(RS6000_BUILTIN_ISELEQD,                 RS6000_BTC_PURE)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELGTD,                 RS6000_BTC_PURE)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELLTD,                 RS6000_BTC_PURE)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELGTDU,                        RS6000_BTC_PURE)
++RS6000_BUILTIN(RS6000_BUILTIN_ISELLTDU,                        RS6000_BTC_PURE)
++RS6000_BUILTIN_EQUATE(ISEL_BUILTIN_OVERLOADED_LAST,
++                     RS6000_BUILTIN_ISELLTDU)
++
++/* Each set of arguments is polymorphic in selected arguments and return
++   value.  */
++#undef RS6000_ISEL_BASE
++#define RS6000_ISEL_BASE(ARG, PRED, CMP)                                       \
++  RS6000_BUILTIN(RS6000_BUILTIN_ISEL_##PRED##CMP##_##ARG##_SS, RS6000_BTC_PURE) \
++  RS6000_BUILTIN(RS6000_BUILTIN_ISEL_##PRED##CMP##_##ARG##_PP, RS6000_BTC_PURE) \
++  RS6000_BUILTIN(RS6000_BUILTIN_ISEL_##PRED##CMP##_##ARG##_UU, RS6000_BTC_PURE)
++#undef RS6000_ISEL_PTR_ARG
++#define RS6000_ISEL_PTR_ARG(PRED, CMP) RS6000_ISEL_BASE(PP, PRED, CMP)
++#undef RS6000_ISEL_SIGNED_ARG
++#define RS6000_ISEL_SIGNED_ARG(PRED, CMP) RS6000_ISEL_BASE(SS, PRED, CMP)
++#undef RS6000_ISEL_UNSIGNED_ARG
++#define RS6000_ISEL_UNSIGNED_ARG(PRED, CMP) RS6000_ISEL_BASE(UU, PRED, CMP)
++
++#undef RS6000_ISEL_EQ
++#define RS6000_ISEL_EQ(CMP)                    \
++  RS6000_ISEL_PTR_ARG(EQ, CMP)                 \
++  RS6000_ISEL_SIGNED_ARG(EQ, CMP)              \
++  RS6000_ISEL_UNSIGNED_ARG(EQ, CMP)
++
++#undef RS6000_ISEL_LT
++#define RS6000_ISEL_LT(CMP) RS6000_ISEL_SIGNED_ARG(LT, CMP)
++
++#undef RS6000_ISEL_GT
++#define RS6000_ISEL_GT(CMP) RS6000_ISEL_SIGNED_ARG(GT, CMP)
++
++#undef RS6000_ISEL_LTU
++#define RS6000_ISEL_LTU(CMP)                   \
++  RS6000_ISEL_PTR_ARG(LTU, CMP)                        \
++  RS6000_ISEL_UNSIGNED_ARG(LTU, CMP)
++
++#undef RS6000_ISEL_GTU
++#define RS6000_ISEL_GTU(CMP)                   \
++  RS6000_ISEL_PTR_ARG(GTU, CMP)                        \
++  RS6000_ISEL_UNSIGNED_ARG(GTU, CMP)
++
++RS6000_ISEL_EQ(CMPW)
++RS6000_ISEL_LT(CMPW)
++RS6000_ISEL_GT(CMPW)
++RS6000_ISEL_LTU(CMPW)
++RS6000_ISEL_GTU(CMPW)
++RS6000_ISEL_EQ(CMPD)
++RS6000_ISEL_LT(CMPD)
++RS6000_ISEL_GT(CMPD)
++RS6000_ISEL_LTU(CMPD)
++RS6000_ISEL_GTU(CMPD)
++
+ /* PAIRED builtins.  */
+ RS6000_BUILTIN(PAIRED_BUILTIN_DIVV2SF3,			RS6000_BTC_MISC)
+ RS6000_BUILTIN(PAIRED_BUILTIN_ABSV2SF2,			RS6000_BTC_MISC)
+diff -ruN gcc-4.6.0-orig/gcc/config/rs6000/rs6000.c gcc-4.6.0-new/gcc/config/rs6000/rs6000.c
+--- gcc-4.6.0-orig/gcc/config/rs6000/rs6000.c	2011-03-15 07:57:37.000000000 -0500
++++ gcc-4.6.0-new/gcc/config/rs6000/rs6000.c	2011-07-25 13:19:52.415921000 -0500
+@@ -12402,6 +12402,289 @@
+   return target;
+ }
+ 
++/* isel builtins are a bit funny, because we want the user to be able to do:
++
++   char *p, *q, *r;
++   int x, y, z;
++   unsigned int a, b, c;
++   ...
++   p = __builtin_iseleq (i, j, q, r);
++   x = __builtin_iseleq (i, j, y, z);
++   a = __builtin_iseleq (i, j, b, c);
++
++   and, of course, i and j may be of several different types depending on the
++   condition.
++
++   We handle this by having generic builtins that
++   TARGET_RESOLVE_OVERLOADED_BUILTIN takes and turns into calls to our
++   specific builtins.  */
++
++/* Macros to help constructing the isel_builtin_desc arrays.
++   These closely mirror the macros in rs6000-builtins.def.  */
++/* HACK: Use VOIDmode here as a constant approximation to Pmode and fix
++   at runtime.  We can't use Pmode because in biarch its definition is
++   not constant.  */
++#define ISEL_Pmode VOIDmode
++#define ISEL_BASE(FLAGS, ARG, RESULT, PRED, CMP, MODE, RMODE)          \
++  { NULL, FLAGS, RS6000_BUILTIN_ISEL_##PRED##CMP##_##ARG##_##RESULT,   \
++      PRED, MODE, RMODE },
++#define ISEL_P_RESULT(FLAGS, ARG, PRED, CMP, MODE, RMODE)              \
++  ISEL_BASE (FLAGS | ISEL_FLAG_SEL_PTR, ARG, PP, PRED,         \
++            CMP, MODE, ISEL_Pmode)
++#define ISEL_S_RESULT(FLAGS, ARG, PRED, CMP, MODE, RMODE)              \
++  ISEL_BASE (FLAGS | ISEL_FLAG_SEL_SIGNED, ARG, SS, PRED,              \
++            CMP, MODE, RMODE)
++#define ISEL_U_RESULT(FLAGS, ARG, PRED, CMP, MODE, RMODE)              \
++  ISEL_BASE (FLAGS | ISEL_FLAG_SEL_UNSIGNED, ARG, UU, PRED,            \
++            CMP, MODE, RMODE)
++
++#define ISEL_EXPAND_ARG(FLAG, ARG, PRED, CMP, MODE, RMODE)             \
++  ISEL_P_RESULT (FLAG, ARG, PRED, CMP, MODE, RMODE)            \
++  ISEL_S_RESULT (FLAG, ARG, PRED, CMP, MODE, RMODE)            \
++  ISEL_U_RESULT (FLAG, ARG, PRED, CMP, MODE, RMODE)
++#define ISEL_PTR_ARG(PRED, CMP, MODE)                          \
++  ISEL_EXPAND_ARG (ISEL_FLAG_CMP_PTR, PP, PRED, CMP, ISEL_Pmode, MODE)
++#define ISEL_SIGNED_ARG(PRED, CMP, MODE)                       \
++  ISEL_EXPAND_ARG (ISEL_FLAG_CMP_SIGNED, SS, PRED, CMP, MODE, MODE)
++#define ISEL_UNSIGNED_ARG(PRED, CMP, MODE)                     \
++  ISEL_EXPAND_ARG (ISEL_FLAG_CMP_UNSIGNED, UU, PRED, CMP, MODE, MODE)
++
++#define ISEL_EQ(CMP, MODE)                                     \
++  ISEL_PTR_ARG (EQ, CMP, MODE)                                 \
++  ISEL_SIGNED_ARG (EQ, CMP, MODE)                              \
++  ISEL_UNSIGNED_ARG (EQ, CMP, MODE)
++#define ISEL_LT(CMP, MODE) ISEL_SIGNED_ARG (LT, CMP, MODE)
++#define ISEL_GT(CMP, MODE) ISEL_SIGNED_ARG (GT, CMP, MODE)
++#define ISEL_LTU(CMP, MODE)                                    \
++  ISEL_PTR_ARG (LTU, CMP, MODE)                                        \
++  ISEL_UNSIGNED_ARG (LTU, CMP, MODE)
++#define ISEL_GTU(CMP, MODE)                                    \
++  ISEL_PTR_ARG (GTU, CMP, MODE)                                        \
++  ISEL_UNSIGNED_ARG (GTU, CMP, MODE)
++
++const struct isel_builtin_desc builtin_iselw[32] = {
++  ISEL_EQ (CMPW, SImode)
++  ISEL_LT (CMPW, SImode)
++  ISEL_GT (CMPW, SImode)
++  ISEL_LTU (CMPW, SImode)
++  ISEL_GTU (CMPW, SImode)
++  { "__builtin_iseleq", 0, RS6000_BUILTIN_ISELEQ, EQ, SImode, SImode },
++  { "__builtin_isellt", 0, RS6000_BUILTIN_ISELLT, LT, SImode, SImode },
++  { "__builtin_iselgt", 0, RS6000_BUILTIN_ISELGT, GT, SImode, SImode },
++  { "__builtin_iselltu", 0, RS6000_BUILTIN_ISELLTU, LTU, SImode, SImode },
++  { "__builtin_iselgtu", 0, RS6000_BUILTIN_ISELGTU, GTU, SImode, SImode }
++};
++
++const struct isel_builtin_desc builtin_iseld[32] = {
++  ISEL_EQ (CMPD, DImode)
++  ISEL_LT (CMPD, DImode)
++  ISEL_GT (CMPD, DImode)
++  ISEL_LTU (CMPD, DImode)
++  ISEL_GTU (CMPD, DImode)
++  { "__builtin_isel64eq", 0, RS6000_BUILTIN_ISELEQD, EQ, DImode, DImode },
++  { "__builtin_isel64lt", 0, RS6000_BUILTIN_ISELLTD, LT, DImode, DImode },
++  { "__builtin_isel64gt", 0, RS6000_BUILTIN_ISELGTD, GT, DImode, DImode },
++  { "__builtin_isel64ltu", 0, RS6000_BUILTIN_ISELLTDU, LTU, DImode, DImode },
++  { "__builtin_isel64gtu", 0, RS6000_BUILTIN_ISELGTDU, GTU, DImode, DImode }
++};
++
++/* Return the mode which DESC uses for comparisons.  */
++
++static enum machine_mode
++isel_cmp_mode (const struct isel_builtin_desc *desc)
++{
++  enum machine_mode mode = (enum machine_mode) desc->cmp_mode;
++
++  return (mode == VOIDmode ? Pmode : mode);
++}
++
++/* Return the mode in which DESC selects arguments.  */
++
++static enum machine_mode
++isel_sel_mode (const struct isel_builtin_desc *desc)
++{
++  enum machine_mode mode = (enum machine_mode) desc->sel_mode;
++
++  return (mode == VOIDmode ? Pmode : mode);
++}
++
++/* Return a tree describing the arguments for DESC according to CMPP:
++   true for comparison arguments, false for select arguments.  */
++
++static tree
++isel_argtype (const struct isel_builtin_desc *desc, bool cmpp)
++{
++  switch (desc->arg_flags & (cmpp
++                            ? ISEL_FLAG_CMP_MASK
++                            : ISEL_FLAG_SEL_MASK))
++    {
++    case ISEL_FLAG_CMP_PTR:
++    case ISEL_FLAG_SEL_PTR:
++      return ptr_type_node;
++    case ISEL_FLAG_CMP_SIGNED:
++      return (isel_cmp_mode (desc) == SImode
++             ? integer_type_node
++             : long_integer_type_node);
++    case ISEL_FLAG_SEL_SIGNED:
++      return (isel_sel_mode (desc) == SImode
++             ? integer_type_node
++             : long_integer_type_node);
++    case ISEL_FLAG_CMP_UNSIGNED:
++      return (isel_cmp_mode (desc) == SImode
++             ? unsigned_type_node
++             : long_unsigned_type_node);
++    case ISEL_FLAG_SEL_UNSIGNED:
++    default:
++      return (isel_sel_mode (desc) == SImode
++             ? unsigned_type_node
++             : long_unsigned_type_node);
++    }
++}
++
++/* Return a mnemonic string describing the argument or result of FLAGS
++   depending on CMPP.  */
++
++static const char *
++isel_strdesc (int flags, bool cmpp)
++{
++  switch (flags & (cmpp ? ISEL_FLAG_CMP_MASK : ISEL_FLAG_SEL_MASK))
++    {
++    case ISEL_FLAG_CMP_PTR:
++    case ISEL_FLAG_SEL_PTR:
++      return "p";
++    case ISEL_FLAG_CMP_SIGNED:
++    case ISEL_FLAG_SEL_SIGNED:
++      return "s";
++    case ISEL_FLAG_CMP_UNSIGNED:
++    case ISEL_FLAG_SEL_UNSIGNED:
++      return "u";
++    default:
++      gcc_unreachable ();
++    }
++}
++
++/* Initialize N_DESC isel builtins from DESC.  SIGNED_TYPE holds the
++   basic type for signed variants of isel, UNSIGNED_TYPE the type for
++   unsigned variants.  */
++
++static void
++rs6000_init_isel_builtins (const struct isel_builtin_desc *desc, int n_descs)
++{
++  int i;
++  const char *is64 = (desc == &builtin_iselw[0] ? "32" : "64");
++
++  for (i = 0; i < n_descs; i++)
++    {
++      const struct isel_builtin_desc *d = &desc[i];
++      tree cmptype, seltype, ftype;
++
++      cmptype = isel_argtype (d, true);
++      seltype = isel_argtype (d, false);
++
++      ftype = build_function_type_list (seltype, cmptype, cmptype,
++                                       seltype, seltype, NULL_TREE);
++
++      if (d->name)
++       def_builtin (MASK_ISEL, d->name, ftype, d->code);
++      else
++       {
++         char builtin_name[40];
++
++         sprintf (builtin_name, "__builtin_isel%s%s%s%s%s%s",
++                  is64,
++                  GET_RTX_NAME (d->cmp_code),
++                  GET_MODE_NAME (isel_cmp_mode (d)),
++                  isel_strdesc (d->arg_flags, true),
++                  isel_strdesc (d->arg_flags, false),
++                  GET_MODE_NAME (isel_sel_mode (d)));
++
++         def_builtin (MASK_ISEL, ggc_strdup (builtin_name), ftype, d->code);
++       }
++    }
++}
++
++static rtx
++rs6000_expand_isel_builtin (const struct isel_builtin_desc *desc,
++                           int n_descs, tree exp, rtx target, int fcode)
++{
++  int i;
++
++  for (i = 0; i < n_descs; i++)
++    {
++      const struct isel_builtin_desc *d = &desc[i];
++
++      if (fcode == (int) d->code)
++       {
++         int opidx;
++         unsigned int j;
++         rtx cmp;
++         rtx operands[4];
++         enum insn_code icode;
++         enum machine_mode opmode;
++         enum machine_mode cmpmode = isel_cmp_mode (d);
++         enum machine_mode selmode = isel_sel_mode (d);
++
++         /* Determine underlying isel insn.  */
++         switch (d->cmp_code)
++           {
++           case GTU:
++           case LTU:
++             icode = (Pmode == SImode
++                      ? CODE_FOR_isel_unsigned_si
++                      : CODE_FOR_isel_unsigned_di);
++             break;
++           default:
++             icode = (Pmode == SImode
++                      ? CODE_FOR_isel_signed_si
++                      : CODE_FOR_isel_signed_di);
++             break;
++           }
++
++         for (j = 0; j < ARRAY_SIZE (operands); j++)
++           {
++             tree arg = CALL_EXPR_ARG (exp, j);
++
++             /* If we got invalid arguments, bail out before generating
++                bad rtl.  */
++             if (arg == error_mark_node)
++               return const0_rtx;
++
++             operands[j] = expand_normal (arg);
++
++             /* Validate.  */
++             /* HACK: The isel pattern doesn't actually consume all the
++                operands to the builtin; it only consumes 2 and 3.  The
++                other two will be handed off to a compare
++                insn. Unfortunately, said insn is not named, so we
++                can't directly access its insn_data here.  Fake it by
++                validating operands 0 and 1 with the isel pattern; that
++                should be good enough.  */
++             opidx = (j < 2 ? 2 : j);
++             opmode = (j < 2 ? cmpmode : selmode);
++             if (! (*insn_data[icode].operand[opidx].predicate) (operands[j],
++                                                                 opmode))
++               operands[j] = copy_to_mode_reg (opmode, operands[j]);
++           }
++
++         /* Validate target.  */
++         if (target == NULL_RTX
++             || GET_MODE (target) != selmode
++             || ! (*insn_data[icode].operand[0].predicate) (target, selmode))
++           target = gen_reg_rtx (selmode);
++
++         /* Generate comparison.  */
++         cmp = gen_rtx_fmt_ee ((enum rtx_code)d->cmp_code, cmpmode,
++                               operands[0], operands[1]);
++
++         rs6000_emit_int_cmove (target, cmp, operands[2], operands[3]);
++
++         return target;
++       }
++    }
++
++  return NULL_RTX;
++}
++
+ /* Expand an expression EXP that calls a built-in function,
+    with result going to TARGET if that's convenient
+    (and in mode MODE if that's convenient).
+@@ -12520,6 +12803,24 @@
+       if (success)
+ 	return ret;
+     }  
++  if (TARGET_ISEL)
++    {
++      ret = rs6000_expand_isel_builtin (builtin_iselw,
++                                       ARRAY_SIZE (builtin_iselw),
++                                       exp, target, fcode);
++
++      if (ret != NULL_RTX)
++       return ret;
++    }
++  if (TARGET_ISEL64)
++    {
++      ret = rs6000_expand_isel_builtin (builtin_iseld,
++                                       ARRAY_SIZE (builtin_iseld),
++                                       exp, target, fcode);
++
++      if (ret != NULL_RTX)
++       return ret;
++    }
+ 
+   gcc_assert (TARGET_ALTIVEC || TARGET_VSX || TARGET_SPE || TARGET_PAIRED_FLOAT);
+ 
+@@ -12738,6 +13039,10 @@
+     spe_init_builtins ();
+   if (TARGET_ALTIVEC)
+     altivec_init_builtins ();
++  if (TARGET_ISEL)
++    rs6000_init_isel_builtins (builtin_iselw, ARRAY_SIZE (builtin_iselw));
++  if (TARGET_ISEL64)
++    rs6000_init_isel_builtins (builtin_iseld, ARRAY_SIZE (builtin_iseld));
+   if (TARGET_ALTIVEC || TARGET_SPE || TARGET_PAIRED_FLOAT || TARGET_VSX)
+     rs6000_common_init_builtins ();
+   if (TARGET_FRE)
+diff -ruN gcc-4.6.0-orig/gcc/config/rs6000/rs6000-c.c gcc-4.6.0-new/gcc/config/rs6000/rs6000-c.c
+--- gcc-4.6.0-orig/gcc/config/rs6000/rs6000-c.c	2011-02-02 23:42:19.000000000 -0600
++++ gcc-4.6.0-new/gcc/config/rs6000/rs6000-c.c	2011-07-25 16:07:14.616209000 -0500
+@@ -3439,7 +3439,7 @@
+ /* Implementation of the resolve_overloaded_builtin target hook, to
+    support Altivec's overloaded builtins.  */
+ 
+-tree
++static tree
+ altivec_resolve_overloaded_builtin (location_t loc, tree fndecl,
+ 				    void *passed_arglist)
+ {
+@@ -3770,3 +3770,148 @@
+   error ("invalid parameter combination for AltiVec intrinsic");
+   return error_mark_node;
+ }
++
++/* Return true if the pair of arguments in ARGS is acceptable according
++   to DECLTYPES and FLAGS.  CMPP determines whether this is for the
++   comparison arguments.  */
++
++static bool
++isel_arguments_valid (tree *args, tree *decltypes, int flags, bool cmpp)
++{
++  tree type0 = TREE_TYPE (args[0]);
++  tree type1 = TREE_TYPE (args[1]);
++  tree decltype0 = decltypes[0];
++  tree decltype1 = decltypes[1];
++
++  switch (flags & (cmpp ? ISEL_FLAG_CMP_MASK : ISEL_FLAG_SEL_MASK))
++    {
++      /* For pointer arguments and results, we just need to make sure
++        we're receiving pointers, and they can be freely converted to
++        and from void *.  For pointer results, we also need to ensure
++        that the types of the passed arguments are compatible: this is
++        similar to what the ?: construct would need to ensure.  */
++    case ISEL_FLAG_CMP_PTR:
++    case ISEL_FLAG_SEL_PTR:
++      {
++       /* Results compatible with each other?  */
++       if (!lang_hooks.types_compatible_p (type0, type1))
++         return false;
++
++       return (POINTER_TYPE_P (type0)
++               && POINTER_TYPE_P (type1));
++      }
++      break;
++      /* For signed and unsigned arguments and results, we just need to
++        make sure that the argument types are compatible with the
++        declared types; we can insert conversions to make everything
++        match up.  */
++    case ISEL_FLAG_CMP_SIGNED:
++    case ISEL_FLAG_SEL_SIGNED:
++    case ISEL_FLAG_CMP_UNSIGNED:
++    case ISEL_FLAG_SEL_UNSIGNED:
++      return (lang_hooks.types_compatible_p (type0, decltype0)
++             && lang_hooks.types_compatible_p (type1, decltype1));
++    default:
++      ;
++    }
++
++  gcc_unreachable ();
++}
++
++/* Determine if FNDECL is a generic isel intrinsic and if it can be
++   resolved to a non-generic version with a proper type using the
++   descriptions found in DESC.  Return a call to the non-generic builtin
++   if so.  */
++
++static tree
++rs6000_resolve_isel_builtin (location_t loc, tree fndecl,
++                            void *passed_arglist,
++                            const struct isel_builtin_desc *desc,
++                            int n_descs)
++{
++  VEC(tree,gc) *arglist = (VEC(tree,gc) *) passed_arglist;
++  unsigned int nargs = VEC_length (tree, arglist);
++  int i;
++  unsigned int fcode = DECL_FUNCTION_CODE (fndecl);
++  const struct isel_builtin_desc *generic = NULL;
++
++  /* Is this even a builtin we care about?  */
++  if (fcode < ISEL_BUILTIN_OVERLOADED_FIRST
++      || fcode > ISEL_BUILTIN_OVERLOADED_LAST)
++    return NULL_TREE;
++
++  if (nargs != 4)
++    {
++      error ("isel intrinsics only accept 4 arguments");
++      return error_mark_node;
++    }
++
++  /* Find the generic builtin we're resolving.  */
++  for (i = 0; i < n_descs; i++)
++    if (desc[i].code == fcode)
++      {
++       generic = &desc[i];
++       break;
++      }
++
++  /* Happens if we're looking for a 64-bit builtin in the 32-bit
++     descriptors.  */
++  if (generic == NULL)
++    return NULL_TREE;
++
++  /* Try all the builtins whose comparison matches the generic one.  */
++  for (i = 0; i < n_descs; i++)
++    {
++      const struct isel_builtin_desc *d = &desc[i];
++      int j;
++      tree *argp = VEC_address (tree, arglist);
++      tree impl_fndecl;
++      tree decltypes[4], t;
++      tree converted_args[4];
++
++      if (d == generic || d->cmp_code != generic->cmp_code)
++       continue;
++
++      impl_fndecl = rs6000_builtin_decls[d->code];
++      t = TYPE_ARG_TYPES (TREE_TYPE (impl_fndecl));
++      for (j = 0 ; t != void_list_node; j++, t = TREE_CHAIN (t))
++       decltypes[j] = TREE_VALUE (t);
++
++      if (!isel_arguments_valid (argp, decltypes, d->arg_flags, true)
++         || !isel_arguments_valid (argp+2, decltypes+2, d->arg_flags, false))
++       continue;
++
++      /* We got here, we're ok.  Build a new, resolved CALL_EXPR.  */
++      for (j = 0; j < 4; j++)
++       converted_args[j] = fold_convert (decltypes[j], argp[j]);
++
++      return build_call_expr_loc (loc, impl_fndecl, 4,
++                                 converted_args[0], converted_args[1],
++                                 converted_args[2], converted_args[3]);
++    }
++
++  error ("invalid parameter combination for isel intrinsic");
++  return error_mark_node;
++}
++
++tree
++rs6000_resolve_overloaded_builtin (location_t loc, tree fndecl, void *arglist)
++{
++  tree t;
++
++  t = altivec_resolve_overloaded_builtin (loc, fndecl, arglist);
++  if (t)
++    return t;
++
++  t = rs6000_resolve_isel_builtin (loc, fndecl, arglist,
++                                  builtin_iselw, ARRAY_SIZE (builtin_iselw));
++  if (t)
++    return t;
++
++  t = rs6000_resolve_isel_builtin (loc, fndecl, arglist,
++                                  builtin_iseld, ARRAY_SIZE (builtin_iseld));
++  if (t)
++    return t;
++
++  return NULL_TREE;
++}
+diff -ruN gcc-4.6.0-orig/gcc/config/rs6000/rs6000.h gcc-4.6.0-new/gcc/config/rs6000/rs6000.h
+--- gcc-4.6.0-orig/gcc/config/rs6000/rs6000.h	2011-03-07 13:27:09.000000000 -0600
++++ gcc-4.6.0-new/gcc/config/rs6000/rs6000.h	2011-07-25 16:07:04.045105000 -0500
+@@ -535,7 +535,7 @@
+ #define REGISTER_TARGET_PRAGMAS() do {				\
+   c_register_pragma (0, "longcall", rs6000_pragma_longcall);	\
+   targetm.target_option.pragma_parse = rs6000_pragma_target_parse; \
+-  targetm.resolve_overloaded_builtin = altivec_resolve_overloaded_builtin; \
++  targetm.resolve_overloaded_builtin = rs6000_resolve_overloaded_builtin; \
+ } while (0)
+ 
+ /* Target #defines.  */
+@@ -2446,3 +2446,41 @@
+ extern GTY(()) tree rs6000_builtin_types[RS6000_BTI_MAX];
+ extern GTY(()) tree rs6000_builtin_decls[RS6000_BUILTIN_COUNT];
+ 
++/* Values for struct isel_builtin_desc.arg_flags.  */
++enum {
++  ISEL_FLAG_CMP_PTR = 0x1,
++  ISEL_FLAG_CMP_SIGNED = 0x2,
++  ISEL_FLAG_CMP_UNSIGNED = 0x4,
++  ISEL_FLAG_CMP_MASK = 0x7,
++  ISEL_FLAG_SEL_PTR = 0x10,
++  ISEL_FLAG_SEL_SIGNED = 0x20,
++  ISEL_FLAG_SEL_UNSIGNED = 0x40,
++  ISEL_FLAG_SEL_MASK = 0x70
++};
++
++struct isel_builtin_desc {
++  /* Name of this builtin.  NULL if we should construct it.  */
++  const char *name;
++
++  /* Flags for argument combinations accepted by the builtin.
++     Zero if this builtin is a generic builtin, to be resolved later.  */
++  int arg_flags;
++
++  /* The code of the builtin.  */
++  enum rs6000_builtins code;
++
++  /* rtx_code and machine_mode are not available here; use ints instead.  */
++  /* The comparison code the builtin uses.  */
++  int cmp_code;
++
++  /* The mode the builtin does comparisons in.  */
++  int cmp_mode;
++
++  /* The mode the builtin's selected arguments are in.
++     Also happens to be its result mode.  */
++  int sel_mode;
++};
++
++/* Arrays describing isel builtins.  */
++extern const struct isel_builtin_desc builtin_iselw[32];
++extern const struct isel_builtin_desc builtin_iseld[32];
+diff -ruN gcc-4.6.0-orig/gcc/config/rs6000/rs6000-protos.h gcc-4.6.0-new/gcc/config/rs6000/rs6000-protos.h
+--- gcc-4.6.0-orig/gcc/config/rs6000/rs6000-protos.h	2011-03-15 07:57:37.000000000 -0500
++++ gcc-4.6.0-new/gcc/config/rs6000/rs6000-protos.h	2011-07-25 16:07:50.484773000 -0500
+@@ -142,7 +142,7 @@
+ 						     unsigned int);
+ extern unsigned int darwin_rs6000_special_round_type_align (tree, unsigned int,
+ 							    unsigned int);
+-extern tree altivec_resolve_overloaded_builtin (location_t, tree, void *);
++extern tree rs6000_resolve_overloaded_builtin (location_t, tree, void *);
+ extern rtx rs6000_libcall_value (enum machine_mode);
+ extern rtx rs6000_va_arg (tree, tree);
+ extern int function_ok_for_sibcall (tree);
+diff -ruN gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel64.c gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel64.c
+--- gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel64.c	1969-12-31 18:00:00.000000000 -0600
++++ gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel64.c	2011-07-25 12:27:55.343932000 -0500
+@@ -0,0 +1,75 @@
++/* { dg-do compile { target { powerpc*-*-* && lp64 } } } */
++/* { dg-options "-mcpu=e500mc64" } */
++
++#include "builtin-isel.h"
++
++/* Equality comparisons.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64eq
++
++SIGNED64_PROTO
++{
++  L = ISEL_BUILTIN (x, y, a, b);
++  U = ISEL_BUILTIN (x, y, (unsigned long) a, (unsigned long) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++  L = ISEL_BUILTIN (p, q, a, b);
++  /* Equality checks explicitly permit unsigned comparison operands.  */
++  L = ISEL_BUILTIN ((unsigned long) x, (unsigned long) y, a, b);
++  r = ISEL_BUILTIN ((unsigned long) x, (unsigned long) y, p, q);
++}
++
++/* less-than, greater-than.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64lt
++
++SIGNED64_PROTO
++{
++  L = ISEL_BUILTIN (x, y, a, b);
++  U = ISEL_BUILTIN (x, y, (unsigned long) a, (unsigned long) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64gt
++
++SIGNED64_PROTO
++{
++  L = ISEL_BUILTIN (x, y, a, b);
++  U = ISEL_BUILTIN (x, y, (unsigned long) a, (unsigned long) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++}
++
++/* Unsigned variants.  These permit unsigned and pointer operands for
++   comparison only.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64ltu
++
++UNSIGNED64_PROTO
++{
++  L = ISEL_BUILTIN (x, y, a, b);
++  U = ISEL_BUILTIN (x, y, (unsigned long) a, (unsigned long) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++  L = ISEL_BUILTIN (p, q, a, b);
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64gtu
++
++UNSIGNED64_PROTO
++{
++  L = ISEL_BUILTIN (x, y, a, b);
++  U = ISEL_BUILTIN (x, y, (unsigned long) a, (unsigned long) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++  L = ISEL_BUILTIN (p, q, a, b);
++}
++
++/* Don't use bare isel, as that'll match function names and the like.  */
++/* { dg-final { scan-assembler-times "isel " 26 } } */
+diff -ruN gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel64-errors.c gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel64-errors.c
+--- gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel64-errors.c	1969-12-31 18:00:00.000000000 -0600
++++ gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel64-errors.c	2011-07-25 12:27:55.372965000 -0500
+@@ -0,0 +1,110 @@
++/* Test rejection of invalid parameter combinations in isel builtins.  */
++/* { dg-do compile { target { powerpc*-*-* && lp64 } } } */
++/* { dg-options "-mcpu=e5500" } */
++
++#include "builtin-isel.h"
++
++
++/* Equality comparisons.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64eq
++
++SIGNED64_PROTO
++{
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((unsigned long) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (unsigned long) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((long *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (long *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned long) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned long) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (long *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (long *) q); /* { dg-error "isel intrinsic" } */
++}
++
++/* less-than, greater-than.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64lt
++
++SIGNED64_PROTO
++{
++  /* Unsigned comparison should be done with the *u variants.  */
++  ISEL_BUILTIN ((unsigned long) x, (unsigned long) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* So should pointer comparison.  */
++  ISEL_BUILTIN (p, q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((unsigned long) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (unsigned long) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((long *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (long *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned long) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned long) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (long *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (long *) q); /* { dg-error "isel intrinsic" } */
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64gt
++
++SIGNED64_PROTO
++{
++  /* Unsigned comparison should be done with the *u variants.  */
++  ISEL_BUILTIN ((unsigned long) x, (unsigned long) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* So should pointer comparison.  */
++  ISEL_BUILTIN (p, q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((unsigned long) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (unsigned long) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((long *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (long *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned long) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned long) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (long *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (long *) q); /* { dg-error "isel intrinsic" } */
++}
++
++/* Unsigned variants.  These permit unsigned and pointer operands for
++   comparison only.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64ltu
++
++UNSIGNED64_PROTO
++{
++  /* Signed comparison should be done with the signed variants.  */
++  ISEL_BUILTIN ((long) x, (long) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((long) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (long) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((long *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (long *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned long) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned long) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (long *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (long *) q); /* { dg-error "isel intrinsic" } */
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isel64gtu
++
++UNSIGNED64_PROTO
++{
++  /* Signed comparison should be done with the signed variants.  */
++  ISEL_BUILTIN ((long) x, (long) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((long) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (long) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((long *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (long *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned long) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned long) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (long *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (long *) q); /* { dg-error "isel intrinsic" } */
++}
+diff -ruN gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel.c gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel.c
+--- gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel.c	1969-12-31 18:00:00.000000000 -0600
++++ gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel.c	2011-07-25 12:27:55.405959000 -0500
+@@ -0,0 +1,81 @@
++/* { dg-do compile } */
++/* { dg-options "-mcpu=e500mc" } */
++
++#include "builtin-isel.h"
++
++/* We're not being clever with the preprocessor here because DejaGNU
++   will get confused.  We do try to use it to eliminate what duplication
++   we can.  */
++
++/* We check to see that the resolution permits polymorphic results.  */
++
++/* Equality comparisons.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iseleq
++
++SIGNED_PROTO
++{
++  i = ISEL_BUILTIN (x, y, a, b);
++  u = ISEL_BUILTIN (x, y, (unsigned int) a, (unsigned int) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++  i = ISEL_BUILTIN (p, q, a, b);
++  /* Equality checks explicitly permit unsigned comparison operands.  */
++  i = ISEL_BUILTIN ((unsigned int) x, (unsigned int) y, a, b);
++  r = ISEL_BUILTIN ((unsigned int) x, (unsigned int) y, p, q);
++}
++
++/* less-than, greater-than.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isellt
++
++SIGNED_PROTO
++{
++  i = ISEL_BUILTIN (x, y, a, b);
++  u = ISEL_BUILTIN (x, y, (unsigned int) a, (unsigned int) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iselgt
++
++SIGNED_PROTO
++{
++  i = ISEL_BUILTIN (x, y, a, b);
++  u = ISEL_BUILTIN (x, y, (unsigned int) a, (unsigned int) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++}
++
++/* Unsigned variants.  These permit unsigned and pointer operands for
++   comparison only.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iselltu
++
++UNSIGNED_PROTO
++{
++  i = ISEL_BUILTIN (x, y, a, b);
++  u = ISEL_BUILTIN (x, y, (unsigned int) a, (unsigned int) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++  i = ISEL_BUILTIN (p, q, a, b);
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iselgtu
++
++UNSIGNED_PROTO
++{
++  i = ISEL_BUILTIN (x, y, a, b);
++  u = ISEL_BUILTIN (x, y, (unsigned int) a, (unsigned int) b);
++  r = ISEL_BUILTIN (x, y, p, q);
++  r = ISEL_BUILTIN (x, y, (char *) p, (char *) q);
++  i = ISEL_BUILTIN (p, q, a, b);
++}
++
++/* Don't use bare isel, as that'll match function names and the like.  */
++/* { dg-final { scan-assembler-times "isel " 26 } } */
+diff -ruN gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel-errors.c gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel-errors.c
+--- gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel-errors.c	1969-12-31 18:00:00.000000000 -0600
++++ gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel-errors.c	2011-07-25 12:27:55.443938000 -0500
+@@ -0,0 +1,117 @@
++/* Test rejection of invalid parameter combinations in isel builtins.  */
++/* { dg-do compile } */
++/* { dg-options "-mcpu=e500mc" } */
++
++#include "builtin-isel.h"
++
++/* We're not being clever with the preprocessor here because DejaGNU
++   will get confused.  We do try to use it to eliminate what duplication
++   we can.  */
++
++/* We check basic resolution of each builtin.  We also check to see that
++   the resolution permits polymorphic results.  Argument type mismatches
++   and result type mismatches are not permitted, except where noted.  */
++
++/* Equality comparisons.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iseleq
++
++SIGNED_PROTO
++{
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((unsigned int) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (unsigned int) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((int *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (int *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned int) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned int) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (int *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (int *) q); /* { dg-error "isel intrinsic" } */
++}
++
++/* less-than, greater-than.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME isellt
++
++SIGNED_PROTO
++{
++  /* Unsigned comparison should be done with the *u variants.  */
++  ISEL_BUILTIN ((unsigned int) x, (unsigned int) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* So should pointer comparison.  */
++  ISEL_BUILTIN (p, q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((unsigned int) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (unsigned int) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((int *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (int *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned int) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned int) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (int *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (int *) q); /* { dg-error "isel intrinsic" } */
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iselgt
++
++SIGNED_PROTO
++{
++  /* Unsigned comparison should be done with the *u variants.  */
++  ISEL_BUILTIN ((unsigned int) x, (unsigned int) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* So should pointer comparison.  */
++  ISEL_BUILTIN (p, q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((unsigned int) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (unsigned int) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((int *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (int *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned int) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned int) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (int *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (int *) q); /* { dg-error "isel intrinsic" } */
++}
++
++/* Unsigned variants.  These permit unsigned and pointer operands for
++   comparison only.  */
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iselltu
++
++UNSIGNED_PROTO
++{
++  /* Signed comparison should be done with the signed variants.  */
++  ISEL_BUILTIN ((int) x, (int) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((int) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (int) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((int *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (int *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned int) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned int) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (int *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (int *) q); /* { dg-error "isel intrinsic" } */
++}
++
++#undef FUNCTION_NAME
++#define FUNCTION_NAME iselgtu
++
++UNSIGNED_PROTO
++{
++  /* Signed comparison should be done with the signed variants.  */
++  ISEL_BUILTIN ((int) x, (int) y, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in argument type.  */
++  ISEL_BUILTIN ((int) x, y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, (int) y, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN ((int *) p, q, a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (p, (int *) q, a, b); /* { dg-error "isel intrinsic" } */
++  /* Mismatches in return type.  */
++  ISEL_BUILTIN (x, y, (unsigned int) a, b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, a, (unsigned int) b); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, (int *) p, q); /* { dg-error "isel intrinsic" } */
++  ISEL_BUILTIN (x, y, p, (int *) q); /* { dg-error "isel intrinsic" } */
++}
+diff -ruN gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel.h gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel.h
+--- gcc-4.6.0-orig/gcc/testsuite/gcc.target/powerpc/builtin-isel.h	1969-12-31 18:00:00.000000000 -0600
++++ gcc-4.6.0-new/gcc/testsuite/gcc.target/powerpc/builtin-isel.h	2011-07-25 12:27:55.483942000 -0500
+@@ -0,0 +1,25 @@
++/* Common definitions for builtin isel testing.  */
++
++#define SIGNED_ARGLIST (int x, int y, int a, int b, void *p, void *q)
++#define UNSIGNED_ARGLIST (unsigned int x, unsigned int y, \
++			  int a, int b, void *p, void *q)
++
++#define SIGNED_PROTO void FUNCTION_NAME SIGNED_ARGLIST
++#define UNSIGNED_PROTO void FUNCTION_NAME UNSIGNED_ARGLIST
++
++#define SIGNED64_ARGLIST (long x, long y, long a, long b, void *p, void *q)
++#define UNSIGNED64_ARGLIST (unsigned long x, unsigned long y, \
++			    long a, long b, void *p, void *q)
++
++#define SIGNED64_PROTO void FUNCTION_NAME SIGNED64_ARGLIST
++#define UNSIGNED64_PROTO void FUNCTION_NAME UNSIGNED64_ARGLIST
++
++#define CONCAT2(X,Y) X##Y
++#define CONCAT(X,Y) CONCAT2(X, Y)
++#define ISEL_BUILTIN CONCAT(__builtin_, FUNCTION_NAME)
++
++volatile int i;
++volatile unsigned int u;
++volatile void *r;
++volatile long L;
++volatile unsigned long U;

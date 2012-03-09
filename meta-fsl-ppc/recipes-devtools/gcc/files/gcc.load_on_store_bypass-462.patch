@@ -1,0 +1,138 @@
+
+ This patch implements option -fbypass-load-on-store
+
+ A load on store collision causes the load to to be replayed if the store has not completed.
+ Under -fbypass-load-on-store, GCC will attempt to avoid a load on store collision by trying
+ to space the load away from the store by scheduling upto 14 instructions in between, to 
+ prevent the load from executing too early.
+
+ -fbypass-load-on-store is enabled under -fschedule-insns
+
+ Cores supported: e5500, e6500, e500mc
+
+ Ref: Load-on-Store Collision Avoidance by Software Stall of Load. James Yang. May 18, 2010
+ 
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/common.opt fsl-gcc-4.6.2-new-bypass/gcc/common.opt
+--- fsl-gcc-4.6.2-sans-bypass/gcc/common.opt	2011-11-29 11:10:18.967872292 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/common.opt	2011-11-29 14:02:46.765994436 -0600
+@@ -840,6 +840,10 @@
+ Common Report Var(flag_btr_bb_exclusive) Optimization
+ Restrict target load migration not to re-use registers in any basic block
+ 
++fbypass-load-on-store
++Common Report Var(flag_bypass_load_on_store) Optimization
++Bypass load on store collision
++
+ fcall-saved-
+ Common Joined RejectNegative Var(common_deferred_options) Defer
+ -fcall-saved-<register>	Mark <register> as being preserved across functions
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e500mc64.md fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e500mc64.md
+--- fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e500mc64.md	2011-11-29 11:11:38.454868780 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e500mc64.md	2011-11-29 17:10:39.849869060 -0600
+@@ -189,3 +189,5 @@
+   (and (eq_attr "type" "ddiv")
+        (eq_attr "cpu" "ppce500mc64"))
+   "e500mc64_decode,e500mc64_issue+e500mc64_fpu,e500mc64_fpu*34")
++
++(define_bypass 15 "e500mc64_store" "e500mc64_load" "rs6000_bypass_load_on_store_collision_p")
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e500mc.md fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e500mc.md
+--- fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e500mc.md	2011-11-29 11:11:38.479869032 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e500mc.md	2011-11-29 17:10:27.810997020 -0600
+@@ -198,3 +198,5 @@
+   (and (eq_attr "type" "ddiv")
+        (eq_attr "cpu" "ppce500mc"))
+   "e500mc_decode,e500mc_issue+e500mc_fpu,e500mc_fpu*65")
++
++(define_bypass 15 "e500mc_store" "e500mc_load" "rs6000_bypass_load_on_store_collision_p")
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e5500.md fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e5500.md
+--- fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e5500.md	2011-11-29 11:11:38.321744639 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e5500.md	2011-11-29 17:10:47.255997293 -0600
+@@ -174,3 +174,5 @@
+   (and (eq_attr "type" "cr_logical,delayed_cr")
+        (eq_attr "cpu" "ppce5500"))
+   "e5500_decode,e5500_bu")
++
++(define_bypass 15 "e5500_store" "e5500_load" "rs6000_bypass_load_on_store_collision_p")
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e6500.md fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e6500.md
+--- fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/e6500.md	2011-11-29 11:11:37.831996567 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/e6500.md	2011-11-29 17:11:00.902869709 -0600
+@@ -211,3 +211,5 @@
+   (and (eq_attr "type" "vecperm")
+        (eq_attr "cpu" "ppce6500"))
+   "e6500_decode,e6500_vecperm")
++
++(define_bypass 15 "e6500_store" "e6500_load" "rs6000_bypass_load_on_store_collision_p")
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/rs6000.c fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/rs6000.c
+--- fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/rs6000.c	2011-11-29 11:11:38.393748363 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/rs6000.c	2011-11-29 17:10:15.740745470 -0600
+@@ -28719,3 +28719,20 @@
+ 
+ 
+ #include "gt-rs6000.h"
++
++bool
++rs6000_bypass_load_on_store_collision_p (rtx out_insn, rtx in_insn)
++{
++  /* The out_insn is a store and the in_insn is a load */
++  if (flag_bypass_load_on_store &&
++      (GET_CODE (PATTERN (out_insn)) == SET &&
++       GET_CODE (SET_DEST (PATTERN (out_insn))) == MEM &&
++       GET_CODE (SET_SRC (PATTERN (out_insn))) == REG) &&
++      (GET_CODE (PATTERN (in_insn)) == SET &&
++       GET_CODE (SET_DEST (PATTERN (in_insn))) == REG &&
++       GET_CODE (SET_SRC (PATTERN (in_insn))) == MEM))
++    return rtx_equal_p (SET_DEST (PATTERN (out_insn)),
++                        SET_SRC  (PATTERN (in_insn)));
++  else
++    return false;
++}
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/rs6000-protos.h fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/rs6000-protos.h
+--- fsl-gcc-4.6.2-sans-bypass/gcc/config/rs6000/rs6000-protos.h	2011-11-29 11:11:37.783996630 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/config/rs6000/rs6000-protos.h	2011-11-29 17:42:51.443119385 -0600
+@@ -174,6 +174,8 @@
+ 
+ extern void rs6000_aix_asm_output_dwarf_table_ref (char *);
+ 
++extern bool rs6000_bypass_load_on_store_collision_p (rtx out_insn, rtx in_insn);
++
+ /* Declare functions in rs6000-c.c */
+ 
+ extern void rs6000_pragma_longcall (struct cpp_reader *);
+diff -ruN fsl-gcc-4.6.2-sans-bypass/gcc/testsuite/gcc.target/powerpc/bypass-load-on-store.c fsl-gcc-4.6.2-new-bypass/gcc/testsuite/gcc.target/powerpc/bypass-load-on-store.c
+--- fsl-gcc-4.6.2-sans-bypass/gcc/testsuite/gcc.target/powerpc/bypass-load-on-store.c	1969-12-31 18:00:00.000000000 -0600
++++ fsl-gcc-4.6.2-new-bypass/gcc/testsuite/gcc.target/powerpc/bypass-load-on-store.c	2011-11-30 16:36:55.168869498 -0600
+@@ -0,0 +1,34 @@
++/* { dg-do compile { target { powerpc*-*-* } } } */
++/* { dg-options "-O0 -fschedule-insns -fbypass-load-on-store -fdump-rtl-sched1 -fsched-verbose=2" } */
++
++void nescaf(void)
++{
++	long a, b, c, d,
++             e, f, g, h,
++	     i, j, k, l,
++             m, n, o, p,
++             q, r, s, t,
++
++	     z, w;
++
++	a = 41; b = 79; c = 20; d = 11;
++	e = 13; f = 43; g = 13; h = 21;
++	i = 12; j = 45; k = 55; l = 90;
++	m = 23; n = 61; o = 89; p = 53;
++	q = 83; r = 52; s = 76; t = 99;
++
++	/* Now, we have a store followed by a load. The assignments to a-t are
++	 * all independent of the store-load computation below. The question is:
++	 * Under -fschedule-insns -fbypass-load-on-store, are 14 of the above
++	 * instructions moved between the store-load?
++	 */
++	z = 121;
++	w = z;
++}
++
++/* Note: There is going to be exactly one insn that will be assigned cost 15.
++ *       Since its insn-number will likely change, we do not include the insn
++ *       number in the scan - just the part of the dump that'll be invariant.
++ */
++/* { dg-final { scan-rtl-dump "into queue with cost=15" "sched1" { target powerpc*-*-* } } } */
++/* { dg-final { cleanup-rtl-dump "sched1" } } */

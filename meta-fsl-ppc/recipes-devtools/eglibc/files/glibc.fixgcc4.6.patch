@@ -1,0 +1,29 @@
+glibc.fixgcc4.6
+
+Glibc build scripts relies on information given by "gcc -v --help".
+With gcc-4.6 and latter, this information is not printed with "--help"
+anymore, but with "--target-help". This patch should be used until
+glibs sources catches up with gcc.
+
+--- libc/configure.in-orig	2010-06-07 11:11:01.000000000 -0500
++++ libc/configure.in	2010-06-07 11:11:28.000000000 -0500
+@@ -1620,7 +1620,7 @@
+       AC_CACHE_CHECK(for -z relro option,
+ 		     libc_cv_z_relro, [dnl
+   libc_cv_z_relro=no
+-  if AC_TRY_COMMAND([${CC-cc} -v --help 2>&1|grep "z relro" 1>&AS_MESSAGE_LOG_FD])
++  if AC_TRY_COMMAND([${CC-cc} -v --target-help 2>&1|grep "z relro" 1>&AS_MESSAGE_LOG_FD])
+   then
+     if AC_TRY_COMMAND([${CC-cc} -Wl,--verbose 2>&1|grep DATA_SEGMENT_RELRO_END 1>&AS_MESSAGE_LOG_FD])
+     then
+--- libc/configure-orig	2010-06-07 11:11:13.000000000 -0500
++++ libc/configure	2010-06-07 11:12:00.000000000 -0500
+@@ -6670,7 +6670,7 @@
+   $as_echo_n "(cached) " >&6
+ else
+     libc_cv_z_relro=no
+-  if { ac_try='${CC-cc} -v --help 2>&1|grep "z relro" 1>&5'
++  if { ac_try='${CC-cc} -v --target-help 2>&1|grep "z relro" 1>&5'
+   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+   (eval $ac_try) 2>&5
+   ac_status=$?

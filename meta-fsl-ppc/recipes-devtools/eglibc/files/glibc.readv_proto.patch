@@ -1,0 +1,99 @@
+glibc.readv_proto
+
+Unfortunate choice of variable names. Causes syntax errors on Altivec
+enabled targets.
+
+diff -u libc-orig/sysdeps/unix/sysv/linux/readv.c libc/sysdeps/unix/sysv/linux/readv.c
+--- libc-orig/sysdeps/unix/sysv/linux/readv.c	2011-05-11 11:01:36.625600000 -0500
++++ libc/sysdeps/unix/sysv/linux/readv.c	2011-05-11 11:03:19.443599768 -0500
+@@ -40,20 +40,20 @@
+ 
+ 
+ ssize_t
+-__libc_readv (fd, vector, count)
++__libc_readv (fd, vec_tor, count)
+      int fd;
+-     const struct iovec *vector;
++     const struct iovec *vec_tor;
+      int count;
+ {
+   ssize_t result;
+ 
+   if (SINGLE_THREAD_P)
+-    result = INLINE_SYSCALL (readv, 3, fd, CHECK_N (vector, count), count);
++    result = INLINE_SYSCALL (readv, 3, fd, CHECK_N (vec_tor, count), count);
+   else
+     {
+       int oldtype = LIBC_CANCEL_ASYNC ();
+ 
+-      result = INLINE_SYSCALL (readv, 3, fd, CHECK_N (vector, count), count);
++      result = INLINE_SYSCALL (readv, 3, fd, CHECK_N (vec_tor, count), count);
+ 
+       LIBC_CANCEL_RESET (oldtype);
+     }
+@@ -64,7 +64,7 @@
+   if (result >= 0 || errno != EINVAL || count <= UIO_FASTIOV)
+     return result;
+ 
+-  return __atomic_readv_replacement (fd, vector, count);
++  return __atomic_readv_replacement (fd, vec_tor, count);
+ #endif
+ }
+ strong_alias (__libc_readv, __readv)
+diff -u libc-orig/sysdeps/unix/sysv/linux/writev.c libc/sysdeps/unix/sysv/linux/writev.c
+--- libc-orig/sysdeps/unix/sysv/linux/writev.c	2011-05-11 11:01:36.577599548 -0500
++++ libc/sysdeps/unix/sysv/linux/writev.c	2011-05-11 11:03:33.994599785 -0500
+@@ -40,20 +40,20 @@
+ 
+ 
+ ssize_t
+-__libc_writev (fd, vector, count)
++__libc_writev (fd, vec_tor, count)
+      int fd;
+-     const struct iovec *vector;
++     const struct iovec *vec_tor;
+      int count;
+ {
+   ssize_t result;
+ 
+   if (SINGLE_THREAD_P)
+-    result = INLINE_SYSCALL (writev, 3, fd, CHECK_N (vector, count), count);
++    result = INLINE_SYSCALL (writev, 3, fd, CHECK_N (vec_tor, count), count);
+   else
+     {
+       int oldtype = LIBC_CANCEL_ASYNC ();
+ 
+-      result = INLINE_SYSCALL (writev, 3, fd, CHECK_N (vector, count), count);
++      result = INLINE_SYSCALL (writev, 3, fd, CHECK_N (vec_tor, count), count);
+ 
+       LIBC_CANCEL_RESET (oldtype);
+     }
+@@ -64,7 +64,7 @@
+   if (result >= 0 || errno != EINVAL || count <= UIO_FASTIOV)
+     return result;
+ 
+-  return __atomic_writev_replacement (fd, vector, count);
++  return __atomic_writev_replacement (fd, vec_tor, count);
+ #endif
+ }
+ strong_alias (__libc_writev, __writev)
+diff -u libc-orig/include/sys/uio.h libc/include/sys/uio.h
+--- libc-orig/include/sys/uio.h	2011-05-11 11:07:53.953602501 -0500
++++ libc/include/sys/uio.h	2011-05-11 11:08:25.117599576 -0500
+@@ -2,12 +2,12 @@
+ #include <misc/sys/uio.h>
+ 
+ /* Now define the internal interfaces.  */
+-extern ssize_t __readv (int __fd, __const struct iovec *__vector,
++extern ssize_t __readv (int __fd, __const struct iovec *__vec_tor,
+ 			int __count);
+-extern ssize_t __libc_readv (int __fd, __const struct iovec *__vector,
++extern ssize_t __libc_readv (int __fd, __const struct iovec *__vec_tor,
+ 			     int __count);
+-extern ssize_t __writev (int __fd, __const struct iovec *__vector,
++extern ssize_t __writev (int __fd, __const struct iovec *__vec_tor,
+ 			 int __count);
+-extern ssize_t __libc_writev (int __fd, __const struct iovec *__vector,
++extern ssize_t __libc_writev (int __fd, __const struct iovec *__vec_tor,
+ 			      int __count);
+ #endif

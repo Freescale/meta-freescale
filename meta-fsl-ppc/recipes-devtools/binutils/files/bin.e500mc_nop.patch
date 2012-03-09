@@ -1,0 +1,114 @@
+Generate the preferred NOP: ori r0, r0, 0 in the place of ori r2, r2, 0
+and add the nop test cases in gas for e500mc64, e5500 and e6500.
+
+diff -ruN binutils-4.6.0-orig/gas/config/tc-ppc.c binutils-4.6.0-new/gas/config/tc-ppc.c
+--- binutils-4.6.0-orig/gas/config/tc-ppc.c	2011-08-18 16:02:21.847979825 -0500
++++ binutils-4.6.0-new/gas/config/tc-ppc.c	2011-08-19 10:09:19.888849978 -0500
+@@ -5815,8 +5817,14 @@
+ 	    }
+ 
+ 	  if ((ppc_cpu & PPC_OPCODE_POWER7) != 0)
+-	    /* power7 group terminating nop: "ori 2,2,0".  */
+-	    md_number_to_chars (dest, 0x60420000, 4);
++	    {
++	      if (ppc_cpu & PPC_OPCODE_E500MC)
++		/* e500mc group terminating nop: "ori 0,0,0".  */
++		md_number_to_chars (dest, 0x60000000, 4);
++	      else
++		/* power7 group terminating nop: "ori 2,2,0".  */
++		md_number_to_chars (dest, 0x60420000, 4);
++	    }
+ 	  else
+ 	    /* power6 group terminating nop: "ori 1,1,0".  */
+ 	    md_number_to_chars (dest, 0x60210000, 4);
+diff -ruN binutils-4.6.0-orig/gas/testsuite/gas/ppc/e500mc64_nop.d binutils-4.6.0-new/gas/testsuite/gas/ppc/e500mc64_nop.d
+--- binutils-4.6.0-orig/gas/testsuite/gas/ppc/e500mc64_nop.d	1969-12-31 18:00:00.000000000 -0600
++++ binutils-4.6.0-new/gas/testsuite/gas/ppc/e500mc64_nop.d	2011-08-19 10:16:29.561849966 -0500
+@@ -0,0 +1,13 @@
++#as: -mppc -me500mc64
++#objdump: -dr -Me500mc64
++#name: Power E500MC64 nop tests
++
++.*: +file format elf(32)?(64)?-powerpc.*
++
++Disassembly of section \.text:
++
++0+00 <start>:
++   0:	60 00 00 00 	nop
++   4:	60 00 00 00 	nop
++   8:	60 00 00 00 	nop
++   c:	60 00 00 00 	nop
+diff -ruN binutils-4.6.0-orig/gas/testsuite/gas/ppc/e500mc64_nop.s binutils-4.6.0-new/gas/testsuite/gas/ppc/e500mc64_nop.s
+--- binutils-4.6.0-orig/gas/testsuite/gas/ppc/e500mc64_nop.s	1969-12-31 18:00:00.000000000 -0600
++++ binutils-4.6.0-new/gas/testsuite/gas/ppc/e500mc64_nop.s	2011-08-19 10:16:29.561849966 -0500
+@@ -0,0 +1,5 @@
++# Power E500MC64 nop tests
++	.section  ".text"
++start:
++	nop
++	.p2align 4,,15
+diff -ruN binutils-4.6.0-orig/gas/testsuite/gas/ppc/e5500_nop.d binutils-4.6.0-new/gas/testsuite/gas/ppc/e5500_nop.d
+--- binutils-4.6.0-orig/gas/testsuite/gas/ppc/e5500_nop.d	1969-12-31 18:00:00.000000000 -0600
++++ binutils-4.6.0-new/gas/testsuite/gas/ppc/e5500_nop.d	2011-08-19 10:16:29.561849966 -0500
+@@ -0,0 +1,13 @@
++#as: -mppc -me5500
++#objdump: -dr -Me5500
++#name: Power E5500 nop tests
++
++.*: +file format elf(32)?(64)?-powerpc.*
++
++Disassembly of section \.text:
++
++0+00 <start>:
++   0:	60 00 00 00 	nop
++   4:	60 00 00 00 	nop
++   8:	60 00 00 00 	nop
++   c:	60 00 00 00 	nop
+diff -ruN binutils-4.6.0-orig/gas/testsuite/gas/ppc/e5500_nop.s binutils-4.6.0-new/gas/testsuite/gas/ppc/e5500_nop.s
+--- binutils-4.6.0-orig/gas/testsuite/gas/ppc/e5500_nop.s	1969-12-31 18:00:00.000000000 -0600
++++ binutils-4.6.0-new/gas/testsuite/gas/ppc/e5500_nop.s	2011-08-19 10:16:29.561849966 -0500
+@@ -0,0 +1,5 @@
++# Power E5500 nop tests
++	.section  ".text"
++start:
++	nop
++	.p2align 4,,15
+diff -ruN binutils-4.6.0-orig/gas/testsuite/gas/ppc/e6500_nop.d binutils-4.6.0-new/gas/testsuite/gas/ppc/e6500_nop.d
+--- binutils-4.6.0-orig/gas/testsuite/gas/ppc/e6500_nop.d	1969-12-31 18:00:00.000000000 -0600
++++ binutils-4.6.0-new/gas/testsuite/gas/ppc/e6500_nop.d	2011-08-19 10:16:29.561849966 -0500
+@@ -0,0 +1,13 @@
++#as: -mppc -me6500
++#objdump: -dr -Me6500
++#name: Power E6500 nop tests
++
++.*: +file format elf(32)?(64)?-powerpc.*
++
++Disassembly of section \.text:
++
++0+00 <start>:
++   0:	60 00 00 00 	nop
++   4:	60 00 00 00 	nop
++   8:	60 00 00 00 	nop
++   c:	60 00 00 00 	nop
+diff -ruN binutils-4.6.0-orig/gas/testsuite/gas/ppc/e6500_nop.s binutils-4.6.0-new/gas/testsuite/gas/ppc/e6500_nop.s
+--- binutils-4.6.0-orig/gas/testsuite/gas/ppc/e6500_nop.s	1969-12-31 18:00:00.000000000 -0600
++++ binutils-4.6.0-new/gas/testsuite/gas/ppc/e6500_nop.s	2011-08-19 10:16:29.562849956 -0500
+@@ -0,0 +1,5 @@
++# Power E6500 nop tests
++	.section  ".text"
++start:
++	nop
++	.p2align 4,,15
+diff -ruN binutils-4.6.0-orig/gas/testsuite/gas/ppc/ppc.exp binutils-4.6.0-new/gas/testsuite/gas/ppc/ppc.exp
+--- binutils-4.6.0-orig/gas/testsuite/gas/ppc/ppc.exp	2011-08-19 10:15:29.445978575 -0500
++++ binutils-4.6.0-new/gas/testsuite/gas/ppc/ppc.exp	2011-08-19 10:16:17.827852501 -0500
+@@ -43,6 +43,9 @@
+ 	run_dump_test "ppc750ps"
+ 	run_dump_test "e500mc"
+ 	run_dump_test "e6500"
++	run_dump_test "e500mc64_nop"
++	run_dump_test "e5500_nop"
++	run_dump_test "e6500_nop"
+ 	run_dump_test "a2"
+ 	run_dump_test "cell"
+ 	run_dump_test "common"
