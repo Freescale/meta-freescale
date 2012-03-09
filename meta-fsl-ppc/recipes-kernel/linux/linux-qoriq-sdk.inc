@@ -1,6 +1,6 @@
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-PV = "3.0.6"
+PV = "3.0.18"
 PR = "r2"
 
 SRCREV = "1e3e8ed15249d73a066ddfe2e80882935c35dcb7"
