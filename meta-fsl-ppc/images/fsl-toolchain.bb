@@ -8,8 +8,6 @@ TOOLCHAIN_TARGET_TASK += " \
 	dtc \
 	"
 
-TOOLCHAIN_TARGET_TASK_append_e500mc = " usdpaa"
-
 TOOLCHAIN_HOST_TASK += " \
 	dtc-nativesdk \
 	"
