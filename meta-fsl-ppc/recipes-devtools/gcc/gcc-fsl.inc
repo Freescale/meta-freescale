@@ -37,8 +37,9 @@ SRC_URI = "svn://gcc.gnu.org/svn/gcc/branches;module=${BRANCH};proto=http \
 	   file://gcc.check_path_validity.patch \
 	   file://gcc.fix_header_issue.patch \
 	   file://gcc.fix_SSIZE_MAX_undefine_issue.patch \
+	   file://GPLUSPLUS_INCLUDE_DIR_with_sysroot_fsl.patch \
 "
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR .= "+${DISTRO}.0"
+PR .= "+${DISTRO}.1"
