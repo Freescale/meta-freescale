@@ -8,4 +8,4 @@ SRC_URI = "\
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR .= "+${DISTRO}.1"
+PR .= "+${DISTRO}.2"
