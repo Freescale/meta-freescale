@@ -1,4 +1,4 @@
-SRC_URI = "svn://www.eglibc.org/svn/branches/;module=${EGLIBC_BRANCH};proto=http \
+SRC_URI_fsl = "svn://www.eglibc.org/svn/branches/;module=${EGLIBC_BRANCH};proto=http \
 		file://glibc.undefined_static.patch \
 		file://glibc.fixgcc4.6.patch \
 		file://glibc.readv_proto.patch \
@@ -11,4 +11,4 @@ SRC_URI = "svn://www.eglibc.org/svn/branches/;module=${EGLIBC_BRANCH};proto=http
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR .= "+${DISTRO}.0"
+PR_fsl .= "+${DISTRO}.0"

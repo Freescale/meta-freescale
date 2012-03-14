@@ -4,13 +4,13 @@
 #                   file://COPYING.LIB;md5=2d5025d4aa3495befef8f17206a5b0a1 \
 #                   file://COPYING.RUNTIME;md5=fe60d87048567d4fe8c8a0ed2448bcc8"
 
-BINV = "4.6.2"
+BINV_fsl = "4.6.2"
 
-SRCREV = "180516"
+SRCREV_fsl = "180516"
 # ignore linaro backports since we are changing the SRCREV
-GCC-4_6-BRANCH-LINARO-BACKPORTS = ""
+GCC-4_6-BRANCH-LINARO-BACKPORTS_fsl = ""
 
-SRC_URI = "svn://gcc.gnu.org/svn/gcc/branches;module=${BRANCH};proto=http \
+SRC_URI_fsl = "svn://gcc.gnu.org/svn/gcc/branches;module=${BRANCH};proto=http \
            file://gcc-4.3.1-ARCH_FLAGS_FOR_TARGET.patch \
            file://gcc.fix_longversionstring.patch \
            file://gcc.rm_slow_tests.patch \
@@ -42,4 +42,4 @@ SRC_URI = "svn://gcc.gnu.org/svn/gcc/branches;module=${BRANCH};proto=http \
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR .= "+${DISTRO}.1"
+PR_fsl .= "+${DISTRO}.1"
