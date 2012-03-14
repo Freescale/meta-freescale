@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Freescale Semiconductor
+# Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Linux kernel for imx platforms"
@@ -6,7 +6,8 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 PR = "r1"
 
-DEFAULT_PREFERENCE = "-1"
+DEFAULT_PREFERENCE_imx53qsb = "-1"
+DEFAULT_PREFERENCE_imx53ard = "-1"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(imx53qsb|imx53ard)"
