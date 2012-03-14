@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Freescale Semiconductor
+# Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Linux kernel for imx platforms"
@@ -9,7 +9,7 @@ PR = "r14"
 inherit kernel
 COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk)"
 
-SRC_URI = "git://opensource.freescale.com/pub/scm/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.09.01;protocol=http \
+SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.09.01 \
            file://egalax_ts-enable-single-event-support.patch \
            file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
            file://1130-ENGR00157473-MX5X-UART-disable-UART2-DMA-to-make-G.patch \
