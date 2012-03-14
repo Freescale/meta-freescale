@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 PR = "r16"
 
 inherit kernel
-COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk)"
+COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk|imx28evk)"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.09.01 \
      	   file://0002-cgroupfs-create-sys-fs-cgroup-to-mount-cgroupfs-on.patch \
@@ -28,6 +28,7 @@ SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.0
            file://1146-ENGR00170244-1-ARM-AHCI-Enable-PDDQ-mode-when-no-d.patch \
            file://1147-ENGR00170244-2-ARM-AHCI-Enable-PDDQ-mode-when-no-d.patch \
            file://no-unaligned-access.patch \
+           file://mx28-removecpufreq.patch \
            file://0001-mx53_loco-add-USR-led-support.patch \
            file://001_Add_accept4_syscall.patch \
            file://002_Return_ERESTARTSYS_from_IPU_GET_EVENT.patch \
