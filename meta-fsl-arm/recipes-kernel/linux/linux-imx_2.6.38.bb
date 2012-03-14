@@ -4,7 +4,7 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r0"
+PR = "r1"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -13,6 +13,7 @@ COMPATIBLE_MACHINE = "(imx53qsb|imx53ard)"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.38_12.01.01 \
            file://egalax_ts-enable-single-event-support.patch \
+           file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
            file://defconfig \
           "
 

@@ -4,13 +4,14 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r13"
+PR = "r14"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk)"
 
 SRC_URI = "git://opensource.freescale.com/pub/scm/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.09.01;protocol=http \
            file://egalax_ts-enable-single-event-support.patch \
+           file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
            file://1130-ENGR00157473-MX5X-UART-disable-UART2-DMA-to-make-G.patch \
            file://1132-ENGR00155891-mx53_loco-enable-mc34708-s-WDI-functio.patch \
            file://1134-ENGR00159738-v4l2-correct-wrong-parameter-when-V4l2.patch \
