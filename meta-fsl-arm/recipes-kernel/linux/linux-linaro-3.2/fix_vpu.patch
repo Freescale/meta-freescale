@@ -1,0 +1,12 @@
+diff --git a/drivers/mxc/vpu/mxc_vpu.c b/drivers/mxc/vpu/mxc_vpu.c
+index 7bfe9bc..957d0ba 100644
+--- a/drivers/mxc/vpu/mxc_vpu.c
++++ b/drivers/mxc/vpu/mxc_vpu.c
+@@ -19,6 +19,7 @@
+  * @ingroup VPU
+  */
+ 
++#include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/interrupt.h>

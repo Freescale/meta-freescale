@@ -1,0 +1,12 @@
+diff --git a/drivers/rtc/rtc-da9052.c b/drivers/rtc/rtc-da9052.c
+index 17ca177..c7da1e4 100644
+--- a/drivers/rtc/rtc-da9052.c
++++ b/drivers/rtc/rtc-da9052.c
+@@ -9,6 +9,7 @@
+  * rtc-da9052.c: RTC driver for DA9052
+  */
+ 
++#include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/rtc.h>
+ #include <linux/mfd/da9052/da9052.h>

@@ -1,0 +1,13 @@
+diff --git a/drivers/regulator/da9052-regulator.c b/drivers/regulator/da9052-regulator.c
+index 612fe60..7456eaf 100644
+--- a/drivers/regulator/da9052-regulator.c
++++ b/drivers/regulator/da9052-regulator.c
+@@ -436,7 +436,7 @@ static int __devinit da9052_regulator_probe(struct platform_device *pdev)
+ 		priv->regulators[i] = regulator_register(
+ 				&da9052_regulators[i].reg_desc,
+ 				&pdev->dev, init_data,
+-				priv);
++				priv, NULL);
+ 		if (IS_ERR(priv->regulators[i])) {
+ 			ret = PTR_ERR(priv->regulators[i]);
+ 			goto err;
