@@ -4,12 +4,13 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r14"
+PR = "r15"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk)"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.09.01 \
+     	   file://0002-cgroupfs-create-sys-fs-cgroup-to-mount-cgroupfs-on.patch \
            file://egalax_ts-enable-single-event-support.patch \
            file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
            file://1130-ENGR00157473-MX5X-UART-disable-UART2-DMA-to-make-G.patch \
