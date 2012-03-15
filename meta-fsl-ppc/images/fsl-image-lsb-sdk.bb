@@ -15,4 +15,4 @@ IMAGE_INSTALL = "\
 
 inherit core-image
 
-IMAGE_FSTYPES ?= "nfsroot"
+IMAGE_FSTYPES ?= "tar.gz"
