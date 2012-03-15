@@ -8,4 +8,8 @@ SRC_URI_fsl = "\
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_fsl .= "+${DISTRO}.2"
+PR_fsl .= "+${DISTRO}.3"
+
+do_install_append() {
+	rm -f ${D}${libdir}/libbfd.la
+}
