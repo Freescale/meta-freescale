@@ -25,7 +25,7 @@ MACHINE_EXTRA_RRECOMMENDS += "imx-lib imx-audio \
                               fsl-mm-codeclib \
                               gst-fsl-plugin"
 
-EXTRA_IMAGEDEPENDS = "u-boot-imx"
+EXTRA_IMAGEDEPENDS = "u-boot"
 
 IMAGE_FSTYPES ?= "tar.bz2 jffs2"
 EXTRA_IMAGECMD_jffs2 = "-lnp "
