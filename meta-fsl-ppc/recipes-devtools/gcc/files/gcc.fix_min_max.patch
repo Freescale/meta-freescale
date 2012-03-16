@@ -1,0 +1,38 @@
+diff -Naur gcc-4.6.2/gcc/config/rs6000/rs6000.c gcc-4.6.2-modified-office2-gs8-ice-fix/gcc/config/rs6000/rs6000.c
+--- gcc-4.6.2/gcc/config/rs6000/rs6000.c	2011-09-18 17:01:56.000000000 -0500
++++ gcc-4.6.2-modified-office2-gs8-ice-fix/gcc/config/rs6000/rs6000.c	2012-01-13 07:07:31.702487887 -0600
+@@ -17727,11 +17727,34 @@
+     c = GEU;
+ 
+   if (code == SMAX || code == UMAX)
++  {
+     target = emit_conditional_move (dest, c, op0, op1, mode,
+ 				    op0, op1, mode, 0);
++    if(!target)
++    {
++      rtx tem;
++      tem = simplify_const_relational_operation (c, mode, op0, op1);
++      if(rtx_equal_p(tem,const0_rtx))
++         target = op1;
++      else if(rtx_equal_p(tem,const1_rtx))
++         target = op0;
++    }
++ 
++  }
+   else
++  {
+     target = emit_conditional_move (dest, c, op0, op1, mode,
+ 				    op1, op0, mode, 0);
++    if(!target)
++    {
++      rtx tem;
++      tem = simplify_const_relational_operation (c, mode, op0, op1);
++      if(rtx_equal_p(tem,const0_rtx))
++         target = op0;
++      else if(rtx_equal_p(tem,const1_rtx))
++         target = op1;
++    }
++  }
+   gcc_assert (target);
+   if (target != dest)
+     emit_move_insn (dest, target);
