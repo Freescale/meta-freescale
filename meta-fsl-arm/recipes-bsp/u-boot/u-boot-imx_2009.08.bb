@@ -14,3 +14,5 @@ PR = "r3"
 SRC_URI = "git://opensource.freescale.com/pub/scm/imx/uboot-imx.git;tag=rel_imx_2.6.35_11.09.01;protocol=http"
 
 S = "${WORKDIR}/git"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
