@@ -8,8 +8,6 @@ include conf/distro/include/fsl-default-providers.inc
 # 	Check Freescale x11 framebuffer
 #	Check jffs2 extra commands
 
-PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg-lite"
-PREFERRED_PROVIDER_virtual/xserver-xf86 = "xserver-xorg-lite"
 XSERVER = "xserver-xorg-lite \
            xf86-input-evdev \
            xf86-input-keyboard \
