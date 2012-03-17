@@ -2,7 +2,7 @@ require recipes-bsp/u-boot/u-boot.inc
 
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
-COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk|imx28evk)"
+COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk|imx28evk|imx6qsabrelite)"
 
 DEPENDS_mxs += "elftosb-native"
 
