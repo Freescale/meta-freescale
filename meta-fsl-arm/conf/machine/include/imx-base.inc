@@ -1,5 +1,6 @@
 # Provides the i.MX common settings
 
+include conf/distro/include/fsl-default-settings.inc
 include conf/distro/include/fsl-default-versions.inc
 include conf/distro/include/fsl-default-revisions.inc
 include conf/distro/include/fsl-default-providers.inc
@@ -31,7 +32,9 @@ MACHINE_EXTRA_RRECOMMENDS += "imx-lib imx-audio \
 
 EXTRA_IMAGEDEPENDS = "u-boot"
 
-IMAGE_FSTYPES ?= "tar.bz2 jffs2"
+SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
+IMAGE_FSTYPES ?= "tar.bz2 ext3 sdcard"
+
 EXTRA_IMAGECMD_jffs2 = "-lnp "
 
 SERIAL_CONSOLE = "115200 ttymxc0"
