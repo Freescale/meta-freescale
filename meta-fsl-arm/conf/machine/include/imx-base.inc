@@ -4,6 +4,12 @@ include conf/distro/include/fsl-default-versions.inc
 include conf/distro/include/fsl-default-revisions.inc
 include conf/distro/include/fsl-default-providers.inc
 
+# Set specific make target and binary suffix
+UBOOT_MAKE_TARGET_mx5 = "u-boot.imx"
+UBOOT_SUFFIX_mx5 = "imx"
+UBOOT_MAKE_TARGET_mx6 = "u-boot.imx"
+UBOOT_SUFFIX_mx6 = "imx"
+
 # Todo:
 # 	Check Freescale x11 framebuffer
 #	Check jffs2 extra commands
