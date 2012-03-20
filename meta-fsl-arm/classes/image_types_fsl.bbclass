@@ -5,6 +5,18 @@ IMAGE_BOOTLOADER ?= "u-boot"
 # Handle u-boot suffixes
 UBOOT_SUFFIX ?= "bin"
 UBOOT_PADDING ?= "0"
+UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
+
+#
+# Handles i.MX mxs bootstream generation
+#
+
+IMAGE_FSTYPES_mxs =+ "uboot.mxsboot-sdcard"
+
+UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
+IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native u-boot"
+IMAGE_CMD_uboot.mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
+                                             ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX_SDCARD}"
 
 #
 # Create an image that can by written onto a SD card using dd.
@@ -50,9 +62,15 @@ IMAGE_CMD_sdcard () {
 	parted -s ${SDCARD} mkpart primary ${BOOT_SPACE} 100%
 	parted ${SDCARD} print
 
+	# Change partition type for mxs processor family
+	if [ "${SOC_FAMILY}" = "mxs" ]; then
+		bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
+		sed -i 's,.,\x53,450' ${SDCARD}
+	fi
+
 	case "${IMAGE_BOOTLOADER}" in
 		u-boot)
-		dd if=${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} of=${SDCARD} conv=notrunc seek=2 skip=${UBOOT_PADDING} bs=512
+		dd if=${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX_SDCARD} of=${SDCARD} conv=notrunc seek=2 skip=${UBOOT_PADDING} bs=512
 		;;
 		barebox)
 		dd if=${DEPLOY_DIR_IMAGE}/barebox-${MACHINE}.bin of=${SDCARD} conv=notrunc seek=1 skip=1 bs=512
