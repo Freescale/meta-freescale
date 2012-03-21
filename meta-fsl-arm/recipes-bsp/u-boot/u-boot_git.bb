@@ -6,11 +6,14 @@ COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk)"
 
 DEPENDS_mxs += "elftosb-native"
 
+PR = "r1"
+
 SRCREV = "6751b05f855bbe56005d5b88d4eb58bcd52170d2"
 
 PV = "v2011.12+git"
 
-SRC_URI = "git://git.denx.de/u-boot.git;branch=master;protocol=git"
+SRC_URI = "git://git.denx.de/u-boot.git;branch=master;protocol=git \
+           file://mx53-fix-uart-clock.patch"
 
 S = "${WORKDIR}/git"
 
