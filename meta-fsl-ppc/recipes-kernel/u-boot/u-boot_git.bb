@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r10"
+PR = "r11"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc"
 
@@ -68,7 +68,7 @@ do_install(){
 		*)		UBOOT_TARGET="u-boot";;
 		esac
 
-		if [ -f ${S}/${UBOOT_TARGET}.bin ]; then
+		if [ -f ${S}/${board}/${UBOOT_TARGET}.bin ]; then
 			mkdir -p ${D}/boot/
 			install ${S}/${board}/${UBOOT_TARGET}.bin ${D}/boot/${UBOOT_TARGET}-${board}-${PV}-${PR}.bin
 			ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${D}/boot/${UBOOT_TARGET}.bin
@@ -90,13 +90,6 @@ do_deploy(){
 		esac
 
 	        if [ -f ${S}/${board}/${UBOOT_TARGET}.bin ]; then
-			mkdir -p ${DEPLOY_DIR_IMAGE}
-	        	install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOY_DIR_IMAGE}/${UBOOT_TARGET}-${MACHINE}-${PV}-${PR}.bin
-
-			cd ${DEPLOY_DIR_IMAGE}
-			rm -f ${UBOOT_TARGET}-${board}.bin
-			ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${UBOOT_TARGET}-${board}.bin
-
 			mkdir -p ${DEPLOYDIR}
 			install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${board}-${PV}-${PR}.bin
 

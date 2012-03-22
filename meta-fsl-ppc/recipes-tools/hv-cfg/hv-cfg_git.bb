@@ -1,7 +1,7 @@
 DESCRIPTION = "Hypervisor Config"
 SECTION = "hv-cfg"
 LICENSE = "BSD"
-PR = "r3"
+PR = "r4"
 
 LIC_FILES_CHKSUM = " \
 	file://p2041rdb/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
@@ -28,11 +28,8 @@ do_deploy () {
 	make install
 
 	M=`echo ${MACHINE} | sed s/-64b//g`
-	mkdir -p ${DEPLOY_DIR_IMAGE}/hv-cfg
-	cp -r ${S}/${M}/${M} ${DEPLOY_DIR_IMAGE}/hv-cfg
-
 	install -d ${DEPLOYDIR}/hv-cfg
-	cp -r ${S}/${M}/${M} ${DEPLOYDIR}/hv-cfg
+	cp -r ${S}/${M}/${M}/* ${DEPLOYDIR}/hv-cfg
 }
 addtask deploy after do_install
 
