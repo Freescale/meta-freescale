@@ -1,0 +1,25 @@
+From: Eric Nelson <eric.nelson@boundarydevices.com>
+Date: Sun, 4 Mar 2012 10:51:36 +0000 (+0000)
+Subject: i.MX6: mx6qsabrelite: add MACH_TYPE_MX6Q_SABRELITE
+X-Git-Url: http://git.denx.de/?p=u-boot%2Fu-boot-imx.git;a=commitdiff_plain;h=5152d09fe89768a119b016b21fc763bc0231d1e8;hp=044cd2a7318a6480346c4e0824956d0dd25e9ec3
+
+i.MX6: mx6qsabrelite: add MACH_TYPE_MX6Q_SABRELITE
+
+Allow non-dt kernels to boot
+
+Signed-off-by: Troy Kisky <troy.kisky@boundarydevices.com>
+---
+
+diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
+index a1a2267..8bc8a83 100644
+--- a/include/configs/mx6qsabrelite.h
++++ b/include/configs/mx6qsabrelite.h
+@@ -28,6 +28,8 @@
+ #define CONFIG_DISPLAY_CPUINFO
+ #define CONFIG_DISPLAY_BOARDINFO
+ 
++#define CONFIG_MACH_TYPE	3769
++
+ #include <asm/arch/imx-regs.h>
+ 
+ #define CONFIG_CMDLINE_TAG
