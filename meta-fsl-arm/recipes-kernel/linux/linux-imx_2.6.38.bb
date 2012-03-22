@@ -4,13 +4,13 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r1"
+PR = "r2"
 
 DEFAULT_PREFERENCE_imx53qsb = "-1"
 DEFAULT_PREFERENCE_imx53ard = "-1"
 
 inherit kernel
-COMPATIBLE_MACHINE = "(imx53qsb|imx53ard)"
+COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx6qsabrelite)"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.38_12.01.01 \
            file://egalax_ts-enable-single-event-support.patch \
