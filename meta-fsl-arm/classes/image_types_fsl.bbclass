@@ -38,7 +38,7 @@ IMAGE_CMD_sdcard () {
 	fi
 
 	TMP=${WORKDIR}/tmp
-	SDCARD=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.sdcard
+	SDCARD=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.sdcard
 
 	dd if=/dev/zero of=${SDCARD} bs=$(expr 1000 \* 1000) count=${SDCARD_SIZE}
 
@@ -70,7 +70,4 @@ IMAGE_CMD_sdcard () {
 
 	dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=1 bs=1M
 	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc seek=1 bs=${BOOT_SPACE}
-
-	cd ${DEPLOY_DIR_IMAGE}
-	ln -sf ${IMAGE_NAME}.sdcard ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.sdcard
 }
