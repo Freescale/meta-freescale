@@ -4,4 +4,4 @@ EXTRA_OECONF_append_fsl = "\
     --enable-natt \
 "
 
-PR .= "+${DISTRO}.0"
+PR_append_fsl = "+${DISTRO}.0"

@@ -12,4 +12,4 @@ SRC_URI_fsl = "\
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_fsl .= "+${DISTRO}.4"
+PR_append_fsl = "+${DISTRO}.4"

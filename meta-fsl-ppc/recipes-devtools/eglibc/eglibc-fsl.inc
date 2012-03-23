@@ -11,4 +11,4 @@ SRC_URI_fsl = "svn://www.eglibc.org/svn/branches/;module=${EGLIBC_BRANCH};proto=
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_fsl .= "+${DISTRO}.0"
+PR_append_fsl = "+${DISTRO}.0"
