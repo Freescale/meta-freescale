@@ -43,4 +43,4 @@ SRC_URI_fsl = "svn://gcc.gnu.org/svn/gcc/branches;module=${BRANCH};proto=http \
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append_fsl = "+${DISTRO}.3"
+PR_append_fsl = "+${DISTRO}.4"
