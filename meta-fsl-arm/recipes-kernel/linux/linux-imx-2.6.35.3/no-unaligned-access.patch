@@ -23,16 +23,17 @@ index 554683d..087e0c0 100644
  # But warn user when we do so
  warn-assign = \
 diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 767874d..cdf3529 100644
+index 767874d..89afaea 100644
 --- a/arch/arm/Makefile
 +++ b/arch/arm/Makefile
-@@ -93,6 +93,10 @@ ifeq ($(CONFIG_ARM_UNWIND),y)
+@@ -93,6 +93,11 @@ ifeq ($(CONFIG_ARM_UNWIND),y)
  CFLAGS_ABI	+=-funwind-tables
  endif
  
-+ifeq ($(CONFIG_ALIGMENT_TRAP),y)
-+CFLAGS_ABI	+=$(call cc-option,-mno-unaligned-access,)
++ifeq ($(CONFIG_ALIGNMENT_TRAP),y)
++CFLAGS_ABI    +=$(call cc-option,-mno-unaligned-access,)
 +endif
++KBUILD_CFLAGS += $(call cc-option,-fno-conserve-stack,)
 +
  ifeq ($(CONFIG_THUMB2_KERNEL),y)
  AFLAGS_AUTOIT	:=$(call as-option,-Wa$(comma)-mimplicit-it=always,-Wa$(comma)-mauto-it)
