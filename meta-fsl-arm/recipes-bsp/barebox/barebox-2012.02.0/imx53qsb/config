@@ -15,13 +15,13 @@ ip=dhcp
 #eth0.serverip=a.b.c.d
 
 # can be either 'nfs', 'tftp', 'nor' or 'nand'
-kernel_loc=disk
+kernel_loc=mnt
 # can be either 'net', 'nor', 'nand' or 'initrd'
 rootfs_loc=disk
 
 # boot parameters for SDCard boot
-kernel_part=disk0.kernel
-rootfs_part_linux_dev=mmcblk0p1
+kernel_name=uImage
+rootfs_part_linux_dev=mmcblk0p3
 rootfs_type=ext3
 
 # can be either 'jffs2' or 'ubifs'

@@ -1,6 +1,6 @@
 require barebox.inc
 
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "http://barebox.org/download/${PN}-${PV}.tar.bz2 \
 	file://defconfig \
@@ -18,6 +18,7 @@ SRC_URI_append_imx53qsb = " \
 	file://0005-mx53-loco-add-i2c-support.patch \
 	file://0006-mx53-loco-add-board-revision-support.patch \
 	file://0007-mx53-loco-update-defconfig.patch \
+	file://0001-imx53qsb-default-config-for-OE-s-sdcard-image.patch \
 	"
 
 do_configure_prepend_imx53qsb() {
