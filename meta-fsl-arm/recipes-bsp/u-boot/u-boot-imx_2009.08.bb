@@ -16,3 +16,9 @@ SRC_URI = "git://opensource.freescale.com/pub/scm/imx/uboot-imx.git;tag=rel_imx_
 S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+do_compile_prepend() {
+	if [ "${@base_contains('DISTRO_FEATURES', 'ld-is-gold', 'ld-is-gold', '', d)}" = "ld-is-gold" ] ; then
+		sed -i 's/$(CROSS_COMPILE)ld/$(CROSS_COMPILE)ld.bfd/g' config.mk
+	fi
+}
