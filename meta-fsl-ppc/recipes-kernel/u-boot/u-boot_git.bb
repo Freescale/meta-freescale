@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r12"
+PR = "r13"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc"
 
@@ -54,8 +54,7 @@ do_compile () {
 	                        [ "${MACHINE_ARCH}" == "p3041ds" ] || \
 			        [ "${MACHINE_ARCH}" == "p3060qds" ] || \
         	                [ "${MACHINE_ARCH}" == "p4080ds" ] || \
-                	        [ "${MACHINE_ARCH}" == "p5020ds" ] || \
-                	        [ "${MACHINE_ARCH}" == "p5020ds-64b" ]; then
+                	        [ "${MACHINE_ARCH}" == "p5020ds" ]; then
 				cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
 			else
 				${STAGING_BINDIR_NATIVE}/boot_format \
