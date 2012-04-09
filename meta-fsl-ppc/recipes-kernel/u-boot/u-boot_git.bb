@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r11"
+PR = "r12"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc"
 
@@ -44,13 +44,24 @@ do_compile () {
 		case "${board}" in
 		*SDCARD*)	UBOOT_TARGET="u-boot-sd";;
 		*SPIFLASH*)	UBOOT_TARGET="u-boot-spi";;
+		*NAND*)		UBOOT_TARGET="u-boot-nand";;
 		*)		UBOOT_TARGET="";;
 		esac
 
 		if [ "x${UBOOT_TARGET}" != "x" ]; then
-			${STAGING_BINDIR_NATIVE}/boot_format \
-				${STAGING_DATADIR_NATIVE}/${BOOTFORMAT_CONFIG} \
-				${S}/${board}/u-boot.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
+			if [ "${MACHINE_ARCH}" == "p1023rds" ] || \
+				[ "${MACHINE_ARCH}" == "p2041rdb" ] || \
+	                        [ "${MACHINE_ARCH}" == "p3041ds" ] || \
+			        [ "${MACHINE_ARCH}" == "p3060qds" ] || \
+        	                [ "${MACHINE_ARCH}" == "p4080ds" ] || \
+                	        [ "${MACHINE_ARCH}" == "p5020ds" ] || \
+                	        [ "${MACHINE_ARCH}" == "p5020ds-64b" ]; then
+				cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+			else
+				${STAGING_BINDIR_NATIVE}/boot_format \
+					${STAGING_DATADIR_NATIVE}/${BOOTFORMAT_CONFIG} \
+					${S}/${board}/u-boot.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
+			fi 
 		fi
 	done
 }
