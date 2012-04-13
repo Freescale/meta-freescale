@@ -9,6 +9,7 @@ SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5e0000", NAME="fm2-
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5e2000", NAME="fm2-gb1"
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5e4000", NAME="fm2-gb2"
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5e6000", NAME="fm2-gb3"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5e8000", NAME="fm2-gb4"
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5f0000", NAME="fm2-10g"
 
 # P1023 has its Fman @ different offsets
