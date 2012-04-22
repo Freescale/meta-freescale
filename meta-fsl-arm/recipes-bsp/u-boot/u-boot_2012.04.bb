@@ -6,18 +6,11 @@ COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk|imx28evk|imx6qsabrelite)"
 
 DEPENDS_mxs += "elftosb-native"
 
-PR = "r3"
+SRCREV = "2790bf69dc12fb9aeb9836904e5f57c7f83d5552"
 
-SRCREV = "6751b05f855bbe56005d5b88d4eb58bcd52170d2"
+PV = "v2012.04"
 
-PV = "v2011.12+git"
-
-SRC_URI = "git://git.denx.de/u-boot.git;branch=master;protocol=git \
-           file://mx53-fix-uart-clock.patch \
-           file://mx6qsabrelite_add_CONFIG_REVISION_TAG.patch \
-           file://mx6qsabrelite_add_MACH_TYPE_MX6Q_SABRELITE.patch \
-	   file://mx6qsabrelite-fix-console.patch \	
-	  "
+SRC_URI = "git://git.denx.de/u-boot.git;branch=master;protocol=git"
 
 S = "${WORKDIR}/git"
 
