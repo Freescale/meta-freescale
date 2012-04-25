@@ -6,9 +6,9 @@ COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk|imx28evk|imx6qsabrelite)"
 
 DEPENDS_mxs += "elftosb-native"
 
-SRCREV = "2790bf69dc12fb9aeb9836904e5f57c7f83d5552"
+SRCREV = "415d386877df49eb051b85ef74fa59a16dc17c7d"
 
-PV = "v2012.04"
+PV = "v2012.04.01"
 
 SRC_URI = "git://git.denx.de/u-boot.git;branch=master;protocol=git"
 
