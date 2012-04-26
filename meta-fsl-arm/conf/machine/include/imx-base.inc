@@ -11,10 +11,6 @@ UBOOT_SUFFIX_mx5 = "imx"
 UBOOT_MAKE_TARGET_mx6 = "u-boot.imx"
 UBOOT_SUFFIX_mx6 = "imx"
 
-# Todo:
-# 	Check Freescale x11 framebuffer
-#	Check jffs2 extra commands
-
 XSERVER = "xserver-xorg-lite \
            xf86-input-evdev \
            xf86-input-keyboard \
