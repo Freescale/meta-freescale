@@ -31,8 +31,6 @@ EXTRA_IMAGEDEPENDS = "u-boot"
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
 IMAGE_FSTYPES ?= "tar.bz2 ext3 sdcard"
 
-EXTRA_IMAGECMD_jffs2 = "-lnp "
-
 SERIAL_CONSOLE = "115200 ttymxc0"
 
 KERNEL_IMAGETYPE = "uImage"
