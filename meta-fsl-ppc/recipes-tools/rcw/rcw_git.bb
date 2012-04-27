@@ -6,7 +6,6 @@ PR = "r3"
 LIC_FILES_CHKSUM = " \
 	file://p2041rdb/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
 	file://p3041ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
-	file://p3060qds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
 	file://p4080ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
 	file://p5020ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
 "

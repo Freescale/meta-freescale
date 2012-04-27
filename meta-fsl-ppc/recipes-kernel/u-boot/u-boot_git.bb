@@ -52,7 +52,6 @@ do_compile () {
 			if [ "${MACHINE_ARCH}" == "p1023rds" ] || \
 				[ "${MACHINE_ARCH}" == "p2041rdb" ] || \
 	                        [ "${MACHINE_ARCH}" == "p3041ds" ] || \
-			        [ "${MACHINE_ARCH}" == "p3060qds" ] || \
         	                [ "${MACHINE_ARCH}" == "p4080ds" ] || \
                 	        [ "${MACHINE_ARCH}" == "p5020ds" ] || \
                 	        [ "${UBOOT_TARGET}" == "u-boot-sd" ] || \
