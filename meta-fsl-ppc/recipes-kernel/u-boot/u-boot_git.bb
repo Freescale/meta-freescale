@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r15"
+PR = "r16"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc"
 
@@ -112,6 +112,7 @@ do_deploy(){
 }
 addtask deploy after do_install
 
-FILES_${PN} += "/boot"
+PACKAGES += "${PN}-images"
+FILES_${PN}-images += "/boot"
 
 ALLOW_EMPTY = "1"
