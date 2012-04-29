@@ -4,6 +4,7 @@ IMAGE_BOOTLOADER ?= "u-boot"
 
 # Handle u-boot suffixes
 UBOOT_SUFFIX ?= "bin"
+UBOOT_PADDING ?= "0"
 
 #
 # Create an image that can by written onto a SD card using dd.
@@ -51,7 +52,7 @@ IMAGE_CMD_sdcard () {
 
 	case "${IMAGE_BOOTLOADER}" in
 		u-boot)
-		dd if=${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} of=${SDCARD} conv=notrunc seek=2 bs=512
+		dd if=${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} of=${SDCARD} conv=notrunc seek=2 skip=${UBOOT_PADDING} bs=512
 		;;
 		barebox)
 		dd if=${DEPLOY_DIR_IMAGE}/barebox-${MACHINE}.bin of=${SDCARD} conv=notrunc seek=1 skip=1 bs=512
