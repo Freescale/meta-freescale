@@ -13,8 +13,6 @@ UBOOT_SUFFIX_mx6 = "imx"
 
 XSERVER = "xserver-xorg-lite \
            xf86-input-evdev \
-           xf86-input-keyboard \
-           xf86-input-mouse \
            xf86-video-imxfb"
 
 # Ship kernel modules
