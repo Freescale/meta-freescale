@@ -53,7 +53,8 @@ IMAGE_CMD_sdcard () {
 	TMP=${WORKDIR}/tmp
 	SDCARD=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.sdcard
 
-	dd if=/dev/zero of=${SDCARD} bs=$(expr 1000 \* 1000) count=${SDCARD_SIZE}
+	# Initialize a sparse file
+	dd if=/dev/zero of=${SDCARD} bs=1 count=0 seek=$(expr 1000 \* 1000 \* ${SDCARD_SIZE})
 
 	# Create partition table
 	parted -s ${SDCARD} mklabel msdos
