@@ -66,7 +66,7 @@ IMAGE_CMD_sdcard () {
 	# Change partition type for mxs processor family
 	if [ "${SOC_FAMILY}" = "mxs" ]; then
 		bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
-		sed -i 's,.,\x53,450' ${SDCARD}
+		echo -n S | dd of=${SDCARD} bs=1 count=1 seek=450 conv=notrunc
 	fi
 
 	case "${IMAGE_BOOTLOADER}" in
