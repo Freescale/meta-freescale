@@ -11,8 +11,6 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 # Handles i.MX mxs bootstream generation
 #
 
-IMAGE_FSTYPES_mxs =+ "uboot.mxsboot-sdcard"
-
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
 IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native u-boot"
 IMAGE_CMD_uboot.mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
