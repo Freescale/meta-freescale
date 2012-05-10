@@ -1,0 +1,1644 @@
+This patch adds PowerPC E500v2 SPE support in TestFloat.
+And it disables the testing for hardware that can not trigger SPE interrupt.
+
+Signed-off-by: Ebony Zhu <ebony.zhu@freescale.com>
+Signed-off-by: Liu Yu <Yu.Liu@freescale.com>
+---
+ processors/POWERPC-gcc.h                |   99 +++++
+ testfloat/powerpc-linux-gcc/Makefile    |   83 +++++
+ testfloat/powerpc-linux-gcc/milieu.h    |   71 ++++
+ testfloat/powerpc-linux-gcc/systflags.c |  107 ++++++
+ testfloat/powerpc-linux-gcc/systfloat.c |  595 +++++++++++++++++++++++++++++++
+ testfloat/powerpc-linux-gcc/systmodes.c |   67 ++++
+ testfloat/templates/Makefile            |   18 +-
+ testfloat/templates/milieu.h            |    2 +-
+ testfloat/testFunction.h                |    2 +-
+ testfloat/testLoops.c                   |  216 +++++++++++
+ 10 files changed, 1252 insertions(+), 8 deletions(-)
+ create mode 100644 processors/POWERPC-gcc.h
+ create mode 100644 testfloat/powerpc-linux-gcc/Makefile
+ create mode 100644 testfloat/powerpc-linux-gcc/milieu.h
+ create mode 100644 testfloat/powerpc-linux-gcc/systflags.c
+ create mode 100644 testfloat/powerpc-linux-gcc/systfloat.c
+ create mode 100644 testfloat/powerpc-linux-gcc/systmodes.c
+
+diff --git a/processors/POWERPC-gcc.h b/processors/POWERPC-gcc.h
+new file mode 100644
+index 0000000..4201faa
+--- /dev/null
++++ b/processors/POWERPC-gcc.h
+@@ -0,0 +1,99 @@
++/*
++ * This file is derived from processors/i386-GCC.h,
++ * the copyright for that material belongs to the original owners.
++ *
++ * Additional material and changes where applicable is:
++ * Copyright (C) 2008 Freescale Semiconductor, Inc. All rights reserved.
++ *
++ * Author: Ebony Zhu,  <ebony.zhu@freescale.com>
++ *         Yu Liu,     <yu.liu@freescale.com>
++ *
++ * THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort has
++ * been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT TIMES
++ * RESULT IN INCORRECT BEHAVIOR.  USE OF THIS SOFTWARE IS RESTRICTED TO PERSONS
++ * AND ORGANIZATIONS WHO CAN AND WILL TAKE FULL RESPONSIBILITY FOR ALL LOSSES,
++ * COSTS, OR OTHER PROBLEMS THEY INCUR DUE TO THE SOFTWARE, AND WHO FURTHERMORE
++ * EFFECTIVELY INDEMNIFY JOHN HAUSER AND THE INTERNATIONAL COMPUTER SCIENCE
++ * INSTITUTE (possibly via similar legal warning) AGAINST ALL LOSSES, COSTS, OR
++ * OTHER PROBLEMS INCURRED BY THEIR CUSTOMERS AND CLIENTS DUE TO THE SOFTWARE.
++ */
++
++/*
++-------------------------------------------------------------------------------
++One of the macros `BIGENDIAN' or `LITTLEENDIAN' must be defined.
++-------------------------------------------------------------------------------
++*/
++#define BIGENDIAN
++
++/*
++-------------------------------------------------------------------------------
++The macro `BITS64' can be defined to indicate that 64-bit integer types are
++supported by the compiler.
++-------------------------------------------------------------------------------
++*/
++#undef BITS64
++
++/*
++-------------------------------------------------------------------------------
++Each of the following `typedef's defines the most convenient type that holds
++integers of at least as many bits as specified.  For example, `uint8' should
++be the most convenient type that can hold unsigned integers of as many as
++8 bits.  The `flag' type must be able to hold either a 0 or 1.  For most
++implementations of C, `flag', `uint8', and `int8' should all be `typedef'ed
++to the same as `int'.
++-------------------------------------------------------------------------------
++*/
++typedef int flag;
++typedef int uint8;
++typedef int int8;
++typedef int uint16;
++typedef int int16;
++typedef unsigned int uint32;
++typedef signed int int32;
++#ifdef BITS64
++typedef unsigned long long int uint64;
++typedef signed long long int int64;
++#endif
++
++/*
++-------------------------------------------------------------------------------
++Each of the following `typedef's defines a type that holds integers
++of _exactly_ the number of bits specified.  For instance, for most
++implementation of C, `bits16' and `sbits16' should be `typedef'ed to
++`unsigned short int' and `signed short int' (or `short int'), respectively.
++-------------------------------------------------------------------------------
++*/
++typedef unsigned char bits8;
++typedef signed char sbits8;
++typedef unsigned short int bits16;
++typedef signed short int sbits16;
++typedef unsigned int bits32;
++typedef signed int sbits32;
++#ifdef BITS64
++typedef unsigned long long int bits64;
++typedef signed long long int sbits64;
++#endif
++
++#ifdef BITS64
++/*
++-------------------------------------------------------------------------------
++The `LIT64' macro takes as its argument a textual integer literal and
++if necessary ``marks'' the literal as having a 64-bit integer type.
++For example, the GNU C Compiler (`gcc') requires that 64-bit literals be
++appended with the letters `LL' standing for `long long', which is `gcc's
++name for the 64-bit integer type.  Some compilers may allow `LIT64' to be
++defined as the identity macro:  `#define LIT64( a ) a'.
++-------------------------------------------------------------------------------
++*/
++#define LIT64( a ) a##LL
++#endif
++
++/*
++-------------------------------------------------------------------------------
++The macro `INLINE' can be used before functions that should be inlined.  If
++a compiler does not support explicit inlining, this macro should be defined
++to be `static'.
++-------------------------------------------------------------------------------
++*/
++#define INLINE extern inline
++
+diff --git a/testfloat/powerpc-linux-gcc/Makefile b/testfloat/powerpc-linux-gcc/Makefile
+new file mode 100644
+index 0000000..de50aad
+--- /dev/null
++++ b/testfloat/powerpc-linux-gcc/Makefile
+@@ -0,0 +1,83 @@
++
++PROCESSOR_H = ../../processors/POWERPC-gcc.h
++SOFTFLOAT_VERSION = bits32
++TARGET = powerpc-GCC
++SOFTFLOAT_DIR = ../../SoftFloat-2b/softfloat/$(SOFTFLOAT_VERSION)/$(TARGET)
++
++OBJ = .o
++EXE =
++INCLUDES = -I. -I.. -I$(SOFTFLOAT_DIR)
++
++COMPILE_C = $(COMPILE_PREFIX)gcc -c -o $@ $(INCLUDES) -I- -O $(EXTRA_CFLAGS)
++
++COMPILE_C_HARD = $(COMPILE_PREFIX)gcc -c -te500v2 -o $@ $(INCLUDES)
++
++COMPILE_SLOWFLOAT_C = $(COMPILE_PREFIX)gcc -c -o $@ $(INCLUDES) -I- -O
++
++LINK = $(COMPILE_PREFIX)gcc -lm -o $@
++
++SOFTFLOAT_H = $(SOFTFLOAT_DIR)/softfloat.h
++SOFTFLOAT_OBJ = $(SOFTFLOAT_DIR)/softfloat$(OBJ)
++
++ALL: testsoftfloat$(EXE) testfloat$(EXE)
++
++systmodes$(OBJ): milieu.h systmodes.c
++	$(COMPILE_C) systmodes.c
++
++systflags$(OBJ): milieu.h ../systflags.h systflags.c
++	$(COMPILE_C) systflags.c
++
++systfloat$(OBJ): milieu.h $(SOFTFLOAT_H) ../systfloat.h systfloat.c
++	$(COMPILE_C_HARD) systfloat.c
++
++#------------------------------------------------------------------------------
++# Probably O.K. below here.
++#------------------------------------------------------------------------------
++
++milieu.h: $(PROCESSOR_H)
++	touch milieu.h
++
++fail$(OBJ): milieu.h ../fail.h
++	$(COMPILE_C) ../fail.c
++
++random$(OBJ): milieu.h ../random.h
++	$(COMPILE_C) ../random.c
++
++testCases$(OBJ): milieu.h ../fail.h ../random.h $(SOFTFLOAT_H) ../testCases.h ../testCases.c
++	$(COMPILE_C) ../testCases.c
++
++writeHex$(OBJ): milieu.h $(SOFTFLOAT_H) ../writeHex.h ../writeHex.c
++	$(COMPILE_C) ../writeHex.c
++
++testLoops$(OBJ): milieu.h $(SOFTFLOAT_H) ../testCases.h ../writeHex.h ../testLoops.h ../testLoops.c
++	$(COMPILE_C) ../testLoops.c
++
++slowfloat$(OBJ): milieu.h $(SOFTFLOAT_H) ../slowfloat.h ../slowfloat-32.c ../slowfloat-64.c ../slowfloat.c
++	$(COMPILE_SLOWFLOAT_C) ../slowfloat.c
++
++testsoftfloat$(OBJ): milieu.h ../fail.h $(SOFTFLOAT_H) ../testCases.h ../testLoops.h ../slowfloat.h ../testsoftfloat.c
++	$(COMPILE_C) ../testsoftfloat.c
++
++testsoftfloat$(EXE): fail$(OBJ) random$(OBJ) $(SOFTFLOAT_OBJ) testCases$(OBJ) writeHex$(OBJ) testLoops$(OBJ) slowfloat$(OBJ) testsoftfloat$(OBJ) systflags$(OBJ) systmodes$(OBJ)
++	$(LINK) fail$(OBJ) random$(OBJ) $(SOFTFLOAT_OBJ) testCases$(OBJ) writeHex$(OBJ) testLoops$(OBJ) slowfloat$(OBJ) testsoftfloat$(OBJ) systflags$(OBJ) systmodes$(OBJ)
++
++testFunction$(OBJ): milieu.h $(SOFTFLOAT_H) ../testCases.h ../testLoops.h ../systmodes.h ../systflags.h ../systfloat.h ../testFunction.h ../testFunction.c
++	$(COMPILE_C) ../testFunction.c
++
++testfloat$(OBJ): milieu.h ../fail.h $(SOFTFLOAT_H) ../testCases.h ../testLoops.h ../systflags.h ../testFunction.h ../testfloat.c
++	$(COMPILE_C) ../testfloat.c
++
++testfloat$(EXE): fail$(OBJ) random$(OBJ) $(SOFTFLOAT_OBJ) testCases$(OBJ) writeHex$(OBJ) testLoops$(OBJ) systmodes$(OBJ) systflags$(OBJ) systfloat$(OBJ) testFunction$(OBJ) testfloat$(OBJ)
++	$(LINK) fail$(OBJ) random$(OBJ) $(SOFTFLOAT_OBJ) testCases$(OBJ) writeHex$(OBJ) testLoops$(OBJ) systmodes$(OBJ) systflags$(OBJ) systfloat$(OBJ) testFunction$(OBJ) testfloat$(OBJ)
++
++$(SOFTFLOAT_OBJ):
++	make -C $(SOFTFLOAT_DIR)
++
++cp: ALL
++	cp  testsoftfloat$(EXE) ../../test_softfloat$(EXE)
++	cp  testfloat$(EXE)  ../../test_float$(EXE)
++
++clean:
++	make -C $(SOFTFLOAT_DIR) clean
++	rm -f *.o testfloat$(EXE) testsoftfloat$(EXE) 
++	rm -f ../../test_softfloat$(EXE) ../../test_float$(EXE)
+diff --git a/testfloat/powerpc-linux-gcc/milieu.h b/testfloat/powerpc-linux-gcc/milieu.h
+new file mode 100644
+index 0000000..29d2b18
+--- /dev/null
++++ b/testfloat/powerpc-linux-gcc/milieu.h
+@@ -0,0 +1,71 @@
++/*
++ * This file is derived from testfloat/386-Win32-gcc/milieu.h,
++ * the copyright for that material belongs to the original owners.
++ *
++ * Additional material and changes where applicable is:
++ * Copyright (C) 2008 Freescale Semiconductor, Inc. All rights reserved.
++ *
++ * Author: Ebony Zhu,  <ebony.zhu@freescale.com>
++ *         Yu Liu,     <yu.liu@freescale.com>
++ */
++
++/*
++===============================================================================
++
++This C header file is part of TestFloat, Release 2a, a package of programs
++for testing the correctness of floating-point arithmetic complying to the
++IEC/IEEE Standard for Floating-Point.
++
++Written by John R. Hauser.  More information is available through the Web
++page `http://HTTP.CS.Berkeley.EDU/~jhauser/arithmetic/TestFloat.html'.
++
++THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
++has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
++TIMES RESULT IN INCORRECT BEHAVIOR.  USE OF THIS SOFTWARE IS RESTRICTED TO
++PERSONS AND ORGANIZATIONS WHO CAN AND WILL TAKE FULL RESPONSIBILITY FOR ANY
++AND ALL LOSSES, COSTS, OR OTHER PROBLEMS ARISING FROM ITS USE.
++
++Derivative works are acceptable, even for commercial purposes, so long as
++(1) they include prominent notice that the work is derivative, and (2) they
++include prominent notice akin to these four paragraphs for those parts of
++this code that are retained.
++
++===============================================================================
++*/
++
++/*
++-------------------------------------------------------------------------------
++Include common integer types and flags.
++-------------------------------------------------------------------------------
++*/
++#include "../../processors/POWERPC-gcc.h"
++/*
++-------------------------------------------------------------------------------
++If the `BITS64' macro is defined by the processor header file but the
++version of SoftFloat being used/tested is the 32-bit one (`bits32'), the
++`BITS64' macro must be undefined here.
++-------------------------------------------------------------------------------
++*/
++
++#undef BITS64
++/*
++-------------------------------------------------------------------------------
++The macro `LONG_DOUBLE_IS_FLOATX80' can be defined to indicate that the
++C compiler supports the type `long double' as an extended double-precision
++format.  Alternatively, the macro `LONG_DOUBLE_IS_FLOAT128' can be defined
++to indicate that `long double' is a quadruple-precision format.  If neither
++of these macros is defined, `long double' will be ignored.
++-------------------------------------------------------------------------------
++#define LONG_DOUBLE_IS_FLOATX80
++*/
++
++/*
++-------------------------------------------------------------------------------
++Symbolic Boolean literals.
++-------------------------------------------------------------------------------
++*/
++enum {
++    FALSE = 0,
++    TRUE  = 1
++};
++
+diff --git a/testfloat/powerpc-linux-gcc/systflags.c b/testfloat/powerpc-linux-gcc/systflags.c
+new file mode 100644
+index 0000000..c382442
+--- /dev/null
++++ b/testfloat/powerpc-linux-gcc/systflags.c
+@@ -0,0 +1,107 @@
++/*
++ * This file is derived from testfloat/386-Win32-gcc/systflags.c,
++ * the copyright for that material belongs to the original owners.
++ *
++ * Additional material and changes where applicable is:
++ * Copyright (C) 2008 Freescale Semiconductor, Inc. All rights reserved.
++ *
++ * Author: Ebony Zhu,  <ebony.zhu@freescale.com>
++ *         Yu Liu,     <yu.liu@freescale.com>
++ */
++
++/*
++===============================================================================
++
++This C source file is part of TestFloat, Release 2a, a package of programs
++for testing the correctness of floating-point arithmetic complying to the
++IEC/IEEE Standard for Floating-Point.
++
++Written by John R. Hauser.  More information is available through the Web
++page `http://HTTP.CS.Berkeley.EDU/~jhauser/arithmetic/TestFloat.html'.
++
++THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
++has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
++TIMES RESULT IN INCORRECT BEHAVIOR.  USE OF THIS SOFTWARE IS RESTRICTED TO
++PERSONS AND ORGANIZATIONS WHO CAN AND WILL TAKE FULL RESPONSIBILITY FOR ANY
++AND ALL LOSSES, COSTS, OR OTHER PROBLEMS ARISING FROM ITS USE.
++
++Derivative works are acceptable, even for commercial purposes, so long as
++(1) they include prominent notice that the work is derivative, and (2) they
++include prominent notice akin to these four paragraphs for those parts of
++this code that are retained.
++
++===============================================================================
++*/
++
++#include "milieu.h"
++#include "systflags.h"
++#include <fenv.h>
++#include <stdio.h>
++#include <math.h>
++#include <bits/nan.h>
++#include <bits/inf.h>
++
++#ifdef __SPE__
++
++#include <spe.h>
++
++
++#define SPE_FINV_ENABLE		(1UL << 5)
++#define SPE_FDBZ_ENABLE		(1UL << 4)
++#define SPE_FUNF_ENABLE		(1UL << 3)
++#define SPE_FOVF_ENABLE		(1UL << 2)
++
++#define SPE_FG			(1UL << 13)
++#define SPE_FX			(1UL << 12)
++#define SPE_FINV		(1UL << 11)
++#define SPE_FDBZ		(1UL << 10)
++#define SPE_FUNF		(1UL << 9)
++#define SPE_FOVF		(1UL << 8)
++
++#define SPE_FG_H		(1UL << 29)
++#define SPE_FX_H		(1UL << 28)
++#define SPE_FINV_H		(1UL << 27)
++#define SPE_FDBZ_H		(1UL << 26)
++#define SPE_FUNF_H		(1UL << 25)
++#define SPE_FOVF_H		(1UL << 24)
++
++static int is_soft_emu = 0;
++
++#endif
++/*
++-------------------------------------------------------------------------------
++Clears the system's IEC/IEEE floating-point exception flags.  Returns the
++previous value of the flags.
++-------------------------------------------------------------------------------
++*/
++extern int rounding;
++unsigned int spefscr = 0;
++
++int8 syst_float_flags_clear( void )
++{
++#ifdef TEST_KERNEL_EMU
++	if( (spefscr & (SPE_FINV | SPE_FINV_H))
++	   || (spefscr & (SPE_FDBZ | SPE_FDBZ_H))
++	   || (spefscr & (SPE_FUNF | SPE_FUNF_H))
++	   || (spefscr & (SPE_FOVF | SPE_FOVF_H))
++	   || (spefscr & (SPE_FX | SPE_FG | SPE_FX_H | SPE_FG_H))){ 
++		is_soft_emu = 1;
++	} else {
++		is_soft_emu = 0;
++	}
++#endif	
++	__builtin_spe_mtspefscr(0x3c|(rounding & 0x3));
++
++	return ((spefscr>>17) & 0x1f);
++}
++
++int syst_float_is_soft_emu(void)
++{
++	int ret = 0;
++#ifdef TEST_KERNEL_EMU
++	ret = is_soft_emu;
++#endif
++	return ret;
++}
++
++
+diff --git a/testfloat/powerpc-linux-gcc/systfloat.c b/testfloat/powerpc-linux-gcc/systfloat.c
+new file mode 100644
+index 0000000..8d06f9f
+--- /dev/null
++++ b/testfloat/powerpc-linux-gcc/systfloat.c
+@@ -0,0 +1,595 @@
++/*
++ * This file is derived from testfloat/systfloat.c,
++ * the copyright for that material belongs to the original owners.
++ *
++ * Additional material and changes where applicable is:
++ * Copyright (C) 2008 Freescale Semiconductor, Inc. All rights reserved.
++ *
++ * Author: Ebony Zhu,  <ebony.zhu@freescale.com>
++ *         Yu Liu,     <yu.liu@freescale.com>
++ */
++
++/*
++===============================================================================
++
++This C source file is part of TestFloat, Release 2a, a package of programs
++for testing the correctness of floating-point arithmetic complying to the
++IEC/IEEE Standard for Floating-Point.
++
++Written by John R. Hauser.  More information is available through the Web
++page `http://HTTP.CS.Berkeley.EDU/~jhauser/arithmetic/TestFloat.html'.
++
++THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
++has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
++TIMES RESULT IN INCORRECT BEHAVIOR.  USE OF THIS SOFTWARE IS RESTRICTED TO
++PERSONS AND ORGANIZATIONS WHO CAN AND WILL TAKE FULL RESPONSIBILITY FOR ANY
++AND ALL LOSSES, COSTS, OR OTHER PROBLEMS ARISING FROM ITS USE.
++
++Derivative works are acceptable, even for commercial purposes, so long as
++(1) they include prominent notice that the work is derivative, and (2) they
++include prominent notice akin to these four paragraphs for those parts of
++this code that are retained.
++
++===============================================================================
++*/
++
++#include <math.h>
++#include "milieu.h"
++#include "softfloat.h"
++#include "systfloat.h"
++
++extern unsigned int spefscr;
++
++float32 syst_int32_to_float32( int32 a )
++{
++    float32 z;
++
++    *( (float *) &z ) = a;
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float64 syst_int32_to_float64( int32 a )
++{
++    float64 z;
++
++    *( (double *) &z ) = a;
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++#if defined( FLOATX80 ) && defined( LONG_DOUBLE_IS_FLOATX80 )
++
++floatx80 syst_int32_to_floatx80( int32 a )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) = a;
++    return z;
++
++}
++
++#endif
++
++#if defined( FLOAT128 ) && defined( LONG_DOUBLE_IS_FLOAT128 )
++
++float128 syst_int32_to_float128( int32 a )
++{
++    float128 z;
++
++    *( (long double *) &z ) = a;
++    return z;
++
++}
++
++#endif
++
++#ifdef BITS64
++
++float32 syst_int64_to_float32( int64 a )
++{
++    float32 z;
++
++    *( (float *) &z ) = a;
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float64 syst_int64_to_float64( int64 a )
++{
++    float64 z;
++
++    *( (double *) &z ) = a;
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++#if defined( FLOATX80 ) && defined( LONG_DOUBLE_IS_FLOATX80 )
++
++floatx80 syst_int64_to_floatx80( int64 a )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) = a;
++    return z;
++
++}
++
++#endif
++
++#if defined( FLOAT128 ) && defined( LONG_DOUBLE_IS_FLOAT128 )
++
++float128 syst_int64_to_float128( int64 a )
++{
++    float128 z;
++
++    *( (long double *) &z ) = a;
++    return z;
++
++}
++
++#endif
++
++#endif
++
++int32 syst_float32_to_int32_round_to_zero( float32 a )
++{
++    int32 z = *( (float *) &a );
++    spefscr = __builtin_spe_mfspefscr();
++
++    return z;
++
++}
++
++#ifdef BITS64
++
++int64 syst_float32_to_int64_round_to_zero( float32 a )
++{
++    int64 z = *( (float *) &a );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++#endif
++
++float64 syst_float32_to_float64( float32 a )
++{
++    float64 z;
++
++    *( (double *) &z ) = *( (float *) &a );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++#if defined( FLOATX80 ) && defined( LONG_DOUBLE_IS_FLOATX80 )
++
++floatx80 syst_float32_to_floatx80( float32 a )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) = *( (float *) &a );
++    return z;
++
++}
++
++#endif
++
++#if defined( FLOAT128 ) && defined( LONG_DOUBLE_IS_FLOAT128 )
++
++float128 syst_float32_to_float128( float32 a )
++{
++    float128 z;
++
++    *( (long double *) &z ) = *( (float *) &a );
++    return z;
++
++}
++
++#endif
++
++float32 syst_float32_add( float32 a, float32 b )
++{
++    float32 z;
++
++    *( (float *) &z ) = *( (float *) &a ) + *( (float *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float32 syst_float32_sub( float32 a, float32 b )
++{
++    float32 z;
++
++    *( (float *) &z ) = *( (float *) &a ) - *( (float *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float32 syst_float32_mul( float32 a, float32 b )
++{
++    float32 z;
++
++    *( (float *) &z ) = *( (float *) &a ) * *( (float *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float32 syst_float32_div( float32 a, float32 b )
++{
++    float32 z;
++
++    *( (float *) &z ) = *( (float *) &a ) / *( (float *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++flag syst_float32_eq( float32 a, float32 b )
++{
++    flag f = ( *( (float *) &a ) == *( (float *) &b ) );
++    spefscr = __builtin_spe_mfspefscr();
++    return f;
++
++}
++
++flag syst_float32_le( float32 a, float32 b )
++{
++    flag f = ( *( (float *) &a ) <= *( (float *) &b ) );
++    spefscr = __builtin_spe_mfspefscr();
++    return f;
++
++}
++
++flag syst_float32_lt( float32 a, float32 b )
++{
++    flag f = ( *( (float *) &a ) < *( (float *) &b ) );
++    spefscr = __builtin_spe_mfspefscr();
++    return f;
++
++}
++
++int32 syst_float64_to_int32_round_to_zero( float64 a )
++{
++    int32 z = *( (double *) &a );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++#ifdef BITS64
++
++int64 syst_float64_to_int64_round_to_zero( float64 a )
++{
++    int64 z = *( (double *) &a );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++#endif
++
++float32 syst_float64_to_float32( float64 a )
++{
++    float32 z;
++
++    *( (float *) &z ) = *( (double *) &a );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++#if defined( FLOATX80 ) && defined( LONG_DOUBLE_IS_FLOATX80 )
++
++floatx80 syst_float64_to_floatx80( float64 a )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) = *( (double *) &a );
++    return z;
++
++}
++
++#endif
++
++#if defined( FLOAT128 ) && defined( LONG_DOUBLE_IS_FLOAT128 )
++
++float128 syst_float64_to_float128( float64 a )
++{
++    float128 z;
++
++    *( (long double *) &z ) = *( (double *) &a );
++    return z;
++
++}
++
++#endif
++
++float64 syst_float64_add( float64 a, float64 b )
++{
++    float64 z;
++
++    *( (double *) &z ) = *( (double *) &a ) + *( (double *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float64 syst_float64_sub( float64 a, float64 b )
++{
++    float64 z;
++
++    *( (double *) &z ) = *( (double *) &a ) - *( (double *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float64 syst_float64_mul( float64 a, float64 b )
++{
++    float64 z;
++
++    *( (double *) &z ) = *( (double *) &a ) * *( (double *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float64 syst_float64_div( float64 a, float64 b )
++{
++    float64 z;
++
++    *( (double *) &z ) = *( (double *) &a ) / *( (double *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++float64 syst_float64_sqrt( float64 a )
++{
++	/* Ebony
++    float64 z;
++
++    *( (double *) &z ) = sqrt( *( (double *) &a ) );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++    */
++
++}
++
++flag syst_float64_eq( float64 a, float64 b )
++{
++    flag f = ( *( (double *) &a ) == *( (double *) &b ) );
++    spefscr = __builtin_spe_mfspefscr();
++    return f;
++
++}
++
++flag syst_float64_le( float64 a, float64 b )
++{
++    flag f = ( *( (double *) &a ) <= *( (double *) &b ) );
++    spefscr = __builtin_spe_mfspefscr();
++    return f;
++
++}
++
++flag syst_float64_lt( float64 a, float64 b )
++{
++    flag f = ( *( (double *) &a ) < *( (double *) &b ) );
++    spefscr = __builtin_spe_mfspefscr();
++    return f;
++
++}
++
++#if defined( FLOATX80 ) && defined( LONG_DOUBLE_IS_FLOATX80 )
++
++int32 syst_floatx80_to_int32_round_to_zero( floatx80 a )
++{
++
++    return *( (long double *) &a );
++
++}
++
++#ifdef BITS64
++
++int64 syst_floatx80_to_int64_round_to_zero( floatx80 a )
++{
++
++    return *( (long double *) &a );
++
++}
++
++#endif
++
++float32 syst_floatx80_to_float32( floatx80 a )
++{
++    float32 z;
++
++    *( (float *) &z ) = *( (long double *) &a );
++    return z;
++
++}
++
++float64 syst_floatx80_to_float64( floatx80 a )
++{
++    float64 z;
++
++    *( (double *) &z ) = *( (long double *) &a );
++    return z;
++
++}
++
++floatx80 syst_floatx80_add( floatx80 a, floatx80 b )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) + *( (long double *) &b );
++    return z;
++
++}
++
++floatx80 syst_floatx80_sub( floatx80 a, floatx80 b )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) - *( (long double *) &b );
++    return z;
++
++}
++
++floatx80 syst_floatx80_mul( floatx80 a, floatx80 b )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) * *( (long double *) &b );
++    return z;
++
++}
++
++floatx80 syst_floatx80_div( floatx80 a, floatx80 b )
++{
++    floatx80 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) / *( (long double *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++flag syst_floatx80_eq( floatx80 a, floatx80 b )
++{
++
++    return ( *( (long double *) &a ) == *( (long double *) &b ) );
++
++}
++
++flag syst_floatx80_le( floatx80 a, floatx80 b )
++{
++
++    return ( *( (long double *) &a ) <= *( (long double *) &b ) );
++
++}
++
++flag syst_floatx80_lt( floatx80 a, floatx80 b )
++{
++
++    return ( *( (long double *) &a ) < *( (long double *) &b ) );
++
++}
++
++#endif
++
++#if defined( FLOAT128 ) && defined( LONG_DOUBLE_IS_FLOAT128 )
++
++int32 syst_float128_to_int32_round_to_zero( float128 a )
++{
++
++    return *( (long double *) &a );
++
++}
++
++#ifdef BITS64
++
++int64 syst_float128_to_int64_round_to_zero( float128 a )
++{
++
++    return *( (long double *) &a );
++
++}
++
++#endif
++
++float32 syst_float128_to_float32( float128 a )
++{
++    float32 z;
++
++    *( (float *) &z ) = *( (long double *) &a );
++    return z;
++
++}
++
++float64 syst_float128_to_float64( float128 a )
++{
++    float64 z;
++
++    *( (double *) &z ) = *( (long double *) &a );
++    return z;
++
++}
++
++float128 syst_float128_add( float128 a, float128 b )
++{
++    float128 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) + *( (long double *) &b );
++    return z;
++
++}
++
++float128 syst_float128_sub( float128 a, float128 b )
++{
++    float128 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) - *( (long double *) &b );
++    return z;
++
++}
++
++float128 syst_float128_mul( float128 a, float128 b )
++{
++    float128 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) * *( (long double *) &b );
++    return z;
++
++}
++
++float128 syst_float128_div( float128 a, float128 b )
++{
++    float128 z;
++
++    *( (long double *) &z ) =
++        *( (long double *) &a ) / *( (long double *) &b );
++    spefscr = __builtin_spe_mfspefscr();
++    return z;
++
++}
++
++flag syst_float128_eq( float128 a, float128 b )
++{
++
++    return ( *( (long double *) &a ) == *( (long double *) &b ) );
++
++}
++
++flag syst_float128_le( float128 a, float128 b )
++{
++
++    return ( *( (long double *) &a ) <= *( (long double *) &b ) );
++
++}
++
++flag syst_float128_lt( float128 a, float128 b )
++{
++
++    return ( *( (long double *) &a ) < *( (long double *) &b ) );
++
++}
++
++#endif
++
+diff --git a/testfloat/powerpc-linux-gcc/systmodes.c b/testfloat/powerpc-linux-gcc/systmodes.c
+new file mode 100644
+index 0000000..143cdea
+--- /dev/null
++++ b/testfloat/powerpc-linux-gcc/systmodes.c
+@@ -0,0 +1,67 @@
++/*
++ * This file is derived from testfloat/386-Win32-gcc/systmodes.S,
++ * the copyright for that material belongs to the original owners.
++ *
++ * Additional material and changes where applicable is:
++ * Copyright (C) 2008 Freescale Semiconductor, Inc. All rights reserved.
++ *
++ * Author: Ebony Zhu,  <ebony.zhu@freescale.com>
++ *         Yu Liu,     <yu.liu@freescale.com>
++ */
++
++/*
++===============================================================================
++
++This C source file is part of TestFloat, Release 2a, a package of programs
++for testing the correctness of floating-point arithmetic complying to the
++IEC/IEEE Standard for Floating-Point.
++
++Written by John R. Hauser.  More information is available through the Web
++page `http://HTTP.CS.Berkeley.EDU/~jhauser/arithmetic/TestFloat.html'.
++
++THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
++has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
++TIMES RESULT IN INCORRECT BEHAVIOR.  USE OF THIS SOFTWARE IS RESTRICTED TO
++PERSONS AND ORGANIZATIONS WHO CAN AND WILL TAKE FULL RESPONSIBILITY FOR ANY
++AND ALL LOSSES, COSTS, OR OTHER PROBLEMS ARISING FROM ITS USE.
++
++Derivative works are acceptable, even for commercial purposes, so long as
++(1) they include prominent notice that the work is derivative, and (2) they
++include prominent notice akin to these four paragraphs for those parts of
++this code that are retained.
++
++===============================================================================
++*/
++
++#include <fenv.h>
++#include "milieu.h"
++#include "systmodes.h"
++/*
++-------------------------------------------------------------------------------
++Sets the system's IEC/IEEE floating-point rounding mode.  Also disables all
++system exception traps.
++-------------------------------------------------------------------------------
++*/
++int rounding;
++
++void syst_float_set_rounding_mode( int8 roundingMode )
++{
++	(void) fesetround ( roundingMode );
++	rounding = roundingMode;
++}
++
++/*
++-------------------------------------------------------------------------------
++Sets the rounding precision of subsequent extended double-precision
++operations.  The `precision' argument should be one of 0, 32, 64, or 80.
++If `precision' is 32, the rounding precision is set equivalent to single
++precision; else if `precision' is 64, the rounding precision is set
++equivalent to double precision; else the rounding precision is set to full
++extended double precision.
++-------------------------------------------------------------------------------
++*/
++void syst_float_set_rounding_precision( int8 precision )
++{
++
++}
++
+diff --git a/testfloat/templates/Makefile b/testfloat/templates/Makefile
+index f5f3cde..18cffe0 100644
+--- a/testfloat/templates/Makefile
++++ b/testfloat/templates/Makefile
+@@ -1,15 +1,21 @@
+ 
+-PROCESSOR_H = ../../processors/!!!processor.h
++#PROCESSOR_H = ../../processors/!!!processor.h
++PROCESSOR_H = ../../processors/POWERPC-gcc.h
+ SOFTFLOAT_VERSION = bits64
+-TARGET = !!!target
+-SOFTFLOAT_DIR = ../../softfloat/$(SOFTFLOAT_VERSION)/$(TARGET)
++
++#TARGET = !!!target
++TARGET = powerpc-GCC
++SOFTFLOAT_DIR = ../../../SoftFloat-2b/softfloat/$(SOFTFLOAT_VERSION)/$(TARGET)
+ 
+ OBJ = .o
+ EXE =
+ INCLUDES = -I. -I.. -I$(SOFTFLOAT_DIR)
+-COMPILE_C = gcc -c -o $@ $(INCLUDES) -I- -O2
+-COMPILE_SLOWFLOAT_C = gcc -c -o $@ $(INCLUDES) -I- -O3
+-LINK = gcc -o $@
++#COMPILE_C = gcc -c -o $@ $(INCLUDES) -I- -O2
++#COMPILE_SLOWFLOAT_C = gcc -c -o $@ $(INCLUDES) -I- -O3
++#LINK = gcc -o $@
++COMPILE_C = /opt/mtwk/usr/local/gcc-3_4-e500-glibc-2.3.4-dp/powerpc-linux-gnuspe/bin/powerpc-linux-gnuspe-gcc -c -o $@ $(INCLUDES) -I- -O2
++COMPILE_SLOWFLOAT_C = /opt/mtwk/usr/local/gcc-3_4-e500-glibc-2.3.4-dp/powerpc-linux-gnuspe/bin/powerpc-linux-gnuspe-gcc -c -o $@ $(INCLUDES) -I- -O3
++LINK = /opt/mtwk/usr/local/gcc-3_4-e500-glibc-2.3.4-dp/powerpc-linux-gnuspe/bin/powerpc-linux-gnuspe-gcc -o $@
+ 
+ SOFTFLOAT_H = $(SOFTFLOAT_DIR)/softfloat.h
+ SOFTFLOAT_OBJ = $(SOFTFLOAT_DIR)/softfloat$(OBJ)
+diff --git a/testfloat/templates/milieu.h b/testfloat/templates/milieu.h
+index 56d3ac4..3214ca8 100644
+--- a/testfloat/templates/milieu.h
++++ b/testfloat/templates/milieu.h
+@@ -28,7 +28,7 @@ this code that are retained.
+ Include common integer types and flags.
+ -------------------------------------------------------------------------------
+ */
+-#include "../../processors/!!!processor.h"
++#include "../../processors/SPARC-gcc.h"
+ 
+ /*
+ -------------------------------------------------------------------------------
+diff --git a/testfloat/testFunction.h b/testfloat/testFunction.h
+index 04bf856..00139a7 100644
+--- a/testfloat/testFunction.h
++++ b/testfloat/testFunction.h
+@@ -126,8 +126,8 @@ extern const flag functionExists[ NUM_FUNCTIONS ];
+ enum {
+     ROUND_NEAREST_EVEN = 1,
+     ROUND_TO_ZERO,
+-    ROUND_DOWN,
+     ROUND_UP,
++    ROUND_DOWN,
+     NUM_ROUNDINGMODES
+ };
+ 
+diff --git a/testfloat/testLoops.c b/testfloat/testLoops.c
+index 8ba92f3..ba05548 100644
+--- a/testfloat/testLoops.c
++++ b/testfloat/testLoops.c
+@@ -488,6 +488,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -539,6 +544,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -592,6 +602,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -647,6 +662,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -702,6 +722,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -753,6 +778,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -806,6 +836,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -861,6 +896,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_int64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -916,6 +956,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -973,6 +1018,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1030,6 +1080,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1087,6 +1142,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1146,6 +1206,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1203,6 +1268,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1260,6 +1330,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32, testCases_b_float32 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1312,6 +1387,25 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float32, testCases_b_float32 );
+         testFlags = testFlagsFunctionPtr();
++
++if(testCases_a_float32 == 0x7ffffe && testCases_b_float32 == 0x3f7ffffe)
++{
++
++                writeErrorFound( 10000 - count );
++                writeInputs_ab_float32();
++                fputs( "  ", stdout );
++                writeOutputs_z_float32( trueZ, trueFlags, testZ, testFlags );
++                fflush( stdout );
++	if (! syst_float_is_soft_emu()){
++		exit(-1);
++	}
++}
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
++        
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1370,6 +1464,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1427,6 +1526,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1484,6 +1588,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1541,6 +1650,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1600,6 +1714,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1657,6 +1776,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1714,6 +1838,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64, testCases_b_float64 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1766,6 +1895,13 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float64, testCases_b_float64 );
+         testFlags = testFlagsFunctionPtr();
++
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
++
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1826,6 +1962,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1883,6 +2024,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1940,6 +2086,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -1995,6 +2146,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2052,6 +2208,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2109,6 +2270,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2166,6 +2332,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80, testCases_b_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2218,6 +2389,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_floatx80, testCases_b_floatx80 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2280,6 +2456,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2337,6 +2518,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2394,6 +2580,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2449,6 +2640,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2506,6 +2702,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2563,6 +2764,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2620,6 +2826,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128, testCases_b_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+@@ -2672,6 +2883,11 @@ void
+         (void) testFlagsFunctionPtr();
+         testZ = testFunction( testCases_a_float128, testCases_b_float128 );
+         testFlags = testFlagsFunctionPtr();
++#ifdef TEST_KERNEL_EMU
++	if (! syst_float_is_soft_emu()){
++		continue;
++	}
++#endif
+         --count;
+         if ( count == 0 ) {
+             checkEarlyExit();
+-- 
+1.5.4
+
