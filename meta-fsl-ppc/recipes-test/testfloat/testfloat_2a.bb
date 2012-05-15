@@ -15,7 +15,7 @@ SRC_URI[TestFloat.sha256sum] = "84d14aa42adefbda2ec9708b42946f7fa59f93689b042684
 SRC_URI[SoftFloat.md5sum] = "b4a58b5c941f1a2317e4c2500086e3fa"
 SRC_URI[SoftFloat.sha256sum] = "89d14b55113a2ba8cbda7011443ba1d298d381c89d939515d56c5f18f2febf81"
 
-S=${WORKDIR}/TestFloat-2a
+S = "${WORKDIR}/TestFloat-2a"
 
 do_unpack2(){
     mv ${WORKDIR}/SoftFloat-2b ${S}/SoftFloat-2b
