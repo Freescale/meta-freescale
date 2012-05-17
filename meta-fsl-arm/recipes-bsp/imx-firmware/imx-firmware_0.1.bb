@@ -9,7 +9,7 @@ SRC_URI = "file://firmware-imx-11.09.01.tar.gz \
            file://vpu_fw_imx51.bin \
            file://vpu_fw_imx53.bin"
 
-COMPATIBLE_MACHINE = "(imx53ard|imx53qsb|imx51evk)"
+COMPATIBLE_MACHINE = "(mx5)"
 
 S = "${WORKDIR}/firmware-imx-11.09.01"
 
