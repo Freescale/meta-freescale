@@ -16,20 +16,6 @@ IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native u-boot"
 IMAGE_CMD_uboot.mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
                                              ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX_SDCARD}"
 
-#
-# Create an image that can by written onto a SD card using dd.
-#
-# External variables needed:
-#   ${SDCARD_ROOTFS}    - the rootfs image to incorporate
-#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}x
-#
-# The disk layout used is:
-#
-#    0  - 1M                  - reserved to bootloader and other data
-#    1M - BOOT_SPACE          - kernel
-#    BOOT_SPACE - SDCARD_SIZE - rootfs
-#
-
 # Default to 3.4GiB images
 SDCARD_SIZE ?= "3400"
 
@@ -48,6 +34,20 @@ SDCARD_GENERATION_COMMAND_mxs = "generate_mxs_sdcard"
 SDCARD_GENERATION_COMMAND_mx5 = "generate_imx_sdcard"
 SDCARD_GENERATION_COMMAND_mx6 = "generate_imx_sdcard"
 
+#
+# Create an image that can by written onto a SD card using dd for use
+# with i.MX SoC family
+#
+# External variables needed:
+#   ${SDCARD_ROOTFS}    - the rootfs image to incorporate
+#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}x
+#
+# The disk layout used is:
+#
+#    0  - 1M                  - reserved to bootloader and other data
+#    1M - BOOT_SPACE          - kernel
+#    BOOT_SPACE - SDCARD_SIZE - rootfs
+#
 generate_imx_sdcard () {
 	# Create partition table
 	parted -s ${SDCARD} mklabel msdos
@@ -85,6 +85,20 @@ generate_imx_sdcard () {
 	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc seek=1 bs=${BOOT_SPACE}
 }
 
+#
+# Create an image that can by written onto a SD card using dd for use
+# with i.MXS SoC family
+#
+# External variables needed:
+#   ${SDCARD_ROOTFS}    - the rootfs image to incorporate
+#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}x
+#
+# The disk layout used is:
+#
+#    1M - 2M                  - reserved to bootloader and other data
+#    2M - BOOT_SPACE          - kernel
+#    BOOT_SPACE - SDCARD_SIZE - rootfs
+#
 generate_mxs_sdcard () {
 	# Create partition table
 	parted -s ${SDCARD} mklabel msdos
