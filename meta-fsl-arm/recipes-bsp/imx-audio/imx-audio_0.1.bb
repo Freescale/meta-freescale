@@ -15,7 +15,7 @@ SRC_URI = "file://imx-audio"
 INITSCRIPT_NAME = "imx-audio"
 INITSCRIPT_PARAMS = "defaults 90"
 
-COMPATIBLE_MACHINE = "(imx53ard|imx53qsb|imx51evk|imx6qsabrelite)"
+COMPATIBLE_MACHINE = "(mx5|mx6)"
 INHIBIT_DEFAULT_DEPS = "1"
 
 do_install() {
