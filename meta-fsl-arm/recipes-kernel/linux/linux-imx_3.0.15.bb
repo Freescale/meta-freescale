@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 PR = "r1"
 
 inherit kernel
-COMPATIBLE_MACHINE = "(imx6qsabrelite)"
+COMPATIBLE_MACHINE = "(mx6)"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_3.0.15_12.02.01\
            file://defconfig \
