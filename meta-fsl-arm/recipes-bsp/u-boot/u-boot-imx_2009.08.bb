@@ -25,3 +25,5 @@ do_compile_prepend() {
 		sed -i 's/$(CROSS_COMPILE)ld/$(CROSS_COMPILE)ld.bfd/g' config.mk
 	fi
 }
+
+COMPATIBLE_MACHINE = "(imx28evk|mx5|mx6)"
