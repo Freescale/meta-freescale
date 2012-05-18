@@ -1,0 +1,34 @@
+From a79af9bfd334db959881ebbe917976ebc7824c35 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marex@denx.de>
+Date: Tue, 1 May 2012 11:09:52 +0000
+Subject: [PATCH 54/56] i.MX28: Check if WP detection is implemented at all
+
+If the WP function is NULL, simply assume the card is always RW.
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Stefano Babic <sbabic@denx.de>
+Cc: Wolfgang Denk <wd@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Acked-by: Stefano Babic <sbabic@denx.de>
+---
+ drivers/mmc/mxsmmc.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/mxsmmc.c b/drivers/mmc/mxsmmc.c
+index 35c6bda..c7200ee 100644
+--- a/drivers/mmc/mxsmmc.c
++++ b/drivers/mmc/mxsmmc.c
+@@ -133,7 +133,8 @@ mxsmmc_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *data)
+ 		/* READ or WRITE */
+ 		if (data->flags & MMC_DATA_READ) {
+ 			ctrl0 |= SSP_CTRL0_READ;
+-		} else if (priv->mmc_is_wp(mmc->block_dev.dev)) {
++		} else if (priv->mmc_is_wp &&
++			priv->mmc_is_wp(mmc->block_dev.dev)) {
+ 			printf("MMC%d: Can not write a locked card!\n",
+ 				mmc->block_dev.dev);
+ 			return UNUSABLE_ERR;
+-- 
+1.7.10
+

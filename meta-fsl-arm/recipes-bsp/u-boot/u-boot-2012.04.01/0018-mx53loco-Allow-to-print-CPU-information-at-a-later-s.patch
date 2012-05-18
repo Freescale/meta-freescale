@@ -1,0 +1,93 @@
+From 255fe9c082f3a409d366517bb5e92d299fdbf2ff Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <festevam@gmail.com>
+Date: Mon, 30 Apr 2012 08:12:03 +0000
+Subject: [PATCH 18/56] mx53loco: Allow to print CPU information at a later
+ stage
+
+Print CPU information within board_late_init().
+
+This is in preparation for adding 1GHz support, which requires programming a PMIC
+via I2C. As I2C is only available after relocation, print the CPU information
+later at board_late_init(), so that the CPU frequency can be printed correctly.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Acked-by: Stefano Babic <sbabic@denx.de>
+---
+ arch/arm/cpu/armv7/imx-common/cpu.c       |    2 +-
+ arch/arm/include/asm/arch-mx5/sys_proto.h |    1 +
+ board/freescale/mx53loco/mx53loco.c       |   22 ++++++++++++++++++++++
+ include/configs/mx53loco.h                |    1 -
+ 4 files changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/cpu/armv7/imx-common/cpu.c b/arch/arm/cpu/armv7/imx-common/cpu.c
+index b96fa5b..b3195dd 100644
+--- a/arch/arm/cpu/armv7/imx-common/cpu.c
++++ b/arch/arm/cpu/armv7/imx-common/cpu.c
+@@ -35,7 +35,7 @@
+ #include <fsl_esdhc.h>
+ #endif
+ 
+-static char *get_reset_cause(void)
++char *get_reset_cause(void)
+ {
+ 	u32 cause;
+ 	struct src *src_regs = (struct src *)SRC_BASE_ADDR;
+diff --git a/arch/arm/include/asm/arch-mx5/sys_proto.h b/arch/arm/include/asm/arch-mx5/sys_proto.h
+index 3f10d29..7b5246e 100644
+--- a/arch/arm/include/asm/arch-mx5/sys_proto.h
++++ b/arch/arm/include/asm/arch-mx5/sys_proto.h
+@@ -37,5 +37,6 @@ void set_chipselect_size(int const);
+ int fecmxc_initialize(bd_t *bis);
+ u32 get_ahb_clk(void);
+ u32 get_periph_clk(void);
++char *get_reset_cause(void);
+ 
+ #endif
+diff --git a/board/freescale/mx53loco/mx53loco.c b/board/freescale/mx53loco/mx53loco.c
+index 7ea9f6e..46aaeb2 100644
+--- a/board/freescale/mx53loco/mx53loco.c
++++ b/board/freescale/mx53loco/mx53loco.c
+@@ -299,6 +299,28 @@ int board_early_init_f(void)
+ 	return 0;
+ }
+ 
++int print_cpuinfo(void)
++{
++	u32 cpurev;
++
++	cpurev = get_cpu_rev();
++	printf("CPU:   Freescale i.MX%x family rev%d.%d at %d MHz\n",
++		(cpurev & 0xFF000) >> 12,
++		(cpurev & 0x000F0) >> 4,
++		(cpurev & 0x0000F) >> 0,
++		mxc_get_clock(MXC_ARM_CLK) / 1000000);
++	printf("Reset cause: %s\n", get_reset_cause());
++	return 0;
++}
++
++#ifdef CONFIG_BOARD_LATE_INIT
++int board_late_init(void)
++{
++	print_cpuinfo();
++	return 0;
++}
++#endif
++
+ int board_init(void)
+ {
+ 	gd->bd->bi_boot_params = PHYS_SDRAM_1 + 0x100;
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index af59307..0778bde 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -27,7 +27,6 @@
+ 
+ #define CONFIG_SYS_MX5_HCLK	24000000
+ #define CONFIG_SYS_MX5_CLK32		32768
+-#define CONFIG_DISPLAY_CPUINFO
+ #define CONFIG_DISPLAY_BOARDINFO
+ 
+ #define CONFIG_MACH_TYPE	MACH_TYPE_MX53_LOCO
+-- 
+1.7.10
+

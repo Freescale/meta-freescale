@@ -1,0 +1,124 @@
+From bb46787a684ee948eff96d5d9a7e6ff1632016ea Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Mon, 7 May 2012 10:25:59 +0000
+Subject: [PATCH 36/56] mx53loco: Add mc34708 support and set mx53 frequency
+ at 1GHz
+
+Add mc34708 support and set mx53 core frequency at its maximum value of 1GHz.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Acked-by: Jason Liu <r64343@freescale.com>
+Acked-by: Stefano Babic <sbabic@denx.de>
+---
+ board/freescale/mx53loco/mx53loco.c |   48 ++++++++++++++++++++++++++---------
+ include/configs/mx53loco.h          |    2 ++
+ include/fsl_pmic.h                  |   10 ++++++++
+ 3 files changed, 48 insertions(+), 12 deletions(-)
+
+diff --git a/board/freescale/mx53loco/mx53loco.c b/board/freescale/mx53loco/mx53loco.c
+index 7ed5c4e..8f5ded9 100644
+--- a/board/freescale/mx53loco/mx53loco.c
++++ b/board/freescale/mx53loco/mx53loco.c
+@@ -38,6 +38,7 @@
+ #include <asm/gpio.h>
+ #include <pmic.h>
+ #include <dialog_pmic.h>
++#include <fsl_pmic.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+@@ -319,23 +320,46 @@ static void setup_iomux_i2c(void)
+ 
+ static int power_init(void)
+ {
+-	unsigned int val, ret;
++	unsigned int val;
++	int ret = -1;
+ 	struct pmic *p;
+ 
+-	pmic_dialog_init();
+-	p = get_pmic();
++	if (!i2c_probe(CONFIG_SYS_DIALOG_PMIC_I2C_ADDR)) {
++		pmic_dialog_init();
++		p = get_pmic();
+ 
+-	/* Set VDDA to 1.25V */
+-	val = DA9052_BUCKCORE_BCOREEN | DA_BUCKCORE_VBCORE_1_250V;
+-	ret = pmic_reg_write(p, DA9053_BUCKCORE_REG, val);
++		/* Set VDDA to 1.25V */
++		val = DA9052_BUCKCORE_BCOREEN | DA_BUCKCORE_VBCORE_1_250V;
++		ret = pmic_reg_write(p, DA9053_BUCKCORE_REG, val);
+ 
+-	ret |= pmic_reg_read(p, DA9053_SUPPLY_REG, &val);
+-	val |= DA9052_SUPPLY_VBCOREGO;
+-	ret |= pmic_reg_write(p, DA9053_SUPPLY_REG, val);
++		ret |= pmic_reg_read(p, DA9053_SUPPLY_REG, &val);
++		val |= DA9052_SUPPLY_VBCOREGO;
++		ret |= pmic_reg_write(p, DA9053_SUPPLY_REG, val);
+ 
+-	/* Set Vcc peripheral to 1.35V */
+-	ret |= pmic_reg_write(p, DA9053_BUCKPRO_REG, 0x62);
+-	ret |= pmic_reg_write(p, DA9053_SUPPLY_REG, 0x62);
++		/* Set Vcc peripheral to 1.30V */
++		ret |= pmic_reg_write(p, DA9053_BUCKPRO_REG, 0x62);
++		ret |= pmic_reg_write(p, DA9053_SUPPLY_REG, 0x62);
++	}
++
++	if (!i2c_probe(CONFIG_SYS_FSL_PMIC_I2C_ADDR)) {
++		pmic_init();
++		p = get_pmic();
++
++		/* Set VDDGP to 1.25V for 1GHz on SW1 */
++		pmic_reg_read(p, REG_SW_0, &val);
++		val = (val & ~SWx_VOLT_MASK_MC34708) | SWx_1_250V_MC34708;
++		ret = pmic_reg_write(p, REG_SW_0, val);
++
++		/* Set VCC as 1.30V on SW2 */
++		pmic_reg_read(p, REG_SW_1, &val);
++		val = (val & ~SWx_VOLT_MASK_MC34708) | SWx_1_300V_MC34708;
++		ret |= pmic_reg_write(p, REG_SW_1, val);
++
++		/* Set global reset timer to 4s */
++		pmic_reg_read(p, REG_POWER_CTL2, &val);
++		val = (val & ~TIMER_MASK_MC34708) | TIMER_4S_MC34708;
++		ret |= pmic_reg_write(p, REG_POWER_CTL2, val);
++	}
+ 
+ 	return ret;
+ }
+diff --git a/include/configs/mx53loco.h b/include/configs/mx53loco.h
+index 8f43eec..87f6ed1 100644
+--- a/include/configs/mx53loco.h
++++ b/include/configs/mx53loco.h
+@@ -97,7 +97,9 @@
+ #define CONFIG_PMIC
+ #define CONFIG_PMIC_I2C
+ #define CONFIG_DIALOG_PMIC
++#define CONFIG_PMIC_FSL
+ #define CONFIG_SYS_DIALOG_PMIC_I2C_ADDR	0x48
++#define CONFIG_SYS_FSL_PMIC_I2C_ADDR	0x8
+ 
+ /* allow to overwrite serial and ethaddr */
+ #define CONFIG_ENV_OVERWRITE
+diff --git a/include/fsl_pmic.h b/include/fsl_pmic.h
+index 742f2e1..3b7cd37 100644
+--- a/include/fsl_pmic.h
++++ b/include/fsl_pmic.h
+@@ -122,4 +122,14 @@ enum {
+ /* Interrupt status 1 */
+ #define RTCRSTI		(1 << 7)
+ 
++/* MC34708 Definitions */
++#define SWx_VOLT_MASK_MC34708	0x3F
++#define SWx_1_250V_MC34708	0x30
++#define SWx_1_300V_MC34708	0x34
++#define TIMER_MASK_MC34708	0x300
++#define TIMER_4S_MC34708	0x100
++#define VUSBSEL_MC34708		(1 << 2)
++#define VUSBEN_MC34708		(1 << 3)
++#define SWBST_CTRL		31
++
+ #endif
+-- 
+1.7.10
+

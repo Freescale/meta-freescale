@@ -1,0 +1,148 @@
+From b4a826714297d304a42bfbe6622e66bbdebe0f61 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marex@denx.de>
+Date: Tue, 1 May 2012 11:09:44 +0000
+Subject: [PATCH 46/56] i.MX28: Improve passing of data from SPL to U-Boot
+
+Pass memory size from SPL via structure located in SRAM instead of SCRATCH
+registers. This allows passing more data about boot from SPL to U-Boot, like the
+boot mode pads configuration.
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Stefano Babic <sbabic@denx.de>
+Cc: Wolfgang Denk <wd@denx.de>
+---
+ arch/arm/cpu/arm926ejs/mx28/mx28.c         |   16 +++++-----------
+ arch/arm/cpu/arm926ejs/mx28/mx28_init.h    |    1 +
+ arch/arm/cpu/arm926ejs/mx28/spl_boot.c     |    7 +++++++
+ arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c |   10 +++-------
+ arch/arm/include/asm/arch-mx28/sys_proto.h |    4 ++++
+ 5 files changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/arch/arm/cpu/arm926ejs/mx28/mx28.c b/arch/arm/cpu/arm926ejs/mx28/mx28.c
+index dc0338d..54a68e1 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/mx28.c
++++ b/arch/arm/cpu/arm926ejs/mx28/mx28.c
+@@ -279,22 +279,16 @@ void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ 
+ int mx28_dram_init(void)
+ {
+-	struct mx28_digctl_regs *digctl_regs =
+-		(struct mx28_digctl_regs *)MXS_DIGCTL_BASE;
+-	uint32_t sz[2];
++	struct mx28_spl_data *data = (struct mx28_spl_data *)
++		((CONFIG_SYS_TEXT_BASE - sizeof(struct mx28_spl_data)) & ~0xf);
+ 
+-	sz[0] = readl(&digctl_regs->hw_digctl_scratch0);
+-	sz[1] = readl(&digctl_regs->hw_digctl_scratch1);
+-
+-	if (sz[0] != sz[1]) {
++	if (data->mem_dram_size == 0) {
+ 		printf("MX28:\n"
+-			"Error, the RAM size in HW_DIGCTRL_SCRATCH0 and\n"
+-			"HW_DIGCTRL_SCRATCH1 is not the same. Please\n"
+-			"verify these two registers contain valid RAM size!\n");
++			"Error, the RAM size passed up from SPL is 0!\n");
+ 		hang();
+ 	}
+ 
+-	gd->ram_size = sz[0];
++	gd->ram_size = data->mem_dram_size;
+ 	return 0;
+ }
+ 
+diff --git a/arch/arm/cpu/arm926ejs/mx28/mx28_init.h b/arch/arm/cpu/arm926ejs/mx28/mx28_init.h
+index 98d3631..8eac958 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/mx28_init.h
++++ b/arch/arm/cpu/arm926ejs/mx28/mx28_init.h
+@@ -37,5 +37,6 @@ static inline void mx28_power_wait_pswitch(void) { }
+ #endif
+ 
+ void mx28_mem_init(void);
++uint32_t mx28_mem_get_size(void);
+ 
+ #endif	/* __M28_INIT_H__ */
+diff --git a/arch/arm/cpu/arm926ejs/mx28/spl_boot.c b/arch/arm/cpu/arm926ejs/mx28/spl_boot.c
+index dfb8309..37e1eb7 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/spl_boot.c
++++ b/arch/arm/cpu/arm926ejs/mx28/spl_boot.c
+@@ -28,6 +28,7 @@
+ #include <asm/io.h>
+ #include <asm/arch/iomux-mx28.h>
+ #include <asm/arch/imx-regs.h>
++#include <asm/arch/sys_proto.h>
+ 
+ #include "mx28_init.h"
+ 
+@@ -49,9 +50,15 @@ void early_delay(int delay)
+ void mx28_common_spl_init(const iomux_cfg_t *iomux_setup,
+ 			const unsigned int iomux_size)
+ {
++	struct mx28_spl_data *data = (struct mx28_spl_data *)
++		((CONFIG_SYS_TEXT_BASE - sizeof(struct mx28_spl_data)) & ~0xf);
++
+ 	mxs_iomux_setup_multiple_pads(iomux_setup, iomux_size);
+ 	mx28_power_init();
++
+ 	mx28_mem_init();
++	data->mem_dram_size = mx28_mem_get_size();
++
+ 	mx28_power_wait_pswitch();
+ }
+ 
+diff --git a/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c b/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c
+index 69c865e..9fa5d29 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c
++++ b/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c
+@@ -175,10 +175,8 @@ void mx28_mem_setup_vddd(void)
+ 		&power_regs->hw_power_vdddctrl);
+ }
+ 
+-void mx28_mem_get_size(void)
++uint32_t mx28_mem_get_size(void)
+ {
+-	struct mx28_digctl_regs *digctl_regs =
+-		(struct mx28_digctl_regs *)MXS_DIGCTL_BASE;
+ 	uint32_t sz, da;
+ 	uint32_t *vt = (uint32_t *)0x20;
+ 	/* The following is "subs pc, r14, #4", used as return from DABT. */
+@@ -189,11 +187,11 @@ void mx28_mem_get_size(void)
+ 	vt[4] = data_abort_memdetect_handler;
+ 
+ 	sz = get_ram_size((long *)PHYS_SDRAM_1, PHYS_SDRAM_1_SIZE);
+-	writel(sz, &digctl_regs->hw_digctl_scratch0);
+-	writel(sz, &digctl_regs->hw_digctl_scratch1);
+ 
+ 	/* Restore the old DABT handler. */
+ 	vt[4] = da;
++
++	return sz;
+ }
+ 
+ void mx28_mem_init(void)
+@@ -241,6 +239,4 @@ void mx28_mem_init(void)
+ 	early_delay(10000);
+ 
+ 	mx28_mem_setup_cpu_and_hbus();
+-
+-	mx28_mem_get_size();
+ }
+diff --git a/arch/arm/include/asm/arch-mx28/sys_proto.h b/arch/arm/include/asm/arch-mx28/sys_proto.h
+index 15d8de3..04f2e4d 100644
+--- a/arch/arm/include/asm/arch-mx28/sys_proto.h
++++ b/arch/arm/include/asm/arch-mx28/sys_proto.h
+@@ -39,6 +39,10 @@ void mx28_common_spl_init(const iomux_cfg_t *iomux_setup,
+ 			const unsigned int iomux_size);
+ #endif
+ 
++struct mx28_spl_data {
++	uint32_t	mem_dram_size;
++};
++
+ int mx28_dram_init(void);
+ 
+ #endif	/* __MX28_H__ */
+-- 
+1.7.10
+

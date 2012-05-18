@@ -1,0 +1,32 @@
+From 694d7164c05e3b785ac3c7055d0bd605bfc6a5ee Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Sat, 12 May 2012 14:14:13 -0300
+Subject: [PATCH 56/56] mx28evk: Scan only first 128MB of DRAM to avoid memory
+ wraparound
+
+Scan only first 128MB of DRAM to avoid memory wraparound.
+
+This fixes mx28evk boot and it follows the same idea of commit
+19a2066b57 (M28: Scan only first 512 MB of DRAM to avoid memory wraparound)
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ include/configs/mx28evk.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/mx28evk.h b/include/configs/mx28evk.h
+index 0c18e50..41037fc 100644
+--- a/include/configs/mx28evk.h
++++ b/include/configs/mx28evk.h
+@@ -75,7 +75,7 @@
+  */
+ #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
+ #define PHYS_SDRAM_1			0x40000000	/* Base address */
+-#define PHYS_SDRAM_1_SIZE		0x40000000	/* Max 1 GB RAM */
++#define PHYS_SDRAM_1_SIZE		0x08000000	/* 128MB RAM */
+ #define CONFIG_STACKSIZE		(128 * 1024)	/* 128 KB stack */
+ #define CONFIG_SYS_MALLOC_LEN		0x00400000	/* 4 MB for malloc */
+ #define CONFIG_SYS_MEMTEST_START	0x40000000	/* Memtest start adr */
+-- 
+1.7.10
+

@@ -1,0 +1,77 @@
+From b22729b27625107061733c718cb49a394fd41a4a Mon Sep 17 00:00:00 2001
+From: Stefano Babic <sbabic@denx.de>
+Date: Wed, 22 Feb 2012 00:24:38 +0000
+Subject: [PATCH 03/56] MX53: add function to set SATA clock to internal
+
+The MX53 SATA interface can use an internal clock (USB PHY1)
+instead of an external clock. This is an undocumented feature, but used
+on most Freescale's evaluation boards, such as MX53-loco.
+
+As stated by Freescale's support:
+
+Fuses (but not pins) may be used to configure SATA clocks.
+Particularly the i.MX53 Fuse_Map contains the next information
+about configuring SATA clocks :
+	SATA_ALT_REF_CLK[1:0] (offset 0x180C)
+
+'00' - 100MHz (External)
+'01' - 50MHz (External)
+'10' - 120MHz, internal (USB PHY)
+'11' - Reserved
+
+Signed-off-by: Stefano Babic <sbabic@denx.de>
+CC: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ arch/arm/cpu/armv7/mx5/clock.c        |   24 ++++++++++++++++++++++++
+ arch/arm/include/asm/arch-mx5/clock.h |    1 +
+ 2 files changed, 25 insertions(+)
+
+diff --git a/arch/arm/cpu/armv7/mx5/clock.c b/arch/arm/cpu/armv7/mx5/clock.c
+index 8f8d01c..d769a4d 100644
+--- a/arch/arm/cpu/armv7/mx5/clock.c
++++ b/arch/arm/cpu/armv7/mx5/clock.c
+@@ -399,6 +399,30 @@ u32 imx_get_fecclk(void)
+ 	return mxc_get_clock(MXC_IPG_CLK);
+ }
+ 
++#ifdef CONFIG_MX53
++/*
++ * The clock for the external interface can be set to use internal clock
++ * if fuse bank 4, row 3, bit 2 is set.
++ * This is an undocumented feature and it was confirmed by Freescale's support:
++ * Fuses (but not pins) may be used to configure SATA clocks.
++ * Particularly the i.MX53 Fuse_Map contains the next information
++ * about configuring SATA clocks :  SATA_ALT_REF_CLK[1:0] (offset 0x180C)
++ * '00' - 100MHz (External)
++ * '01' - 50MHz (External)
++ * '10' - 120MHz, internal (USB PHY)
++ * '11' - Reserved
++*/
++void mxc_set_sata_internal_clock(void)
++{
++	u32 *tmp_base =
++		(u32 *)(IIM_BASE_ADDR + 0x180c);
++
++	set_usb_phy1_clk();
++
++	writel((readl(tmp_base) & (~0x7)) | 0x4, tmp_base);
++}
++#endif
++
+ /*
+  * Dump some core clockes.
+  */
+diff --git a/arch/arm/include/asm/arch-mx5/clock.h b/arch/arm/include/asm/arch-mx5/clock.h
+index f9f82f3..e822809 100644
+--- a/arch/arm/include/asm/arch-mx5/clock.h
++++ b/arch/arm/include/asm/arch-mx5/clock.h
+@@ -45,5 +45,6 @@ void set_usb_phy2_clk(void);
+ void enable_usb_phy2_clk(unsigned char enable);
+ void set_usboh3_clk(void);
+ void enable_usboh3_clk(unsigned char enable);
++void mxc_set_sata_internal_clock(void);
+ 
+ #endif /* __ASM_ARCH_CLOCK_H */
+-- 
+1.7.10
+

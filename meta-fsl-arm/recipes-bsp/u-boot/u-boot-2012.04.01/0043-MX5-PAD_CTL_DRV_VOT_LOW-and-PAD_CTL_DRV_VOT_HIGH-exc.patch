@@ -1,0 +1,45 @@
+From 31b19f2736b7d1c5c209ff22a99aec1c3449fedc Mon Sep 17 00:00:00 2001
+From: Stefano Babic <sbabic@denx.de>
+Date: Wed, 9 May 2012 12:07:31 +0200
+Subject: [PATCH 43/56] MX5: PAD_CTL_DRV_VOT_LOW and PAD_CTL_DRV_VOT_HIGH
+ exchanged
+
+After an update to the MX51 reference manual (Rev. 5), the
+values of the PAD_CTL_DRV_VOT_LOW and PAD_CTL_DRV_VOT_HIGH
+are now clearly wrong:
+
+"Bit 13:
+High / Low Output Voltage Range. This bit selects the output voltage mode for
+SD2_CMD. 0 High output voltage mode
+1 Low output voltage mode"
+
+The values are currently negated in code - fixed.
+
+Reported-by: David Jander <david.jander@protonic.nl>
+Signed-off-by: Stefano Babic <sbabic@denx.de>
+CC: Marek Vasut <marek.vasut@gmail.com>
+CC: David Jander <david.jander@protonic.nl>
+Acked-by: David Jander <david.jander@protonic.nl>
+Acked-by: Marek Vasut <marek.vasut@gmail.com>
+---
+ arch/arm/include/asm/arch-mx5/iomux.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/include/asm/arch-mx5/iomux.h b/arch/arm/include/asm/arch-mx5/iomux.h
+index 760371b..e3765a3 100644
+--- a/arch/arm/include/asm/arch-mx5/iomux.h
++++ b/arch/arm/include/asm/arch-mx5/iomux.h
+@@ -66,8 +66,8 @@ typedef enum iomux_pad_config {
+ 	PAD_CTL_HYS_ENABLE = 0x1 << 8,	/* Hysteresis enabled */
+ 	PAD_CTL_DDR_INPUT_CMOS = 0x0 << 9,/* DDR input CMOS */
+ 	PAD_CTL_DDR_INPUT_DDR = 0x1 << 9,/* DDR input DDR */
+-	PAD_CTL_DRV_VOT_LOW = 0x0 << 13, /* Low voltage mode */
+-	PAD_CTL_DRV_VOT_HIGH = 0x1 << 13,/* High voltage mode */
++	PAD_CTL_DRV_VOT_LOW = 0x1 << 13, /* Low voltage mode */
++	PAD_CTL_DRV_VOT_HIGH = 0x0 << 13,/* High voltage mode */
+ } iomux_pad_config_t;
+ 
+ /* various IOMUX input functions */
+-- 
+1.7.10
+

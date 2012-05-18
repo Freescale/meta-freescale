@@ -1,0 +1,33 @@
+From 8c96682f52e8e9bf7591fad07e9f9bc51e1da7d4 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marex@denx.de>
+Date: Thu, 3 May 2012 05:47:21 +0000
+Subject: [PATCH 20/56] M28: Enable FDT support
+
+This will eventually be needed with Linux 3.5, which will be the point when
+MXS will be switched to FDT.
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Wolfgang Denk <wd@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>
+Cc: Stefano Babic <sbabic@denx.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+---
+ include/configs/m28evk.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/configs/m28evk.h b/include/configs/m28evk.h
+index 39d6a07..40845d3 100644
+--- a/include/configs/m28evk.h
++++ b/include/configs/m28evk.h
+@@ -43,6 +43,8 @@
+ #define	CONFIG_ARCH_CPU_INIT
+ #define	CONFIG_ARCH_MISC_INIT
+ 
++#define CONFIG_OF_LIBFDT
++
+ /*
+  * SPL
+  */
+-- 
+1.7.10
+

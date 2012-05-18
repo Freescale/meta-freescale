@@ -1,0 +1,47 @@
+From 99e963384668bdd678cea944c02ce47d223e7f0d Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Mon, 23 Apr 2012 08:30:49 +0000
+Subject: [PATCH 40/56] spi: mxs: Introduce spi_cs_is_valid()
+
+Introduce spi_cs_is_valid() for validating spi bus and chip select numbers.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Acked-by: Marek Vasut <marex@denx.de>
+Acked-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/spi/mxs_spi.c |   13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/spi/mxs_spi.c b/drivers/spi/mxs_spi.c
+index 4e6f14e..e7237e7 100644
+--- a/drivers/spi/mxs_spi.c
++++ b/drivers/spi/mxs_spi.c
+@@ -51,14 +51,23 @@ void spi_init(void)
+ {
+ }
+ 
++int spi_cs_is_valid(unsigned int bus, unsigned int cs)
++{
++	/* MXS SPI: 4 ports and 3 chip selects maximum */
++	if (bus > 3 || cs > 2)
++		return 0;
++	else
++		return 1;
++}
++
+ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
+ 				  unsigned int max_hz, unsigned int mode)
+ {
+ 	struct mxs_spi_slave *mxs_slave;
+ 	uint32_t addr;
+ 
+-	if (bus > 3) {
+-		printf("MXS SPI: Max bus number is 3\n");
++	if (!spi_cs_is_valid(bus, cs)) {
++		printf("mxs_spi: invalid bus %d / chip select %d\n", bus, cs);
+ 		return NULL;
+ 	}
+ 
+-- 
+1.7.10
+

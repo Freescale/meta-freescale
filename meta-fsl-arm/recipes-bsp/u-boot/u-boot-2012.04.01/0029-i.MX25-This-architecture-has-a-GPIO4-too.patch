@@ -1,0 +1,28 @@
+From 30a6bfcb371cf21afc98624989fcdb7114069b9d Mon Sep 17 00:00:00 2001
+From: Timo Ketola <timo@exertus.fi>
+Date: Wed, 18 Apr 2012 22:55:29 +0000
+Subject: [PATCH 29/56] i.MX25: This architecture has a GPIO4 too
+
+Signed-off-by: Timo Ketola <timo@exertus.fi>
+Acked-by: Stefano Babic <sbabic@denx.de>
+---
+ drivers/gpio/mxc_gpio.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpio/mxc_gpio.c b/drivers/gpio/mxc_gpio.c
+index f1b1c16..6615535 100644
+--- a/drivers/gpio/mxc_gpio.c
++++ b/drivers/gpio/mxc_gpio.c
+@@ -41,7 +41,8 @@ static unsigned long gpio_ports[] = {
+ 	[0] = GPIO1_BASE_ADDR,
+ 	[1] = GPIO2_BASE_ADDR,
+ 	[2] = GPIO3_BASE_ADDR,
+-#if defined(CONFIG_MX51) || defined(CONFIG_MX53) || defined(CONFIG_MX6Q)
++#if defined(CONFIG_MX25) || defined(CONFIG_MX51) || defined(CONFIG_MX53) || \
++		defined(CONFIG_MX6Q)
+ 	[3] = GPIO4_BASE_ADDR,
+ #endif
+ #if defined(CONFIG_MX53) || defined(CONFIG_MX6Q)
+-- 
+1.7.10
+

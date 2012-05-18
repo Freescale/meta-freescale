@@ -1,0 +1,53 @@
+From 070bb8e23c0f2eb5106854adbc432c67b3177598 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marex@denx.de>
+Date: Fri, 4 May 2012 01:32:50 +0000
+Subject: [PATCH 42/56] i.MX28: Add delay after CPU bypass is cleared
+
+This solves issues when larger amount of DRAM is used, like 256MB.
+Behave the same in case of CPU bypass as we do in case of EMI
+bypass, but wait 15 ms. We need to wait until the clock domain
+stabilizes.
+
+This issue seemed to have been caused by not waiting after frobbing
+with the CPU bypass, it was unrelated to memory, but had a direct
+impact, causing trouble. This was yet another X-File of the
+imx-bootlets, sigh. The conclusion is, trying a semi-random delay
+(there is delay after the EMI bypass change), the issue is fixed.
+
+Another possible explanation is that we do not do the "simple memory
+test" FSL does in their imx-bootlets (1000 R/W cycles to/from piece of
+the memory, while also outputing something on the serial port). This
+might have caused the similar delay in the imx-bootlets and therefore
+they didn't need to add this explicitly.
+
+For now, this seems good fix enough, but to me, whole that memory
+init code in imx-bootlets is completely flunked and it'd need deeper
+investigation.
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Wolfgang Denk <wd@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>
+Cc: Stefano Babic <sbabic@denx.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Acked-by: Stefano Babic <sbabic@denx.de>
+Acked-by: Detlev Zundel <dzu@denx.de>
+---
+ arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c b/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c
+index 0f825ed..69c865e 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c
++++ b/arch/arm/cpu/arm926ejs/mx28/spl_mem_init.c
+@@ -149,6 +149,8 @@ void mx28_mem_setup_cpu_and_hbus(void)
+ 	/* Disable CPU bypass */
+ 	writel(CLKCTRL_CLKSEQ_BYPASS_CPU,
+ 		&clkctrl_regs->hw_clkctrl_clkseq_clr);
++
++	early_delay(15000);
+ }
+ 
+ void mx28_mem_setup_vdda(void)
+-- 
+1.7.10
+

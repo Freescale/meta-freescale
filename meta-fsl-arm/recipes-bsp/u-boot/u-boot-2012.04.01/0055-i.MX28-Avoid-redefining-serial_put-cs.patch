@@ -1,0 +1,36 @@
+From b72b9a019acd1646ad8ae2518c8e7901f4ca8a90 Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marex@denx.de>
+Date: Tue, 1 May 2012 11:09:53 +0000
+Subject: [PATCH 55/56] i.MX28: Avoid redefining serial_put[cs]()
+
+Do not define serial_putc() and serial_puts() calls if
+CONFIG_SPL_SERIAL_SUPPORT is set.
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Stefano Babic <sbabic@denx.de>
+Cc: Wolfgang Denk <wd@denx.de>
+Acked-by: Stefano Babic <sbabic@denx.de>
+---
+ arch/arm/cpu/arm926ejs/mx28/spl_boot.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/cpu/arm926ejs/mx28/spl_boot.c b/arch/arm/cpu/arm926ejs/mx28/spl_boot.c
+index c9b4566..a6dfca3 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/spl_boot.c
++++ b/arch/arm/cpu/arm926ejs/mx28/spl_boot.c
+@@ -123,8 +123,10 @@ inline void board_init_r(gd_t *id, ulong dest_addr)
+ 		;
+ }
+ 
++#ifndef CONFIG_SPL_SERIAL_SUPPORT
+ void serial_putc(const char c) {}
+ void serial_puts(const char *s) {}
++#endif
+ void hang(void) __attribute__ ((noreturn));
+ void hang(void)
+ {
+-- 
+1.7.10
+

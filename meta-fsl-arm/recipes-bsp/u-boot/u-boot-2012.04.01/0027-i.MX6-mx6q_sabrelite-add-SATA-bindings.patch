@@ -1,0 +1,96 @@
+From 95d9b53d5f0afdfe3487c5bd55a23f9503a2adad Mon Sep 17 00:00:00 2001
+From: Eric Nelson <eric.nelson@boundarydevices.com>
+Date: Tue, 1 May 2012 09:55:11 +0000
+Subject: [PATCH 27/56] i.MX6: mx6q_sabrelite: add SATA bindings
+
+Signed-off-by: Eric Nelson <eric.nelson@boundarydevices.com>
+Acked-by: Marek Vasut <marex@denx.de>
+Acked-by: stefano Babic <sbabic@denx.de>
+---
+ board/freescale/mx6qsabrelite/mx6qsabrelite.c |   31 +++++++++++++++++++++++++
+ include/configs/mx6qsabrelite.h               |   13 +++++++++++
+ 2 files changed, 44 insertions(+)
+
+diff --git a/board/freescale/mx6qsabrelite/mx6qsabrelite.c b/board/freescale/mx6qsabrelite/mx6qsabrelite.c
+index 90773aa..29cbfed 100644
+--- a/board/freescale/mx6qsabrelite/mx6qsabrelite.c
++++ b/board/freescale/mx6qsabrelite/mx6qsabrelite.c
+@@ -25,6 +25,7 @@
+ #include <asm/arch/imx-regs.h>
+ #include <asm/arch/mx6x_pins.h>
+ #include <asm/arch/iomux-v3.h>
++#include <asm/arch/clock.h>
+ #include <asm/errno.h>
+ #include <asm/gpio.h>
+ #include <mmc.h>
+@@ -293,6 +294,32 @@ static void setup_buttons(void)
+ 					 ARRAY_SIZE(button_pads));
+ }
+ 
++#ifdef CONFIG_CMD_SATA
++
++int setup_sata(void)
++{
++	struct iomuxc_base_regs *const iomuxc_regs
++		= (struct iomuxc_base_regs *) IOMUXC_BASE_ADDR;
++	int ret = enable_sata_clock();
++	if (ret)
++		return ret;
++
++	clrsetbits_le32(&iomuxc_regs->gpr[13],
++			IOMUXC_GPR13_SATA_MASK,
++			IOMUXC_GPR13_SATA_PHY_8_RXEQ_3P0DB
++			|IOMUXC_GPR13_SATA_PHY_7_SATA2M
++			|IOMUXC_GPR13_SATA_SPEED_3G
++			|(3<<IOMUXC_GPR13_SATA_PHY_6_SHIFT)
++			|IOMUXC_GPR13_SATA_SATA_PHY_5_SS_DISABLED
++			|IOMUXC_GPR13_SATA_SATA_PHY_4_ATTEN_9_16
++			|IOMUXC_GPR13_SATA_PHY_3_TXBOOST_0P00_DB
++			|IOMUXC_GPR13_SATA_PHY_2_TX_1P104V
++			|IOMUXC_GPR13_SATA_PHY_1_SLOW);
++
++	return 0;
++}
++#endif
++
+ int board_early_init_f(void)
+ {
+ 	setup_iomux_uart();
+@@ -310,6 +337,10 @@ int board_init(void)
+ 	setup_spi();
+ #endif
+ 
++#ifdef CONFIG_CMD_SATA
++	setup_sata();
++#endif
++
+        return 0;
+ }
+ 
+diff --git a/include/configs/mx6qsabrelite.h b/include/configs/mx6qsabrelite.h
+index 48be6e6..feabc05 100644
+--- a/include/configs/mx6qsabrelite.h
++++ b/include/configs/mx6qsabrelite.h
+@@ -72,6 +72,19 @@
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+ 
++#define CONFIG_CMD_SATA
++/*
++ * SATA Configs
++ */
++#ifdef CONFIG_CMD_SATA
++#define CONFIG_DWC_AHSATA
++#define CONFIG_SYS_SATA_MAX_DEVICE	1
++#define CONFIG_DWC_AHSATA_PORT_ID	0
++#define CONFIG_DWC_AHSATA_BASE_ADDR	SATA_ARB_BASE_ADDR
++#define CONFIG_LBA48
++#define CONFIG_LIBATA
++#endif
++
+ #define CONFIG_CMD_PING
+ #define CONFIG_CMD_DHCP
+ #define CONFIG_CMD_MII
+-- 
+1.7.10
+

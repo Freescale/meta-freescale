@@ -1,0 +1,168 @@
+From c9d426383e2d672d72e646801cbe19fea9653cba Mon Sep 17 00:00:00 2001
+From: Marek Vasut <marek.vasut@gmail.com>
+Date: Tue, 1 May 2012 11:09:49 +0000
+Subject: [PATCH 51/56] i.MX28: Add LRADC init to i.MX28 SPL
+
+This code is part of battery boot support for i.MX28.
+
+Signed-off-by: Marek Vasut <marek.vasut@gmail.com>
+Cc: Detlev Zundel <dzu@denx.de>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Stefano Babic <sbabic@denx.de>
+Cc: Wolfgang Denk <wd@denx.de>
+---
+ arch/arm/cpu/arm926ejs/mx28/Makefile         |    2 +-
+ arch/arm/cpu/arm926ejs/mx28/mx28_init.h      |    3 +
+ arch/arm/cpu/arm926ejs/mx28/spl_lradc_init.c |   86 ++++++++++++++++++++++++++
+ arch/arm/cpu/arm926ejs/mx28/spl_power_init.c |   10 +++
+ 4 files changed, 100 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/cpu/arm926ejs/mx28/spl_lradc_init.c
+
+diff --git a/arch/arm/cpu/arm926ejs/mx28/Makefile b/arch/arm/cpu/arm926ejs/mx28/Makefile
+index a2e3f77..674a3af 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/Makefile
++++ b/arch/arm/cpu/arm926ejs/mx28/Makefile
+@@ -28,7 +28,7 @@ LIB	= $(obj)lib$(SOC).o
+ COBJS	= clock.o mx28.o iomux.o timer.o
+ 
+ ifdef	CONFIG_SPL_BUILD
+-COBJS	+= spl_boot.o spl_mem_init.o spl_power_init.o
++COBJS	+= spl_boot.o spl_lradc_init.o spl_mem_init.o spl_power_init.o
+ endif
+ 
+ SRCS	:= $(START:.o=.S) $(COBJS:.o=.c)
+diff --git a/arch/arm/cpu/arm926ejs/mx28/mx28_init.h b/arch/arm/cpu/arm926ejs/mx28/mx28_init.h
+index 8eac958..e3a4493 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/mx28_init.h
++++ b/arch/arm/cpu/arm926ejs/mx28/mx28_init.h
+@@ -39,4 +39,7 @@ static inline void mx28_power_wait_pswitch(void) { }
+ void mx28_mem_init(void);
+ uint32_t mx28_mem_get_size(void);
+ 
++void mx28_lradc_init(void);
++void mx28_lradc_enable_batt_measurement(void);
++
+ #endif	/* __M28_INIT_H__ */
+diff --git a/arch/arm/cpu/arm926ejs/mx28/spl_lradc_init.c b/arch/arm/cpu/arm926ejs/mx28/spl_lradc_init.c
+new file mode 100644
+index 0000000..88a603c
+--- /dev/null
++++ b/arch/arm/cpu/arm926ejs/mx28/spl_lradc_init.c
+@@ -0,0 +1,86 @@
++/*
++ * Freescale i.MX28 Battery measurement init
++ *
++ * Copyright (C) 2011 Marek Vasut <marek.vasut@gmail.com>
++ * on behalf of DENX Software Engineering GmbH
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <common.h>
++#include <config.h>
++#include <asm/io.h>
++#include <asm/arch/imx-regs.h>
++
++#include "mx28_init.h"
++
++void mx28_lradc_init(void)
++{
++	struct mx28_lradc_regs *regs = (struct mx28_lradc_regs *)MXS_LRADC_BASE;
++
++	writel(LRADC_CTRL0_SFTRST, &regs->hw_lradc_ctrl0_clr);
++	writel(LRADC_CTRL0_CLKGATE, &regs->hw_lradc_ctrl0_clr);
++	writel(LRADC_CTRL0_ONCHIP_GROUNDREF, &regs->hw_lradc_ctrl0_clr);
++
++	clrsetbits_le32(&regs->hw_lradc_ctrl3,
++			LRADC_CTRL3_CYCLE_TIME_MASK,
++			LRADC_CTRL3_CYCLE_TIME_6MHZ);
++
++	clrsetbits_le32(&regs->hw_lradc_ctrl4,
++			LRADC_CTRL4_LRADC7SELECT_MASK |
++			LRADC_CTRL4_LRADC6SELECT_MASK,
++			LRADC_CTRL4_LRADC7SELECT_CHANNEL7 |
++			LRADC_CTRL4_LRADC6SELECT_CHANNEL10);
++}
++
++void mx28_lradc_enable_batt_measurement(void)
++{
++	struct mx28_lradc_regs *regs = (struct mx28_lradc_regs *)MXS_LRADC_BASE;
++
++	/* Check if the channel is present at all. */
++	if (!(readl(&regs->hw_lradc_status) & LRADC_STATUS_CHANNEL7_PRESENT))
++		return;
++
++	writel(LRADC_CTRL1_LRADC7_IRQ_EN, &regs->hw_lradc_ctrl1_clr);
++	writel(LRADC_CTRL1_LRADC7_IRQ, &regs->hw_lradc_ctrl1_clr);
++
++	clrsetbits_le32(&regs->hw_lradc_conversion,
++			LRADC_CONVERSION_SCALE_FACTOR_MASK,
++			LRADC_CONVERSION_SCALE_FACTOR_LI_ION);
++	writel(LRADC_CONVERSION_AUTOMATIC, &regs->hw_lradc_conversion_set);
++
++	/* Configure the channel. */
++	writel((1 << 7) << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
++		&regs->hw_lradc_ctrl2_clr);
++	writel(0xffffffff, &regs->hw_lradc_ch7_clr);
++	clrbits_le32(&regs->hw_lradc_ch7, LRADC_CH_NUM_SAMPLES_MASK);
++	writel(LRADC_CH_ACCUMULATE, &regs->hw_lradc_ch7_clr);
++
++	/* Schedule the channel. */
++	writel(1 << 7, &regs->hw_lradc_ctrl0_set);
++
++	/* Start the channel sampling. */
++	writel(((1 << 7) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) |
++		((1 << 3) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) |
++		100, &regs->hw_lradc_delay3);
++
++	writel(0xffffffff, &regs->hw_lradc_ch7_clr);
++
++	writel(LRADC_DELAY_KICK, &regs->hw_lradc_delay3_set);
++}
+diff --git a/arch/arm/cpu/arm926ejs/mx28/spl_power_init.c b/arch/arm/cpu/arm926ejs/mx28/spl_power_init.c
+index aa4117d..dfb62eb 100644
+--- a/arch/arm/cpu/arm926ejs/mx28/spl_power_init.c
++++ b/arch/arm/cpu/arm926ejs/mx28/spl_power_init.c
+@@ -883,6 +883,13 @@ void mx28_power_set_vddd(uint32_t new_target, uint32_t new_brownout)
+ 			new_brownout << POWER_VDDDCTRL_BO_OFFSET_OFFSET);
+ }
+ 
++void mx28_setup_batt_detect(void)
++{
++	mx28_lradc_init();
++	mx28_lradc_enable_batt_measurement();
++	early_delay(10);
++}
++
+ void mx28_power_init(void)
+ {
+ 	struct mx28_power_regs *power_regs =
+@@ -892,6 +899,9 @@ void mx28_power_init(void)
+ 	mx28_power_clear_auto_restart();
+ 	mx28_power_set_linreg();
+ 	mx28_power_setup_5v_detect();
++
++	mx28_setup_batt_detect();
++
+ 	mx28_power_configure_power_source();
+ 	mx28_enable_output_rail_protection();
+ 
+-- 
+1.7.10
+
