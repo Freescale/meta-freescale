@@ -40,7 +40,7 @@ SDCARD_GENERATION_COMMAND_mx6 = "generate_imx_sdcard"
 #
 # External variables needed:
 #   ${SDCARD_ROOTFS}    - the rootfs image to incorporate
-#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}x
+#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}
 #
 # The disk layout used is:
 #
@@ -91,7 +91,7 @@ generate_imx_sdcard () {
 #
 # External variables needed:
 #   ${SDCARD_ROOTFS}    - the rootfs image to incorporate
-#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}x
+#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}
 #
 # The disk layout used is:
 #
