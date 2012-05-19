@@ -56,12 +56,6 @@ generate_imx_sdcard () {
 	parted -s ${SDCARD} mkpart primary ${BOOT_SPACE} 100%
 	parted ${SDCARD} print
 
-	# Change partition type for mxs processor family
-	if [ "${SOC_FAMILY}" = "mxs" ]; then
-		bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
-		echo -n S | dd of=${SDCARD} bs=1 count=1 seek=450 conv=notrunc
-	fi
-
 	case "${IMAGE_BOOTLOADER}" in
 		u-boot)
 		dd if=${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX_SDCARD} of=${SDCARD} conv=notrunc seek=2 skip=${UBOOT_PADDING} bs=512
