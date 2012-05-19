@@ -23,7 +23,7 @@ SDCARD_SIZE ?= "3400"
 BOOTDD_VOLUME_ID ?= "Boot ${MACHINE}"
 
 # Addional space for boot partition
-BOOT_SPACE ?= "5M"
+BOOT_SPACE ?= "5MiB"
 
 IMAGE_DEPENDS_sdcard = "parted-native dosfstools-native mtools-native \
                         virtual/kernel ${IMAGE_BOOTLOADER}"
@@ -51,8 +51,8 @@ SDCARD_GENERATION_COMMAND_mx6 = "generate_imx_sdcard"
 generate_imx_sdcard () {
 	# Create partition table
 	parted -s ${SDCARD} mklabel msdos
-	parted -s ${SDCARD} mkpart primary 0 1M
-	parted -s ${SDCARD} mkpart primary 1M ${BOOT_SPACE}
+	parted -s ${SDCARD} mkpart primary 0 1MiB
+	parted -s ${SDCARD} mkpart primary 1MiB ${BOOT_SPACE}
 	parted -s ${SDCARD} mkpart primary ${BOOT_SPACE} 100%
 	parted ${SDCARD} print
 
