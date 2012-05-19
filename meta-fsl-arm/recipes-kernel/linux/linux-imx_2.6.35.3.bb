@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 PR = "r16"
 
 inherit kernel
-COMPATIBLE_MACHINE = "(imx53qsb|imx53ard|imx51evk|imx28evk)"
+COMPATIBLE_MACHINE = "(mxs|mx5)"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.09.01 \
      	   file://0002-cgroupfs-create-sys-fs-cgroup-to-mount-cgroupfs-on.patch \
