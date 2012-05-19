@@ -11,6 +11,12 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 # Handles i.MX mxs bootstream generation
 #
 
+# IMX Bootlets Linux bootstream
+IMAGE_DEPENDS_linux.sb = "elftosb-native imx-bootlets virtual/kernel"
+IMAGE_CMD_linux.sb = "(cd ${DEPLOY_DIR_IMAGE} ; elftosb -z -c imx-bootlets-linux_prebuilt.db-${MACHINE} \
+                                                        -o ${IMAGE_NAME}.linux.sb)"
+
+# U-Boot mxsboot generation to SD-Card
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
 IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native u-boot"
 IMAGE_CMD_uboot.mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
@@ -57,6 +63,10 @@ generate_imx_sdcard () {
 	parted ${SDCARD} print
 
 	case "${IMAGE_BOOTLOADER}" in
+		imx-bootlets)
+		bberror "The imx-bootlets is not supported for i.MX based machines"
+		exit 1
+		;;
 		u-boot)
 		dd if=${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX_SDCARD} of=${SDCARD} conv=notrunc seek=2 skip=${UBOOT_PADDING} bs=512
 		;;
@@ -85,29 +95,47 @@ generate_imx_sdcard () {
 #
 # External variables needed:
 #   ${SDCARD_ROOTFS}    - the rootfs image to incorporate
-#   ${IMAGE_BOOTLOADER} - bootloader to use {u-boot, barebox}
-#
-# The disk layout used is:
-#
-#    1M - 2M                  - reserved to bootloader and other data
-#    2M - BOOT_SPACE          - kernel
-#    BOOT_SPACE - SDCARD_SIZE - rootfs
+#   ${IMAGE_BOOTLOADER} - bootloader to use {imx-bootlets, u-boot}
 #
 generate_mxs_sdcard () {
 	# Create partition table
 	parted -s ${SDCARD} mklabel msdos
-	parted -s ${SDCARD} mkpart primary 1MiB 2MiB
-	parted -s ${SDCARD} mkpart primary 2MiB ${BOOT_SPACE}
-	parted -s ${SDCARD} mkpart primary ${BOOT_SPACE} 100%
-	parted ${SDCARD} print
-
-	# Change partition type for mxs processor family
-	bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
-	echo -n S | dd of=${SDCARD} bs=1 count=1 seek=450 conv=notrunc
 
 	case "${IMAGE_BOOTLOADER}" in
+		imx-bootlets)
+		# The disk layout used is:
+		#
+		#    1M - BOOT_SPACE          - kernel
+		#    BOOT_SPACE - SDCARD_SIZE - rootfs
+		#
+		parted -s ${SDCARD} mkpart primary 1MiB ${BOOT_SPACE}
+		parted -s ${SDCARD} mkpart primary ${BOOT_SPACE} 100%
+
+		# Empty 4 bytes from boot partition
+		dd if=/dev/zero of=${SDCARD} conv=notrunc seek=2048 count=4
+
+		# Write the bootstream in (2048 + 4) bytes
+		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.linux.sb of=${SDCARD} conv=notrunc seek=1 seek=2052
+		;;
 		u-boot)
+		# The disk layout used is:
+		#
+		#    1M - 2M                  - reserved to bootloader and other data
+		#    2M - BOOT_SPACE          - kernel
+		#    BOOT_SPACE - SDCARD_SIZE - rootfs
+		#
+		parted -s ${SDCARD} mkpart primary 1MiB 2MiB
+		parted -s ${SDCARD} mkpart primary 2MiB ${BOOT_SPACE}
+		parted -s ${SDCARD} mkpart primary ${BOOT_SPACE} 100%
+
 		dd if=${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX_SDCARD} of=${SDCARD} conv=notrunc seek=1 skip=${UBOOT_PADDING} bs=1MiB
+		BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
+	        | awk '/ 2 / { print substr($4, 1, length($4 -1)) / 1024 }')
+
+		mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
+		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
+
+		dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=2 bs=1MiB
 		;;
 		*)
 		bberror "Unkown IMAGE_BOOTLOADER value"
@@ -115,12 +143,12 @@ generate_mxs_sdcard () {
 		;;
 	esac
 
-	BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
-	                  | awk '/ 2 / { print substr($4, 1, length($4 -1)) / 1024 }')
-	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
-	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
+	# Change partition type for mxs processor family
+	bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
+	echo -n S | dd of=${SDCARD} bs=1 count=1 seek=450 conv=notrunc
 
-	dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=2 bs=1MiB
+	parted ${SDCARD} print
+
 	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc seek=1 bs=${BOOT_SPACE}
 }
 
