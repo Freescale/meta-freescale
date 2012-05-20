@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=f7bdc0c63080175d1667091b864cb12c"
 
 inherit autotools pkgconfig
 
-PR = "r3"
+PR = "r4"
 SRC_URI = "file://xserver-xorg-video-imx-${PV}.tar.gz \
            file://xf86-video-imxfb-fix-m4-hardcodded-paths.patch"
 SRC_URI[md5sum] = "d19148399b5d1c4dab90d0cc6f2c4789"
@@ -26,4 +26,6 @@ do_install_append () {
     rm -f ${D}${libdir}/xorg/modules/drivers/*.la
 }
 
+INSANE_SKIP_${PN} = "ldflags"
+INSANE_SKIP_${PN}-dbg = "ldflags"
 RDEPENDS_${PN} += "amd-gpu-x11-bin-mx51"
