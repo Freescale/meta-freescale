@@ -4,7 +4,7 @@
 DESCRIPTION = "GPU driver and apps for x11 on mx51"
 LICENSE = "MIT"
 SECTION = "libs"
-PR = "r1"
+PR = "r2"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
@@ -32,6 +32,10 @@ do_install () {
     install -m 0755 ${S}/usr/bin/* ${D}${bindir}
 }
 
+
+INSANE_SKIP_${PN} = "ldflags"
+INSANE_SKIP_${PN}-dev = "ldflags"
+INSANE_SKIP_${PN}-staticdev = "ldflags"
 FILES_${PN} = "${bindir}/* ${libdir}/*.so*"
 FILES_${PN}-dev = "\
     ${includedir}/EGL/*.h \
