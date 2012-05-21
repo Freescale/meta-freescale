@@ -13,7 +13,7 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 
 # IMX Bootlets Linux bootstream
 IMAGE_DEPENDS_linux.sb = "elftosb-native imx-bootlets virtual/kernel"
-IMAGE_CMD_linux.sb = "(cd ${DEPLOY_DIR_IMAGE} ; elftosb -z -c imx-bootlets-linux_prebuilt.db-${MACHINE} \
+IMAGE_CMD_linux.sb = "(cd ${DEPLOY_DIR_IMAGE} ; elftosb -z -c imx-bootlets-linux_ivt.bd-${MACHINE} \
                                                         -o ${IMAGE_NAME}.linux.sb)"
 
 # U-Boot mxsboot generation to SD-Card
