@@ -4,7 +4,7 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r17"
+PR = "r18"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(mxs|mx5)"
@@ -30,6 +30,7 @@ SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.0
            file://no-unaligned-access.patch \
            file://mx28-removecpufreq.patch \
            file://mxs-duart-use-ttyAMA-for-device-name.patch \
+           file://w1-fix-support-multiple-master.patch \
            file://0001-mx53_loco-add-USR-led-support.patch \
            file://001_Add_accept4_syscall.patch \
            file://002_Return_ERESTARTSYS_from_IPU_GET_EVENT.patch \
