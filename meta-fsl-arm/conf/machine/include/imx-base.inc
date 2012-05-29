@@ -19,10 +19,9 @@ XSERVER = "xserver-xorg-lite \
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
 # Extra audio support
-MACHINE_EXTRA_RRECOMMENDS += "imx-lib imx-audio \
-                              pulseaudio \
-                              fsl-mm-codeclib \
-                              gst-fsl-plugin"
+MACHINE_EXTRA_RRECOMMENDS += "imx-audio \
+                              imx-firmware \
+                              imx-lib"
 
 EXTRA_IMAGEDEPENDS = "u-boot"
 
@@ -33,4 +32,4 @@ SERIAL_CONSOLE = "115200 ttymxc0"
 
 KERNEL_IMAGETYPE = "uImage"
 
-MACHINE_FEATURES = "apm usbgadget usbhost vfat alsa touchscreen"
+MACHINE_FEATURES = "apm pci usbgadget usbhost vfat alsa touchscreen"
