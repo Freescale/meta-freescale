@@ -1,15 +1,16 @@
-PROVIDES = "linux-libc-headers"
-
 DESCRIPTION = "Linux kernel headers for Freescale platforms"
 SECTION = "devel"
 LICENSE = "GPLv2"
 
+PKGSUFFIX = ""
+PKGSUFFIX_virtclass-nativesdk = "-nativesdk"
+
 INHIBIT_DEFAULT_DEPS = "1"
-PROVIDES = "linux-libc-headers linux-qoriq-sdk-headers"
-RPROVIDES_${PN}-dev = "linux-libc-headers-dev"
-RPROVIDES_${PN}-dbg = "linux-libc-headers-dbg"
+PROVIDES = "linux-libc-headers${PKGSUFFIX} ${PN}"
+RPROVIDES_${PN}-dev += "linux-libc-headers${PKGSUFFIX}-dev"
+RPROVIDES_${PN}-dbg += "linux-libc-headers${PKGSUFFIX}-dbg"
 RDEPENDS_${PN}-dev = ""
-RRECOMMENDS_${PN}-dbg = "${PN}-dev (= ${EXTENDPKGV})"
+RRECOMMENDS_${PN}-dbg = "linux-libc-headers${PKGSUFFIX}-dev (= ${EXTENDPKGV})"
 
 require recipes-kernel/linux/linux-qoriq-sdk.inc
 
