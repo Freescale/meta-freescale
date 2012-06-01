@@ -1,0 +1,42 @@
+elftosb: don't use full path for headers
+
+This fixes the building on new host distributions where header might
+move due multilib support and other possible changes in future.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ common/stdafx.h |    2 +-
+ stdafx.h        |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/common/stdafx.h b/common/stdafx.h
+index e6bf9dd..fb3c2d7 100644
+--- a/common/stdafx.h
++++ b/common/stdafx.h
+@@ -27,7 +27,7 @@
+ // For Linux systems only, types.h only defines the signed
+ // integer types.  This is not professional code.
+ // Update: They are defined in the header files in the more recent version of redhat enterprise gcc.
+-#include "/usr/include/sys/types.h"
++#include <sys/types.h>
+ #include <stdint.h>
+ //typedef unsigned long uint32_t;
+ //typedef unsigned short uint16_t;
+diff --git a/stdafx.h b/stdafx.h
+index ce80458..6ff2f44 100644
+--- a/stdafx.h
++++ b/stdafx.h
+@@ -27,7 +27,7 @@
+ // For Linux systems only, types.h only defines the signed
+ // integer types.  This is not professional code.
+ // Update: They are defined in the header files in the more recent version of redhat enterprise gcc.
+-#include "/usr/include/sys/types.h"
++#include <sys/types.h>
+ //typedef unsigned long uint32_t;
+ //typedef unsigned short uint16_t;
+ //typedef unsigned char uint8_t;
+-- 
+1.7.2.5
+
