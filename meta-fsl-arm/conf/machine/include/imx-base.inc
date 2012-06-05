@@ -23,6 +23,9 @@ MACHINE_EXTRA_RRECOMMENDS += "imx-audio \
                               imx-firmware \
                               imx-lib"
 
+# Gstreamer plugin
+MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
+
 EXTRA_IMAGEDEPENDS = "u-boot"
 
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
