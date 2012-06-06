@@ -4,7 +4,7 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r3"
+PR = "r4"
 
 DEFAULT_PREFERENCE_imx53qsb = "-1"
 DEFAULT_PREFERENCE_imx53ard = "-1"
