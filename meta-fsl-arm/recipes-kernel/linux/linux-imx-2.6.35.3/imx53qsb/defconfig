@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.3
-# Wed Mar  7 23:28:03 2012
+# Tue Jun  5 18:54:48 2012
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -589,7 +589,7 @@ CONFIG_RFKILL_INPUT=y
 #
 # Generic Driver Options
 #
-CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+CONFIG_UEVENT_HELPER_PATH=""
 CONFIG_DEVTMPFS=y
 CONFIG_DEVTMPFS_MOUNT=y
 CONFIG_STANDALONE=y
