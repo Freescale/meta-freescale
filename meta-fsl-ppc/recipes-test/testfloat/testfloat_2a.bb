@@ -20,7 +20,13 @@ S = "${WORKDIR}/TestFloat-2a"
 do_unpack2(){
     mv ${WORKDIR}/SoftFloat-2b ${S}/SoftFloat-2b
     cd ${S}
-    find -type f -exec dos2unix {} \;
+    if [ -n "$(which fromdos)" ];then
+        find -type f -exec fromdos {} \;
+    elif [ -n "$(which dos2unix)" ];then
+        find -type f -exec dos2unix {} \;
+    else
+        echo -e "\nERROR: command dos2unix or fromdos not found\n" && return 1
+    fi
 }
 addtask do_unpack2 after do_unpack before do_patch
 
