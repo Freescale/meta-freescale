@@ -13,8 +13,29 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 
 # IMX Bootlets Linux bootstream
 IMAGE_DEPENDS_linux.sb = "elftosb-native imx-bootlets virtual/kernel"
-IMAGE_CMD_linux.sb = "(cd ${DEPLOY_DIR_IMAGE} ; elftosb -z -c imx-bootlets-linux.bd-${MACHINE} \
-                                                        -o ${IMAGE_NAME}.linux.sb)"
+IMAGE_LINK_NAME_linux.sb = ""
+IMAGE_CMD_linux.sb () {
+	kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
+	kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb`"
+	linux_bd_file=imx-bootlets-linux.bd-${MACHINE}
+	if [ `basename $kernel_bin .bin` = `basename $kernel_dtb .dtb` ]; then
+		# When using device tree we build a zImage with the dtb
+		# appended on the end of the image
+		linux_bd_file=imx-bootlets-linux.bd-dtb-${MACHINE}
+		cat $kernel_bin $kernel_dtb \
+		    > $kernel_bin-dtb
+		rm -f ${KERNEL_IMAGETYPE}-${MACHINE}.bin-dtb
+		ln -s $kernel_bin-dtb ${KERNEL_IMAGETYPE}-${MACHINE}.bin-dtb
+	fi
+
+	# Ensure the file is generated
+	rm -f ${IMAGE_NAME}.linux.sb
+	elftosb -z -c $linux_bd_file -o ${IMAGE_NAME}.linux.sb
+
+	# Remove the appended file as it is only used here
+	rm -f $kernel_bin-dtb
+}
+
 
 # U-Boot mxsboot generation to SD-Card
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
@@ -84,6 +105,13 @@ generate_imx_sdcard () {
 	                  | awk '/ 2 / { print substr($4, 1, length($4 -1)) / 1024 }')
 	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
 	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
+	if [ -e "${KERNEL_IMAGETYPE}-${MACHINE}.dtb" ]; then
+		kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
+		kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb`"
+		if [ `basename $kernel_bin .bin` = `basename $kernel_dtb .dtb` ]; then
+			mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.dtb ::/machine.dtb
+		fi
+	fi
 
 	dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=1 bs=1M
 	dd if=${SDCARD_ROOTFS} of=${SDCARD} conv=notrunc seek=1 bs=${BOOT_SPACE}
@@ -134,6 +162,13 @@ generate_mxs_sdcard () {
 
 		mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
 		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
+		if [ -e "${KERNEL_IMAGETYPE}-${MACHINE}.dtb" ]; then
+			kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
+			kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb`"
+			if [ `basename $kernel_bin .bin` = `basename $kernel_dtb .dtb` ]; then
+				mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.dtb ::/machine.dtb
+			fi
+		fi
 
 		dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=2 bs=1MiB
 		;;
