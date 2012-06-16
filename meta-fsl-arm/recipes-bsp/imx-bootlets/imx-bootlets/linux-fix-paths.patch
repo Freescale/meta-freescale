@@ -22,7 +22,7 @@ index 516f4f2..366ac22 100644
 +	power_prep="imx-bootlets-power_prep-@MACHINE@";
 +	sdram_prep="imx-bootlets-boot_prep-@MACHINE@";
 +	linux_prep="imx-bootlets-linux_prep-@MACHINE@";
-+	zImage="zImage-@MACHINE@.bin";
++	zImage="zImage-@MACHINE@.bin@DTB@";
  }
  
  section (0) {

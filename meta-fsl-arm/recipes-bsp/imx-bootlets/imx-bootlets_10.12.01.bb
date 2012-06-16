@@ -2,7 +2,7 @@ DESCRIPTION = "i.MXS boot streams"
 LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "http://download.ossystems.com.br/bsp/freescale/source/imx-bootlets-src-${PV}.tar.gz \
            file://linux-fix-paths.patch \
@@ -30,7 +30,8 @@ python () {
 
 do_configure () {
     # Use machine specific binaries
-    sed -i 's,@MACHINE@,${MACHINE},g' linux.bd
+    sed 's,@MACHINE@,${MACHINE},g;s,@DTB@,-dtb,g' < linux.bd > linux.bd-dtb
+    sed -i 's,@MACHINE@,${MACHINE},g;s,@DTB@,,g' linux.bd
 }
 
 do_compile () {
@@ -42,7 +43,8 @@ do_compile () {
 do_install () {
     install -d ${D}/boot/
     install -m 644 boot_prep/boot_prep power_prep/power_prep \
-                   linux_prep/output-target/linux_prep linux.bd \
+                   linux_prep/output-target/linux_prep \
+                   linux.bd linux.bd-dtb \
                    ${D}/boot
 }
 
@@ -54,7 +56,7 @@ do_deploy () {
 	for f in boot_prep/boot_prep \
              power_prep/power_prep \
              linux_prep/output-target/linux_prep \
-             linux.bd; do
+             linux.bd linux.bd-dtb; do
         full_name="imx-bootlets-`basename $f`-${MACHINE}-${PV}-${PR}"
         symlink_name="imx-bootlets-`basename $f`-${MACHINE}"
 
