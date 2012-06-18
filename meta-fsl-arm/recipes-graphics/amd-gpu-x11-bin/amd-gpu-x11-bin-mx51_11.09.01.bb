@@ -4,7 +4,7 @@
 DESCRIPTION = "GPU driver and apps for x11 on mx51"
 LICENSE = "MIT"
 SECTION = "libs"
-PR = "r2"
+PR = "r3"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
@@ -18,20 +18,16 @@ SRC_URI[sha256sum] = "6150d3d72a3f8abb26df1e31cee0f07f53c106c8d5de014c1175c8cb72
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${bindir}
-    install -d ${D}${includedir}/EGL
-    install -d ${D}${includedir}/GLES
-    install -d ${D}${includedir}/GLES2
-    install -d ${D}${includedir}/KHR
-    install -d ${D}${includedir}/VG
-    install -m 0644 ${S}/usr/include/EGL/* ${D}${includedir}/EGL
-    install -m 0644 ${S}/usr/include/GLES/* ${D}${includedir}/GLES
-    install -m 0644 ${S}/usr/include/GLES2/* ${D}${includedir}/GLES2
-    install -m 0644 ${S}/usr/include/KHR/* ${D}${includedir}/KHR
-    install -m 0644 ${S}/usr/include/VG/* ${D}${includedir}/VG
-    install -m 0755 ${S}/usr/lib/* ${D}${libdir}
-    install -m 0755 ${S}/usr/bin/* ${D}${bindir}
-}
+    install -d ${D}${includedir}
 
+    cp -axr ${S}/usr/bin/* ${D}${bindir}
+    cp -L ${S}/usr/lib/*.so ${D}${libdir}
+    cp -axr ${S}/usr/include/* ${D}${includedir}
+
+    find ${D}${bindir} -type f -exec chmod 755 {} \;
+    find ${D}${libdir} -type f -exec chmod 755 {} \;
+    find ${D}${includedir} -type f -exec chmod 660 {} \;
+}
 
 INSANE_SKIP_${PN} = "ldflags"
 INSANE_SKIP_${PN}-dev = "ldflags"
