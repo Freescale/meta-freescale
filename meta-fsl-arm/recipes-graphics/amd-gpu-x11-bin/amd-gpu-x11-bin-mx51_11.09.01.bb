@@ -4,8 +4,9 @@
 DESCRIPTION = "GPU driver and apps for x11 on mx51"
 LICENSE = "MIT"
 SECTION = "libs"
-PR = "r3"
+PR = "r4"
 
+PROVIDES = "virtual/libgl"
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
 DEPENDS = "virtual/libx11 libz160"
@@ -31,12 +32,17 @@ do_install () {
 
 INSANE_SKIP_${PN} = "ldflags"
 INSANE_SKIP_${PN}-dev = "ldflags"
-INSANE_SKIP_${PN}-staticdev = "ldflags"
-FILES_${PN} = "${bindir}/* ${libdir}/*.so*"
-FILES_${PN}-dev = "\
-    ${includedir}/EGL/*.h \
-    ${includedir}/GLES/*.h \
-    ${includedir}/GLES2/*.h \
-    ${includedir}/KHR/*.h \
-    ${includedir}/VG/*.h"
-FILES_${PN}-staticdev = "${libdir}/*.a"
+
+# Todo: find out what libres.a and libcsi.a are for
+# package include/KHR header
+PACKAGES = "libegl libegl-dev libgl libgles libgles-dev libopenvg \
+            libopenvg-dev lib2dz160 libd2z430"
+FILES_libegl = "${libdir}/libEGL.*"
+FILES_libegl-dev = "${includedir}/EGL"
+FILES_libgl = "${libdir}/libgsl-fsl.*"
+FILES_libgles = "${libdir}/libGLES*"
+FILES_libgles-dev = "${includedir}/GLES ${includedir}/GLES2"
+FILES_libopenvg = "${libdir}/libOpenVG.*"
+FILES_libopenvg-dev = "${includedir}/VG"
+FILES_lib2dz160 = "${libdir}/lib2dz160.*"
+FILES_lib2dz340 = "${libdir}/lib2dz340.*"
