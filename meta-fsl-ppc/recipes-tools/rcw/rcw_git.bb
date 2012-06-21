@@ -16,7 +16,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit deploy
 
-SRCREV = "${AUTOREV}"
+SRCREV = "394db85c496f6e41dd7e29e54dab3db2b380b187"
 SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git"
 
 S = "${WORKDIR}/git"
