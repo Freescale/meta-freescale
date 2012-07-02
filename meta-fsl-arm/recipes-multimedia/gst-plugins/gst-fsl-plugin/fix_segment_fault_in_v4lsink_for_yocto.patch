@@ -1,0 +1,31 @@
+diff -ruN gst-fsl-plugin-2.0.3.orig/src/misc/v4l_sink/src/mfw_gst_fb.c gst-fsl-plugin-2.0.3/src/misc/v4l_sink/src/mfw_gst_fb.c
+--- gst-fsl-plugin-2.0.3.orig/src/misc/v4l_sink/src/mfw_gst_fb.c	2012-06-29 11:28:36.837384109 +0800
++++ gst-fsl-plugin-2.0.3/src/misc/v4l_sink/src/mfw_gst_fb.c	2012-06-29 11:31:01.441387410 +0800
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 2009-2011 Freescale Semiconductor, Inc. All rights reserved.
++ * Copyright (c) 2009-2012, Freescale Semiconductor, Inc. All rights reserved.
+  *
+  */
+ 
+@@ -236,6 +236,8 @@
+     ret = ioctl(v4l->fd_fb, FBIOGET_VSCREENINFO, &fb_var);
+     if (ret < 0) {
+         g_print("Unable to get resolution value\n");
++        v4l->fullscreen_width = 1024;
++        v4l->fullscreen_height = 768;
+         return FALSE;
+     }
+     v4l->fullscreen_width = fb_var.xres;
+diff -ruN gst-fsl-plugin-2.0.3.orig/src/misc/v4l_sink/src/mfw_gst_v4lsink.c gst-fsl-plugin-2.0.3/src/misc/v4l_sink/src/mfw_gst_v4lsink.c
+--- gst-fsl-plugin-2.0.3.orig/src/misc/v4l_sink/src/mfw_gst_v4lsink.c	2012-06-29 11:28:36.837384109 +0800
++++ gst-fsl-plugin-2.0.3/src/misc/v4l_sink/src/mfw_gst_v4lsink.c	2012-06-29 11:32:26.337389344 +0800
+@@ -1427,7 +1427,7 @@
+             g_mutex_lock (v4l_info->flow_lock);
+             v4l_info->gstXInfo->running = FALSE;
+             g_mutex_unlock (v4l_info->flow_lock);
+-            if (v4l_info->x11enabled) {
++            if ((v4l_info->x11enabled) && (v4l_info->gstXInfo) && (v4l_info->gstXInfo->event_thread)) {
+                 g_thread_join (v4l_info->gstXInfo->event_thread);
+             }
+             if (v4l_info->gstXInfo->xwindow) {
