@@ -25,7 +25,7 @@ index 10a2822..4901530 100644
      virtual bool eventFilter(QEvent *) = 0;
      virtual void handlePaint(QPaintEvent *) {}
      virtual bool paintsOnWidget() { return true; } // Controls overlays
-+    virtual void handleMove(QMoveEvent * event ) = 0;
++    virtual void handleMove(QMoveEvent * event ) {};
  
  protected:
      VideoWidget *m_videoWidget;
