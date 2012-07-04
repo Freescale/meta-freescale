@@ -2,7 +2,6 @@
 
 include conf/distro/include/fsl-default-settings.inc
 include conf/distro/include/fsl-default-versions.inc
-include conf/distro/include/fsl-default-revisions.inc
 include conf/distro/include/fsl-default-providers.inc
 
 include conf/machine/include/soc-family.inc
