@@ -36,4 +36,4 @@ SERIAL_CONSOLE = "115200 ttymxc0"
 
 KERNEL_IMAGETYPE = "uImage"
 
-MACHINE_FEATURES = "apm pci usbgadget usbhost vfat alsa touchscreen wifi bluetooth"
+MACHINE_FEATURES = "apm usbgadget usbhost vfat alsa touchscreen"
