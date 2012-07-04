@@ -4,7 +4,7 @@
 DESCRIPTION = "GPU driver and apps for x11 on mx51"
 LICENSE = "MIT"
 SECTION = "libs"
-PR = "r5"
+PR = "r6"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
@@ -21,7 +21,7 @@ do_install () {
     install -d ${D}${includedir}
 
     cp -axr ${S}/usr/bin/* ${D}${bindir}
-    cp -L ${S}/usr/lib/*.so ${D}${libdir}
+    cp -L ${S}/usr/lib/*.so* ${D}${libdir}
     cp -axr ${S}/usr/include/* ${D}${includedir}
 
     find ${D}${bindir} -type f -exec chmod 755 {} \;
