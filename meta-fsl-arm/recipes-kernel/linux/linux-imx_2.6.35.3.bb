@@ -4,12 +4,15 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r23"
+PR = "r24"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(mxs|mx5)"
 
-SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;tag=rel_imx_2.6.35_11.09.01 \
+# Revision of 'rel_imx_2.6.35_11.09.01' tag
+SRCREV = "691c08adeed64d5153937a0e31aaf4c251924471"
+
+SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git \
      	   file://0002-cgroupfs-create-sys-fs-cgroup-to-mount-cgroupfs-on.patch \
            file://egalax_ts-enable-single-event-support.patch \
            file://NFS-Fix-nfsroot-support.patch \
