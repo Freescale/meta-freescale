@@ -71,14 +71,13 @@ SDCARD_GENERATION_COMMAND_mx6 = "generate_imx_sdcard"
 #
 # The disk layout used is:
 #
-#    0  - 1M                  - reserved to bootloader and other data
+#    0  - 1M                  - reserved to bootloader (not partitioned)
 #    1M - BOOT_SPACE          - kernel
 #    BOOT_SPACE - SDCARD_SIZE - rootfs
 #
 generate_imx_sdcard () {
 	# Create partition table
 	parted -s ${SDCARD} mklabel msdos
-	parted -s ${SDCARD} mkpart primary 0 1MiB
 	parted -s ${SDCARD} mkpart primary 1MiB ${BOOT_SPACE}
 	parted -s ${SDCARD} mkpart primary ${BOOT_SPACE} 100%
 	parted ${SDCARD} print
