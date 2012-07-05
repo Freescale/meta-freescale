@@ -11,5 +11,3 @@ kernel_do_configure_prepend() {
 	# copy desired defconfig so we pick it up for the real kernel_do_configure
 	cp ${KERNEL_DEFCONFIG} ${B}/.config
 }
-
-require recipes-kernel/linux/linux-tools.inc
