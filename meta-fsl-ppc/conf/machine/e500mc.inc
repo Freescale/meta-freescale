@@ -8,7 +8,6 @@ MACHINE_FEATURES_RRECOMMENDS = ""
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq-sdk"
 PREFERRED_VERSION_virtual/kernel ?= "3.0.6"
 PREFERRED_PROVIDER_linux-libc-headers ?= "linux-qoriq-sdk-headers"
-PREFERRED_PROVIDER_linux-libc-headers-nativesdk ?= "linux-qoriq-sdk-headers-nativesdk"
 
 KERNEL_IMAGETYPE ?= "uImage"
 # disable the images below for now
