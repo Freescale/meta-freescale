@@ -1,13 +1,10 @@
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-PV = "3.0.6"
+PV = "3.0.34"
 PR = "r3"
 
-SRCREV = "1e3e8ed15249d73a066ddfe2e80882935c35dcb7"
+SRCREV = "fsl-sdk-v1.2"
 SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
-		file://add-no-unused-but-set-variable.patch \
-		file://add-no-error-array-bounds.patch \
-		file://0001-compiler.h-Undef-before-redefining-__attribute_const.patch \
 	  "
 
 KSRC ?= ""
