@@ -15,4 +15,4 @@ IMAGE_INSTALL = "\
 
 inherit core-image
 
-IMAGE_FSTYPES ?= "tar.gz"
+IMAGE_FSTYPES = "tar.gz"
