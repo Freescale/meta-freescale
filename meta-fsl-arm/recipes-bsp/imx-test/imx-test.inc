@@ -5,7 +5,7 @@ DEPENDS = "virtual/kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=3f40d7994397109285ec7b81fdeb3b58"
 
-INC_PR = "r2"
+INC_PR = "r3"
 
 PLATFORM_imx53ard = "IMX53"
 PLATFORM_imx53qsb = "IMX53"
@@ -26,3 +26,5 @@ do_install() {
 
 FILES_${PN} += "/unit_tests"
 FILES_${PN}-dbg += "/unit_tests/.debug"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
