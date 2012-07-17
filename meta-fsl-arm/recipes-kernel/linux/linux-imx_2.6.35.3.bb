@@ -67,6 +67,10 @@ do_install_append() {
 
 sysroot_stage_all_append() {
 	sysroot_stage_dir ${D}/kernel ${SYSROOT_DESTDIR}/kernel
+
+	# Copy native binaries need for imx-test build onto sysroot
+	mkdir -p ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/basic \
+	         ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/mod
 	cp ${S}/scripts/basic/fixdep ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/basic
 	cp ${S}/scripts/mod/modpost ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/mod
 }
