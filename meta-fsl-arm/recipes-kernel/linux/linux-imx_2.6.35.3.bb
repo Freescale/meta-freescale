@@ -4,7 +4,7 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r24"
+PR = "r25"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(mxs|mx5)"
@@ -63,10 +63,13 @@ do_install_append() {
 	if [ -d include/generated ]; then
 		cp include/generated/* $kerneldir/include/generated/
 	fi
-	# scripts/basic/fixdep is used in imx-test
-	mkdir -p $kerneldir/scripts/basic/
-	cp scripts/basic/fixdep $kerneldir/scripts/basic/
-	# scripts/mod/modpost is used in imx-test
-	mkdir -p $kerneldir/scripts/mod
-	cp scripts/mod/modpost $kerneldir/scripts/mod
+
+	# Host architecture object file
+	rm $kerneldir/scripts/kconfig/kxgettext.o
+}
+
+sysroot_stage_all_append() {
+	sysroot_stage_dir ${D}/kernel ${SYSROOT_DESTDIR}/kernel
+	cp ${S}/scripts/basic/fixdep ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/basic
+	cp ${S}/scripts/mod/modpost ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/mod
 }
