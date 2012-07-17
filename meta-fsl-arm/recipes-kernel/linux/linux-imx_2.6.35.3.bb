@@ -4,7 +4,7 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r25"
+PR = "r26"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(mxs|mx5)"
@@ -63,9 +63,6 @@ do_install_append() {
 	if [ -d include/generated ]; then
 		cp include/generated/* $kerneldir/include/generated/
 	fi
-
-	# Host architecture object file
-	rm $kerneldir/scripts/kconfig/kxgettext.o
 }
 
 sysroot_stage_all_append() {
