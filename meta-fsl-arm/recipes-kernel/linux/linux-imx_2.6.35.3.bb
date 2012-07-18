@@ -4,7 +4,7 @@
 DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r25"
+PR = "r26"
 
 inherit kernel
 COMPATIBLE_MACHINE = "(mxs|mx5)"
@@ -69,11 +69,15 @@ do_install_append() {
 }
 
 sysroot_stage_all_append() {
-	sysroot_stage_dir ${D}/kernel ${SYSROOT_DESTDIR}/kernel
+	# denzil does not have KERNEL_SRC_PATH so we default to /kernel
+	destdir=${KERNEL_SRC_PATH}
+	if [ -z "$destdir" ]; then
+		destdir=/kernel
+	fi
 
 	# Copy native binaries need for imx-test build onto sysroot
 	mkdir -p ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/basic \
 	         ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/mod
-	cp ${S}/scripts/basic/fixdep ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/basic
-	cp ${S}/scripts/mod/modpost ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/mod
+	cp ${S}/scripts/basic/fixdep ${SYSROOT_DESTDIR}$destdir/scripts/basic
+	cp ${S}/scripts/mod/modpost ${SYSROOT_DESTDIR}$destdir/scripts/mod
 }
