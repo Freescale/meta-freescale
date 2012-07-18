@@ -1,5 +1,3 @@
-TARGET_FPU = "ppc-efd"
-
 require conf/machine/include/tune-ppce500v2.inc
 
 MACHINE_FEATURES = "kernel26 pci ext2 ext3 serial"
