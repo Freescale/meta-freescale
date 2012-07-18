@@ -5,7 +5,7 @@ LICENSE = "LGPLv2.1"
 SECTION = "multimedia"
 DEPENDS = "virtual/kernel"
 
-INC_PR = "r1"
+INC_PR = "r2"
 
 LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
 
@@ -27,7 +27,7 @@ do_install () {
     oe_runmake DEST_DIR="${D}" install
 }
 
-FILES_${PN} += "${libdir}/*.so"
+FILES_${PN} += "${libdir}/*${SOLIBS}"
 FILES_${PN}-dbg += "${libdir}/.debug"
-FILES_${PN}-dev += "${libdir}/*.la ${libdir}/*.a"
+FILES_${PN}-dev += "${libdir}/*${SOLIBSDEV}"
 
