@@ -9,7 +9,7 @@ LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 DEPENDS = "gstreamer gst-plugins-base fsl-mm-codeclib imx-lib"
 RDEPENDS_${PN} = "fsl-mm-codeclib"
-PR = "r4"
+PR = "r5"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
