@@ -1,4 +1,4 @@
 # Append path for freescale layer to include bsp xorg.conf 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PRINC := "${@int(PRINC) + 4}"
+PRINC := "${@int(PRINC) + 6}"
