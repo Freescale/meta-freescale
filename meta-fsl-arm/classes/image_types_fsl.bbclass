@@ -101,7 +101,7 @@ generate_imx_sdcard () {
 	esac
 
 	BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
-	                  | awk '/ 2 / { print substr($4, 1, length($4 -1)) / 1024 }')
+	                  | awk '/ 1 / { print substr($4, 1, length($4 -1)) / 1024 }')
 	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
 	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
 	if [ -e "${KERNEL_IMAGETYPE}-${MACHINE}.dtb" ]; then
