@@ -1,6 +1,6 @@
-From d46b70c7679e6706a001771c322185fcc95a981c Mon Sep 17 00:00:00 2001
+From 2ff5682e42771519757756dedbf27b7a9e8e25d9 Mon Sep 17 00:00:00 2001
 From: Rogerio Pimentel <rogerio.pimentel@freescale.com>
-Date: Mon, 4 Jun 2012 14:25:31 -0300
+Date: Tue, 24 Jul 2012 13:47:01 -0300
 Subject: [PATCH] Add support for i.MX codecs to phonon
 
 Add support for i.MX codecs to phonon
@@ -10,15 +10,15 @@ Signed-off-by: Rogerio Pimentel <rogerio.pimentel@freescale.com>
 ---
  src/3rdparty/phonon/gstreamer/abstractrenderer.h |    1 +
  src/3rdparty/phonon/gstreamer/mediaobject.cpp    |    4 +
- src/3rdparty/phonon/gstreamer/videowidget.cpp    |   57 ++------
+ src/3rdparty/phonon/gstreamer/videowidget.cpp    |   60 ++------
  src/3rdparty/phonon/gstreamer/videowidget.h      |    1 +
- src/3rdparty/phonon/gstreamer/widgetrenderer.cpp |  166 +++++++++++++---------
+ src/3rdparty/phonon/gstreamer/widgetrenderer.cpp |  169 ++++++++++++++--------
  src/3rdparty/phonon/gstreamer/widgetrenderer.h   |   17 ++-
- src/3rdparty/phonon/gstreamer/x11renderer.cpp    |   23 +---
- 7 files changed, 136 insertions(+), 133 deletions(-)
+ src/3rdparty/phonon/gstreamer/x11renderer.cpp    |   22 +---
+ 7 files changed, 141 insertions(+), 133 deletions(-)
 
 diff --git a/src/3rdparty/phonon/gstreamer/abstractrenderer.h b/src/3rdparty/phonon/gstreamer/abstractrenderer.h
-index 10a2822..4901530 100644
+index 10a2822..fa0d87d 100644
 --- a/src/3rdparty/phonon/gstreamer/abstractrenderer.h
 +++ b/src/3rdparty/phonon/gstreamer/abstractrenderer.h
 @@ -49,6 +49,7 @@ public:
@@ -52,19 +52,14 @@ index 23a60c0..f806d64 100644
      GstPad *videopad = gst_element_get_pad (m_videoPipe, "sink");
      gst_element_add_pad (m_videoGraph, gst_ghost_pad_new ("sink", videopad));
 diff --git a/src/3rdparty/phonon/gstreamer/videowidget.cpp b/src/3rdparty/phonon/gstreamer/videowidget.cpp
-index e1f0ec9..6c9862b 100644
+index a4c6f79..3682d3f 100644
 --- a/src/3rdparty/phonon/gstreamer/videowidget.cpp
 +++ b/src/3rdparty/phonon/gstreamer/videowidget.cpp
-@@ -81,48 +81,17 @@ void VideoWidget::setupVideoBin()
+@@ -83,50 +83,16 @@ void VideoWidget::setupVideoBin()
      Q_ASSERT(m_videoBin);
      gst_object_ref (GST_OBJECT (m_videoBin)); //Take ownership
      gst_object_sink (GST_OBJECT (m_videoBin));
-+    gst_bin_add_many (GST_BIN (m_videoBin), videoSink, NULL);
-+    GstPad *videopad = gst_element_get_pad (videoSink,"sink");
-+    gst_element_add_pad (m_videoBin, gst_ghost_pad_new ("sink", videopad));
-+    gst_object_unref (videopad);
-+    QWidget *parentWidget = qobject_cast<QWidget*>(parent());
- 
+-
 -    //The videoplug element is the final element before the pluggable videosink
 -    m_videoplug = gst_element_factory_make ("identity", NULL);
 -
@@ -94,26 +89,34 @@ index e1f0ec9..6c9862b 100644
 -            //If video balance is not available, just connect to sink directly
 -            success = gst_element_link_many(queue, m_colorspace, videoScale, m_videoplug, videoSink, (const char*)NULL);
 -        }
-+    if (parentWidget)
-+            parentWidget->winId();  // Due to some existing issues with alien in 4.4,
-+                                    //  we must currently force the creation of a parent widget.
-+    m_isValid = true; 		    //initialization ok, accept input
- 
+-
 -        if (success) {
 -            GstPad *videopad = gst_element_get_pad (queue, "sink");
 -            gst_element_add_pad (m_videoBin, gst_ghost_pad_new ("sink", videopad));
 -            gst_object_unref (videopad);
+-#ifndef Q_WS_QPA
 -            QWidget *parentWidget = qobject_cast<QWidget*>(parent());
 -            if (parentWidget)
 -                parentWidget->winId();  // Due to some existing issues with alien in 4.4,
 -                                        //  we must currently force the creation of a parent widget.
+-#endif
 -            m_isValid = true; //initialization ok, accept input
 -        }
 -    }
++    gst_bin_add_many (GST_BIN (m_videoBin), videoSink, NULL);
++    GstPad *videopad = gst_element_get_pad (videoSink,"sink");
++    gst_element_add_pad (m_videoBin, gst_ghost_pad_new ("sink", videopad));
++    gst_object_unref (videopad);
++    QWidget *parentWidget = qobject_cast<QWidget*>(parent());
++    
++    if (parentWidget)
++            parentWidget->winId();  // Due to some existing issues with alien in 4.4,
++                                    //  we must currently force the creation of a parent widget.
++    m_isValid = true; 		    //initialization ok, accept input
  }
  
  void VideoWidget::paintEvent(QPaintEvent *event)
-@@ -131,6 +100,12 @@ void VideoWidget::paintEvent(QPaintEvent *event)
+@@ -135,6 +101,12 @@ void VideoWidget::paintEvent(QPaintEvent *event)
      m_renderer->handlePaint(event);
  }
  
@@ -139,7 +142,7 @@ index 8603f6a..38c7b17 100644
      QRect scaleToAspect(QRect srcRect, int w, int h) const;
      QRect calculateDrawFrameRect() const;
 diff --git a/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp b/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp
-index 423af9d..de524ec 100644
+index 423af9d..aa4925a 100644
 --- a/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp
 +++ b/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp
 @@ -15,7 +15,9 @@
@@ -152,7 +155,7 @@ index 423af9d..de524ec 100644
  #include <gst/gst.h>
  #include "common.h"
  #include "message.h"
-@@ -24,6 +26,19 @@
+@@ -24,6 +26,18 @@
  #include "widgetrenderer.h"
  #include "qrgb.h"
  
@@ -163,7 +166,6 @@ index 423af9d..de524ec 100644
 +#include <fcntl.h>
 +#include <sys/ioctl.h>
 +#include <unistd.h>
-+
 +#include <linux/mxcfb.h>
 +
 +#define MXCFB_GBL_ALPHA 	255
@@ -172,7 +174,7 @@ index 423af9d..de524ec 100644
  // support old OpenGL installations (1.2)
  // assume that if TEXTURE0 isn't defined, none are
  #ifndef GL_TEXTURE0
-@@ -35,26 +50,6 @@
+@@ -35,26 +49,6 @@
  #ifndef QT_NO_PHONON_VIDEO
  QT_BEGIN_NAMESPACE
  
@@ -199,7 +201,7 @@ index 423af9d..de524ec 100644
  namespace Phonon
  {
  namespace Gstreamer
-@@ -62,20 +57,12 @@ namespace Gstreamer
+@@ -62,17 +56,11 @@ namespace Gstreamer
  
  WidgetRenderer::WidgetRenderer(VideoWidget *videoWidget)
          : AbstractRenderer(videoWidget)
@@ -210,6 +212,7 @@ index 423af9d..de524ec 100644
 -    if ((m_videoSink = GST_ELEMENT(g_object_new(get_type_RGB(), NULL)))) {
 -        gst_object_ref (GST_OBJECT (m_videoSink)); //Take ownership
 +    if ((m_videoSink = gst_element_factory_make("mfw_v4lsink", NULL)) && m_videoSink != NULL) {
++	
 +	gst_object_ref (GST_OBJECT (m_videoSink)); //Take ownership
          gst_object_sink (GST_OBJECT (m_videoSink));
 -        
@@ -218,11 +221,8 @@ index 423af9d..de524ec 100644
 -        sink->renderWidget = videoWidget;
      }
  
--    // Clear the background with black by default
-     QPalette palette;
-     palette.setColor(QPalette::Background, Qt::black);
-     m_videoWidget->setPalette(palette);
-@@ -84,65 +71,116 @@ WidgetRenderer::WidgetRenderer(VideoWidget *videoWidget)
+     // Clear the background with black by default
+@@ -84,67 +72,124 @@ WidgetRenderer::WidgetRenderer(VideoWidget *videoWidget)
      m_videoWidget->setAttribute(Qt::WA_PaintOnScreen, false);
  }
  
@@ -231,35 +231,35 @@ index 423af9d..de524ec 100644
  {
 -    if (m_videoWidget->root()->state() == Phonon::LoadingState)
 -        return;
-+     if (m_videoSink) {
+-
+-    m_frame = QImage(); 
+-    {
+-        m_frame = QImage((uchar *)array.constData(), w, h, QImage::Format_RGB32);
+-    }
++    if (m_videoSink) {
 +         gst_object_unref (GST_OBJECT (m_videoSink));
 +         m_videoSink = 0;
 +     }
 +}
  
--    m_frame = QImage(); 
--    {
--        m_frame = QImage((uchar *)array.constData(), w, h, QImage::Format_RGB32);
--    }
-+void WidgetRenderer::setVideoSize(void)
-+{
-+
-+   int adj_x;
-+   int adj_y;
-+
-+   QSize wSize = m_videoWidget->size();
-+   m_drawFrameRect = m_videoWidget->calculateDrawFrameRect();
-+   framePos = m_videoWidget->mapToGlobal(QPoint(0,0));
- 
 -    m_array = array;
 -    m_width = w;
 -    m_height = h;
-+   //Center the video in the widget
++void WidgetRenderer::setVideoSize(void)
++{
  
 -    m_videoWidget->update();
-+   adj_x = (wSize.width()/2) - (m_drawFrameRect.width()/2);
-+   adj_y = (wSize.height()/2) - (m_drawFrameRect.height()/2);
++   int adj_x;
++   int adj_y;	
++   
++   QSize wSize = m_videoWidget->size();
++   m_drawFrameRect = m_videoWidget->calculateDrawFrameRect(); 
++   framePos = m_videoWidget->mapToGlobal(QPoint(0,0));
 +
++   //Center the video in the widget
++
++   adj_x = (wSize.width()/2) - (m_drawFrameRect.width()/2); 
++   adj_y = (wSize.height()/2) - (m_drawFrameRect.height()/2); 
 +   g_object_set(G_OBJECT(m_videoSink), "axis-left",adj_x + framePos.x(),(const char*)NULL);
 +   g_object_set(G_OBJECT(m_videoSink), "axis-top", adj_y + framePos.y(), (const char*)NULL);
 +   g_object_set(G_OBJECT(m_videoSink), "disp-width", m_drawFrameRect.width(), (const char*)NULL);
@@ -295,30 +295,34 @@ index 423af9d..de524ec 100644
 +int WidgetRenderer::setOverlay(void)
  {
 -    return m_frame;
-+     struct mxcfb_color_key color_key;
-+     struct mxcfb_gbl_alpha alpha;
-+     int fd_fb;
++      struct mxcfb_color_key color_key;
++      struct mxcfb_gbl_alpha alpha;
++      int fd_fb;
++	
++      if ((fd_fb = open("/dev/fb0", O_RDWR, 0)) < 0)
++      {
++          printf("Unable to open %s\n", "/dev/fb0");
++          return -1;
++        
++      }
++     
++      alpha.alpha = MXCFB_GBL_ALPHA;
++      alpha.enable = 1;
 +
-+     if ((fd_fb = open("/dev/fb0", O_RDWR, 0)) < 0)
-+     {
-+         printf("Unable to open %s\n", "/dev/fb0");
-+         return -1;
-+     }
-+
-+     alpha.alpha = MXCFB_GBL_ALPHA;
-+     alpha.enable = 1;
-+
-+     if (ioctl(fd_fb, MXCFB_SET_GBL_ALPHA, &alpha) < 0) {
-+         printf("Error in applying Alpha\n");
-+     }
++      if (ioctl(fd_fb, MXCFB_SET_GBL_ALPHA, &alpha) < 0) {
++        	printf("Error in applying Alpha\n");
++      }
 +
 +     color_key.color_key = MXCFB_CLR_KEY & 0x00FFFFFF;
 +     color_key.enable = 1;
 +     if ( ioctl(fd_fb, MXCFB_SET_CLR_KEY, &color_key) < 0) {
-+         printf("Error in applying Color Key\n");
-+         return -1;
++     
++	   	printf("Error in applying Color Key\n");
++          	return -1;
 +     }
++
 +     close (fd_fb);
++
 +     return 0;
  }
  
@@ -333,7 +337,7 @@ index 423af9d..de524ec 100644
 +     Q_UNUSED(event);
 +
 +     if (framePos != m_videoWidget->mapToGlobal(QPoint(0,0)))
-+         setVideoSize();
++	setVideoSize();
  }
  
  bool WidgetRenderer::eventFilter(QEvent * event)
@@ -342,39 +346,42 @@ index 423af9d..de524ec 100644
 -        NewFrameEvent *frameEvent= static_cast <NewFrameEvent *>(event);
 -        setNextFrame(frameEvent->frame, frameEvent->width, frameEvent->height);
 -        return true;
--    }
--    return false;
-+     if (event->type() == QEvent::Show) {
++   if (event->type() == QEvent::Show) {
++	
 +	setOverlay();
 +	return true;
-+     } else if (event->type() ==  QEvent::Resize) {
++
++    } else if (event->type() ==  QEvent::Resize) {
++
 +	setVideoSize();
 +	return true;
-+     }
-+     if (framePos != m_videoWidget->mapToGlobal(QPoint(0,0)))
+     }
++    if (framePos != m_videoWidget->mapToGlobal(QPoint(0,0)))
 +	setVideoSize();
-+     return false;
-+}
-+
+     return false;
+ }
+ 
 +void WidgetRenderer::aspectRatioChanged(Phonon::VideoWidget::AspectRatio)
 +{
-+     setVideoSize();
++    setVideoSize();
 +}
 +
 +void WidgetRenderer::scaleModeChanged(Phonon::VideoWidget::ScaleMode)
 +{
 +    setVideoSize();
 +}
-+
++ 
 +void WidgetRenderer::movieSizeChanged(const QSize &movieSize)
 +{
 +    Q_UNUSED(movieSize);
 +    setVideoSize();
++}
++
  }
+ } //namespace Phonon::Gstreamer
  
- }
 diff --git a/src/3rdparty/phonon/gstreamer/widgetrenderer.h b/src/3rdparty/phonon/gstreamer/widgetrenderer.h
-index 03ee9c0..886975a 100644
+index 03ee9c0..6de1a03 100644
 --- a/src/3rdparty/phonon/gstreamer/widgetrenderer.h
 +++ b/src/3rdparty/phonon/gstreamer/widgetrenderer.h
 @@ -40,20 +40,21 @@ class WidgetRenderer : public AbstractRenderer
@@ -394,7 +401,7 @@ index 03ee9c0..886975a 100644
 +    void scaleModeChanged(Phonon::VideoWidget::ScaleMode scaleMode);
 +    void movieSizeChanged(const QSize &movieSize);
 +    void setVideoSize(void);
-+    int  setOverlay(void);
++    int  setOverlay(void); 
 +    void handleMove(QMoveEvent* event);
  private:
 -    mutable QImage m_frame;
@@ -408,7 +415,7 @@ index 03ee9c0..886975a 100644
  
  }
 diff --git a/src/3rdparty/phonon/gstreamer/x11renderer.cpp b/src/3rdparty/phonon/gstreamer/x11renderer.cpp
-index 968f3a8..2119840 100644
+index 968f3a8..c4662e7 100644
 --- a/src/3rdparty/phonon/gstreamer/x11renderer.cpp
 +++ b/src/3rdparty/phonon/gstreamer/x11renderer.cpp
 @@ -31,6 +31,8 @@
@@ -420,7 +427,7 @@ index 968f3a8..2119840 100644
  QT_BEGIN_NAMESPACE
  
  namespace Phonon
-@@ -83,26 +85,7 @@ X11Renderer::~X11Renderer()
+@@ -83,26 +85,8 @@ X11Renderer::~X11Renderer()
  
  GstElement* X11Renderer::createVideoSink()
  {
@@ -443,7 +450,7 @@ index 968f3a8..2119840 100644
 -
 -    if (!videoSink)
 -        videoSink = gst_element_factory_make ("ximagesink", NULL);
--
+ 
 +    GstElement *videoSink = gst_element_factory_make ("mfw_v4lsink", NULL);
      gst_object_ref (GST_OBJECT (videoSink)); //Take ownership
      gst_object_sink (GST_OBJECT (videoSink));
