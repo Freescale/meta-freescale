@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r26"
+PR = "r27"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
 
@@ -69,18 +69,20 @@ do_compile () {
 		esac
 
 		if [ "x${UBOOT_TARGET}" != "x" ]; then
-			if [ "${MACHINE_ARCH}" == "p1023rds" ] || \
-				[ "${MACHINE_ARCH}" == "p2041rdb" ] || \
-	                        [ "${MACHINE_ARCH}" == "p3041ds" ] || \
-        	                [ "${MACHINE_ARCH}" == "p4080ds" ] || \
-                	        [ "${MACHINE_ARCH}" == "p5020ds" ] || \
-                	        [ "${UBOOT_TARGET}" == "u-boot-sd" ] || \
-				[ "${UBOOT_TARGET}" == "u-boot-nand" ]; then
+			if [ "${UBOOT_TARGET}" == "u-boot-sd" ]; then
 				cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+            elif [ "${UBOOT_TARGET}" == "u-boot-nand" ];then
+				if [ "${DEFAULTTUNE}" != "ppce500v2" ];then
+                    cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+                fi
 			else
-				${STAGING_BINDIR_NATIVE}/boot_format \
+				if [ -n "${BOOTFORMAT_CONFIG}" ];then
+                    ${STAGING_BINDIR_NATIVE}/boot_format \
 					${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
 					${S}/${board}/u-boot.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
+                else
+                    cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+                fi
 			fi 
 		fi
 	done
