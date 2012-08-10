@@ -59,7 +59,7 @@ do_compile () {
 				cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
 			else
 				${STAGING_BINDIR_NATIVE}/boot_format \
-					${STAGING_DATADIR_NATIVE}/${BOOTFORMAT_CONFIG} \
+					${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
 					${S}/${board}/u-boot.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
 			fi 
 		fi
