@@ -1,5 +1,5 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"
 
-SRC_URI += "file://gettext.fix_testcase.patch"
+SRC_URI_fsl += "file://gettext.fix_testcase.patch"
 
-PR .= "+${DISTRO}.0"
+PR_fsl .= "+${DISTRO}.0"

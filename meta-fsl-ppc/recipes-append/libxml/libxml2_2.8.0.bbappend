@@ -1,3 +1,3 @@
-EXTRA_OECONF += "--with-fexceptions"
+EXTRA_OECONF_fsl += "--with-fexceptions"
 
-PR .= "+${DISTRO}.0"
+PR_fsl .= "+${DISTRO}.0"

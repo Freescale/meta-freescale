@@ -1,3 +1,3 @@
-PR .= "+${DISTRO}.0"
+PR_fsl .= "+${DISTRO}.0"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"

@@ -1,4 +1,4 @@
-FILEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"
 
-PR .= "+${DISTRO}.0"
+PR_fsl .= "+${DISTRO}.0"
 
