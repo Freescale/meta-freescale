@@ -1,28 +1,24 @@
 # Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.2"
+PR = "${INC_PR}.3"
 
 include linux-imx.inc
 
 COMPATIBLE_MACHINE = "(mxs|mx5)"
 
 # Revision of imx_2.6.35_10.12.01 branch
-SRCREV_mxs = "a0e8d80376957175e959f70aba51a1cae487e414"
+SRCREV_mxs = "6a31a551bc302e74a17e9051bba356903e98273f"
 LOCALVERSION = "-10.12.01+yocto-${DATE}"
 
 # Revision of imx_2.6.35_11.09.01 branch
-SRCREV_mx5 = "3e2396eddb362ff70ee6eac43fb1f27f217dc0d1"
+SRCREV_mx5 = "cb0c4573ddf2eb4ee6942929f265560740f5dad2"
 LOCALVERSION = "-11.09.01+yocto-${DATE}"
 
-SRC_URI += "file://0002-cgroupfs-create-sys-fs-cgroup-to-mount-cgroupfs-on.patch \
-            file://NFS-Fix-nfsroot-support.patch \
+SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
             file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
             file://no-unaligned-access.patch \
-            file://w1-fix-support-multiple-master.patch \
-            file://smsc95xx-randomize-mac-once.patch \
             file://dm9601-support-for-usb-ethernet-0x0fe6-0x9700.patch \
-            file://wire-up-sys_accept4-on-ARM.patch \
 "
 
 SRC_URI_append_mxs = " \
