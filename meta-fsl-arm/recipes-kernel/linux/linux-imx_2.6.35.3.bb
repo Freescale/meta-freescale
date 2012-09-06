@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.3"
+PR = "${INC_PR}.4"
 
 include linux-imx.inc
 
@@ -24,6 +24,7 @@ SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
 SRC_URI_append_mxs = " \
            file://mx23-do-not-use-safe-write.patch \
            file://mx23-dont-mange-IRQ_VDDA_BRNOUT.patch \
+           file://mx28-removecpufreq.patch \
            file://mxs-duart-use-ttyAMA-for-device-name.patch \
 "
 
