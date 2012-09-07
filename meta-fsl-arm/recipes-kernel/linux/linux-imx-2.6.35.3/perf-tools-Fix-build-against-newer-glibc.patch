@@ -1,0 +1,40 @@
+From ee7517dc33cd8c1d10bc504faef8a085694eebe2 Mon Sep 17 00:00:00 2001
+From: Josh Boyer <jwboyer@redhat.com>
+Date: Thu, 18 Aug 2011 07:37:21 -0400
+Subject: [PATCH 2/2] perf tools: Fix build against newer glibc
+
+Upstream glibc commit 295e904 added a definition for __attribute_const__
+to cdefs.h.  This causes the following error when building perf:
+
+util/include/linux/compiler.h:8:0: error: "__attribute_const__"
+redefined [-Werror] /usr/include/sys/cdefs.h:226:0: note: this is the
+location of the previous definition
+
+Wrap __attribute_const__ in #ifndef as we do for __always_inline.
+
+Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Link: http://lkml.kernel.org/r/20110818113720.GL2227@zod.bos.redhat.com
+Signed-off-by: Josh Boyer <jwboyer@redhat.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/util/include/linux/compiler.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tools/perf/util/include/linux/compiler.h b/tools/perf/util/include/linux/compiler.h
+index 791f9dd..547628e 100644
+--- a/tools/perf/util/include/linux/compiler.h
++++ b/tools/perf/util/include/linux/compiler.h
+@@ -5,7 +5,9 @@
+ #define __always_inline	inline
+ #endif
+ #define __user
++#ifndef __attribute_const__
+ #define __attribute_const__
++#endif
+ 
+ #define __used		__attribute__((__unused__))
+ 
+-- 
+1.7.10.4
+
