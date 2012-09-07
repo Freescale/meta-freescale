@@ -1,0 +1,54 @@
+diff -Nur amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/EGL/eglext.h amd-gpu-x11-bin-mx51-11.09.01/usr/include/EGL/eglext.h
+--- amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/EGL/eglext.h	2012-08-18 12:43:19.431788396 -0300
++++ amd-gpu-x11-bin-mx51-11.09.01/usr/include/EGL/eglext.h	2012-08-18 12:43:50.799909873 -0300
+@@ -164,11 +164,11 @@
+  * nanoseconds (unadjusted standard time).  Here, it is defined as
+  * appropriate for an ISO C compiler.
+  */
+-#ifndef _LINUX
++#ifndef __linux__
+ typedef uint64_t EGLTimeKHR;
+-#else   // _LINUX
++#else   // __linux__
+ typedef unsigned long long EGLTimeKHR;
+-#endif  // _LINUX
++#endif  // __linux__
+ 
+ #define EGL_SYNC_PRIOR_COMMANDS_COMPLETE_KHR            0xFFF8
+ #define EGL_SYNC_STATUS_KHR                             0xFFF7                                  
+diff -Nur amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/EGL/eglfslext.h amd-gpu-x11-bin-mx51-11.09.01/usr/include/EGL/eglfslext.h
+--- amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/EGL/eglfslext.h	2012-08-18 12:43:19.431788396 -0300
++++ amd-gpu-x11-bin-mx51-11.09.01/usr/include/EGL/eglfslext.h	2012-08-18 12:43:50.759785714 -0300
+@@ -65,7 +65,7 @@
+ } eglYUVInfo;
+ #endif
+ 
+-#ifdef _LINUX
++#ifdef __linux__
+ struct EGLImageInfoFSL
+ {
+     void *mem_virt[3]; //virtual addresses for Y/U/V planes
+diff -Nur amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/VG/ext.h amd-gpu-x11-bin-mx51-11.09.01/usr/include/VG/ext.h
+--- amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/VG/ext.h	2012-08-18 12:43:19.431788396 -0300
++++ amd-gpu-x11-bin-mx51-11.09.01/usr/include/VG/ext.h	2012-08-18 12:43:50.799909873 -0300
+@@ -15,7 +15,7 @@
+ extern "C" {
+ #endif
+ 
+-#ifndef _LINUX
++#ifndef __linux__
+ #include <VG/openvg.h>
+ #else
+ #include "openvg.h"
+diff -Nur amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/VG/openvg.h amd-gpu-x11-bin-mx51-11.09.01/usr/include/VG/openvg.h
+--- amd-gpu-x11-bin-mx51-11.09.01.orig/usr/include/VG/openvg.h	2012-08-18 12:43:19.431788396 -0300
++++ amd-gpu-x11-bin-mx51-11.09.01/usr/include/VG/openvg.h	2012-08-18 12:43:50.799909873 -0300
+@@ -449,7 +449,7 @@
+ #       endif
+ #   elif defined(__APPLE__)
+ #       define VG_API_CALL extern
+-#   elif defined(_LINUX)
++#   elif defined(__linux__)
+ #       if defined (OPENVG_DLL_EXPORTS)
+ #           define VG_API_CALL extern
+ #       else
