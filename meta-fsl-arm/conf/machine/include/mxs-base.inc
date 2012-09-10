@@ -9,6 +9,9 @@ include conf/machine/include/tune-arm926ejs.inc
 
 SOC_FAMILY = "mxs"
 
+# Disable perf features as 2.6.35.3 fail to build otherwise
+PERF_FEATURES_ENABLE = ""
+
 XSERVER = "xserver-xorg \
            xf86-input-evdev \
            xf86-video-fbdev"
