@@ -1,0 +1,29 @@
+From a8aa8d131a7140d5625c24c9f4c28c605213552c Mon Sep 17 00:00:00 2001
+From: Andrey Mazo <ahippo@yandex.ru>
+Date: Fri, 18 May 2012 21:11:22 +0400
+Subject: [PATCH] Avoid ldconfig due to cross-compilation problems.
+
+Make required symlinks manually.
+Otherwise, it cases problems on cbuild endianness != ctarget endianness
+setups because /sbin/ldconfig expects elf header in the wrong endianness.
+---
+ src/lxc/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/src/lxc/Makefile.am b/src/lxc/Makefile.am
+index 1c26952..3b84c1a 100644
+--- a/src/lxc/Makefile.am
++++ b/src/lxc/Makefile.am
+@@ -125,8 +125,8 @@ lxc_kill_SOURCES = lxc_kill.c
+ 
+ install-exec-local: install-soPROGRAMS
+ 	mv $(DESTDIR)$(libdir)/liblxc.so $(DESTDIR)$(libdir)/liblxc.so.$(VERSION)
+-	/sbin/ldconfig -l $(DESTDIR)$(libdir)/liblxc.so.$(VERSION)
+ 	cd $(DESTDIR)$(libdir); \
++	ln -sf liblxc.so.$(VERSION) liblxc.so.$(firstword $(subst ., ,$(VERSION))); \
+ 	ln -sf liblxc.so.$(firstword $(subst ., ,$(VERSION))) liblxc.so
+ 
+ uninstall-local:
+-- 
+1.7.3.4
+
