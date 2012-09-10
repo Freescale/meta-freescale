@@ -4,6 +4,9 @@ include conf/distro/include/fsl-default-settings.inc
 include conf/distro/include/fsl-default-versions.inc
 include conf/distro/include/fsl-default-providers.inc
 
+# Disable perf features as 2.6.35.3 fail to build otherwise
+PERF_FEATURES_ENABLE = ""
+
 # Set specific make target and binary suffix
 UBOOT_MAKE_TARGET = "u-boot.imx"
 UBOOT_SUFFIX = "imx"
