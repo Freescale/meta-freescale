@@ -14,3 +14,11 @@ S = '${@base_conditional("KSRC", "", "${WORKDIR}/git", "${KSRC}", d)}'
 
 # make everything compatible for the time being
 COMPATIBLE_MACHINE_$MACHINE = "$MACHINE"
+
+python () {
+	promote_kernel = d.getVar('BUILD_64BIT_KERNEL')
+
+	if promote_kernel != 0:
+		d.setVar('KERNEL_CC_append', ' -m64')
+		d.setVar('KERNEL_LD_append', ' -melf64ppc')
+}
