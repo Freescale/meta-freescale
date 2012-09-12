@@ -3,7 +3,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 PV = "3.0.34"
 PR = "r6"
 
-SRCREV = "fsl-sdk-v1.2.1"
+SRCREV = "058c67be272af9ab95b88c941f31fb3eda05a4d3"
 SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
            file://0001-compiler.h-Undef-before-redefining-__attribute_const.patch \
 	   file://0001-powerpc-Fix-build-dependencies-for-c-files-requiring.patch \
