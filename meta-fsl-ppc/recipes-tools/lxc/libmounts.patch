@@ -1,0 +1,48 @@
+From dfef62f0334c65397254215f809a8f25364ea6ef Mon Sep 17 00:00:00 2001
+From: Stuart Yoder <stuart.yoder@freescale.com>
+Date: Wed, 12 Sep 2012 11:05:07 -0500
+Subject: [PATCH] create lib mounts only if the host directories exist
+
+Signed-off-by: Stuart Yoder <stuart.yoder@freescale.com>
+---
+ templates/lxc-busybox.in |   24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
+
+diff --git a/templates/lxc-busybox.in b/templates/lxc-busybox.in
+index 720ceef..f6cb1ba 100644
+--- a/templates/lxc-busybox.in
++++ b/templates/lxc-busybox.in
+@@ -235,19 +235,17 @@ lxc.pts = 1
+ lxc.rootfs = $rootfs
+ EOF
+ 
+-if [ -d "$rootfs/lib" ]; then
+-cat <<EOF >> $path/config
+-lxc.mount.entry=/lib $rootfs/lib none ro,bind 0 0
+-lxc.mount.entry=/usr/lib $rootfs/usr/lib none ro,bind 0 0
+-EOF
+-fi
+-
+-if [ -d "/lib64" ] && [ -d "$rootfs/lib64" ]; then
+-cat <<EOF >> $path/config
+-lxc.mount.entry=/lib64 $rootfs/lib64 none ro,bind 0 0
+-lxc.mount.entry=/usr/lib64 $rootfs/usr/lib64 none ro,bind 0 0
+-EOF
+-fi
++    libdirs="\
++        /lib \
++        /usr/lib \
++        /lib64 \
++        /usr/lib64"
++
++    for dir in $libdirs; do
++        if [ -d $dir ]; then
++            echo "lxc.mount.entry=$dir $rootfs$dir none ro,bind 0 0" >> $path/config
++        fi
++    done
+ }
+ 
+ usage()
+-- 
+1.7.9.7
+
