@@ -6,10 +6,10 @@ COMPATIBLE_MACHINE = "(imx28evk|mx5|mx6)"
 
 DEPENDS_mxs += "elftosb-native"
 
-SRCREV = "4e6e82429c127d6084b3a3cde5f2f2c4ea63440b"
+SRCREV = "560b63a4fc0f293ab2bfde015781a8f48f2c24c4"
 
 PV = "v2012.04.01"
-PR = "r4"
+PR = "r5"
 
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 

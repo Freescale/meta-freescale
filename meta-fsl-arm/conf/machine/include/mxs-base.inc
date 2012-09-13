@@ -9,7 +9,7 @@ include conf/machine/include/tune-arm926ejs.inc
 
 SOC_FAMILY = "mxs"
 
-XSERVER = "xserver-xorg-lite \
+XSERVER = "xserver-xorg \
            xf86-input-evdev \
            xf86-video-fbdev"
 
