@@ -8,7 +8,7 @@ include conf/distro/include/fsl-default-providers.inc
 UBOOT_MAKE_TARGET = "u-boot.imx"
 UBOOT_SUFFIX = "imx"
 
-XSERVER = "xserver-xorg-lite \
+XSERVER = "xserver-xorg \
            xf86-input-evdev \
            xf86-video-imxfb"
 
