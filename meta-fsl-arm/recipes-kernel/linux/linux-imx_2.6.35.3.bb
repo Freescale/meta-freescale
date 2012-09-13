@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.4"
+PR = "${INC_PR}.7"
 
 include linux-imx.inc
 
@@ -17,6 +17,8 @@ LOCALVERSION = "-11.09.01+yocto-${DATE}"
 
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
             file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
+            file://perf-tools-Fix-build-against-newer-glibc.patch \
+            file://perf-tools-Do-not-treat-warnings-as-errors.patch \
             file://no-unaligned-access.patch \
             file://dm9601-support-for-usb-ethernet-0x0fe6-0x9700.patch \
 "
@@ -29,6 +31,7 @@ SRC_URI_append_mxs = " \
 "
 
 SRC_URI_append_mx5 = " \
+           file://mx5-fix-hang-with-framebuffer.patch \
            file://egalax_ts-enable-single-event-support.patch \
            file://0001-mx53_loco-add-USR-led-support.patch \
            file://002_Return_ERESTARTSYS_from_IPU_GET_EVENT.patch \
