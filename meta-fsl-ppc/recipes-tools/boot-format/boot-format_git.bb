@@ -1,6 +1,6 @@
 DESCRIPTION = "Boot format utility for booting from eSDHC/eSPI"
-LICENSE = "GPL"
-PR = "r4"
+LICENSE = "GPLv2"
+PR = "r5"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/boot-format.git\
