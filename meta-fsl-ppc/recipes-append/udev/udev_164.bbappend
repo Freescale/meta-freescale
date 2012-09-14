@@ -1,4 +1,3 @@
-FILEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"
 
-PR_fsl .= "+${DISTRO}.0"
-
+PR_fsl .= "+${DISTRO}.1"

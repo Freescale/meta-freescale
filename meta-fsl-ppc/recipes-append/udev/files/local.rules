@@ -15,6 +15,8 @@
 
 KERNEL=="nbd*", GOTO="persistent_storage_end"
 
+SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", GOTO="nomountblock"
+
 # Media automounting
 SUBSYSTEM=="block", ACTION=="add"    RUN+="/etc/udev/scripts/mount.sh"
 SUBSYSTEM=="block", ACTION=="remove" RUN+="/etc/udev/scripts/mount.sh"
@@ -37,3 +39,4 @@ SUBSYSTEM=="input", KERNEL=="event[0-9]*", ATTRS{modalias}=="input:*-e0*,3,*a0,1
 
 LABEL="persistent_storage_end"
 
+LABEL="nomountblock"
