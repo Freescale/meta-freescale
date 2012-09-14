@@ -16,6 +16,3 @@ KERNEL_IMAGETYPE ?= "uImage"
 #		ext2.gz.u-boot ext2.bz2.u-boot ext2.lzma.u-boot"
 
 MACHINEOVERRIDES .= ":e6500:fslmachine"
-
-#not ideal but we require 64-bit support to build the kernel
-DISTRO_FEATURES_append = " multiarch"
