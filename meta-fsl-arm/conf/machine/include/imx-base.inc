@@ -20,9 +20,9 @@ MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
 # Extra audio support
 MACHINE_EXTRA_RRECOMMENDS += "imx-audio \
-                              imx-firmware \
                               imx-lib \
                               udev-extraconf \
+                              firmware-imx \
                              "
 
 # Gstreamer plugin
