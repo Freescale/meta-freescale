@@ -3,15 +3,14 @@ DESCRIPTION = "Freescale IMX firmware such as for the VPU"
 SECTION = "base"
 LICENSE = "Freescale"
 LIC_FILES_CHKSUM = "file://licenses/vpu/EULA;md5=6469a8514eed615d6bf8c09f41846d8f"
-PR = "r4"
 
-SRC_URI = "file://firmware-imx-11.09.01.tar.gz \
+INC_PR = "r0"
+
+SRC_URI = "file://firmware-imx-${PV}.tar.gz \
            file://vpu_fw_imx51.bin \
            file://vpu_fw_imx53.bin"
 
 COMPATIBLE_MACHINE = "(mx5)"
-
-S = "${WORKDIR}/firmware-imx-11.09.01"
 
 # todo: make FILES_ machine dependent using override, i.MX53 only now.
 FILES_${PN} = "/lib/firmware/vpu/vpu_fw_imx53.bin"
@@ -35,3 +34,7 @@ do_install() {
 	cp -rf ${S}/firmware/ar3k ${D}/lib/firmware
 }
 
+# Add an upgrade path
+RPROVIDES_${PN} = "imx-firmware"
+RREPLACES_${PN} = "imx-firmware"
+RCONFLICTS_${PN} = "imx-firmware"
