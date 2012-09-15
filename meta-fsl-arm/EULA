@@ -1,0 +1,248 @@
+IMPORTANT. Read the following Freescale Software License Agreement
+("Agreement") completely. By selecting the "I Accept" button at the
+end of this page, you indicate that you accept the terms of the
+Agreement referenced below.  You may then download the file.  If this
+is a "shrink wrap license," by opening the package and installing the
+software contained, you indicate that you accept the terms of the
+Agreement referenced below.
+
+			 OPEN SOURCE LICENSE
+
+You are about to download certain software that is subject to various
+open source licenses such as the Apache License, the BSD license, the
+Free Software Foundation General Public License and Lesser General
+Public License, the Mozilla Public License and others.  The particular
+files are listed in a file in the distribution, which will typically
+be called "package_manifest.txt" ("Manifest"). In the case of a
+discrepancy between the Manifest and the files in the distribution,
+the files in the distribution will supersede this list. The files that
+are subject to open source licenses will have the licensing details
+contained in those files. If you do not accept the terms of any of
+those licenses, stop using those files immediately.
+
+		 FREESCALE SOFTWARE LICENSE AGREEMENT
+
+This is a legal agreement between you (either as an individual or as
+an authorized representative of your employer) and Freescale
+Semiconductor, Inc. ("Freescale"). It concerns your rights to use
+these files and any accompanying written materials (the "Software" and
+the "Codec Software" (as defined below).  Except where specifically
+indicated in the License Grant below, Software will include Codec
+Software including third party software as more fully described below
+and identified on Attachment A; and software created or licensed to
+Freescale. This Agreement does not concern your use of any files that
+are subject to an "open source" software license, such as the Free
+Software Foundation "General Public License," or "GNU GPL."  In
+consideration for Freescale allowing you to access the Software, you
+are agreeing to be bound by the terms of this Agreement. If you do not
+agree to all of the terms of this Agreement, do not download the
+Software. If you change your mind later, stop using the Software and
+delete all copies of the Software in your possession or control. Any
+copies of the Software that you have already distributed, where
+permitted, and do not destroy will continue to be governed by this
+Agreement. Your prior use will also continue to be governed by this
+Agreement.
+
+LICENSE GRANT.  Exclusively in conjunction with your development and
+sale of a product containing an i.MX or STMP programmable processing
+unit (e.g. a microprocessor, microcontroller) supplied directly or
+indirectly from Freescale ("Freescale System"), Freescale grants to
+you, free of charge, the non-exclusive, non-transferable right (1) to
+use the Software, (2) to reproduce the Software, (3) distribute the
+Software, (4) to sublicense to others the right to use the distributed
+Software as included within the Freescale System and, to the extent
+the Software is provided in source code form (human readable), (5) to
+prepare derivative works of the Software, (6) to distribute derivative
+works thereof only in object (machine-readable) form as part of a
+Freescale System, and (7) to sublicense to others the right to use the
+distributed derivative works as included within the Freescale System.
+Exclusively in conjunction with your development and sale of a product
+containing a Freescale System, Freescale grants to you, free of
+charge, the non-exclusive, non-transferable right to use the Codec
+Software evaluation and demonstration purposes only.  Codec Software
+is software designed for processing multimedia streams (audio and
+video).  You agree that you are responsible for obtaining any
+necessary licenses or permission for all Essential Patents for Codec
+Software. "Essential Patent" means a patent to the limited extent that
+infringement of such patent cannot be avoided in remaining compliant
+with the technology standards implicated by the usage of any of the
+Codec Software, including optional implementation of such standards,
+on technical but not commercial grounds, taking into account normal
+technical practice and the state of the art generally available at the
+time of standardization.  You may not translate, reverse engineer,
+decompile, or disassemble the Software except to the extent applicable
+law specifically prohibits such restriction. You will not assert
+against Freescale any intellectual property right that you create in
+preparation of any derivative works of the Software. If you violate
+any of the terms or restrictions of this Agreement, Freescale may
+immediately terminate this Agreement, and require that you stop using
+and delete all copies of the Software in your possession or control.
+
+COPYRIGHT.  The Software is licensed to you, not sold.  Freescale or
+its licensor owns the Software, and United States copyright laws and
+international treaty provisions protect the Software. Therefore, you
+must treat the Software like any other copyrighted material (e.g. a
+book or musical recording). You may not use or copy the Software for
+any other purpose than what is described in this Agreement. Except as
+expressly provided herein, Freescale does not grant to you any express
+or implied rights under any Freescale or third party patents,
+copyrights, trademarks, or trade secrets. Additionally, you must
+reproduce and apply any copyright or other proprietary rights notices
+included on or embedded in the Software to any copies or derivative
+works made thereof, in whole or in part, if any.
+
+SUPPORT.  Freescale is NOT obligated to provide any support, upgrades
+or new releases of the Software. If you wish, you may contact
+Freescale and report problems and provide suggestions regarding the
+Software. Freescale has no obligation whatsoever to respond in any way
+to such a problem report or suggestion. Freescale may make changes to
+the Software at any time, without any obligation to notify or provide
+updated versions of the Software to you.
+
+EXCLUDED LICENSES. You will not take or fail to take any action that
+could subject the Software to an Excluded License.  An Excluded
+License means any license that requires as a condition of use,
+modification and/or distribution of software subject to the Excluded
+License, that such software or other software combined and/or
+distributed with such software be (A) disclosed or distributed in
+source code form; (B) licensed for the purpose of making derivative
+works; or (C) redistributable at no charge.
+
+FEEDBACK. You grant to Freescale a non-exclusive, non-transferable,
+irrevocable, perpetual, worldwide, royalty-free, sub-licensable
+license under your Intellectual Property Rights to use without
+restriction and for any purpose any suggestion, comment or other
+feedback related to the Licensed Software (including, but not limited
+to, error corrections and bug fixes).
+
+NO WARRANTY.  TO THE MAXIMUM EXTENT PERMITTED BY LAW, FREESCALE
+EXPRESSLY DISCLAIMS ANY WARRANTY FOR THE SOFTWARE.  THE SOFTWARE IS
+PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR
+IMPLIED, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+NON-INFRINGEMENT. YOU ASSUME THE ENTIRE RISK ARISING OUT OF THE USE OR
+PERFORMANCE OF THE SOFTWARE, OR ANY SYSTEMS YOU DESIGN USING THE
+SOFTWARE (IF ANY). NOTHING IN THIS AGREEMENT MAY BE CONSTRUED AS A
+WARRANTY OR REPRESENTATION BY FREESCALE THAT THE SOFTWARE OR ANY
+DERIVATIVE WORK DEVELOPED WITH OR INCORPORATING THE SOFTWARE WILL BE
+FREE FROM INFRINGEMENT OF THE INTELLECTUAL PROPERTY RIGHTS OF THIRD
+PARTIES.
+
+INDEMNITY. You agree to fully defend and indemnify Freescale from any
+and all claims, liabilities, and costs (including reasonable
+attorney's fees) related to (1) your use (including your sublicensee's
+use, if permitted) of the Software or (2) your violation of the terms
+and conditions of this Agreement.
+
+LIMITATION OF LIABILITY.  IN NO EVENT WILL FREESCALE BE LIABLE,
+WHETHER IN CONTRACT, TORT, OR OTHERWISE, FOR ANY INCIDENTAL, SPECIAL,
+INDIRECT, CONSEQUENTIAL OR PUNITIVE DAMAGES, INCLUDING, BUT NOT
+LIMITED TO, DAMAGES FOR ANY LOSS OF USE, LOSS OF TIME, INCONVENIENCE,
+COMMERCIAL LOSS, OR LOST PROFITS, SAVINGS, OR REVENUES TO THE FULL
+EXTENT SUCH MAY BE DISCLAIMED BY LAW.  FREESCALE'S TOTAL LIABILITY FOR
+ANY AND ALL COSTS, DAMAGES, CLAIMS, OR LOSSES WHATSOEVER ARISING OUT
+OF OR IN CONNECTION WITH THIS AGREEMENT OR PRODUCT(S) SUPPLIED UNDER
+THIS AGREEMENT IS LIMITED TO THE AGGREGATE AMOUNT PAID BY LICENSEE TO
+FREESCALE IN CONNECTION WITH THE LICENSED SOFTWARE TO WHICH LOSSES OR
+DAMAGES ARE CLAIMED.
+
+COMPLIANCE WITH LAWS; EXPORT RESTRICTIONS. You must use the Software
+in accordance with all applicable export laws, regulations and
+statutes.  You agree that neither you nor your licensees (if any)
+intend to or will, directly or indirectly, export or transmit the
+Software to any country in violation of. any export restrictions.
+
+GOVERNMENT USE.  Use of the Software and any corresponding
+documentation, if any, is provided with RESTRICTED RIGHTS. Use,
+duplication or disclosure by the Government is subject to restrictions
+as set forth in subparagraph (c)(1)(ii) of The Rights in Technical
+Data and Computer Software clause at DFARS 252.227-7013 or
+subparagraphs (c)(l) and (2) of the Commercial Computer
+Software--Restricted Rights at 48 CFR 52.227-19, as
+applicable. Manufacturer is Freescale Semiconductor, Inc., 6501
+William Cannon Drive West, Austin, TX, 78735.
+
+HIGH RISK ACTIVITIES.  You acknowledge that the Software is not fault
+tolerant and is not designed, manufactured or intended by Freescale
+for incorporation into products intended for use or resale in on-line
+control equipment in hazardous, dangerous to life or potentially
+life-threatening environments requiring fail-safe performance, such as
+in the operation of nuclear facilities, aircraft navigation or
+communication systems, air traffic control, direct life support
+machines or weapons systems, in which the failure of products could
+lead directly to death, personal injury or severe physical or
+environmental damage ("High Risk Activities"). You specifically
+represent and warrant that you will not use the Software or any
+derivative work of the Software for High Risk Activities.
+
+CHOICE OF LAW; VENUE; LIMITATIONS.  You agree that the statutes and
+laws of the United States and the State of Texas, USA, without regard
+to conflicts of laws principles, will apply to all matters relating to
+this Agreement or the Software, and you agree that any litigation will
+be subject to the exclusive jurisdiction of the state or federal
+courts in Texas, USA.
+
+PRODUCT LABELING.  You are not authorized to use any Freescale
+trademarks, brand names, or logos.
+
+ENTIRE AGREEMENT.  This Agreement constitutes the entire agreement
+between you and Freescale regarding the subject matter of this
+Agreement, and supersedes all prior communications, negotiations,
+understandings, agreements or representations, either written or oral,
+if any.  This Agreement may only be amended in written form, executed
+by you and Freescale.
+
+SEVERABILITY.  If any provision of this Agreement is held for any
+reason to be invalid or unenforceable, then the remaining provisions
+of this Agreement will be unimpaired and, unless a modification or
+replacement of the invalid or unenforceable provision is further held
+to deprive you or Freescale of a material benefit, in which case the
+Agreement will immediately terminate, the invalid or unenforceable
+provision will be replaced with a provision that is valid and
+enforceable and that comes closest to the intention underlying the
+invalid or unenforceable provision.
+
+NO WAIVER.  The waiver by Freescale of any breach of any provision of
+this Agreement will not operate or be construed as a waiver of any
+other or a subsequent breach of the same or a different provision.
+
+
+
+
+			    ATTACHMENT A:
+
+SanDisk Corporation Software
+The Board Support Package includes software developed by SanDisk
+Corporation ("SanDisk").  You must separately obtain the rights to
+reproduce and distribute this software in source code form from
+SanDisk.  Please follow these easy steps to obtain the license and
+software:
+1. Contact your local SanDisk sales representative to obtain the
+SanDisk License Agreement.
+2. Sign the license agreement.  Fax the signed agreement to SanDisk
+USA marketing department at 408-542-0403.  The license will be valid
+when fully executed by SanDisk.
+3. If you have specific questions, please send an email to
+sales@sandisk.com You may only use the SanDisk Corporation Software on
+products compatible with a SanDisk Secure Digital Card.  You may not
+use the SanDisk Corporation Software on any memory device product.
+SanDisk retains all rights to any modifications or derivative works to
+the SanDisk Corporation Software that you may create.
+
+Global Locate
+The Board Support Package includes software and hardware developed by
+Global Locate, Inc. ("Global Locate") and acquired by Broadcom
+Corporation.  You must separately obtain rights beyond evaluation and
+demonstration in connection with the Board Support Package from
+Broadcom Corporation.
+
+CSR
+The Board Support Package includes software and hardware developed by
+Cambridge Silicon Radio, Inc. ("CSR").  You must separately obtain
+rights beyond evaluation and demonstration in connection with the
+Board Support Package from CSR.
+
+CTS
+The Board Support Package includes software or technology developed by
+Coding Technologies, AB ("CTS").  You only have the right to use the
+CTS software in connection with the Freescale System.
