@@ -16,6 +16,12 @@ S = '${@base_conditional("KSRC", "", "${WORKDIR}/git", "${KSRC}", d)}'
 COMPATIBLE_MACHINE_$MACHINE = "$MACHINE"
 
 python () {
+	ma = d.getVar("DISTRO_FEATURES", True)
+	arch = d.getVar("OVERRIDES", True)
+
+	if not "multiarch" in ma and ("e5500" in arch or "e6500" in arch):
+		raise bb.parse.SkipPackage("Building the kernel for this arch requires multiarch to be in DISTRO_FEATURES")
+
 	promote_kernel = d.getVar('BUILD_64BIT_KERNEL')
 
 	if promote_kernel != 0:
