@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.9"
+PR = "${INC_PR}.10"
 
 include linux-imx.inc
 
@@ -25,6 +25,7 @@ SRC_URI_append_mxs = " \
 "
 
 SRC_URI_append_mx5 = " \
+           file://mx5-fix-hang-with-framebuffer.patch \
            file://egalax_ts-enable-single-event-support.patch \
            file://0001-mx53_loco-add-USR-led-support.patch \
 "
