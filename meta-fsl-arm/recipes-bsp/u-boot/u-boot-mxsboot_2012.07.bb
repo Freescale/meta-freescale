@@ -3,10 +3,10 @@ LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 SECTION = "bootloader"
 
-PV = "v2012.04.01"
+PV = "v2012.07"
 
-SRCREV = "415d386877df49eb051b85ef74fa59a16dc17c7d"
-SRC_URI = "git://git.denx.de/u-boot.git;branch=master;protocol=git"
+SRCREV = "8b53a1ae421246f1001a2a38121e6c9365843f0a"
+SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
 
