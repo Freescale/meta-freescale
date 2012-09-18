@@ -1,8 +1,8 @@
 # Provides the i.MX common settings
 
-include conf/distro/include/fsl-default-settings.inc
-include conf/distro/include/fsl-default-versions.inc
-include conf/distro/include/fsl-default-providers.inc
+include conf/machine/include/fsl-default-settings.inc
+include conf/machine/include/fsl-default-versions.inc
+include conf/machine/include/fsl-default-providers.inc
 
 # Set specific make target and binary suffix
 UBOOT_MAKE_TARGET = "u-boot.imx"
