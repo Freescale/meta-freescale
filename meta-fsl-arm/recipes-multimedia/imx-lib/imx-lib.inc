@@ -5,11 +5,11 @@ LICENSE = "LGPLv2.1"
 SECTION = "multimedia"
 DEPENDS = "virtual/kernel"
 
-INC_PR = "r2"
+INC_PR = "r3"
 
 LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
 
-SRC_URI = "file://${PN}-${PV}.tar.gz"
+SRC_URI = "${FSL_MIRROR}/imx-lib-${PV}.tar.gz"
 
 PLATFORM_mx5 = "IMX51"
 
