@@ -1,16 +1,18 @@
-# Copyright (C) 2011 Freescale Semicondutors <aalonso@freescale.com>
+# Copyright (C) 2011, 2012 Freescale Semicondutors <aalonso@freescale.com>
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale Multimedia codec libs"
-LICENSE = "MIT"
+LICENSE = "Proprietary"
 SECTION = "multimedia"
-PR = "r0"
-
 LIC_FILES_CHKSUM = "file://ghdr/mp3_enc_interface.h;endline=11;md5=545a1927139b4739d8980c49954b6b95"
 
-SRC_URI = "file://${PN}-${PV}.tar.gz"
-SRC_URI[md5sum] = "6a15f85f4b48f0728e206c0709ef6b90"
-SRC_URI[sha256sum] = "b4de979a2277e586094da78a8e4b81b74a6b33aea9850a2b88600c5144fdd0f1"
+PR = "r1"
+
+SRC_URI = "${FSL_MIRROR}/fsl-mm-mp3enc-codeclib-${PV}.bin;fsl-eula=true"
+SRC_URI[md5sum] = "049611d9f76b524b9fa9521527ba3235"
+SRC_URI[sha256sum] = "e3712fa45a8f42617773678d45ab7ae0f20150a4d904f1e73afa8baa1941cf99"
+
+inherit fsl-eula-unpack
 
 do_install () {
     install -d ${D}${libdir}
@@ -22,4 +24,7 @@ do_install () {
 }
 
 FILES_${PN} += "${libdir}/*.so* ${libdir}/pkgconfig/*.pc"
+INSANE_SKIP_${PN} = "ldflags"
+
 FILES_${PN}-dev += "${includedir}/mm_ghdr/*.h"
+INSANE_SKIP_${PN}-dev = "ldflags"
