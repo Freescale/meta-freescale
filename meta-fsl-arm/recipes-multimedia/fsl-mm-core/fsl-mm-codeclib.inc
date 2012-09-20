@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Freescale Semiconductor
+# Copyright (C) 2011, 2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale mm codec libs"
@@ -8,12 +8,14 @@ DEPENDS = "pkgconfig"
 
 LIC_FILES_CHKSUM = "file://docs/EULA.txt;md5=ea4d5c069d7aef0838a110409ea78a01"
 
-INC_PR = "r1"
+INC_PR = "r2"
 
 INSANE_SKIP_${PN} = "ldflags"
 INSANE_SKIP_${PN}-dev = "ldflags"
 
-SRC_URI = "file://${PN}-${PV}.tar.gz"
+SRC_URI = "${FSL_MIRROR}/fsl-mm-codeclib-${PV}.bin;fsl-eula=true"
+
+inherit fsl-eula-unpack
 
 do_install () {
     install -d ${D}${libdir}
