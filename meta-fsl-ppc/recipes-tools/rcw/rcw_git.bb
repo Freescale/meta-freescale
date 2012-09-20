@@ -1,14 +1,9 @@
 DESCRIPTION = "Reset Control Words (RCW)"
 SECTION = "rcw"
 LICENSE = "BSD"
-PR = "r4"
+PR = "r5"
 
-LIC_FILES_CHKSUM = " \
-	file://p2041rdb/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
-	file://p3041ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
-	file://p4080ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
-	file://p5020ds/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
-"
+LIC_FILES_CHKSUM = "file://rcw.py;beginline=8;endline=28;md5=9ba0b28922dd187b06b6c8ebcfdd208e"
 
 # this package is specific to the machine itself
 INHIBIT_DEFAULT_DEPS = "1"
@@ -16,7 +11,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit deploy
 
-SRCREV = "394db85c496f6e41dd7e29e54dab3db2b380b187"
+SRCREV = "a84434258ac4a1f0c7cb6e9ea709dc8c3267f788"
 SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git"
 
 S = "${WORKDIR}/git"
