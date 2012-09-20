@@ -6,14 +6,14 @@ LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 DEPENDS = "gstreamer gst-plugins-base fsl-mm-codeclib imx-lib"
 RDEPENDS_${PN} = "fsl-mm-codeclib"
-INC_PR = "r5"
+INC_PR = "r6"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
-SRC_URI = "file://${PN}-${PV}.tar.gz \
-          file://fix_segment_fault_in_v4lsink_for_yocto.patch"
+SRC_URI = "${FSL_MIRROR}/gst-fsl-plugin-${PV}.tar.gz \
+           file://fix_segment_fault_in_v4lsink_for_yocto.patch"
 
 inherit autotools pkgconfig
 
