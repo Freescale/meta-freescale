@@ -11,6 +11,7 @@ inherit kernel
 require recipes-kernel/linux/linux-dtb.inc
 
 PV = "3.5+3.6-rc6+git${SRCPV}"
+PR = "r1"
 
 # patches-3.6-rc6 tip
 SRCREV = "ed4adce4a3aae5008af26c2ca6847dc56e850d31"
@@ -25,4 +26,4 @@ S = "${WORKDIR}/git"
 # machine, with different entry points
 EXTRA_OEMAKE += "LOADADDR=${UBOOT_ENTRYPOINT}"
 
-COMPATIBLE_MACHINE = "(mxs|mx5|mx6)"
+COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6)"
