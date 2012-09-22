@@ -1,10 +1,10 @@
-# Copyright (C) 2011 Freescale
+# Copyright (C) 2011, 2012 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for x11 on mx51"
-LICENSE = "MIT"
+LICENSE = "Proprietary"
 SECTION = "libs"
-PR = "r10"
+PR = "r11"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
@@ -12,10 +12,12 @@ DEPENDS = "virtual/libx11"
 
 PROVIDES = "virtual/egl virtual/libgles1 virtual/libgles2"
 
-SRC_URI = "file://${PN}-${PV}.tar.gz \
+SRC_URI = "${FSL_MIRROR}/amd-gpu-x11-bin-mx51-${PV}.bin;fsl-eula=true \
            file://fix-linux-build-check.patch"
-SRC_URI[md5sum] = "499a2cc08dd48a6c5f7db8d231428548"
-SRC_URI[sha256sum] = "6150d3d72a3f8abb26df1e31cee0f07f53c106c8d5de014c1175c8cb721fac29"
+SRC_URI[md5sum] = "54391a4e670b597d06d01253fb217cad"
+SRC_URI[sha256sum] = "c7a6fa03b7aa2a375556c59908876554ba720c1e744baba2debb84a408f790db"
+
+inherit fsl-eula-unpack
 
 do_install () {
     install -d ${D}${libdir}
