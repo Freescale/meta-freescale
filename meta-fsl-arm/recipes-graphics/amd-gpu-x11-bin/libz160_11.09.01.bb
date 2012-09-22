@@ -1,17 +1,19 @@
-# Copyright (C) 2011 Freescale
+# Copyright (C) 2011, 2012 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "AMD libz160 gpu driver"
-LICENSE = "MIT"
+LICENSE = "Proprietary"
 SECTION = "libs"
-PR = "r1"
+PR = "r2"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/z160.h;endline=28;md5=65dd44cd769091092f38e34cd52cc271"
 
-SRC_URI = "file://${PN}-bin-${PV}.tar.gz"
-SRC_URI[md5sum] = "49b6d51e2ea6651107b08f43715c8c2e"
-SRC_URI[sha256sum] = "43b1bebb2656d0c868c10f66ddc064c6324b74694daedfb3f542f93f438232c5"
+SRC_URI = "${FSL_MIRROR}/libz160-bin-${PV}.bin;fsl-eula=true"
+SRC_URI[md5sum] = "9a9c2c93f4b44e89316772d348eead7d"
+SRC_URI[sha256sum] = "08767eb269a0a30ca0aa3d3b5aa9a53a2d17ed1c24651b7e8cefc7704b883f19"
+
+inherit fsl-eula-unpack
 
 do_install () {
     install -d ${D}${libdir}
