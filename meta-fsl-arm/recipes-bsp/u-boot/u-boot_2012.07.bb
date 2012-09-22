@@ -2,13 +2,14 @@ require recipes-bsp/u-boot/u-boot.inc
 
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
-COMPATIBLE_MACHINE = "(imx28evk|mx5|mx6)"
+COMPATIBLE_MACHINE = "(imx28evk|mx3|mx5|mx6)"
 
 DEPENDS_mxs += "elftosb-native"
 
 SRCREV = "573e018c01178616ecf04e088e1a5b99537db694"
 
 PV = "v2012.07"
+PR = "r1"
 
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
