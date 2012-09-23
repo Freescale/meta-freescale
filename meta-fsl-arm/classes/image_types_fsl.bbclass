@@ -16,7 +16,7 @@ IMAGE_DEPENDS_linux.sb = "elftosb-native imx-bootlets virtual/kernel"
 IMAGE_LINK_NAME_linux.sb = ""
 IMAGE_CMD_linux.sb () {
 	kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
-	kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb`"
+	kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb || true`"
 	linux_bd_file=imx-bootlets-linux.bd-${MACHINE}
 	if [ `basename $kernel_bin .bin` = `basename $kernel_dtb .dtb` ]; then
 		# When using device tree we build a zImage with the dtb
