@@ -1,10 +1,10 @@
 SUMMARY = "Freescale IMX firmware"
 DESCRIPTION = "Freescale IMX firmware such as for the VPU"
 SECTION = "base"
-LICENSE = "Freescale"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://licenses/vpu/EULA;md5=6469a8514eed615d6bf8c09f41846d8f"
 
-INC_PR = "r0"
+INC_PR = "r1"
 
 SRC_URI = "file://firmware-imx-${PV}.tar.gz \
            file://vpu_fw_imx51.bin \
