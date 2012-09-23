@@ -4,13 +4,13 @@
 DESCRIPTION = "GPU driver and apps for x11 on mx51"
 LICENSE = "MIT"
 SECTION = "libs"
-PR = "r9"
+PR = "r10"
 
 #todo: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
-DEPENDS = "virtual/libx11 libz160"
-PROVIDES = "virtual/libgl"
-RDEPENDS = "libz160"
+DEPENDS = "virtual/libx11"
+
+PROVIDES = "virtual/egl virtual/libgles1 virtual/libgles2"
 
 SRC_URI = "file://${PN}-${PV}.tar.gz \
            file://fix-linux-build-check.patch"
@@ -23,25 +23,80 @@ do_install () {
     install -d ${D}${includedir}
 
     cp -axr ${S}/usr/bin/* ${D}${bindir}
-    cp -L ${S}/usr/lib/*.so* ${D}${libdir}
+    cp -axf ${S}/usr/lib/* ${D}${libdir}
     cp -axr ${S}/usr/include/* ${D}${includedir}
 
     find ${D}${bindir} -type f -exec chmod 755 {} \;
-    find ${D}${libdir} -type f -exec chmod 755 {} \;
-    find ${D}${includedir} -type f -exec chmod 660 {} \;
+    find ${D}${libdir} -type f -exec chmod 644 {} \;
+    find ${D}${includedir} -type f -exec chmod 644 {} \;
+
+    # FIXME: Fix sonames of broken libraries
+    mv ${D}${libdir}/lib2dz160.so ${D}${libdir}/lib2dz160.so.0
+    mv ${D}${libdir}/lib2dz430.so ${D}${libdir}/lib2dz430.so.0
+
+    # FIXME: Remove unkown files
+    rm -r ${D}${libdir}/libcsi.a \
+          ${D}${libdir}/libres.a
 }
 
+PACKAGES =+ "libgsl-fsl-mx51 libgsl-fsl-mx51-dev libgsl-fsl-mx51-dbg \
+             libegl-mx51 libegl-mx51-dev libegl-mx51-dbg \
+             libgles-mx51 libgles-mx51-dev libgles-mx51-dbg \
+             libgles2-mx51 libgles2-mx51-dev libgles2-mx51-dbg \
+             libopenvg-mx51 libopenvg-mx51-dev libopenvg-mx51-dbg \
+             lib2dz160-mx51 lib2dz160-mx51-dbg \
+             lib2dz430-mx51 lib2dz430-mx51-dbg"
+
 INSANE_SKIP_${PN} = "ldflags"
-INSANE_SKIP_${PN}-dev = "ldflags"
-INSANE_SKIP_${PN}-staticdev = "ldflags"
-FILES_${PN} = "${bindir}/* ${libdir}/*.so*"
-FILES_${PN}-dev = "\
-    ${includedir}/EGL/*.h \
-    ${includedir}/GLES/*.h \
-    ${includedir}/GLES2/*.h \
-    ${includedir}/KHR/*.h \
-    ${includedir}/VG/*.h"
-FILES_${PN}-staticdev = "${libdir}/*.a"
+
+FILES_${PN}-dbg = "${bindir}/.debug/*"
+
+FILES_libgsl-fsl-mx51 = "${libdir}/libgsl-fsl${SOLIBS}"
+FILES_libgsl-fsl-mx51-dev = "${libdir}/libgsl-fsl${SOLIBSDEV}"
+FILES_libgsl-fsl-mx51-dbg = "${libdir}/.debug/libgsl-fsl${SOLIBS}"
+
+INSANE_SKIP_libgsl-fsl-mx51 = "ldflags"
+INSANE_SKIP_libgsl-fsl-mx51-dev = "ldflags"
+INSANE_SKIP_libgsl-fsl-mx51-dbg = "ldflags"
+
+FILES_libegl-mx51 = "${libdir}/libEGL${SOLIBS}"
+FILES_libegl-mx51-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/libEGL${SOLIBSDEV}"
+FILES_libegl-mx51-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
+
+INSANE_SKIP_libegl-mx51 = "ldflags"
+INSANE_SKIP_libegl-mx51-dev = "ldflags"
+INSANE_SKIP_libegl-mx51-dbg = "ldflags"
+
+FILES_libgles-mx51 = "${libdir}/libGLESv1*${SOLIBS}"
+FILES_libgles-mx51-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBSDEV}"
+FILES_libgles-mx51-dbg = "${libdir}/.debug/libGLESv1*${SOLIBS}"
+INSANE_SKIP_libgles-mx51 = "ldflags"
+INSANE_SKIP_libgles-mx51-dev = "ldflags"
+INSANE_SKIP_libgles-mx51-dbg = "ldflags"
+
+FILES_libgles2-mx51 = "${libdir}/libGLESv2${SOLIBS}"
+FILES_libgles2-mx51-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV}"
+FILES_libgles2-mx51-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
+INSANE_SKIP_libgles2-mx51 = "ldflags"
+INSANE_SKIP_libgles2-mx51-dev = "ldflags"
+INSANE_SKIP_libgles2-mx51-dbg = "ldflags"
+
+FILES_libopenvg-mx51 = "${libdir}/libOpenVG${SOLIBS}"
+FILES_libopenvg-mx51-dev = "${includedir}/VG ${libdir}/libOpenVG${SOLIBSDEV}"
+FILES_libopenvg-mx51-dbg = "${libdir}/.debug/libOpenVG${SOLIBS}"
+INSANE_SKIP_libopenvg-mx51 = "ldflags"
+INSANE_SKIP_libopenvg-mx51-dev = "ldflags"
+INSANE_SKIP_libopenvg-mx51-dbg = "ldflags"
+
+FILES_lib2dz160-mx51 = "${libdir}/lib2dz160${SOLIBS}"
+FILES_lib2dz160-mx51-dbg = "${libdir}/.debug/lib2dz160${SOLIBS}"
+INSANE_SKIP_lib2dz160-mx51 = "ldflags"
+INSANE_SKIP_lib2dz160-mx51-dbg = "ldflags"
+
+FILES_lib2dz430-mx51 = "${libdir}/lib2dz430${SOLIBS}"
+FILES_lib2dz430-mx51-dbg = "${libdir}/.debug/lib2dz430${SOLIBS}"
+INSANE_SKIP_lib2dz430-mx51 = "ldflags"
+INSANE_SKIP_lib2dz430-mx51-dbg = "ldflags"
 
 COMPATIBLE_MACHINE = "(mx5)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
