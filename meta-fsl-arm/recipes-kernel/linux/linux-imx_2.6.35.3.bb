@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.10"
+PR = "${INC_PR}.11"
 
 include linux-imx.inc
 
@@ -17,6 +17,7 @@ LOCALVERSION = "-11.09.01+yocto-${DATE}"
 
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
             file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
+            file://perf-tools-Allow-building-with-gcc-4.6.patch \
 "
 
 SRC_URI_append_mxs = " \
