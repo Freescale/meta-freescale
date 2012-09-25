@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r24"
+PR = "r25"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
 
@@ -14,6 +14,13 @@ inherit deploy
 SRCREV = "6d1aef1c02ba9472215234696faa8ce8745a40a9"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git \
 		"
+python () {
+	ml = d.getVar("MULTILIB_VARIANTS", True)
+	arch = d.getVar("OVERRIDES", True)
+
+	if ("e5500-64b:" in arch or "e6500-64b:" in arch) and not "lib32" in ml:
+		raise bb.parse.SkipPackage("Building the u-boot for this arch requires multilib to be enabled")
+}
 
 DEPENDS_append_e5500-64b = " lib32-gcc-cross lib32-libgcc"
 PATH_append_e5500-64b = ":${STAGING_BINDIR_NATIVE}/${DEFAULTTUNE_virtclass-multilib-lib32}${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}/"
