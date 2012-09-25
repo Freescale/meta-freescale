@@ -16,3 +16,4 @@ KERNEL_IMAGETYPE ?= "uImage"
 #		ext2.gz.u-boot ext2.bz2.u-boot ext2.lzma.u-boot"
 
 MACHINEOVERRIDES .= ":e500mc:fslmachine"
+EXTRA_IMAGEDEPENDS += "u-boot"
