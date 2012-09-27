@@ -6,7 +6,7 @@ LICENSE = "MIT-X"
 DEPENDS = "virtual/xserver virtual/libx11 xproto randrproto util-macros amd-gpu-x11-bin-mx51 libz160"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f7bdc0c63080175d1667091b864cb12c"
 
-PR = "r7"
+PR = "r8"
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-${PV}.tar.gz \
            file://xf86-video-imxfb-fix-m4-hardcodded-paths.patch"
@@ -26,6 +26,8 @@ do_install_append () {
     # driver's la files are not packaged
     rm -f ${D}${libdir}/xorg/modules/drivers/*.la
 }
+
+RDEPENDS_${PN} += "xserver-xorg-module-exa"
 
 INSANE_SKIP_${PN} = "ldflags"
 INSANE_SKIP_${PN}-dbg = "ldflags"
