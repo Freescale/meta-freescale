@@ -1,12 +1,12 @@
-# Copyright (C) 2011 Freescale
+# Copyright (C) 2011, 2012 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Helper utility for freescale imx platforms"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=172ede34353056ebec7a597d8459f029"
 SECTION = "bootloader"
-PR = "r3"
-BBCLASSEXTEND = "native"
+PR = "r4"
+BBCLASSEXTEND = "native nativesdk"
 
 SRC_URI = "http://repository.timesys.com/buildsources/e/elftosb/elftosb-${PV}/elftosb-${PV}.tar.gz \
            file://cross-build.patch \
