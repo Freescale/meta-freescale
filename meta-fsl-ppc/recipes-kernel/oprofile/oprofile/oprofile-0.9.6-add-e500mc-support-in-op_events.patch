@@ -1,0 +1,17 @@
+Upstream-Status: Pending
+
+Add e500mc support in libop/op_events.c
+
+Signed-off-by: Zhenhua Luo <b19537@freescale.com>
+===============================================================================
+diff -urN oprofile-0.9.6/libop/op_events.c oprofile-0.9.6-new/libop/op_events.c
+--- oprofile-0.9.6/libop/op_events.c	2009-11-24 23:25:17.000000000 +0800
++++ oprofile-0.9.6-new/libop/op_events.c	2010-08-19 11:13:15.000000000 +0800
+@@ -1062,6 +1062,7 @@
+ 
+ 		case CPU_PPC_E500:
+ 		case CPU_PPC_E500_2:
++		case CPU_PPC_E500MC:
+ 		case CPU_PPC_E300:
+ 			descr->name = "CPU_CLK";
+ 			break;
