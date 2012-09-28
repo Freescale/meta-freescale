@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.12"
+PR = "${INC_PR}.13"
 
 include linux-imx.inc
 
