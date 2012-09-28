@@ -1,18 +1,18 @@
 # Copyright (C) 2011-2012 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.11"
+PR = "${INC_PR}.12"
 
 include linux-imx.inc
 
 COMPATIBLE_MACHINE = "(mxs|mx5)"
 
 # Revision of imx_2.6.35_10.12.01 branch
-SRCREV_mxs = "38bf41cc376e24c384934fbeb10770d6712e9143"
+SRCREV_mxs = "5910faa40398a445e6b76c2edd1793aa852f738a"
 LOCALVERSION = "-10.12.01+yocto-${DATE}"
 
 # Revision of imx_2.6.35_11.09.01 branch
-SRCREV_mx5 = "406cab2e8b3c030c0f86263282f846bb55a2faf6"
+SRCREV_mx5 = "7bd2ccd2539dba25eee4107122cbe0df70544d7f"
 LOCALVERSION = "-11.09.01+yocto-${DATE}"
 
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
@@ -23,10 +23,4 @@ SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
 SRC_URI_append_mxs = " \
            file://mx28-removecpufreq.patch \
            file://mxs-duart-use-ttyAMA-for-device-name.patch \
-"
-
-SRC_URI_append_mx5 = " \
-           file://mx5-fix-hang-with-framebuffer.patch \
-           file://egalax_ts-enable-single-event-support.patch \
-           file://0001-mx53_loco-add-USR-led-support.patch \
 "
