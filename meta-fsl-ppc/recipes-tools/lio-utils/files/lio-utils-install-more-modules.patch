@@ -1,0 +1,15 @@
+Upstream-Status: Pending
+
+install tcm_snap module
+
+Signed-off-by: Zhenhua Luo <b19537@freescale.com>
+--- a/tcm-py/setup.py	2012-09-27 04:21:14.984705400 -0500
++++ b/tcm-py/setup.py	2012-09-27 04:20:18.387604661 -0500
+@@ -12,6 +12,6 @@
+       author_email='nab@linux-iscsi.org',
+       url='http://linux-iscsi.org',
+       license='GPL',
+-      py_modules=['tcm_dump', 'tcm_fileio','tcm_iblock','tcm_node','tcm_pscsi','tcm_ramdisk','tcm_loop','tcm_fabric']
++      py_modules=['tcm_dump', 'tcm_fileio','tcm_iblock','tcm_node','tcm_pscsi','tcm_ramdisk','tcm_loop','tcm_fabric', 'tcm_snap']
+ )
+ 
