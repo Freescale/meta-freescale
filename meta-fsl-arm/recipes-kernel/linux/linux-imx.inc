@@ -5,12 +5,13 @@ DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-INC_PR = "r30"
+INC_PR = "r31"
 
 inherit kernel
 
 # Put a local version until we have a true SRCREV to point to
-LOCALVERSION ?= "+yocto-${DATE}"
+LOCALVERSION ?= "+yocto"
+SCMVERSION ?= "y"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git \
            file://defconfig \
@@ -36,6 +37,12 @@ do_configure_prepend() {
 	kernel_conf_variable LOCALVERSION_AUTO n
 
 	sed -e "${CONF_SED_SCRIPT}" < '${WORKDIR}/defconfig' >> '${S}/.config'
+
+	if [ "${SCMVERSION}" = "y" ]; then
+		# Add GIT revision to the local version
+		head=`git rev-parse --verify --short HEAD 2> /dev/null`
+		printf "%s%s" +g $head > ${S}/.scmversion
+	fi
 }
 
 # install nedded headers for imx-test compilation
