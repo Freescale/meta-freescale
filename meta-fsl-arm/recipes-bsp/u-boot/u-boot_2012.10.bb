@@ -6,18 +6,11 @@ COMPATIBLE_MACHINE = "(imx28evk|mx3|mx5|mx6)"
 
 DEPENDS_mxs += "elftosb-native"
 
-PV = "v2012.07"
-PR = "r1"
+PV = "v2012.10"
 
-SRCREV = "8b53a1ae421246f1001a2a38121e6c9365843f0a"
+SRCREV = "18cfaf0a6d31339106c32fdcdef2408829817143"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-
-do_compile_prepend() {
-	if [ "${@base_contains('DISTRO_FEATURES', 'ld-is-gold', 'ld-is-gold', '', d)}" = "ld-is-gold" ] ; then
-		sed -i 's/$(CROSS_COMPILE)ld/$(CROSS_COMPILE)ld.bfd/g' config.mk
-	fi
-}
