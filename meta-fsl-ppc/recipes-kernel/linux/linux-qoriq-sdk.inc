@@ -1,7 +1,9 @@
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
+
+
 PV = "3.0.34"
-PR = "r7"
+PR = "r8"
 
 SRCREV = "058c67be272af9ab95b88c941f31fb3eda05a4d3"
 SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
@@ -27,4 +29,12 @@ python () {
 	if promote_kernel == "1":
 		d.setVar('KERNEL_CC_append', ' -m64')
 		d.setVar('KERNEL_LD_append', ' -melf64ppc')
+
+	error_qa = d.getVar('ERROR_QA', True)
+	if 'arch' in error_qa:
+		d.setVar('ERROR_QA', error_qa.replace(' arch', ''))
+
+	all_qa = d.getVar('ALL_QA', True)
+	if 'arch' in all_qa:
+		d.setVar('ALL_QA', all_qa.replace(' arch', ''))
 }
