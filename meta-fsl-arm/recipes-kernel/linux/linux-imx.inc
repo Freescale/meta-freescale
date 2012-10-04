@@ -5,7 +5,7 @@ DESCRIPTION = "Linux kernel for imx platforms"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-INC_PR = "r31"
+INC_PR = "r32"
 
 inherit kernel
 
@@ -34,7 +34,7 @@ do_configure_prepend() {
 	CONF_SED_SCRIPT=""
 
 	kernel_conf_variable LOCALVERSION "\"${LOCALVERSION}\""
-	kernel_conf_variable LOCALVERSION_AUTO n
+	kernel_conf_variable LOCALVERSION_AUTO y
 
 	sed -e "${CONF_SED_SCRIPT}" < '${WORKDIR}/defconfig' >> '${S}/.config'
 
