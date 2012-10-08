@@ -18,12 +18,21 @@ XSERVER = "xserver-xorg \
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
+# Firmware
+MACHINE_FIRMWARE ?= ""
+MACHINE_FIRMWARE_mx53 = "firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
+MACHINE_FIRMWARE_mx51 = "firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
+MACHINE_FIRMWARE_mx35 = "firmware-imx-sdma-imx35"
+MACHINE_FIRMWARE_mx31 = "firmware-imx-sdma-imx31"
+MACHINE_FIRMWARE_mx27 = "firmware-imx-vpu-imx27"
+MACHINE_FIRMWARE_mx25 = "firmware-imx-sdma-imx25"
+
+MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
+
 # Extra audio support
 MACHINE_EXTRA_RRECOMMENDS += "imx-audio \
                               imx-lib \
-                              udev-extraconf \
-                              firmware-imx \
-                             "
+                              udev-extraconf"
 
 # Gstreamer plugin
 MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
