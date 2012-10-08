@@ -4,26 +4,17 @@ SECTION = "base"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://licenses/vpu/EULA;md5=6469a8514eed615d6bf8c09f41846d8f"
 
-INC_PR = "r2"
+INC_PR = "r3"
 
-SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
-           file://vpu_fw_imx51.bin \
-           file://vpu_fw_imx53.bin"
+SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true"
 
 inherit fsl-eula-unpack
-
-COMPATIBLE_MACHINE = "(mx5)"
 
 # todo: make FILES_ machine dependent using override, i.MX53 only now.
 FILES_${PN} = "/lib/firmware/vpu/vpu_fw_imx53.bin"
 FILES_${PN} += "/lib/firmware/sdma/sdma-imx53-to1.bin"
 FILES_${PN} += "/lib/firmware/ath6k/*"
 FILES_${PN} += "/lib/firmware/ar3k/*"
-
-do_patch() {
-	cp ${WORKDIR}/vpu_fw_imx51.bin ${S}/firmware/vpu/
-	cp ${WORKDIR}/vpu_fw_imx53.bin ${S}/firmware/vpu/
-}
 
 do_install() {
 	install -d ${D}/lib/firmware/vpu
