@@ -4,6 +4,8 @@ include conf/machine/include/fsl-default-settings.inc
 include conf/machine/include/fsl-default-versions.inc
 include conf/machine/include/fsl-default-providers.inc
 
+include conf/machine/include/soc-family.inc
+
 # Disable perf features as 2.6.35.3 fail to build otherwise
 PERF_FEATURES_ENABLE = ""
 
@@ -11,9 +13,20 @@ PERF_FEATURES_ENABLE = ""
 UBOOT_MAKE_TARGET = "u-boot.imx"
 UBOOT_SUFFIX = "imx"
 
+UBOOT_ENTRYPOINT_mx51  = "0xa0000000"
+UBOOT_LOADADDRESS_mx51 = "0xa0000000"
+
+UBOOT_ENTRYPOINT_mx53  = "0x70800000"
+UBOOT_LOADADDRESS_mx53 = "0x70800000"
+
+UBOOT_ENTRYPOINT_mx6  = "0x10800000"
+UBOOT_LOADADDRESS_mx6 = "0x10800000"
+
+XSERVER_DRIVER = "xf86-video-fbdev"
+XSERVER_DRIVER_mx5 = "xf86-video-imxfb"
 XSERVER = "xserver-xorg \
            xf86-input-evdev \
-           xf86-video-imxfb"
+           ${XSERVER_DRIVER}"
 
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
@@ -36,6 +49,7 @@ MACHINE_EXTRA_RRECOMMENDS += "imx-audio \
 
 # Gstreamer plugin
 MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
+MACHINE_GSTREAMER_PLUGIN_mx6 = ""
 
 PREFERRED_PROVIDER_virtual/egl_mx5 ?= "amd-gpu-x11-bin-mx51"
 PREFERRED_PROVIDER_virtual/libgles1_mx5 ?= "amd-gpu-x11-bin-mx51"
