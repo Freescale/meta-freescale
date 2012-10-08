@@ -11,6 +11,7 @@ LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b18
 
 SRC_URI = "${FSL_MIRROR}/imx-lib-${PV}.tar.gz"
 
+PLATFORM_mx6 = "IMX6Q"
 PLATFORM_mx5 = "IMX51"
 
 PARALLEL_MAKE="-j 1"
