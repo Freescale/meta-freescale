@@ -24,7 +24,7 @@ do_compile () {
 }
 
 do_install () {
-    oe_runmake DEST_DIR="${D}" install
+    oe_runmake PLATFORM="${PLATFORM}" DEST_DIR="${D}" install
 }
 
 FILES_${PN} += "${libdir}/*${SOLIBS}"
