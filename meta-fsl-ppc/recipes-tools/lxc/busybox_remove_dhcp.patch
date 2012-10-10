@@ -1,0 +1,12 @@
+diff --git a/templates/lxc-busybox.in b/templates/lxc-busybox.in
+index a94eaa3..29b87ce 100644
+--- a/templates/lxc-busybox.in
++++ b/templates/lxc-busybox.in
+@@ -80,7 +80,6 @@ EOF
+ #!/bin/sh
+ /bin/syslogd
+ /bin/mount -a
+-/bin/udhcpc
+ EOF
+ 
+     # executable

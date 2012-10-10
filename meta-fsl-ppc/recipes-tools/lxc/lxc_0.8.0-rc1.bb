@@ -3,7 +3,7 @@ SECTION = "console/utils"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 PRIORITY = "optional"
-PR = "r1"
+PR = "r2"
 DEPENDS = "libxml2 libcap"
 RDEPENDS_${PN} = " \
 		rsync \
@@ -22,6 +22,7 @@ RDEPENDS_${PN} = " \
 SRC_URI = "http://lxc.sourceforge.net/download/lxc/${PN}-${PV}.tar.gz \
 	file://noldconfig.patch \
 	file://libmounts.patch \
+	file://busybox_remove_dhcp.patch \
 	"
 
 SRC_URI[md5sum] ="06ceecf4dbe1be988fc903ad8dd34d29"
