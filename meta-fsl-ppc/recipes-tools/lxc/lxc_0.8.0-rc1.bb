@@ -3,7 +3,7 @@ SECTION = "console/utils"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 PRIORITY = "optional"
-PR = "r3"
+PR = "r4"
 DEPENDS = "libxml2 libcap"
 RDEPENDS_${PN} = " \
 		rsync \
@@ -36,3 +36,8 @@ EXTRA_OECONF = "--disable-doc --disable-rpath"
 inherit autotools
 
 FILES_${PN}-dbg += "${libexecdir}/lxc/.debug"
+
+# create empty dir needed by lxc
+do_install_append() {
+	install -d ${D}${localstatedir}/lib/lxc
+}
