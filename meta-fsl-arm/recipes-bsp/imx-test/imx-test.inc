@@ -5,11 +5,10 @@ DEPENDS = "virtual/kernel imx-lib"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=3f40d7994397109285ec7b81fdeb3b58"
 
-INC_PR = "r5"
+INC_PR = "r6"
 
-PLATFORM_imx53ard = "IMX53"
-PLATFORM_imx53qsb = "IMX53"
-PLATFORM_imx51evk = "IMX51"
+PLATFORM_mx53 = "IMX53"
+PLATFORM_mx51 = "IMX51"
 
 SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz"
 
