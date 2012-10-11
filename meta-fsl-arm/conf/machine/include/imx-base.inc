@@ -33,6 +33,8 @@ MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
+MACHINE_FIRMWARE_mx6q = "firmware-imx-vpu-imx6q"
+MACHINE_FIRMWARE_mx6d = "firmware-imx-vpu-imx6d"
 MACHINE_FIRMWARE_mx53 = "firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_mx51 = "firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
 MACHINE_FIRMWARE_mx35 = "firmware-imx-sdma-imx35"
