@@ -9,7 +9,7 @@ LICENSE = "GPLv2 & LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe \
                     file://COPYING.LGPL;md5=4fbd65380cdd255951079008b364516c"
 
-PR = "r1"
+PR = "r2"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-${PV}.tar.bz2"
@@ -37,6 +37,8 @@ PACKAGES =+ "lmsensors-scripts"
 
 FILES_lmsensors-scripts = "${bindir}/*.pl ${bindir}/ddcmon ${sbindir}/fancontrol* ${sbindir}/pwmconfig ${sbindir}/sensors-detect"
 RDEPENDS_lmsensors-scripts += "lmsensors-sensors perl bash"
+RDEPENDS_lmsensors-apps += "perl-module-strict perl-module-vars perl-module-warnings-register perl-module-warnings"
+RDEPENDS_lmsensors-scripts += "perl-module-fcntl perl-module-exporter perl-module-xsloader perl-module-exporter-heavy perl-module-file-basename perl-module-constant"
 
 FILES_lmsensors-sensors = "${bindir}/sensors ${sysconfdir}"
 FILES_lmsensors-sensors-dbg += "${bindir}/.debug/sensors"
