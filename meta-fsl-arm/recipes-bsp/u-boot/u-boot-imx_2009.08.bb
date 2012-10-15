@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4c6cde5df68eff615d36789dc18edd3b"
 
 DEPENDS_mxs += "elftosb-native"
 
-PR = "r7"
+PR = "r8"
 
 # Revision of imx_2.6.35_10.12.01 branch
 SRCREV_mxs = "e4437f1c192a1a68028e6fcff3f50ff50352041d"
@@ -35,6 +35,7 @@ UBOOT_MACHINE_imx28evk = "mx28_evk_config"
 
 UBOOT_MAKE_TARGET = "u-boot.bin"
 UBOOT_SUFFIX = "bin"
+UBOOT_PADDING = "2"
 
 S = "${WORKDIR}/git"
 EXTRA_OEMAKE += 'HOSTSTRIP=true'
