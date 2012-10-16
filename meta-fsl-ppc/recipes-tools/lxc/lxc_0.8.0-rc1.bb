@@ -3,8 +3,8 @@ SECTION = "console/utils"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 PRIORITY = "optional"
-PR = "r4"
-DEPENDS = "libxml2 libcap"
+PR = "r5"
+DEPENDS = "libxml2 libcap virtual/kernel"
 RDEPENDS_${PN} = " \
 		rsync \
 		gzip \
@@ -31,7 +31,7 @@ SRC_URI[sha256sum] = "32bf83902c07387646c55de440d6d12cf61bd54c97417109c2d1ac47d1
 
 S = "${WORKDIR}/${PN}-${PV}"
 
-EXTRA_OECONF = "--disable-doc --disable-rpath"
+EXTRA_OECONF = "--disable-doc --disable-rpath --with-linuxdir=${STAGING_KERNEL_DIR}"
 
 inherit autotools
 
