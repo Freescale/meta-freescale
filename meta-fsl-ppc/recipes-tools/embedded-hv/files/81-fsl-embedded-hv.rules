@@ -1,0 +1,2 @@
+# Add rule to handle setting up device node for FSL HV mgmt driver
+SUBSYSTEM=="misc", KERNEL=="fsl-hv", NAME="fsl-hv"
