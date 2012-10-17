@@ -3,6 +3,8 @@ SECTION = "embedded-hv"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://README;endline=22;md5=0655bbc3b7d7166c30c87208b4e23cf0"
 
+PR = "r1"
+
 DEPENDS = "u-boot-mkimage-native"
 
 inherit deploy
@@ -74,6 +76,6 @@ do_deploy_append() {
 }
 
 ALLOW_EMPTY_${PN} = "1"
-PACKAGES_prepend = "${PN}-image ${PN}-partman"
+PACKAGES_prepend = "${PN}-image ${PN}-partman "
 FILES_${PN}-image = "/boot/"
 FILES_${PN}-partman = "${bindir}/partman"
