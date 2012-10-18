@@ -7,7 +7,7 @@ OpenEmbedded and/or Yocto.
 This layer depends on:
 
 URI: git://git.openembedded.org/openembedded-core
-branch: denzil
+branch: master
 revision: HEAD
 
 EULA
