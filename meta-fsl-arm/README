@@ -10,6 +10,17 @@ URI: git://git.openembedded.org/openembedded-core
 branch: denzil
 revision: HEAD
 
+EULA
+----
+
+Some SoC depends on libraries and packages that are covered by
+Freescale EULA. To have the right to use those binaries in your images
+you need to read and accept the EULA at EULA.txt file.
+
+In order to accept it, you should add, in your local.conf file:
+
+ACCEPT_FSL_EULA = "1"
+
 Contributing
 ------------
 
