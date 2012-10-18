@@ -30,5 +30,6 @@ mailing list.
 Mailing list: http://groups.google.com/group/meta-fsl-arm
 Source code: https://github.com/Freescale/meta-fsl-arm
 
-When sending single patches, please use something like
-'git send-email -1 --to meta-fsl-arm@googlegroups.com --subject-prefix=meta-fsl-arm][PATCH'
+When sending patches, please use something like:
+
+git send-email --to meta-fsl-arm@googlegroups.com --subject-prefix='meta-fsl-arm][PATCH'
