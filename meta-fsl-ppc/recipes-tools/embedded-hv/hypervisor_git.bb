@@ -3,26 +3,27 @@ SECTION = "embedded-hv"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://README;endline=22;md5=0655bbc3b7d7166c30c87208b4e23cf0"
 
-PR = "r1"
+PR = "r2"
 
 DEPENDS = "u-boot-mkimage-native"
 
 inherit deploy
 
 S = "${WORKDIR}/git"
-SRCREV = "${AUTOREV}"
 
 # TODO: fix dtc to use the already built package
 SRC_URI = " \
 	git://git.freescale.com/ppc/sdk/hypervisor/hypervisor.git;name=hypervisor \
 	git://git.freescale.com/ppc/sdk/hypervisor/kconfig.git;name=kconfig;destsuffix=git/kconfig \
 	git://git.freescale.com/ppc/sdk/hypervisor/libos.git;name=libos;destsuffix=git/libos \
-	git://git.freescale.com/ppc/sdk/hypervisor/mux_server.git;name=mux_server;destsuffix=git/mux_server \
 	git://www.jdl.com/software/dtc.git;name=dtc;destsuffix=dtc \
 	file://81-fsl-embedded-hv.rules \
 	  "
 
 SRCREV_FORMAT="hypervisor"
+SRCREV = "d3f8d79ca252fc17d4a9ca5f44f563c8a291a9a1"
+SRCREV_kconfig = "47a6c4ac5e0621ecbc309bf1b7b588f08858b7e6"
+SRCREV_libos = "8a88243d057c32c83595ba201eaf20fc5ec76190"
 SRCREV_dtc = "033089f29099bdfd5c2d6986cdb9fd07b16cfde0"
 
 EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
