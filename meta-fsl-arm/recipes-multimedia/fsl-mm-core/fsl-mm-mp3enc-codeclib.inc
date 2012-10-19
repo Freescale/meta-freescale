@@ -26,3 +26,5 @@ INSANE_SKIP_${PN} = "ldflags"
 
 FILES_${PN}-dev += "${includedir}/mm_ghdr/*.h"
 INSANE_SKIP_${PN}-dev = "ldflags"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
