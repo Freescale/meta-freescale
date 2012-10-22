@@ -9,7 +9,7 @@ PV = "1.0+fsl"
 DEPENDS += "dtc"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git"
-SRCREV = "${AUTOREV}"
+SRCREV = "deccbc3b81951f826df805f10c0a0318a80af011"
 
 S = "${WORKDIR}/git"
 
