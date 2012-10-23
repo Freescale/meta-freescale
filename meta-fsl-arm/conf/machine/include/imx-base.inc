@@ -43,9 +43,10 @@ MACHINE_FIRMWARE_mx25 = "firmware-imx-sdma-imx25"
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
 # Extra audio support
-MACHINE_EXTRA_RRECOMMENDS += "imx-audio \
-                              imx-lib \
-                              udev-extraconf"
+MACHINE_EXTRA_RRECOMMENDS += "imx-audio"
+
+# Extra udev rules
+MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf"
 
 # Gstreamer plugin
 MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
