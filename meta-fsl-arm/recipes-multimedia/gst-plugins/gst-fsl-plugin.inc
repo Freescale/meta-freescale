@@ -20,13 +20,14 @@ SRC_URI = "${FSL_MIRROR}/${PACKAGE_NAME}-${PV}.tar.gz"
 inherit autotools pkgconfig
 
 PLATFORM_mx5 = "MX51"
+PLATFORM_mx6 = "MX6"
 
 # Todo add a mechanism to map posible build targets
 INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include"
 EXTRA_OEMAKE = "INCLUDES=${INCLUDE_DIR}"
 EXTRA_OECONF = "PLATFORM=${PLATFORM} --disable-valgrind --disable-examples --disable-debug"
 
-PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore \
+PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \
              ${PN}-libme ${PN}-libgstbufmeta ${PN}-libmfwba \
              ${PN}-libfwvss ${PN}-gplay"
 
@@ -38,6 +39,7 @@ FILES_${PN}-staticdev += "${libdir}/gstreamer-0.10/*.a"
 FILES_${PN}-gplay = "${bindir}/gplay"
 FILES_${PN}-libmfwsconf = "${libdir}/libmfwsconf${SOLIBS}"
 FILES_${PN}-libgplaycore = "${libdir}/libgplaycore${SOLIBS}"
+FILES_${PN}-libgstfsl = "${libdir}/libgstfsl-0.10${SOLIBS}"
 FILES_${PN}-libme = "${libdir}/libme${SOLIBS}"
 FILES_${PN}-libgstbufmeta = "${libdir}/libgstbufmeta${SOLIBS}"
 FILES_${PN}-libmfwba =  "${libdir}/libmfwba${SOLIBS}"
