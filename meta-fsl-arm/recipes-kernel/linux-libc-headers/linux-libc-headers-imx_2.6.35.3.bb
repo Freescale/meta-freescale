@@ -8,9 +8,9 @@ RPROVIDES_${PN}-dbg = "linux-libc-headers-dbg"
 SRCREV_mxs = "0ea8cb9453379388f870f9b8d13269fb9dc0761c"
 
 # Revision of imx_2.6.35_11.09.01 branch
-SRCREV_mx5 = "012a4b8a404f5c89c31e2d428d5e4c9eb3a70ec7"
+SRCREV_mx5 = "bc8159027063aded47316b669b1293998337b2ee"
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git"
 
 S = "${WORKDIR}/git"
 
-PR = "r5"
+PR = "r6"
