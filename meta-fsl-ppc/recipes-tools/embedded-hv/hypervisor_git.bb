@@ -3,7 +3,7 @@ SECTION = "embedded-hv"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://README;endline=22;md5=0655bbc3b7d7166c30c87208b4e23cf0"
 
-PR = "r2"
+PR = "r3"
 
 DEPENDS = "u-boot-mkimage-native"
 
@@ -30,14 +30,6 @@ EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${TARGET_PREFIX}gcc ${TOOLCHA
 
 DEFCONFIG = "defconfig"
 DEFCONFIG_powerpc64 = "64bit_defconfig"
-
-do_create_link () {
-	cd ${S}/..
-	if [ ! -e hv ]; then
-		ln -s ${S} hv
-	fi
-}
-addtask create_link before do_compile after do_configure
 
 inherit cml1
 do_configure () {
