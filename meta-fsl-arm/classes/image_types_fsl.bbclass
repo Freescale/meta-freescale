@@ -146,23 +146,23 @@ generate_mxs_sdcard () {
 		imx-bootlets)
 		# The disk layout used is:
 		#
-		#    0                      -> IMAGE_ROOTFS_ALIGNMENT         - reserved for bootstream (not partitioned)
-		#    IMAGE_ROOTFS_ALIGNMENT -> BOOT_SPACE                     - kernel and other data
+		#    0                      -> 1024                           - Unused (not partitioned)
+		#    1024                   -> BOOT_SPACE                     - kernel and other data (bootstream)
 		#    BOOT_SPACE             -> SDIMG_SIZE                     - rootfs
 		#
-		#                                                     Default Free space = 1.3x
-		#                                                     Use IMAGE_OVERHEAD_FACTOR to add more space
-		#                                                     <--------->
-		#            4MiB               8MiB           SDIMG_ROOTFS                    4KiB
-		# <-----------------------> <----------> <----------------------> <------------------------------>
-		#  ------------------------ ------------ ------------------------ -------------------------------
-		# | IMAGE_ROOTFS_ALIGNMENT | BOOT_SPACE | ROOTFS_SIZE            |     IMAGE_ROOTFS_ALIGNMENT    |
-		#  ------------------------ ------------ ------------------------ -------------------------------
-		# ^                        ^            ^                        ^                               ^
-		# |                        |            |                        |                               |
-		# 0                      4096     4MiB +  8MiB       4MiB +  8Mib + SDIMG_ROOTFS   4MiB +  8MiB + SDIMG_ROOTFS + 4MiB
-		parted -s ${SDCARD} unit KiB mkpart primary ${IMAGE_ROOTFS_ALIGNMENT} $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
-		parted -s ${SDCARD} unit KiB mkpart primary $(expr  ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
+		#                                     Default Free space = 1.3x
+		#                                     Use IMAGE_OVERHEAD_FACTOR to add more space
+		#                                     <--------->
+		#    1024        8MiB          SDIMG_ROOTFS                    4MiB
+		# <-------> <----------> <----------------------> <------------------------------>
+		#  --------------------- ------------------------ -------------------------------
+		# | Unused | BOOT_SPACE | ROOTFS_SIZE            |     IMAGE_ROOTFS_ALIGNMENT    |
+		#  --------------------- ------------------------ -------------------------------
+		# ^        ^            ^                        ^                               ^
+		# |        |            |                        |                               |
+		# 0      1024      1024 + 8MiB       1024 + 8Mib + SDIMG_ROOTFS      1024 + 8MiB + SDIMG_ROOTFS + 4MiB
+		parted -s ${SDCARD} unit KiB mkpart primary 1024 $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
+		parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
 
 		# Empty 4 bytes from boot partition
 		dd if=/dev/zero of=${SDCARD} conv=notrunc seek=2048 count=4
