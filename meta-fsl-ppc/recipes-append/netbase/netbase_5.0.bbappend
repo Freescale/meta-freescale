@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"
 
-SRC_URI_fsl += "file://71-fsl-dpaa-persistent-networking.rules"
+SRC_URI_append_fsl += "file://71-fsl-dpaa-persistent-networking.rules"
 
 do_install_append_fsl () {
 	install -d ${D}${sysconfdir}/udev/rules.d/
