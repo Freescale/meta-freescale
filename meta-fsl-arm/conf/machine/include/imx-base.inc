@@ -11,7 +11,7 @@ PERF_FEATURES_ENABLE = ""
 
 # Set specific make target and binary suffix
 UBOOT_MAKE_TARGET = "u-boot.imx"
-UBOOT_SUFFIX = "imx"
+UBOOT_SUFFIX ?= "imx"
 
 UBOOT_ENTRYPOINT_mx51  = "0xa0000000"
 UBOOT_LOADADDRESS_mx51 = "0xa0000000"
