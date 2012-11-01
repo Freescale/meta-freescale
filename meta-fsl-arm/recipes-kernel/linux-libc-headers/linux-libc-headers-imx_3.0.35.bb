@@ -6,9 +6,8 @@ RPROVIDES_${PN}-dbg = "linux-libc-headers-dbg"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
-SRCREV = "1e54cdcdb6940a58d5e09174410fe0fe28041fa3"
+# Revision of 12.09.01 tag
+SRCREV = "eaaf30efdc8dfeb03418bde1499a76c9903bd211"
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git"
 
 S = "${WORKDIR}/git"
-
-PR = "r1"
