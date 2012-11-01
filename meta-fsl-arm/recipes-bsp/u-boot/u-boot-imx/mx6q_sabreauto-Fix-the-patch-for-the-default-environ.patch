@@ -38,7 +38,7 @@ index 5f8f02c..5910eca 100644
 +	 "uimage=uImage\0" \
 +	 "mmcdev=2\0" \
 +	 "mmcpart=1\0" \
-+	 "mmcroot=/dev/mmcblk1p2 rw\0" \
++	 "mmcroot=/dev/mmcblk0p2 rw\0" \
 +	 "mmcrootfstype=ext3 rootwait\0" \
 +	 "mmcargs=setenv bootargs console=ttymxc3,${baudrate} " \
 +	 "root=${mmcroot} " \
