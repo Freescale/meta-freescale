@@ -5,13 +5,13 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r27"
+PR = "r28"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
 
 inherit deploy
 
-SRCREV = "6d1aef1c02ba9472215234696faa8ce8745a40a9"
+SRCREV = "c6d9d502924ade8877f53eecdd5cf37e05d6d6b4"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git"
 
 SRCREV_e6500 = "59852d03867108217fe88e3bfc3e1e9cedfe63c5"
