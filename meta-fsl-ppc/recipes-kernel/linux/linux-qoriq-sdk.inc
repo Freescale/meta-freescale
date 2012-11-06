@@ -1,11 +1,9 @@
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
+PV = "3.0.48"
+PR = "r9"
 
-
-PV = "3.0.34"
-PR = "r8"
-
-SRCREV = "058c67be272af9ab95b88c941f31fb3eda05a4d3"
+SRCREV = "dd5a5aac3e15b16a4bccbab29c736bda0e7d55e7"
 SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
            file://0001-compiler.h-Undef-before-redefining-__attribute_const.patch \
 	   file://0001-powerpc-Fix-build-dependencies-for-c-files-requiring.patch \
