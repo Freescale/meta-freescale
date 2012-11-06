@@ -1,7 +1,7 @@
 DESCRIPTION = "Hypervisor Config"
 SECTION = "hv-cfg"
 LICENSE = "BSD"
-PR = "r5"
+PR = "r6"
 
 LIC_FILES_CHKSUM = " \
 	file://p2041rdb/LICENSE;md5=96dd72f26e9bb861de5c76c60e35e1bc \
@@ -18,7 +18,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit deploy
 
-SRCREV = "102ab848d94f3c04f364ed273d0e00b21b0266f4"
+SRCREV = "deb55b9564ef8fb9e1fda1112233f11ae2a12d4a"
 SRC_URI = "git://git.freescale.com/ppc/sdk/hv-cfg.git"
 
 S = "${WORKDIR}/git"
