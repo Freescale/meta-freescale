@@ -24,6 +24,7 @@ UBOOT_LOADADDRESS_mx6 = "0x10800000"
 
 XSERVER_DRIVER = "xf86-video-fbdev"
 XSERVER_DRIVER_mx5 = "xf86-video-imxfb"
+XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
 XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
