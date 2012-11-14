@@ -38,7 +38,7 @@ mailing list.
 
 Mailing list:
 
-    http://groups.google.com/group/meta-fsl-arm
+    https://lists.yoctoproject.org/listinfo/meta-freescale
 
 Source code:
 
@@ -48,4 +48,4 @@ Source code:
 
 When sending patches, please use something like:
 
-git send-email --to meta-fsl-arm@googlegroups.com --subject-prefix='meta-fsl-arm][PATCH'
+git send-email --to meta-freescale@yoctoproject.org --subject-prefix='meta-fsl-arm][PATCH'
