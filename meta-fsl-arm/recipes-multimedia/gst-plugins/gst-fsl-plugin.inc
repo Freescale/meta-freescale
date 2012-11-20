@@ -12,7 +12,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
-SRC_URI = "${FSL_MIRROR}/gst-fsl-plugin-${PV}.tar.gz"
+PACKAGE_NAME ?= "${PN}"
+
+S = "${WORKDIR}/${PACKAGE_NAME}-${PV}"
+
+SRC_URI = "${FSL_MIRROR}/${PACKAGE_NAME}-${PV}.tar.gz"
 
 inherit autotools pkgconfig
 
