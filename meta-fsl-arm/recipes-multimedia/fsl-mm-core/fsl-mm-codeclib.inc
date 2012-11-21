@@ -8,7 +8,7 @@ DEPENDS = "pkgconfig"
 
 LIC_FILES_CHKSUM = "file://docs/EULA.txt;md5=ea4d5c069d7aef0838a110409ea78a01"
 
-INC_PR = "r2"
+INC_PR = "r3"
 
 INSANE_SKIP_${PN} = "ldflags"
 INSANE_SKIP_${PN}-dev = "ldflags"
@@ -29,8 +29,5 @@ do_install () {
 	# Fix file permissions
 	find ${D} -type f -exec chmod a-x '{}' ';'
 }
-
-FILES_${PN} += "${libdir}/${SOLIBS}"
-FILES_${PN}-dev += "${libdir}/${SOLIBSDEV}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
