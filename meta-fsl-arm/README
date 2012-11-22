@@ -7,12 +7,12 @@ OpenEmbedded and/or Yocto.
 This layer depends on:
 
 URI: git://git.openembedded.org/openembedded-core
-branch: master
+branch: danny
 revision: HEAD
 
 URI: git://git.openembedded.org/meta-openembedded
 layer: meta-oe
-branch: master
+branch: danny
 revision: HEAD
 
 To avoid the meta-oe dependency add to local.conf:
