@@ -2,8 +2,10 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require gst-fsl-plugin.inc
+DEPENDS += "fsl-mm-codeclib"
+RDEPENDS_${PN} = "fsl-mm-codeclib"
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 
 SRC_URI += "file://fix_segment_fault_in_v4lsink_for_yocto.patch"
 SRC_URI[md5sum] = "036a8e86031b0670f41b10796e268f9e"
