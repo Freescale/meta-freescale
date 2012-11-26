@@ -34,3 +34,12 @@ optionally include a branch if the patch applies to multiple branches,
 otherwise master is assumed
 
 git send-email --to meta-freescale@yoctoproject.org --subject-prefix='meta-fsl-ppc][PATCH][denzil][danny][master'
+
+git.yoctoproject.org vs. git.freescale.com:
+-------------------------------------------
+
+git.yoctoproject.org hosts the official upstream work of Freescale's OE/YP repos,
+for official SDK releases at times we need to do last minute fixes or include things
+not supported upstream so we have a different repo on git.freescale.com for the
+official release. git.freescale.com should be based off repos from git.yoctoproject.org
+
