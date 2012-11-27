@@ -52,7 +52,7 @@ do_install () {
     cp ${S}/usr/lib/*.so ${D}${libdir}
     cp -axr ${S}/usr/include/* ${D}${includedir}
 
-	cp -axr ${S}/opt ${D}
+    cp -axr ${S}/opt ${D}
 
     # Move DRI library to proper path
     mv ${D}${libdir}/vivante_dri.so ${D}${libdir}/dri
