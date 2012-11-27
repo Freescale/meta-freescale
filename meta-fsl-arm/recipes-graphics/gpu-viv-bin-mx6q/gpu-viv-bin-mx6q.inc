@@ -7,7 +7,7 @@ LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=092bc28e13d678ceaebe1a40559275fb"
 PROVIDES += "virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2 libvivante-dri-mx6"
 
-INC_PR = "r0"
+INC_PR = "r1"
 
 inherit fsl-eula-unpack
 
@@ -32,6 +32,9 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libvivante-dri-mx6 libvivante-dri-mx6-dev libvivante-dri-mx6-dbg \
 	libvivante-common-mx6 libvivante-common-mx6-dev libvivante-common-mx6-dbg \
 	"
+
+# Inhibit warnings about files being stripped.
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 # FIXME: The provided binary doesn't provide soname. If in future BSP
 # release the libraries are fixed, we can drop this hack.
