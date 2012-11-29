@@ -3,15 +3,13 @@
 
 include linux-imx.inc
 
-PR = "${INC_PR}.4"
+PR = "${INC_PR}.5"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
 # Revision of 12.09.01 tag
-SRCREV = "eaaf30efdc8dfeb03418bde1499a76c9903bd211"
+SRCREV = "059685632ebd37a89e60cbb1e6dd535b3b08c3be"
 LOCALVERSION = "-12.09.01+yocto"
-
-SRC_URI += "file://perf_tools_Fix_build_against_newer_glibc.patch"
 
 # iMX6Q SabreLITE changes done by Boundary Devices
 SRC_URI_append_imx6qsabrelite = " file://sync-boundary-changes.patch"
