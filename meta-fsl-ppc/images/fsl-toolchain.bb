@@ -1,4 +1,4 @@
-PR = "r1"
+PR = "r2"
 
 require fsl-toolchain-bare.bb
 
@@ -9,6 +9,9 @@ TOOLCHAIN_TARGET_TASK += " \
 	dtc \
 	libgomp \
 	libgomp-dev \
+	libgomp-staticdev \
+	libstdc++-staticdev \
+	${TCLIBC}-staticdev \
 	"
 
 TOOLCHAIN_HOST_TASK += " \
