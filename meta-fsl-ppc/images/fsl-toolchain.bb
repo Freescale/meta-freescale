@@ -12,5 +12,5 @@ TOOLCHAIN_TARGET_TASK += " \
 	"
 
 TOOLCHAIN_HOST_TASK += " \
-	dtc-nativesdk \
+	nativesdk-dtc \
 	"
