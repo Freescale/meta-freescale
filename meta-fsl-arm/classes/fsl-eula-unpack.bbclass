@@ -18,6 +18,7 @@ python fsl_bin_do_unpack() {
     fetcher = bb.fetch2.Fetch(src_uri, localdata)
 
     for url in fetcher.ud.values():
+        save_cwd = os.getcwd()
         # Check for supported fetchers
         if url.type in ['http', 'https', 'ftp', 'file']:
             if url.parm.get('fsl-eula', False):
