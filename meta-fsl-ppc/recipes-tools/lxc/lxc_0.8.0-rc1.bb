@@ -3,7 +3,7 @@ SECTION = "console/utils"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 PRIORITY = "optional"
-PR = "r6"
+PR = "r7"
 DEPENDS = "libxml2 libcap virtual/kernel"
 RDEPENDS_${PN} = " \
 		rsync \
@@ -12,7 +12,6 @@ RDEPENDS_${PN} = " \
 		perl-module-strict \
 		perl-module-getopt-long \
 		perl-module-vars \
-		perl-module-warnings-register \
 		perl-module-exporter \
 		perl-module-constant \
 		perl-module-overload \
