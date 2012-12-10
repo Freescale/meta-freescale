@@ -119,6 +119,16 @@ generate_imx_sdcard () {
 	                  | awk '/ 1 / { print substr($4, 1, length($4 -1)) / 1024 }')
 	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
 	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
+
+	# Copy boot scripts
+	for item in ${BOOT_SCRIPTS}; do
+		src=`echo $item | awk -F':' '{ print $1 }'`
+		dst=`echo $item | awk -F':' '{ print $2 }'`
+
+		mcopy -i ${WORKDIR}/boot.img -s $src ::/$dst
+	done
+
+	# Copy device tree file
 	if [ -e "${KERNEL_IMAGETYPE}-${MACHINE}.dtb" ]; then
 		kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
 		kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb`"
