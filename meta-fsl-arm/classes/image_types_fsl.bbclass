@@ -106,6 +106,8 @@ generate_imx_sdcard () {
 		dd if=${DEPLOY_DIR_IMAGE}/barebox-${MACHINE}.bin of=${SDCARD} conv=notrunc seek=1 skip=1 bs=512
 		dd if=${DEPLOY_DIR_IMAGE}/bareboxenv-${MACHINE}.bin of=${SDCARD} conv=notrunc seek=1 bs=512k
 		;;
+		"")
+		;;
 		*)
 		bberror "Unkown IMAGE_BOOTLOADER value"
 		exit 1
