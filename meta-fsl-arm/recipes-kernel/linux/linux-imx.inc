@@ -57,15 +57,9 @@ do_install_append() {
 }
 
 sysroot_stage_all_append() {
-	# denzil does not have KERNEL_SRC_PATH so we default to /kernel
-	destdir=${KERNEL_SRC_PATH}
-	if [ -z "$destdir" ]; then
-		destdir=/kernel
-	fi
-
 	# Copy native binaries need for imx-test build onto sysroot
-	mkdir -p ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/basic \
-	         ${SYSROOT_DESTDIR}/usr/src/kernel/scripts/mod
-	cp ${S}/scripts/basic/fixdep ${SYSROOT_DESTDIR}$destdir/scripts/basic
-	cp ${S}/scripts/mod/modpost ${SYSROOT_DESTDIR}$destdir/scripts/mod
+	mkdir -p ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/basic \
+	         ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/mod
+	cp ${S}/scripts/basic/fixdep ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/basic
+	cp ${S}/scripts/mod/modpost ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/mod
 }
