@@ -1,0 +1,43 @@
+From 67b539d256520f95f3c8101f4605ea6d496982df Mon Sep 17 00:00:00 2001
+From: Zhenhua Luo <b19537@freescale.com>
+Date: Thu, 18 Oct 2012 17:28:00 +0300
+Subject: [PATCH] fm-lib: make the library install path configurable
+
+currently library for both 32bit target and 64bit target
+is installed in /usr/lib folder, add a variable to make the
+install path configurable
+
+Signed-off-by: Zhenhua Luo <b19537@freescale.com>
+---
+ Makefile |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 06fe930..d59f44a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -59,6 +59,8 @@ endif
+ 
+ INSTALL?=install
+ 
++LIB_DEST_DIR?=$(PREFIX)/lib
++
+ # Don't forget to increment .version before doing a new release!
+ FM_LIB_VERSION:=$(shell cat .version)
+ 
+@@ -118,9 +120,9 @@ archive: all .version
+ 
+ install-%: %.a
+ 	@(echo "Installing...")
+-	@($(INSTALL) -d $(DESTDIR)$(PREFIX)/lib)
+-	@($(INSTALL) $< $(DESTDIR)$(PREFIX)/lib)
+-	@(ln -s $(DESTDIR)$(PREFIX)/lib/$< $(DESTDIR)$(PREFIX)/lib/libfm.a)
++	@($(INSTALL) -d $(DESTDIR)$(LIB_DEST_DIR))
++	@($(INSTALL) $< $(DESTDIR)$(LIB_DEST_DIR))
++	@(ln -s $(DESTDIR)$(LIB_DEST_DIR)/$< $(DESTDIR)$(LIB_DEST_DIR)/libfm.a)
+ 	@(cp -r -p ./include $(DESTDIR)$(PREFIX))
+ 	@($(INSTALL) -d $(DESTDIR)$(PREFIX)/share/doc/fm-lib-$(FM_LIB_VERSION))
+ 	@($(INSTALL) $(FM_LIB_DOCFILES) $(DESTDIR)$(PREFIX)/share/doc/fm-lib-$(FM_LIB_VERSION))
+-- 
+1.7.9.5
+
