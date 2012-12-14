@@ -5,7 +5,7 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r28"
+PR = "r29"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
 
@@ -13,12 +13,8 @@ inherit deploy
 
 SRCREV = "c6d9d502924ade8877f53eecdd5cf37e05d6d6b4"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git"
-
-SRCREV_e6500 = "59852d03867108217fe88e3bfc3e1e9cedfe63c5"
-SRCREV_e6500-64b = "59852d03867108217fe88e3bfc3e1e9cedfe63c5"
-SRC_URI_e6500 = "git://git.denx.de/u-boot.git"
-SRC_URI_e6500-64b = "git://git.denx.de/u-boot.git"
-
+SRCREV_e6500 = "9040d1ee41fc29fc7e9796bdfb59612f80bc1ee4"
+SRCREV_e6500-64b = "9040d1ee41fc29fc7e9796bdfb59612f80bc1ee4"
 python () {
 	ml = d.getVar("MULTILIB_VARIANTS", True)
 	arch = d.getVar("OVERRIDES", True)
