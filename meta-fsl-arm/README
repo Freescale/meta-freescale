@@ -7,17 +7,8 @@ OpenEmbedded and/or Yocto.
 This layer depends on:
 
 URI: git://git.openembedded.org/openembedded-core
-branch: danny
+branch: master
 revision: HEAD
-
-URI: git://git.openembedded.org/meta-openembedded
-layer: meta-oe
-branch: danny
-revision: HEAD
-
-To avoid the meta-oe dependency add to local.conf:
-
-BBMASK = "udev_.*\.bbappend$"
 
 EULA
 ----
