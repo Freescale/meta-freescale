@@ -46,6 +46,10 @@ Source code:
     http://git.yoctoproject.org/git/meta-fsl-arm
     https://github.com/Freescale/meta-fsl-arm
 
+When creating patches, please use something like:
+
+    git format-patch -s --subject-prefix='meta-fsl-arm][PATCH' origin
+
 When sending patches, please use something like:
 
-git send-email --to meta-freescale@yoctoproject.org --subject-prefix='meta-fsl-arm][PATCH'
+    git send-email --to meta-freescale@yoctoproject.org <generated patch>
