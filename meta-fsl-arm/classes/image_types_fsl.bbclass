@@ -129,12 +129,17 @@ generate_imx_sdcard () {
 	done
 
 	# Copy device tree file
-	if [ -e "${KERNEL_IMAGETYPE}-${MACHINE}.dtb" ]; then
-		kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
-		kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb`"
-		if [ `basename $kernel_bin .bin` = `basename $kernel_dtb .dtb` ]; then
-			mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.dtb ::/machine.dtb
-		fi
+	if test -n "${KERNEL_DEVICETREE}"; then
+		for DTS_FILE in ${KERNEL_DEVICETREE}; do
+			DTS_BASE_NAME=`basename ${DTS_FILE} | awk -F "." '{print $1}'`
+			if [ -e "${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb" ]; then
+				kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
+				kernel_bin_for_dtb="`readlink ${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb | sed "s,$DTS_BASE_NAME,${MACHINE},g;s,\.dtb$,.bin,g"`"
+				if [ $kernel_bin = $kernel_bin_for_dtb ]; then
+					mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb ::/${DTS_BASE_NAME}.dtb
+				fi
+			fi
+		done
 	fi
 
 	# Burn Partition
@@ -217,12 +222,17 @@ generate_mxs_sdcard () {
 
 		mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
 		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
-		if [ -e "${KERNEL_IMAGETYPE}-${MACHINE}.dtb" ]; then
-			kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
-			kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb`"
-			if [ `basename $kernel_bin .bin` = `basename $kernel_dtb .dtb` ]; then
-				mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.dtb ::/machine.dtb
-			fi
+		if test -n "${KERNEL_DEVICETREE}"; then
+			for DTS_FILE in ${KERNEL_DEVICETREE}; do
+				DTS_BASE_NAME=`basename ${DTS_FILE} | awk -F "." '{print $1}'`
+				if [ -e "${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb" ]; then
+					kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
+					kernel_bin_for_dtb="`readlink ${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb | sed "s,$DTS_BASE_NAME,${MACHINE},g;s,\.dtb$,.bin,g"`"
+					if [ $kernel_bin = $kernel_bin_for_dtb ]; then
+						mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb ::/${DTS_BASE_NAME}.dtb
+					fi
+				fi
+			done
 		fi
 
 		dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=2 bs=$(expr 1024 \* 1024)
