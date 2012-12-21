@@ -5,16 +5,16 @@ DESCRIPTION = "Linux mainline kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 DEPENDS += "lzop-native"
+PROVIDES = "virtual/kernel"
 
 inherit kernel
 
 require recipes-kernel/linux/linux-dtb.inc
 
-PV = "3.5+3.6-rc6+git${SRCPV}"
-PR = "r1"
+PV = "3.7+git${SRCPV}"
 
-# patches-3.6-rc6 tip
-SRCREV = "ed4adce4a3aae5008af26c2ca6847dc56e850d31"
+# patches-3.7
+SRCREV = "0f30a07969aa1ea3470ceedf9cc0ae98216fa0f3"
 
 SRC_URI = "git://github.com/Freescale/linux-mainline.git \
            \
