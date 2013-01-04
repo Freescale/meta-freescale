@@ -1,6 +1,6 @@
 require barebox.inc
 
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "http://barebox.org/download/${PN}-${PV}.tar.bz2 \
 	file://defconfig \
@@ -25,3 +25,5 @@ do_configure_prepend_imx53qsb() {
 	cp ${WORKDIR}/config ${S}/arch/arm/boards/freescale-mx53-loco/env
 	oe_runmake oldconfig
 }
+
+COMPATIBLE_MACHINE = "imx53qsb"
