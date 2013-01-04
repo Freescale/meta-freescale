@@ -3,7 +3,7 @@
 
 require recipes-graphics/xorg-driver/xorg-driver-video.inc
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 
 DEPENDS += "virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q"
 
@@ -24,6 +24,7 @@ S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}"
 do_install_append () {
 	install -d ${D}${includedir}
 	cp -axr ${S}/src/vivante_gal/vivante_priv.h ${D}${includedir}
+	cp -axr ${S}/src/vivante_gal/vivante_gal.h ${D}${includedir}
 	find ${D}${includedir} -type f -exec chmod 660 {} \;
 }
 
