@@ -1,4 +1,4 @@
-# Copyright (C) 2012 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2013 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Linux mainline kernel"
@@ -12,9 +12,10 @@ inherit kernel
 require recipes-kernel/linux/linux-dtb.inc
 
 PV = "3.7+git${SRCPV}"
+PR = "r1"
 
 # patches-3.7
-SRCREV = "0f30a07969aa1ea3470ceedf9cc0ae98216fa0f3"
+SRCREV = "bc2b10c4b6edf5ce1fae6f69f7651c0e8f736195"
 
 SRC_URI = "git://github.com/Freescale/linux-mainline.git \
            \
