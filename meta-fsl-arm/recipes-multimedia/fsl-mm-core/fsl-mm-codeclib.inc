@@ -1,33 +1,31 @@
-# Copyright (C) 2011, 2012 Freescale Semiconductor
+# Copyright (C) 2011-2013 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "Freescale mm codec libs"
-SECTION = "multimedia"
+DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
-DEPENDS = "pkgconfig"
+SECTION = "multimedia"
 
-LIC_FILES_CHKSUM = "file://docs/EULA.txt;md5=ea4d5c069d7aef0838a110409ea78a01"
+INC_PR = "r4"
 
-INC_PR = "r3"
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-INSANE_SKIP_${PN} = "ldflags"
-INSANE_SKIP_${PN}-dev = "ldflags"
+inherit fsl-eula-unpack pkgconfig
 
-SRC_URI = "${FSL_MIRROR}/fsl-mm-codeclib-${PV}.bin;fsl-eula=true"
-
-inherit fsl-eula-unpack
+# FIXME: Quiet down the warnings during package
+INSANE_SKIP_${PN} = "ldflags textrel"
+INSANE_SKIP_${PN}-dev = "ldflags textrel"
 
 do_install () {
-    install -d ${D}${libdir}
-    install -d ${D}${libdir}/pkgconfig
-    install -d ${D}${includedir}/mm_ghdr
+    install -d ${D}${includedir} ${D}${libdir}
+    cp -ar ${S}/release/lib/* ${D}${libdir}
+    rm -rf ${D}${includedir}/mm_ghdr
+    cp -r ${S}/ghdr* ${D}${includedir}
+    mv ${D}${includedir}/ghdr ${D}${includedir}/mm_ghdr
 
-    cp -r ${S}/release/lib/* ${D}${libdir}
-    cp -r ${S}/ghdr/* ${D}${includedir}/mm_ghdr
-    install -m 0644 ${S}/pkgconfig/fsl-mm-core.pc ${D}${libdir}/pkgconfig
-
-	# Fix file permissions
-	find ${D} -type f -exec chmod a-x '{}' ';'
+    # FIXME: Fix permissions
+    find ${D} -type f -exec chmod 0644 '{}' ';'
 }
+
+FILES_${PN} += "${libdir}/lib*_elinux.3.0.1.07.00"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
