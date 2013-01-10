@@ -11,7 +11,9 @@ PLATFORM_mx6 = "IMX6Q"
 PLATFORM_mx53 = "IMX53"
 PLATFORM_mx51 = "IMX51"
 
-SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz"
+SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz \
+           file://clocks.sh"
+
 
 do_compile() {
         LDFLAGS="" make PLATFORM=${PLATFORM} LINUXPATH=${STAGING_KERNEL_DIR} \
@@ -21,6 +23,7 @@ do_compile() {
 do_install() {
         install -d ${D}/unit_tests
         install -m 755 test-utils.sh ${D}/unit_tests/test-utils.sh
+        install -m 0755 ${WORKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
         install -m 755 ${S}/platform/${PLATFORM}/* ${D}/unit_tests/
 }
 
