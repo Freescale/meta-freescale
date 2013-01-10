@@ -1,6 +1,6 @@
 require barebox.inc
 
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "http://barebox.org/download/${PN}-${PV}.tar.bz2 \
 	file://defconfig \

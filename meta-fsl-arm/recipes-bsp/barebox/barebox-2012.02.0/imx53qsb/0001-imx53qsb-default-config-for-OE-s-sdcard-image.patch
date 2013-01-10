@@ -22,7 +22,7 @@ index 0000000..3a5ae42
 +#!/bin/sh
 +
 +mkdir /mnt
-+mount /dev/disk0.1 fat /mnt
++mount /dev/disk0.0 fat /mnt
 diff --git a/defaultenv/bin/boot b/defaultenv/bin/boot
 index 1120757..e46705d 100644
 --- a/defaultenv/bin/boot

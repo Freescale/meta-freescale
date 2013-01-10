@@ -21,7 +21,7 @@ rootfs_loc=disk
 
 # boot parameters for SDCard boot
 kernel_name=uImage
-rootfs_part_linux_dev=mmcblk0p3
+rootfs_part_linux_dev=mmcblk0p2
 rootfs_type=ext3
 
 # can be either 'jffs2' or 'ubifs'
@@ -45,7 +45,7 @@ autoboot_timeout=3
 
 bootargs="console=ttymxc0,115200"
 
-disk_parts="512k(barebox)ro,512k(bareboxenv),4M(kernel),-(root)"
+disk_parts="512k(barebox)ro,512k(bareboxenv),8M(kernel),-(root)"
 
 # set a fancy prompt (if support is compiled in)
 PS1="\e[1;32mbarebox@\e[1;31m\h:\w\e[0m "
