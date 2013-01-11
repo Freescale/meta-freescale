@@ -1,4 +1,4 @@
-PRINC := "${@int(PRINC) + 2}"
+PRINC := "${@int(PRINC) + 1}"
 
 PROVIDES_mx5 = "virtual/libgl"
 PROVIDES_mx6 = "virtual/libgl"
