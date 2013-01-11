@@ -54,9 +54,16 @@ MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf"
 # Gstreamer plugin
 MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
 
+# mx5 GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx5 ?= "amd-gpu-x11-bin-mx51"
 PREFERRED_PROVIDER_virtual/libgles1_mx5 ?= "amd-gpu-x11-bin-mx51"
 PREFERRED_PROVIDER_virtual/libgles2_mx5 ?= "amd-gpu-x11-bin-mx51"
+
+# mx6 GPU libraries
+PREFERRED_PROVIDER_virtual/egl_mx6 ?= "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgl_mx6 ?= "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgles1_mx6 ?= "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgles2_mx6 ?= "gpu-viv-bin-mx6q"
 
 PREFERRED_PROVIDER_virtual/kernel_mx3 = "linux-fslc"
 PREFERRED_PROVIDER_linux-libc-headers_mx3 = "linux-libc-headers"
