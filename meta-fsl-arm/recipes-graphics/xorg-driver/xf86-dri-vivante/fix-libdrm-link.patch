@@ -1,0 +1,33 @@
+This adds a missing link dependency on libdrm
+
+Upstream-Status: Pending
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+
+Index: DRI_1.10.4/configure.ac
+===================================================================
+--- DRI_1.10.4.orig/configure.ac
++++ DRI_1.10.4/configure.ac
+@@ -55,6 +55,7 @@ XORG_DRIVER_CHECK_EXT(XV, videoproto)
+ 
+ # Checks for pkg-config packages
+ PKG_CHECK_MODULES(XORG, [xorg-server >= 1.0.99.901 xproto fontsproto $REQUIRED_MODULES])
++PKG_CHECK_MODULES(LIBDRM, [libdrm >= 2.3.0])
+ sdkdir=$(pkg-config --variable=sdkdir xorg-server)
+ 
+ # Checks for libraries.
+Index: DRI_1.10.4/src/Makefile.am
+===================================================================
+--- DRI_1.10.4.orig/src/Makefile.am
++++ DRI_1.10.4/src/Makefile.am
+@@ -11,9 +11,9 @@
+ ##############################################################################
+ 
+ 
+-AM_CFLAGS = @XORG_CFLAGS@
++AM_CFLAGS = @XORG_CFLAGS@ @LIBDRM_CFLAGS@
+ libdri_la_LTLIBRARIES = libdri.la
+-libdri_la_LDFLAGS = -module -avoid-version
++libdri_la_LDFLAGS = -module -avoid-version @LIBDRM_LIBS@
+ libdri_ladir = @moduledir@/extensions
+ libdri_la_SOURCES = \
+ 	dri.c \
