@@ -6,8 +6,8 @@ DEPENDS = "libusb"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCREV = "3463b576b67f03012a59cedd8e55e9d37c5cea76"
-SRC_URI = "git://git.bfuser.eu/git/marex/mxsldr.git;protocol=http"
+SRCREV = "c40d80472525e1d57dae5317c028b745968c0399"
+SRC_URI = "git://git.denx.de/u-boot.git"
 
 PV = "0.0.0+git${SRCPV}"
 
