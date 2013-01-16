@@ -12,7 +12,7 @@ inherit kernel
 require recipes-kernel/linux/linux-dtb.inc
 
 PV = "3.7+git${SRCPV}"
-PR = "r2"
+PR = "r3"
 
 # patches-3.7
 SRCREV = "bc2b10c4b6edf5ce1fae6f69f7651c0e8f736195"
