@@ -3,7 +3,7 @@
 
 include linux-imx.inc
 
-PR = "${INC_PR}.7"
+PR = "${INC_PR}.8"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
@@ -12,6 +12,7 @@ SRCREV = "059685632ebd37a89e60cbb1e6dd535b3b08c3be"
 LOCALVERSION = "-12.09.01+yocto"
 
 SRC_URI += "file://fix_getrusage_for_perf.patch \
+            file://egalax_ts-Add-support-for-single-touch-in-Kconfig.patch \
            "
 
 # iMX6Q SabreLITE changes done by Boundary Devices
