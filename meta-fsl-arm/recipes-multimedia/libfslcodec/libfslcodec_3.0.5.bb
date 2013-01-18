@@ -9,8 +9,8 @@ PR = "r1"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
-SRC_URI[md5sum] = "9e0a765de73b32efa5d276fa90372ce1"
-SRC_URI[sha256sum] = "882f223375652b639b7167adca6858dd7c7f1f1cf4d3c6b5b62eec2466bd53be"
+SRC_URI[md5sum] = "dc08b569175981fc0bd5f97986cfd543"
+SRC_URI[sha256sum] = "2a4a7248246ff37f30486f34918151f09493ecfcaeca0cd8155d5b5c93245138"
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
 PACKAGES_DYNAMIC = "${PN}-*"
