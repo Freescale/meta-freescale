@@ -1,0 +1,10 @@
+include imx-lib.inc
+
+PR = "${INC_PR}.0"
+PE = "1"
+
+SRC_URI[md5sum] = "d7867f6f5ff36f8e6c659da058334e73"
+SRC_URI[sha256sum] = "2c584c78a0cf77ca3b5cdf926b008968dbc2243f59c113ed323599c72f3de12c"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_MACHINE = "(mx6)"
