@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Freescale Semicondutor
+# Copyright (C) 2012-2013 Freescale Semicondutor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require gst-fsl-plugin.inc
@@ -9,7 +9,7 @@ PR = "${INC_PR}.1"
 
 PACKAGE_NAME = "gst-fsl-plugins"
 
-SRC_URI[md5sum] = "9adf5e5c208989289075e6a5458a301a"
-SRC_URI[sha256sum] = "41b75d937ef0e511b21e22d7ddbb419c99dcf358bc6f581edc2c9056729bfa9b"
+SRC_URI[md5sum] = "fd7c9db129cbcc4dc79b7dd832061594"
+SRC_URI[sha256sum] = "546deb407993f726ef4e140f5bd734d612d5f8872c832ac820957f667f22306e"
 
 COMPATIBLE_MACHINE = "(mx6)"
