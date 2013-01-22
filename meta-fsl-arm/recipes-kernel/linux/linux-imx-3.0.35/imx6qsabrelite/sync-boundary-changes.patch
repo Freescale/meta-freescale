@@ -3229,10 +3229,10 @@ diff --git a/arch/arm/mach-mx5/usb_h2.c b/arch/arm/mach-mx5/usb_h2.c
 old mode 100755
 new mode 100644
 diff --git a/arch/arm/mach-mx6/Kconfig b/arch/arm/mach-mx6/Kconfig
-index 45ae9ea..fad950e 100644
+index 2ffd90d..481075b 100644
 --- a/arch/arm/mach-mx6/Kconfig
 +++ b/arch/arm/mach-mx6/Kconfig
-@@ -173,6 +173,10 @@ config MACH_MX6Q_SABRELITE
+@@ -175,6 +175,10 @@ config MACH_MX6Q_SABRELITE
  	select IMX_HAVE_PLATFORM_IMX_ASRC
  	select IMX_HAVE_PLATFORM_FLEXCAN
  	select IMX_HAVE_PLATFORM_IMX_CAAM
@@ -3244,7 +3244,7 @@ index 45ae9ea..fad950e 100644
  	  Include support for i.MX 6Quad SABRE Lite platform. This includes specific
  	  configurations for the board and its peripherals.
 diff --git a/arch/arm/mach-mx6/board-mx6q_sabrelite.c b/arch/arm/mach-mx6/board-mx6q_sabrelite.c
-index eff81ac..2c0cbe2 100644
+index 736b423..b586426 100644
 --- a/arch/arm/mach-mx6/board-mx6q_sabrelite.c
 +++ b/arch/arm/mach-mx6/board-mx6q_sabrelite.c
 @@ -56,12 +56,15 @@
@@ -3337,9 +3337,9 @@ index eff81ac..2c0cbe2 100644
  void __init early_console_setup(unsigned long base, struct clk *clk);
  static struct clk *sata_clk;
  
-@@ -108,252 +135,49 @@ extern struct regulator *(*get_cpu_regulator)(void);
+@@ -108,252 +135,49 @@ static int caam_enabled;
+ extern struct regulator *(*get_cpu_regulator)(void);
  extern void (*put_cpu_regulator)(void);
- extern void mx6_cpu_regulator_init(void);
  
 -static iomux_v3_cfg_t mx6q_sabrelite_pads[] = {
 -	/* AUDMUX */
@@ -3972,7 +3972,7 @@ index eff81ac..2c0cbe2 100644
  {
  	int ret = 0;
  
-@@ -660,21 +526,21 @@ static void __init imx6q_sabrelite_init_usb(void)
+@@ -660,20 +526,20 @@ static void __init imx6q_sabrelite_init_usb(void)
  	/* disable external charger detect,
  	 * or it will affect signal quality at dp .
  	 */
@@ -3990,7 +3990,6 @@ index eff81ac..2c0cbe2 100644
  
 -	mx6_set_otghost_vbus_func(imx6q_sabrelite_usbotg_vbus);
 +	mx6_set_otghost_vbus_func(imx6_sabrelite_usbotg_vbus);
- 	mx6_usb_dr_init();
  }
  
  /* HW Initialization, if return 0, initialization is successful. */
@@ -3999,7 +3998,7 @@ index eff81ac..2c0cbe2 100644
  {
  	u32 tmpdata;
  	int ret = 0;
-@@ -734,39 +600,45 @@ put_sata_clk:
+@@ -733,39 +599,45 @@ put_sata_clk:
  	return ret;
  }
  
@@ -4063,7 +4062,7 @@ index eff81ac..2c0cbe2 100644
  	.reserved_mem_size = SZ_128M,
  };
  
-@@ -834,14 +706,12 @@ static void hdmi_init(int ipu_id, int disp_id)
+@@ -833,14 +705,12 @@ static void hdmi_init(int ipu_id, int disp_id)
  
  static void hdmi_enable_ddc_pin(void)
  {
@@ -4080,7 +4079,7 @@ index eff81ac..2c0cbe2 100644
  }
  
  static struct fsl_mxc_hdmi_platform_data hdmi_data = {
-@@ -852,7 +722,7 @@ static struct fsl_mxc_hdmi_platform_data hdmi_data = {
+@@ -851,7 +721,7 @@ static struct fsl_mxc_hdmi_platform_data hdmi_data = {
  
  static struct fsl_mxc_hdmi_core_platform_data hdmi_core_data = {
  	.ipu_id = 0,
@@ -4089,7 +4088,7 @@ index eff81ac..2c0cbe2 100644
  };
  
  static struct fsl_mxc_lcd_platform_data lcdif_data = {
-@@ -904,13 +774,12 @@ static void sabrelite_suspend_exit(void)
+@@ -903,13 +773,12 @@ static void sabrelite_suspend_exit(void)
  {
  	/* resume restore */
  }
@@ -4104,7 +4103,7 @@ index eff81ac..2c0cbe2 100644
  #define GPIO_BUTTON(gpio_num, ev_code, act_low, descr, wake)	\
  {								\
  	.gpio		= gpio_num,				\
-@@ -922,14 +791,15 @@ static const struct pm_platform_data mx6q_sabrelite_pm_data __initconst = {
+@@ -921,14 +790,15 @@ static const struct pm_platform_data mx6q_sabrelite_pm_data __initconst = {
  }
  
  static struct gpio_keys_button sabrelite_buttons[] = {
@@ -4126,7 +4125,7 @@ index eff81ac..2c0cbe2 100644
  static struct gpio_keys_platform_data sabrelite_button_data = {
  	.buttons	= sabrelite_buttons,
  	.nbuttons	= ARRAY_SIZE(sabrelite_buttons),
-@@ -949,7 +819,63 @@ static void __init sabrelite_add_device_buttons(void)
+@@ -948,7 +818,63 @@ static void __init sabrelite_add_device_buttons(void)
  	platform_device_register(&sabrelite_button_device);
  }
  #else
@@ -4191,7 +4190,7 @@ index eff81ac..2c0cbe2 100644
  #endif
  
  static struct regulator_consumer_supply sabrelite_vmmc_consumers[] = {
-@@ -1056,7 +982,7 @@ static struct platform_device sgtl5000_sabrelite_vddd_reg_devices = {
+@@ -1055,7 +981,7 @@ static struct platform_device sgtl5000_sabrelite_vddd_reg_devices = {
  
  #endif /* CONFIG_SND_SOC_SGTL5000 */
  
@@ -4200,7 +4199,7 @@ index eff81ac..2c0cbe2 100644
  {
  	mxc_register_device(&mx6_sabrelite_audio_device,
  			    &mx6_sabrelite_audio_data);
-@@ -1069,6 +995,15 @@ static int imx6q_init_audio(void)
+@@ -1068,6 +994,15 @@ static int imx6q_init_audio(void)
  	return 0;
  }
  
@@ -4216,9 +4215,9 @@ index eff81ac..2c0cbe2 100644
  static struct platform_pwm_backlight_data mx6_sabrelite_pwm_backlight_data = {
  	.pwm_id = 3,
  	.max_brightness = 255,
-@@ -1115,19 +1050,37 @@ static struct mipi_csi2_platform_data mipi_csi2_pdata = {
- 	.pixel_clk = "emi_clk",
- };
+@@ -1121,19 +1056,37 @@ static int __init caam_setup(char *__unused)
+ }
+ early_param("caam", caam_setup);
  
 +static const struct imx_pcie_platform_data pcie_data  __initconst = {
 +	.pcie_pwr_en	= -EINVAL,
@@ -4257,7 +4256,7 @@ index eff81ac..2c0cbe2 100644
  
  #ifdef CONFIG_FEC_1588
  	/* Set GPIO_16 input for IEEE-1588 ts_clk and RMII reference clock
-@@ -1141,13 +1094,26 @@ static void __init mx6_sabrelite_board_init(void)
+@@ -1147,13 +1100,26 @@ static void __init mx6_sabrelite_board_init(void)
  	gp_reg_id = sabrelite_dvfscore_data.reg_id;
  	soc_reg_id = sabrelite_dvfscore_data.soc_id;
  	pu_reg_id = sabrelite_dvfscore_data.pu_id;
@@ -4288,9 +4287,9 @@ index eff81ac..2c0cbe2 100644
  		imx6q_add_ipuv3fb(i, &sabrelite_fb_data[i]);
  
  	imx6q_add_vdoa();
-@@ -1161,9 +1127,9 @@ static void __init mx6_sabrelite_board_init(void)
- 
- 	imx6q_add_imx_caam();
+@@ -1168,9 +1134,9 @@ static void __init mx6_sabrelite_board_init(void)
+ 	if (1 == caam_enabled)
+ 		imx6q_add_imx_caam();
  
 -	imx6q_add_imx_i2c(0, &mx6q_sabrelite_i2c_data);
 -	imx6q_add_imx_i2c(1, &mx6q_sabrelite_i2c_data);
@@ -4301,7 +4300,7 @@ index eff81ac..2c0cbe2 100644
  	i2c_register_board_info(0, mxc_i2c0_board_info,
  			ARRAY_SIZE(mxc_i2c0_board_info));
  	i2c_register_board_info(1, mxc_i2c1_board_info,
-@@ -1172,33 +1138,35 @@ static void __init mx6_sabrelite_board_init(void)
+@@ -1179,33 +1145,35 @@ static void __init mx6_sabrelite_board_init(void)
  			ARRAY_SIZE(mxc_i2c2_board_info));
  
  	/* SPI */
@@ -4347,7 +4346,7 @@ index eff81ac..2c0cbe2 100644
  	imx6q_add_mxc_pwm_backlight(3, &mx6_sabrelite_pwm_backlight_data);
  
  	imx6q_add_otp();
-@@ -1214,12 +1182,23 @@ static void __init mx6_sabrelite_board_init(void)
+@@ -1220,12 +1188,23 @@ static void __init mx6_sabrelite_board_init(void)
  	imx6q_add_hdmi_soc();
  	imx6q_add_hdmi_soc_dai();
  
@@ -4376,7 +4375,7 @@ index eff81ac..2c0cbe2 100644
  
  	clko2 = clk_get(NULL, "clko2_clk");
  	if (IS_ERR(clko2))
-@@ -1235,6 +1214,28 @@ static void __init mx6_sabrelite_board_init(void)
+@@ -1241,6 +1220,28 @@ static void __init mx6_sabrelite_board_init(void)
  	clk_enable(clko2);
  	imx6q_add_busfreq();
  
@@ -4405,7 +4404,7 @@ index eff81ac..2c0cbe2 100644
  	imx6q_add_perfmon(0);
  	imx6q_add_perfmon(1);
  	imx6q_add_perfmon(2);
-@@ -1258,16 +1259,16 @@ static struct sys_timer mx6_sabrelite_timer = {
+@@ -1264,16 +1265,16 @@ static struct sys_timer mx6_sabrelite_timer = {
  	.init   = mx6_sabrelite_timer_init,
  };
  
@@ -4427,13 +4426,171 @@ index eff81ac..2c0cbe2 100644
  	}
  #endif
  }
-@@ -1283,5 +1284,5 @@ MACHINE_START(MX6Q_SABRELITE, "Freescale i.MX 6Quad Sabre-Lite Board")
+@@ -1289,5 +1290,5 @@ MACHINE_START(MX6Q_SABRELITE, "Freescale i.MX 6Quad Sabre-Lite Board")
  	.init_irq = mx6_init_irq,
  	.init_machine = mx6_sabrelite_board_init,
  	.timer = &mx6_sabrelite_timer,
 -	.reserve = mx6q_sabrelite_reserve,
 +	.reserve = mx6_sabrelite_reserve,
  MACHINE_END
+diff --git a/arch/arm/mach-mx6/cpu_op-mx6.c b/arch/arm/mach-mx6/cpu_op-mx6.c
+index 5124c5e..750e57d 100644
+--- a/arch/arm/mach-mx6/cpu_op-mx6.c
++++ b/arch/arm/mach-mx6/cpu_op-mx6.c
+@@ -95,7 +95,7 @@ static struct cpu_op mx6q_cpu_op_1G[] = {
+ 	 .soc_voltage = 1250000,
+ #else
+ 	 .pu_voltage = 1175000,
+-	 .soc_voltage = 1175000,
++	 .soc_voltage = 1250000,
+ #endif
+ 	 .cpu_voltage = 1150000,},
+ #ifdef CONFIG_MX6_VPU_352M
+@@ -115,7 +115,7 @@ static struct cpu_op mx6q_cpu_op_1G[] = {
+ 	  .cpu_rate = 396000000,
+ 	  .cpu_podf = 0,
+ 	  .pu_voltage = 1175000,
+-	  .soc_voltage = 1175000,
++	  .soc_voltage = 1250000,
+ 	  .cpu_voltage = 950000,},
+ #endif
+ };
+diff --git a/arch/arm/mach-mx6/cpu_regulator-mx6.c b/arch/arm/mach-mx6/cpu_regulator-mx6.c
+index d905132..2af5d38 100644
+--- a/arch/arm/mach-mx6/cpu_regulator-mx6.c
++++ b/arch/arm/mach-mx6/cpu_regulator-mx6.c
+@@ -21,6 +21,7 @@
+ #include <linux/cpufreq.h>
+ #endif
+ #include <linux/io.h>
++#include <linux/delay.h>
+ #include <asm/cpu.h>
+ 
+ #include <mach/clock.h>
+@@ -101,49 +102,16 @@ void mx6_cpu_regulator_init(void)
+ 			regulator_set_voltage(cpu_regulator,
+ 					      cpu_op_tbl[0].cpu_voltage,
+ 					      cpu_op_tbl[0].cpu_voltage);
+-			if (enable_ldo_mode == LDO_MODE_BYPASSED) {
+-				/*digital bypass VDDPU/VDDSOC/VDDARM*/
+-				reg = __raw_readl(ANADIG_REG_CORE);
+-				reg &= ~BM_ANADIG_REG_CORE_REG0_TRG;
+-				reg |= BF_ANADIG_REG_CORE_REG0_TRG(0x1f);
+-				reg &= ~BM_ANADIG_REG_CORE_REG1_TRG;
+-				reg |= BF_ANADIG_REG_CORE_REG1_TRG(0x1f);
+-				reg &= ~BM_ANADIG_REG_CORE_REG2_TRG;
+-				reg |= BF_ANADIG_REG_CORE_REG2_TRG(0x1f);
+-				__raw_writel(reg, ANADIG_REG_CORE);
+-				/* Mask the ANATOP brown out interrupt in the GPC. */
+-				reg = __raw_readl(gpc_base + 0x14);
+-				reg |= 0x80000000;
+-				__raw_writel(reg, gpc_base + 0x14);
+-			}
+-			clk_set_rate(cpu_clk, cpu_op_tbl[0].cpu_rate);
+-
+-			/*Fix loops-per-jiffy */
+-#ifdef CONFIG_SMP
+-			for_each_online_cpu(cpu)
+-				per_cpu(cpu_data, cpu).loops_per_jiffy =
+-				mx6_cpu_jiffies(
+-					per_cpu(cpu_data, cpu).loops_per_jiffy,
+-					curr_cpu / 1000,
+-					clk_get_rate(cpu_clk) / 1000);
+-#else
+-			old_loops_per_jiffy = loops_per_jiffy;
+-
+-			loops_per_jiffy =
+-				mx6_cpu_jiffies(old_loops_per_jiffy,
+-						curr_cpu/1000,
+-						clk_get_rate(cpu_clk) / 1000);
+-#endif
+-#if defined(CONFIG_CPU_FREQ)
+-			/* Fix CPU frequency for CPUFREQ. */
+-			for (cpu = 0; cpu < num_online_cpus(); cpu++)
+-				cpufreq_get(cpu);
+-#endif
+ 		}
+ 	}
+ 	soc_regulator = regulator_get(NULL, soc_reg_id);
+ 	if (IS_ERR(soc_regulator))
+ 		printk(KERN_ERR "%s: failed to get soc regulator\n", __func__);
++	else if (cpu_op_tbl)
++                regulator_set_voltage(soc_regulator,
++				      cpu_op_tbl[0].soc_voltage,
++				      cpu_op_tbl[0].soc_voltage);
++
+ 	pu_regulator = regulator_get(NULL, pu_reg_id);
+ 	if (IS_ERR(pu_regulator))
+ 		printk(KERN_ERR "%s: failed to get pu regulator\n", __func__);
+@@ -161,7 +129,66 @@ void mx6_cpu_regulator_init(void)
+ 	*VDDPU can be turned off by internal anatop anatop power gate.
+ 	*
+ 	*/
+-	else if (!IS_ERR(pu_regulator) && strcmp(pu_reg_id, "cpu_vddgpu"))
+-		external_pureg = 1;
++	else {
++		printk (KERN_ERR "%s: have pu_regulator\n", __func__ );
++		if (strcmp(pu_reg_id, "cpu_vddgpu"))
++			external_pureg = 1;
++
++		if (cpu_op_tbl) {
++			printk (KERN_ERR "%s: setting pu_regulator to %uuV\n",
++				__func__,
++                                cpu_op_tbl[0].pu_voltage);
++
++			regulator_set_voltage(pu_regulator,
++					      cpu_op_tbl[0].pu_voltage,
++					      cpu_op_tbl[0].pu_voltage);
++		}
++	}
++
++	if (cpu_op_tbl
++	    && !IS_ERR(cpu_regulator)
++	    && !IS_ERR(soc_regulator)
++	    && !IS_ERR(pu_regulator)) {
++		udelay(500);
++
++		if (enable_ldo_mode == LDO_MODE_BYPASSED) {
++			/*digital bypass VDDPU/VDDSOC/VDDARM*/
++			reg = __raw_readl(ANADIG_REG_CORE);
++			reg &= ~BM_ANADIG_REG_CORE_REG0_TRG;
++			reg |= BF_ANADIG_REG_CORE_REG0_TRG(0x1f);
++			reg &= ~BM_ANADIG_REG_CORE_REG1_TRG;
++			reg |= BF_ANADIG_REG_CORE_REG1_TRG(0x1f);
++			reg &= ~BM_ANADIG_REG_CORE_REG2_TRG;
++			reg |= BF_ANADIG_REG_CORE_REG2_TRG(0x1f);
++			__raw_writel(reg, ANADIG_REG_CORE);
++			/* Mask the ANATOP brown out interrupt in the GPC. */
++			reg = __raw_readl(gpc_base + 0x14);
++			reg |= 0x80000000;
++			__raw_writel(reg, gpc_base + 0x14);
++		}
++		clk_set_rate(cpu_clk, cpu_op_tbl[0].cpu_rate);
++
++		/*Fix loops-per-jiffy */
++#ifdef CONFIG_SMP
++		for_each_online_cpu(cpu)
++			per_cpu(cpu_data, cpu).loops_per_jiffy =
++			mx6_cpu_jiffies(
++				per_cpu(cpu_data, cpu).loops_per_jiffy,
++				curr_cpu / 1000,
++				clk_get_rate(cpu_clk) / 1000);
++#else
++		old_loops_per_jiffy = loops_per_jiffy;
++
++		loops_per_jiffy =
++			mx6_cpu_jiffies(old_loops_per_jiffy,
++					curr_cpu/1000,
++					clk_get_rate(cpu_clk) / 1000);
++#endif
++#if defined(CONFIG_CPU_FREQ)
++		/* Fix CPU frequency for CPUFREQ. */
++		for (cpu = 0; cpu < num_online_cpus(); cpu++)
++			cpufreq_get(cpu);
++#endif
++	}
+ }
+ 
 diff --git a/arch/arm/mach-mx6/pads-mx6_sabrelite.h b/arch/arm/mach-mx6/pads-mx6_sabrelite.h
 new file mode 100644
 index 0000000..63a556f
@@ -4803,6 +4960,18 @@ new mode 100644
 diff --git a/arch/arm/plat-mxc/cpufreq.c b/arch/arm/plat-mxc/cpufreq.c
 old mode 100755
 new mode 100644
+index 4cdc837..95c7b54
+--- a/arch/arm/plat-mxc/cpufreq.c
++++ b/arch/arm/plat-mxc/cpufreq.c
+@@ -112,7 +112,7 @@ int set_cpu_freq(int freq)
+ 			printk(KERN_ERR "COULD NOT SET GP VOLTAGE!!!!\n");
+ 			goto err3;
+ 		}
+-		udelay(50);
++		udelay(260);
+ 	}
+ 	ret = clk_set_rate(cpu_clk, freq);
+ 	if (ret != 0) {
 diff --git a/arch/arm/plat-mxc/devices/Kconfig b/arch/arm/plat-mxc/devices/Kconfig
 old mode 100755
 new mode 100644
@@ -4912,10 +5081,10 @@ diff --git a/arch/arm/plat-mxc/include/mach/iomux-mx53.h b/arch/arm/plat-mxc/inc
 old mode 100755
 new mode 100644
 diff --git a/arch/arm/plat-mxc/include/mach/iomux-mx6q.h b/arch/arm/plat-mxc/include/mach/iomux-mx6q.h
-index 9226af1..83f2881 100644
+index cdff320..4519d23 100644
 --- a/arch/arm/plat-mxc/include/mach/iomux-mx6q.h
 +++ b/arch/arm/plat-mxc/include/mach/iomux-mx6q.h
-@@ -2909,6 +2909,24 @@
+@@ -2913,6 +2913,24 @@
  #define _MX6Q_PAD_TEST_MODE__TCU_TEST_MODE		\
  		IOMUX_PAD(NO_PAD_I, NO_MUX_I, 0, 0x0000, 0, 0)
  
@@ -4940,7 +5109,7 @@ index 9226af1..83f2881 100644
  #define _MX6Q_PAD_SD3_DAT7__USDHC3_DAT7			\
  		IOMUX_PAD(0x0690, 0x02A8, 0, 0x0000, 0, 0)
  #define _MX6Q_PAD_SD3_DAT7__UART1_TXD			\
-@@ -6517,6 +6535,48 @@
+@@ -6521,6 +6539,48 @@
  #define  MX6Q_PAD_TEST_MODE__TCU_TEST_MODE		\
  		(_MX6Q_PAD_TEST_MODE__TCU_TEST_MODE | MUX_PAD_CTRL(NO_PAD_CTRL))
  
@@ -5082,10 +5251,10 @@ new mode 100644
 diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
 old mode 100755
 new mode 100644
-index 7cf975a..a2589e4
+index 3420cdb..311bd4d
 --- a/drivers/input/touchscreen/Kconfig
 +++ b/drivers/input/touchscreen/Kconfig
-@@ -282,6 +292,22 @@ config TOUCHSCREEN_MAX11801
+@@ -292,6 +292,22 @@ config TOUCHSCREEN_MAX11801
  	  To compile this driver as a module, choose M here: the
  	  module will be called max11801_ts.
  
@@ -5108,7 +5277,7 @@ index 7cf975a..a2589e4
  config TOUCHSCREEN_MCS5000
  	tristate "MELFAS MCS-5000 touchscreen"
  	depends on I2C
-@@ -695,6 +721,17 @@ config TOUCHSCREEN_TSC2007
+@@ -718,6 +734,17 @@ config TOUCHSCREEN_TSC2007
  	  To compile this driver as a module, choose M here: the
  	  module will be called tsc2007.
  
@@ -5129,7 +5298,7 @@ index 7cf975a..a2589e4
 diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
 old mode 100755
 new mode 100644
-index e614512..eac3453
+index 94a71c1..e8104ce
 --- a/drivers/input/touchscreen/Makefile
 +++ b/drivers/input/touchscreen/Makefile
 @@ -49,6 +49,7 @@ obj-$(CONFIG_TOUCHSCREEN_TOUCHRIGHT)	+= touchright.o
@@ -5140,9 +5309,9 @@ index e614512..eac3453
  obj-$(CONFIG_TOUCHSCREEN_UCB1400)	+= ucb1400_ts.o
  obj-$(CONFIG_TOUCHSCREEN_WACOM_W8001)	+= wacom_w8001.o
  obj-$(CONFIG_TOUCHSCREEN_WM831X)	+= wm831x-ts.o
-@@ -64,4 +65,5 @@ obj-$(CONFIG_TOUCHSCREEN_P1003)		+= p1003_ts.o
- obj-$(CONFIG_TOUCHSCREEN_TPS6507X)	+= tps6507x-ts.o
+@@ -65,4 +66,5 @@ obj-$(CONFIG_TOUCHSCREEN_TPS6507X)	+= tps6507x-ts.o
  obj-$(CONFIG_TOUCHSCREEN_MAX11801)	+= max11801_ts.o
+ obj-$(CONFIG_TOUCHSCREEN_NOVATEK)	+= novatek_ts.o
  obj-$(CONFIG_TOUCHSCREEN_EGALAX)	+= egalax_ts.o
 +obj-$(CONFIG_TOUCHSCREEN_FT5X06)	+= ft5x06_ts.o
  obj-$(CONFIG_TOUCHSCREEN_ELAN)		+= elan_ts.o
@@ -6373,11 +6542,11 @@ index 541bdb8..3b0ca83 100644
  
  		ptr += tpl_link;
 diff --git a/drivers/mmc/host/sdhci-esdhc-imx.c b/drivers/mmc/host/sdhci-esdhc-imx.c
-index e173686..2e3330c 100644
+index 35fd825..7b08196 100644
 --- a/drivers/mmc/host/sdhci-esdhc-imx.c
 +++ b/drivers/mmc/host/sdhci-esdhc-imx.c
-@@ -849,6 +849,7 @@ static int esdhc_pltfm_init(struct sdhci_host *host, struct sdhci_pltfm_data *pd
- 		host->ocr_avail_sd |= MMC_VDD_165_195;
+@@ -855,6 +855,7 @@ static int esdhc_pltfm_init(struct sdhci_host *host, struct sdhci_pltfm_data *pd
+ 
  	if (boarddata->support_8bit)
  		host->mmc->caps |= MMC_CAP_8_BIT_DATA;
 +	host->mmc->caps |= boarddata->caps;
@@ -6573,7 +6742,7 @@ index 0982a7b..cb52033 100644
 diff --git a/drivers/net/fec.c b/drivers/net/fec.c
 old mode 100755
 new mode 100644
-index 5af378f..b74b1d9
+index 4b5818e..9717fc6
 --- a/drivers/net/fec.c
 +++ b/drivers/net/fec.c
 @@ -159,7 +159,9 @@ MODULE_PARM_DESC(macaddr, "FEC Ethernet MAC address");
@@ -6586,7 +6755,7 @@ index 5af378f..b74b1d9
  #define FEC_ENET_RAEM_V		0x8
  #define FEC_ENET_RAFL_V		0x8
  #define FEC_ENET_OPD_V		0xFFF0
-@@ -557,28 +559,33 @@ static int fec_rx_poll(struct napi_struct *napi, int budget)
+@@ -562,28 +564,33 @@ static int fec_rx_poll(struct napi_struct *napi, int budget)
  			goto rx_processing_done;
  
  		/* Check for errors. */
@@ -6639,7 +6808,7 @@ index 5af378f..b74b1d9
  			goto rx_processing_done;
  		}
  
-@@ -1035,9 +1042,10 @@ static int fec_enet_mii_probe(struct net_device *ndev)
+@@ -1040,9 +1047,10 @@ static int fec_enet_mii_probe(struct net_device *ndev)
  	}
  
  	/* mask with MAC supported features */
@@ -6652,8 +6821,8 @@ index 5af378f..b74b1d9
 +	} else
  		phy_dev->supported &= PHY_BASIC_FEATURES;
  
- 	phy_dev->advertising = phy_dev->supported;
-@@ -1054,7 +1062,7 @@ static int fec_enet_mii_probe(struct net_device *ndev)
+ 	/* enable phy pause frame for any platform */
+@@ -1062,7 +1070,7 @@ static int fec_enet_mii_probe(struct net_device *ndev)
  	return 0;
  }
  
@@ -6662,7 +6831,7 @@ index 5af378f..b74b1d9
  {
  	static struct mii_bus *fec0_mii_bus;
  	struct net_device *ndev = platform_get_drvdata(pdev);
-@@ -1120,7 +1128,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+@@ -1128,7 +1136,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
  	}
  
  	for (i = 0; i < PHY_MAX_ADDR; i++)
@@ -6671,7 +6840,7 @@ index 5af378f..b74b1d9
  
  	if (mdiobus_register(fep->mii_bus))
  		goto err_out_free_mdio_irq;
-@@ -1611,6 +1619,9 @@ fec_restart(struct net_device *dev, int duplex)
+@@ -1627,6 +1635,9 @@ fec_restart(struct net_device *dev, int duplex)
  		writel(OPT_FRAME_SIZE | 0x06, fep->hwp + FEC_R_CNTRL);
  		writel(0x0, fep->hwp + FEC_X_CNTRL);
  	}
@@ -6681,7 +6850,7 @@ index 5af378f..b74b1d9
  	fep->full_duplex = duplex;
  
  	/* Set MII speed */
-@@ -1641,12 +1652,9 @@ fec_restart(struct net_device *dev, int duplex)
+@@ -1657,12 +1668,9 @@ fec_restart(struct net_device *dev, int duplex)
  		 * ENET pause frame has two issues as ticket TKT116501
  		 * The issues have been fixed on Rigel TO1.1 and Arik TO1.2
  		 */
@@ -6696,7 +6865,7 @@ index 5af378f..b74b1d9
  		writel(val, fep->hwp + FEC_R_CNTRL);
  	}
  
-@@ -1700,24 +1708,31 @@ fec_restart(struct net_device *dev, int duplex)
+@@ -1716,24 +1724,31 @@ fec_restart(struct net_device *dev, int duplex)
  		fep->phy_dev->speed == SPEED_1000)
  		val |= (0x1 << 5);
  
@@ -6740,7 +6909,7 @@ index 5af378f..b74b1d9
  		/* enable endian swap */
  		val |= (0x1 << 8);
  		/* enable ENET store and forward mode */
-@@ -1772,6 +1787,7 @@ fec_probe(struct platform_device *pdev)
+@@ -1791,6 +1806,7 @@ fec_probe(struct platform_device *pdev)
  	struct net_device *ndev;
  	int i, irq, ret = 0;
  	struct resource *r;
@@ -6748,7 +6917,7 @@ index 5af378f..b74b1d9
  
  	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  	if (!r)
-@@ -1804,8 +1820,11 @@ fec_probe(struct platform_device *pdev)
+@@ -1823,8 +1839,11 @@ fec_probe(struct platform_device *pdev)
  	platform_set_drvdata(pdev, ndev);
  
  	pdata = pdev->dev.platform_data;
@@ -6761,7 +6930,7 @@ index 5af378f..b74b1d9
  
  	/* This device has up to three irqs on some platforms */
  	for (i = 0; i < 3; i++) {
-@@ -1833,7 +1852,7 @@ fec_probe(struct platform_device *pdev)
+@@ -1852,7 +1871,7 @@ fec_probe(struct platform_device *pdev)
  	if (ret)
  		goto failed_init;
  
@@ -6983,10 +7152,10 @@ diff --git a/drivers/rtc/rtc-da9052.c b/drivers/rtc/rtc-da9052.c
 old mode 100755
 new mode 100644
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 8a66f3e..96df580 100644
+index a512a76..00d3675 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1212,9 +1212,12 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1215,9 +1215,12 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
  {
  	struct imx_port *sport = (struct imx_port *)port;
  	unsigned long flags;
@@ -7001,7 +7170,7 @@ index 8a66f3e..96df580 100644
  	unsigned long num, denom;
  	uint64_t tdiv64;
  
-@@ -1237,26 +1240,25 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1240,26 +1243,25 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
  		old_csize = CS8;
  	}
  
@@ -7035,7 +7204,7 @@ index 8a66f3e..96df580 100644
  	}
  
  	/*
-@@ -1269,7 +1271,7 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1272,7 +1274,7 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
  
  	spin_lock_irqsave(&sport->port.lock, flags);
  
@@ -7044,7 +7213,7 @@ index 8a66f3e..96df580 100644
  	if (termios->c_iflag & INPCK)
  		sport->port.read_status_mask |= (URXD_FRMERR | URXD_PRERR);
  	if (termios->c_iflag & (BRKINT | PARMRK))
-@@ -1296,22 +1298,6 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1299,22 +1301,6 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
  	 */
  	uart_update_timeout(port, termios->c_cflag, baud);
  
@@ -7067,7 +7236,7 @@ index 8a66f3e..96df580 100644
  	if (USE_IRDA(sport)) {
  		/*
  		 * use maximum available submodule frequency to
-@@ -1338,31 +1324,47 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1341,31 +1327,47 @@ imx_set_termios(struct uart_port *port, struct ktermios *termios,
  	num -= 1;
  	denom -= 1;
  
@@ -7191,10 +7360,10 @@ diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight/Makefile
 old mode 100755
 new mode 100644
 diff --git a/drivers/video/mxc/mxc_ipuv3_fb.c b/drivers/video/mxc/mxc_ipuv3_fb.c
-index 745c485..d8df225 100644
+index 8038f3d..66ea47d 100644
 --- a/drivers/video/mxc/mxc_ipuv3_fb.c
 +++ b/drivers/video/mxc/mxc_ipuv3_fb.c
-@@ -830,6 +830,8 @@ static int mxcfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
+@@ -869,6 +869,8 @@ static int mxcfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
  		vtotal = var->yres + var->lower_margin + var->vsync_len +
  		    var->upper_margin;
  		var->pixclock = (vtotal * htotal * 6UL) / 100UL;
@@ -7203,7 +7372,7 @@ index 745c485..d8df225 100644
  		var->pixclock = KHZ2PICOS(var->pixclock);
  		dev_dbg(info->device,
  			"pixclock set for 60Hz refresh = %u ps\n",
-@@ -2229,7 +2231,7 @@ static int mxcfb_probe(struct platform_device *pdev)
+@@ -2310,7 +2312,7 @@ static int mxcfb_probe(struct platform_device *pdev)
  		mxcfbi->ipu_ch_nf_irq = IPU_IRQ_DC_SYNC_NFACK;
  		mxcfbi->ipu_alp_ch_irq = -1;
  		mxcfbi->ipu_ch = MEM_DC_SYNC;
@@ -7239,7 +7408,7 @@ index 3dbad0d..4f15ba4 100644
  	if (plat) {
  		if (plat->reset)
 diff --git a/drivers/video/mxc_hdmi.c b/drivers/video/mxc_hdmi.c
-index a45c347..3d96dfa 100644
+index 92822f8..91fc773 100644
 --- a/drivers/video/mxc_hdmi.c
 +++ b/drivers/video/mxc_hdmi.c
 @@ -1538,10 +1538,10 @@ static void mxc_hdmi_edid_rebuild_modelist(struct mxc_hdmi *hdmi)
@@ -7280,13 +7449,6 @@ new mode 100644
 diff --git a/include/linux/mfd/da9052/tsi_filter.h b/include/linux/mfd/da9052/tsi_filter.h
 old mode 100755
 new mode 100644
-diff --git a/localversion b/localversion
-new file mode 100644
-index 0000000..e02409d
---- /dev/null
-+++ b/localversion
-@@ -0,0 +1 @@
-+-2026-geaaf30e
 diff --git a/sound/soc/codecs/sgtl5000.c b/sound/soc/codecs/sgtl5000.c
 index fd05514..45191d1 100644
 --- a/sound/soc/codecs/sgtl5000.c
@@ -7309,17 +7471,3 @@ index fd05514..45191d1 100644
  
  	snd_soc_write(codec, SGTL5000_CHIP_DAC_VOL, 0x6060);
  	snd_soc_write(codec, SGTL5000_CHIP_ANA_ADC_CTRL,
-diff --git a/tools/perf/util/include/linux/compiler.h b/tools/perf/util/include/linux/compiler.h
-index 547628e..791f9dd 100644
---- a/tools/perf/util/include/linux/compiler.h
-+++ b/tools/perf/util/include/linux/compiler.h
-@@ -5,9 +5,7 @@
- #define __always_inline	inline
- #endif
- #define __user
--#ifndef __attribute_const__
- #define __attribute_const__
--#endif
- 
- #define __used		__attribute__((__unused__))
- 

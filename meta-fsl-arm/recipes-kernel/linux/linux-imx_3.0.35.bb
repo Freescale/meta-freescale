@@ -7,9 +7,9 @@ PR = "${INC_PR}.10"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
-# Revision of 12.09.01 tag
-SRCREV = "059685632ebd37a89e60cbb1e6dd535b3b08c3be"
-LOCALVERSION = "-12.09.01+yocto"
+# Revision of 1.1.0 tag
+SRCREV = "c27cb3851bb6f822f8a92e4a1e10fba19284bdd4"
+LOCALVERSION = "-1.1.0+yocto"
 
 SRC_URI += "file://fix_getrusage_for_perf.patch \
             file://egalax_ts-Add-support-for-single-touch-in-Kconfig.patch \
