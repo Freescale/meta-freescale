@@ -1,9 +1,11 @@
-# Copyright (C) 2012 Freescale Semiconductor
+# Copyright (C) 2012-2013 Freescale Semiconductor
+# Copyright (C) 2012-2013 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require recipes-graphics/xorg-driver/xorg-driver-video.inc
 
-PR = "${INC_PR}.2"
+PE = "3"
+PR = "${INC_PR}.0"
 
 DEPENDS += "virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q"
 
@@ -13,14 +15,21 @@ SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
            file://fix-vivante-compile.patch \
            file://remove-mibstore.patch \
            file://Makefile.am-remove-prefixed-include-path.patch"
-SRC_URI[md5sum] = "1948119717aa01bed1f630be9ee7a708"
-SRC_URI[sha256sum] = "5b3be4b426d2d2803554df9e4d8919d1f9d17659c3153c71c6529f43c37e6ed1"
+SRC_URI[md5sum] = "d872365c046738628a7016343ffdb79a"
+SRC_URI[sha256sum] = "d53216d5f9e3f7803983ac1577d83985dfda33145e4711300f4ad5cbbe28e32d"
 
 EXTRA_OECONF_armv7a = " --enable-neon --disable-static"
 CFLAGS += " -I${STAGING_INCDIR}/xorg -I${STAGING_INCDIR}/drm"
 LDFLAGS += "-lm -ldl -lX11 -lGAL-x11"
 
-S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}"
+S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}/EXA/"
+
+do_compile_prepend () {
+    # FIXME: Allow build without depending on xserver-xorg
+    #        as this is the is the only source dependency and
+    #        by default Xorg does not install this header anyway.
+    cp ${S}/../DRI*/src/dri.h ${S}/../DRI*/src/sarea.h ${S}/src/vivante_fbdev/
+}
 
 do_install_append () {
 	install -d ${D}${includedir}

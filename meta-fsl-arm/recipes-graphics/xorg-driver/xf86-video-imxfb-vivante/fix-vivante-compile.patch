@@ -4,10 +4,10 @@ versions of the X server.
 
 Upstream-Status: Pending
 
-Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_dri.h
+Index: xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante_dri.h
 ===================================================================
---- xserver-xorg-video-imx-viv-12.09.01.orig/src/vivante_fbdev/vivante_dri.h
-+++ xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_dri.h
+--- xserver-xorg-video-imx-viv-1.1.0.orig/src/vivante_fbdev/vivante_dri.h
++++ xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante_dri.h
 @@ -67,7 +67,7 @@ typedef struct _vvtDeviceInfoRec {
  } vvtDeviceInfo;
  
@@ -17,19 +17,11 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_dri.h
  Bool VivDRIFinishScreenInit(ScreenPtr pScreen);
  
  #endif /* _VIVANTE_DRI_H_ */
-Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_driver.c
+Index: xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante_fbdev_driver.c
 ===================================================================
---- xserver-xorg-video-imx-viv-12.09.01.orig/src/vivante_fbdev/vivante_fbdev_driver.c
-+++ xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_driver.c
-@@ -19,7 +19,6 @@
- *****************************************************************************/
- 
- 
--
- #include "vivante_common.h"
- #include "vivante.h"
- #include "vivante_exa.h"
-@@ -54,9 +53,8 @@ static const OptionInfoRec *VivAvailable
+--- xserver-xorg-video-imx-viv-1.1.0.orig/src/vivante_fbdev/vivante_fbdev_driver.c
++++ xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante_fbdev_driver.c
+@@ -53,9 +53,8 @@ static const OptionInfoRec *VivAvailable
  static void VivIdentify(int flags);
  static Bool VivProbe(DriverPtr drv, int flags);
  static Bool VivPreInit(ScrnInfoPtr pScrn, int flags);
@@ -41,7 +33,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
  static Bool VivDriverFunc(ScrnInfoPtr pScrn, xorgDriverFuncOp op,
          pointer ptr);
  
-@@ -178,7 +176,7 @@ VivSetup(pointer module, pointer opts, i
+@@ -175,7 +174,7 @@ VivSetup(pointer module, pointer opts, i
  
  static Bool InitExaLayer(ScreenPtr pScreen) {
      ExaDriverPtr pExa;
@@ -50,7 +42,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
      VivPtr pViv = GET_VIV_PTR(pScrn);
  
      TRACE_ENTER();
-@@ -274,7 +272,7 @@ static Bool InitExaLayer(ScreenPtr pScre
+@@ -258,7 +257,7 @@ static Bool InitExaLayer(ScreenPtr pScre
  }
  
  static Bool DestroyExaLayer(ScreenPtr pScreen) {
@@ -59,7 +51,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
      VivPtr pViv = GET_VIV_PTR(pScrn);
      TRACE_ENTER();
      xf86DrvMsg(pScreen->myNum, X_INFO, "Shutdown EXA\n");
-@@ -590,7 +588,7 @@ VivPreInit(ScrnInfoPtr pScrn, int flags)
+@@ -570,7 +569,7 @@ VivPreInit(ScrnInfoPtr pScrn, int flags)
  static Bool
  VivCreateScreenResources(ScreenPtr pScreen) {
      PixmapPtr pPixmap;
@@ -68,7 +60,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
      VivPtr fPtr = GET_VIV_PTR(pScrn);
      Bool ret;
  
-@@ -612,8 +610,8 @@ VivCreateScreenResources(ScreenPtr pScre
+@@ -592,8 +591,8 @@ VivCreateScreenResources(ScreenPtr pScre
  }
  
  static Bool
@@ -79,7 +71,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
      VivPtr fPtr = GET_VIV_PTR(pScrn);
      VisualPtr visual;
      int init_picture = 0;
-@@ -631,7 +629,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -611,7 +610,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
  
      /*Mapping the Video memory*/
      if (NULL == (fPtr->mFB.mFBMemory = fbdevHWMapVidmem(pScrn))) {
@@ -88,7 +80,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
                  " failed\n");
          TRACE_EXIT(FALSE);
      }
-@@ -647,11 +645,11 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -626,17 +625,17 @@ VivScreenInit(int scrnIndex, ScreenPtr p
  
      /*Init the hardware in current mode*/
      if (!fbdevHWModeInit(pScrn, pScrn->currentMode)) {
@@ -100,9 +92,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
 -    fbdevHWAdjustFrame(scrnIndex, 0, 0, 0);
 +    fbdevHWAdjustFrame(FBDEVHWADJUSTFRAME_ARGS(0, 0));
  
- 
- 
-@@ -659,7 +657,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+     /* mi layer */
      miClearVisualTypes();
      if (pScrn->bitsPerPixel > 8) {
          if (!miSetVisualTypes(pScrn->depth, TrueColorMask, pScrn->rgbBits, TrueColor)) {
@@ -111,7 +101,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
                      " for %d bits per pixel [1]\n",
                      pScrn->bitsPerPixel);
              TRACE_EXIT(FALSE);
-@@ -668,14 +666,14 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -645,14 +644,14 @@ VivScreenInit(int scrnIndex, ScreenPtr p
          if (!miSetVisualTypes(pScrn->depth,
                  miGetDefaultVisualMask(pScrn->depth),
                  pScrn->rgbBits, pScrn->defaultVisual)) {
@@ -128,7 +118,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
          return FALSE;
      }
  
-@@ -684,14 +682,14 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -660,14 +659,14 @@ VivScreenInit(int scrnIndex, ScreenPtr p
      pScrn->displayWidth = fbdevHWGetLineLength(pScrn) /
              (pScrn->bitsPerPixel / 8);
      if (pScrn->displayWidth != pScrn->virtualX) {
@@ -145,7 +135,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
              "FB Start = %p  FB Base = %p  FB Offset = %p\n",
              fPtr->mFB.mFBStart, fPtr->mFB.mFBMemory, fPtr->mFB.mFBOffset);
  
-@@ -708,7 +706,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -684,7 +683,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
              init_picture = 1;
              break;
          default:
@@ -154,7 +144,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
                      "internal error: invalid number of bits per"
                      " pixel (%d) encountered in"
                      " VivScreenInit()\n", pScrn->bitsPerPixel);
-@@ -740,7 +738,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -716,7 +715,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
      if (fPtr->mFakeExa.mUseExaFlag) {
          TRACE_INFO("Loading EXA");
          if (!InitExaLayer(pScreen)) {
@@ -163,7 +153,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
                      "internal error: initExaLayer failed "
                      "in VivScreenInit()\n");
          }
-@@ -759,7 +757,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -733,7 +732,7 @@ VivScreenInit(int scrnIndex, ScreenPtr p
  
      /* colormap */
      if (!miCreateDefColormap(pScreen)) {
@@ -172,7 +162,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
                  "internal error: miCreateDefColormap failed "
                  "in VivScreenInit()\n");
          TRACE_EXIT(FALSE);
-@@ -799,18 +797,18 @@ VivScreenInit(int scrnIndex, ScreenPtr p
+@@ -775,20 +774,20 @@ VivScreenInit(int scrnIndex, ScreenPtr p
  }
  
  static Bool
@@ -184,8 +174,10 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
      Bool ret = FALSE;
      TRACE_ENTER();
  
+ #ifndef DISABLE_VIVANTE_DRI
 -    VivDRICloseScreen(pScreen);
 +    VivDRICloseScreen(CLOSE_SCREEN_ARGS);
+ #endif
  
      if (fPtr->mFakeExa.mUseExaFlag) {
          DEBUGP("UnLoading EXA");
@@ -195,7 +187,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
                      "internal error: DestroyExaLayer failed "
                      "in VivCloseScreen()\n");
          }
-@@ -823,7 +821,7 @@ VivCloseScreen(int scrnIndex, ScreenPtr 
+@@ -801,7 +800,7 @@ VivCloseScreen(int scrnIndex, ScreenPtr
  
      pScreen->CreateScreenResources = fPtr->CreateScreenResources;
      pScreen->CloseScreen = fPtr->CloseScreen;
@@ -204,10 +196,10 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_fbdev_drive
      TRACE_EXIT(ret);
  }
  
-Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_util/compat-api.h
+Index: xserver-xorg-video-imx-viv-1.1.0/src/vivante_util/compat-api.h
 ===================================================================
 --- /dev/null
-+++ xserver-xorg-video-imx-viv-12.09.01/src/vivante_util/compat-api.h
++++ xserver-xorg-video-imx-viv-1.1.0/src/vivante_util/compat-api.h
 @@ -0,0 +1,106 @@
 +/*
 + * Copyright 2012 Red Hat, Inc.
@@ -315,11 +307,11 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_util/compat-api.h
 +#endif
 +
 +#endif
-Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_util/vivante_common.h
+Index: xserver-xorg-video-imx-viv-1.1.0/src/vivante_util/vivante_common.h
 ===================================================================
---- xserver-xorg-video-imx-viv-12.09.01.orig/src/vivante_util/vivante_common.h
-+++ xserver-xorg-video-imx-viv-12.09.01/src/vivante_util/vivante_common.h
-@@ -76,6 +76,9 @@ extern "C" {
+--- xserver-xorg-video-imx-viv-1.1.0.orig/src/vivante_util/vivante_common.h
++++ xserver-xorg-video-imx-viv-1.1.0/src/vivante_util/vivante_common.h
+@@ -69,6 +69,9 @@ extern "C" {
  #include "xf86Crtc.h"
  #include "cursorstr.h"
  
@@ -329,11 +321,11 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_util/vivante_common.h
      /*Debug*/
  #include "vivante_debug.h"
  
-Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante.h
+Index: xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante.h
 ===================================================================
---- xserver-xorg-video-imx-viv-12.09.01.orig/src/vivante_fbdev/vivante.h
-+++ xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante.h
-@@ -99,11 +99,11 @@ extern "C" {
+--- xserver-xorg-video-imx-viv-1.1.0.orig/src/vivante_fbdev/vivante.h
++++ xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante.h
+@@ -92,11 +92,11 @@ extern "C" {
  #define GET_VIV_PTR(p) ((VivPtr)((p)->driverPrivate))
  
  #define VIVPTR_FROM_PIXMAP(x)		\
@@ -348,11 +340,11 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante.h
  
      /********************************************************************************
       *
-Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_dri.c
+Index: xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante_dri.c
 ===================================================================
---- xserver-xorg-video-imx-viv-12.09.01.orig/src/vivante_fbdev/vivante_dri.c
-+++ xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_dri.c
-@@ -49,7 +49,7 @@ VivDestroyContext(ScreenPtr pScreen, drm
+--- xserver-xorg-video-imx-viv-1.1.0.orig/src/vivante_fbdev/vivante_dri.c
++++ xserver-xorg-video-imx-viv-1.1.0/src/vivante_fbdev/vivante_dri.c
+@@ -51,7 +51,7 @@ VivDestroyContext(ScreenPtr pScreen, drm
  
  Bool
  VivDRIFinishScreenInit(ScreenPtr pScreen) {
@@ -361,7 +353,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_dri.c
      VivPtr pViv = GET_VIV_PTR(pScrn);
      DRIInfoPtr pDRIInfo = (DRIInfoPtr) pViv->pDRIInfo;
  
-@@ -79,7 +79,7 @@ VivDRIMoveBuffers(WindowPtr pParent, DDX
+@@ -81,7 +81,7 @@ VivDRIMoveBuffers(WindowPtr pParent, DDX
  }
  
  Bool VivDRIScreenInit(ScreenPtr pScreen) {
@@ -370,7 +362,7 @@ Index: xserver-xorg-video-imx-viv-12.09.01/src/vivante_fbdev/vivante_dri.c
      DRIInfoPtr pDRIInfo;
      VivPtr pViv = GET_VIV_PTR(pScrn);
  
-@@ -185,7 +185,7 @@ Bool VivDRIScreenInit(ScreenPtr pScreen)
+@@ -187,7 +187,7 @@ Bool VivDRIScreenInit(ScreenPtr pScreen)
  }
  
  void VivDRICloseScreen(ScreenPtr pScreen) {

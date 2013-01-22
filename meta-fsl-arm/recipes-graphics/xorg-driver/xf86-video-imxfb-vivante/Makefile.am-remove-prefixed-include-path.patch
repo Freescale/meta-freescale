@@ -6,6 +6,8 @@ Subject: [PATCH] Makefile.am remove prefixed include path
 * Remove prefixed include path, use ${STAGING_INCDIR}
   to locate drm headers.
 
+Upstream-Status: Pending
+
 Signed-off-by: Adrian Alonso <aalonso00@gmail.com>
 ---
  src/Makefile.am |    2 +-
