@@ -4,7 +4,7 @@
 DESCRIPTION = "GPU driver and apps for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=092bc28e13d678ceaebe1a40559275fb"
+LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=c831981a5cbb2673318b77fb2f07014c"
 PROVIDES += "virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2 libvivante-dri-mx6"
 
 INC_PR = "r2"
@@ -40,6 +40,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 # FIXME: The provided binary doesn't provide soname. If in future BSP
 # release the libraries are fixed, we can drop this hack.
+REALSOLIBS := "${SOLIBS}"
 SOLIBS = "${SOLIBSDEV}"
 
 # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
@@ -54,16 +55,22 @@ do_install () {
     install -d ${D}${libdir}/dri
     install -d ${D}${includedir}
 
-    cp ${S}/usr/lib/*.so ${D}${libdir}
-    cp -axr ${S}/usr/include/* ${D}${includedir}
-
-    cp -axr ${S}/opt ${D}
-
-    # Move DRI library to proper path
-    mv ${D}${libdir}/vivante_dri.so ${D}${libdir}/dri
+    cp -rP ${S}/usr/lib/* ${D}${libdir}
+    cp -rP ${S}/usr/include/* ${D}${includedir}
+    cp -rP ${S}/opt ${D}
 
     find ${D}${libdir} -type f -exec chmod 644 {} \;
     find ${D}${includedir} -type f -exec chmod 644 {} \;
+
+    # FIXME: Drop default library as we need to explicit link to one
+    #        of supported backends
+    rm ${D}${libdir}/libEGL.so \
+       ${D}${libdir}/libGAL.so \
+       ${D}${libdir}/libVIVANTE.so
+
+    # FIXME: Drop directfb backport as 1.4 version is not supported in Yocto
+    rm -r ${D}${libdir}/directfb-1.4-0 \
+          ${D}${libdir}/*-dfb.so
 }
 
 S = "${WORKDIR}/${PN}-${PV}"
@@ -77,9 +84,7 @@ FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
 
-FILES_libegl-common-mx6 = "${libdir}/libEGL${SOLIBS}"
 FILES_libegl-common-mx6-dev = "${includedir}/EGL ${libdir}/libEGL${SOLIBSDEV}"
-FILES_libegl-common-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 
 FILES_libegl-fb-mx6 = "${libdir}/libEGL-fb${SOLIBS}"
 FILES_libegl-fb-mx6-dev = "${libdir}/libEGL-fb${SOLIBSDEV}"
@@ -89,9 +94,7 @@ FILES_libegl-x11-mx6 = "${libdir}/libEGL-x11${SOLIBS}"
 FILES_libegl-x11-mx6-dev = "${libdir}/libEGL-x11${SOLIBSDEV}"
 FILES_libegl-x11-mx6-dbg = "${libdir}/.debug/libEGL-x11${SOLIBS}"
 
-FILES_libgal-common-mx6 = "${libdir}/libGAL${SOLIBS}"
 FILES_libgal-common-mx6-dev = "${includedir}/HAL ${libdir}/libGAL${SOLIBSDEV}"
-FILES_libgal-common-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
 
 FILES_libgal-fb-mx6 = "${libdir}/libGAL-fb${SOLIBS}"
 FILES_libgal-fb-mx6-dev = "${libdir}/libGAL-fb${SOLIBSDEV}"
@@ -109,7 +112,7 @@ FILES_libgles2-mx6 = "${libdir}/libGLESv2${SOLIBS}"
 FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV}"
 FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
 
-FILES_libgl-mx6 = "${libdir}/libGL${SOLIBS}"
+FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-mx6-dev = "${includedir}/GL ${libdir}/libGL${SOLIBSDEV}"
 FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL${SOLIBS}"
 
@@ -129,9 +132,7 @@ FILES_libvdk-mx6 = "${libdir}/libVDK${SOLIBS}"
 FILES_libvdk-mx6-dev = "${includedir}/*vdk.h ${libdir}/libVDK${SOLIBSDEV}"
 FILES_libvdk-mx6-dbg = "${libdir}/.debug/libVDK${SOLIBS}"
 
-FILES_libvivante-common-mx6 = "${libdir}/libVIVANTE${SOLIBS}"
 FILES_libvivante-common-mx6-dev = "${includedir}/HAL ${libdir}/libVIVANTE${SOLIBSDEV}"
-FILES_libvivante-common-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
 
 FILES_libvivante-fb-mx6 = "${libdir}/libVIVANTE-fb${SOLIBS}"
 FILES_libvivante-fb-mx6-dev = "${libdir}/libVIVANTE-fb${SOLIBSDEV}"
