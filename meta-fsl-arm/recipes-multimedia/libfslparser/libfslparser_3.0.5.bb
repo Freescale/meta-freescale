@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Freescale Semicondutors
+# Copyright (C) 2012-2013 Freescale Semicondutors
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia parser libs"
 LICENSE = "Proprietary"
@@ -9,8 +9,8 @@ PR = "r1"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
-SRC_URI[md5sum] = "52a72680d4c1db4b9fadcae56980a8ae"
-SRC_URI[sha256sum] = "50b514fe3e9912ac24e9da81de5e713bf42e1a7d3a41ae6f221258c2f8539194"
+SRC_URI[md5sum] = "9fd8105530e1668ae91bd53a5b0d9807"
+SRC_URI[sha256sum] = "d3139e28e453d2af04439e607cd12ad17e117144049c9a8add05a5a142c654ae"
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
 do_install_append() {
