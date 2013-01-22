@@ -20,7 +20,7 @@ SRC_URI = "git://git.linaro.org/bsp/freescale/linux-linaro.git;branch=lt-3.2-imx
 #			file://fix_ipuv3.patch \
 #			file://fix_usb.patch \
 #			file://fix_rtc-da9052.patch \
-#			file://fix_da9052_bl.patch \
+#			file://fix_da9052_bl.patch
 
 
 S = "${WORKDIR}/git"
