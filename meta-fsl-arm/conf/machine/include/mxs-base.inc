@@ -9,6 +9,11 @@ include conf/machine/include/tune-arm926ejs.inc
 
 SOC_FAMILY = "mxs"
 
+UBOOT_ENTRYPOINT = "0x41008000"
+UBOOT_LOADADDRESS = "0x41008000"
+UBOOT_MAKE_TARGET = "u-boot.sb"
+UBOOT_SUFFIX = "sb"
+
 # Disable perf features as 2.6.35.3 fail to build otherwise
 PERF_FEATURES_ENABLE = ""
 
