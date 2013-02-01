@@ -1,0 +1,18 @@
+Fix a build failure due missing uint definiton
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+
+Index: gst-fsl-plugins-3.0.5/src/misc/v4l_sink/src/mfw_gst_fb.c
+===================================================================
+--- gst-fsl-plugins-3.0.5.orig/src/misc/v4l_sink/src/mfw_gst_fb.c
++++ gst-fsl-plugins-3.0.5/src/misc/v4l_sink/src/mfw_gst_fb.c
+@@ -39,6 +39,7 @@
+ 
+ #include <fcntl.h>
+ #include <sys/ioctl.h>
++#include <sys/types.h>
+ //#if ((!defined (_MX233)) && (!defined (_MX28)) && (!defined (_MX50)))
+ //#include <linux/mxcfb.h>
+ //#else
