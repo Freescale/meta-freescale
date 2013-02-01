@@ -25,6 +25,8 @@ UBOOT_LOADADDRESS_mx6 = "0x10800000"
 UBOOT_ENTRYPOINT_mx6sl = "0X80800000"
 UBOOT_LOADADDRESS_mx6sl = "0X80800000"
 
+PREFERRED_VERSION_xserver-xorg_mx6 = "2:1.11.4"
+
 XSERVER_DRIVER = "xf86-video-fbdev"
 XSERVER_DRIVER_mx5 = "xf86-video-imxfb"
 XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
