@@ -4,8 +4,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 SECTION = "bootloader"
 
 PV = "v2013.01"
+PR = "r1"
 
-SRCREV = "d55bd2b60645e3331f7b12f9251c1eeada44b505"
+SRCREV = "d229fb849bd4b453a08b18f4f8cd00741ef53b1d"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
