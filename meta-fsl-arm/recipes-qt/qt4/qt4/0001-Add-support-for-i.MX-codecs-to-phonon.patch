@@ -427,7 +427,15 @@ index 968f3a8..c4662e7 100644
  QT_BEGIN_NAMESPACE
  
  namespace Phonon
-@@ -83,26 +85,8 @@ X11Renderer::~X11Renderer()
+@@ -78,31 +80,16 @@ X11Renderer::~X11Renderer()
+ {
+     m_renderWidget->setAttribute(Qt::WA_PaintOnScreen, false);
+     m_renderWidget->setAttribute(Qt::WA_NoSystemBackground, false);
++    if (m_videoSink) {
++      gst_object_unref (GST_OBJECT (m_videoSink));
++    }
+     delete m_renderWidget;
+ }
  
  GstElement* X11Renderer::createVideoSink()
  {
