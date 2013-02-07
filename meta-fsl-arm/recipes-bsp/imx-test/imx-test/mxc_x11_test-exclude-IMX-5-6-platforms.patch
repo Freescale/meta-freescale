@@ -1,0 +1,26 @@
+From 868587e3e59bb70061c4c0bad9c6b6c009f8bd94 Mon Sep 17 00:00:00 2001
+From: Leonardo Sandoval <leonardo.sandoval@freescale.com>
+Date: Thu, 7 Feb 2013 14:53:02 -0600
+Subject: [PATCH] mxc_x11_test: exclude IMX[5|6] platforms
+
+Upstream-Status: Pending
+
+Signed-off-by: Leonardo Sandoval <leonardo.sandoval@freescale.com>
+---
+ test/mxc_x11_test/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/mxc_x11_test/Makefile b/test/mxc_x11_test/Makefile
+index dd4ca7c..f4794fc 100644
+--- a/test/mxc_x11_test/Makefile
++++ b/test/mxc_x11_test/Makefile
+@@ -1,5 +1,5 @@
+ # list of platforms which did not want this test case
+-EXCLUDE_LIST:=
++EXCLUDE_LIST:=IMX6Q IMX53 IMX51
+ CFLAGS += -lm
+ LIBS += -lX11 -lXdamage -lXrender -lXrandr
+ 
+-- 
+1.7.9.5
+
