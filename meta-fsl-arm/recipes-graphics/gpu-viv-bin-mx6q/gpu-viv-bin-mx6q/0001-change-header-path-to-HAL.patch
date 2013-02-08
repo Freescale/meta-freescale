@@ -1,0 +1,33 @@
+From 1a4a35678ef70283d1a31835deecd39711a9db86 Mon Sep 17 00:00:00 2001
+From: Jeremy Stashluk <jstashluk@dekaresearch.com>
+Date: Wed, 30 Jan 2013 13:16:53 -0500
+Subject: [PATCH] change header path to HAL
+
+The gpu-viv-bin-mx6q package from Freescale puts this header in the HAL
+directory under the system. I think this is a problem in the LTIB release as
+well.
+
+Upstream-Status: Pending
+
+Signed-off-by: Jeremy Stashluk <jstashluk@dekaresearch.com>
+
+---
+ usr/include/gc_vdk_types.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/usr/include/gc_vdk_types.h b/usr/include/gc_vdk_types.h
+index 11514f9..8e3dfe4 100644
+--- a/usr/include/gc_vdk_types.h
++++ b/usr/include/gc_vdk_types.h
+@@ -26,7 +26,7 @@ extern "C" {
+ #endif
+ 
+ #include <EGL/egl.h>
+-#include "gc_hal_eglplatform.h"
++#include <HAL/gc_hal_eglplatform.h>
+ 
+ /*******************************************************************************
+ ** vdkPrivate. *****************************************************************
+-- 
+1.7.9.5
+

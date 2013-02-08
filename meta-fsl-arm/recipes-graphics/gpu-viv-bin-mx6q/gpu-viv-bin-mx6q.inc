@@ -7,11 +7,13 @@ LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=092bc28e13d678ceaebe1a40559275fb"
 PROVIDES += "virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2 libvivante-dri-mx6"
 
-INC_PR = "r1"
+INC_PR = "r2"
 
 inherit fsl-eula-unpack
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
+           file://0001-change-header-path-to-HAL.patch \
+          "
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libegl-fb-mx6 libegl-fb-mx6-dev libegl-fb-mx6-dbg \
