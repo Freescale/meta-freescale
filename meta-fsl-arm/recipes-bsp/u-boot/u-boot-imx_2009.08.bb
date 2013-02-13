@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4c6cde5df68eff615d36789dc18edd3b"
 
 DEPENDS_mxs += "elftosb-native"
 
-PR = "r10"
+PR = "r11"
 
 # Revision of imx_2.6.35_10.12.01 branch
 SRCREV_mxs = "e4437f1c192a1a68028e6fcff3f50ff50352041d"
@@ -26,6 +26,7 @@ SRC_URI_append_imx5 = " \
 SRCREV_mx6 = "d9804829ee8fb221c4bd2001e8c0ac47783b5b0b"
 SRC_URI_append_mx6 = " \
    file://mx6q_sabreauto-Fix-the-patch-for-the-default-environ.patch \
+   file://mx6q_sabresd-Change-default-environment-to-work-with.patch \
 "
 
 
@@ -36,6 +37,7 @@ UBOOT_MACHINE_imx53ard = "mx53_ard_ddr3_config"
 UBOOT_MACHINE_imx51evk = "mx51_bbg_config"
 UBOOT_MACHINE_imx6qsabrelite = "mx6q_sabrelite_config"
 UBOOT_MACHINE_imx6qsabreauto = "mx6q_sabreauto_config"
+UBOOT_MACHINE_imx6qsabresd = "mx6q_sabresd_config"
 UBOOT_MACHINE_imx28evk = "mx28_evk_config"
 
 UBOOT_MAKE_TARGET = "u-boot.bin"
