@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4c6cde5df68eff615d36789dc18edd3b"
 
 DEPENDS_mxs += "elftosb-native"
 
-PR = "r11"
+PR = "r12"
 
 # Revision of imx_2.6.35_10.12.01 branch
 SRCREV_mxs = "e4437f1c192a1a68028e6fcff3f50ff50352041d"
@@ -22,8 +22,8 @@ SRC_URI_append_imx5 = " \
            file://mx53_loco_bootenv.patch \
 "
 
-# Revision of imx_2.6.35_12.09.01 branch
-SRCREV_mx6 = "d9804829ee8fb221c4bd2001e8c0ac47783b5b0b"
+# Revision of imx_3.0.35_1.1.0 branch
+SRCREV_mx6 = "98a5299c945cb7e440e3c3d9c572f017e5a02ede"
 SRC_URI_append_mx6 = " \
    file://mx6q_sabreauto-Fix-the-patch-for-the-default-environ.patch \
    file://mx6q_sabresd-Change-default-environment-to-work-with.patch \
