@@ -1,0 +1,47 @@
+From f4f360d3858d3ac6a65ff754ada381f44827f0db Mon Sep 17 00:00:00 2001
+From: Leonardo Sandoval <leonardo_gdl@yahoo.com.mx>
+Date: Thu, 14 Feb 2013 23:37:09 -0600
+Subject: [PATCH] Link with the Real-Time Extension lib
+
+Upstream-Status: Pending
+
+Signed-off-by: Leonardo Sandoval <leonardo.sandoval@freescale.com>
+---
+ configure.ac                        |    5 +++++
+ src/misc/v4l_source/src/Makefile.am |    4 ++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 1ad4d22..f332d38 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -173,6 +173,11 @@ AC_CHECK_LIB(ipu, mxc_ipu_lib_task_init, [IPU_LIBS=-lipu], [echo "No libipu arou
+ AC_SUBST(IPU_CFLAGS)
+ AC_SUBST(IPU_LIBS)
+ 
++dnl of the POSIX Real-Time Extensions.
++AC_CHECK_LIB(rt, clock_gettime)
++AC_SUBST(RT_CFLAGS)
++AC_SUBST(RT_LIBS)
++
+ FSL_MM_CORE_CFLAGS=`$PKG_CONFIG --cflags libfslaudiocodec 2>/dev/null`
+ FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslvideocodec 2>/dev/null`
+ FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslparser 2>/dev/null`
+diff --git a/src/misc/v4l_source/src/Makefile.am b/src/misc/v4l_source/src/Makefile.am
+index b80d27e..490e441 100755
+--- a/src/misc/v4l_source/src/Makefile.am
++++ b/src/misc/v4l_source/src/Makefile.am
+@@ -7,8 +7,8 @@ endif
+ plugin_LTLIBRARIES = libmfw_gst_v4lsrc.la 
+ 
+ libmfw_gst_v4lsrc_la_SOURCES =  mfw_gst_v4lsrc.c 
+-libmfw_gst_v4lsrc_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(IPU_CFLAGS) -D$(PLATFORM) -I$(FBHEADER_PATH) -I. -I../../../../inc/plugin -I../../../../libs/gstbufmeta 
+-libmfw_gst_v4lsrc_la_LIBADD = $(GST_BASE_LIBS) -lgstvideo-$(GST_MAJORMINOR) -lgstinterfaces-$(GST_MAJORMINOR) ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
++libmfw_gst_v4lsrc_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(IPU_CFLAGS) -D$(PLATFORM) -I$(FBHEADER_PATH) -I. -I../../../../inc/plugin -I../../../../libs/gstbufmeta $(RT_CFLAGS)
++libmfw_gst_v4lsrc_la_LIBADD = $(GST_BASE_LIBS) -lgstvideo-$(GST_MAJORMINOR) -lgstinterfaces-$(GST_MAJORMINOR) ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la $(RT_LIBS)
+ libmfw_gst_v4lsrc_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+ 
+ noinst_HEADERS = mfw_gst_v4lsrc.h
+-- 
+1.7.5.4
+

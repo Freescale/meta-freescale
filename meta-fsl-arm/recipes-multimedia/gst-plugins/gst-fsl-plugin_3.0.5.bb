@@ -5,9 +5,11 @@ require gst-fsl-plugin.inc
 
 DEPENDS += "libfslcodec libfslvpuwrap libfslparser"
 
-PR = "${INC_PR}.2"
+PR = "${INC_PR}.3"
 
-SRC_URI += "file://fix-missing-sys-types-h.patch"
+SRC_URI += "file://fix-missing-sys-types-h.patch \
+            file://Link-with-the-Real-Time-Extension-lib.patch \
+           "
 
 PACKAGE_NAME = "gst-fsl-plugins"
 
