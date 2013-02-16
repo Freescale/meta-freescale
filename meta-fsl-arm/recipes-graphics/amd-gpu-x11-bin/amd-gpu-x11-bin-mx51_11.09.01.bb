@@ -6,7 +6,7 @@ LICENSE = "Proprietary"
 SECTION = "libs"
 PR = "r12"
 
-#todo: Replace for correct AMD license
+# FIXME: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
 DEPENDS = "virtual/libx11"
 
