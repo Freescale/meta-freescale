@@ -4,7 +4,7 @@
 LICENSE = "MIT"
 SECTION = "x11/base"
 DEPENDS = "virtual/libx11 util-macros xf86-video-imxfb-vivante"
-LIC_FILES_CHKSUM = "file://src/dri.h;enline=27;md5=1d0d59e1dc96f5197ea3a8b101bf1fcc"
+LIC_FILES_CHKSUM = "file://src/dri.h;enline=27;md5=79a9064e49ae41adca4827cd2281a014"
 
 SRC_URI = "${FSL_MIRROR}/dri-xorg-graphic-imx-viv-${PV}.bin;fsl-eula=true"
 SRC_URI[md5sum] = "8c90045cd5f4dba81095856634ba5136"
