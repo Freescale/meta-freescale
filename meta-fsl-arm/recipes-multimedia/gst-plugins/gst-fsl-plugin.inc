@@ -33,7 +33,7 @@ PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \
 
 FILES_${PN} = "${libdir}/gstreamer-0.10/*.so ${datadir}"
 FILES_${PN}-dbg += "${libdir}/gstreamer-0.10/.debug"
-FILES_${PN}-dev += "${libdir}/gstreamer-0.10/*.la"
+FILES_${PN}-dev += "${libdir}/gstreamer-0.10/*.la ${libdir}/pkgconfig/*.pc"
 FILES_${PN}-staticdev += "${libdir}/gstreamer-0.10/*.a"
 
 FILES_${PN}-gplay = "${bindir}/gplay"
