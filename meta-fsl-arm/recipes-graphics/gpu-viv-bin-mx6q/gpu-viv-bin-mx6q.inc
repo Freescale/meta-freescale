@@ -132,6 +132,7 @@ FILES_libgles-mx6-dbg = "${libdir}/.debug/libGLESv1*${SOLIBS} ${libdir}/.debug/l
 FILES_libgles2-mx6 = "${libdir}/libGLESv2${SOLIBS}"
 FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV}"
 FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
+RDEPENDS_libgles2-mx6 = "libglslc-mx6"
 
 FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-mx6-dev = "${includedir}/GL ${libdir}/libGL${SOLIBSDEV}"
