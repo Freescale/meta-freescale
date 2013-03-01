@@ -1,3 +1,3 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR .= "+${DISTRO}"
+PRINC := "${@int(PRINC) + 1}"
