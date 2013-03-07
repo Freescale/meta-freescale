@@ -12,7 +12,7 @@ inherit kernel
 require recipes-kernel/linux/linux-dtb.inc
 
 PV = "3.8+git${SRCPV}"
-PR = "r1"
+PR = "r2"
 
 # patches-3.8
 SRCREV = "34f2768ffece87712ddfe753e52daf036c57eb29"
@@ -22,6 +22,11 @@ SRC_URI = "git://github.com/Freescale/linux-mainline.git \
            file://defconfig"
 
 S = "${WORKDIR}/git"
+
+do_configure_append () {
+    # Ensure we have a proper GIT hash in kernel version
+    rm ${S}/.scmversion
+}
 
 # We need to pass it as param since kernel might support more then one
 # machine, with different entry points
