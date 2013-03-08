@@ -1,3 +1,2 @@
-PR_fsl .= "+${DISTRO}.0"
+PRINC := "${@int(PRINC) + 1}"
 
-FILESEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"
