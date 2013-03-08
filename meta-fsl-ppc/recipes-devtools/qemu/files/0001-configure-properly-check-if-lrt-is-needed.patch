@@ -1,0 +1,43 @@
+From e5906138d8042817cc3b49872dd181c66a11abdf Mon Sep 17 00:00:00 2001
+From: Ting Liu <b28495@freescale.com>
+Date: Wed, 6 Mar 2013 01:56:35 -0600
+Subject: [PATCH] configure: properly check if -lrt is needed
+
+Upstream-Status: Backport
+commit  8bacde8d86a09699207d85d4bab06162aed18dc4
+
+Signed-off-by: Natanael Copa <ncopa@alpinelinux.org>
+Signed-off-by: Blue Swirl <blauwirbel@gmail.com>
+Signed-off-by: Ting Liu <b28495@freescale.com>
+---
+ configure |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/configure b/configure
+index 999375a..29b3e30 100755
+--- a/configure
++++ b/configure
+@@ -2444,13 +2444,18 @@ fi
+ cat > $TMPC <<EOF
+ #include <signal.h>
+ #include <time.h>
+-int main(void) { clockid_t id; return clock_gettime(id, NULL); }
++int main(void) {
++  timer_create(CLOCK_REALTIME, NULL, NULL);
++  return clock_gettime(CLOCK_REALTIME, NULL);
++}
+ EOF
+ 
+ if compile_prog "" "" ; then
+   :
+-elif compile_prog "" "-lrt" ; then
++# we need pthread for static linking. use previous pthread test result
++elif compile_prog "" "-lrt $pthread_lib" ; then
+   LIBS="-lrt $LIBS"
++  libs_qga="-lrt $libs_qga"
+ fi
+ 
+ if test "$darwin" != "yes" -a "$mingw32" != "yes" -a "$solaris" != yes -a \
+-- 
+1.7.9.7
+
