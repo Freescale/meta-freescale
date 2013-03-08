@@ -7,9 +7,9 @@ include linux-imx.inc
 
 COMPATIBLE_MACHINE = "(mxs|mx5)"
 
-# Revision of imx_2.6.35_10.12.01 branch
-SRCREV_mxs = "c0879e9a6a19a512ebfa1d1d6d9927569ecdf8d4"
-LOCALVERSION_mxs = "-10.12.01+yocto"
+# Revision of imx_2.6.35_1.1.0 branch
+SRCREV_mxs = "914558e17e95a55ac1eac9a6c219d17d7825f715"
+LOCALVERSION_mxs = "-1.1.0+yocto"
 
 # Revision of imx_2.6.35_11.09.01 branch
 SRCREV_mx5 = "bc8159027063aded47316b669b1293998337b2ee"
