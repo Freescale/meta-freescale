@@ -4,7 +4,7 @@ HOMEPAGE = "http://linux-iscsi.org/index.php/Lio-utils"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://debian/copyright;md5=c3ea231a32635cbb5debedf3e88aa3df"
 
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "git://risingtidesystems.com/lio-utils.git;protocal=git \
     file://lio-utils-install-more-modules.patch "
@@ -46,13 +46,16 @@ do_install() {
     if test -d ${S}/tools; then
         oe_runmake install
     fi
-
+ 
+    install -d ${D}/etc/target/
     install -d ${D}/etc/init.d/
     install -m 755 ${S}/scripts/rc.target ${D}/etc/init.d/
+    install -m 755 ${S}/conf/tcm_start.default ${D}/etc/target/tcm_start.sh
+    install -m 755 ${S}/conf/lio_start.default ${D}/etc/target/lio_start.sh
 }
 
 RDEPENDS_${PN} += "python-stringold python-subprocess python-shell \ 
     python-datetime python-textutils python-crypt python-netclient python-email"
 
 
-FILES_${PN} += "${sbindir}/* /etc/init.d/*"
+FILES_${PN} += "${sbindir}/* /etc/init.d/* /etc/target/*"
