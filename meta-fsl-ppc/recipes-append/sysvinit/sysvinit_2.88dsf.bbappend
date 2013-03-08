@@ -1,5 +1,2 @@
-FILESEXTRAPATHS_prepend_fsl := "${THISDIR}/files:"
+PRINC := "${@int(PRINC) + 1}"
 
-PR_fsl .= "+${DISTRO}.1"
-
-SRC_URI_append_fsl = " file://auto-detect-hostname.patch;patchdir=../"
