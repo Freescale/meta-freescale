@@ -1,0 +1,31 @@
+Avoid conflicting types with Xorg newer code
+
+Upstream-Status: Pending
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+
+Index: gpu-viv-bin-mx6q-1.1.0/usr/include/HAL/gc_hal_base.h
+===================================================================
+--- gpu-viv-bin-mx6q-1.1.0.orig/usr/include/HAL/gc_hal_base.h
++++ gpu-viv-bin-mx6q-1.1.0/usr/include/HAL/gc_hal_base.h
+@@ -101,7 +101,7 @@ extern gcsPLS gcPLS;
+ typedef struct _gcsTLS * gcsTLS_PTR;
+ 
+ typedef void (* gctTLS_DESTRUCTOR) (
+-    gcsTLS_PTR TLS
++    gcsTLS_PTR pTLS
+     );
+ 
+ typedef struct _gcsTLS
+@@ -648,10 +648,10 @@ gcoOS_SetPLSValue(
+ /* Get access to the thread local storage. */
+ gceSTATUS
+ gcoOS_GetTLS(
+-    OUT gcsTLS_PTR * TLS
++    OUT gcsTLS_PTR * pTLS
+     );
+ 
+-    /* Copy the TLS from a source thread. */
++    /* Copy the pTLS from a source thread. */
+     gceSTATUS gcoOS_CopyTLS(IN gcsTLS_PTR Source);
+ 
+ /* Destroy the objects associated with the current thread. */

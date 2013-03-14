@@ -14,6 +14,7 @@ inherit fsl-eula-unpack
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://0001-change-header-path-to-HAL.patch \
            file://gc_hal_eglplatform-remove-xlib-undefs.patch \
+           file://fix-conflicting-TLS-definition.patch \
           "
 
 GPU_XLIBS = "libegl-x11-mx6 libegl-x11-mx6-dev libegl-x11-mx6-dbg \
@@ -30,7 +31,6 @@ GPU_DFBLIBS = "libegl-dfb-mx6 libegl-dfb-mx6-dev libegl-dfb-mx6-dbg \
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgles-mx6 libgles-mx6-dev libgles-mx6-dbg \
 	libgles2-mx6 libgles2-mx6-dev libgles2-mx6-dbg \
-	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
 	libglslc-mx6 libglslc-mx6-dev libglslc-mx6-dbg \
 	libopencl-mx6 libopencl-mx6-dev libopencl-mx6-dbg \
 	libopenvg-mx6 libopenvg-mx6-dev libopenvg-mx6-dbg \
@@ -133,10 +133,6 @@ FILES_libgles2-mx6 = "${libdir}/libGLESv2${SOLIBS}"
 FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV}"
 FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
 RDEPENDS_libgles2-mx6 = "libglslc-mx6"
-
-FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
-FILES_libgl-mx6-dev = "${includedir}/GL ${libdir}/libGL${SOLIBSDEV}"
-FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL${SOLIBS}"
 
 FILES_libglslc-mx6 = "${libdir}/libGLSLC${SOLIBS}"
 FILES_libglslc-mx6-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
