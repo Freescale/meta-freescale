@@ -67,6 +67,7 @@ do_install () {
 
     cp ${S}/usr/lib/*.so ${D}${libdir}
     cp -axr ${S}/usr/include/* ${D}${includedir}
+    rm -r ${D}${includedir}/GL
     cp -axr ${S}/opt ${D}
 
     if [ "${KEEP_XLIBS}" = "no" ]; then
