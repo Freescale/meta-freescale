@@ -5,15 +5,13 @@
 require recipes-graphics/xorg-driver/xorg-driver-video.inc
 
 PE = "3"
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.2"
 
 DEPENDS += "virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q"
 
 LIC_FILES_CHKSUM = "file://src/vivante_fbdev/vivante.h;endline=19;md5=93a322f91ec495569dcbcfbb2a95454a"
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
-           file://fix-vivante-compile.patch \
-           file://remove-mibstore.patch \
            file://Makefile.am-remove-prefixed-include-path.patch"
 SRC_URI[md5sum] = "d872365c046738628a7016343ffdb79a"
 SRC_URI[sha256sum] = "d53216d5f9e3f7803983ac1577d83985dfda33145e4711300f4ad5cbbe28e32d"
@@ -38,7 +36,16 @@ do_install_append () {
 	find ${D}${includedir} -type f -exec chmod 660 {} \;
 }
 
-RDEPENDS_${PN} += "xserver-xorg-module-exa"
+RDEPENDS_${PN} += "xserver-xorg-module-exa xf86-dri-vivante"
+
+# Add the ABI dependency at package generation time, as otherwise bitbake will
+# attempt to find a provider for it (and fail) when it does the parse.
+#
+# This version *must* be kept correct.
+python populate_packages_prepend() {
+    pn = d.getVar("PN", True)
+    d.appendVar("RDEPENDS_" + pn, " xorg-abi-video-11")
+}
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
