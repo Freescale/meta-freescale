@@ -22,6 +22,9 @@ UBOOT_LOADADDRESS_mx53 = "0x70800000"
 UBOOT_ENTRYPOINT_mx6  = "0x10800000"
 UBOOT_LOADADDRESS_mx6 = "0x10800000"
 
+UBOOT_ENTRYPOINT_mx6sl = "0X80800000"
+UBOOT_LOADADDRESS_mx6sl = "0X80800000"
+
 XSERVER_DRIVER = "xf86-video-fbdev"
 XSERVER_DRIVER_mx5 = "xf86-video-imxfb"
 XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
@@ -67,6 +70,7 @@ PREFERRED_PROVIDER_virtual/libgles1_mx6 ?= "gpu-viv-bin-mx6q"
 PREFERRED_PROVIDER_virtual/libgles2_mx6 ?= "gpu-viv-bin-mx6q"
 
 PREFERRED_PROVIDER_virtual/kernel_mx3 = "linux-fslc"
+PREFERRED_PROVIDER_u-boot_mx6sl = "u-boot-imx"
 
 EXTRA_IMAGEDEPENDS = "u-boot"
 
