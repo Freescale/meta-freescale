@@ -1,7 +1,38 @@
-PRINC := "${@int(PRINC) + 1}"
+PRINC := "${@int(PRINC) + 3}"
 
-PROVIDES_mx5 = "virtual/libgl"
-PROVIDES_mx6 = "virtual/libgl"
+# FIXME: We may need to disable EGL, GL ES1 and GL ES2
+python __anonymous () {
+    import re
 
-PACKAGE_ARCH_mx5 = "${MACHINE_ARCH}"
-PACKAGE_ARCH_mx6 = "${MACHINE_ARCH}"
+    # SoC families to work on
+    families = ['mx5', 'mx6']
+    cur_soc_families = d.getVar('SOC_FAMILY', True)
+    if cur_soc_families and \
+        any(map(lambda x: x in cur_soc_families.split(':'), families)):
+        # Remove egl gles1 and gles2 configure options
+        extra_oeconf = d.getVar('EXTRA_OECONF', True).split()
+        take_out = ['--enable-egl', '--enable-gles1', '--enable-gles2']
+        put_in = ['--disable-egl', '--disable-gles1', '--disable-gles2']
+        pattern = re.compile("--with-egl-platforms")
+        new_extra_oeconf = []
+        for i in extra_oeconf:
+            if i not in take_out and not pattern.match(i):
+                new_extra_oeconf.append(i)
+        for i in put_in:
+            new_extra_oeconf.append(i)
+
+        d.setVar('EXTRA_OECONF', ' '.join(new_extra_oeconf))
+
+        # Remove itens from provides
+        provides = d.getVar('PROVIDES', True)
+        take_out = ['virtual/libgles1', 'virtual/libgles2', 'virtual/egl']
+        new_provides = []
+        for i in provides:
+            if i not in take_out:
+                new_provides.append(i)
+
+        d.setVar('PROVIDES', ' '.join(new_provides))
+
+        # We are now machine specific
+        d.setVar('PACKAGE_ARCH', d.getVar('MACHINE_ARCH'))
+}
