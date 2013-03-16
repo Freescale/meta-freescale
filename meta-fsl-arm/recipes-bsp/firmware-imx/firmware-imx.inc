@@ -4,11 +4,11 @@ SECTION = "base"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://licenses/vpu/EULA;md5=6469a8514eed615d6bf8c09f41846d8f"
 
-INC_PR = "r4"
+INC_PR = "r5"
 
 SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true"
 
-inherit fsl-eula-unpack allarch
+inherit fsl-eula-unpack
 
 do_install() {
 	install -d ${D}/lib/firmware
@@ -43,3 +43,5 @@ python populate_packages_prepend() {
 }
 
 PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
