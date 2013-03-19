@@ -1,0 +1,33 @@
+From 9a06d08e43923f8ce35f1c649334f14d2e81941b Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Tue, 19 Mar 2013 14:04:08 -0300
+Subject: [PATCH] perf: Avoid use of sysroot's Linux headers
+
+As Yocto now use a newer Linux headers package we end having a build
+failure in perf as 'stddef.h' has changed and does not provide NULL
+definiton anymore. To workaround it we add the srcdir onto search path
+for include files, before sysroot one.
+
+Upstream-Status: Inappropriate [build system specific change]
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ tools/perf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/Makefile b/tools/perf/Makefile
+index 854652a..9605d46 100644
+--- a/tools/perf/Makefile
++++ b/tools/perf/Makefile
+@@ -301,7 +301,7 @@ endif
+ # Those must not be GNU-specific; they are shared with perl/ which may
+ # be built by a different compiler. (Note that this is an artifact now
+ # but it still might be nice to keep that distinction.)
+-BASIC_CFLAGS = -Iutil/include -Iarch/$(ARCH)/include
++BASIC_CFLAGS = -Iutil/include -Iarch/$(ARCH)/include -I../../include
+ BASIC_LDFLAGS =
+ 
+ # Guard against environment variables
+-- 
+1.8.1
+
