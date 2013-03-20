@@ -6,13 +6,14 @@ LICENSE = "MIT-X"
 DEPENDS = "virtual/xserver virtual/libx11 xproto randrproto util-macros amd-gpu-x11-bin-mx51 libz160"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f7bdc0c63080175d1667091b864cb12c"
 
-PR = "r10"
+PR = "r11"
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-${PV}.tar.gz \
            file://xf86-video-imxfb-fix-m4-hardcodded-paths.patch \
            file://Make-video-API-forward-and-backward-compatible.patch \
            file://ext-Update-to-newer-swap-macros.patch \
            file://Fix-error-unknown-type-name-uint.patch \
+           file://xserver-1.14-compat.patch \
 "
 SRC_URI[md5sum] = "d19148399b5d1c4dab90d0cc6f2c4789"
 SRC_URI[sha256sum] = "d7d85e9f13c6dd58addab89847f3a8a67f6382a54135c7978c9a95368af024d4"
