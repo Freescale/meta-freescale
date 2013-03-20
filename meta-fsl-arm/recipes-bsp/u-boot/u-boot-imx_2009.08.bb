@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4c6cde5df68eff615d36789dc18edd3b"
 
 DEPENDS_mxs += "elftosb-native"
 
-PR = "r13"
+PR = "r14"
 
 # Revision of imx_2.6.35_10.12.01 branch
 SRCREV_mxs = "e4437f1c192a1a68028e6fcff3f50ff50352041d"
@@ -35,6 +35,11 @@ SRC_URI_append_mx6sl = " \
    file://mx6sl_evk-Fix-the-patch-for-the-default-environment-.patch \
 "
 
+SRCREV_mx6dl = "d4057eba315edbc8335c138c0c9edbe2109ea36e"
+SRC_URI_append_mx6dl = " \
+   file://mx6dl_sabresd-Change-default-environment-to-work-wit.patch \
+"
+
 SRC_URI = "git://git.freescale.com/imx/uboot-imx.git"
 
 UBOOT_MACHINE_imx53qsb = "mx53_loco_config"
@@ -43,6 +48,7 @@ UBOOT_MACHINE_imx51evk = "mx51_bbg_config"
 UBOOT_MACHINE_imx6qsabrelite = "mx6q_sabrelite_config"
 UBOOT_MACHINE_imx6qsabreauto = "mx6q_sabreauto_config"
 UBOOT_MACHINE_imx6qsabresd = "mx6q_sabresd_config"
+UBOOT_MACHINE_imx6dlsabresd = "mx6dl_sabresd_config"
 UBOOT_MACHINE_imx6slevk = "mx6sl_evk_config"
 UBOOT_MACHINE_imx28evk = "mx28_evk_config"
 

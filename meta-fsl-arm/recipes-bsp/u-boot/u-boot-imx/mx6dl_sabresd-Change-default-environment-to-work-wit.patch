@@ -1,0 +1,67 @@
+From 7ae3e4c665bd27111ee8ae2b801251b1d32f44cc Mon Sep 17 00:00:00 2001
+From: Daiane Angolini <daiane.angolini@freescale.com>
+Date: Wed, 20 Mar 2013 03:57:54 -0500
+Subject: [PATCH] mx6dl_sabresd: Change default environment to work with OE
+
+Upstream-Status: Inappropriate [configuration]
+
+Signed-off-by: Daiane Angolini <daiane.angolini@freescale.com>
+---
+ include/configs/mx6dl_sabresd.h |   41 ++++++++++++++++++++++----------------
+ 1 files changed, 24 insertions(+), 17 deletions(-)
+
+diff --git a/include/configs/mx6dl_sabresd.h b/include/configs/mx6dl_sabresd.h
+index a496453..6499d25 100644
+--- a/include/configs/mx6dl_sabresd.h
++++ b/include/configs/mx6dl_sabresd.h
+@@ -121,23 +121,30 @@
+ #define CONFIG_RD_LOADADDR	(CONFIG_LOADADDR + 0x300000)
+ 
+ #define	CONFIG_EXTRA_ENV_SETTINGS					\
+-		"netdev=eth0\0"						\
+-		"ethprime=FEC0\0"					\
+-		"uboot=u-boot.bin\0"			\
+-		"kernel=uImage\0"				\
+-		"nfsroot=/opt/eldk/arm\0"				\
+-		"bootargs_base=setenv bootargs console=ttymxc0,115200\0"\
+-		"bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "\
+-			"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0"\
+-		"bootcmd_net=run bootargs_base bootargs_nfs; "		\
+-			"tftpboot ${loadaddr} ${kernel}; bootm\0"	\
+-		"bootargs_mmc=setenv bootargs ${bootargs} ip=dhcp "     \
+-			"root=/dev/mmcblk0p1 rootwait\0"                \
+-		"bootcmd_mmc=run bootargs_base bootargs_mmc; "   \
+-		"mmc dev 3; "	\
+-		"mmc read ${loadaddr} 0x800 0x2000; bootm\0"	\
+-		"bootcmd=run bootcmd_net\0"                             \
+-
++	 "script=boot.scr\0" \
++	 "uimage=uImage\0" \
++	 "mmcdev=2\0" \
++	 "mmcpart=1\0" \
++	 "mmcroot=/dev/mmcblk1p2 rw\0" \
++	 "mmcrootfstype=ext3 rootwait\0" \
++	 "mmcargs=setenv bootargs console=ttymxc0,${baudrate} " \
++	 "root=${mmcroot} " \
++	 "rootfstype=${mmcrootfstype}\0" \
++	 "loadbootscript=" \
++	 "fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
++	 "bootscript=echo Running bootscript from mmc ...; " \
++	 "source\0" \
++	 "loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
++	 "mmcboot=echo Booting from mmc ...; " \
++	 "run mmcargs; " \
++	 "bootm\0" \
++	 "netargs=setenv bootargs console=ttymxc0,${baudrate} " \
++	 "root=/dev/nfs " \
++	 "ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
++	 "netboot=echo Booting from net ...; " \
++	 "run netargs; " \
++	 "dhcp ${uimage}; bootm\0" \
++	 "bootcmd=run loaduimage; run mmcboot;\0" \
+ 
+ #define CONFIG_ARP_TIMEOUT	200UL
+ 
+-- 
+1.7.5.4
+
