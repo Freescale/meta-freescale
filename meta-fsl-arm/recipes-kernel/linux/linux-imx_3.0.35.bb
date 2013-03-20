@@ -15,6 +15,9 @@ LOCALVERSION = "-1.1.0+yocto"
 SRCREV_mx6sl = "7e8c89cd4b47c4ac6ec6a91a5f54d450688bde4f"
 LOCALVERSION_mx6sl = "-3.0.0+yocto"
 
+SRCREV_mx6dl = "7e8c89cd4b47c4ac6ec6a91a5f54d450688bde4f"
+LOCALVERSION_mx6dl = "-3.0.0+yocto"
+
 SRC_URI += "file://fix_getrusage_for_perf.patch \
             file://egalax_ts-Add-support-for-single-touch-in-Kconfig.patch \
            "
