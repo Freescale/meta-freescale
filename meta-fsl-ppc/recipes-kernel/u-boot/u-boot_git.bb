@@ -5,16 +5,15 @@ PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
-PR = "r29"
+PR = "r30"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
 
 inherit deploy
 
-SRCREV = "c6d9d502924ade8877f53eecdd5cf37e05d6d6b4"
-SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git"
-SRCREV_e6500 = "9040d1ee41fc29fc7e9796bdfb59612f80bc1ee4"
-SRCREV_e6500-64b = "9040d1ee41fc29fc7e9796bdfb59612f80bc1ee4"
+SRCREV = "7bcd7f45c8974978f8eb73ae4d32e71cb6a49b77"
+SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git \
+		"
 python () {
 	ml = d.getVar("MULTILIB_VARIANTS", True)
 	arch = d.getVar("OVERRIDES", True)
@@ -68,17 +67,21 @@ do_compile () {
 			if [ "${UBOOT_TARGET}" == "u-boot-sd" ]; then
 				cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
             elif [ "${UBOOT_TARGET}" == "u-boot-nand" ];then
-				if [ "${DEFAULTTUNE}" != "ppce500v2" ];then
+				if [ "${DEFAULTTUNE}" = "ppce500v2" ];then
+                    if echo $board |egrep "(P1020RDB|P1021RDB|P1024RDB|P2020RDB|P1022DS|P1025RDB)" 2>&1 >/dev/null;then
+                        cp ${S}/${board}/u-boot-with-spl.bin ${S}/${board}/${UBOOT_TARGET}.bin
+                    fi
+                else
                     cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
                 fi
 			else
 				if [ -n "${BOOTFORMAT_CONFIG}" ];then
-                    ${STAGING_BINDIR_NATIVE}/boot_format \
-					${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
-					${S}/${board}/u-boot.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
-                else
-                    cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
-                fi
+               			     	${STAGING_BINDIR_NATIVE}/boot_format \
+						${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
+						${S}/${board}/u-boot.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
+                		else
+                    			cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+                		fi
 			fi 
 		fi
 	done
@@ -133,4 +136,4 @@ addtask deploy after do_install
 PACKAGES += "${PN}-images"
 FILES_${PN}-images += "/boot"
 
-ALLOW_EMPTY = "1"
+ALLOW_EMPTY_${PN} = "1"
