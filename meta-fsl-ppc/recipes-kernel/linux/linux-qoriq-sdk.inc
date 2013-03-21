@@ -1,23 +1,12 @@
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-PV = "3.0.48"
-PV_e6500 = "3.0.51"
-PV_e6500-64b = "3.0.51"
-PR = "r10"
+PV = "3.0.51"
+PR = "r11"
 
-SRCREV = "dd5a5aac3e15b16a4bccbab29c736bda0e7d55e7"
-SRCREV_e6500 = "c294ca97427698b749c6fe4b768b9cc1dd37dc04"
-SRCREV_e6500-64b = "c294ca97427698b749c6fe4b768b9cc1dd37dc04"
+SRCREV = "faac5211f398f25e2be44ac996895335d5218516"
 SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
            file://0001-compiler.h-Undef-before-redefining-__attribute_const.patch \
-	   file://0001-powerpc-Fix-build-dependencies-for-c-files-requiring.patch \
 	  "
-SRC_URI_e6500 = "git://git.freescale.com/ppc/sdk/linux.git \
-           file://0001-compiler.h-Undef-before-redefining-__attribute_const.patch \
-"
-SRC_URI_e6500-64b = "git://git.freescale.com/ppc/sdk/linux.git \
-           file://0001-compiler.h-Undef-before-redefining-__attribute_const.patch \
-"
 
 KSRC ?= ""
 S = '${@base_conditional("KSRC", "", "${WORKDIR}/git", "${KSRC}", d)}'
