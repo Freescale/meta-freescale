@@ -3,11 +3,13 @@ SECTION = "fman"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
 
+PR = "r1"
+
 DEPENDS = "linux-libc-headers"
 DEPENDS_virtclass-native = ""
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git"
-SRCREV = "5ebbf75c3108404b513198c9fd9b955b123680af"
+SRCREV = "e80c0625d4f2671ac4f15cabfdd1b334143eb515"
 
 S = "${WORKDIR}/git"
 
@@ -34,6 +36,6 @@ do_install_virtclass-native () {
       cp -rf ${S}/include/* ${D}/${includedir}
 }
 
-ALLOW_EMPTY = "1"
+ALLOW_EMPTY_${PN} = "1"
 
 BBCLASSEXTEND = "native"
