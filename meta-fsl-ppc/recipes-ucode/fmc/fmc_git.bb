@@ -3,8 +3,10 @@ SECTION = "fmc"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a504ab5a8ff235e67c7301214749346c"
 
+PR = "r1"
+
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git"
-SRCREV = "274ff60dd9d7dd9f881deeb86c2c4b8a342e55d1"
+SRCREV = "6db53fae9dfe72db0312a383733e0d3598aad3f2"
 
 DEPENDS = "libxml2 fmlib tclap"
 
