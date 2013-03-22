@@ -11,6 +11,7 @@ LIC_FILES_CHKSUM = "file://src/vivante_fbdev/vivante.h;endline=19;md5=93a322f91e
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
            file://fix-vivante-compile.patch \
+           file://remove-mibstore.patch \
            file://Makefile.am-remove-prefixed-include-path.patch"
 SRC_URI[md5sum] = "1948119717aa01bed1f630be9ee7a708"
 SRC_URI[sha256sum] = "5b3be4b426d2d2803554df9e4d8919d1f9d17659c3153c71c6529f43c37e6ed1"
