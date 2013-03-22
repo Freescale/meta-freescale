@@ -24,7 +24,7 @@ python __anonymous () {
         d.setVar('EXTRA_OECONF', ' '.join(new_extra_oeconf))
 
         # Remove itens from provides
-        provides = d.getVar('PROVIDES', True)
+        provides = d.getVar('PROVIDES', True).split()
         take_out = ['virtual/libgles1', 'virtual/libgles2', 'virtual/egl']
         new_provides = []
         for i in provides:
