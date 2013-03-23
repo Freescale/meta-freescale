@@ -1,5 +1,3 @@
-PRINC := "${@int(PRINC) + 3}"
-
 # FIXME: We may need to disable EGL, GL ES1 and GL ES2
 python __anonymous () {
     import re
