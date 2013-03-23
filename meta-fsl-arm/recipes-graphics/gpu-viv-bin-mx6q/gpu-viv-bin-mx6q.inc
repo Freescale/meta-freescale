@@ -5,7 +5,7 @@ DESCRIPTION = "GPU driver and apps for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=c831981a5cbb2673318b77fb2f07014c"
-PROVIDES += "virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2 virtual/dri"
+PROVIDES += "virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2"
 
 INC_PR = "r5"
 
@@ -20,7 +20,6 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
 GPU_XLIBS = "libegl-x11-mx6 libegl-x11-mx6-dev libegl-x11-mx6-dbg \
 	libgal-x11-mx6 libgal-x11-mx6-dev libgal-x11-mx6-dbg \
 	libvivante-x11-mx6 libvivante-x11-mx6-dev libvivante-x11-mx6-dbg \
-	libvivante-dri-mx6 libvivante-dri-mx6-dev libvivante-dri-mx6-dbg \
 	"
 
 GPU_DFBLIBS = "libegl-dfb-mx6 libegl-dfb-mx6-dev libegl-dfb-mx6-dbg \
@@ -72,9 +71,6 @@ do_install () {
 
     if [ "${KEEP_XLIBS}" = "no" ]; then
         rm ${D}${libdir}/*-x11.so
-    else
-        install -d ${D}${libdir}/dri
-        cp -ax ${S}/usr/lib/dri/* ${D}${libdir}/dri
     fi
     if [ "${KEEP_DFBLIBS}" = "no" ]; then
         rm ${D}${libdir}/*-dfb.so
@@ -94,8 +90,7 @@ S = "${WORKDIR}/${PN}-${PV}"
 
 FILES_${PN} += "/opt"
 FILES_${PN}-dev = "${includedir}"
-FILES_${PN}-dbg = "${libdir}/.debug ${libdir}/dri/.debug \
-                   /opt/viv_samples/*/*/.debug"
+FILES_${PN}-dbg = "${libdir}/.debug /opt/viv_samples/*/*/.debug"
 
 FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
@@ -161,10 +156,6 @@ FILES_libvivante-x11-mx6-dbg = "${libdir}/.debug/libVIVANTE-x11${SOLIBS}"
 FILES_libvivante-dfb-mx6 = "${libdir}/libVIVANTE-dfb${SOLIBS}"
 FILES_libvivante-dfb-mx6-dev = "${libdir}/libVIVANTE-dfb${SOLIBSDEV}"
 FILES_libvivante-dfb-mx6-dbg = "${libdir}/.debug/libVIVANTE-dfb${SOLIBS}"
-
-FILES_libvivante-dri-mx6 = "${libdir}/dri/vivante_dri${SOLIBS}"
-FILES_libvivante-dri-mx6-dev = ""
-FILES_libvivante-dri-mx6-dbg = "${libdir}/dri/.debug/vivante_dri${SOLIBS}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
