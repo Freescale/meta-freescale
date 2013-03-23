@@ -41,8 +41,8 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	${@base_contains("DISTRO_FEATURES", "directfb", "${GPU_DFBLIBS}", "", d)} \
 	"
 
-KEEP_XLIBS = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
-KEEP_DFBLIBS = "${@base_contains("DISTRO_FEATURES", "directfb", "yes", "no", d)}"
+USE_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
+USE_DFB = "${@base_contains("DISTRO_FEATURES", "directfb", "yes", "no", d)}"
 
 # Inhibit warnings about files being stripped.
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
@@ -69,18 +69,25 @@ do_install () {
     rm -r ${D}${includedir}/GL
     cp -axr ${S}/opt ${D}
 
-    if [ "${KEEP_XLIBS}" = "no" ]; then
-        rm ${D}${libdir}/*-x11.so
-    fi
-    if [ "${KEEP_DFBLIBS}" = "no" ]; then
-        rm ${D}${libdir}/*-dfb.so
-    fi
-
     # FIXME: Drop default library as we need to explicit link to one
     #        of supported backends
     rm ${D}${libdir}/libEGL.so \
        ${D}${libdir}/libGAL.so \
        ${D}${libdir}/libVIVANTE.so
+
+    if [ "${USE_X11}" = "yes" ]; then
+        find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
+        find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'
+    else
+        if [ "${USE_DFB}" = "yes" ]; then
+            find ${D}${libdir} -name '*-x11.so' -exec rm '{}' ';'
+            find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'
+        else
+            # Regular framebuffer
+            find ${D}${libdir} -name '*-x11.so' -exec rm '{}' ';'
+            find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
+        fi
+    fi
 
     find ${D}${libdir} -type f -exec chmod 644 {} \;
     find ${D}${includedir} -type f -exec chmod 644 {} \;
