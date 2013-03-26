@@ -14,6 +14,7 @@ SRC_URI[sha256sum] = "2a4a7248246ff37f30486f34918151f09493ecfcaeca0cd8155d5b5c93
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
 PACKAGES_DYNAMIC = "${PN}-*"
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 do_install_append() {
 	# FIXME: This link points to nowhere
