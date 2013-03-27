@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4c6cde5df68eff615d36789dc18edd3b"
 
 DEPENDS_mxs += "elftosb-native"
 
-PR = "r14"
+PR = "r15"
 
 # Revision of imx_2.6.35_10.12.01 branch
 SRCREV_mxs = "e4437f1c192a1a68028e6fcff3f50ff50352041d"
@@ -29,12 +29,13 @@ SRC_URI_append_mx6 = " \
    file://mx6q_sabresd-Change-default-environment-to-work-with.patch \
 "
 
-# Revision of imx_3.0.35_3.0.0 branch
-SRCREV_mx6sl = "d4057eba315edbc8335c138c0c9edbe2109ea36e"
+# Revision of imx_3.0.35_12.10.02 branch
+SRCREV_mx6sl = "27cdce50f9a7fc30d7cff067b420a32e5f2c5959"
 SRC_URI_append_mx6sl = " \
    file://mx6sl_evk-Fix-the-patch-for-the-default-environment-.patch \
 "
 
+# Revision of imx_3.0.35_3.0.0 branch
 SRCREV_mx6dl = "d4057eba315edbc8335c138c0c9edbe2109ea36e"
 SRC_URI_append_mx6dl = " \
    file://mx6dl_sabresd-Change-default-environment-to-work-wit.patch \
