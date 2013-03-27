@@ -48,7 +48,7 @@ python populate_packages_prepend() {
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
     for p in d.getVar('PACKAGES', True).split():
-        d.setVar("INSANE_SKIP_%s" % p, "ldflags")
+        d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
 }
 
 # Ensure we get warnings if we miss something
