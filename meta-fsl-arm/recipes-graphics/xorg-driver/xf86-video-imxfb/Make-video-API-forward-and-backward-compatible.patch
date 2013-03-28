@@ -282,7 +282,7 @@ index 178e36e..f4b3e38 100644
 +imxScreenInit(SCREEN_INIT_ARGS_DECL)
  {
 -	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
-+	SCRN_INFO_PTR(pScreen);
++	ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
  	ImxPtr fPtr = IMXPTR(pScrn);
  	VisualPtr visual;
  	int init_picture = 0;

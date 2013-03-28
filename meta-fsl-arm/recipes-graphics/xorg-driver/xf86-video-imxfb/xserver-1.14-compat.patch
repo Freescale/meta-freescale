@@ -24,3 +24,11 @@ Index: xserver-xorg-video-imx-11.09.01/src/imx_driver.c
  #include "micmap.h"
  #include "colormapst.h"
  #include "xf86cmap.h"
+@@ -722,7 +721,6 @@ imxScreenInit(SCREEN_INIT_ARGS_DECL)
+ 	/* Initialize for X extensions. */
+ 	imxExtInit();
+ 
+-	miInitializeBackingStore(pScreen);
+ 	xf86SetBackingStore(pScreen);
+ 
+ 	/* software cursor */
