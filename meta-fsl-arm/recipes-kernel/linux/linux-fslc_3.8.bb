@@ -12,10 +12,10 @@ inherit kernel
 require recipes-kernel/linux/linux-dtb.inc
 
 PV = "3.8+git${SRCPV}"
-PR = "r4"
+PR = "r5"
 
 # patches-3.8
-SRCREV = "893c1d3779eb68f576e2f7cf1dcca437e474cffd"
+SRCREV = "9674b8d96fca62bc47be48fd857591dcfca874b1"
 
 SRC_URI = "git://github.com/Freescale/linux-mainline.git \
            \
