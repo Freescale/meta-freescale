@@ -3,10 +3,9 @@ LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 SECTION = "bootloader"
 
-PV = "v2013.01"
-PR = "r1"
+PV = "v2013.04"
 
-SRCREV = "d229fb849bd4b453a08b18f4f8cd00741ef53b1d"
+SRCREV = "7e2cfc83e91229e2573a3b51aec9e8c9fd27ed79"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
