@@ -5,7 +5,7 @@
 require recipes-graphics/xorg-driver/xorg-driver-video.inc
 
 PE = "3"
-PR = "${INC_PR}.2"
+PR = "${INC_PR}.3"
 
 DEPENDS += "virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q"
 
@@ -18,7 +18,6 @@ SRC_URI[sha256sum] = "d53216d5f9e3f7803983ac1577d83985dfda33145e4711300f4ad5cbbe
 
 EXTRA_OECONF_armv7a = " --enable-neon --disable-static"
 CFLAGS += " -I${STAGING_INCDIR}/xorg -I${STAGING_INCDIR}/drm"
-LDFLAGS += "-lm -ldl -lX11 -lGAL-x11"
 
 S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}/EXA/"
 

@@ -17,16 +17,6 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://fix-conflicting-TLS-definition.patch \
           "
 
-GPU_XLIBS = "libegl-x11-mx6 libegl-x11-mx6-dev libegl-x11-mx6-dbg \
-	libgal-x11-mx6 libgal-x11-mx6-dev libgal-x11-mx6-dbg \
-	libvivante-x11-mx6 libvivante-x11-mx6-dev libvivante-x11-mx6-dbg \
-	"
-
-GPU_DFBLIBS = "libegl-dfb-mx6 libegl-dfb-mx6-dev libegl-dfb-mx6-dbg \
-	libgal-dfb-mx6 libgal-dfb-mx6-dev libgal-dfb-mx6-dbg \
-	libvivante-dfb-mx6 libvivante-dfb-mx6-dev libvivante-dfb-mx6-dbg \
-	"
-
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgles-mx6 libgles-mx6-dev libgles-mx6-dbg \
 	libgles2-mx6 libgles2-mx6-dev libgles2-mx6-dbg \
@@ -34,12 +24,10 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libopencl-mx6 libopencl-mx6-dev libopencl-mx6-dbg \
 	libopenvg-mx6 libopenvg-mx6-dev libopenvg-mx6-dbg \
 	libvdk-mx6 libvdk-mx6-dev libvdk-mx6-dbg \
-	libegl-fb-mx6 libegl-fb-mx6-dev libegl-fb-mx6-dbg \
-	libgal-fb-mx6 libgal-fb-mx6-dev libgal-fb-mx6-dbg \
-	libvivante-fb-mx6 libvivante-fb-mx6-dev libvivante-fb-mx6-dbg \
-	${@base_contains("DISTRO_FEATURES", "x11", "${GPU_XLIBS}", "", d)} \
-	${@base_contains("DISTRO_FEATURES", "directfb", "${GPU_DFBLIBS}", "", d)} \
-	"
+	libegl-mx6 libegl-mx6-dev libegl-mx6-dbg \
+	libgal-mx6 libgal-mx6-dev libgal-mx6-dbg \
+	libvivante-mx6 libvivante-mx6-dev libvivante-mx6-dbg \
+"
 
 USE_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
 USE_DFB = "${@base_contains("DISTRO_FEATURES", "directfb", "yes", "no", d)}"
@@ -69,12 +57,6 @@ do_install () {
     rm -r ${D}${includedir}/GL
     cp -axr ${S}/opt ${D}
 
-    # FIXME: Drop default library as we need to explicit link to one
-    #        of supported backends
-    rm ${D}${libdir}/libEGL.so \
-       ${D}${libdir}/libGAL.so \
-       ${D}${libdir}/libVIVANTE.so
-
     if [ "${USE_X11}" = "yes" ]; then
         find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
         find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'
@@ -88,6 +70,24 @@ do_install () {
             find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
         fi
     fi
+
+    # We'll only have one backend here so we rename it to generic name
+    # and avoid rework in other packages, when possible
+    rm ${D}${libdir}/libEGL.so ${D}${libdir}/libGAL.so \
+       ${D}${libdir}/libVIVANTE.so
+
+    renamed=
+    for backend in x11 fb dfb; do
+        for f in $(find ${D}${libdir} -name "*-$backend.so"); do
+            if [ -n "$renamed" ] && [ "$renamed" != "$backend" ]; then
+                bberror "More than one GPU backend is installed ($backend and $renamed)."
+                exit 1
+            fi
+
+            renamed=$backend
+            mv $f $(echo $f | sed "s,-$backend\.so,.so,g")
+         done
+    done
 
     find ${D}${libdir} -type f -exec chmod 644 {} \;
     find ${D}${includedir} -type f -exec chmod 644 {} \;
@@ -103,29 +103,13 @@ FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
 
-FILES_libegl-fb-mx6 = "${libdir}/libEGL-fb${SOLIBS}"
-FILES_libegl-fb-mx6-dev = "${libdir}/libEGL-fb${SOLIBSDEV}"
-FILES_libegl-fb-mx6-dbg = "${libdir}/.debug/libEGL-fb${SOLIBS}"
+FILES_libegl-mx6 = "${libdir}/libEGL${SOLIBS}"
+FILES_libegl-mx6-dev = "${libdir}/libEGL${SOLIBSDEV}"
+FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 
-FILES_libegl-x11-mx6 = "${libdir}/libEGL-x11${SOLIBS}"
-FILES_libegl-x11-mx6-dev = "${libdir}/libEGL-x11${SOLIBSDEV}"
-FILES_libegl-x11-mx6-dbg = "${libdir}/.debug/libEGL-x11${SOLIBS}"
-
-FILES_libegl-dfb-mx6 = "${libdir}/libEGL-dfb${SOLIBS}"
-FILES_libegl-dfb-mx6-dev = "${libdir}/libEGL-dfb${SOLIBSDEV}"
-FILES_libegl-dfb-mx6-dbg = "${libdir}/.debug/libEGL-dfb${SOLIBS}"
-
-FILES_libgal-fb-mx6 = "${libdir}/libGAL-fb${SOLIBS}"
-FILES_libgal-fb-mx6-dev = "${libdir}/libGAL-fb${SOLIBSDEV}"
-FILES_libgal-fb-mx6-dbg = "${libdir}/.debug/libGAL-fb${SOLIBS}"
-
-FILES_libgal-x11-mx6 = "${libdir}/libGAL-x11${SOLIBS}"
-FILES_libgal-x11-mx6-dev = "${libdir}/libGAL-x11${SOLIBSDEV}"
-FILES_libgal-x11-mx6-dbg = "${libdir}/.debug/libGAL-x11${SOLIBS}"
-
-FILES_libgal-dfb-mx6 = "${libdir}/libGAL-dfb${SOLIBS}"
-FILES_libgal-dfb-mx6-dev = "${libdir}/libGAL-dfb${SOLIBSDEV}"
-FILES_libgal-dfb-mx6-dbg = "${libdir}/.debug/libGAL-dfb${SOLIBS}"
+FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
+FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV}"
+FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
 
 FILES_libgles-mx6 = "${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBS}"
 FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV}"
@@ -152,17 +136,9 @@ FILES_libvdk-mx6 = "${libdir}/libVDK${SOLIBS}"
 FILES_libvdk-mx6-dev = "${includedir}/*vdk.h ${libdir}/libVDK${SOLIBSDEV}"
 FILES_libvdk-mx6-dbg = "${libdir}/.debug/libVDK${SOLIBS}"
 
-FILES_libvivante-fb-mx6 = "${libdir}/libVIVANTE-fb${SOLIBS}"
-FILES_libvivante-fb-mx6-dev = "${libdir}/libVIVANTE-fb${SOLIBSDEV}"
-FILES_libvivante-fb-mx6-dbg = "${libdir}/.debug/libVIVANTE-fb${SOLIBS}"
-
-FILES_libvivante-x11-mx6 = "${libdir}/libVIVANTE-x11${SOLIBS}"
-FILES_libvivante-x11-mx6-dev = "${libdir}/libVIVANTE-x11${SOLIBSDEV}"
-FILES_libvivante-x11-mx6-dbg = "${libdir}/.debug/libVIVANTE-x11${SOLIBS}"
-
-FILES_libvivante-dfb-mx6 = "${libdir}/libVIVANTE-dfb${SOLIBS}"
-FILES_libvivante-dfb-mx6-dev = "${libdir}/libVIVANTE-dfb${SOLIBSDEV}"
-FILES_libvivante-dfb-mx6-dbg = "${libdir}/.debug/libVIVANTE-dfb${SOLIBS}"
+FILES_libvivante-mx6 = "${libdir}/libVIVANTE${SOLIBS}"
+FILES_libvivante-mx6-dev = "${libdir}/libVIVANTE${SOLIBSDEV}"
+FILES_libvivante-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
