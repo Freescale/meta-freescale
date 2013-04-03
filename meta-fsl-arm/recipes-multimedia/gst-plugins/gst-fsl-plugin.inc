@@ -21,6 +21,7 @@ inherit autotools pkgconfig
 
 PLATFORM_mx5 = "MX51"
 PLATFORM_mx6 = "MX6"
+PLATFORM_mx28 = "MX28"
 
 # Todo add a mechanism to map posible build targets
 INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include"
