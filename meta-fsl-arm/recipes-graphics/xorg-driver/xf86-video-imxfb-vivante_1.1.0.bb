@@ -7,7 +7,7 @@ require recipes-graphics/xorg-driver/xorg-driver-video.inc
 PE = "3"
 PR = "${INC_PR}.3"
 
-DEPENDS += "virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q"
+DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q"
 
 LIC_FILES_CHKSUM = "file://src/vivante_fbdev/vivante.h;endline=19;md5=93a322f91ec495569dcbcfbb2a95454a"
 
