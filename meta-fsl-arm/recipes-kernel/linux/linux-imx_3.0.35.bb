@@ -22,6 +22,3 @@ LOCALVERSION_mx6dl = "-3.0.0+yocto"
 SRC_URI += "file://fix_getrusage_for_perf.patch \
             file://egalax_ts-Add-support-for-single-touch-in-Kconfig.patch \
            "
-
-# iMX6Q SabreLITE changes done by Boundary Devices
-SRC_URI_append_imx6qsabrelite = " file://sync-boundary-changes.patch"
