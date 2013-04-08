@@ -18,6 +18,7 @@ SRC_URI[sha256sum] = "d53216d5f9e3f7803983ac1577d83985dfda33145e4711300f4ad5cbbe
 
 EXTRA_OECONF_armv7a = " --enable-neon --disable-static"
 CFLAGS += " -I${STAGING_INCDIR}/xorg -I${STAGING_INCDIR}/drm"
+LDFLAGS += " -lGAL"
 
 S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}/EXA/"
 
