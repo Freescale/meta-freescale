@@ -72,7 +72,6 @@ PREFERRED_PROVIDER_virtual/libgles1_mx6 ?= "gpu-viv-bin-mx6q"
 PREFERRED_PROVIDER_virtual/libgles2_mx6 ?= "gpu-viv-bin-mx6q"
 
 PREFERRED_PROVIDER_virtual/kernel_mx3 = "linux-fslc"
-PREFERRED_PROVIDER_u-boot_mx6dl = "u-boot-imx"
 
 EXTRA_IMAGEDEPENDS = "u-boot"
 
