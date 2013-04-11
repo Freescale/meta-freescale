@@ -28,8 +28,8 @@ do_install_append () {
     cp -axr ${S}/src/*.h ${D}${includedir}/xorg
     find ${D}${includedir} -type f -exec chmod 660 {} \;
 
-    # don't install libtool (*.la) archive not usefull, fix Makefile.am
-    find ${D}${libdir}/xorg/modules -regex ".*\.la$" | xargs rm -f --
+    # FIXME: don't install libtool (*.la) file
+    rm ${D}${libdir}/xorg/modules/extensions/*.la
 }
 
 FILES_${PN}-dev += "${includedir}/xorg/*.h"
