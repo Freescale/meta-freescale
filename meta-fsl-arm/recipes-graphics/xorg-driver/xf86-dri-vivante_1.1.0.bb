@@ -30,6 +30,10 @@ do_install_append () {
 
     # FIXME: don't install libtool (*.la) file
     rm ${D}${libdir}/xorg/modules/extensions/*.la
+
+    # FIXME: The Xorg driver has a hardcoded library name
+    mv ${D}${libdir}/xorg/modules/extensions/libdri.so \
+       ${D}${libdir}/xorg/modules/extensions/libvivante_dri.so
 }
 
 FILES_${PN}-dev += "${includedir}/xorg/*.h"
