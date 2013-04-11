@@ -36,7 +36,7 @@ do_install_append () {
 	find ${D}${includedir} -type f -exec chmod 660 {} \;
 }
 
-RDEPENDS_${PN} += "xserver-xorg-module-exa xf86-dri-vivante"
+RDEPENDS_${PN} += "xserver-xorg-module-exa mesa-driver-swrast xf86-dri-vivante"
 
 # Add the ABI dependency at package generation time, as otherwise bitbake will
 # attempt to find a provider for it (and fail) when it does the parse.
