@@ -44,10 +44,12 @@ MACHINE_FIRMWARE_mx6d = "firmware-imx-vpu-imx6d"
 MACHINE_FIRMWARE_mx6dl = "firmware-imx-vpu-imx6d"
 MACHINE_FIRMWARE_mx53 = "firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_mx51 = "firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
-MACHINE_FIRMWARE_mx35 = "firmware-imx-sdma-imx35"
-MACHINE_FIRMWARE_mx31 = "firmware-imx-sdma-imx31"
-MACHINE_FIRMWARE_mx27 = "firmware-imx-vpu-imx27"
-MACHINE_FIRMWARE_mx25 = "firmware-imx-sdma-imx25"
+
+# FIXME: Needs addition of firmware-imx of official BSPs
+#MACHINE_FIRMWARE_mx35 = "firmware-imx-sdma-imx35"
+#MACHINE_FIRMWARE_mx31 = "firmware-imx-sdma-imx31"
+#MACHINE_FIRMWARE_mx27 = "firmware-imx-vpu-imx27"
+#MACHINE_FIRMWARE_mx25 = "firmware-imx-sdma-imx25"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
