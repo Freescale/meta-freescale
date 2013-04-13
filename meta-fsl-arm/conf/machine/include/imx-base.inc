@@ -54,7 +54,9 @@ MACHINE_FIRMWARE_mx51 = "firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
 # Extra audio support
-MACHINE_EXTRA_RRECOMMENDS += "imx-audio"
+# FIXME: Add support for ALL SoC families
+MACHINE_EXTRA_RRECOMMENDS_append_mx5 = " imx-audio"
+MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " imx-audio"
 
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf"
