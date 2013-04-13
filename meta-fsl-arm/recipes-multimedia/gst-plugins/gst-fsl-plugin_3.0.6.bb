@@ -3,7 +3,7 @@
 
 require gst-fsl-plugin.inc
 
-DEPENDS = "gstreamer gst-plugins-base libfslcodec libfslparser"
+DEPENDS = "virtual/kernel gstreamer gst-plugins-base libfslcodec libfslparser"
 
 PR = "${INC_PR}.1"
 
