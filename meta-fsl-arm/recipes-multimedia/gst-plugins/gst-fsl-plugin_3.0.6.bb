@@ -5,7 +5,7 @@ require gst-fsl-plugin.inc
 
 DEPENDS = "gstreamer gst-plugins-base libfslcodec libfslparser"
 
-PR = "${INC_PR}.0"
+PR = "${INC_PR}.1"
 
 SRC_URI += "file://fix-missing-sys-types-h.patch \
             file://Link-with-the-Real-Time-Extension-lib.patch \
@@ -13,7 +13,7 @@ SRC_URI += "file://fix-missing-sys-types-h.patch \
 
 PACKAGE_NAME = "gst-fsl-plugins"
 
-SRC_URI[md5sum] = "fd7c9db129cbcc4dc79b7dd832061594"
-SRC_URI[sha256sum] = "546deb407993f726ef4e140f5bd734d612d5f8872c832ac820957f667f22306e"
+SRC_URI[md5sum] = "5416a727e8b0bd94eec077ac7d70aae7"
+SRC_URI[sha256sum] = "fdb0b5ab964f607a93664412702a131931da8ef0b557597cbf161c3d9c9d0c12"
 
 COMPATIBLE_MACHINE = "(mx28)"
