@@ -63,6 +63,7 @@ MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf"
 
 # Gstreamer plugin
 MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
+MACHINE_GSTREAMER_PLUGIN_mx3 ?= ""
 
 # mx5 GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx5 ?= "amd-gpu-x11-bin-mx51"
