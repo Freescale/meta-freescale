@@ -10,7 +10,7 @@ PROVIDES += "u-boot"
 
 PV = "v2013.04"
 
-SRCREV = "debad5d6cba77538d183ac947a41f6b88f9498b2"
+SRCREV = "6675aaab17b944867aa13164e50ecdab0884b8b8"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
