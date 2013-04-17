@@ -13,6 +13,9 @@ inherit kernel
 LOCALVERSION ?= "+yocto"
 SCMVERSION ?= "y"
 
+# Add imx-test support hacks
+IMX_TEST_SUPPORT ?= "y"
+
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git \
            file://defconfig \
 "
@@ -51,13 +54,15 @@ do_configure_prepend() {
 
 # install nedded headers for imx-test compilation
 do_install_append() {
-	# bounds.h may be used by a module and is currently missing
-	if [ -d include/generated ]; then
-		cp include/generated/* $kerneldir/include/generated/
-	fi
+	if [ "${IMX_TEST_SUPPORT}" = "y" ]; then
+		# bounds.h may be used by a module and is currently missing
+		if [ -d include/generated ]; then
+			cp include/generated/* $kerneldir/include/generated/
+		fi
 
-	# Host architecture object file
-	rm -f $kerneldir/scripts/kconfig/kxgettext.o
+		# Host architecture object file
+		rm -f $kerneldir/scripts/kconfig/kxgettext.o
+	fi
 }
 
 sysroot_stage_all_append() {
