@@ -9,8 +9,7 @@ include conf/machine/include/tune-arm926ejs.inc
 
 SOC_FAMILY = "mxs"
 
-UBOOT_ENTRYPOINT = "0x41008000"
-UBOOT_LOADADDRESS = "0x41008000"
+UBOOT_ENTRYPOINT = "0x40008000"
 UBOOT_MAKE_TARGET = "u-boot.sb"
 UBOOT_SUFFIX = "sb"
 
