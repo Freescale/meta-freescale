@@ -40,7 +40,9 @@ FILES_${PN}-dev += "${includedir}/xorg/*.h"
 FILES_${PN} += " ${libdir}/xorg/modules/extensions/*.so"
 FILES_${PN}-dbg += " ${libdir}/xorg/modules/extensions/.debug"
 
-RDEPENDS_${PN} += "xserver-xorg-extension-glx"
+RDEPENDS_${PN} += "xserver-xorg-extension-glx \
+                   xserver-xorg-extension-dri \
+                   xserver-xorg-extension-dri2"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
