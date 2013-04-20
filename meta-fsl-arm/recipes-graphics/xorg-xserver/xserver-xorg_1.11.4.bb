@@ -19,8 +19,7 @@ do_install_append_mx6 () {
     # FIXME: This is a workaround to ensure we use Vivante DRI
     rm ${D}${includedir}/xorg/dri.h \
        ${D}${includedir}/xorg/sarea.h \
-       ${D}${includedir}/xorg/dristruct.h \
-       ${D}${libdir}/xorg/modules/extensions/libdri.so
+       ${D}${includedir}/xorg/dristruct.h
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
