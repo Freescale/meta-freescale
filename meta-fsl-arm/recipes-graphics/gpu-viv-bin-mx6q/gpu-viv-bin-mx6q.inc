@@ -1,4 +1,5 @@
-# Copyright (C) 2012 Freescale Semiconductor
+# Copyright (C) 2012-2013 Freescale Semiconductor
+# Copyright (C) 2012-2013 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for imx6"
@@ -27,6 +28,7 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libegl-mx6 libegl-mx6-dev libegl-mx6-dbg \
 	libgal-mx6 libgal-mx6-dev libgal-mx6-dbg \
 	libvivante-mx6 libvivante-mx6-dev libvivante-mx6-dbg \
+	libvivante-dri-mx6 \
 "
 
 USE_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
@@ -58,6 +60,7 @@ do_install () {
     cp -axr ${S}/opt ${D}
 
     if [ "${USE_X11}" = "yes" ]; then
+        cp -r ${S}/usr/lib/dri ${D}${libdir}
         find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
         find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'
     else
@@ -139,6 +142,8 @@ FILES_libvdk-mx6-dbg = "${libdir}/.debug/libVDK${SOLIBS}"
 FILES_libvivante-mx6 = "${libdir}/libVIVANTE${SOLIBS}"
 FILES_libvivante-mx6-dev = "${libdir}/libVIVANTE${SOLIBSDEV}"
 FILES_libvivante-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
+
+FILES_libvivante-dri-mx6 = "${libdir}/dri/vivante_dri.so"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
