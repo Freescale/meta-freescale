@@ -3,12 +3,12 @@
 
 include linux-imx.inc
 
-PR = "${INC_PR}.13"
+PR = "${INC_PR}.14"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
 # Revision of 1.1.0 branch
-SRCREV = "64eb436e9876a2d95abea34464addf37a0888f61"
+SRCREV = "21304e170e6aa140d189158fcf27d731d3547969"
 LOCALVERSION = "-1.1.0+yocto"
 
 # Revision of 12.10.02 branch
