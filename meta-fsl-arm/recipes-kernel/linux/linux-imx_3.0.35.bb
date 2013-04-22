@@ -11,11 +11,11 @@ COMPATIBLE_MACHINE = "(mx6)"
 SRCREV = "64eb436e9876a2d95abea34464addf37a0888f61"
 LOCALVERSION = "-1.1.0+yocto"
 
-# Revision of 12.10.02 tag
+# Revision of 12.10.02 branch
 SRCREV_mx6sl = "741f7dcf5dd1b5ce82986eda139ddbce69c66e31"
 LOCALVERSION_mx6sl = "-12.10.02+yocto"
 
-# Revision of 3.0.0 tag
+# Revision of 3.0.0 branch
 SRCREV_mx6dl = "7e8c89cd4b47c4ac6ec6a91a5f54d450688bde4f"
 LOCALVERSION_mx6dl = "-3.0.0+yocto"
 
