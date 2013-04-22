@@ -3,12 +3,12 @@
 
 include linux-imx.inc
 
-PR = "${INC_PR}.12"
+PR = "${INC_PR}.13"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
-# Revision of 1.1.0 tag
-SRCREV = "c27cb3851bb6f822f8a92e4a1e10fba19284bdd4"
+# Revision of 1.1.0 branch
+SRCREV = "64eb436e9876a2d95abea34464addf37a0888f61"
 LOCALVERSION = "-1.1.0+yocto"
 
 # Revision of 12.10.02 tag
