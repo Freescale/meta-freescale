@@ -24,8 +24,13 @@ ACCEPT_FSL_EULA = "1"
 Contributing
 ------------
 
-To contribute to this layer you should the patches for review to the
-mailing list.
+To contribute to this layer you should submit the patches for review to the
+mailing list (meta-freescale@yoctoproject.org).
+
+Please refer to:
+https://wiki.yoctoproject.org/wiki/Contribution_Guidelines#General_Information
+
+for some useful guidelines to be followed when submitting patches.
 
 Mailing list:
 
