@@ -5,11 +5,11 @@ PR = "${INC_PR}.23"
 
 include linux-imx.inc
 
-COMPATIBLE_MACHINE = "(mxs|mx5)"
+COMPATIBLE_MACHINE = "(mx28|mx5)"
 
 # Revision of imx_2.6.35_1.1.0 branch
-SRCREV_mxs = "914558e17e95a55ac1eac9a6c219d17d7825f715"
-LOCALVERSION_mxs = "-1.1.0+yocto"
+SRCREV_mx28 = "914558e17e95a55ac1eac9a6c219d17d7825f715"
+LOCALVERSION_mx28 = "-1.1.0+yocto"
 
 # Revision of imx_2.6.35_11.09.01 branch
 SRCREV_mx5 = "ed51f22bea310805bfdcc1be236cc56ff0832b3a"
@@ -20,6 +20,6 @@ SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
             file://perf-avoid-use-sysroot-headers.patch \
 "
 
-SRC_URI_append_mxs = " \
+SRC_URI_append_mx28 = " \
            file://mxs-duart-use-ttyAMA-for-device-name.patch \
 "
