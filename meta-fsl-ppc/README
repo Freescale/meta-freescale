@@ -1,15 +1,14 @@
-meta-fsl-ppc
-==========
+OpenEmbedded/Yocto BSP layer for Freescale's PPC platforms
+==========================================================
 
-This is the location for Freescale PowerPC maintained BSP's
+This layer provides support for Freescale's PPC platforms for use with
+OpenEmbedded and/or Yocto.
 
 This layer depends on:
+
 URI: git://git.openembedded.org/openembedded-core
 branch: master
 revision: HEAD
-
-It's testing to be working against YP 1.1 (edison) onwards after
-checking out the appropriate branch
 
 Contributing
 ------------
@@ -26,14 +25,15 @@ Source code:
     git://git.yoctoproject.org/meta-fsl-ppc
     http://git.yoctoproject.org/git/meta-fsl-ppc
 
-When sending patches, please use something like:
+When creating patches, please use something like:
 
-git send-email --to meta-freescale@yoctoproject.org --subject-prefix='meta-fsl-ppc][PATCH'
-
+    git format-patch -s --subject-prefix='meta-fsl-ppc dylan][PATCH' origin
 optionally include a branch if the patch applies to multiple branches,
 otherwise master is assumed
 
-git send-email --to meta-freescale@yoctoproject.org --subject-prefix='meta-fsl-ppc][PATCH][denzil][danny][master'
+When sending patches, please use something like:
+
+    git send-email --to meta-freescale@yoctoproject.org <generated patch>
 
 git.yoctoproject.org vs. git.freescale.com:
 -------------------------------------------
