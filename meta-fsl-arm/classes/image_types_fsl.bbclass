@@ -118,7 +118,7 @@ generate_imx_sdcard () {
 	BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
 	                  | awk '/ 1 / { print substr($4, 1, length($4 -1)) / 1024 }')
 	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
-	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
+	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
 
 	# Copy boot scripts
 	for item in ${BOOT_SCRIPTS}; do
@@ -221,7 +221,7 @@ generate_mxs_sdcard () {
 	        | awk '/ 2 / { print substr($4, 1, length($4 -1)) / 1024 }')
 
 		mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
-		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/uImage-${MACHINE}.bin ::/uImage
+		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
 		if test -n "${KERNEL_DEVICETREE}"; then
 			for DTS_FILE in ${KERNEL_DEVICETREE}; do
 				DTS_BASE_NAME=`basename ${DTS_FILE} | awk -F "." '{print $1}'`
