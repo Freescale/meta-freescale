@@ -2,10 +2,10 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require gst-fsl-plugin.inc
-DEPENDS += "fsl-mm-codeclib"
-RDEPENDS_${PN} = "fsl-mm-codeclib"
+DEPENDS += "fsl-mm-codeclib fsl-mm-flv-codeclib fsl-mm-mp3enc-codeclib"
+RDEPENDS_${PN} = "fsl-mm-codeclib fsl-mm-flv-codeclib fsl-mm-mp3enc-codeclib"
 
-PR = "${INC_PR}.3"
+PR = "${INC_PR}.4"
 
 SRC_URI += "file://fix_segment_fault_in_v4lsink_for_yocto.patch \
             file://fix-missing-sys-types-h.patch"
