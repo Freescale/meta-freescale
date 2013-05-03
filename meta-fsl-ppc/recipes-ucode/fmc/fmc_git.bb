@@ -3,7 +3,7 @@ SECTION = "fmc"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a504ab5a8ff235e67c7301214749346c"
 
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git"
 SRCREV = "6db53fae9dfe72db0312a383733e0d3598aad3f2"
@@ -20,6 +20,8 @@ EXTRA_OEMAKE = 'FMD_USPACE_HEADER_PATH="${STAGING_INCDIR}/fmd" \
 EXTRA_OEMAKE_virtclass-native = 'FMCHOSTMODE=1 FMD_USPACE_HEADER_PATH="${STAGING_INCDIR}/fmd" \
     FMD_USPACE_LIB_PATH="${STAGING_LIBDIR}" LIBXML2_HEADER_PATH="${STAGING_INCDIR}/libxml2" \
     TCLAP_HEADER_PATH="${STAGING_INCDIR}" '
+
+PARALLEL_MAKE = ""
 
 do_compile () {
     if [ "b4860qds" = "${MACHINE}" ] || [ "b4420qds" = "${MACHINE}" ];then
@@ -40,8 +42,12 @@ do_install () {
 
     install -d ${D}/etc/fmc/config
     install -m 644 ${S}/etc/fmc/config/hxs_pdl_v3.xml ${D}/etc/fmc/config
-}
 
-PARALLEL_MAKE = ""
+    install -d ${D}/${includedir}/fmc
+    install ${S}/source/fmc.h ${D}/${includedir}/fmc
+
+    install -d ${D}/${libdir}
+    install ${S}/source/libfmc.a ${D}/${libdir}
+}
 
 BBCLASSEXTEND = "native"
