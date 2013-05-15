@@ -1,4 +1,4 @@
-# Copyright (C) 2011 Freescale Semiconductor
+# Copyright (C) 2011-2013 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "bootloader for imx platforms"
@@ -22,22 +22,12 @@ SRC_URI_append_imx5 = " \
            file://mx53_loco_bootenv.patch \
 "
 
-# Revision of imx_3.0.35_1.1.0 branch
-SRCREV_mx6 = "98a5299c945cb7e440e3c3d9c572f017e5a02ede"
+# Revision of imx_3.0.35_4.0.0 branch
+SRCREV_mx6 = "5899674bf39544bec47e209649a723cf7348d3ba"
 SRC_URI_append_mx6 = " \
    file://mx6q_sabreauto-Fix-the-patch-for-the-default-environ.patch \
    file://mx6q_sabresd-Change-default-environment-to-work-with.patch \
-"
-
-# Revision of imx_3.0.35_12.10.02 branch
-SRCREV_mx6sl = "27cdce50f9a7fc30d7cff067b420a32e5f2c5959"
-SRC_URI_append_mx6sl = " \
    file://mx6sl_evk-Fix-the-patch-for-the-default-environment-.patch \
-"
-
-# Revision of imx_3.0.35_3.0.0 branch
-SRCREV_mx6dl = "d4057eba315edbc8335c138c0c9edbe2109ea36e"
-SRC_URI_append_mx6dl = " \
    file://mx6dl_sabresd-Change-default-environment-to-work-wit.patch \
 "
 
