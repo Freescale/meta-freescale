@@ -27,6 +27,7 @@ PLATFORM_mx28 = "MX28"
 INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include"
 EXTRA_OEMAKE = "INCLUDES=${INCLUDE_DIR}"
 EXTRA_OECONF = "PLATFORM=${PLATFORM} --disable-valgrind --disable-examples --disable-debug"
+CACHED_CONFIGUREVARS += "CROSS_ROOT=${STAGING_DIR_TARGET}"
 
 PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \
              ${PN}-libme ${PN}-libgstbufmeta ${PN}-libmfwba \
