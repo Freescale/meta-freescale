@@ -34,6 +34,8 @@ PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \
              ${PN}-libfwvss ${PN}-gplay"
 
 FILES_${PN} = "${libdir}/gstreamer-0.10/*.so ${datadir}"
+RDEPENDS_${PN} += "gst-plugins-good-id3demux"
+
 FILES_${PN}-dbg += "${libdir}/gstreamer-0.10/.debug"
 FILES_${PN}-dev += "${libdir}/gstreamer-0.10/*.la ${libdir}/pkgconfig/*.pc"
 FILES_${PN}-staticdev += "${libdir}/gstreamer-0.10/*.a"
