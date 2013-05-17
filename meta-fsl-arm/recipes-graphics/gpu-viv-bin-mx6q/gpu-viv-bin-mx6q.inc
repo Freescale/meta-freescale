@@ -5,7 +5,7 @@
 DESCRIPTION = "GPU driver and apps for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=c831981a5cbb2673318b77fb2f07014c"
+LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=19f5925343fa3da65596eeaa4ddb5fd3"
 PROVIDES += "virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2"
 
 INC_PR = "r5"
@@ -19,6 +19,7 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
           "
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
+	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
 	libgles-mx6 libgles-mx6-dev libgles-mx6-dbg \
 	libgles2-mx6 libgles2-mx6-dev libgles2-mx6-dbg \
 	libglslc-mx6 libglslc-mx6-dev libglslc-mx6-dbg \
@@ -56,8 +57,12 @@ do_install () {
 
     cp ${S}/usr/lib/*.so ${D}${libdir}
     cp -axr ${S}/usr/include/* ${D}${includedir}
-    rm -r ${D}${includedir}/GL
     cp -axr ${S}/opt ${D}
+
+    # FIXME: Remove Wayland contents
+    rm -r ${D}${includedir}/wayland-viv
+    find ${D}${libdir} -name '*-wl.so' -exec rm '{}' ';'
+    rm ${D}${libdir}/*wayland*.so
 
     if [ "${USE_X11}" = "yes" ]; then
         cp -r ${S}/usr/lib/dri ${D}${libdir}
@@ -113,6 +118,9 @@ FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
 FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV}"
 FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
+
+FILES_libgl-mx6 = "${libdir}/libGL${SOLIBS}"
+FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
 
 FILES_libgles-mx6 = "${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBS}"
 FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV}"
