@@ -3,10 +3,9 @@
 
 include linux-fslc.inc
 
-PV = "3.8+git${SRCPV}"
-PR = "r5"
+PV = "3.9+git${SRCPV}"
 
-# patches-3.8
-SRCREV = "8a197c14157aca439ce104e4bf6cd12076f81630"
+# patches-3.9
+SRCREV = "10bc2b6b466ab890c3e7a6623d13b7dbea788ce4"
 
 COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6)"
