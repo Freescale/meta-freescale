@@ -1,0 +1,29 @@
+From: Javier Viguera <javier.viguera@digi.com>
+Date: Tue, 21 May 2013 16:52:52 +0200
+Subject: [PATCH] Use library's SONAME in dlopen
+
+The 'libmfwba.so' symbolic link is only installed with the development
+package, and without that symlink some gstreamer pipelines (mostly using
+mfw_isink) fail with:
+
+Can not open dll, libmfwba.so: cannot open shared object file: No such file or directory.
+Caught SIGSEGV accessing address (nil)
+
+Signed-off-by: Javier Viguera <javier.viguera@digi.com>
+---
+ libs/vss/vss_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libs/vss/vss_common.c b/libs/vss/vss_common.c
+index 757c2fc..2044051 100755
+--- a/libs/vss/vss_common.c
++++ b/libs/vss/vss_common.c
+@@ -86,7 +86,7 @@ static void * g_dlhandle = NULL;
+ void open_allocator_dll()
+ {
+     char * errstr;
+-    g_dlhandle = dlopen("libmfwba.so", RTLD_LAZY);
++    g_dlhandle = dlopen("libmfwba.so.0", RTLD_LAZY);
+     
+     if (!g_dlhandle) {
+         printf("Can not open dll, %s.\n", dlerror());
