@@ -18,41 +18,38 @@ do_install_append() {
 	# FIXME: This link points to nowhere
 	rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
 
-	# LTIB move the files around or gst-fsl-plugin won't find them
-	for p in $(find ${D}${libdir}/imx-mm -mindepth 1 -maxdepth 1 -type d); do
-		mv $p/* ${D}${libdir}
-		rmdir $p
-	done
-	rmdir ${D}${libdir}/imx-mm
+    # LTIB move the files around or gst-fsl-plugin won't find them
+    for p in $(find ${D}${libdir}/imx-mm -mindepth 2 -maxdepth 2 -not -type d); do
+            mv $p ${D}${libdir}
+    done
+    rmdir ${D}${libdir}/imx-mm/video-codec
 
 	# FIXME: Drop examples
 	rm -r ${D}${datadir}/imx-mm
 }
 
 python populate_packages_prepend() {
-    do_split_packages(d, d.getVar('libdir', True), '^lib_(.*)_elinux\.so\..*',
-                      aux_files_pattern_verbatim='${libdir}/lib_%s_elinux.so.*',
-                      output_pattern='libfslcodec-audio-%s',
-                      description='Freescale IMX Codec (%s)',
-                      extra_depends='', prepend=True)
-
-    wrapdir = bb.data.expand('${libdir}/wrap', d)
-    do_split_packages(d, wrapdir, '^lib_(.*)_elinux\.so\..*',
-                      aux_files_pattern_verbatim='${libdir}/wrap/lib_%s_elinux.so.*',
-                      output_pattern='libfslcodec-audio-wrap-%s',
-                      description='Freescale IMX Codec Wrap (%s)',
-                      extra_depends='', prepend=True)
+    codecdir = bb.data.expand('${libdir}', d)
+    do_split_packages(d, codecdir, '^lib_([^_]*).*_arm.*_elinux\.so\..*',
+                      aux_files_pattern='${libdir}/imx-mm/audio-codec/wrap/lib_%sd_wrap_arm*_elinux.so.*',
+                      output_pattern='libfslcodec-%s',
+                      description='Freescale i.MX Codec (%s)',
+                      extra_depends='')
 
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
     for p in d.getVar('PACKAGES', True).split():
         d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
+        d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
 }
 
 # Ensure we get warnings if we miss something
 FILES_${PN} = ""
 
-FILES_${PN}-dev += "${libdir}/*/*${SOLIBSDEV} \
-                    ${libdir}/*/*/*${SOLIBSDEV}"
+FILES_${PN}-dev += "${libdir}/imx-mm/*/*${SOLIBSDEV} \
+                    ${libdir}/imx-mm/*/*/*${SOLIBSDEV}"
+
+# FIXME: The wrap and lib names does not match
+FILES_${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm*_elinux.so.*"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
