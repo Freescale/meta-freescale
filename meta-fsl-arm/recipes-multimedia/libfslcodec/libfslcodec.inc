@@ -14,6 +14,11 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 PACKAGES_DYNAMIC = "${PN}-*"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
+PACKAGES += "${PN}-meta"
+
+ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY_${PN}-meta = "1"
+
 do_install_append() {
 	# FIXME: This link points to nowhere
 	rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
@@ -41,6 +46,11 @@ python populate_packages_prepend() {
     for p in d.getVar('PACKAGES', True).split():
         d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
         d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
+
+    # Allow addition of all codecs in a image; useful specially for
+    # debugging.
+    codec_pkgs = oe.utils.packages_filter_out_system(d)
+    d.appendVar('RDEPENDS_libfslcodec-meta', ' ' + ' '.join(codec_pkgs))
 }
 
 # Ensure we get warnings if we miss something
