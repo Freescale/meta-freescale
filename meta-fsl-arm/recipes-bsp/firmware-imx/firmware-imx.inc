@@ -19,12 +19,10 @@ do_install() {
     find ${D}/lib/firmware/ -name Android.mk -exec rm '{}' ';'
     rm ${D}/lib/firmware/LICENCE.atheros_firmware \
        ${D}/lib/firmware/README
+
+    # FIXME: Remove firmware packaged in linux-firmware
+    rm -r ${D}/lib/firmware/ath6k ${D}/lib/firmware/ar3k
 }
-
-PACKAGES += "${PN}-ath6k ${PN}-ar3k"
-
-FILES_${PN}-ath6k = "/lib/firmware/ath6k/*"
-FILES_${PN}-ar3k  = "/lib/firmware/ar3k/*"
 
 python populate_packages_prepend() {
     vpudir = bb.data.expand('/lib/firmware/vpu', d)
