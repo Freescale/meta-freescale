@@ -8,7 +8,7 @@ include linux-imx.inc
 COMPATIBLE_MACHINE = "(mx28|mx5)"
 
 # Revision of imx_2.6.35_maintain branch
-SRCREV = "0f7b03c410f5baf1055a66860acc78d5b28a836d"
+SRCREV = "2796ca60635ad1170e9a2d7ad0d0aa49107e7102"
 LOCALVERSION = "-maintain+yocto"
 
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
