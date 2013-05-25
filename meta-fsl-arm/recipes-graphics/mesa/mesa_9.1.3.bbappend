@@ -34,3 +34,8 @@ python __anonymous () {
         # We are now machine specific
         d.setVar('PACKAGE_ARCH', d.getVar('MACHINE_ARCH'))
 }
+
+# FIXME: Dirty hack to allow use of Vivante GPU libGL binary
+do_install_append_mx6 () {
+    rm ${D}${libdir}/libGL.*
+}
