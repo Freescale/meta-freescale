@@ -9,8 +9,8 @@ LIC_FILES_CHKSUM = "file://src/dri.h;enline=27;md5=1d0d59e1dc96f5197ea3a8b101bf1
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
            file://fix-libdrm-link.patch"
-SRC_URI[md5sum] = "d872365c046738628a7016343ffdb79a"
-SRC_URI[sha256sum] = "d53216d5f9e3f7803983ac1577d83985dfda33145e4711300f4ad5cbbe28e32d"
+SRC_URI[md5sum] = "5c5b5be029b077346610518bb729c012"
+SRC_URI[sha256sum] = "c67249e68d4233eb1d0a5f337ded8f121dc61fa26fca102a00f93acc3e37ea0f"
 
 PE = "1"
 PR = "r0"
