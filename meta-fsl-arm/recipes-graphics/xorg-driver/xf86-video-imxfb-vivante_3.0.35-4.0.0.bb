@@ -9,12 +9,12 @@ PR = "${INC_PR}.3"
 
 DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q"
 
-LIC_FILES_CHKSUM = "file://src/vivante_fbdev/vivante.h;endline=19;md5=93a322f91ec495569dcbcfbb2a95454a"
+LIC_FILES_CHKSUM = "file://src/vivante_fbdev/vivante.h;endline=19;md5=641ac6e6d013833e36290797f4d7089c"
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
            file://Makefile.am-remove-prefixed-include-path.patch"
-SRC_URI[md5sum] = "d872365c046738628a7016343ffdb79a"
-SRC_URI[sha256sum] = "d53216d5f9e3f7803983ac1577d83985dfda33145e4711300f4ad5cbbe28e32d"
+SRC_URI[md5sum] = "5c5b5be029b077346610518bb729c012"
+SRC_URI[sha256sum] = "c67249e68d4233eb1d0a5f337ded8f121dc61fa26fca102a00f93acc3e37ea0f"
 
 EXTRA_OECONF_armv7a = " --enable-neon --disable-static"
 CFLAGS += " -I${STAGING_INCDIR}/xorg -I${STAGING_INCDIR}/drm"
