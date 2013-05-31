@@ -33,6 +33,17 @@ PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \
              ${PN}-libme ${PN}-libgstbufmeta ${PN}-libmfwba \
              ${PN}-libfwvss ${PN}-gplay"
 
+# FIXME: Add all features
+# feature from excluded mm packages
+PACKAGECONFIG[ac3] += "--enable-ac3dec,--disable-ac3dec,libfslac3codec"
+# feature from special mm packages
+PACKAGECONFIG[aacp] += "--enable-aacpdec,--disable-aacpdec,libfslaacpcodec"
+MSDEPENDS = "libfslmsparser libfslmscodec"
+PACKAGECONFIG[wma10dec] +="--enable-wma10dec,--disable-wma10dec,${MSDEPENDS}"
+PACKAGECONFIG[wma8enc] +="--enable-wma8enc,--disable-wma8enc,${MSDEPENDS}"
+PACKAGECONFIG[wmv9mpdec] +="--enable-wmv9mpdec,--disable-wmv9mpdec,${MSDEPENDS}"
+PACKAGECONFIG[wmv78dec] +="--enable-wmv78dec,--disable-wmv78dec,${MSDEPENDS}"
+
 FILES_${PN} = "${libdir}/gstreamer-0.10/*.so ${datadir}"
 RDEPENDS_${PN} += "gst-plugins-good-id3demux"
 
