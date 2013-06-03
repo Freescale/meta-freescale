@@ -84,5 +84,5 @@ FILES_lib2dz160-mx51-dbg = "${libdir}/.debug/lib2dz160${SOLIBS}"
 FILES_lib2dz430-mx51 = "${libdir}/lib2dz430${SOLIBS}"
 FILES_lib2dz430-mx51-dbg = "${libdir}/.debug/lib2dz430${SOLIBS}"
 
-COMPATIBLE_MACHINE = "(mx5)"
+COMPATIBLE_MACHINE = "${@base_contains('DISTRO_FEATURES', 'x11', '(mx5)', 'Invalid!', d)}"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
