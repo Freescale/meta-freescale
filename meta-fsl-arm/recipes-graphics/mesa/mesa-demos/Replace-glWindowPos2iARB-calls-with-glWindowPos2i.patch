@@ -1,0 +1,355 @@
+From 757649a766f90e745f24df1d191caeef15c71399 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Tue, 4 Jun 2013 09:28:51 -0300
+Subject: [PATCH] Replace glWindowPos2iARB calls with glWindowPos2i
+
+Vivante libGL does not provide the glWindowPos2iARB symbol, but
+glWindowPos2i. Use this instead.
+
+Upstream-Status: Inapropriate [embedded specific]
+
+Reported-by: Jeremy Stashluk <jstashluk@dekaresearch.com>
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ src/demos/copypix.c             |  4 ++--
+ src/demos/engine.c              |  2 +-
+ src/demos/fogcoord.c            |  4 ++--
+ src/glsl/shadow_sampler.c       |  2 +-
+ src/tests/auxbuffer.c           |  2 +-
+ src/tests/copypixrate.c         |  2 +-
+ src/tests/drawbuffers.c         |  2 +-
+ src/tests/drawbuffers2.c        |  2 +-
+ src/tests/fbotest1.c            |  2 +-
+ src/tests/fbotest2.c            |  4 ++--
+ src/tests/fbotest3.c            |  2 +-
+ src/tests/readrate.c            | 10 +++++-----
+ src/tests/viewmemory.c          |  2 +-
+ src/trivial/clear-fbo-scissor.c |  2 +-
+ src/trivial/clear-fbo-tex.c     |  2 +-
+ src/trivial/clear-fbo.c         |  2 +-
+ src/trivial/readpixels.c        |  2 +-
+ src/trivial/tri-fbo.c           |  2 +-
+ src/xdemos/glxsnoop.c           |  2 +-
+ src/xdemos/wincopy.c            |  4 ++--
+ 20 files changed, 28 insertions(+), 28 deletions(-)
+
+diff --git a/src/demos/copypix.c b/src/demos/copypix.c
+index 286c5a9..041b567 100644
+--- a/src/demos/copypix.c
++++ b/src/demos/copypix.c
+@@ -54,7 +54,7 @@ static void Display( void )
+    glClear( GL_COLOR_BUFFER_BIT );
+ 
+    /* draw original image */
+-   glWindowPos2iARB(dx, dy);                    
++   glWindowPos2i(dx, dy);                    
+    glDrawPixels(ImgWidth, ImgHeight, ImgFormat, GL_UNSIGNED_BYTE, Image);
+ 
+    if (Scissor)
+@@ -71,7 +71,7 @@ static void Display( void )
+ 
+    /* draw copy */
+    glPixelZoom(Xzoom, Yzoom);
+-   glWindowPos2iARB(Xpos, Ypos);
++   glWindowPos2i(Xpos, Ypos);
+    glCopyPixels(dx, dy, ImgWidth, ImgHeight, GL_COLOR);
+    glPixelZoom(1, 1);
+ 
+diff --git a/src/demos/engine.c b/src/demos/engine.c
+index 928fcbb..beace4c 100644
+--- a/src/demos/engine.c
++++ b/src/demos/engine.c
+@@ -971,7 +971,7 @@ Draw(void)
+       glDisable(GL_LIGHTING);
+       glDisable(GL_TEXTURE_2D);
+       glColor3f(1, 1 , 1);
+-      glWindowPos2iARB(10, 10);
++      glWindowPos2i(10, 10);
+       PrintString(s);
+       if (lit)
+ 	 glEnable(GL_LIGHTING);
+diff --git a/src/demos/fogcoord.c b/src/demos/fogcoord.c
+index 567eec0..e833009 100644
+--- a/src/demos/fogcoord.c
++++ b/src/demos/fogcoord.c
+@@ -68,14 +68,14 @@ PrintInfo(void)
+ 
+    sprintf(s, "Mode(m): %s  Start(s/S): %g  End(e/E): %g  Density(d/D): %g",
+            ModeStr, fogStart, fogEnd, fogDensity);
+-   glWindowPos2iARB(5, 20);
++   glWindowPos2i(5, 20);
+    PrintString(s);
+ 
+    sprintf(s, "Arrays(a): %s  glFogCoord(c): %s  EyeZ(z/z): %g",
+            (Arrays ? "Yes" : "No"),
+            (fogCoord ? "Yes" : "No"),
+            camz);
+-   glWindowPos2iARB(5, 5);
++   glWindowPos2i(5, 5);
+    PrintString(s);
+ }
+ 
+diff --git a/src/glsl/shadow_sampler.c b/src/glsl/shadow_sampler.c
+index b830030..eb82d8b 100644
+--- a/src/glsl/shadow_sampler.c
++++ b/src/glsl/shadow_sampler.c
+@@ -85,7 +85,7 @@ Redisplay(void)
+    glPopMatrix();
+ 
+    glUseProgram(0);
+-   glWindowPos2iARB(80, 20);
++   glWindowPos2i(80, 20);
+    PrintString("white   black   white   black");
+ 
+    {
+diff --git a/src/tests/auxbuffer.c b/src/tests/auxbuffer.c
+index 5fa399a..0cd5f47 100644
+--- a/src/tests/auxbuffer.c
++++ b/src/tests/auxbuffer.c
+@@ -419,7 +419,7 @@ event_loop(Display *dpy, Window win)
+       /* Copy aux buffer image to back color buffer */
+       glReadBuffer(GL_AUX0);
+       glDrawBuffer(GL_BACK);
+-      glWindowPos2iARB(0, 0);
++      glWindowPos2i(0, 0);
+       glDisable(GL_DEPTH_TEST);
+       glCopyPixels(0, 0, WinWidth, WinHeight, GL_COLOR);
+       glEnable(GL_DEPTH_TEST);
+diff --git a/src/tests/copypixrate.c b/src/tests/copypixrate.c
+index 2f64e0a..df1f9b0 100644
+--- a/src/tests/copypixrate.c
++++ b/src/tests/copypixrate.c
+@@ -91,7 +91,7 @@ BlitOne(void)
+    else
+ #endif
+    {
+-      glWindowPos2iARB(x, y);
++      glWindowPos2i(x, y);
+       glCopyPixels(0, 0, ImgWidth, ImgHeight, GL_COLOR);
+    }
+ }
+diff --git a/src/tests/drawbuffers.c b/src/tests/drawbuffers.c
+index fa2f8a7..cd5033f 100644
+--- a/src/tests/drawbuffers.c
++++ b/src/tests/drawbuffers.c
+@@ -88,7 +88,7 @@ Display(void)
+    glUseProgram(0);
+    glDisable(GL_DEPTH_TEST);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+-   glWindowPos2iARB(0, 0);
++   glWindowPos2i(0, 0);
+    glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+ 
+    free(buffer);
+diff --git a/src/tests/drawbuffers2.c b/src/tests/drawbuffers2.c
+index 5bcf0b2..84d444b 100644
+--- a/src/tests/drawbuffers2.c
++++ b/src/tests/drawbuffers2.c
+@@ -112,7 +112,7 @@ Display(void)
+    glUseProgram(0);
+    glDisable(GL_DEPTH_TEST);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+-   glWindowPos2iARB(0, 0);
++   glWindowPos2i(0, 0);
+    glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+ 
+    free(buffer);
+diff --git a/src/tests/fbotest1.c b/src/tests/fbotest1.c
+index 161903c..5930a6d 100644
+--- a/src/tests/fbotest1.c
++++ b/src/tests/fbotest1.c
+@@ -61,7 +61,7 @@ Display( void )
+ 
+    /* draw to window */
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+-   glWindowPos2iARB(0, 0);
++   glWindowPos2i(0, 0);
+    glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+ 
+    free(buffer);
+diff --git a/src/tests/fbotest2.c b/src/tests/fbotest2.c
+index 6ef7f12..11c867e 100644
+--- a/src/tests/fbotest2.c
++++ b/src/tests/fbotest2.c
+@@ -72,7 +72,7 @@ Display( void )
+ 
+       glDisable(GL_DEPTH_TEST);  /* in case window has depth buffer */
+ 
+-      glWindowPos2iARB(0, 0);
++      glWindowPos2i(0, 0);
+       glCopyPixels(0, 0, Width, Height, GL_COLOR);
+    }
+    else if (blitPix) {
+@@ -95,7 +95,7 @@ Display( void )
+       /* draw to window */
+       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+       glDisable(GL_DEPTH_TEST);  /* in case window has depth buffer */
+-      glWindowPos2iARB(0, 0);
++      glWindowPos2i(0, 0);
+       glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+ 
+       free(buffer);
+diff --git a/src/tests/fbotest3.c b/src/tests/fbotest3.c
+index 19f684d..e6d7710 100644
+--- a/src/tests/fbotest3.c
++++ b/src/tests/fbotest3.c
+@@ -79,7 +79,7 @@ Display( void )
+    /* draw to window */
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glDisable(GL_DEPTH_TEST);  /* in case window has depth buffer */
+-   glWindowPos2iARB(0, 0);
++   glWindowPos2i(0, 0);
+    glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+ 
+    free(buffer);
+diff --git a/src/tests/readrate.c b/src/tests/readrate.c
+index 3859cf4..81eb8a3 100644
+--- a/src/tests/readrate.c
++++ b/src/tests/readrate.c
+@@ -85,7 +85,7 @@ MeasureFormat(struct format_type *fmt, GLint width, GLint height, GLuint pbo)
+       glEnd();
+ 
+ #if DRAW
+-      glWindowPos2iARB(0,0);
++      glWindowPos2i(0,0);
+       glDrawPixels(width, height,
+                    fmt->Format, fmt->Type, Buffer);
+       glFinish();
+@@ -137,21 +137,21 @@ Draw(void)
+ 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+-   glWindowPos2iARB(10, y);
++   glWindowPos2i(10, y);
+    sprintf(str, "ReadPixels size: %d x %d", width, height);
+    PrintString(str);
+    y -= 14;
+ 
+-   glWindowPos2iARB(10, y);
++   glWindowPos2i(10, y);
+    PrintString("Press up/down/left/right to change image size.");
+    y -= 14;
+ 
+-   glWindowPos2iARB(10, y);
++   glWindowPos2i(10, y);
+    PrintString("Press 'b' to run benchmark test.");
+    y -= 14;
+ 
+    if (Benchmark) {
+-      glWindowPos2iARB(10, y);
++      glWindowPos2i(10, y);
+       PrintString("Testing...");
+    }
+ 
+diff --git a/src/tests/viewmemory.c b/src/tests/viewmemory.c
+index 16044b9..3584c33 100644
+--- a/src/tests/viewmemory.c
++++ b/src/tests/viewmemory.c
+@@ -95,7 +95,7 @@ Draw(void)
+ 
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(0, 1, 0);
+-   glWindowPos2iARB(10, 10);
++   glWindowPos2i(10, 10);
+    PrintString(s);
+ 
+    glutSwapBuffers();
+diff --git a/src/trivial/clear-fbo-scissor.c b/src/trivial/clear-fbo-scissor.c
+index a30935c..5c15200 100644
+--- a/src/trivial/clear-fbo-scissor.c
++++ b/src/trivial/clear-fbo-scissor.c
+@@ -182,7 +182,7 @@ Draw(void)
+ 
+       /* draw to window */
+       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+-      glWindowPos2iARB(0, 0);
++      glWindowPos2i(0, 0);
+       glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+ 
+       free(buffer);
+diff --git a/src/trivial/clear-fbo-tex.c b/src/trivial/clear-fbo-tex.c
+index de84f98..f0fbdf6 100644
+--- a/src/trivial/clear-fbo-tex.c
++++ b/src/trivial/clear-fbo-tex.c
+@@ -140,7 +140,7 @@ static void Draw( void )
+       glClearColor(0.8, 0.8, 0, 0.0);
+       glClear(GL_COLOR_BUFFER_BIT);
+ 
+-      glWindowPos2iARB(30, 30);
++      glWindowPos2i(30, 30);
+       glDrawPixels(Width-60, Height-60, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+       
+       free(buffer);
+diff --git a/src/trivial/clear-fbo.c b/src/trivial/clear-fbo.c
+index 10d830b..3fee3e3 100644
+--- a/src/trivial/clear-fbo.c
++++ b/src/trivial/clear-fbo.c
+@@ -116,7 +116,7 @@ Draw(void)
+       glClearColor(0.8, 0.8, 0, 0.0);
+       glClear(GL_COLOR_BUFFER_BIT);
+ 
+-      glWindowPos2iARB(30, 30);
++      glWindowPos2i(30, 30);
+       glDrawPixels(Width-60, Height-60, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+       
+       free(buffer);
+diff --git a/src/trivial/readpixels.c b/src/trivial/readpixels.c
+index ccce4ed..74e0546 100644
+--- a/src/trivial/readpixels.c
++++ b/src/trivial/readpixels.c
+@@ -71,7 +71,7 @@ static void Draw(void)
+    printf("Pixel(0,0) = %f, %f, %f, %f\n",
+           image[0], image[1], image[2], image[3]);
+    /* draw to right half of window */
+-   glWindowPos2iARB(Width, 0);
++   glWindowPos2i(Width, 0);
+    glPixelZoom(Zoom, Zoom);
+    glDrawPixels(Width, Height, GL_RGBA, GL_FLOAT, image);
+    free(image);
+diff --git a/src/trivial/tri-fbo.c b/src/trivial/tri-fbo.c
+index d5800b2..dd1f21a 100644
+--- a/src/trivial/tri-fbo.c
++++ b/src/trivial/tri-fbo.c
+@@ -119,7 +119,7 @@ static void Draw( void )
+       glClearColor(0.8, 0.8, 0, 0.0);
+       glClear(GL_COLOR_BUFFER_BIT);
+ 
+-      glWindowPos2iARB(30, 30);
++      glWindowPos2i(30, 30);
+       glDrawPixels(Width-60, Height-60, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+       
+       
+diff --git a/src/xdemos/glxsnoop.c b/src/xdemos/glxsnoop.c
+index 2215cfd..13d2b2d 100644
+--- a/src/xdemos/glxsnoop.c
++++ b/src/xdemos/glxsnoop.c
+@@ -91,7 +91,7 @@ redraw(Display *dpy, Window srcWin, Window dstWin )
+    }
+ 
+    glXMakeCurrent(dpy, dstWin, Context);
+-   glWindowPos2iARB(0, 0);
++   glWindowPos2i(0, 0);
+    glDrawBuffer(GL_FRONT);
+    glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, image);
+    glFlush();
+diff --git a/src/xdemos/wincopy.c b/src/xdemos/wincopy.c
+index f670983..d010085 100644
+--- a/src/xdemos/wincopy.c
++++ b/src/xdemos/wincopy.c
+@@ -156,11 +156,11 @@ Redraw(void)
+    glClear(GL_COLOR_BUFFER_BIT);
+ 
+    if (TestClipping) {
+-      glWindowPos2iARB(-2, -2);
++      glWindowPos2i(-2, -2);
+       glCopyPixels(-2, -2, Width[0] + 4, Height[0] + 4, GL_COLOR);
+    }
+    else {
+-      glWindowPos2iARB(0, 0);
++      glWindowPos2i(0, 0);
+       glCopyPixels(0, 0, Width[0], Height[0], GL_COLOR);
+    }
+ 
+-- 
+1.8.1
+
