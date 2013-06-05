@@ -16,6 +16,9 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://0001-change-header-path-to-HAL.patch \
            file://gc_hal_eglplatform-remove-xlib-undefs.patch \
            file://fix-conflicting-TLS-definition.patch \
+           file://egl.pc \
+           file://glesv1_cm.pc \
+           file://glesv2.pc \
           "
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
@@ -58,6 +61,11 @@ do_install () {
     cp ${S}/usr/lib/*.so ${D}${libdir}
     cp -axr ${S}/usr/include/* ${D}${includedir}
     cp -axr ${S}/opt ${D}
+
+    install -d ${D}${libdir}/pkgconfig
+    install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/
+    install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/
+    install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/
 
     # FIXME: Remove Wayland contents
     rm -r ${D}${includedir}/wayland-viv
@@ -112,7 +120,7 @@ FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
 
 FILES_libegl-mx6 = "${libdir}/libEGL${SOLIBS}"
-FILES_libegl-mx6-dev = "${libdir}/libEGL${SOLIBSDEV}"
+FILES_libegl-mx6-dev = "${libdir}/libEGL${SOLIBSDEV} ${libdir}/pkgconfig/egl.pc"
 FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
@@ -123,11 +131,11 @@ FILES_libgl-mx6 = "${libdir}/libGL${SOLIBS}"
 FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
 
 FILES_libgles-mx6 = "${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBS}"
-FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV}"
+FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
 FILES_libgles-mx6-dbg = "${libdir}/.debug/libGLESv1*${SOLIBS} ${libdir}/.debug/libGLES_*${SOLIBS}"
 
 FILES_libgles2-mx6 = "${libdir}/libGLESv2${SOLIBS}"
-FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV}"
+FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV} ${libdir}/pkgconfig/glesv2.pc"
 FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
 RDEPENDS_libgles2-mx6 = "libglslc-mx6"
 
