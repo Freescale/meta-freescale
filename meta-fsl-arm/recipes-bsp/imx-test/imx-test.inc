@@ -15,10 +15,15 @@ SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz \
            file://clocks.sh \
            file://mxc_x11_test-exclude-IMX-5-6-platforms.patch"
 
+INCLUDE_DIR="-I${STAGING_INCDIR} \
+             -I${STAGING_KERNEL_DIR}/include \
+             -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
+             -I${STAGING_KERNEL_DIR}/drivers/mxc/security/sahara2/include"
 
 do_compile() {
         LDFLAGS="" make PLATFORM=${PLATFORM} LINUXPATH=${STAGING_KERNEL_DIR} \
-        KBUILD_OUTPUT=${STAGING_KERNEL_DIR} CROSS_COMPILE=${TARGET_PREFIX} V=1
+        KBUILD_OUTPUT=${STAGING_KERNEL_DIR} CROSS_COMPILE=${TARGET_PREFIX} V=1 \
+        INC="${INCLUDE_DIR}"
 }
 
 do_install() {
