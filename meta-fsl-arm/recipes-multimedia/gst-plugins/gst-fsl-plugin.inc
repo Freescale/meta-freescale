@@ -5,7 +5,7 @@ DESCRIPTION = "Gstreamer freescale plugins"
 LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 
-DEPENDS = "gstreamer gst-plugins-base libfslcodec libfslparser"
+DEPENDS = "gstreamer gst-plugins-base libfslcodec libfslparser virtual/kernel"
 DEPENDS_append_mx5 = " imx-lib"
 DEPENDS_append_mx6 = " imx-lib libfslvpuwrap"
 
