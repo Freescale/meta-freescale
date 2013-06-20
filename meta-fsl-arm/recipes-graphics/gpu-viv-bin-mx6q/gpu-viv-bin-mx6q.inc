@@ -6,6 +6,7 @@ DESCRIPTION = "GPU driver and apps for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=19f5925343fa3da65596eeaa4ddb5fd3"
+DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes', '', d)}"
 PROVIDES += "virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2"
 
 INC_PR = "r5"
