@@ -37,6 +37,8 @@ do_install () {
     # FIXME: Fix sonames of broken libraries
     mv ${D}${libdir}/lib2dz160.so ${D}${libdir}/lib2dz160.so.0
     mv ${D}${libdir}/lib2dz430.so ${D}${libdir}/lib2dz430.so.0
+    ln -sf lib2dz160.so.0 ${D}${libdir}/lib2dz160.so
+    ln -sf lib2dz430.so.0 ${D}${libdir}/lib2dz430.so
 
     # FIXME: Remove unkown files
     rm -r ${D}${libdir}/libcsi.a \
