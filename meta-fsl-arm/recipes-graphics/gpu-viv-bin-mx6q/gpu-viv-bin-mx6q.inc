@@ -17,8 +17,11 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://gc_hal_eglplatform-remove-xlib-undefs.patch \
            file://fix-conflicting-TLS-definition.patch \
            file://egl.pc \
+           file://egl_x11.pc \
            file://glesv1_cm.pc \
+           file://glesv1_cm_x11.pc \
            file://glesv2.pc \
+           file://glesv2_x11.pc \
           "
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
@@ -63,9 +66,6 @@ do_install () {
     cp -axr ${S}/opt ${D}
 
     install -d ${D}${libdir}/pkgconfig
-    install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/
-    install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/
-    install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/
 
     # FIXME: Remove Wayland contents
     rm -r ${D}${includedir}/wayland-viv
@@ -76,7 +76,15 @@ do_install () {
         cp -r ${S}/usr/lib/dri ${D}${libdir}
         find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
         find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'
+
+        install -m 0644 ${WORKDIR}/egl_x11.pc ${D}${libdir}/pkgconfig/egl.pc
+        install -m 0644 ${WORKDIR}/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+        install -m 0644 ${WORKDIR}/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
     else
+        install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
+        install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+        install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
+
         if [ "${USE_DFB}" = "yes" ]; then
             find ${D}${libdir} -name '*-x11.so' -exec rm '{}' ';'
             find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'

@@ -5,7 +5,7 @@ includedir=/usr/include
 
 Name: glesv1_cm
 Description: Vivante OpenGL ES 1.1 CM library
-Requires.private:
+Requires.private: libdrm x11 xext xdamage xfixes xcb
 Version: 8.0
 Libs: -L${libdir} -lGLESv1_CM -lEGL -lGAL
 Libs.private: -lm -lpthread -ldl
