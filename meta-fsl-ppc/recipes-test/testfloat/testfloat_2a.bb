@@ -6,10 +6,11 @@ LIC_FILES_CHKSUM = "file://testfloat/testfloat.txt;beginline=87;endline=95;md5=b
 
 SRC_URI = " http://www.jhauser.us/arithmetic/TestFloat-2a.tar.Z;name=TestFloat \
             http://www.jhauser.us/arithmetic/SoftFloat-2b.tar.Z;name=SoftFloat \
-            file://SoftFloat-powerpc-1.patch \
-            file://TestFloat-powerpc-E500v2-SPE-1.patch \
             file://Yocto-replace-COMPILE_PREFIX-gcc.patch \
           "
+SRC_URI_append_fslmachine = " file://SoftFloat-powerpc-1.patch \
+                              file://TestFloat-powerpc-E500v2-SPE-1.patch \
+                            "
 SRC_URI[TestFloat.md5sum] = "4dc889319ae1e0c5381ec511f784553a"
 SRC_URI[TestFloat.sha256sum] = "84d14aa42adefbda2ec9708b42946f7fa59f93689b042684bd027863481f8e4e"
 SRC_URI[SoftFloat.md5sum] = "b4a58b5c941f1a2317e4c2500086e3fa"

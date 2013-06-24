@@ -8,6 +8,8 @@ LIC_FILES_CHKSUM = "file://rcw.py;beginline=8;endline=28;md5=9ba0b28922dd187b06b
 # this package is specific to the machine itself
 INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST ?= "(none)"
 
 inherit deploy
 

@@ -15,6 +15,8 @@ DEPENDS += "dtc-native"
 # this package is specific to the machine itself
 INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST ?= "(none)"
 
 inherit deploy
 

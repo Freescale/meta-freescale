@@ -12,6 +12,9 @@ RDEPENDS_${PN} = "libgcc"
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git"
 SRCREV = "670ad8827fd83169ccb54a008c638dbb497b1c61"
 
+COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST ?= "(none)"
+
 S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = 'V=1 CC="${CC}" LD="${LD}" AR="${AR}"'
