@@ -14,6 +14,8 @@ LOCALVERSION = "-maintain+yocto"
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
             file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
             file://perf-avoid-use-sysroot-headers.patch \
+            file://2.6.35-maintain-1-2-mx53-fix-ssi3-addresses.patch \
+            file://2.6.35-maintain-2-2-SD2_DATA1__AUDMUX_AUD4_TXFS-fix-pin-defintion.patch \
 "
 
 SRC_URI_append_mx28 = " \
