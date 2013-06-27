@@ -19,3 +19,9 @@ SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5ec000", NAME="fm2-
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5ee000", NAME="fm2-mac8"
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5f0000", NAME="fm2-mac9"
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5f2000", NAME="fm2-mac10"
+
+# Unify the PCIe Etherenet port -maxinum PCIe slots is 4
+SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe240000.pcie", DRIVERS=="fsl-pci", NAME="eth0"
+SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe250000.pcie", DRIVERS=="fsl-pci", NAME="eth1"
+SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe260000.pcie", DRIVERS=="fsl-pci", NAME="eth2"
+SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe270000.pcie", DRIVERS=="fsl-pci", NAME="eth3"
