@@ -16,8 +16,11 @@ SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ffe5f0000", NAME="fm2-
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ff7e0000", NAME="fm1-gb0"
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa", ATTR{device_addr}=="ff7e2000", NAME="fm1-gb1"
 
-# Unify the PCIe Etherenet port -maxinum PCIe slots is 4
+# Unify the PCIe Etherenet port, maxinum PCIe slots is 4
 SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe200000.pcie", DRIVERS=="fsl-pci", NAME="eth0"
 SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe201000.pcie", DRIVERS=="fsl-pci", NAME="eth1"
 SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe202000.pcie", DRIVERS=="fsl-pci", NAME="eth2"
 SUBSYSTEM=="net", KERNEL=="eth*", KERNELS=="ffe203000.pcie", DRIVERS=="fsl-pci", NAME="eth3"
+
+# Rename macless0 port to "eth4"
+SUBSYSTEM=="net", ATTR{device_type}=="macless0", NAME="eth4"
