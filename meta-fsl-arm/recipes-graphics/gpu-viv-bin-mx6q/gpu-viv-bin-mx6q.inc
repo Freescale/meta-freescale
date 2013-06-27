@@ -55,14 +55,14 @@ SOLIBS = "${SOLIBSDEV}"
 python __anonymous() {
     packages = d.getVar('PACKAGES', True).split()
     for p in packages:
-        d.setVar("INSANE_SKIP_%s" % p, "ldflags")
+        d.appendVar("INSANE_SKIP_%s" % p, " ldflags")
 }
 
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
 
-    cp ${S}/usr/lib/*.so ${D}${libdir}
+    cp -a ${S}/usr/lib/*.so* ${D}${libdir}
     cp -axr ${S}/usr/include/* ${D}${includedir}
     cp -axr ${S}/opt ${D}
 
@@ -71,12 +71,11 @@ do_install () {
     # FIXME: Remove Wayland contents
     rm -r ${D}${includedir}/wayland-viv
     find ${D}${libdir} -name '*-wl.so' -exec rm '{}' ';'
-    rm ${D}${libdir}/*wayland*.so
+    rm ${D}${libdir}/*wayland*.so*
 
     if [ "${USE_X11}" = "yes" ]; then
         cp -r ${S}/usr/lib/dri ${D}${libdir}
-        find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
-        find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'
+        backend=x11
 
         install -m 0644 ${WORKDIR}/egl_x11.pc ${D}${libdir}/pkgconfig/egl.pc
         install -m 0644 ${WORKDIR}/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
@@ -87,31 +86,22 @@ do_install () {
         install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
 
         if [ "${USE_DFB}" = "yes" ]; then
-            find ${D}${libdir} -name '*-x11.so' -exec rm '{}' ';'
-            find ${D}${libdir} -name '*-fb.so' -exec rm '{}' ';'
+            backend=dfb
         else
             # Regular framebuffer
-            find ${D}${libdir} -name '*-x11.so' -exec rm '{}' ';'
-            find ${D}${libdir} -name '*-dfb.so' -exec rm '{}' ';'
+            backend=fb
         fi
     fi
 
     # We'll only have one backend here so we rename it to generic name
     # and avoid rework in other packages, when possible
-    rm ${D}${libdir}/libEGL.so ${D}${libdir}/libGAL.so \
-       ${D}${libdir}/libVIVANTE.so
+    mv ${D}${libdir}/libEGL-${backend}.so ${D}${libdir}/libEGL.so.1
+    ln -sf libEGL.so.1 ${D}${libdir}/libEGL.so
+    mv ${D}${libdir}/libGAL-${backend}.so ${D}${libdir}/libGAL.so
+    mv ${D}${libdir}/libVIVANTE-${backend}.so ${D}${libdir}/libVIVANTE.so
 
-    renamed=
     for backend in x11 fb dfb; do
-        for f in $(find ${D}${libdir} -name "*-$backend.so"); do
-            if [ -n "$renamed" ] && [ "$renamed" != "$backend" ]; then
-                bberror "More than one GPU backend is installed ($backend and $renamed)."
-                exit 1
-            fi
-
-            renamed=$backend
-            mv $f $(echo $f | sed "s,-$backend\.so,.so,g")
-         done
+        find ${D}${libdir} -name "*-$backend.so" -exec rm '{}' ';'
     done
 
     find ${D}${libdir} -type f -exec chmod 644 {} \;
@@ -128,7 +118,7 @@ FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
 
-FILES_libegl-mx6 = "${libdir}/libEGL${SOLIBS}"
+FILES_libegl-mx6 = "${libdir}/libEGL${REALSOLIBS}"
 FILES_libegl-mx6-dev = "${libdir}/libEGL${SOLIBSDEV} ${libdir}/pkgconfig/egl.pc"
 FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 
@@ -136,14 +126,19 @@ FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
 FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV}"
 FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
 
-FILES_libgl-mx6 = "${libdir}/libGL${SOLIBS}"
+FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
+FILES_libgl-mx6-dev = "${libdir}/libGL${SOLIBSDEV}"
 FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
 
-FILES_libgles-mx6 = "${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBS}"
+# libEGL needs to open libGLESv1.so
+INSANE_SKIP_libgles-mx6 += "dev-so"
+FILES_libgles-mx6 = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBS}"
 FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
 FILES_libgles-mx6-dbg = "${libdir}/.debug/libGLESv1*${SOLIBS} ${libdir}/.debug/libGLES_*${SOLIBS}"
 
-FILES_libgles2-mx6 = "${libdir}/libGLESv2${SOLIBS}"
+# libEGL needs to open libGLESv2.so
+INSANE_SKIP_libgles2-mx6 += "dev-so"
+FILES_libgles2-mx6 = "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
 FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV} ${libdir}/pkgconfig/glesv2.pc"
 FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
 RDEPENDS_libgles2-mx6 = "libglslc-mx6"
