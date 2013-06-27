@@ -10,3 +10,4 @@ COMPATIBLE_MACHINE = "(mx6)"
 # Revision of 4.0.0 branch
 SRCREV = "572fd62b7e2d70ef83e2ca8fe9895fe6f1531f8a"
 LOCALVERSION = "-4.0.0+yocto"
+SRC_URI += "file://arm-mach-mx6-fix-pll4-set_rate-callback.patch"
