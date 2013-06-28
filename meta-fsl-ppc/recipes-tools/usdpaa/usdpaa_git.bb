@@ -10,17 +10,29 @@ DEPENDS = "libxml2 libedit ncurses readline flib fmc"
 RDEPENDS_${PN} = "libgcc"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git"
-SRCREV = "670ad8827fd83169ccb54a008c638dbb497b1c61"
+SRCREV = "97fe45d9697ef339e10a1885539b23fa7fcb113e"
 
 COMPATIBLE_HOST_fslmachine = ".*"
 COMPATIBLE_HOST ?= "(none)"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = 'V=1 CC="${CC}" LD="${LD}" AR="${AR}"'
+EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}"'
 export ARCH="${TARGET_ARCH}"
 
 do_compile_prepend () {
+	case ${MACHINE} in
+		b4420qds|b4420qds-64b|b4860qds|b4860qds-64b) SOC=B4860;;
+		t4240qds|t4240qds-64b) SOC=T4240;;
+		p1023rdb) SOC=P1023;;
+		*) SOC=P4080;;
+	esac
+	export FMC_EXTRA_CFLAGS="-I ${STAGING_INCDIR}/fmc"
+	export FMLIB_EXTRA_CFLAGS="-I ${STAGING_INCDIR}/fmd \
+		-I ${STAGING_INCDIR}/fmd/Peripherals \
+		-I ${STAGING_INCDIR}/fmd/integrations \
+		-D $SOC"
+
 	export LIBXML2_CFLAGS="$(pkg-config --cflags libxml-2.0)"
 	export LIBXML2_LDFLAGS="$(pkg-config --libs --static libxml-2.0)"
 	export LIBEDIT_CFLAGS="$(pkg-config --cflags libedit)"
