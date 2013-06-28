@@ -17,14 +17,16 @@ SRC_URI = " \
 	git://git.freescale.com/ppc/sdk/hypervisor/kconfig.git;name=kconfig;destsuffix=git/kconfig \
 	git://git.freescale.com/ppc/sdk/hypervisor/libos.git;name=libos;destsuffix=git/libos \
 	git://www.jdl.com/software/dtc.git;name=dtc;destsuffix=dtc \
+	git://git.freescale.com/ppc/sdk/hypertrk.git;name=hypertrk;destsuffix=git/hypertrk \
 	file://81-fsl-embedded-hv.rules \
 	  "
 
 SRCREV_FORMAT="hypervisor"
-SRCREV = "d3f8d79ca252fc17d4a9ca5f44f563c8a291a9a1"
-SRCREV_kconfig = "47a6c4ac5e0621ecbc309bf1b7b588f08858b7e6"
-SRCREV_libos = "8a88243d057c32c83595ba201eaf20fc5ec76190"
+SRCREV = "e6092cdf2a225c66c1ea46b1151eb828da29d139"
+SRCREV_kconfig = "a56025d4da992b856796b0eccac2e410d751dbac"
+SRCREV_libos = "5268371581f3ef3959be2a53235edfa6a8c6aa7c"
 SRCREV_dtc = "033089f29099bdfd5c2d6986cdb9fd07b16cfde0"
+SRCREV_hypertrk = "975c98b562186afbd3bbf103ae54b96cf9b3e533"
 
 EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
 
@@ -39,7 +41,17 @@ do_configure () {
 	oe_runmake ${DEFCONFIG}
 }
 
+PKG_HV_HYPERTRK_SUPPORT = "n"
 do_compile () {
+	if [ "${PKG_HV_HYPERTRK_SUPPORT}" = "y" ]
+	then
+		oe_runmake silentoldconfig
+		export HV_DIR=$PWD
+		cd hypertrk
+		oe_runmake deploy
+		cd ..
+	fi
+
 	oe_runmake
 	oe_runmake partman
 }
@@ -71,6 +83,7 @@ do_deploy_append() {
 	rm -f ${S}/../hv
 }
 
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 ALLOW_EMPTY_${PN} = "1"
 PACKAGES_prepend = "${PN}-image ${PN}-partman "
 FILES_${PN}-image = "/boot/"
