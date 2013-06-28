@@ -11,9 +11,9 @@ DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
 
 inherit deploy
 
-SRCREV = "7bcd7f45c8974978f8eb73ae4d32e71cb6a49b77"
-SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git \
-		"
+SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git"
+SRCREV = "831b30de4b768f0b3b7dbfa11739b14cea612d7e"
+
 python () {
 	ml = d.getVar("MULTILIB_VARIANTS", True)
 	arch = d.getVar("OVERRIDES", True)
@@ -68,7 +68,7 @@ do_compile () {
 				cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
             elif [ "${UBOOT_TARGET}" == "u-boot-nand" ];then
 				if [ "${DEFAULTTUNE}" = "ppce500v2" ];then
-                    if echo $board |egrep "(P1020RDB|P1021RDB|P1024RDB|P2020RDB|P1022DS|P1025RDB)" 2>&1 >/dev/null;then
+                    if echo $board |egrep "(P1010RDB|P1020RDB|P1021RDB|P1024RDB|P2020RDB|P1022DS|P1025RDB|BSC9131RDB|BSC9132QDS)" 2>&1 >/dev/null;then
                         cp ${S}/${board}/u-boot-with-spl.bin ${S}/${board}/${UBOOT_TARGET}.bin
                     fi
                 else
