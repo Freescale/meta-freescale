@@ -20,7 +20,7 @@ COMPATIBLE_HOST ?= "(none)"
 
 inherit deploy
 
-SRCREV = "deb55b9564ef8fb9e1fda1112233f11ae2a12d4a"
+SRCREV = "d037ab9d5b9ecd58e10a7dac2b601d781ed9b5bf"
 SRC_URI = "git://git.freescale.com/ppc/sdk/hv-cfg.git"
 
 S = "${WORKDIR}/git"
