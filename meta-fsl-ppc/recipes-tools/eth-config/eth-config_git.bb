@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=cf02dc8eb5ac4a76f3812826520dea87"
 PR = "r2"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/eth-config.git"
-SRCREV = "c1400695e56aa80f2f4c88c4e0582028248ae06f"
+SRCREV = "c255231fb606bff18390da3b26e1ee9fca55e4e6"
 
 S = "${WORKDIR}/git"
 
