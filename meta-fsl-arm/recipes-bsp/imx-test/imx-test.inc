@@ -15,6 +15,8 @@ SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz \
            file://clocks.sh \
            file://mxc_x11_test-exclude-IMX-5-6-platforms.patch"
 
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+
 INCLUDE_DIR="-I${STAGING_INCDIR} \
              -I${STAGING_KERNEL_DIR}/include \
              -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
