@@ -2,6 +2,8 @@ DESCRIPTION = "Linux kernel headers for Freescale platforms"
 SECTION = "devel"
 LICENSE = "GPLv2"
 
+PR = "${INC_PR}.1"
+
 INHIBIT_DEFAULT_DEPS = "1"
 PROVIDES = "linux-libc-headers ${PN}"
 RPROVIDES_${PN}-dev += "linux-libc-headers-dev"
@@ -10,6 +12,8 @@ RDEPENDS_${PN}-dev = ""
 RRECOMMENDS_${PN}-dbg = "linux-libc-headers-dev (= ${EXTENDPKGV})"
 
 require recipes-kernel/linux/linux-qoriq-sdk.inc
+
+SRC_URI_append += " file://scripts-Makefile.headersinst-install-headers-from-sc.patch"
 
 inherit kernel-arch
 

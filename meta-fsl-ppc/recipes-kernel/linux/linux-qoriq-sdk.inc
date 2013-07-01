@@ -1,11 +1,10 @@
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-PV = "3.0.51"
-PR = "r11"
+PV = "3.8"
+INC_PR = "r11"
 
-SRCREV = "faac5211f398f25e2be44ac996895335d5218516"
+SRCREV = "4b66366af2d77de68f4bd6548d07421e13d3df05"
 SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
-           file://0001-compiler.h-Undef-before-redefining-__attribute_const.patch \
 	  "
 
 KSRC ?= ""

@@ -7,11 +7,11 @@ LICENSE = "GPLv2"
 
 require recipes-kernel/linux/linux-qoriq-sdk.inc
 
-PR = "r11"
+PR = "${INC_PR}.1"
 
-SRC_URI += "file://fix_getrusage_for_perf.patch \
-            file://0001-Enable-the-option-Automount-devtmpfs-at-dev-in-kerne.patch \
-           "
+DEPENDS_append = " libgcc"
+KERNEL_CC_append = " ${TOOLCHAIN_OPTIONS}"
+KERNEL_LD_append = " ${TOOLCHAIN_OPTIONS}"
 
 do_configure_prepend() {
 	# copy desired defconfig so we pick it up for the real kernel_do_configure
