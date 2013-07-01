@@ -9,12 +9,14 @@ inherit fsl-eula-unpack autotools pkgconfig
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+
 python populate_packages_prepend() {
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
     # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
     for p in d.getVar('PACKAGES', True).split():
-        d.setVar("INSANE_SKIP_%s" % p, "ldflags dev-so")
+        d.setVar("INSANE_SKIP_%s" % p, "ldflags dev-so textrel")
 }
 
 # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
