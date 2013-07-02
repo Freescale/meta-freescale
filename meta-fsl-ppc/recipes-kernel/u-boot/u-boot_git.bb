@@ -47,7 +47,7 @@ do_compile () {
 	unset CFLAGS
 	unset CPPFLAGS
 
-	if [ "x${UBOOT_MACHINES}" == "x" ]; then
+	if [ "x${UBOOT_MACHINES}" = "x" ]; then
 		UBOOT_MACHINES=${UBOOT_MACHINE}
 	fi
 
@@ -64,9 +64,9 @@ do_compile () {
 		esac
 
 		if [ "x${UBOOT_TARGET}" != "x" ]; then
-			if [ "${UBOOT_TARGET}" == "u-boot-sd" ]; then
+			if [ "${UBOOT_TARGET}" = "u-boot-sd" ]; then
 				cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
-            elif [ "${UBOOT_TARGET}" == "u-boot-nand" ];then
+            elif [ "${UBOOT_TARGET}" = "u-boot-nand" ];then
 				if [ "${DEFAULTTUNE}" = "ppce500v2" ];then
                     if echo $board |egrep "(P1010RDB|P1020RDB|P1021RDB|P1024RDB|P2020RDB|P1022DS|P1025RDB|BSC9131RDB|BSC9132QDS)" 2>&1 >/dev/null;then
                         cp ${S}/${board}/u-boot-with-spl.bin ${S}/${board}/${UBOOT_TARGET}.bin
@@ -88,7 +88,7 @@ do_compile () {
 }
 
 do_install(){
-	if [ "x${UBOOT_MACHINES}" == "x" ]; then
+	if [ "x${UBOOT_MACHINES}" = "x" ]; then
 		UBOOT_MACHINES=${UBOOT_MACHINE}
 	fi
 
@@ -109,7 +109,7 @@ do_install(){
 }
 
 do_deploy(){
-	if [ "x${UBOOT_MACHINES}" == "x" ]; then
+	if [ "x${UBOOT_MACHINES}" = "x" ]; then
 		UBOOT_MACHINES=${UBOOT_MACHINE}
 	fi
 
