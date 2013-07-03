@@ -1,5 +1,4 @@
 DESCRIPTION = "User-Space Data-Path Acceleration Architecture drivers"
-SECTION = "usdpaa"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=39e58bedc879163c9338596e52df5b1f"
 PR = "r4"
@@ -7,13 +6,10 @@ PR = "r4"
 inherit pkgconfig
 
 DEPENDS = "libxml2 libedit ncurses readline flib fmc"
-RDEPENDS_${PN} = "libgcc"
+RDEPENDS_${PN} = "libgcc bash"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git"
 SRCREV = "97fe45d9697ef339e10a1885539b23fa7fcb113e"
-
-COMPATIBLE_HOST_fslmachine = ".*"
-COMPATIBLE_HOST ?= "(none)"
 
 S = "${WORKDIR}/git"
 
@@ -44,6 +40,10 @@ do_install () {
 }
 
 PARALLEL_MAKE_pn-${PN} = ""
-
 FILES_${PN} += "/root/SOURCE_THIS /usr/etc/"
-RDEPENDS_${PN} += "bash"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST ?= "(none)"
+
