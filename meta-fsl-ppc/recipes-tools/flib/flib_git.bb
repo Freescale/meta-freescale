@@ -11,3 +11,5 @@ S = "${WORKDIR}/git"
 do_install(){
     oe_runmake install DESTDIR=${D}
 }
+
+ALLOW_EMPTY_${PN} = "1"
