@@ -12,5 +12,3 @@ QT_CONFIG_FLAGS_append_mx5 = " -I${STAGING_KERNEL_DIR}/include/"
 DEPENDS_append_mx6 = " virtual/kernel"
 PACKAGE_ARCH_mx6 = "${MACHINE_ARCH}"
 QT_CONFIG_FLAGS_append_mx6 = " -I${STAGING_KERNEL_DIR}/include/"
-
-PRINC := "${@int(PRINC) + 2}"
