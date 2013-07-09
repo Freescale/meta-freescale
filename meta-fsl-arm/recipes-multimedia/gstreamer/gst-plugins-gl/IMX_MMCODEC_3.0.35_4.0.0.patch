@@ -1,0 +1,2438 @@
+diff --git a/configure.ac b/configure.ac
+index 6a4efe0..fa277fa 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -5,7 +5,7 @@ dnl please read gstreamer/docs/random/autotools before changing this file
+ dnl initialize autoconf
+ dnl releases only do -Wall, git and prerelease does -Werror too
+ dnl use a three digit version number for releases, and four for git/prerelease
+-AC_INIT(GStreamer OpenGL Plug-ins, 0.10.3,
++AC_INIT(GStreamer OpenGL Plug-ins, 0.10.3.1,
+     http://bugzilla.gnome.org/enter_bug.cgi?product=GStreamer,
+     gst-plugins-gl)
+ 
+@@ -61,7 +61,7 @@ dnl AS_LIBTOOL_TAGS
+ 
+ AC_LIBTOOL_WIN32_DLL
+ AM_PROG_LIBTOOL
+-AS_PROG_OBJC
++AC_PROG_OBJC
+ 
+ dnl *** required versions of GStreamer stuff ***
+ GST_REQ=0.10.35
+@@ -83,6 +83,8 @@ AG_GST_GETTEXT([gst-plugins-gl-$GST_MAJORMINOR])
+ 
+ dnl *** check for arguments to configure ***
+ 
++AG_GST_ARG_DISABLE_FATAL_WARNINGS
++
+ AG_GST_ARG_DEBUG
+ AG_GST_ARG_PROFILING
+ AG_GST_ARG_VALGRIND
+@@ -160,36 +162,48 @@ AG_GST_CHECK_FUNCTION
+ dnl *** checks for dependency libraries ***
+ 
+ dnl GLib is required
+-AG_GST_GLIB_CHECK([2.6])
++AG_GST_GLIB_CHECK([2.22])
+ 
+ #dnl Check for OpenGL, GLU and GLEW
+ echo host is $host
+ case $host in
+   *-linux* | *-cygwin* | *-solaris* | *-netbsd* | *-freebsd* | *-openbsd* | *-kfreebsd* | *-dragonflybsd* | *-gnu* )
+-    AG_GST_CHECK_X
+     save_CPPFLAGS="$CPPFLAGS"
+     save_LIBS="$LIBS"
+-    CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+-    LIBS="$LIBS $X_LIBS"
+-    #PKG_CHECK_MODULES(GL, gl, HAVE_GL=yes, HAVE_GL=no)
+-    AC_CHECK_HEADERS([GL/gl.h], [HAVE_GL=yes], [HAVE_GL=no])
+-    if test "x$HAVE_GL" = "xyes"; then
+-      AG_GST_CHECK_LIBHEADER(GL, GL, glTexImage2D,, GL/gl.h,, AC_MSG_ERROR([OpenGL is required]))
+-      AG_GST_CHECK_LIBHEADER(GLU, GLU, gluSphere,, GL/glu.h,, AC_MSG_ERROR([GLU is required]))
+-      AG_GST_CHECK_LIBHEADER(GLEW, GLEW, glewInit,, GL/glew.h,, AC_MSG_ERROR([GLEW is required]))
+-      GL_LIBS="$LIBS $X_LIBS -lGL -lGLU -lGLEW"
+-      GL_BACKEND=x11
+-      GL_TYPE=gl
++    AC_CHECK_LIB(EGL, fbGetDisplay, HAVE_EGL_FB=yes, HAVE_EGL_FB=no)
++    if test "x$HAVE_EGL_FB" = "xyes"; then
++      GL_LIBS="$LIBS -lGLESv2 -lEGL"
++      GL_BACKEND=fbES2
++      GL_TYPE=gles
++      save_CPPFLAGS="$save_CPPFLAGS -DLINUX -DEGL_API_FB"
+     else
++      AG_GST_CHECK_X
++      CPPFLAGS="$CPPFLAGS $X_CFLAGS -DLINUX"
++      LIBS="$LIBS $X_LIBS"
+       AC_CHECK_HEADERS([EGL/egl.h], [HAVE_EGL=yes], [HAVE_EGL=no])
+       if test "x$HAVE_EGL" = "xyes"; then
+         AG_GST_CHECK_LIBHEADER(EGL, EGL, eglGetError,, EGL/egl.h,, AC_MSG_ERROR([EGL is required]))
++        s_LIBS="$LIBS"
++        LIBS="-lEGL $LIBS"
+         AG_GST_CHECK_LIBHEADER(GLES2, GLESv2, glTexImage2D,, GLES2/gl2.h,, AC_MSG_ERROR([OpenGLES2 is required]))
+-        GL_LIBS="$LIBS $X_LIBS -lEGL -lGLESv2"
++        LIBS="$s_LIBS"
++        GL_LIBS="$LIBS -lGLESv2 -lEGL"
+         GL_BACKEND=x11ES2
+         GL_TYPE=gles
++        save_CPPFLAGS="$save_CPPFLAGS -DLINUX"
+       else
+-        AC_MSG_ERROR([GL or EGL is required, consider installing libgl1-mesa-dev])
++        #PKG_CHECK_MODULES(GL, gl, HAVE_GL=yes, HAVE_GL=no)
++        AC_CHECK_HEADERS([GL/gl.h], [HAVE_GL=yes], [HAVE_GL=no])
++        if test "x$HAVE_GL" = "xyes"; then
++          AG_GST_CHECK_LIBHEADER(GL, GL, glTexImage2D,, GL/gl.h,, AC_MSG_ERROR([OpenGL is required]))
++          AG_GST_CHECK_LIBHEADER(GLU, GLU, gluSphere,, GL/glu.h,, AC_MSG_ERROR([GLU is required]))
++          AG_GST_CHECK_LIBHEADER(GLEW, GLEW, glewInit,, GL/glew.h,, AC_MSG_ERROR([GLEW is required]))
++          GL_LIBS="$LIBS $X_LIBS -lGL -lGLU -lGLEW"
++          GL_BACKEND=x11
++          GL_TYPE=gl
++        else
++          AC_MSG_ERROR([GL or EGL is required, consider installing libgl1-mesa-dev])
++        fi
+       fi
+     fi
+     CPPFLAGS="$save_CPPFLAGS"
+@@ -230,6 +244,7 @@ AC_SUBST(GL_BACKEND)
+ AC_SUBST(OPENGL_ES2)
+ AM_CONDITIONAL(GL_BACKEND_X11, test "x$GL_BACKEND" = "xx11")
+ AM_CONDITIONAL(GL_BACKEND_X11ES2, test "x$GL_BACKEND" = "xx11ES2")
++AM_CONDITIONAL(GL_BACKEND_FBES2, test "x$GL_BACKEND" = "xfbES2")
+ AM_CONDITIONAL(GL_BACKEND_COCOA, test "x$GL_BACKEND" = "xcocoa")
+ AM_CONDITIONAL(GL_BACKEND_WIN32, test "x$GL_BACKEND" = "xwin32")
+ AM_CONDITIONAL(GL_IS_OPENGL, test "x$GL_TYPE" = "xgl")
+@@ -251,6 +266,18 @@ AC_SUBST(GLIB_PREFIX)
+ AC_SUBST(GST_PREFIX)
+ AC_SUBST(GSTPB_PREFIX)
+ 
++GST_FSL_CFLAGS="`$PKG_CONFIG --cflags gstreamer-fsl-$GST_MAJORMINOR`"
++GST_FSL_LIBS="`$PKG_CONFIG --libs gstreamer-fsl-$GST_MAJORMINOR`"
++AC_CHECK_HEADERS([EGL/eglvivante.h], HAVE_VIVANTE=[yes], HAVE_VIVANTE=[no])
++if test "x$HAVE_VIVANTE" = "xyes"; then
++  if test "x$GST_FSL_CFLAGS" = "x"; then
++    AC_MSG_ERROR([gstreamer-fsl is required])
++  fi
++  AC_DEFINE(GPU_VIVANTE, [1], [Use Vivante GPU])
++fi
++AM_CONDITIONAL(USE_VIVANTE, test "x$HAVE_VIVANTE" = "xyes")
++AC_SUBST(GST_FSL_CFLAGS)
++AC_SUBST(GST_FSL_LIBS)
+ 
+ dnl libpng is optional
+ PKG_CHECK_MODULES(LIBPNG, libpng >= 1.0, HAVE_PNG=yes, HAVE_PNG=no)
+@@ -269,12 +296,15 @@ if test x$with_jpeg_mmx != x; then
+   LIBS="$LIBS -L$with_jpeg_mmx"
+ fi
+ AC_CHECK_LIB(jpeg-mmx, jpeg_set_defaults, HAVE_JPEG="yes", HAVE_JPEG="no")
+-JPEG_LIBS="$LIBS -ljpeg-mmx"
+-LIBS="$OLD_LIBS"
+ if test x$HAVE_JPEG != xyes; then
+   AC_CHECK_LIB(jpeg, jpeg_set_defaults, HAVE_JPEG="yes", HAVE_JPEG="no")
+-  JPEG_LIBS="-ljpeg"
+-  AC_DEFINE(HAVE_JPEG, [1] , [Use libjpeg])
++  if test x$HAVE_JPEG = xyes; then
++    JPEG_LIBS="-ljpeg"
++    AC_DEFINE(HAVE_JPEG, [1] , [Use libjpeg])
++  fi
++else
++  JPEG_LIBS="$LIBS -ljpeg-mmx"
++  LIBS="$OLD_LIBS"
+ fi
+ AC_SUBST(HAVE_JPEG)
+ AC_SUBST(JPEG_LIBS)
+@@ -383,8 +413,14 @@ AG_GST_SET_PACKAGE_RELEASE_DATETIME_WITH_NANO([$PACKAGE_VERSION_NANO],
+   [$PACKAGE_VERSION_MAJOR.$PACKAGE_VERSION_MINOR.$PACKAGE_VERSION_MICRO])
+ 
+ dnl define an ERROR_CFLAGS Makefile variable
+-AG_GST_SET_ERROR_CFLAGS($GST_GIT)
+-AG_GST_SET_ERROR_CXXFLAGS($GST_GIT)
++AG_GST_SET_ERROR_CFLAGS($FATAL_WARNINGS)
++AG_GST_SET_ERROR_CXXFLAGS($FATAL_WARNINGS)
++dnl define an ERROR_OBJCFLAGS Makefile variable
++AG_GST_SET_ERROR_OBJCFLAGS($FATAL_WARNINGS, [
++    -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls
++    -Wwrite-strings -Wold-style-definition
++    -Winit-self -Wmissing-include-dirs -Wno-multichar
++    -Wnested-externs $NO_WARNINGS])
+ 
+ dnl define correct level for debugging messages
+ AG_GST_SET_LEVEL_DEFAULT($GST_GIT)
+@@ -460,8 +496,10 @@ AC_SUBST(DEPRECATED_CFLAGS)
+ dnl every flag in GST_OPTION_CFLAGS can be overridden at make time
+ GST_OPTION_CFLAGS="\$(WARNING_CFLAGS) \$(ERROR_CFLAGS) \$(DEBUG_CFLAGS) \$(PROFILE_CFLAGS) \$(GCOV_CFLAGS) \$(OPT_CFLAGS) \$(DEPRECATED_CFLAGS)"
+ GST_OPTION_CXXFLAGS="\$(WARNING_CXXFLAGS) \$(ERROR_CXXFLAGS) \$(DEBUG_CFLAGS) \$(PROFILE_CFLAGS) \$(GCOV_CFLAGS) \$(OPT_CFLAGS) \$(DEPRECATED_CFLAGS)"
++GST_OPTION_OBJCFLAGS="\$(WARNING_OBJCFLAGS) \$(ERROR_OBJCFLAGS) \$(DEBUG_CFLAGS) \$(PROFILE_CFLAGS) \$(GCOV_CFLAGS) \$(OPT_CFLAGS) \$(DEPRECATED_CFLAGS)"
+ AC_SUBST(GST_OPTION_CFLAGS)
+ AC_SUBST(GST_OPTION_CXXFLAGS)
++AC_SUBST(GST_OPTION_OBJCFLAGS)
+ 
+ dnl our libraries need to be versioned correctly
+ AC_SUBST(GST_LT_LDFLAGS)
+@@ -474,10 +512,12 @@ AC_SUBST(GST_PLUGINS_GL_CFLAGS)
+ 
+ dnl FIXME: do we want to rename to GST_ALL_* ?
+ dnl add GST_OPTION_CFLAGS, but overridable
++GST_OBJCFLAGS="-I\$(top_srcdir)/gst-libs $GST_CFLAGS $GLIB_EXTRA_CFLAGS \$(GST_OPTION_OBJCFLAGS)"
+ GST_CXXFLAGS="-I\$(top_srcdir)/gst-libs -I\$(top_builddir)/gst-libs $GST_CFLAGS $GST_CXXFLAGS $GLIB_EXTRA_CFLAGS \$(GST_OPTION_CXXFLAGS)"
+ GST_CFLAGS="-I\$(top_srcdir)/gst-libs -I\$(top_builddir)/gst-libs $GST_CFLAGS $GLIB_EXTRA_CFLAGS \$(GST_OPTION_CFLAGS)"
+ AC_SUBST(GST_CFLAGS)
+ AC_SUBST(GST_CXXFLAGS)
++AC_SUBST(GST_OBJCFLAGS)
+ 
+ dnl add GCOV libs because libtool strips -fprofile-arcs -ftest-coverage
+ GST_LIBS="$GST_LIBS \$(GCOV_LIBS)"
+diff --git a/docs/libs/Makefile.am b/docs/libs/Makefile.am
+index defa340..18016cf 100644
+--- a/docs/libs/Makefile.am
++++ b/docs/libs/Makefile.am
+@@ -50,7 +50,7 @@ extra_files =
+ # CFLAGS and LDFLAGS for compiling scan program. Only needed if your app/lib
+ # contains GtkObjects/GObjects and you want to document signals and properties.
+ GTKDOC_CFLAGS = $(GST_PLUGINS_BASE_CFLAGS) $(GST_BASE_CFLAGS) \
+-	-I$(top_srcdir)/gst-libs/gst/gl
++	-I$(top_srcdir)/gst-libs/gst/gl -I$(top_srcdir) -DHAVE_CONFIG_H -DLINUX
+ GTKDOC_LIBS = \
+ 	$(top_builddir)/gst-libs/gst/gl/libgstgl-@GST_MAJORMINOR@.la \
+   $(GST_BASE_LIBS)
+diff --git a/docs/plugins/inspect/plugin-libvisual-gl.xml b/docs/plugins/inspect/plugin-libvisual-gl.xml
+index da5a3d5..477c811 100644
+--- a/docs/plugins/inspect/plugin-libvisual-gl.xml
++++ b/docs/plugins/inspect/plugin-libvisual-gl.xml
+@@ -3,10 +3,10 @@
+   <description>libvisual-gl visualization plugins</description>
+   <filename>../../ext/libvisual/.libs/libgstlibvisualgl.so</filename>
+   <basename>libgstlibvisualgl.so</basename>
+-  <version>0.10.3</version>
++  <version>0.10.3.1</version>
+   <license>LGPL</license>
+   <source>gst-plugins-gl</source>
+-  <package>GStreamer OpenGL Plug-ins source release</package>
++  <package>GStreamer OpenGL Plug-ins git</package>
+   <origin>Unknown package origin</origin>
+   <elements>
+     <element>
+diff --git a/docs/plugins/inspect/plugin-opengl.xml b/docs/plugins/inspect/plugin-opengl.xml
+index dbfa9fb..9b7b663 100644
+--- a/docs/plugins/inspect/plugin-opengl.xml
++++ b/docs/plugins/inspect/plugin-opengl.xml
+@@ -3,10 +3,10 @@
+   <description>OpenGL plugin</description>
+   <filename>../../gst/gl/.libs/libgstopengl.so</filename>
+   <basename>libgstopengl.so</basename>
+-  <version>0.10.3</version>
++  <version>0.10.3.1</version>
+   <license>LGPL</license>
+   <source>gst-plugins-gl</source>
+-  <package>GStreamer OpenGL Plug-ins source release</package>
++  <package>GStreamer OpenGL Plug-ins git</package>
+   <origin>Unknown package origin</origin>
+   <elements>
+     <element>
+diff --git a/gst-libs/gst/gl/Makefile.am b/gst-libs/gst/gl/Makefile.am
+index 2ef7afc..d55a513 100644
+--- a/gst-libs/gst/gl/Makefile.am
++++ b/gst-libs/gst/gl/Makefile.am
+@@ -4,6 +4,7 @@ lib_LTLIBRARIES = libgstgl-@GST_MAJORMINOR@.la
+ EXTRA_DIST = \
+ 	gstglwindow_x11.c \
+ 	gstglwindow_x11ES2.c \
++	gstglwindow_fbES2.c \
+ 	gstglwindow_win32.c \
+ 	gstglwindow_winCE.c \
+ 	gstglwindow_cocoa.m
+@@ -28,6 +29,13 @@ endif
+ if GL_BACKEND_X11ES2
+ libgstgl_@GST_MAJORMINOR@_la_SOURCES += gstglwindow_x11ES2.c
+ endif
++if GL_BACKEND_FBES2
++libgstgl_@GST_MAJORMINOR@_la_SOURCES += gstglwindow_fbES2.c
++endif
++
++if USE_VIVANTE
++libgstgl_@GST_MAJORMINOR@_la_SOURCES += gstglvivante.c
++endif
+ 
+ libgstgl_@GST_MAJORMINOR@includedir = $(includedir)/gstreamer-@GST_MAJORMINOR@/gst/gl
+ libgstgl_@GST_MAJORMINOR@include_HEADERS = \
+@@ -41,13 +49,19 @@ libgstgl_@GST_MAJORMINOR@include_HEADERS = \
+         gstglshadervariables.h \
+ 	gstglshader.h
+ 
++if USE_VIVANTE
++libgstgl_@GST_MAJORMINOR@include_HEADERS += gstglvivante.h
++endif
++
+ libgstgl_@GST_MAJORMINOR@_la_LIBADD = \
+ 	$(GST_PLUGINS_BASE_LIBS) -lgstvideo-$(GST_MAJORMINOR) -lgstcontroller-$(GST_MAJORMINOR) \
++	$(GST_FSL_LIBS) \
+ 	$(GST_BASE_LIBS) $(GST_LIBS) \
+ 	$(GL_LIBS)
+ 
+ libgstgl_@GST_MAJORMINOR@_la_CFLAGS = \
+ 	$(GL_CFLAGS) $(X_CFLAGS) \
++	$(GST_FSL_CFLAGS) \
+ 	$(GST_PLUGINS_BASE_CFLAGS) $(GST_BASE_CFLAGS) $(GST_CFLAGS)
+ libgstgl_@GST_MAJORMINOR@_la_OBJCFLAGS = \
+ 	$(GL_CFLAGS) $(X_CFLAGS) \
+diff --git a/gst-libs/gst/gl/gstgldisplay.c b/gst-libs/gst/gl/gstgldisplay.c
+index 64c6c2c..da2e602 100644
+--- a/gst-libs/gst/gl/gstgldisplay.c
++++ b/gst-libs/gst/gl/gstgldisplay.c
+@@ -28,6 +28,9 @@
+ 
+ #include <gst/video/gstvideosink.h>
+ #include "gstgldisplay.h"
++#ifdef GPU_VIVANTE
++#include "gstglvivante.h"
++#endif
+ 
+ #ifndef GLEW_VERSION_MAJOR
+ #define GLEW_VERSION_MAJOR 4
+@@ -468,6 +471,10 @@ gst_gl_display_init (GstGLDisplay * display, GstGLDisplayClass * klass)
+ #endif
+ 
+   display->error_message = NULL;
++
++#ifdef GPU_VIVANTE
++  display->gpu_priv = gst_gl_vivante_new ();
++#endif
+ }
+ 
+ static void
+@@ -539,6 +546,12 @@ gst_gl_display_finalize (GObject * object)
+     g_free (display->error_message);
+     display->error_message = NULL;
+   }
++#ifdef GPU_VIVANTE
++  if (display->gpu_priv) {
++    gst_gl_vivante_delete (display->gpu_priv);
++    display->gpu_priv = NULL;
++  }
++#endif
+ }
+ 
+ 
+@@ -1135,6 +1148,17 @@ gst_gl_display_thread_init_upload (GstGLDisplay * display)
+ void
+ gst_gl_display_thread_do_upload (GstGLDisplay * display)
+ {
++  if (display->gpu_priv &&
++      display->upload_width == display->upload_data_width &&
++      display->upload_height == display->upload_data_height) {
++#ifdef GPU_VIVANTE
++    if (gst_gl_vivante_tex_upload (display->gpu_priv, display))
++      return;
++#endif
++  }
++
++  GST_WARNING ("%s: Fall into non direct uploading", __func__);
++
+   gst_gl_display_thread_do_upload_fill (display);
+ 
+   switch (display->upload_video_format) {
+@@ -1950,14 +1974,13 @@ gst_gl_display_on_draw (GstGLDisplay * display)
+ 
+     glBegin (GL_QUADS);
+     /* gst images are top-down while opengl plane is bottom-up */
+-    glTexCoord2i (display->redisplay_texture_width, 0);
++    glTexCoord2i (1, 0);
+     glVertex2f (1.0f, 1.0f);
+     glTexCoord2i (0, 0);
+     glVertex2f (-1.0f, 1.0f);
+-    glTexCoord2i (0, display->redisplay_texture_height);
++    glTexCoord2i (0, 1);
+     glVertex2f (-1.0f, -1.0f);
+-    glTexCoord2i (display->redisplay_texture_width,
+-        display->redisplay_texture_height);
++    glTexCoord2i (1, 1);
+     glVertex2f (1.0f, -1.0f);
+     /*glTexCoord2i (display->redisplay_texture_width, 0);
+        glVertex2i (1, -1);
+@@ -1974,7 +1997,8 @@ gst_gl_display_on_draw (GstGLDisplay * display)
+ 
+ #else //OPENGL_ES2
+ 
+-    const GLfloat vVertices[] = { 1.0f, 1.0f, 0.0f,
++    GLfloat left, right, top, bottom;
++    GLfloat vVertices[] = { 1.0f, 1.0f, 0.0f,
+       1.0f, 0.0f,
+       -1.0f, 1.0f, 0.0f,
+       0.0f, 0.0f,
+@@ -1986,6 +2010,17 @@ gst_gl_display_on_draw (GstGLDisplay * display)
+ 
+     GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
+ 
++#ifdef GPU_VIVANTE
++    if (display->gpu_priv) {
++      gst_gl_vivante_get_sampler_rect (display->gpu_priv, &left, &right, &top,
++          &bottom);
++      vVertices[3] = vVertices[18] = right;
++      vVertices[4] = vVertices[9] = bottom;
++      vVertices[8] = vVertices[13] = left;
++      vVertices[14] = vVertices[19] = top;
++    }
++#endif
++
+     glClear (GL_COLOR_BUFFER_BIT);
+ 
+     gst_gl_shader_use (display->redisplay_shader);
+@@ -2067,6 +2102,9 @@ gst_gl_display_glgen_texture (GstGLDisplay * display, GLuint * pTexture,
+     case GST_VIDEO_FORMAT_I420:
+     case GST_VIDEO_FORMAT_YV12:
+     case GST_VIDEO_FORMAT_AYUV:
++#ifdef GPU_VIVANTE
++    case GST_VIDEO_FORMAT_NV12:
++#endif
+       glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA8,
+           width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+       break;
+@@ -2177,11 +2215,11 @@ gst_gl_display_check_framebuffer_status (void)
+       GST_ERROR ("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
+       break;
+ 
+-#if defined(GL_ARB_framebuffer_object)
++/*
+     case GL_FRAMEBUFFER_UNDEFINED:
+       GST_ERROR ("GL_FRAMEBUFFER_UNDEFINED");
+       break;
+-#endif
++*/
+ 
+     default:
+       GST_ERROR ("General FBO error");
+@@ -2350,8 +2388,13 @@ gst_gl_display_init_upload (GstGLDisplay * display, GstVideoFormat video_format,
+   display->upload_height = gl_height;
+   display->upload_data_width = video_width;
+   display->upload_data_height = video_height;
+-  gst_gl_window_send_message (display->gl_window,
+-      GST_GL_WINDOW_CB (gst_gl_display_thread_init_upload), display);
++
++#ifdef GPU_VIVANTE
++  if (!gst_gl_vivante_check_format (display->gpu_priv, video_format,
++          video_width, video_height))
++#endif
++    gst_gl_window_send_message (display->gl_window,
++        GST_GL_WINDOW_CB (gst_gl_display_thread_init_upload), display);
+   isAlive = display->isAlive;
+   gst_gl_display_unlock (display);
+ 
+@@ -2364,6 +2407,14 @@ gboolean
+ gst_gl_display_do_upload (GstGLDisplay * display, GLuint texture,
+     gint data_width, gint data_height, gpointer data)
+ {
++  return gst_gl_display_do_upload_with_meta (display, texture, data_width,
++      data_height, data, NULL);
++}
++
++gboolean
++gst_gl_display_do_upload_with_meta (GstGLDisplay * display, GLuint texture,
++    gint data_width, gint data_height, gpointer data, gpointer meta)
++{
+   gboolean isAlive = TRUE;
+ 
+   gst_gl_display_lock (display);
+@@ -2373,6 +2424,7 @@ gst_gl_display_do_upload (GstGLDisplay * display, GLuint texture,
+     display->upload_data_width = data_width;
+     display->upload_data_height = data_height;
+     display->upload_data = data;
++    display->upload_meta = meta;
+     gst_gl_window_send_message (display->gl_window,
+         GST_GL_WINDOW_CB (gst_gl_display_thread_do_upload), display);
+     isAlive = display->isAlive;
+@@ -2975,11 +3027,11 @@ gst_gl_display_thread_do_upload_draw (GstGLDisplay * display)
+ 
+ #ifdef OPENGL_ES2
+   GLint viewport_dim[4];
+-
+-  const GLfloat vVertices[] = { 1.0f, -1.0f, 0.0f,
++  GLfloat left, right, top, bottom;
++  GLfloat vVertices[] = { 1.0f, -1.0f, 0.0f,
+     1.0f, 0.0f,
+     -1.0f, -1.0f, 0.0f,
+-    0.0f, .0f,
++    0.0f, 0.0f,
+     -1.0f, 1.0f, 0.0f,
+     0.0f, 1.0f,
+     1.0f, 1.0f, 0.0f,
+@@ -2987,6 +3039,18 @@ gst_gl_display_thread_do_upload_draw (GstGLDisplay * display)
+   };
+ 
+   GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
++
++#ifdef GPU_VIVANTE
++  if (display->gpu_priv) {
++    gst_gl_vivante_get_sampler_rect (display->gpu_priv, &left, &right, &top,
++        &bottom);
++    vVertices[3] = vVertices[18] = right;
++    vVertices[4] = vVertices[9] = bottom;
++    vVertices[8] = vVertices[13] = left;
++    vVertices[14] = vVertices[19] = top;
++  }
++#endif
++
+ #endif
+ 
+   glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, display->upload_fbo);
+@@ -3260,13 +3324,13 @@ gst_gl_display_thread_do_upload_draw (GstGLDisplay * display)
+ 
+ #ifndef OPENGL_ES2
+   glBegin (GL_QUADS);
+-  glTexCoord2i (display->upload_data_width, 0);
++  glTexCoord2i (1, 0);
+   glVertex2f (1.0f, -1.0f);
+   glTexCoord2i (0, 0);
+   glVertex2f (-1.0f, -1.0f);
+-  glTexCoord2i (0, display->upload_data_height);
++  glTexCoord2i (0, 1);
+   glVertex2f (-1.0f, 1.0f);
+-  glTexCoord2i (display->upload_data_width, display->upload_data_height);
++  glTexCoord2i (1, 1);
+   glVertex2f (1.0f, 1.0f);
+   glEnd ();
+ 
+@@ -3554,11 +3618,11 @@ gst_gl_display_thread_do_download_draw_yuv (GstGLDisplay * display)
+   glBegin (GL_QUADS);
+   glTexCoord2i (0, 0);
+   glVertex2f (-1.0f, -1.0f);
+-  glTexCoord2i (width, 0);
++  glTexCoord2i (1, 0);
+   glVertex2f (1.0f, -1.0f);
+-  glTexCoord2i (width, height);
++  glTexCoord2i (1, 1);
+   glVertex2f (1.0f, 1.0f);
+-  glTexCoord2i (0, height);
++  glTexCoord2i (0, 1);
+   glVertex2f (-1.0f, 1.0f);
+   glEnd ();
+ 
+diff --git a/gst-libs/gst/gl/gstgldisplay.h b/gst-libs/gst/gl/gstgldisplay.h
+index f657e1e..31dfe26 100644
+--- a/gst-libs/gst/gl/gstgldisplay.h
++++ b/gst-libs/gst/gl/gstgldisplay.h
+@@ -229,6 +229,9 @@ struct _GstGLDisplay
+ 
+   gchar *error_message;
+ 
++  gpointer gpu_priv;
++  gpointer upload_meta;
++  gboolean upload_buf_mapped;
+ };
+ 
+ 
+@@ -264,6 +267,8 @@ gboolean gst_gl_display_init_upload (GstGLDisplay * display,
+     gint video_width, gint video_height);
+ gboolean gst_gl_display_do_upload (GstGLDisplay * display, GLuint texture,
+     gint data_width, gint data_height, gpointer data);
++gboolean gst_gl_display_do_upload_with_meta (GstGLDisplay * display, GLuint texture,
++    gint data_width, gint data_height, gpointer data, gpointer meta);
+ gboolean gst_gl_display_init_download (GstGLDisplay * display,
+     GstVideoFormat video_format, gint width, gint height);
+ gboolean gst_gl_display_do_download (GstGLDisplay * display, GLuint texture,
+diff --git a/gst-libs/gst/gl/gstglshader.h b/gst-libs/gst/gl/gstglshader.h
+index ddeb99c..aec69f1 100644
+--- a/gst-libs/gst/gl/gstglshader.h
++++ b/gst-libs/gst/gl/gstglshader.h
+@@ -21,6 +21,10 @@
+ #ifndef __GST_GL_SHADER_H__
+ #define __GST_GL_SHADER_H__
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ /* OpenGL 2.0 for Embedded Systems */
+ #ifdef OPENGL_ES2
+ #include <GLES2/gl2.h>
+diff --git a/gst-libs/gst/gl/gstglshadervariables.c b/gst-libs/gst/gl/gstglshadervariables.c
+index 69d5b75..be6e58c 100644
+--- a/gst-libs/gst/gl/gstglshadervariables.c
++++ b/gst-libs/gst/gl/gstglshadervariables.c
+@@ -550,6 +550,7 @@ gst_gl_shadervariable_set (GstGLShader * shader,
+           (float *) ret->value);
+       break;
+ 
++#ifndef OPENGL_ES2
+     case _mat2x3:
+       gst_gl_shader_set_uniform_matrix_2x3fv (shader, ret->name, ret->count, 0,
+           (float *) ret->value);
+@@ -569,6 +570,7 @@ gst_gl_shadervariable_set (GstGLShader * shader,
+       gst_gl_shader_set_uniform_matrix_4x2fv (shader, ret->name, ret->count, 0,
+           (float *) ret->value);
+       break;
++#endif
+ 
+     case _mat3:
+     case _mat3x3:
+@@ -576,6 +578,7 @@ gst_gl_shadervariable_set (GstGLShader * shader,
+           (float *) ret->value);
+       break;
+ 
++#ifndef OPENGL_ES2
+     case _mat3x4:
+       gst_gl_shader_set_uniform_matrix_3x4fv (shader, ret->name, ret->count, 0,
+           (float *) ret->value);
+@@ -585,6 +588,7 @@ gst_gl_shadervariable_set (GstGLShader * shader,
+       gst_gl_shader_set_uniform_matrix_4x3fv (shader, ret->name, ret->count, 0,
+           (float *) ret->value);
+       break;
++#endif
+ 
+     case _mat4:
+     case _mat4x4:
+diff --git a/gst-libs/gst/gl/gstglvivante.c b/gst-libs/gst/gl/gstglvivante.c
+new file mode 100644
+index 0000000..2b8c9ae
+--- /dev/null
++++ b/gst-libs/gst/gl/gstglvivante.c
+@@ -0,0 +1,218 @@
++/*
++ * Copyright (c) 2012, Freescale Semiconductor, Inc. All rights reserved.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include <string.h>
++
++#include "gstglvivante.h"
++#include <gstbufmeta.h>
++
++#define GL_GLEXT_PROTOTYPES
++#include <GLES2/gl2ext.h>
++
++typedef struct
++{
++  gfloat sampler_left;
++  gfloat sampler_right;
++  gfloat sampler_top;
++  gfloat sampler_bottom;
++} GstGLVivante;
++
++gpointer
++gst_gl_vivante_new ()
++{
++  GstGLVivante *viv = g_new (GstGLVivante, 1);
++
++  viv->sampler_left = 0.0f;
++  viv->sampler_right = 1.0f;
++  viv->sampler_top = 1.0f;
++  viv->sampler_bottom = 0.0f;
++
++  return viv;
++}
++
++void
++gst_gl_vivante_delete (gpointer gpu)
++{
++  g_free (gpu);
++}
++
++gboolean
++gst_gl_vivante_check_format (gpointer gpu, GstVideoFormat format, gint width,
++    gint height)
++{
++  switch (format) {
++    case GST_VIDEO_FORMAT_YV12:
++    case GST_VIDEO_FORMAT_NV12:
++      if ((width & 15) == 0)
++        return TRUE;
++      break;
++    default:
++      GST_WARNING ("GstVideoFormat %d not supported by vivante", format);
++  }
++  GST_WARNING
++      ("Check format %d, width,height [%d, %d] failed, can't direct render",
++      format, width, height);
++  return FALSE;
++}
++
++GLenum
++gst_gl_vivante_get_gl_format (gpointer gpu, GstVideoFormat format)
++{
++  switch (format) {
++    case GST_VIDEO_FORMAT_YV12:
++      return GL_VIV_YV12;
++    case GST_VIDEO_FORMAT_NV12:
++      return GL_VIV_NV12;
++    default:
++      GST_WARNING ("GstVideoFormat %d not supported by vivante", format);
++  }
++  return GL_NONE;
++}
++
++static gboolean
++format_is_yuv (GstVideoFormat format)
++{
++  switch (format) {
++    case GST_VIDEO_FORMAT_YV12:
++    case GST_VIDEO_FORMAT_NV12:
++      return TRUE;
++    default:
++      return FALSE;
++  }
++}
++
++static void
++copy_data_to_gpu (gpointer gpu, GstVideoFormat format, gpointer data,
++    gpointer planes[], gint width, gint height)
++{
++  gint src_height;
++  gint src_y_size, src_uv_size;
++  gint dst_y_size, dst_uv_size;
++
++  /* width is already 16 aligned */
++  switch (format) {
++    case GST_VIDEO_FORMAT_YV12:
++      src_height = GST_ROUND_UP_2 (height);
++      src_y_size = width * src_height;
++      src_uv_size = src_y_size / 4;
++      dst_y_size = width * height;
++      dst_uv_size = dst_y_size / 4;
++      memcpy (planes[0], data, dst_y_size);
++      memcpy (planes[1], (gchar *) data + src_y_size, dst_uv_size);
++      memcpy (planes[2], (gchar *) data + src_y_size + src_uv_size,
++          dst_uv_size);
++      break;
++    case GST_VIDEO_FORMAT_NV12:
++      src_height = GST_ROUND_UP_2 (height);
++      src_y_size = width * src_height;
++      dst_y_size = width * height;
++      dst_uv_size = dst_y_size / 2;
++      memcpy (planes[0], data, dst_y_size);
++      memcpy (planes[1], (gchar *) data + src_y_size, dst_uv_size);
++      break;
++    default:
++      return;
++  }
++}
++
++gboolean
++gst_gl_vivante_tex_upload (gpointer gpu, GstGLDisplay * display)
++{
++  GstVideoFormat format = display->upload_video_format;
++  gint width = display->upload_data_width;
++  gint height = display->upload_data_height;
++  gpointer data = display->upload_data;
++  GstBufferMeta *meta = GST_BUFFER_META (display->upload_meta);
++  gpointer planes[3];
++  GLuint physical = meta ? (GLuint) (meta->physical_data) : ~0U;
++
++  GST_INFO ("gst_gl_vivante_tex_upload physical address 0x%x, data %p, tex %d",
++      physical, data, display->upload_outtex);
++
++  if (!gst_gl_vivante_check_format (gpu, format, width, height))
++    return FALSE;
++
++  glBindTexture (GL_TEXTURE_2D, display->upload_outtex);
++
++  if (((guint) data & 0x3F) != 0) {     /* not aligned, need additional copy */
++    if (!format_is_yuv (format)) {      /* rgb is left to default handler */
++      GST_WARNING ("Format %d unaligned data is not supported for"
++          " direct rendering", format);
++      return FALSE;
++    }
++
++    GST_WARNING ("Data not aligned, need additional copy");
++
++    glTexDirectVIV (GL_TEXTURE_2D, width, height,
++        gst_gl_vivante_get_gl_format (gpu, format), (GLvoid **) & planes);
++    if (glGetError () != GL_NO_ERROR)
++      return FALSE;
++
++    copy_data_to_gpu (gpu, format, data, planes, width, height);
++  } else {
++    glTexDirectVIVMap (GL_TEXTURE_2D, width, height,
++        gst_gl_vivante_get_gl_format (gpu, format), &data, &physical);
++    if (glGetError () != GL_NO_ERROR)
++      return FALSE;
++    display->upload_buf_mapped = TRUE;
++  }
++
++  glTexDirectInvalidateVIV (GL_TEXTURE_2D);
++
++  return TRUE;
++}
++
++void
++gst_gl_vivante_set_caps (gpointer gpu, GstCaps * caps)
++{
++  GstVideoFormat format;
++  gint width;
++  gint height;
++  GstStructure *s;
++  gint left = 0, right = 0, top = 0, bottom = 0;
++  GstGLVivante *viv = (GstGLVivante *) gpu;
++
++  s = gst_caps_get_structure (caps, 0);
++  gst_structure_get_int (s, "crop-left", &left);
++  gst_structure_get_int (s, "crop-top", &top);
++  gst_structure_get_int (s, "crop-right", &right);
++  gst_structure_get_int (s, "crop-bottom", &bottom);
++
++  gst_video_format_parse_caps (caps, &format, &width, &height);
++
++  viv->sampler_left = ((gfloat) left) / width;
++  viv->sampler_right = ((gfloat) (width - right)) / width;
++  viv->sampler_top = ((gfloat) (height - bottom)) / height;
++  viv->sampler_bottom = ((gfloat) top) / height;
++}
++
++void
++gst_gl_vivante_get_sampler_rect (gpointer gpu, gfloat * left, gfloat * right,
++    gfloat * top, gfloat * bottom)
++{
++  GstGLVivante *viv = (GstGLVivante *) gpu;
++
++  *left = viv->sampler_left;
++  *right = viv->sampler_right;
++  *top = viv->sampler_top;
++  *bottom = viv->sampler_bottom;
++}
+diff --git a/gst-libs/gst/gl/gstglvivante.h b/gst-libs/gst/gl/gstglvivante.h
+new file mode 100644
+index 0000000..f763f80
+--- /dev/null
++++ b/gst-libs/gst/gl/gstglvivante.h
+@@ -0,0 +1,41 @@
++/*
++ * Copyright (c) 2012, Freescale Semiconductor, Inc. All rights reserved.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#ifndef __GST_GL_VIVANTE_H__
++#define __GST_GL_VIVANTE_H__
++
++#include "gstgldisplay.h"
++#include <GLES2/gl2.h>
++
++G_BEGIN_DECLS
++
++gpointer gst_gl_vivante_new();
++void gst_gl_vivante_delete(gpointer gpu);
++
++gboolean gst_gl_vivante_check_format(gpointer gpu, GstVideoFormat format, gint width, gint height);
++GLenum gst_gl_vivante_get_gl_format(gpointer gpu, GstVideoFormat format);
++
++gboolean gst_gl_vivante_tex_upload (gpointer gpu, GstGLDisplay * display);
++void gst_gl_vivante_set_caps (gpointer gpu, GstCaps * caps);
++
++void gst_gl_vivante_get_sampler_rect (gpointer gpu, gfloat *left, gfloat *right, gfloat *top, gfloat *bottom);
++
++G_END_DECLS
++
++#endif /* __GST_GL_VIVANTE_H__ */
+diff --git a/gst-libs/gst/gl/gstglwindow.h b/gst-libs/gst/gl/gstglwindow.h
+index 499d47a..c3cafb2 100644
+--- a/gst-libs/gst/gl/gstglwindow.h
++++ b/gst-libs/gst/gl/gstglwindow.h
+@@ -21,6 +21,10 @@
+ #ifndef __GST_GL_WINDOW_H__
+ #define __GST_GL_WINDOW_H__
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ /* OpenGL 2.0 for Embedded Systems */
+ #ifdef OPENGL_ES2
+ #undef UNICODE
+diff --git a/gst-libs/gst/gl/gstglwindow_fbES2.c b/gst-libs/gst/gl/gstglwindow_fbES2.c
+new file mode 100644
+index 0000000..57c02e1
+--- /dev/null
++++ b/gst-libs/gst/gl/gstglwindow_fbES2.c
+@@ -0,0 +1,709 @@
++/*
++ * GStreamer
++ * Copyright (C) 2008 Julien Isorce <julien.isorce@gmail.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "gstglwindow.h"
++#include "EGL/eglvivante.h"
++
++#include <locale.h>
++#include <stdio.h>
++#include <stdlib.h>
++
++#define GST_GL_WINDOW_GET_PRIVATE(o)  \
++  (G_TYPE_INSTANCE_GET_PRIVATE((o), GST_GL_TYPE_WINDOW, GstGLWindowPrivate))
++
++/* A gl window is created and deleted in a thread dedicated to opengl calls
++   The name contains "window" because an opengl context is used in cooperation
++   with a window */
++
++const gchar *EGLErrorString ();
++
++enum
++{
++  ARG_0,
++  ARG_DISPLAY
++};
++
++enum GstGLFbEventType
++{
++  FB_EVENT_DRAW,
++  FB_EVENT_CALLBACK,
++  FB_EVENT_QUIT,
++};
++
++typedef struct _GstGLFbEvent
++{
++  enum GstGLFbEventType type;
++  GstGLWindowCB callback;
++  gpointer data;
++} GstGLFbEvent;
++
++struct _GstGLWindowPrivate
++{
++  /* X is not thread safe */
++  GMutex *lock;
++  GCond *cond_send_message;
++  GCond *cond_queue_message;
++  gboolean running;
++  gboolean allow_extra_expose_events;
++
++  /* fb queue */
++  GList *queue;
++
++  /* X context */
++  gchar *display_name;
++  gint device_width;
++  gint device_height;
++
++  EGLNativeWindowType internal_win_id;
++  EGLNativeDisplayType device;
++
++  /* EGL */
++  EGLContext gl_context;
++  EGLDisplay gl_display;
++  EGLSurface gl_surface;
++
++  /* frozen callbacks */
++  GstGLWindowCB draw_cb;
++  gpointer draw_data;
++  GstGLWindowCB2 resize_cb;
++  gpointer resize_data;
++  GstGLWindowCB close_cb;
++  gpointer close_data;
++};
++
++G_DEFINE_TYPE (GstGLWindow, gst_gl_window, G_TYPE_OBJECT);
++
++#undef G_LOG_DOMAIN
++#define G_LOG_DOMAIN "GstGLWindow"
++
++gboolean _gst_gl_window_debug = FALSE;
++
++void
++gst_gl_window_init_platform ()
++{
++}
++
++static void
++free_event (gpointer event, gpointer data)
++{
++  g_slice_free (GstGLFbEvent, event);
++}
++
++/* Must be called in the gl thread */
++static void
++gst_gl_window_finalize (GObject * object)
++{
++  GstGLWindow *window = GST_GL_WINDOW (object);
++  GstGLWindowPrivate *priv = window->priv;
++  gboolean ret = TRUE;
++
++  g_mutex_lock (priv->lock);
++
++  g_debug ("about to finalize gl window\n");
++
++  if (priv->gl_context) {
++    ret =
++        eglMakeCurrent (priv->gl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
++        EGL_NO_CONTEXT);
++    if (!ret)
++      g_debug ("failed to release opengl context\n");
++
++    eglDestroyContext (priv->gl_display, priv->gl_context);
++  }
++
++  if (priv->gl_display)
++    eglTerminate (priv->gl_display);
++
++  if (priv->device)
++    fbDestroyDisplay (priv->device);
++
++  g_list_foreach (priv->queue, free_event, NULL);
++  g_list_free (priv->queue);
++  priv->queue = NULL;
++
++  if (priv->cond_send_message) {
++    g_cond_free (priv->cond_send_message);
++    priv->cond_send_message = NULL;
++  }
++
++  if (priv->cond_queue_message) {
++    g_cond_free (priv->cond_queue_message);
++    priv->cond_queue_message = NULL;
++  }
++
++  g_mutex_unlock (priv->lock);
++
++  if (priv->lock) {
++    g_mutex_free (priv->lock);
++    priv->lock = NULL;
++  }
++
++  G_OBJECT_CLASS (gst_gl_window_parent_class)->finalize (object);
++}
++
++static void
++gst_gl_window_set_property (GObject * object, guint prop_id,
++    const GValue * value, GParamSpec * pspec)
++{
++  GstGLWindow *window;
++  GstGLWindowPrivate *priv;
++
++  g_return_if_fail (GST_GL_IS_WINDOW (object));
++
++  window = GST_GL_WINDOW (object);
++
++  priv = window->priv;
++
++  switch (prop_id) {
++    case ARG_DISPLAY:
++      priv->display_name = g_strdup (g_value_get_string (value));
++      break;
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++      break;
++  }
++}
++
++static void
++gst_gl_window_get_property (GObject * object, guint prop_id,
++    GValue * value, GParamSpec * pspec)
++{
++  GstGLWindow *window;
++  GstGLWindowPrivate *priv;
++
++  g_return_if_fail (GST_GL_IS_WINDOW (object));
++
++  window = GST_GL_WINDOW (object);
++
++  priv = window->priv;
++
++  switch (prop_id) {
++    case ARG_DISPLAY:
++      g_value_set_string (value, priv->display_name);
++      break;
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++      break;
++  }
++}
++
++static void
++gst_gl_window_log_handler (const gchar * domain, GLogLevelFlags flags,
++    const gchar * message, gpointer user_data)
++{
++  if (_gst_gl_window_debug) {
++    g_log_default_handler (domain, flags, message, user_data);
++  }
++}
++
++static void
++gst_gl_window_class_init (GstGLWindowClass * klass)
++{
++  GObjectClass *obj_class = G_OBJECT_CLASS (klass);
++
++  g_type_class_add_private (klass, sizeof (GstGLWindowPrivate));
++
++  obj_class->finalize = gst_gl_window_finalize;
++  obj_class->set_property = gst_gl_window_set_property;
++  obj_class->get_property = gst_gl_window_get_property;
++
++  g_object_class_install_property (obj_class, ARG_DISPLAY,
++      g_param_spec_string ("display", "Display", "X Display name", NULL,
++          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++}
++
++static void
++gst_gl_window_init (GstGLWindow * window)
++{
++  GstGLWindowPrivate *priv = NULL;
++  window->priv = GST_GL_WINDOW_GET_PRIVATE (window);
++  priv = window->priv;
++
++  if (g_getenv ("GST_GL_WINDOW_DEBUG") != NULL)
++    _gst_gl_window_debug = TRUE;
++
++  g_log_set_handler ("GstGLWindow", G_LOG_LEVEL_DEBUG,
++      gst_gl_window_log_handler, NULL);
++
++  priv->lock = NULL;
++  priv->cond_send_message = NULL;
++  priv->running = FALSE;
++  priv->allow_extra_expose_events = FALSE;
++
++  priv->queue = NULL;
++
++  /* X context */
++  priv->display_name = NULL;
++  priv->device_width = 0;
++  priv->device_height = 0;
++
++  /* EGL */
++  priv->gl_context = EGL_NO_CONTEXT;
++  priv->gl_display = 0;
++  priv->gl_surface = EGL_NO_SURFACE;
++
++  /* frozen callbacks */
++  priv->draw_cb = NULL;
++  priv->draw_data = NULL;
++  priv->resize_cb = NULL;
++  priv->resize_data = NULL;
++  priv->close_cb = NULL;
++  priv->close_data = NULL;
++}
++
++/* Must be called in the gl thread */
++GstGLWindow *
++gst_gl_window_new (gulong external_gl_context)
++{
++  GstGLWindow *window = g_object_new (GST_GL_TYPE_WINDOW, NULL);
++  GstGLWindowPrivate *priv = window->priv;
++
++  EGLint config_attrib[] = {
++    EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
++    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
++    EGL_DEPTH_SIZE, 16,
++    EGL_NONE
++  };
++
++  EGLint context_attrib[] = {
++    EGL_CONTEXT_CLIENT_VERSION, 2,
++    EGL_NONE
++  };
++
++  EGLint majorVersion;
++  EGLint minorVersion;
++  EGLint numConfigs;
++  EGLConfig config;
++
++  int index = 0;
++
++  setlocale (LC_NUMERIC, "C");
++
++  priv->lock = g_mutex_new ();
++  priv->cond_send_message = g_cond_new ();
++  priv->cond_queue_message = g_cond_new ();
++  priv->running = TRUE;
++  priv->allow_extra_expose_events = TRUE;
++
++  g_mutex_lock (priv->lock);
++
++  if (priv->display_name)
++    index = strtol (priv->display_name, NULL, 0);
++
++  priv->device = fbGetDisplayByIndex (index);
++
++  if (!priv->device) {
++    g_debug ("failed to get fb display by index %d\n", index);
++    goto failure;
++  }
++
++  priv->internal_win_id = fbCreateWindow (priv->device, -1, -1, 0, 0);
++
++  fbGetDisplayGeometry (priv->device, &priv->device_width,
++      &priv->device_height);
++
++  priv->gl_display = eglGetDisplay (priv->device);
++
++  if (eglInitialize (priv->gl_display, &majorVersion, &minorVersion))
++    g_debug ("egl initialized: %d.%d\n", majorVersion, minorVersion);
++  else {
++    g_debug ("failed to initialize egl %ld, %s\n", (gulong) priv->gl_display,
++        EGLErrorString ());
++    goto failure;
++  }
++
++  if (eglChooseConfig (priv->gl_display, config_attrib, &config, 1,
++          &numConfigs))
++    g_debug ("config set: %ld, %ld\n", (gulong) config, (gulong) numConfigs);
++  else {
++    g_debug ("failed to set config %ld, %s\n", (gulong) priv->gl_display,
++        EGLErrorString ());
++    goto failure;
++  }
++
++  priv->gl_surface =
++      eglCreateWindowSurface (priv->gl_display, config, priv->internal_win_id,
++      NULL);
++  if (priv->gl_surface != EGL_NO_SURFACE)
++    g_debug ("surface created: %ld\n", (gulong) priv->gl_surface);
++  else {
++    g_debug ("failed to create surface %ld, %ld, %ld, %s\n",
++        (gulong) priv->gl_display, (gulong) priv->gl_surface,
++        (gulong) priv->gl_display, EGLErrorString ());
++    goto failure;
++  }
++
++  g_debug ("about to create gl context\n");
++
++  priv->gl_context =
++      eglCreateContext (priv->gl_display, config,
++      (EGLContext) (guint) external_gl_context, context_attrib);
++
++  if (priv->gl_context != EGL_NO_CONTEXT)
++    g_debug ("gl context created: %ld\n", (gulong) priv->gl_context);
++  else {
++    g_debug ("failed to create glcontext %ld, %ld, %s\n",
++        (gulong) priv->gl_context, (gulong) priv->gl_display,
++        EGLErrorString ());
++    goto failure;
++  }
++
++  if (!eglMakeCurrent (priv->gl_display, priv->gl_surface, priv->gl_surface,
++          priv->gl_context)) {
++    g_debug ("failed to make opengl context current %ld, %s\n",
++        (gulong) priv->gl_display, EGLErrorString ());
++    goto failure;
++  }
++
++  g_mutex_unlock (priv->lock);
++  printf ("device WxH:%dx%d\n", priv->device_width, priv->device_height);
++  return window;
++
++failure:
++  g_mutex_unlock (priv->lock);
++  g_object_unref (G_OBJECT (window));
++  return NULL;
++}
++
++GQuark
++gst_gl_window_error_quark (void)
++{
++  return g_quark_from_static_string ("gst-gl-window-error");
++}
++
++gulong
++gst_gl_window_get_internal_gl_context (GstGLWindow * window)
++{
++  GstGLWindowPrivate *priv = window->priv;
++  return (gulong) priv->gl_context;
++}
++
++void
++callback_activate_gl_context (GstGLWindowPrivate * priv)
++{
++  if (!eglMakeCurrent (priv->gl_display, priv->gl_surface, priv->gl_surface,
++          priv->gl_context))
++    g_debug ("failed to activate opengl context %lud\n",
++        (gulong) priv->gl_context);
++}
++
++void
++callback_inactivate_gl_context (GstGLWindowPrivate * priv)
++{
++  if (!eglMakeCurrent (priv->device, EGL_NO_SURFACE, EGL_NO_SURFACE,
++          EGL_NO_CONTEXT))
++    g_debug ("failed to inactivate opengl context %lud\n",
++        (gulong) priv->gl_context);
++}
++
++void
++gst_gl_window_activate_gl_context (GstGLWindow * window, gboolean activate)
++{
++  GstGLWindowPrivate *priv = window->priv;
++  if (activate)
++    gst_gl_window_send_message (window,
++        GST_GL_WINDOW_CB (callback_activate_gl_context), priv);
++  else
++    gst_gl_window_send_message (window,
++        GST_GL_WINDOW_CB (callback_inactivate_gl_context), priv);
++}
++
++/* Not called by the gl thread */
++void
++gst_gl_window_set_external_window_id (GstGLWindow * window, gulong id)
++{
++}
++
++void
++gst_gl_window_set_draw_callback (GstGLWindow * window, GstGLWindowCB callback,
++    gpointer data)
++{
++  GstGLWindowPrivate *priv = window->priv;
++
++  g_mutex_lock (priv->lock);
++
++  priv->draw_cb = callback;
++  priv->draw_data = data;
++
++  g_mutex_unlock (priv->lock);
++}
++
++void
++gst_gl_window_set_resize_callback (GstGLWindow * window,
++    GstGLWindowCB2 callback, gpointer data)
++{
++  GstGLWindowPrivate *priv = window->priv;
++
++  g_mutex_lock (priv->lock);
++
++  priv->resize_cb = callback;
++  priv->resize_data = data;
++
++  g_mutex_unlock (priv->lock);
++}
++
++void
++gst_gl_window_set_close_callback (GstGLWindow * window, GstGLWindowCB callback,
++    gpointer data)
++{
++  GstGLWindowPrivate *priv = window->priv;
++
++  g_mutex_lock (priv->lock);
++
++  priv->close_cb = callback;
++  priv->close_data = data;
++
++  g_mutex_unlock (priv->lock);
++}
++
++/* Called in the gl thread */
++void
++gst_gl_window_draw_unlocked (GstGLWindow * window, gint width, gint height)
++{
++  GstGLWindowPrivate *priv = window->priv;
++
++  if (priv->running && priv->allow_extra_expose_events) {
++    GstGLFbEvent *event = g_slice_new0 (GstGLFbEvent);
++    event->type = FB_EVENT_DRAW;
++    priv->queue = g_list_append (priv->queue, event);
++    g_cond_signal (priv->cond_queue_message);
++    /* block until opengl calls have been executed in the gl thread */
++    g_cond_wait (priv->cond_send_message, priv->lock);
++  }
++}
++
++/* Not called by the gl thread */
++void
++gst_gl_window_draw (GstGLWindow * window, gint width, gint height)
++{
++  if (window) {
++    GstGLWindowPrivate *priv = window->priv;
++
++    g_mutex_lock (priv->lock);
++
++    if (priv->running) {
++      GstGLFbEvent *event = g_slice_new0 (GstGLFbEvent);
++      event->type = FB_EVENT_DRAW;
++      priv->queue = g_list_append (priv->queue, event);
++      g_cond_signal (priv->cond_queue_message);
++      /* block until opengl calls have been executed in the gl thread */
++      g_cond_wait (priv->cond_send_message, priv->lock);
++    }
++
++    g_mutex_unlock (priv->lock);
++  }
++}
++
++static void
++gst_gl_fb_queue_flush (GList * queue, GCond * cond)
++{
++  GstGLFbEvent *event;
++  GList *first;
++
++  while ((first = g_list_first (queue))) {
++    event = first->data;
++    queue = g_list_delete_link (queue, first);
++
++    if (event->type == FB_EVENT_CALLBACK) {
++      g_debug ("execute last pending custom x events\n");
++
++      if (!event->callback || !event->data)
++        g_debug ("custom cb not initialized\n");
++
++      event->callback (event->data);
++
++      g_cond_signal (cond);
++    }
++
++    g_slice_free (GstGLFbEvent, event);
++  }
++}
++
++/* Called in the gl thread */
++void
++gst_gl_window_run_loop (GstGLWindow * window)
++{
++  GstGLWindowPrivate *priv = window->priv;
++  GstGLFbEvent *event;
++  GList *first;
++
++  g_debug ("begin loop\n");
++
++  g_mutex_lock (priv->lock);
++
++  while (priv->running) {
++
++    if (!priv->queue)
++      g_cond_wait (priv->cond_queue_message, priv->lock);
++
++    first = g_list_first (priv->queue);
++    event = first->data;
++    priv->queue = g_list_delete_link (priv->queue, first);
++
++    // use in generic/cube and other related uses
++    priv->allow_extra_expose_events = g_list_length (priv->queue) <= 2;
++
++    switch (event->type) {
++      case FB_EVENT_CALLBACK:
++      {
++        if (priv->running) {
++          if (!event->callback || !event->data)
++            g_debug ("custom cb not initialized\n");
++          event->callback (event->data);
++          g_cond_signal (priv->cond_send_message);
++        }
++        break;
++      }
++
++      case FB_EVENT_QUIT:
++      {
++        g_debug ("Quit loop message %lud\n", (gulong) priv->internal_win_id);
++
++        /* exit loop */
++        priv->running = FALSE;
++
++        /* make sure last pendings send message calls are executed */
++        gst_gl_fb_queue_flush (priv->queue, priv->cond_send_message);
++        priv->queue = NULL;
++
++        /* Finally we can destroy opengl ressources (texture/shaders/fbo) */
++        if (!event->callback || !event->data)
++          g_debug ("destroy cb not correclty set\n");
++
++        event->callback (event->data);
++        g_cond_signal (priv->cond_send_message);
++        break;
++      }
++
++      case FB_EVENT_DRAW:
++        if (priv->draw_cb) {
++          priv->draw_cb (priv->draw_data);
++          glFlush ();
++          eglSwapBuffers (priv->gl_display, priv->gl_surface);
++          g_cond_signal (priv->cond_send_message);
++        }
++        break;
++
++      default:
++        g_debug ("unknown GstGLFbEvent type: %ud\n", event->type);
++        break;
++    }                           // switch
++
++    g_slice_free (GstGLFbEvent, event);
++
++  }                             // while running
++
++  g_mutex_unlock (priv->lock);
++
++  g_debug ("end loop\n");
++}
++
++/* Not called by the gl thread */
++void
++gst_gl_window_quit_loop (GstGLWindow * window, GstGLWindowCB callback,
++    gpointer data)
++{
++  if (window) {
++    GstGLWindowPrivate *priv = window->priv;
++
++    g_mutex_lock (priv->lock);
++
++    if (priv->running) {
++      GstGLFbEvent *event = g_slice_new0 (GstGLFbEvent);
++      event->type = FB_EVENT_QUIT;
++      event->callback = callback;
++      event->data = data;
++      priv->queue = g_list_append (priv->queue, event);
++
++      g_cond_signal (priv->cond_queue_message);
++      g_cond_wait (priv->cond_send_message, priv->lock);
++    }
++
++    g_mutex_unlock (priv->lock);
++  }
++}
++
++/* Not called by the gl thread */
++void
++gst_gl_window_send_message (GstGLWindow * window, GstGLWindowCB callback,
++    gpointer data)
++{
++  if (window) {
++    GstGLWindowPrivate *priv = window->priv;
++
++    g_mutex_lock (priv->lock);
++
++    if (priv->running) {
++      GstGLFbEvent *event = g_slice_new0 (GstGLFbEvent);
++      event->type = FB_EVENT_CALLBACK;
++      event->callback = callback;
++      event->data = data;
++      priv->queue = g_list_append (priv->queue, event);
++      g_cond_signal (priv->cond_queue_message);
++
++      /* block until opengl calls have been executed in the gl thread */
++      g_cond_wait (priv->cond_send_message, priv->lock);
++    }
++
++    g_mutex_unlock (priv->lock);
++  }
++}
++
++const gchar *
++EGLErrorString ()
++{
++  EGLint nErr = eglGetError ();
++  switch (nErr) {
++    case EGL_SUCCESS:
++      return "EGL_SUCCESS";
++    case EGL_BAD_DISPLAY:
++      return "EGL_BAD_DISPLAY";
++    case EGL_NOT_INITIALIZED:
++      return "EGL_NOT_INITIALIZED";
++    case EGL_BAD_ACCESS:
++      return "EGL_BAD_ACCESS";
++    case EGL_BAD_ALLOC:
++      return "EGL_BAD_ALLOC";
++    case EGL_BAD_ATTRIBUTE:
++      return "EGL_BAD_ATTRIBUTE";
++    case EGL_BAD_CONFIG:
++      return "EGL_BAD_CONFIG";
++    case EGL_BAD_CONTEXT:
++      return "EGL_BAD_CONTEXT";
++    case EGL_BAD_CURRENT_SURFACE:
++      return "EGL_BAD_CURRENT_SURFACE";
++    case EGL_BAD_MATCH:
++      return "EGL_BAD_MATCH";
++    case EGL_BAD_NATIVE_PIXMAP:
++      return "EGL_BAD_NATIVE_PIXMAP";
++    case EGL_BAD_NATIVE_WINDOW:
++      return "EGL_BAD_NATIVE_WINDOW";
++    case EGL_BAD_PARAMETER:
++      return "EGL_BAD_PARAMETER";
++    case EGL_BAD_SURFACE:
++      return "EGL_BAD_SURFACE";
++    default:
++      return "unknown";
++  }
++}
+diff --git a/gst-libs/gst/gl/gstglwindow_x11ES2.c b/gst-libs/gst/gl/gstglwindow_x11ES2.c
+index 260fd2e..65afb50 100644
+--- a/gst-libs/gst/gl/gstglwindow_x11ES2.c
++++ b/gst-libs/gst/gl/gstglwindow_x11ES2.c
+@@ -116,16 +116,16 @@ gst_gl_window_finalize (GObject * object)
+ 
+   if (priv->gl_context) {
+     ret =
+-        eglMakeCurrent (priv->device, EGL_NO_SURFACE, EGL_NO_SURFACE,
++        eglMakeCurrent (priv->gl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+         EGL_NO_CONTEXT);
+     if (!ret)
+       g_debug ("failed to release opengl context\n");
+ 
+-    eglDestroyContext (priv->device, priv->gl_context);
++    eglDestroyContext (priv->gl_display, priv->gl_context);
+   }
+ 
+-  if (priv->device)
+-    eglTerminate (priv->device);
++  if (priv->gl_display)
++    eglTerminate (priv->gl_display);
+ 
+   XFree (priv->visual_info);
+ 
+@@ -510,7 +510,7 @@ callback_activate_gl_context (GstGLWindowPrivate * priv)
+ void
+ callback_inactivate_gl_context (GstGLWindowPrivate * priv)
+ {
+-  if (!eglMakeCurrent (priv->device, EGL_NO_SURFACE, EGL_NO_SURFACE,
++  if (!eglMakeCurrent (priv->gl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+           EGL_NO_CONTEXT))
+     g_debug ("failed to inactivate opengl context %lud\n",
+         (gulong) priv->gl_context);
+@@ -622,7 +622,7 @@ gst_gl_window_draw_unlocked (GstGLWindow * window, gint width, gint height)
+ 
+     XSendEvent (priv->device, priv->internal_win_id, FALSE, ExposureMask,
+         &event);
+-    XSync (priv->disp_send, FALSE);
++    XSync (priv->device, FALSE);
+   }
+ }
+ 
+diff --git a/gst/gl/gstglbumper.c b/gst/gl/gstglbumper.c
+index 12efe7d..2daec5b 100644
+--- a/gst/gl/gstglbumper.c
++++ b/gst/gl/gstglbumper.c
+@@ -157,7 +157,6 @@ gst_gl_bumper_init_resources (GstGLFilter * filter)
+ 
+   png_structp png_ptr;
+   png_infop info_ptr;
+-  guint sig_read = 0;
+   png_uint_32 width = 0;
+   png_uint_32 height = 0;
+   gint bit_depth = 0;
+@@ -209,7 +208,7 @@ gst_gl_bumper_init_resources (GstGLFilter * filter)
+ 
+   png_init_io (png_ptr, fp);
+ 
+-  png_set_sig_bytes (png_ptr, sig_read);
++  png_set_sig_bytes (png_ptr, sizeof (magic));
+ 
+   png_read_info (png_ptr, info_ptr);
+ 
+diff --git a/gst/gl/gstglimagesink.c b/gst/gl/gstglimagesink.c
+index d57f5b5..369d7f1 100644
+--- a/gst/gl/gstglimagesink.c
++++ b/gst/gl/gstglimagesink.c
+@@ -1,6 +1,6 @@
+ /*
+- * GStreamer
+- * Copyright (C) 2003 Julien Moutte <julien@moutte.net>
++ * GStreamerfor
++ * Copyright (C) 2003 Julien Moutte <julien@moutte.net>for
+  * Copyright (C) 2005,2006,2007 David A. Schleef <ds@schleef.org>
+  * Copyright (C) 2008 Julien Isorce <julien.isorce@gmail.com>
+  *
+@@ -86,6 +86,9 @@
+ #include <gst/interfaces/xoverlay.h>
+ 
+ #include "gstglimagesink.h"
++#ifdef GPU_VIVANTE
++#include "gstglvivante.h"
++#endif
+ 
+ GST_DEBUG_CATEGORY (gst_debug_glimage_sink);
+ #define GST_CAT_DEFAULT gst_debug_glimage_sink
+@@ -137,11 +140,13 @@ static GstStaticPadTemplate gst_glimage_sink_template =
+     GST_PAD_SINK,
+     GST_PAD_ALWAYS,
+     GST_STATIC_CAPS (GST_GL_VIDEO_CAPS ";"
+-        GST_VIDEO_CAPS_RGB ";"
+-        GST_VIDEO_CAPS_RGBx ";"
+-        GST_VIDEO_CAPS_RGBA ";"
+-        GST_VIDEO_CAPS_YUV ("{ I420, YV12, YUY2, UYVY, AYUV }"))
+-    );
++        GST_VIDEO_CAPS_RGB ";" GST_VIDEO_CAPS_RGBx ";" GST_VIDEO_CAPS_RGBA ";"
++#ifdef GPU_VIVANTE
++        GST_VIDEO_CAPS_YUV ("{ NV12, I420, YV12, YUY2, UYVY, AYUV }")
++#else
++        GST_VIDEO_CAPS_YUV ("{ I420, YV12, YUY2, UYVY, AYUV }")
++#endif
++    ));
+ #endif
+ 
+ enum
+@@ -152,7 +157,8 @@ enum
+   PROP_CLIENT_DRAW_CALLBACK,
+   PROP_CLIENT_DATA,
+   PROP_FORCE_ASPECT_RATIO,
+-  PROP_PIXEL_ASPECT_RATIO
++  PROP_PIXEL_ASPECT_RATIO,
++  PROP_RENDERED_FRAMES
+ };
+ 
+ GST_BOILERPLATE_FULL (GstGLImageSink, gst_glimage_sink, GstVideoSink,
+@@ -241,6 +247,10 @@ gst_glimage_sink_class_init (GstGLImageSinkClass * klass)
+           "The pixel aspect ratio of the device", "1/1",
+           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+ 
++  g_object_class_install_property (gobject_class, PROP_RENDERED_FRAMES,
++      g_param_spec_int ("rendered", "rendered",
++          "Get the total rendered frames", 0, G_MAXINT, 0, G_PARAM_READABLE));
++
+   gobject_class->finalize = gst_glimage_sink_finalize;
+ 
+   gstelement_class->change_state = gst_glimage_sink_change_state;
+@@ -261,6 +271,7 @@ gst_glimage_sink_init (GstGLImageSink * glimage_sink,
+   glimage_sink->new_window_id = 0;
+   glimage_sink->display = NULL;
+   glimage_sink->stored_buffer = NULL;
++  glimage_sink->stored_input_buffer = NULL;
+   glimage_sink->clientReshapeCallback = NULL;
+   glimage_sink->clientDrawCallback = NULL;
+   glimage_sink->client_data = NULL;
+@@ -370,6 +381,9 @@ gst_glimage_sink_get_property (GObject * object, guint prop_id,
+       if (!g_value_transform (glimage_sink->par, value))
+         g_warning ("Could not transform string to aspect ratio");
+       break;
++    case PROP_RENDERED_FRAMES:
++      g_value_set_int (value, glimage_sink->rendered);
++      break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       break;
+@@ -435,6 +449,7 @@ gst_glimage_sink_change_state (GstElement * element, GstStateChange transition)
+ 
+           return GST_STATE_CHANGE_FAILURE;
+         }
++        glimage_sink->rendered = 0;
+       }
+       break;
+     case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
+@@ -456,6 +471,10 @@ gst_glimage_sink_change_state (GstElement * element, GstStateChange transition)
+         gst_buffer_unref (GST_BUFFER_CAST (glimage_sink->stored_buffer));
+         glimage_sink->stored_buffer = NULL;
+       }
++      if (glimage_sink->stored_input_buffer) {
++        gst_buffer_unref (glimage_sink->stored_input_buffer);
++        glimage_sink->stored_input_buffer = NULL;
++      }
+       if (glimage_sink->display) {
+         g_object_unref (glimage_sink->display);
+         glimage_sink->display = NULL;
+@@ -533,6 +552,14 @@ gst_glimage_sink_set_caps (GstBaseSink * bsink, GstCaps * caps)
+     if (!ok)
+       return FALSE;
+ 
++#ifdef GPU_VIVANTE
++    /* special case for format that vivante can't handle */
++    if (format == GST_VIDEO_FORMAT_NV12 &&
++        !gst_gl_vivante_check_format (glimage_sink->display->gpu_priv, format,
++            width, height))
++      return FALSE;
++#endif
++
+     /* init colorspace conversion if needed */
+     ok = gst_gl_display_init_upload (glimage_sink->display, format,
+         width, height, width, height);
+@@ -609,6 +636,11 @@ gst_glimage_sink_set_caps (GstBaseSink * bsink, GstCaps * caps)
+   if (!glimage_sink->window_id && !glimage_sink->new_window_id)
+     gst_x_overlay_prepare_xwindow_id (GST_X_OVERLAY (glimage_sink));
+ 
++#ifdef GPU_VIVANTE
++  if (glimage_sink->display->gpu_priv)
++    gst_gl_vivante_set_caps (glimage_sink->display->gpu_priv, caps);
++#endif
++
+   return TRUE;
+ }
+ 
+@@ -617,11 +649,18 @@ gst_glimage_sink_render (GstBaseSink * bsink, GstBuffer * buf)
+ {
+   GstGLImageSink *glimage_sink = NULL;
+   GstGLBuffer *gl_buffer = NULL;
++  gint index;
++  GstFlowReturn res;
+ 
+   glimage_sink = GST_GLIMAGE_SINK (bsink);
+ 
+   GST_INFO ("buffer size: %d", GST_BUFFER_SIZE (buf));
+ 
++  if (buf == glimage_sink->stored_input_buffer)
++    return GST_FLOW_OK;
++
++  glimage_sink->display->upload_buf_mapped = FALSE;
++
+   //is gl
+   if (glimage_sink->is_gl) {
+     //increment gl buffer ref before storage
+@@ -633,9 +672,16 @@ gst_glimage_sink_render (GstBaseSink * bsink, GstBuffer * buf)
+     gl_buffer = gst_gl_buffer_new (glimage_sink->display,
+         glimage_sink->width, glimage_sink->height);
+ 
+-    //blocking call
+-    gst_gl_display_do_upload (glimage_sink->display, gl_buffer->texture,
+-        glimage_sink->width, glimage_sink->height, GST_BUFFER_DATA (buf));
++    index = G_N_ELEMENTS (buf->_gst_reserved) - 1;
++
++    if (index >= 0)
++      //blocking call
++      gst_gl_display_do_upload_with_meta (glimage_sink->display,
++          gl_buffer->texture, glimage_sink->width, glimage_sink->height,
++          GST_BUFFER_DATA (buf), buf->_gst_reserved[index]);
++    else
++      gst_gl_display_do_upload (glimage_sink->display, gl_buffer->texture,
++          glimage_sink->width, glimage_sink->height, GST_BUFFER_DATA (buf));
+ 
+     //gl_buffer is created in this block, so the gl buffer is already referenced
+   }
+@@ -645,26 +691,36 @@ gst_glimage_sink_render (GstBaseSink * bsink, GstBuffer * buf)
+     gst_gl_display_set_window_id (glimage_sink->display,
+         glimage_sink->window_id);
+   }
+-  //the buffer is cleared when an other comes in
+-  if (glimage_sink->stored_buffer) {
+-    gst_buffer_unref (GST_BUFFER_CAST (glimage_sink->stored_buffer));
+-    glimage_sink->stored_buffer = NULL;
+-  }
+-  //store current buffer
+-  glimage_sink->stored_buffer = gl_buffer;
+-
+   //redisplay opengl scene
+   if (gl_buffer->texture &&
+       gst_gl_display_redisplay (glimage_sink->display,
+           gl_buffer->texture, gl_buffer->width, gl_buffer->height,
+           glimage_sink->window_width, glimage_sink->window_height,
+           glimage_sink->keep_aspect_ratio))
+-    return GST_FLOW_OK;
++    res = GST_FLOW_OK;
+   else {
+     GST_ELEMENT_ERROR (glimage_sink, RESOURCE, NOT_FOUND,
+         GST_GL_DISPLAY_ERR_MSG (glimage_sink->display), (NULL));
+-    return GST_FLOW_ERROR;
++    res = GST_FLOW_ERROR;
+   }
++
++  //the buffer is cleared when an other comes in
++  if (glimage_sink->stored_buffer) {
++    gst_buffer_unref (GST_BUFFER_CAST (glimage_sink->stored_buffer));
++    glimage_sink->stored_buffer = NULL;
++  }
++  if (glimage_sink->stored_input_buffer) {
++    gst_buffer_unref (glimage_sink->stored_input_buffer);
++    glimage_sink->stored_input_buffer = NULL;
++  }
++  //store current buffer
++  glimage_sink->stored_buffer = gl_buffer;
++  if (glimage_sink->display->upload_buf_mapped)
++    glimage_sink->stored_input_buffer = gst_buffer_ref (buf);
++
++  glimage_sink->rendered++;
++
++  return res;
+ }
+ 
+ 
+diff --git a/gst/gl/gstglimagesink.h b/gst/gl/gstglimagesink.h
+index c61b5c5..bd40bc4 100644
+--- a/gst/gl/gstglimagesink.h
++++ b/gst/gl/gstglimagesink.h
+@@ -51,6 +51,7 @@ struct _GstGLImageSink
+ 
+     //properties
+     gchar *display_name;
++    gint rendered;
+ 
+     gulong window_id;
+     gulong new_window_id;
+@@ -67,6 +68,7 @@ struct _GstGLImageSink
+ 
+     GstGLDisplay *display;
+     GstGLBuffer *stored_buffer;
++    GstBuffer *stored_input_buffer;
+ 
+     CRCB clientReshapeCallback;
+     CDCB clientDrawCallback;
+diff --git a/gst/gl/gstglupload.c b/gst/gl/gstglupload.c
+index 09bc96d..8e12532 100644
+--- a/gst/gl/gstglupload.c
++++ b/gst/gl/gstglupload.c
+@@ -70,6 +70,9 @@
+ 
+ #include "gstglupload.h"
+ 
++#ifdef GPU_VIVANTE
++#include "gstglvivante.h"
++#endif
+ 
+ #define GST_CAT_DEFAULT gst_gl_upload_debug
+ GST_DEBUG_CATEGORY_STATIC (GST_CAT_DEFAULT);
+@@ -106,10 +109,13 @@ static GstStaticPadTemplate gst_gl_upload_sink_pad_template =
+     GST_PAD_SINK,
+     GST_PAD_ALWAYS,
+     GST_STATIC_CAPS (GST_VIDEO_CAPS_RGB ";"
+-        GST_VIDEO_CAPS_RGBx ";"
+-        GST_VIDEO_CAPS_RGBA ";"
+-        GST_VIDEO_CAPS_YUV ("{ I420, YV12, YUY2, UYVY, AYUV }"))
+-    );
++        GST_VIDEO_CAPS_RGBx ";" GST_VIDEO_CAPS_RGBA ";"
++#ifdef GPU_VIVANTE
++        GST_VIDEO_CAPS_YUV ("{ NV12, I420, YV12, YUY2, UYVY, AYUV }")
++#else
++        GST_VIDEO_CAPS_YUV ("{ I420, YV12, YUY2, UYVY, AYUV }")
++#endif
++    ));
+ #endif
+ 
+ /* Properties */
+@@ -504,6 +510,14 @@ gst_gl_upload_set_caps (GstBaseTransform * bt, GstCaps * incaps,
+     GST_DEBUG ("caps connot be parsed");
+     return FALSE;
+   }
++#ifdef GPU_VIVANTE
++  /* special case for format that vivante can't handle */
++  if (upload->video_format == GST_VIDEO_FORMAT_NV12 &&
++      !gst_gl_vivante_check_format (upload->display->gpu_priv,
++          upload->video_format, upload->video_width, upload->video_height))
++    return FALSE;
++#endif
++
+   //init colorspace conversion if needed
+   ret = gst_gl_display_init_upload (upload->display, upload->video_format,
+       upload->gl_width, upload->gl_height,
+diff --git a/tests/examples/cocoa/videoxoverlay/Makefile.am b/tests/examples/cocoa/videoxoverlay/Makefile.am
+index 5a85bb4..b4a4932 100755
+--- a/tests/examples/cocoa/videoxoverlay/Makefile.am
++++ b/tests/examples/cocoa/videoxoverlay/Makefile.am
+@@ -4,7 +4,7 @@ noinst_PROGRAMS = videoxoverlay
+ 
+ videoxoverlay_SOURCES = main.m
+ 
+-videoxoverlay_OBJCFLAGS=$(GST_PLUGINS_GL_CFLAGS) $(GST_PLUGINS_BASE_CFLAGS) $(GST_CFLAGS) \
++videoxoverlay_OBJCFLAGS=$(GST_PLUGINS_GL_CFLAGS) $(GST_PLUGINS_BASE_CFLAGS) $(GST_OBJCFLAGS) \
+ 	$(GL_CFLAGS) -I/usr/local/include/gstreamer-0.10
+ videoxoverlay_LDADD=$(GST_PLUGINS_GL_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) \
+ 	$(GL_LIBS) -lgstinterfaces-$(GST_MAJORMINOR)
+diff --git a/common/check.mak b/common/check.mak
+index 30487f1..bc44620 100644
+--- a/common/check.mak
++++ b/common/check.mak
+@@ -24,6 +24,12 @@ LOOPS = 10
+ 	CK_DEFAULT_TIMEOUT=20					\
+ 	$*
+ 
++# just like 'check', but don't run it again if it fails (useful for debugging)
++%.check-norepeat: %
++	@$(TESTS_ENVIRONMENT)					\
++	CK_DEFAULT_TIMEOUT=20					\
++	$*
++
+ # run any given test in a loop
+ %.torture: %
+ 	@for i in `seq 1 $(LOOPS)`; do				\
+@@ -152,7 +158,8 @@ help:
+ 	@echo
+ 	@echo "make check                         -- run all checks"
+ 	@echo "make torture                       -- run all checks $(LOOPS) times"
+-	@echo "make (dir)/(test).check            -- run the given check once"
++	@echo "make (dir)/(test).check            -- run the given check once, repeat with GST_DEBUG=*:2 if it fails"
++	@echo "make (dir)/(test).check-norepeat   -- run the given check once, but don't run it again if it fails"
+ 	@echo "make (dir)/(test).forever          -- run the given check forever"
+ 	@echo "make (dir)/(test).torture          -- run the given check $(LOOPS) times"
+ 	@echo
+diff --git a/common/gtk-doc-plugins.mak b/common/gtk-doc-plugins.mak
+index 8cc42e7..084f9ae 100644
+--- a/common/gtk-doc-plugins.mak
++++ b/common/gtk-doc-plugins.mak
+@@ -13,8 +13,7 @@ help:
+ 	@echo
+ 
+ # update the stuff maintained by doc maintainers
+-update:
+-	$(MAKE) scanobj-update
++update: scanobj-update
+ 	$(MAKE) check-outdated-docs
+ 
+ # We set GPATH here; this gives us semantics for GNU make
+@@ -130,7 +129,7 @@ scanobj-build.stamp: $(SCANOBJ_DEPS) $(basefiles)
+ 	    --module=$(DOC_MODULE) --source=$(PACKAGE) --inspect-dir=$(INSPECT_DIR) &&		\
+ 	    echo "  DOC   Merging introspection data" && \
+ 	    $(PYTHON)						\
+-	    $(top_srcdir)/common/scangobj-merge.py $(DOC_MODULE);	\
++	    $(top_srcdir)/common/scangobj-merge.py $(DOC_MODULE) || exit 1;	\
+ 	if test x"$(srcdir)" != x. ; then				\
+ 	    for f in $(SCANOBJ_FILES);					\
+ 	    do								\
+diff --git a/common/m4/Makefile.am b/common/m4/Makefile.am
+index 2ddb8a7..856d6e3 100644
+--- a/common/m4/Makefile.am
++++ b/common/m4/Makefile.am
+@@ -8,7 +8,6 @@ EXTRA_DIST = \
+ 	as-gcc-inline-assembly.m4 \
+ 	as-libtool.m4 \
+ 	as-libtool-tags.m4 \
+-	as-objc.m4 \
+ 	as-python.m4 \
+ 	as-scrub-include.m4 \
+ 	as-version.m4 \
+diff --git a/common/m4/as-compiler-flag.m4 b/common/m4/as-compiler-flag.m4
+index 882a4c7..8bb853a 100644
+--- a/common/m4/as-compiler-flag.m4
++++ b/common/m4/as-compiler-flag.m4
+@@ -62,3 +62,35 @@ AC_DEFUN([AS_CXX_COMPILER_FLAG],
+   AC_MSG_RESULT([$flag_ok])
+ ])
+ 
++dnl AS_OBJC_COMPILER_FLAG(CPPFLAGS, ACTION-IF-ACCEPTED, [ACTION-IF-NOT-ACCEPTED])
++dnl Tries to compile with the given CPPFLAGS.
++dnl Runs ACTION-IF-ACCEPTED if the compiler can compile with the flags,
++dnl and ACTION-IF-NOT-ACCEPTED otherwise.
++
++AC_DEFUN([AS_OBJC_COMPILER_FLAG],
++[
++  AC_REQUIRE([AC_PROG_OBJC])
++
++  AC_MSG_CHECKING([to see if Objective C compiler understands $1])
++
++  save_CPPFLAGS="$CPPFLAGS"
++  CPPFLAGS="$CPPFLAGS $1"
++
++  AC_LANG_PUSH([Objective C])
++
++  AC_TRY_COMPILE([ ], [], [flag_ok=yes], [flag_ok=no])
++  CPPFLAGS="$save_CPPFLAGS"
++
++  if test "X$flag_ok" = Xyes ; then
++    $2
++    true
++  else
++    $3
++    true
++  fi
++
++  AC_LANG_POP([Objective C])
++
++  AC_MSG_RESULT([$flag_ok])
++])
++
+diff --git a/common/m4/as-objc.m4 b/common/m4/as-objc.m4
+deleted file mode 100644
+index 1e7066a..0000000
+--- a/common/m4/as-objc.m4
++++ /dev/null
+@@ -1,56 +0,0 @@
+-
+-
+-# AC_PROG_OBJC([LIST-OF-COMPILERS])
+-#
+-AC_DEFUN([AS_PROG_OBJC],
+-[
+-AC_CHECK_TOOLS(OBJC,
+-	[m4_default([$1], [objcc objc gcc cc CC])],
+-	none)
+-AC_SUBST(OBJC)
+-OBJC_LDFLAGS="-lobjc"
+-AC_SUBST(OBJC_LDFLAGS)
+-if test "x$OBJC" != xnone ; then
+-  _AM_DEPENDENCIES(OBJC)
+-  AC_MSG_CHECKING([if Objective C compiler works])
+-  cat >>conftest.m <<EOF
+-#include <objc/Object.h>
+-@interface Moo:Object
+-{
+-}
+-- moo;
+-int main();
+-@end
+-
+-@implementation Moo
+-- moo
+-{
+-  exit(0);
+-}
+-
+-int main()
+-{
+-  id moo;
+-  moo = [[Moo new]];
+-  [[moo moo]];
+-  return 1;
+-}
+-@end
+-EOF
+-  ${OBJC} conftest.m ${OBJC_LDFLAGS} >&5 2>&5
+-  if test -f a.out -o -f a.exe ; then
+-    result=yes
+-  else
+-    result=no
+-    echo failed program is: >&5
+-    cat conftest.m >&5
+-  fi
+-  rm -f conftest.m a.out a.exe
+-  AC_MSG_RESULT([$result])
+-else
+-  _AM_DEPENDENCIES(OBJC)
+-fi
+-
+-])
+-
+-
+diff --git a/common/m4/gst-arch.m4 b/common/m4/gst-arch.m4
+index 2e935d2..077a20b 100644
+--- a/common/m4/gst-arch.m4
++++ b/common/m4/gst-arch.m4
+@@ -5,32 +5,30 @@ dnl defines HOST_CPU
+ 
+ AC_DEFUN([AG_GST_ARCH],
+ [
+-  AC_REQUIRE([AC_CANONICAL_HOST]) dnl we use host_ variables
+-
+   dnl Determine CPU
+-  case "x${host_cpu}" in
++  case "x${target_cpu}" in
+     xi?86 | xk? | xi?86_64)
+-      case $host_os in
++      case $target_os in
+          solaris*)
+             AC_CHECK_DECL([__i386],	[I386_ABI="yes"], [I386_ABI="no"])
+             AC_CHECK_DECL([__amd64], [AMD64_ABI="yes"], [AMD64_ABI="no"])
+ 
+             if test "x$I386_ABI" = "xyes" ; then
+                HAVE_CPU_I386=yes
+-               AC_DEFINE(HAVE_CPU_I386, 1, [Define if the host CPU is an x86])
++               AC_DEFINE(HAVE_CPU_I386, 1, [Define if the target CPU is an x86])
+             fi
+             if test "x$AMD64_ABI" = "xyes" ; then
+                 HAVE_CPU_X86_64=yes
+-                AC_DEFINE(HAVE_CPU_X86_64, 1, [Define if the host CPU is a x86_64])
++                AC_DEFINE(HAVE_CPU_X86_64, 1, [Define if the target CPU is a x86_64])
+             fi
+             ;;
+          *)
+             HAVE_CPU_I386=yes
+-            AC_DEFINE(HAVE_CPU_I386, 1, [Define if the host CPU is an x86])
++            AC_DEFINE(HAVE_CPU_I386, 1, [Define if the target CPU is an x86])
+ 
+             dnl FIXME could use some better detection
+             dnl (ie CPUID)
+-            case "x${host_cpu}" in
++            case "x${target_cpu}" in
+               xi386 | xi486) ;;
+             *)
+               AC_DEFINE(HAVE_RDTSC, 1, [Define if RDTSC is available]) ;;
+@@ -40,43 +38,43 @@ AC_DEFUN([AG_GST_ARCH],
+       ;;
+     xpowerpc)
+       HAVE_CPU_PPC=yes
+-      AC_DEFINE(HAVE_CPU_PPC, 1, [Define if the host CPU is a PowerPC]) ;;
++      AC_DEFINE(HAVE_CPU_PPC, 1, [Define if the target CPU is a PowerPC]) ;;
+     xpowerpc64)
+       HAVE_CPU_PPC64=yes
+-      AC_DEFINE(HAVE_CPU_PPC64, 1, [Define if the host CPU is a 64 bit PowerPC]) ;;
++      AC_DEFINE(HAVE_CPU_PPC64, 1, [Define if the target CPU is a 64 bit PowerPC]) ;;
+     xalpha*)
+       HAVE_CPU_ALPHA=yes
+-      AC_DEFINE(HAVE_CPU_ALPHA, 1, [Define if the host CPU is an Alpha]) ;;
++      AC_DEFINE(HAVE_CPU_ALPHA, 1, [Define if the target CPU is an Alpha]) ;;
+     xarm*)
+       HAVE_CPU_ARM=yes
+-      AC_DEFINE(HAVE_CPU_ARM, 1, [Define if the host CPU is an ARM]) ;;
++      AC_DEFINE(HAVE_CPU_ARM, 1, [Define if the target CPU is an ARM]) ;;
+     xsparc*)
+       HAVE_CPU_SPARC=yes
+-      AC_DEFINE(HAVE_CPU_SPARC, 1, [Define if the host CPU is a SPARC]) ;;
++      AC_DEFINE(HAVE_CPU_SPARC, 1, [Define if the target CPU is a SPARC]) ;;
+     xmips*)
+       HAVE_CPU_MIPS=yes
+-      AC_DEFINE(HAVE_CPU_MIPS, 1, [Define if the host CPU is a MIPS]) ;;
++      AC_DEFINE(HAVE_CPU_MIPS, 1, [Define if the target CPU is a MIPS]) ;;
+     xhppa*)
+       HAVE_CPU_HPPA=yes
+-      AC_DEFINE(HAVE_CPU_HPPA, 1, [Define if the host CPU is a HPPA]) ;;
++      AC_DEFINE(HAVE_CPU_HPPA, 1, [Define if the target CPU is a HPPA]) ;;
+     xs390*)
+       HAVE_CPU_S390=yes
+-      AC_DEFINE(HAVE_CPU_S390, 1, [Define if the host CPU is a S390]) ;;
++      AC_DEFINE(HAVE_CPU_S390, 1, [Define if the target CPU is a S390]) ;;
+     xia64*)
+       HAVE_CPU_IA64=yes
+-      AC_DEFINE(HAVE_CPU_IA64, 1, [Define if the host CPU is a IA64]) ;;
++      AC_DEFINE(HAVE_CPU_IA64, 1, [Define if the target CPU is a IA64]) ;;
+     xm68k*)
+       HAVE_CPU_M68K=yes
+-      AC_DEFINE(HAVE_CPU_M68K, 1, [Define if the host CPU is a M68K]) ;;
++      AC_DEFINE(HAVE_CPU_M68K, 1, [Define if the target CPU is a M68K]) ;;
+     xx86_64)
+       HAVE_CPU_X86_64=yes
+-      AC_DEFINE(HAVE_CPU_X86_64, 1, [Define if the host CPU is a x86_64]) ;;
++      AC_DEFINE(HAVE_CPU_X86_64, 1, [Define if the target CPU is a x86_64]) ;;
+     xcris)
+       HAVE_CPU_CRIS=yes
+-      AC_DEFINE(HAVE_CPU_CRIS, 1, [Define if the host CPU is a CRIS]) ;;
++      AC_DEFINE(HAVE_CPU_CRIS, 1, [Define if the target CPU is a CRIS]) ;;
+     xcrisv32)
+       HAVE_CPU_CRISV32=yes
+-      AC_DEFINE(HAVE_CPU_CRISV32, 1, [Define if the host CPU is a CRISv32]) ;;
++      AC_DEFINE(HAVE_CPU_CRISV32, 1, [Define if the target CPU is a CRISv32]) ;;
+   esac
+ 
+   dnl Determine endianness
+@@ -98,6 +96,7 @@ AC_DEFUN([AG_GST_ARCH],
+   AM_CONDITIONAL(HAVE_CPU_CRISV32,    test "x$HAVE_CPU_CRISV32" = "xyes")
+ 
+   AC_DEFINE_UNQUOTED(HOST_CPU, "$host_cpu", [the host CPU])
++  AC_DEFINE_UNQUOTED(TARGET_CPU, "$target_cpu", [the target CPU])
+ ])
+ 
+ dnl check if unaligned memory access works correctly
+diff --git a/common/m4/gst-args.m4 b/common/m4/gst-args.m4
+index 030e7ac..e011ed4 100644
+--- a/common/m4/gst-args.m4
++++ b/common/m4/gst-args.m4
+@@ -19,6 +19,7 @@ dnl AG_GST_ARG_ENABLE_EXTERNAL
+ dnl AG_GST_ARG_ENABLE_EXPERIMENTAL
+ dnl AG_GST_ARG_ENABLE_BROKEN
+ 
++dnl AG_GST_ARG_DISABLE_FATAL_WARNINGS
+ AC_DEFUN([AG_GST_ARG_DEBUG],
+ [
+   dnl debugging stuff
+@@ -110,13 +111,13 @@ AC_DEFUN([AG_GST_ARG_GCOV],
+     dnl if gcov is used, we do not want default -O2 CFLAGS
+     if test "x$GST_GCOV_ENABLED" = "xyes"
+     then
+-      CFLAGS="-O0"
++      CFLAGS="$CFLAGS -O0"
+       AC_SUBST(CFLAGS)
+-      CXXFLAGS="-O0"
++      CXXFLAGS="$CXXFLAGS -O0"
+       AC_SUBST(CXXFLAGS)
+-      FFLAGS="-O0"
++      FFLAGS="$FFLAGS -O0"
+       AC_SUBST(FFLAGS)
+-      CCASFLAGS="-O0"
++      CCASFLAGS="$CCASFLAGS -O0"
+       AC_SUBST(CCASFLAGS)
+       AC_MSG_NOTICE([gcov enabled, setting CFLAGS and friends to $CFLAGS])
+     fi
+@@ -325,3 +326,20 @@ AC_DEFUN([AG_GST_ARG_ENABLE_BROKEN],
+       AC_MSG_NOTICE([not building broken plug-ins])
+     ])
+ ])
++
++dnl allow people (or build tools) to override default behaviour
++dnl for fatal compiler warnings
++AC_DEFUN([AG_GST_ARG_DISABLE_FATAL_WARNINGS],
++[
++  AC_ARG_ENABLE(fatal-warnings,
++    AC_HELP_STRING([--disable-fatal-warnings],
++                   [Don't turn compiler warnings into fatal errors]),
++    [
++      case "${enableval}" in
++        yes) FATAL_WARNINGS=yes ;;
++        no)  FATAL_WARNINGS=no ;;
++        *)   AC_MSG_ERROR(bad value ${enableval} for --disable-fatal-warnings) ;;
++      esac
++    ],
++    [FATAL_WARNINGS=$GST_GIT]) dnl Default value
++])
+diff --git a/common/m4/gst-check.m4 b/common/m4/gst-check.m4
+index 3fd3acf..f3f39b4 100644
+--- a/common/m4/gst-check.m4
++++ b/common/m4/gst-check.m4
+@@ -117,6 +117,38 @@ AC_DEFUN([AG_GST_CHECK_GST_CHECK],
+ ])
+ 
+ dnl ===========================================================================
++dnl AG_GST_CHECK_UNINSTALLED_SETUP([ACTION-IF-UNINSTALLED], [ACTION-IF-NOT])
++dnl
++dnl ACTION-IF-UNINSTALLED  (optional) extra actions to perform if the setup
++dnl                        is an uninstalled setup
++dnl ACTION-IF-NOT          (optional) extra actions to perform if the setup
++dnl                        is not an uninstalled setup
++dnl ===========================================================================
++AC_DEFUN([AG_GST_CHECK_UNINSTALLED_SETUP],
++[
++  AC_MSG_CHECKING([whether this is an uninstalled GStreamer setup])
++  AC_CACHE_VAL(gst_cv_is_uninstalled_setup,[
++    gst_cv_is_uninstalled_setup=no
++    if (set -u; : $GST_PLUGIN_SYSTEM_PATH) 2>/dev/null ; then
++      if test -z "$GST_PLUGIN_SYSTEM_PATH" \
++           -a -n "$GST_PLUGIN_SCANNER"     \
++           -a -n "$GST_PLUGIN_PATH"        \
++           -a -n "$GST_REGISTRY"           \
++           -a -n "$DYLD_LIBRARY_PATH"      \
++           -a -n "$LD_LIBRARY_PATH"; then
++        gst_cv_is_uninstalled_setup=yes;
++      fi
++    fi
++  ])
++  AC_MSG_RESULT($gst_cv_is_uninstalled_setup)
++  if test "x$gst_cv_is_uninstalled_setup" = "xyes"; then
++    ifelse([$1], , :, [$1])
++  else
++    ifelse([$2], , :, [$2])
++  fi
++])
++
++dnl ===========================================================================
+ dnl AG_GST_CHECK_GST_PLUGINS_BASE([GST-MAJORMINOR], [MIN-VERSION], [REQUIRED])
+ dnl
+ dnl Sets GST_PLUGINS_BASE_CFLAGS and GST_PLUGINS_BASE_LIBS.
+diff --git a/common/m4/gst-error.m4 b/common/m4/gst-error.m4
+index f8f2364..e12a04c 100644
+--- a/common/m4/gst-error.m4
++++ b/common/m4/gst-error.m4
+@@ -196,6 +196,91 @@ AC_DEFUN([AG_GST_SET_ERROR_CXXFLAGS],
+   AC_MSG_NOTICE([set ERROR_CXXFLAGS to $ERROR_CXXFLAGS])
+ ])
+ 
++dnl Sets WARNING_OBJCFLAGS and ERROR_OBJCFLAGS to something the compiler 
++dnl will accept and AC_SUBST them so they are available in Makefile
++dnl
++dnl WARNING_OBJCFLAGS will contain flags to make the compiler emit more
++dnl   warnings.
++dnl ERROR_OBJCFLAGS will contain flags to make those warnings fatal,
++dnl   unless ADD-WERROR is set to "no"
++dnl 
++dnl If MORE_FLAGS is set, tries to add each of the given flags
++dnl to WARNING_CFLAGS if the compiler supports them. Each flag is 
++dnl tested separately.
++dnl
++dnl These flags can be overridden at make time:
++dnl make ERROR_OBJCFLAGS=
++AC_DEFUN([AG_GST_SET_ERROR_OBJCFLAGS],
++[
++  AC_REQUIRE([AC_PROG_OBJC])
++  AC_REQUIRE([AS_OBJC_COMPILER_FLAG])
++
++  ERROR_OBJCFLAGS=""
++  WARNING_OBJCFLAGS=""
++
++  dnl if we support -Wall, set it unconditionally
++  AS_OBJC_COMPILER_FLAG(-Wall, WARNING_OBJCFLAGS="$WARNING_OBJCFLAGS -Wall")
++
++  dnl if asked for, add -Werror if supported
++  if test "x$1" != "xno"
++  then
++    AS_OBJC_COMPILER_FLAG(-Werror, ERROR_OBJCFLAGS="$ERROR_OBJCFLAGS -Werror")
++
++    if test "x$ERROR_OBJCFLAGS" != "x"
++    then
++	dnl Add -fno-strict-aliasing for GLib versions before 2.19.8
++	dnl as before G_LOCK and friends caused strict aliasing compiler
++	dnl warnings.
++	PKG_CHECK_EXISTS([glib-2.0 < 2.19.8], [
++	  AS_OBJC_COMPILER_FLAG([-fno-strict-aliasing],
++	    ERROR_OBJCFLAGS="$ERROR_OBJCFLAGS -fno-strict-aliasing")
++	  ])
++    else
++      dnl if -Werror isn't suported, try -errwarn=%all
++      AS_OBJC_COMPILER_FLAG([-errwarn=%all], ERROR_OBJCFLAGS="$ERROR_OBJCFLAGS -errwarn=%all")
++      if test "x$ERROR_OBJCFLAGS" != "x"; then
++        dnl try -errwarn=%all,no%E_EMPTY_DECLARATION,
++        dnl no%E_STATEMENT_NOT_REACHED,no%E_ARGUEMENT_MISMATCH,
++        dnl no%E_MACRO_REDEFINED (Sun Forte case)
++        dnl For Forte we need disable "empty declaration" warning produced by un-needed semicolon
++        dnl "statement not reached" disabled because there is g_assert_not_reached () in some places
++        dnl "macro redefined" because of gst/gettext.h
++        dnl FIXME: is it really supposed to be 'ARGUEMENT' and not 'ARGUMENT'?
++        dnl FIXME: do any of these work with the c++ compiler? if not, why
++        dnl do we check at all?
++        for f in 'no%E_EMPTY_DECLARATION' \
++                 'no%E_STATEMENT_NOT_REACHED' \
++                 'no%E_ARGUEMENT_MISMATCH' \
++                 'no%E_MACRO_REDEFINED' \
++                 'no%E_LOOP_NOT_ENTERED_AT_TOP'
++        do
++          AS_OBJC_COMPILER_FLAG([-errwarn=%all,$f], ERROR_OBJCFLAGS="$ERROR_OBJCFLAGS,$f")
++        done
++      fi
++    fi
++  fi
++
++  if test "x$2" != "x"
++  then
++    UNSUPPORTED=""
++    list="$2"
++    for each in $list
++    do
++      AS_OBJC_COMPILER_FLAG($each,
++          WARNING_OBJCFLAGS="$WARNING_OBJCFLAGS $each",
++          UNSUPPORTED="$UNSUPPORTED $each")
++    done
++    if test "X$UNSUPPORTED" != X ; then
++      AC_MSG_NOTICE([unsupported compiler flags: $UNSUPPORTED])
++    fi
++  fi
++
++  AC_SUBST(WARNING_OBJCFLAGS)
++  AC_SUBST(ERROR_OBJCFLAGS)
++  AC_MSG_NOTICE([set WARNING_OBJCFLAGS to $WARNING_OBJCFLAGS])
++  AC_MSG_NOTICE([set ERROR_OBJCFLAGS to $ERROR_OBJCFLAGS])
++])
++
+ dnl Sets the default error level for debugging messages
+ AC_DEFUN([AG_GST_SET_LEVEL_DEFAULT],
+ [
+diff --git a/common/m4/gst-feature.m4 b/common/m4/gst-feature.m4
+index c072c79..cff7f30 100644
+--- a/common/m4/gst-feature.m4
++++ b/common/m4/gst-feature.m4
+@@ -232,10 +232,11 @@ AC_DEFUN([AG_GST_CHECK_GST_DEBUG_DISABLED],
+   save_CFLAGS="$CFLAGS"
+   CFLAGS="$GST_CFLAGS $CFLAGS"
+   AC_COMPILE_IFELSE([
++    AC_LANG_SOURCE([[
+       #include <gst/gstconfig.h>
+       #ifdef GST_DISABLE_GST_DEBUG
+       #error "debugging disabled, make compiler fail"
+-      #endif], [ debug_system_enabled=yes], [debug_system_enabled=no])
++      #endif]])], [ debug_system_enabled=yes], [debug_system_enabled=no])
+   CFLAGS="$save_CFLAGS"
+   AC_LANG_POP([C])
+ 
+diff --git a/common/m4/gst.m4 b/common/m4/gst.m4
+index ddfde51..d4c53cb 100644
+--- a/common/m4/gst.m4
++++ b/common/m4/gst.m4
+@@ -3,10 +3,15 @@ dnl sets up use of GStreamer configure.ac macros
+ dnl all GStreamer autoconf macros are prefixed
+ dnl with AG_GST_ for public macros
+ dnl with _AG_GST_ for private macros
++dnl
++dnl We call AC_CANONICAL_TARGET and AC_CANONICAL_HOST so that
++dnl it is valid before AC_ARG_PROGRAM is called
+ 
+ AC_DEFUN([AG_GST_INIT],
+ [
+   m4_pattern_forbid(^_?AG_GST_)
++  AC_REQUIRE([AC_CANONICAL_HOST]) dnl we use host_ variables
++  AC_REQUIRE([AC_CANONICAL_TARGET]) dnl we use target_ variables
+ ])
+ 
+ dnl AG_GST_PKG_CONFIG_PATH
