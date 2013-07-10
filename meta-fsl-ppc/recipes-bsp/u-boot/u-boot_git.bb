@@ -39,6 +39,8 @@ EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
+UBOOT_LOCALVERSION = "${@d.getVar('SDK_VERSION', True).partition(' ')[0]}"
+
 USRC ?= ""
 S = '${@base_conditional("USRC", "", "${WORKDIR}/git", "${USRC}", d)}'
 
@@ -46,6 +48,12 @@ do_compile () {
 	unset LDFLAGS
 	unset CFLAGS
 	unset CPPFLAGS
+
+        if [ ! -e ${B}/.scmversion -a ! -e ${S}/.scmversion ]
+        then
+            echo ${UBOOT_LOCALVERSION} > ${B}/.scmversion
+            echo ${UBOOT_LOCALVERSION} > ${S}/.scmversion
+        fi
 
 	if [ "x${UBOOT_MACHINES}" = "x" ]; then
 		UBOOT_MACHINES=${UBOOT_MACHINE}
