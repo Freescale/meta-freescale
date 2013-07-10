@@ -18,6 +18,7 @@ SRC_URI = " \
 	git://git.freescale.com/ppc/sdk/hypervisor/libos.git;name=libos;destsuffix=git/libos \
 	git://www.jdl.com/software/dtc.git;name=dtc;destsuffix=dtc \
 	git://git.freescale.com/ppc/sdk/hypertrk.git;name=hypertrk;destsuffix=git/hypertrk \
+	file://0001-fix-sizeof-pointer-memaccess-error.patch \
 	file://81-fsl-embedded-hv.rules \
 	  "
 
