@@ -32,8 +32,3 @@ do_compile () {
 do_install () {
     oe_runmake PLATFORM="${PLATFORM}" DEST_DIR="${D}" install
 }
-
-FILES_${PN} += "${libdir}/*${SOLIBS}"
-FILES_${PN}-dbg += "${libdir}/.debug"
-FILES_${PN}-dev += "${libdir}/*${SOLIBSDEV}"
-
