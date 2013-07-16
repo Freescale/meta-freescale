@@ -1,4 +1,4 @@
-# Copyright (C) 2011, 2012, 2013 Freescale Semiconductor
+# Copyright (C) 2011-2013 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Gstreamer freescale plugins"
@@ -45,7 +45,7 @@ PACKAGECONFIG[wmv9mpdec] +="--enable-wmv9mpdec,--disable-wmv9mpdec,${MSDEPENDS}"
 PACKAGECONFIG[wmv78dec] +="--enable-wmv78dec,--disable-wmv78dec,${MSDEPENDS}"
 
 FILES_${PN} = "${libdir}/gstreamer-0.10/*.so ${datadir}"
-RDEPENDS_${PN} += "gst-plugins-good-id3demux"
+RDEPENDS_${PN} += "gst-plugins-good-id3demux libfslparser"
 
 FILES_${PN}-dbg += "${libdir}/gstreamer-0.10/.debug"
 FILES_${PN}-dev += "${libdir}/gstreamer-0.10/*.la ${libdir}/pkgconfig/*.pc"
