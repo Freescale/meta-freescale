@@ -9,6 +9,8 @@ PV = "1.4+fsl"
 SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git"
 SRCREV = "8713c58725df407dbbedb48fa315248d0100720c"
 
+SRC_URI += "file://fdt_header.patch"
+
 S = "${WORKDIR}/git"
 
 QEMU_TARGETS = "ppc"
