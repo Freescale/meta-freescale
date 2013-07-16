@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2013 Freescale Semicondutors
+# Copyright (C) 2012-2013 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia parser libs"
 LICENSE = "Proprietary"
