@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2013 Freescale Semicondutors
+# Copyright (C) 2012-2013 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
@@ -16,6 +16,9 @@ PACKAGES += "${PN}-meta"
 
 ALLOW_EMPTY_${PN} = "1"
 ALLOW_EMPTY_${PN}-meta = "1"
+
+# Choose between Soft Float-Point and Hard Float-Point
+EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d)}"
 
 do_install_append() {
 	# FIXME: This link points to nowhere
