@@ -7,6 +7,8 @@ LICENSE = "GPLv2"
 
 require recipes-kernel/linux/linux-qoriq-sdk.inc
 
+SRC_URI += "file://libtraceevent-Remove-hard-coded-include-to-usr-local-include-in-Makefile.patch"
+
 PR = "${INC_PR}.1"
 
 DEPENDS_append = " libgcc"
