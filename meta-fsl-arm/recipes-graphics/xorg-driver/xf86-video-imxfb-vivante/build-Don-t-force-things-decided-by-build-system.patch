@@ -1,0 +1,82 @@
+From bc46bc886c79246065cf779a7b4e197b80acd9b1 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Thu, 18 Jul 2013 19:52:11 -0300
+Subject: [PATCH] build: Don't force things decided by build system
+
+The build system should't enforce build flags and linking flags which
+are not really necessary so it build system can do the "Right Thing"
+automatically.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ DRI_1.10.4/src/makefile.linux | 20 +-------------------
+ EXA/src/makefile.linux        |  9 +--------
+ 2 files changed, 2 insertions(+), 27 deletions(-)
+
+diff --git a/DRI_1.10.4/src/makefile.linux b/DRI_1.10.4/src/makefile.linux
+index 86aa903..9188432 100644
+--- a/DRI_1.10.4/src/makefile.linux
++++ b/DRI_1.10.4/src/makefile.linux
+@@ -37,29 +37,11 @@ ifeq ($(SWAP_SINGLE_PARAMETER),1)
+ CFLAGS  += -DSWAP_SINGLE_PARAMETER
+ endif
+ 
+-ifeq ($(BUILD_HARD_VFP),1)
+-CFLAGS += -mfpu=neon -mfloat-abi=hard
+-else
+-CFLAGS += -mfpu=vfp -mfloat-abi=softfp
+-endif
+-
+ CFLAGS += -fvisibility=hidden -fPIC -DPIC
+ CFLAGS += -I. -I.. -I$(sysroot)/usr/include -I$(sysroot)/usr/include/xorg -I$(sysroot)/usr/include/$(PIXMAN)
+ CFLAGS += -I../../EXA/src/vivante_gal
+-ifeq ($(YOCTO),1)
+-# Yocto: compile will fail (does not support ldrex/strexeq/...)
+-# specify armv6 to walkaround it
+-# armv7: not supported by the toolchain
+-CFLAGS += -march=armv6
+-else
+-CFLAGS += -marm
+-# -Wa,-mimplicit-it=thumb
+-endif
+-
+ 
+-#LFLAGS += -lGAL -lm -ldl -ldrm -lX11 -module -Wl,-soname -Wl,$(target) -Wl,-rpath,/usr/lib/xorg/modules/extensions
+-#LFLAGS += -lGAL -lm -ldl -ldrm -lX11 -module -Wl,-soname -Wl,$(target)
+-LFLAGS += -L$(sysroot)/usr/lib -lGAL -lm -ldl -ldrm -lX11 -Wl,-soname -Wl,$(target)
++LFLAGS += -lGAL -lm -ldl -ldrm -lX11 -Wl,-soname -Wl,$(target)
+ 
+ all: $(target)
+ 
+diff --git a/EXA/src/makefile.linux b/EXA/src/makefile.linux
+index eb56de5..bfaf314 100644
+--- a/EXA/src/makefile.linux
++++ b/EXA/src/makefile.linux
+@@ -57,12 +57,6 @@ ifeq ($(BUSID_HAS_NUMBER),1)
+ CFLAGS  += -DBUSID_HAS_NUMBER
+ endif
+ 
+-ifeq ($(BUILD_HARD_VFP),1)
+-CFLAGS += -mfpu=neon -mfloat-abi=hard
+-else
+-CFLAGS += -mfpu=vfp -mfloat-abi=softfp
+-endif
+-
+ # macro FREESCALE_EXTENSION is reserved for future use
+ CFLAGS += -fvisibility=hidden -fPIC -DPIC -O2 -DFREESCALE_EXTENSION
+ CFLAGS += -I. -I.. -I$(sysroot)/usr/include -I$(sysroot)/usr/include/xorg -I$(sysroot)/usr/include/$(PIXMAN)
+@@ -73,8 +67,7 @@ CFLAGS += -marm
+ #CFLAGS += -mimplicit-it=thumb
+ 
+ LFLAGS += -fPIC
+-#LFLAGS +=  -Wl,--no-allow-shlib-undefined -lX11
+-LFLAGS += -L$(sysroot)/usr/lib -lm -ldl -lGAL -Wl,-soname -Wl,vivante_drv.so
++LFLAGS += -lm -ldl -lGAL -Wl,-soname -Wl,vivante_drv.so
+ 
+ 
+ all: $(target)
+-- 
+1.8.3.2
+
