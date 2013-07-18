@@ -1,10 +1,13 @@
 # Copyright (C) 2012-2013 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-PR = "${INC_PR}.0"
-PE = "1"
+PR = "r5.0"
 
 include gpu-viv-bin-mx6q.inc
+
+SRC_URI += "file://0001-change-header-path-to-HAL.patch \
+            file://gc_hal_eglplatform-remove-xlib-undefs.patch \
+            file://fix-conflicting-TLS-definition.patch"
 
 SRC_URI[md5sum] = "2bb7d2f4bdff79ae99ce0c9fc2540701"
 SRC_URI[sha256sum] = "48d04d11c6fec11411bcd97c47199caea517ebcd86db6c70f1964b3358a68924"

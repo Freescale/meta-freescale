@@ -9,14 +9,11 @@ LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=19f5925343fa3da65
 DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes', '', d)} mesa"
 PROVIDES += "virtual/libgl virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2"
 
-INC_PR = "r5"
+PE = "1"
 
 inherit fsl-eula-unpack
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
-           file://0001-change-header-path-to-HAL.patch \
-           file://gc_hal_eglplatform-remove-xlib-undefs.patch \
-           file://fix-conflicting-TLS-definition.patch \
            file://egl.pc \
            file://egl_x11.pc \
            file://glesv1_cm.pc \
