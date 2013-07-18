@@ -30,6 +30,9 @@ XSERVER = "xserver-xorg \
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
+# Float-Point setting
+DEFAULTTUNE_mx6 ?= "cortexa9hf-neon"
+
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE_append_mx6q = " firmware-imx-vpu-imx6q"
