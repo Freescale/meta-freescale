@@ -43,6 +43,18 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libwayland-egl-mx6-dev \
 "
 
+# Skip package if it does not match the machine float-point type in use
+python __anonymous () {
+        is_machine_hardfp = base_contains("TUNE_FEATURES", "callconvention-hard", True, False, d)
+        is_package_hardfp = d.getVar("PACKAGE_FP_TYPE", True) == "hardfp"
+
+        if is_package_hardfp != is_machine_hardfp:
+                PN = d.getVar("PN", True)
+                PV = d.getVar("PV", True)
+                bb.debug(1, "Skipping %s (%s) as machine and package float-point does not match" % (PN, PV))
+                raise bb.parse.SkipPackage("Package Float-Point is not compatible with the machine")
+}
+
 USE_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
 USE_DFB = "${@base_contains("DISTRO_FEATURES", "directfb", "yes", "no", d)}"
 USE_WL = "${@base_contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
