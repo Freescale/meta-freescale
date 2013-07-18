@@ -171,6 +171,7 @@ FILES_libglslc-mx6-dbg = "${libdir}/.debug/libGLSLC${SOLIBS}"
 FILES_libopencl-mx6 = "${libdir}/libOpenCL${SOLIBS}"
 FILES_libopencl-mx6-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 FILES_libopencl-mx6-dbg = "${libdir}/.debug/libOpenCL${SOLIBS}"
+RDEPENDS_libopencl-mx6-dev = "libclc-mx6"
 
 FILES_libopenvg-mx6 = "${libdir}/libOpenVG*${SOLIBS}"
 FILES_libopenvg-mx6-dev = "${includedir}/VG ${libdir}/libOpenVG*${SOLIBSDEV}"
