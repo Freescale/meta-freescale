@@ -1,6 +1,6 @@
 include imx-lib.inc
 
-PR = "${INC_PR}.0"
+PR = "r5.0"
 PE = "1"
 
 SRC_URI = "${FSL_MIRROR}/imx-lib-${PV}.bin;fsl-eula=true"

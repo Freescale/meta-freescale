@@ -1,11 +1,9 @@
-# Copyright (C) 2012 Freescale Semiconductor
+# Copyright (C) 2012-2013 Freescale Semiconductor
 
 DESCRIPTION = "Platform specific libraries for imx platform"
 LICENSE = "LGPLv2.1"
 SECTION = "multimedia"
 DEPENDS = "virtual/kernel"
-
-INC_PR = "r5"
 
 LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
 

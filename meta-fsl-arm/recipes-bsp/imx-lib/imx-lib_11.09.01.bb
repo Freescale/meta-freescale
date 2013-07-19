@@ -1,6 +1,6 @@
 include imx-lib.inc
 
-PR = "${INC_PR}.2"
+PR = "r5.2"
 
 SRC_URI = "${FSL_MIRROR}/imx-lib-${PV}.tar.gz"
 
