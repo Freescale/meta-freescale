@@ -23,7 +23,9 @@ python __anonymous () {
 
         # Remove itens from provides
         provides = d.getVar('PROVIDES', True).split()
-        take_out = ['virtual/libgles1', 'virtual/libgles2', 'virtual/egl', 'virtual/libgl']
+        take_out = ['virtual/libgles1', 'virtual/libgles2', 'virtual/egl']
+        if 'mx6' in cur_soc_families.split(':'):
+            take_out.append('virtual/libgl')
         new_provides = []
         for i in provides:
             if i not in take_out:
