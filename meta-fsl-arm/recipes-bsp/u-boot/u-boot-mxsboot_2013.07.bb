@@ -5,7 +5,7 @@ SECTION = "bootloader"
 
 PV = "v2013.07"
 
-SRCREV = "68c517eafcb060aa8ef92ed2620f0f41c5275d89"
+SRCREV = "fdf86c202c17adfc6f6313dc35f685b1d22b8125"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
