@@ -40,6 +40,8 @@ python populate_packages_prepend() {
                       prepend=True)
 }
 
+ALLOW_EMPTY_${PN} = "1"
+
 PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
