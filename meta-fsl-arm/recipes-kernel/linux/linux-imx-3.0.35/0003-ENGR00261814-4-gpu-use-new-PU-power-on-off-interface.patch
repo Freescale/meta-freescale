@@ -1,0 +1,53 @@
+From 1579de9397783ab5321c80f1e76661653ef38ccd Mon Sep 17 00:00:00 2001
+From: Robin Gong <b38343@freescale.com>
+Date: Thu, 9 May 2013 11:45:55 +0800
+Subject: [PATCH 3/6] ENGR00261814-4 gpu: use new PU power on/off interface
+
+use new PU power on/off interface in GPU driver
+
+Upstream-Status: Backport [3.5.7-1.0.0]
+
+Signed-off-by: Robin Gong <b38343@freescale.com>
+Acked-by: Lily Zhang
+---
+ .../mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c   | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+index 9c2bae6..dfbc699 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -6819,8 +6819,13 @@ gckOS_SetGPUPower(
+     }
+ 	if((Power == gcvTRUE) && (oldPowerState == gcvFALSE))
+ 	{
+-		if(!IS_ERR(Os->device->gpu_regulator))
+-            regulator_enable(Os->device->gpu_regulator);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3,5,0)		
++	    if(!IS_ERR(Os->device->gpu_regulator))
++            	regulator_enable(Os->device->gpu_regulator);
++#else
++	    imx_gpc_power_up_pu(true);
++#endif
++
+ #ifdef CONFIG_PM
+ 		pm_runtime_get_sync(Os->device->pmdev);
+ #endif
+@@ -6930,8 +6935,13 @@ gckOS_SetGPUPower(
+ #ifdef CONFIG_PM
+ 		pm_runtime_put_sync(Os->device->pmdev);
+ #endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3,5,0)		
+ 		if(!IS_ERR(Os->device->gpu_regulator))
+-            regulator_disable(Os->device->gpu_regulator);
++			regulator_disable(Os->device->gpu_regulator);
++#else
++    		imx_gpc_power_up_pu(false);
++#endif
+ 	}
+     /* TODO: Put your code here. */
+     gcmkFOOTER_NO();
+-- 
+1.8.3.2
+

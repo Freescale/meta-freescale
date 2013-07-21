@@ -1,0 +1,2006 @@
+From c090a0238315094d245de2503b6f9a5bce0bda03 Mon Sep 17 00:00:00 2001
+From: Loren Huang <b02279@freescale.com>
+Date: Mon, 27 May 2013 17:45:48 +0800
+Subject: [PATCH 4/6] ENGR00264288-1 [GPU]Integrate 4.6.9p12 release kernel
+ part code
+
+Integrate 4.6.9p12 release kernel part code.
+Cherry-pick from 3.0.35 branch.
+
+Upstream-Status: Backport [3.5.7-1.0.0]
+
+Signed-off-by: Loren Huang <b02279@freescale.com>
+Acked-by: Lily Zhang
+---
+ .../GC350/hal/kernel/gc_hal_kernel_hardware_vg.c   |  63 +++-
+ .../GC350/hal/kernel/gc_hal_kernel_hardware_vg.h   |   2 +
+ .../arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c  | 174 ++++++++---
+ .../arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.h  |   2 +
+ drivers/mxc/gpu-viv/config                         |   1 -
+ drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.c     | 329 +++++++--------------
+ .../mxc/gpu-viv/hal/kernel/gc_hal_kernel_command.c |   6 +-
+ .../gpu-viv/hal/kernel/gc_hal_kernel_command_vg.c  |  14 +-
+ drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c  |   6 +-
+ drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c | 119 +++++++-
+ .../hal/kernel/gc_hal_kernel_video_memory.c        |   3 +
+ drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal.h        |   6 +
+ drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_base.h   |  34 +--
+ .../mxc/gpu-viv/hal/kernel/inc/gc_hal_compiler.h   |  20 +-
+ drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_driver.h |  35 ++-
+ drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h |  62 +---
+ drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_enum.h   |   7 -
+ .../mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h    |  31 +-
+ .../mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h    |   2 +-
+ drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_vg.h     |   6 +
+ .../hal/os/linux/kernel/gc_hal_kernel_device.c     |  13 +
+ .../hal/os/linux/kernel/gc_hal_kernel_device.h     |   1 +
+ .../hal/os/linux/kernel/gc_hal_kernel_driver.c     |  10 +-
+ .../gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c |  74 +++--
+ .../gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.h |   3 +
+ 25 files changed, 574 insertions(+), 449 deletions(-)
+
+diff --git a/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.c b/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.c
+index 4a6010d..70c2cd6 100644
+--- a/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.c
++++ b/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.c
+@@ -217,7 +217,6 @@ _IdentifyHardware(
+     return status;
+ }
+ 
+-#if gcdPOWER_MANAGEMENT
+ static gctTHREADFUNCRESULT gctTHREADFUNCTYPE
+ _TimeIdleThread(
+     gctTHREADFUNCPARAMETER ThreadParameter
+@@ -262,8 +261,6 @@ _TimeIdleThread(
+     }
+     return 0;
+ }
+-#endif
+-
+ 
+ /******************************************************************************\
+ ****************************** gckVGHARDWARE API code *****************************
+@@ -309,6 +306,7 @@ gckVGHARDWARE_Construct(
+     do
+     {
+         gcmkERR_BREAK(gckOS_SetGPUPower(Os, gcvCORE_VG, gcvTRUE, gcvTRUE));
++
+         status = _ResetGPU(Os);
+ 
+         if (status != gcvSTATUS_OK)
+@@ -368,14 +366,17 @@ gckVGHARDWARE_Construct(
+ 
+         gcmkERR_BREAK(gckOS_CreateMutex(Os, &hardware->powerMutex));
+         gcmkERR_BREAK(gckOS_CreateSignal(Os, gcvFALSE, &hardware->idleSignal));
+-#if gcdPOWER_MANAGEMENT
++
++        /* Enable power management by default. */
++        hardware->powerManagement = gcvTRUE;
++
+         gcmkERR_BREAK(gckOS_StartThread(
+             hardware->os,
+             _TimeIdleThread,
+             hardware,
+             &hardware->timeIdleThread
+             ));
+-#endif
++
+         /* Return pointer to the gckVGHARDWARE object. */
+         *Hardware = hardware;
+ 
+@@ -395,6 +396,8 @@ gckVGHARDWARE_Construct(
+         gcmkVERIFY_OK(gckOS_Free(Os, hardware));
+     }
+ 
++    gcmkVERIFY_OK(gckOS_SetGPUPower(Os, gcvCORE_VG, gcvFALSE, gcvFALSE));
++
+     gcmkFOOTER();
+     /* Return the status. */
+     return status;
+@@ -425,11 +428,10 @@ gckVGHARDWARE_Destroy(
+     /* Verify the arguments. */
+     gcmkVERIFY_OBJECT(Hardware, gcvOBJ_HARDWARE);
+ 
+-#if gcdPOWER_MANAGEMENT
+     Hardware->killThread  = gcvTRUE;
+     gcmkVERIFY_OK(gckOS_Signal(Hardware->os, Hardware->idleSignal, gcvTRUE));
+     gcmkVERIFY_OK(gckOS_StopThread(Hardware->os, Hardware->timeIdleThread));
+-#endif
++
+     /* Mark the object as unknown. */
+     Hardware->object.type = gcvOBJ_UNKNOWN;
+ 
+@@ -1432,7 +1434,6 @@ gckVGHARDWARE_ReadInterrupt(
+     return status;
+ }
+ 
+-#if gcdPOWER_MANAGEMENT
+ static gceSTATUS _CommandStall(
+     gckVGHARDWARE Hardware)
+ {
+@@ -1477,7 +1478,6 @@ static gceSTATUS _CommandStall(
+     /* Return the status. */
+     return status;
+ }
+-#endif
+ 
+ /*******************************************************************************
+ **
+@@ -1500,7 +1500,6 @@ gckVGHARDWARE_SetPowerManagementState(
+     IN gceCHIPPOWERSTATE State
+     )
+ {
+-#if gcdPOWER_MANAGEMENT
+     gceSTATUS status;
+     gckVGCOMMAND command = gcvNULL;
+     gckOS os;
+@@ -1600,6 +1599,12 @@ gckVGHARDWARE_SetPowerManagementState(
+     command = Hardware->kernel->command;
+     gcmkVERIFY_OBJECT(command, gcvOBJ_COMMAND);
+ 
++    if (Hardware->powerManagement == gcvFALSE)
++    {
++        gcmkFOOTER_NO();
++        return gcvSTATUS_OK;
++    }
++
+     /* Start profiler. */
+     gcmkPROFILE_INIT(freq, time);
+ 
+@@ -1914,10 +1919,6 @@ OnError:
+     /* Return the status. */
+     gcmkFOOTER();
+     return status;
+-#else /* gcdPOWER_MANAGEMENT */
+-    /* Do nothing */
+-    return gcvSTATUS_OK;
+-#endif
+ }
+ 
+ /*******************************************************************************
+@@ -1955,6 +1956,40 @@ gckVGHARDWARE_QueryPowerManagementState(
+     return gcvSTATUS_OK;
+ }
+ 
++/*******************************************************************************
++**
++**  gckVGHARDWARE_SetPowerManagement
++**
++**  Configure GPU power management function.
++**  Only used in driver initialization stage.
++**
++**  INPUT:
++**
++**      gckVGHARDWARE Harwdare
++**          Pointer to an gckHARDWARE object.
++**
++**      gctBOOL PowerManagement
++**          Power Mangement State.
++**
++*/
++gceSTATUS
++gckVGHARDWARE_SetPowerManagement(
++    IN gckVGHARDWARE Hardware,
++    IN gctBOOL PowerManagement
++    )
++{
++    gcmkHEADER_ARG("Hardware=0x%x", Hardware);
++
++    /* Verify the arguments. */
++    gcmkVERIFY_OBJECT(Hardware, gcvOBJ_HARDWARE);
++
++    Hardware->powerManagement = PowerManagement;
++
++    /* Success. */
++    gcmkFOOTER_NO();
++    return gcvSTATUS_OK;
++}
++
+ gceSTATUS
+ gckVGHARDWARE_SetPowerOffTimeout(
+     IN gckVGHARDWARE  Hardware,
+diff --git a/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.h b/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.h
+index 83a603e..16b81ae 100644
+--- a/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.h
++++ b/drivers/mxc/gpu-viv/arch/GC350/hal/kernel/gc_hal_kernel_hardware_vg.h
+@@ -66,6 +66,8 @@ struct _gckVGHARDWARE
+     gctTHREAD                   timeIdleThread;
+     gctBOOL                     killThread;
+     gctPOINTER                  pageTableDirty;
++
++    gctBOOL                     powerManagement;
+ };
+ 
+ #endif /* __gc_hal_kernel_hardware_h_ */
+diff --git a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
+index ebd36fe..00f3839 100644
+--- a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
++++ b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
+@@ -176,6 +176,7 @@ _IdentifyHardware(
+         Identity->chipMinorFeatures1 = 0;
+         Identity->chipMinorFeatures2 = 0;
+         Identity->chipMinorFeatures3 = 0;
++        Identity->chipMinorFeatures4 = 0;
+     }
+     else
+     {
+@@ -207,13 +208,20 @@ _IdentifyHardware(
+                 gckOS_ReadRegisterEx(Os, Core,
+                                      0x00088,
+                                      &Identity->chipMinorFeatures3));
++
++            /* Read chip minor featuress register #4. */
++            gcmkONERROR(
++                gckOS_ReadRegisterEx(Os, Core,
++                                     0x00094,
++                                     &Identity->chipMinorFeatures4));
+         }
+         else
+         {
+-            /* Chip doesn't has minor features register #1 or 2 or 3. */
++            /* Chip doesn't has minor features register #1 or 2 or 3 or 4. */
+             Identity->chipMinorFeatures1 = 0;
+             Identity->chipMinorFeatures2 = 0;
+             Identity->chipMinorFeatures3 = 0;
++            Identity->chipMinorFeatures4 = 0;
+         }
+     }
+ 
+@@ -234,14 +242,14 @@ _IdentifyHardware(
+ 
+     /* Exception for GC1000, revision 5035 &  GC800, revision 4612 */
+     if (((Identity->chipModel == gcv1000) && ((Identity->chipRevision == 0x5035)
+-                                           || (Identity->chipRevision == 0x5036)))
++                                           || (Identity->chipRevision == 0x5036)
++                                           || (Identity->chipRevision == 0x5037)))
+ 	 || ((Identity->chipModel == gcv800) && (Identity->chipRevision == 0x4612)))
+     {
+         Identity->superTileMode = 1;
+     }
+ 
+ 
+-
+ 	/* Disable HZ when EZ is present for older chips. */
+ 	if (!((((gctUINT32) (Identity->chipFeatures)) >> (0 ? 16:16) & ((gctUINT32) ((((1 ? 16:16) - (0 ? 16:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 16:16) - (0 ? 16:16) + 1)))))) == (0x1 & ((gctUINT32) ((((1 ? 16:16) - (0 ? 16:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 16:16) - (0 ? 16:16) + 1))))))))
+     {
+@@ -285,6 +293,10 @@ _IdentifyHardware(
+                    "Identity: chipMinorFeatures3=0x%08X",
+                    Identity->chipMinorFeatures3);
+ 
++    gcmkTRACE_ZONE(gcvLEVEL_INFO, gcvZONE_HARDWARE,
++                   "Identity: chipMinorFeatures4=0x%08X",
++                   Identity->chipMinorFeatures4);
++
+     /***************************************************************************
+     ** Get chip specs.
+     */
+@@ -576,7 +588,6 @@ OnError:
+     return status;
+ }
+ 
+-#if gcdPOWER_MANAGEMENT
+ static gceSTATUS
+ _IsGPUPresent(
+     IN gckHARDWARE Hardware
+@@ -631,7 +642,6 @@ OnError:
+     gcmkFOOTER();
+     return status;
+ }
+-#endif
+ 
+ /******************************************************************************\
+ ****************************** gckHARDWARE API code *****************************
+@@ -708,6 +718,7 @@ gckHARDWARE_Construct(
+ 
+     case gcv300:
+     case gcv320:
++    case gcv420:
+         hardware->type = gcvHARDWARE_2D;
+         /*set outstanding limit*/
+         gcmkONERROR(gckOS_ReadRegisterEx(Os, Core, 0x00414, &axi_ot));
+@@ -795,6 +806,9 @@ gckHARDWARE_Construct(
+     hardware->linkQueue.count = 0;
+ #endif
+ 
++    /* Enable power management by default. */
++    hardware->powerManagement = gcvTRUE;
++
+     /* Return pointer to the gckHARDWARE object. */
+     *Hardware = hardware;
+ 
+@@ -1404,6 +1418,7 @@ gckHARDWARE_QueryChipIdentity(
+     Identity->chipMinorFeatures1 = Hardware->identity.chipMinorFeatures1;
+     Identity->chipMinorFeatures2 = Hardware->identity.chipMinorFeatures2;
+     Identity->chipMinorFeatures3 = Hardware->identity.chipMinorFeatures3;
++    Identity->chipMinorFeatures4 = Hardware->identity.chipMinorFeatures4;
+ 
+     /* Return chip specs. */
+     Identity->streamCount            = Hardware->identity.streamCount;
+@@ -3129,7 +3144,7 @@ gckHARDWARE_FlushMMU(
+             | ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 25:16) - (0 ? 25:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 25:16) - (0 ? 25:16) + 1))))))) << (0 ? 25:16))) | (((gctUINT32) ((gctUINT32) (1) & ((gctUINT32) ((((1 ? 25:16) - (0 ? 25:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 25:16) - (0 ? 25:16) + 1))))))) << (0 ? 25:16)));
+ 
+         buffer[9]
+-            = (((((gctUINT32) (~0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 4:4) - (0 ? 4:4) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 4:4) - (0 ? 4:4) + 1))))))) << (0 ? 4:4))) | (((gctUINT32) (0x1 & ((gctUINT32) ((((1 ? 4:4) - (0 ? 4:4) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 4:4) - (0 ? 4:4) + 1))))))) << (0 ? 4:4))) &  ((((gctUINT32) (~0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 7:7) - (0 ? 7:7) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 7:7) - (0 ? 7:7) + 1))))))) << (0 ? 7:7))) | (((gctUINT32) (0x0 & ((gctUINT32) ((((1 ? 7:7) - (0 ? 7:7) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 7:7) - (0 ? 7:7) + 1))))))) << (0 ? 7:7))) );
++            = (((((gctUINT32) (~0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 4:4) - (0 ? 4:4) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 4:4) - (0 ? 4:4) + 1))))))) << (0 ? 4:4))) | (((gctUINT32) (0x1 & ((gctUINT32) ((((1 ? 4:4) - (0 ? 4:4) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 4:4) - (0 ? 4:4) + 1))))))) << (0 ? 4:4))) &  ((((gctUINT32) (~0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 7:7) - (0 ? 7:7) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 7:7) - (0 ? 7:7) + 1))))))) << (0 ? 7:7))) | (((gctUINT32) (0x0 & ((gctUINT32) ((((1 ? 7:7) - (0 ? 7:7) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 7:7) - (0 ? 7:7) + 1))))))) << (0 ? 7:7))));
+ 
+         /* Arm the PE-FE Semaphore. */
+         buffer[10]
+@@ -3660,7 +3675,7 @@ typedef enum
+ }
+ gcePOWER_FLAGS;
+ 
+-#if gcmIS_DEBUG(gcdDEBUG_TRACE) && gcdPOWER_MANAGEMENT
++#if gcmIS_DEBUG(gcdDEBUG_TRACE)
+ static gctCONST_STRING
+ _PowerEnum(gceCHIPPOWERSTATE State)
+ {
+@@ -3709,7 +3724,6 @@ gckHARDWARE_SetPowerManagementState(
+     IN gceCHIPPOWERSTATE State
+     )
+ {
+-#if gcdPOWER_MANAGEMENT
+     gceSTATUS status;
+     gckCOMMAND command = gcvNULL;
+     gckOS os;
+@@ -3841,6 +3855,12 @@ gckHARDWARE_SetPowerManagementState(
+     command = Hardware->kernel->command;
+     gcmkVERIFY_OBJECT(command, gcvOBJ_COMMAND);
+ 
++    if (Hardware->powerManagement == gcvFALSE)
++    {
++        gcmkFOOTER_NO();
++        return gcvSTATUS_OK;
++    }
++
+     /* Start profiler. */
+     gcmkPROFILE_INIT(freq, time);
+ 
+@@ -4491,10 +4511,6 @@ OnError:
+     /* Return the status. */
+     gcmkFOOTER();
+     return status;
+-#else /* gcdPOWER_MANAGEMENT */
+-    /* Do nothing */
+-    return gcvSTATUS_OK;
+-#endif
+ }
+ 
+ /*******************************************************************************
+@@ -4532,6 +4548,40 @@ gckHARDWARE_QueryPowerManagementState(
+     return gcvSTATUS_OK;
+ }
+ 
++/*******************************************************************************
++**
++**  gckHARDWARE_SetPowerManagement
++**
++**  Configure GPU power management function.
++**  Only used in driver initialization stage.
++**
++**  INPUT:
++**
++**      gckHARDWARE Harwdare
++**          Pointer to an gckHARDWARE object.
++**
++**      gctBOOL PowerManagement
++**          Power Mangement State.
++**
++*/
++gceSTATUS
++gckHARDWARE_SetPowerManagement(
++    IN gckHARDWARE Hardware,
++    IN gctBOOL PowerManagement
++    )
++{
++    gcmkHEADER_ARG("Hardware=0x%x", Hardware);
++
++    /* Verify the arguments. */
++    gcmkVERIFY_OBJECT(Hardware, gcvOBJ_HARDWARE);
++
++    Hardware->powerManagement = PowerManagement;
++
++    /* Success. */
++    gcmkFOOTER_NO();
++    return gcvSTATUS_OK;
++}
++
+ #if gcdENABLE_FSCALE_VAL_ADJUST
+ gceSTATUS
+ gckHARDWARE_SetFscaleValue(
+@@ -4767,6 +4817,21 @@ OnError:
+                              GC_DEBUG_SIGNALS_##block##_Address, \
+                              &profiler->data))
+ 
++#define gcmkREAD_DEBUG_REGISTER_N(control, block, index, data) \
++    gcmkONERROR(\
++        gckOS_WriteRegisterEx(Hardware->os, \
++                              Hardware->core, \
++                              GC_DEBUG_CONTROL##control##_Address, \
++                              gcmSETFIELD(0, \
++                                          GC_DEBUG_CONTROL##control, \
++                                          block, \
++                                          index))); \
++    gcmkONERROR(\
++        gckOS_ReadRegisterEx(Hardware->os, \
++                             Hardware->core, \
++                             GC_DEBUG_SIGNALS_##block##_Address, \
++                             &data))
++
+ #define gcmkRESET_DEBUG_REGISTER(control, block) \
+     gcmkONERROR(\
+         gckOS_WriteRegisterEx(Hardware->os, \
+@@ -4857,6 +4922,9 @@ gckHARDWARE_QueryProfileRegisters(
+ {
+     gceSTATUS status;
+     gcsPROFILER_COUNTERS * profiler = Counters;
++    gctUINT i, clock;
++    gctUINT32 colorKilled, colorDrawn, depthKilled, depthDrawn;
++    gctUINT32 totalRead, totalWrite;
+ 
+     gcmkHEADER_ARG("Hardware=0x%x Counters=0x%x", Hardware, Counters);
+ 
+@@ -4867,16 +4935,6 @@ gckHARDWARE_QueryProfileRegisters(
+     gcmkONERROR(
+         gckOS_ReadRegisterEx(Hardware->os,
+                              Hardware->core,
+-                             0x00040,
+-                             &profiler->gpuTotalRead64BytesPerFrame));
+-    gcmkONERROR(
+-        gckOS_ReadRegisterEx(Hardware->os,
+-                             Hardware->core,
+-                             0x00044,
+-                             &profiler->gpuTotalWrite64BytesPerFrame));
+-    gcmkONERROR(
+-        gckOS_ReadRegisterEx(Hardware->os,
+-                             Hardware->core,
+                              0x00438,
+                              &profiler->gpuCyclesCounter));
+ 
+@@ -4892,8 +4950,63 @@ gckHARDWARE_QueryProfileRegisters(
+                              0x0007C,
+                              &profiler->gpuIdleCyclesCounter));
+ 
+-    if(Reset){
+ 
++    /* Read clock control register. */
++    gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os,
++                                     Hardware->core,
++                                     0x00000,
++                                     &clock));
++
++    profiler->gpuTotalRead64BytesPerFrame = 0;
++    profiler->gpuTotalWrite64BytesPerFrame = 0;
++    profiler->pe_pixel_count_killed_by_color_pipe = 0;
++    profiler->pe_pixel_count_killed_by_depth_pipe = 0;
++    profiler->pe_pixel_count_drawn_by_color_pipe = 0;
++    profiler->pe_pixel_count_drawn_by_depth_pipe = 0;
++
++     /* Walk through all avaiable pixel pipes. */
++    for (i = 0; i < Hardware->identity.pixelPipes; ++i)
++    {
++        /* Select proper pipe. */
++        gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os,
++                                           Hardware->core,
++                                           0x00000,
++                                           ((((gctUINT32) (clock)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:20) - (0 ? 23:20) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:20) - (0 ? 23:20) + 1))))))) << (0 ? 23:20))) | (((gctUINT32) ((gctUINT32) (i) & ((gctUINT32) ((((1 ? 23:20) - (0 ? 23:20) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:20) - (0 ? 23:20) + 1))))))) << (0 ? 23:20)))));
++
++        /* BW */
++        gcmkONERROR(
++        gckOS_ReadRegisterEx(Hardware->os,
++                             Hardware->core,
++                             0x00040,
++                             &totalRead));
++        gcmkONERROR(
++        gckOS_ReadRegisterEx(Hardware->os,
++                             Hardware->core,
++                             0x00044,
++                             &totalWrite));
++
++        profiler->gpuTotalRead64BytesPerFrame += totalRead;
++        profiler->gpuTotalWrite64BytesPerFrame += totalWrite;
++
++        /* PE */
++        gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470, ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (0) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16)))));gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &colorKilled));
++        gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470, ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (1) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16)))));gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &depthKilled));
++        gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470, ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (2) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16)))));gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &colorDrawn));
++        gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470, ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (3) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16)))));gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &depthDrawn));
++
++        profiler->pe_pixel_count_killed_by_color_pipe += colorKilled;
++        profiler->pe_pixel_count_killed_by_depth_pipe += depthKilled;
++        profiler->pe_pixel_count_drawn_by_color_pipe += colorDrawn;
++        profiler->pe_pixel_count_drawn_by_depth_pipe += depthDrawn;
++    }
++
++    /* Reset clock control register. */
++    gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os,
++                                      Hardware->core,
++                                      0x00000,
++                                      clock));
++
++    if(Reset){
+             /* Reset counters. */
+             gcmkONERROR(
+                 gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x0003C, 1));
+@@ -4903,19 +5016,10 @@ gckHARDWARE_QueryProfileRegisters(
+                 gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00438, 0));
+             gcmkONERROR(
+                 gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00078, 0));
+-        }
+-    /* PE */
+-    gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (0) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) ));
+-gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &profiler->pe_pixel_count_killed_by_color_pipe));
+-    gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (1) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) ));
+-gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &profiler->pe_pixel_count_killed_by_depth_pipe));
+-    gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (2) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) ));
+-gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &profiler->pe_pixel_count_drawn_by_color_pipe));
+-    gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (3) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) ));
+-gcmkONERROR(gckOS_ReadRegisterEx(Hardware->os, Hardware->core, 0x00454, &profiler->pe_pixel_count_drawn_by_depth_pipe));
+-    if(Reset){     gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (15) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) ));
++            gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (15) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) ));
+ gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16))) | (((gctUINT32) ((gctUINT32) (0) & ((gctUINT32) ((((1 ? 23:16) - (0 ? 23:16) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 23:16) - (0 ? 23:16) + 1))))))) << (0 ? 23:16)))
+-)); }
++));
++    }
+ 
+     /* SH */
+     gcmkONERROR(gckOS_WriteRegisterEx(Hardware->os, Hardware->core, 0x00470,   ((((gctUINT32) (0)) & ~(((gctUINT32) (((gctUINT32) ((((1 ? 31:24) - (0 ? 31:24) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 31:24) - (0 ? 31:24) + 1))))))) << (0 ? 31:24))) | (((gctUINT32) ((gctUINT32) (7) & ((gctUINT32) ((((1 ? 31:24) - (0 ? 31:24) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 31:24) - (0 ? 31:24) + 1))))))) << (0 ? 31:24))) ));
+diff --git a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.h b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.h
+index 517b35c..37226b7 100644
+--- a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.h
++++ b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.h
+@@ -90,6 +90,8 @@ struct _gckHARDWARE
+ #if gcdLINK_QUEUE_SIZE
+     struct _gckLINKQUEUE        linkQueue;
+ #endif
++
++    gctBOOL                     powerManagement;
+ };
+ 
+ gceSTATUS
+diff --git a/drivers/mxc/gpu-viv/config b/drivers/mxc/gpu-viv/config
+index 1196efa..cdd143e 100644
+--- a/drivers/mxc/gpu-viv/config
++++ b/drivers/mxc/gpu-viv/config
+@@ -22,7 +22,6 @@
+ ARCH_TYPE                         ?= arm
+ SDK_DIR                           ?= $(AQROOT)/build/sdk
+ USE_3D_VG                         ?= 1
+-USE_POWER_MANAGEMENT              ?= 1
+ FORCE_ALL_VIDEO_MEMORY_CACHED     ?= 0
+ NONPAGED_MEMORY_CACHEABLE         ?= 0
+ NONPAGED_MEMORY_BUFFERABLE        ?= 1
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.c
+index 7964585..b7b0d28 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.c
+@@ -904,9 +904,6 @@ gckKERNEL_Dispatch(
+     gctSIGNAL   signal;
+ #endif
+ 
+-    gcsDATABASE_RECORD record;
+-    gctPOINTER    data;
+-
+     gcmkHEADER_ARG("Kernel=0x%x FromUser=%d Interface=0x%x",
+                    Kernel, FromUser, Interface);
+ 
+@@ -1940,249 +1937,133 @@ gckKERNEL_Dispatch(
+ #endif
+ 
+     case gcvHAL_GET_SHARED_INFO:
+-        bytes = (gctSIZE_T) Interface->u.GetSharedInfo.size;
+-
+-        if (Interface->u.GetSharedInfo.dataId != 0)
++        if (Interface->u.GetSharedInfo.data == gcvNULL)
+         {
+-            gcmkONERROR(gckKERNEL_FindProcessDB(Kernel,
+-                        Interface->u.GetSharedInfo.pid,
+-                        0,
+-                        gcvDB_SHARED_INFO,
+-                        gcmINT2PTR(Interface->u.GetSharedInfo.dataId),
+-                        &record));
+-
+-            /* find a record in db, check size */
+-            if (record.bytes != bytes)
+-            {
+-                /* Size change is not allowed */
+-                gcmkONERROR(gcvSTATUS_INVALID_DATA);
+-            }
+-
+-            /* fetch data */
+-            gcmkONERROR(gckOS_CopyToUserData(
+-                Kernel->os,
+-                record.physical,
+-                gcmUINT64_TO_PTR(Interface->u.GetSharedInfo.data),
+-                bytes
+-                ));
+-
++            gcmkONERROR(gcvSTATUS_INVALID_ARGUMENT);
+         }
+-
+-        if ((node = gcmUINT64_TO_PTR(Interface->u.GetSharedInfo.node)) != gcvNULL)
++        else
+         {
+-            switch (Interface->u.GetSharedInfo.infoType)
+-                {
+-                case gcvVIDMEM_INFO_GENERIC:
+-                    { /* Generic data stored */
+-                        if (node->VidMem.memory->object.type == gcvOBJ_VIDMEM)
+-                        {
+-                            data = &node->VidMem.sharedInfo;
+-
+-                        }
+-                        else
+-                        {
+-                            data = &node->Virtual.sharedInfo;
+-                        }
++            gctUINT32 pid    = Interface->u.GetSharedInfo.pid;
++            gctUINT32 dataId = Interface->u.GetSharedInfo.dataId;
++            gctSIZE_T bytes  = Interface->u.GetSharedInfo.bytes;
++            gctPOINTER data  = Interface->u.GetSharedInfo.data;
++            gcsDATABASE_RECORD record;
+ 
+-                         gcmkONERROR(gckOS_CopyToUserData(
+-                             Kernel->os,
+-                             data,
+-                             gcmUINT64_TO_PTR(Interface->u.GetSharedInfo.nodeData),
+-                             sizeof(gcsVIDMEM_NODE_SHARED_INFO)
+-                             ));
+-                    }
+-                    break;
+-
+-                case gcvVIDMEM_INFO_DIRTY_RECTANGLE:
+-                    { /* Dirty rectangle stored */
+-                        gcsVIDMEM_NODE_SHARED_INFO *storedSharedInfo;
+-                        gcsVIDMEM_NODE_SHARED_INFO alignedSharedInfo;
+-
+-                        if (node->VidMem.memory->object.type == gcvOBJ_VIDMEM)
+-                        {
+-                            storedSharedInfo = &node->VidMem.sharedInfo;
+-                        }
+-                        else
+-                        {
+-                            storedSharedInfo = &node->Virtual.sharedInfo;
+-                        }
+-
+-                        /* Stored shared info holds the unaligned dirty rectangle.
+-                           Align it first.                                         */
+-
+-                        /* Hardware requires 64-byte aligned address, and 16x4 pixel aligned rectsize.
+-                           We simply align to 32 pixels which covers both 16- and 32-bpp formats. */
+-
+-                        /* Make sure we have a legit rectangle. */
+-                        gcmkASSERT((storedSharedInfo->RectSize.width != 0) && (storedSharedInfo->RectSize.height != 0));
+-
+-                        alignedSharedInfo.SrcOrigin.x = gcmALIGN_BASE(storedSharedInfo->SrcOrigin.x, 32);
+-                        alignedSharedInfo.RectSize.width = gcmALIGN((storedSharedInfo->RectSize.width + (storedSharedInfo->SrcOrigin.x - alignedSharedInfo.SrcOrigin.x)), 16);
+-
+-                        alignedSharedInfo.SrcOrigin.y = gcmALIGN_BASE(storedSharedInfo->SrcOrigin.y, 4);
+-                        alignedSharedInfo.RectSize.height = gcmALIGN((storedSharedInfo->RectSize.height + (storedSharedInfo->SrcOrigin.y - alignedSharedInfo.SrcOrigin.y)), 4);
+-
+-                        gcmkONERROR(gckOS_CopyToUserData(
+-                            Kernel->os,
+-                            &alignedSharedInfo,
+-                            gcmUINT64_TO_PTR(Interface->u.GetSharedInfo.nodeData),
+-                            sizeof(gcsVIDMEM_NODE_SHARED_INFO)
+-                            ));
+-
+-                        gcmkTRACE_ZONE(gcvLEVEL_VERBOSE, gcvZONE_KERNEL,
+-                                        "Node = %p, unaligned rectangle (l=%d, t=%d, w=%d, h=%d) aligned to (l=%d, t=%d, w=%d, h=%d)", node,
+-                                        storedSharedInfo->SrcOrigin.x, storedSharedInfo->SrcOrigin.y,
+-                                        storedSharedInfo->RectSize.width, storedSharedInfo->RectSize.height,
+-                                        alignedSharedInfo.SrcOrigin.x, alignedSharedInfo.SrcOrigin.y,
+-                                        alignedSharedInfo.RectSize.width, alignedSharedInfo.RectSize.height);
++            /* Find record. */
++            gcmkONERROR(
++                gckKERNEL_FindProcessDB(Kernel,
++                                        pid,
++                                        0,
++                                        gcvDB_SHARED_INFO,
++                                        gcmINT2PTR(dataId),
++                                        &record));
++
++            /* Check memory size. */
++            if (bytes < record.bytes)
++            {
++                /* Insufficient memory to hold shared data. */
++                gcmkONERROR(gcvSTATUS_INVALID_ARGUMENT);
++            }
+ 
+-                        /* Rectangle */
+-                        storedSharedInfo->SrcOrigin.x =
+-                        storedSharedInfo->SrcOrigin.y =
+-                        storedSharedInfo->RectSize.width =
+-                        storedSharedInfo->RectSize.height = 0;
+-                    }
+-                    break;
+-                }
++            /* Copy to user. */
++            status = gckOS_CopyToUserData(Kernel->os,
++                                          record.physical,
++                                          data,
++                                          record.bytes);
++
++            /*
++             * Remove from process db.
++             * Every time when shared info is taken, the record is erased in
++             * kernel side.
++             */
++            gcmkVERIFY_OK(
++                gckKERNEL_RemoveProcessDB(Kernel,
++                                          pid,
++                                          gcvDB_SHARED_INFO,
++                                          gcmINT2PTR(dataId)));
++            /* Free existed data. */
++            gcmkVERIFY_OK(
++                gckOS_FreeMemory(Kernel->os, record.physical));
+         }
+         break;
+ 
+     case gcvHAL_SET_SHARED_INFO:
+-        bytes = (gctSIZE_T) Interface->u.SetSharedInfo.size;
+-
+-        if (Interface->u.SetSharedInfo.dataId != 0)
+         {
+-            status = gckKERNEL_FindProcessDB(Kernel, processID, 0,
+-                        gcvDB_SHARED_INFO,
+-                        gcmINT2PTR(Interface->u.SetSharedInfo.dataId),
+-                        &record);
+-
+-            if (status == gcvSTATUS_INVALID_DATA)
+-            {
+-                /* private data has not been created yet */
+-                /* Note: we count on DestoryProcessDB to free it */
+-                gcmkONERROR(gckOS_AllocateMemory(
+-                    Kernel->os,
+-                    bytes,
+-                    &data
+-                    ));
+-
+-                gcmkONERROR(
+-                    gckKERNEL_AddProcessDB(Kernel, processID,
+-                        gcvDB_SHARED_INFO,
+-                        gcmINT2PTR(Interface->u.SetSharedInfo.dataId),
+-                        data,
+-                        bytes
+-                        ));
+-            }
+-            else
++            gctUINT32 dataId = Interface->u.SetSharedInfo.dataId;
++            gctPOINTER data  = Interface->u.SetSharedInfo.data;
++            gctUINT32 bytes  = Interface->u.SetSharedInfo.bytes;
++            gctPOINTER memory = gcvNULL;
++            gcsDATABASE_RECORD record;
++
++            if (gcmIS_SUCCESS(gckKERNEL_FindProcessDB(Kernel,
++                                                     processID,
++                                                     0,
++                                                     gcvDB_SHARED_INFO,
++                                                     gcmINT2PTR(dataId),
++                                                     &record)))
+             {
+-                /* bail on other errors */
+-                gcmkONERROR(status);
+-
+-                /* find a record in db, check size */
+-                if (record.bytes != bytes)
++                /* Find a record with the same id. */
++                if (bytes != record.bytes)
+                 {
+-                    /* Size change is not allowed */
+-                    gcmkONERROR(gcvSTATUS_INVALID_DATA);
++                    /* Remove from process db. */
++                    gcmkVERIFY_OK(
++                        gckKERNEL_RemoveProcessDB(Kernel,
++                                                  processID,
++                                                  gcvDB_SHARED_INFO,
++                                                  gcmINT2PTR(dataId)));
++
++                    /* Free existed data. */
++                    gcmkVERIFY_OK(
++                        gckOS_FreeMemory(Kernel->os, record.physical));
+                 }
+-
+-                /* get storage address */
+-                data = record.physical;
+-            }
+-
+-            gcmkONERROR(gckOS_CopyFromUserData(
+-                Kernel->os,
+-                data,
+-                gcmUINT64_TO_PTR(Interface->u.SetSharedInfo.data),
+-                bytes
+-                ));
+-        }
+-
+-        if ((node = gcmUINT64_TO_PTR(Interface->u.SetSharedInfo.node)) != gcvNULL)
+-        {
+-            switch (Interface->u.SetSharedInfo.infoType)
++                else
+                 {
+-                case gcvVIDMEM_INFO_GENERIC:
+-                    { /* Generic data stored */
+-                        if (node->VidMem.memory->object.type == gcvOBJ_VIDMEM)
+-                        {
+-                            data = &node->VidMem.sharedInfo;
+-                        }
+-                        else
+-                        {
+-                            data = &node->Virtual.sharedInfo;
+-                        }
+-
+-                        gcmkONERROR(gckOS_CopyFromUserData(
+-                            Kernel->os,
+-                            data,
+-                            gcmUINT64_TO_PTR(Interface->u.SetSharedInfo.nodeData),
+-                            sizeof(gcsVIDMEM_NODE_SHARED_INFO)
+-                            ));
+-                    }
+-                    break;
++                    /* Re-use allocated memory. */
++                    memory = record.physical;
++                }
++            }
+ 
+-                case gcvVIDMEM_INFO_DIRTY_RECTANGLE:
+-                    { /* Dirty rectangle stored */
+-                        gcsVIDMEM_NODE_SHARED_INFO newSharedInfo;
+-                        gcsVIDMEM_NODE_SHARED_INFO *currentSharedInfo;
+-                        gctINT dirtyX, dirtyY, right, bottom;
+-
+-                        /* Expand the dirty rectangle stored in the node to include the rectangle passed in. */
+-                        gcmkONERROR(gckOS_CopyFromUserData(
+-                            Kernel->os,
+-                            &newSharedInfo,
+-                            gcmUINT64_TO_PTR(Interface->u.SetSharedInfo.nodeData),
+-                            gcmSIZEOF(gcsVIDMEM_NODE_SHARED_INFO)
+-                            ));
+-
+-                        if (node->VidMem.memory->object.type == gcvOBJ_VIDMEM)
+-                        {
+-                            currentSharedInfo = &node->VidMem.sharedInfo;
+-                        }
+-                        else
+-                        {
+-                            currentSharedInfo = &node->Virtual.sharedInfo;
+-                        }
++            if ((data == gcvNULL) || (bytes == 0))
++            {
++                /* Nothing to record. */
++                break;
++            }
+ 
+-                        gcmkTRACE_ZONE(gcvLEVEL_VERBOSE, gcvZONE_KERNEL, "Node = %p Stored rectangle (l=%d, t=%d, w=%d, h=%d)", node,
+-                                        currentSharedInfo->SrcOrigin.x, currentSharedInfo->SrcOrigin.y,
+-                                        currentSharedInfo->RectSize.width, currentSharedInfo->RectSize.height);
++            if (bytes > 1024)
++            {
++                /* Limite data size. */
++                gcmkONERROR(gcvSTATUS_TOO_COMPLEX);
++            }
+ 
+-                        gcmkTRACE_ZONE(gcvLEVEL_VERBOSE, gcvZONE_KERNEL, "To combine with (l=%d, t=%d, w=%d, h=%d)",
+-                                        newSharedInfo.SrcOrigin.x, newSharedInfo.SrcOrigin.y,
+-                                        newSharedInfo.RectSize.width, newSharedInfo.RectSize.height);
++            if (memory == gcvNULL)
++            {
++                /* Allocate memory for holding shared data. */
++                gcmkONERROR(
++                    gckOS_AllocateMemory(Kernel->os, bytes, &memory));
+ 
+-                        if ((currentSharedInfo->RectSize.width == 0) || (currentSharedInfo->RectSize.height == 0))
+-                        { /* Setting it for the first time */
+-                            currentSharedInfo->SrcOrigin.x = newSharedInfo.SrcOrigin.x;
+-                            currentSharedInfo->SrcOrigin.y = newSharedInfo.SrcOrigin.y;
+-                            currentSharedInfo->RectSize.width = newSharedInfo.RectSize.width;
+-                            currentSharedInfo->RectSize.height = newSharedInfo.RectSize.height;
+-                        }
+-                        else
+-                        {
+-                            /* Expand the stored rectangle to include newly locked rectangle */
+-                            dirtyX = (newSharedInfo.SrcOrigin.x < currentSharedInfo->SrcOrigin.x) ? newSharedInfo.SrcOrigin.x : currentSharedInfo->SrcOrigin.x;
+-                            right = gcmMAX((currentSharedInfo->SrcOrigin.x + currentSharedInfo->RectSize.width), (newSharedInfo.SrcOrigin.x + newSharedInfo.RectSize.width));
+-                            currentSharedInfo->RectSize.width = right - dirtyX;
+-                            currentSharedInfo->SrcOrigin.x = dirtyX;
+-
+-                            dirtyY = (newSharedInfo.SrcOrigin.y < currentSharedInfo->SrcOrigin.y) ? newSharedInfo.SrcOrigin.y : currentSharedInfo->SrcOrigin.y;
+-                            bottom = gcmMAX((currentSharedInfo->SrcOrigin.y + currentSharedInfo->RectSize.height), (newSharedInfo.SrcOrigin.y + newSharedInfo.RectSize.height));
+-                            currentSharedInfo->RectSize.height = bottom - dirtyY;
+-                            currentSharedInfo->SrcOrigin.y = dirtyY;
+-                        }
++                /* Add to process db. */
++                status = gckKERNEL_AddProcessDB(Kernel,
++                                                processID,
++                                                gcvDB_SHARED_INFO,
++                                                gcmINT2PTR(dataId),
++                                                memory,
++                                                bytes);
+ 
+-                        gcmkTRACE_ZONE(gcvLEVEL_VERBOSE, gcvZONE_KERNEL, "Combined rectangle (l=%d, t=%d, w=%d, h=%d)",
+-                                       currentSharedInfo->SrcOrigin.x, currentSharedInfo->SrcOrigin.y,
+-                                       currentSharedInfo->RectSize.width, currentSharedInfo->RectSize.height);
+-                    }
++                if (gcmIS_ERROR(status))
++                {
++                    /* Failed to add process db. Free allocated memory. */
++                    gcmkVERIFY_OK(gckOS_FreeMemory(Kernel->os, memory));
+                     break;
+                 }
+-        }
++            }
+ 
++            /* Copy shared data to kernel memory. */
++            gcmkONERROR(
++                gckOS_CopyFromUserData(Kernel->os,
++                                       memory,
++                                       data,
++                                       bytes));
++        }
+         break;
+ 
+     case gcvHAL_SET_FSCALE_VALUE:
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command.c
+index 66ce0d1..9ee9ea1 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command.c
+@@ -2047,14 +2047,14 @@ gckCOMMAND_Commit(
+         EventQueue = nextEventRecord;
+     }
+ 
+-#if gcdPOWER_MANAGEMENT
+-    if (Command->kernel->eventObj->queueHead == gcvNULL)
++    if (Command->kernel->eventObj->queueHead == gcvNULL
++     && Command->kernel->hardware->powerManagement == gcvTRUE
++    )
+     {
+         /* Commit done event by which work thread knows all jobs done. */
+         gcmkVERIFY_OK(
+             gckEVENT_CommitDone(Command->kernel->eventObj, gcvKERNEL_PIXEL));
+     }
+-#endif
+ 
+     /* Submit events. */
+     status = gckEVENT_Submit(Command->kernel->eventObj, gcvTRUE, gcvFALSE);
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command_vg.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command_vg.c
+index 9685a5d..76c1c10 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command_vg.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_command_vg.c
+@@ -1234,7 +1234,6 @@ _EventHandler_BusError(
+     return gcvSTATUS_OK;
+ }
+ 
+-#if gcdPOWER_MANAGEMENT
+ /******************************************************************************\
+ ****************************** Power Stall Handler *******************************
+ \******************************************************************************/
+@@ -1250,7 +1249,6 @@ _EventHandler_PowerStall(
+         Kernel->command->powerStallSignal,
+         gcvTRUE);
+ }
+-#endif
+ 
+ /******************************************************************************\
+ ******************************** Task Routines *********************************
+@@ -1965,15 +1963,12 @@ gcmDECLARE_INTERRUPT_HANDLER(COMMAND, 0)
+                             );
+                     }
+                 }
+-#if gcdPOWER_MANAGEMENT
+                 else
+                 {
+-
+                     status = gckVGHARDWARE_SetPowerManagementState(
+                                 Kernel->command->hardware, gcvPOWER_IDLE_BROADCAST
+                                 );
+                 }
+-#endif
+ 
+                 /* Break out of the loop. */
+                 break;
+@@ -2848,7 +2843,7 @@ gckVGCOMMAND_Construct(
+             _EventHandler_BusError
+             ));
+ 
+-#if gcdPOWER_MANAGEMENT
++
+         command->powerStallInt = 30;
+         /* Enable the interrupt. */
+         gcmkERR_BREAK(gckVGINTERRUPT_Enable(
+@@ -2856,7 +2851,6 @@ gckVGCOMMAND_Construct(
+             &command->powerStallInt,
+             _EventHandler_PowerStall
+             ));
+-#endif
+ 
+         /***********************************************************************
+         ** Task management initialization.
+@@ -3419,7 +3413,6 @@ gckVGCOMMAND_Commit(
+             gcvINFINITE
+             ));
+ 
+-#if gcdPOWER_MANAGEMENT
+         status = gckVGHARDWARE_SetPowerManagementState(
+             Command->hardware, gcvPOWER_ON_AUTO);
+ 
+@@ -3447,7 +3440,7 @@ gckVGCOMMAND_Commit(
+ 
+             break;
+         }
+-#endif
++
+         gcmkERR_BREAK(_FlushMMU(Command));
+ 
+         do
+@@ -3676,10 +3669,9 @@ gckVGCOMMAND_Commit(
+         }
+         while (gcvFALSE);
+ 
+-#if gcdPOWER_MANAGEMENT
+         gcmkVERIFY_OK(gckOS_ReleaseSemaphore(
+             Command->os, Command->powerSemaphore));
+-#endif
++
+         /* Release the mutex. */
+         gcmkCHECK_STATUS(gckOS_ReleaseMutex(
+             Command->os,
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c
+index bc5f083..673d4f7 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c
+@@ -1303,9 +1303,9 @@ gckKERNEL_DestroyProcessDB(
+                            gcmPTR2INT(record->data), status);
+             break;
+ 
+-                    case gcvDB_SHARED_INFO:
+-                        status = gckOS_FreeMemory(Kernel->os, record->physical);
+-                        break;
++        case gcvDB_SHARED_INFO:
++            status = gckOS_FreeMemory(Kernel->os, record->physical);
++            break;
+ 
+         default:
+             gcmkTRACE_ZONE(gcvLEVEL_ERROR, gcvZONE_DATABASE,
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c
+index 43c9297..c7f67c7 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c
+@@ -97,6 +97,14 @@ static gcsMirrorPageTable_PTR mirrorPageTable = gcvNULL;
+ static gctPOINTER mirrorPageTableMutex = gcvNULL;
+ #endif
+ 
++typedef struct _gcsDynamicSpaceNode * gcsDynamicSpaceNode_PTR;
++typedef struct _gcsDynamicSpaceNode
++{
++    gctUINT32       start;
++    gctINT32        entries;
++}
++gcsDynamicSpaceNode;
++
+ static void
+ _WritePageEntry(
+     IN gctUINT32_PTR PageEntry,
+@@ -482,30 +490,117 @@ OnError:
+ }
+ 
+ static gceSTATUS
++_FindDynamicSpace(
++    IN gckMMU Mmu,
++    OUT gcsDynamicSpaceNode_PTR *Array,
++    OUT gctINT * Size
++    )
++{
++    gceSTATUS status = gcvSTATUS_OK;
++    gctPOINTER pointer = gcvNULL;
++    gcsDynamicSpaceNode_PTR array = gcvNULL;
++    gctINT size = 0;
++    gctINT i = 0, nodeStart = -1, nodeEntries = 0;
++
++    /* Allocate memory for the array. */
++    gcmkONERROR(gckOS_Allocate(Mmu->os,
++                               gcmSIZEOF(*array) * (gcdMMU_MTLB_ENTRY_NUM / 2),
++                               &pointer));
++
++    array = (gcsDynamicSpaceNode_PTR)pointer;
++
++    /* Loop all the entries. */
++    while (i < gcdMMU_MTLB_ENTRY_NUM)
++    {
++        if (!Mmu->mtlbLogical[i])
++        {
++            if (nodeStart < 0)
++            {
++                /* This is the first entry of the dynamic space. */
++                nodeStart   = i;
++                nodeEntries = 1;
++            }
++            else
++            {
++                /* Other entries of the dynamic space. */
++                nodeEntries++;
++            }
++        }
++        else if (nodeStart >= 0)
++        {
++            /* Save the previous node. */
++            array[size].start   = nodeStart;
++            array[size].entries = nodeEntries;
++            size++;
++
++            /* Reset the start. */
++            nodeStart   = -1;
++            nodeEntries = 0;
++        }
++
++        i++;
++    }
++
++    /* Save the previous node. */
++    if (nodeStart >= 0)
++    {
++        array[size].start   = nodeStart;
++        array[size].entries = nodeEntries;
++        size++;
++    }
++
++#if gcdMMU_TABLE_DUMP
++    for (i = 0; i < size; i++)
++    {
++        gckOS_Print("%s(%d): [%d]: start=%d, entries=%d.\n",
++                __FUNCTION__, __LINE__,
++                i,
++                array[i].start,
++                array[i].entries);
++    }
++#endif
++
++    *Array = array;
++    *Size  = size;
++
++    return gcvSTATUS_OK;
++
++OnError:
++    if (pointer != gcvNULL)
++    {
++        gckOS_Free(Mmu->os, pointer);
++    }
++
++    return status;
++}
++
++static gceSTATUS
+ _SetupDynamicSpace(
+     IN gckMMU Mmu
+     )
+ {
+     gceSTATUS status;
+-    gctINT i;
++    gcsDynamicSpaceNode_PTR nodeArray = gcvNULL;
++    gctINT i, nodeArraySize = 0;
+     gctUINT32 physical;
+-    gctINT numEntries;
++    gctINT numEntries = 0;
+     gctUINT32_PTR pageTable;
+     gctBOOL acquired = gcvFALSE;
+ 
+-    /* find the start of dynamic address space. */
+-    for (i = 0; i < gcdMMU_MTLB_ENTRY_NUM; i++)
++    /* Find all the dynamic address space. */
++    gcmkONERROR(_FindDynamicSpace(Mmu, &nodeArray, &nodeArraySize));
++
++    /* TODO: We only use the largest one for now. */
++    for (i = 0; i < nodeArraySize; i++)
+     {
+-        if (!Mmu->mtlbLogical[i])
++        if (nodeArray[i].entries > numEntries)
+         {
+-            break;
++            Mmu->dynamicMappingStart = nodeArray[i].start;
++            numEntries               = nodeArray[i].entries;
+         }
+     }
+ 
+-    Mmu->dynamicMappingStart = i;
+-
+-    /* Number of entries in Master TLB for dynamic mapping. */
+-    numEntries = gcdMMU_MTLB_ENTRY_NUM - i;
++    gckOS_Free(Mmu->os, (gctPOINTER)nodeArray);
+ 
+     Mmu->pageTableSize = numEntries * 4096;
+ 
+@@ -545,7 +640,9 @@ _SetupDynamicSpace(
+     acquired = gcvTRUE;
+ 
+     /* Map to Master TLB. */
+-    for (; i < gcdMMU_MTLB_ENTRY_NUM; i++)
++    for (i = (gctINT)Mmu->dynamicMappingStart;
++         i < (gctINT)Mmu->dynamicMappingStart + numEntries;
++         i++)
+     {
+         _WritePageEntry(Mmu->mtlbLogical + i,
+                         physical
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c
+index 8a442a2..8b8bbdc 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c
+@@ -2144,6 +2144,9 @@ gckVIDMEM_Unlock(
+ 
+             if (!Node->Virtual.contiguous
+             &&  (Node->Virtual.lockeds[Kernel->core] == 1)
++#if gcdENABLE_VG
++            && (Kernel->vg == gcvNULL)
++#endif
+             )
+             {
+                 if (Type == gcvSURF_BITMAP)
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal.h
+index 7077412..4406d7e 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal.h
+@@ -2072,6 +2072,12 @@ gckHARDWARE_QueryPowerManagementState(
+     OUT gceCHIPPOWERSTATE* State
+     );
+ 
++gceSTATUS
++gckHARDWARE_SetPowerManagement(
++    IN gckHARDWARE Hardware,
++    IN gctBOOL PowerManagement
++    );
++
+ #if gcdENABLE_FSCALE_VAL_ADJUST
+ gceSTATUS
+ gckHARDWARE_SetFscaleValue(
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_base.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_base.h
+index ac86399..44689b0 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_base.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_base.h
+@@ -74,7 +74,6 @@ typedef struct _gcsSYNC_CONTEXT  *      gcsSYNC_CONTEXT_PTR;
+ /******************************************************************************\
+ ******************************* Process local storage *************************
+ \******************************************************************************/
+-
+ typedef struct _gcsPLS * gcsPLS_PTR;
+ typedef struct _gcsPLS
+ {
+@@ -107,6 +106,7 @@ typedef struct _gcsPLS
+ 
+     /* Reference count for destructor. */
+     gcsATOM_PTR                 reference;
++    gctBOOL                     bKFS;
+ #if gcdUSE_NPOT_PATCH
+     gctBOOL                     bNeedSupportNP2Texture;
+ #endif
+@@ -123,7 +123,7 @@ extern gcsPLS gcPLS;
+ typedef struct _gcsTLS * gcsTLS_PTR;
+ 
+ typedef void (* gctTLS_DESTRUCTOR) (
+-    gcsTLS_PTR TLS
++    gcsTLS_PTR
+     );
+ 
+ typedef struct _gcsTLS
+@@ -658,8 +658,6 @@ gcoHAL_QueryChipFeature(
+     IN gceFEATURE   Feature);
+ 
+ #endif
+-
+-
+ /******************************************************************************\
+ ********************************** gcoOS Object *********************************
+ \******************************************************************************/
+@@ -1775,20 +1773,6 @@ gcoSURF_QueryVidMemNode(
+     OUT gctUINT_PTR Bytes
+     );
+ 
+-/*  Set usage attribute of a surface. */
+-gceSTATUS
+-gcoSURF_SetUsage(
+-    IN gcoSURF Surface,
+-    IN gceSURF_USAGE Usage
+-    );
+-
+-/*  Return usage attribute of a surface. */
+-gceSTATUS
+-gcoSURF_QueryUsage(
+-    IN gcoSURF Surface,
+-    OUT gceSURF_USAGE *Usage
+-    );
+-
+ /* Set the color type of the surface. */
+ gceSTATUS
+ gcoSURF_SetColorType(
+@@ -1975,6 +1959,14 @@ gcoSURF_SetWindow(
+     IN gctUINT Height
+     );
+ 
++/* Set width/height alignment of the surface directly and calculate stride/size. This is only for dri backend now. Please be careful before use. */
++gceSTATUS
++gcoSURF_SetAlignment(
++    IN gcoSURF Surface,
++    IN gctUINT Width,
++    IN gctUINT Height
++    );
++
+ /* Increase reference count of the surface. */
+ gceSTATUS
+ gcoSURF_ReferenceSurface(
+@@ -2009,6 +2001,12 @@ gcoSURF_SetOffset(
+     );
+ 
+ gceSTATUS
++gcoSURF_GetOffset(
++    IN gcoSURF Surface,
++    OUT gctUINT *Offset
++    );
++
++gceSTATUS
+ gcoSURF_NODE_Cache(
+     IN gcsSURF_NODE_PTR Node,
+     IN gctPOINTER Logical,
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_compiler.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_compiler.h
+index 4a0870f..8693c37 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_compiler.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_compiler.h
+@@ -36,12 +36,16 @@ extern "C" {
+ #endif
+ 
+ #ifndef GC_ENABLE_LOADTIME_OPT
+-#define GC_ENABLE_LOADTIME_OPT      1
++#define GC_ENABLE_LOADTIME_OPT           1
+ #endif
+ 
+ #define TEMP_OPT_CONSTANT_TEXLD_COORD    1
+ 
+-#define TEMP_SHADER_PATCH            1
++#define TEMP_SHADER_PATCH                1
++
++#define ADD_PRE_ROTATION_TO_VS           0
++
++#define TEMP_INLINE_ALL_EXPANSION            1
+ /******************************* IR VERSION ******************/
+ #define gcdSL_IR_VERSION gcmCC('\0','\0','\0','\1')
+ 
+@@ -683,6 +687,13 @@ typedef enum _gceSHADER_FLAGS
+     gcvSHADER_USE_ALPHA_KILL            = 0x100,
+ #endif
+ 
++#if ADD_PRE_ROTATION_TO_VS
++    gcvSHADER_VS_PRE_ROTATION           = 0x200,
++#endif
++
++#if TEMP_INLINE_ALL_EXPANSION
++    gcvSHADER_INLINE_ALL_EXPANSION      = 0x200,
++#endif
+ }
+ gceSHADER_FLAGS;
+ 
+@@ -771,10 +782,15 @@ typedef enum _gceSHADER_OPTIMIZATION
+     /* optimize varying packing */
+     gcvOPTIMIZATION_VARYINGPACKING              = 1 << 22,
+ 
++#if TEMP_INLINE_ALL_EXPANSION
++	gcvOPTIMIZATION_INLINE_ALL_EXPANSION        = 1 << 23,
++#endif
++
+     /*  Full optimization. */
+     /*  Note that gcvOPTIMIZATION_LOAD_SW_WORKAROUND is off. */
+ 	gcvOPTIMIZATION_FULL                        = 0x7FFFFFFF &
+                                                   ~gcvOPTIMIZATION_LOAD_SW_WORKAROUND &
++                                                  ~gcvOPTIMIZATION_INLINE_ALL_EXPANSION &
+                                                   ~gcvOPTIMIZATION_POWER_OPTIMIZATION,
+ 
+ 	/* Optimization Unit Test flag. */
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_driver.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_driver.h
+index 028bbd1..b056c52 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_driver.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_driver.h
+@@ -210,6 +210,9 @@ typedef struct _gcsHAL_QUERY_CHIP_IDENTITY
+     /* Supported minor feature 3 fields. */
+     gctUINT32                   chipMinorFeatures3;
+ 
++    /* Supported minor feature 4 fields. */
++    gctUINT32                   chipMinorFeatures4;
++
+     /* Number of streams supported. */
+     gctUINT32                   streamCount;
+ 
+@@ -929,30 +932,30 @@ typedef struct _gcsHAL_INTERFACE
+ 
+         struct _gcsHAL_GET_SHARED_INFO
+         {
++            /* Process id. */
+             IN gctUINT32            pid;
++
++            /* Data id. */
+             IN gctUINT32            dataId;
+-            /* gcuVIDMEM_NODE_PTR */
+-            IN gctUINT64            node;
+-            /* gctUINT8_PTR */
+-            OUT gctUINT64           data;
+-            /* fix size. gctUINT8_PTR*/
+-            OUT gctUINT64           nodeData;
+-            gctUINT64               size;
+-            IN gceVIDMEM_NODE_SHARED_INFO_TYPE infoType;
++
++            /* Data size. */
++            IN gctSIZE_T            bytes;
++
++            /* Pointer to save the shared data. */
++            OUT gctPOINTER          data;
+         }
+         GetSharedInfo;
+ 
+         struct _gcsHAL_SET_SHARED_INFO
+         {
++            /* Data id. */
+             IN gctUINT32            dataId;
+-            /* gcuVIDMEM_NODE_PTR */
+-            IN gctUINT64   node;
+-            /* gctUINT8_PTR */
+-            IN gctUINT64         data;
+-            /* gctUINT8_PTR */
+-            IN gctUINT64         nodeData;
+-            IN gctUINT64            size;
+-            IN gceVIDMEM_NODE_SHARED_INFO_TYPE infoType;
++
++            /* Data to be shared. */
++            IN gctPOINTER           data;
++
++            /* Data size. */
++            IN gctSIZE_T            bytes;
+         }
+         SetSharedInfo;
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h
+index 249b61b..8481375 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h
+@@ -323,50 +323,6 @@ gcoSURF_Resolve(
+     IN gcoSURF DestSurface
+     );
+ 
+-/* Export the render target. */
+-gceSTATUS
+-gcoSURF_ExportRenderTarget(
+-    IN gcoSURF SrcSurface
+-);
+-
+-/* Import the render target. */
+-gceSTATUS
+-gcoSURF_ImportRenderTarget(
+-    IN gctUINT32 Pid,
+-    IN gcoSURF SrcSurface
+-);
+-
+-/* Save the Resolve info to kernel. */
+-gceSTATUS
+-gcoSURF_PrepareRemoteResolveRect(
+-    IN gcoSURF SrcSurface,
+-    IN gcsPOINT_PTR SrcOrigin,
+-    IN gcsPOINT_PTR DestOrigin,
+-    IN gcsPOINT_PTR RectSize
+-    );
+-
+-/* Resolve using the rectangle info previously saved in the vid mem node. */
+-gceSTATUS
+-gcoSURF_ResolveFromStoredRect(
+-    IN gcoSURF SrcSurface,
+-    IN gcoSURF DestSurface
+-    );
+-
+-/* Using the info that Process Pid saved to do resolve. */
+-gceSTATUS
+-gcoSURF_RemoteResolveRect(
+-    IN gcoSURF SrcSurface,
+-    IN gcoSURF DestSurface,
+-    IN gctBOOL *resolveDiscarded
+-    );
+-
+-/* Return the "resolve submitted indicator" signal. */
+-gceSTATUS
+-gcoSURF_GetRTSignal(
+-    IN gcoSURF RTSurface,
+-    OUT gctSIGNAL * resolveSubmittedSignal
+-    );
+-
+ /* Resolve rectangular area of a surface. */
+ gceSTATUS
+ gcoSURF_ResolveRect(
+@@ -1684,6 +1640,12 @@ gcoTEXTURE_IsRenderable(
+     );
+ 
+ gceSTATUS
++gcoTEXTURE_IsRenderableEx(
++    IN gcoTEXTURE Texture,
++    IN gctUINT Level
++    );
++
++gceSTATUS
+ gcoTEXTURE_IsComplete(
+     IN gcoTEXTURE Texture,
+     IN gctINT MaxLevel
+@@ -2028,21 +1990,15 @@ gceSTATUS
+ gcoHAL_GetSharedInfo(
+     IN gctUINT32 Pid,
+     IN gctUINT32 DataId,
+-    OUT gctUINT8_PTR Data,
+     IN gctSIZE_T Bytes,
+-    IN gctUINT64 Node,
+-    OUT gctUINT8_PTR NodeData,
+-    IN gceVIDMEM_NODE_SHARED_INFO_TYPE SharedInfoType
++    OUT gctPOINTER Data
+     );
+ 
+ gceSTATUS
+ gcoHAL_SetSharedInfo(
+     IN gctUINT32 DataId,
+-    IN gctUINT8_PTR Data,
+-    IN gctSIZE_T Bytes,
+-    IN gctUINT64 Node,
+-    IN gctUINT8_PTR NodeData,
+-    IN gceVIDMEM_NODE_SHARED_INFO_TYPE SharedInfoType
++    IN gctPOINTER Data,
++    IN gctSIZE_T Bytes
+     );
+ 
+ #ifdef __cplusplus
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_enum.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_enum.h
+index cf6b425..a1d9ae5 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_enum.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_enum.h
+@@ -181,13 +181,6 @@ typedef enum _gceCACHEOPERATION
+ }
+ gceCACHEOPERATION;
+ 
+-typedef enum _gceVIDMEM_NODE_SHARED_INFO_TYPE
+-{
+-    gcvVIDMEM_INFO_GENERIC,
+-    gcvVIDMEM_INFO_DIRTY_RECTANGLE
+-}
+-gceVIDMEM_NODE_SHARED_INFO_TYPE;
+-
+ /* Surface types. */
+ typedef enum _gceSURF_TYPE
+ {
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h
+index afe83d0..9e2a8db 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h
+@@ -391,15 +391,6 @@
+ #endif
+ 
+ /*
+-    gcdPOWER_MANAGEMENT
+-
+-        This define enables the power management code.
+-*/
+-#ifndef gcdPOWER_MANAGEMENT
+-#   define gcdPOWER_MANAGEMENT                  1
+-#endif
+-
+-/*
+     gcdPOWER_SUSNPEND_WHEN_IDLE
+ 
+         Set to 1 to make GPU enter gcvPOWER_SUSPEND when idle detected,
+@@ -428,7 +419,7 @@
+         If the value is 0, no timeout will be checked for.
+ */
+ #ifndef gcdGPU_TIMEOUT
+-#   if gcdFPGA_BUILD
++#if gcdFPGA_BUILD
+ #       define gcdGPU_TIMEOUT                   0
+ #   else
+ #       define gcdGPU_TIMEOUT                   20000
+@@ -726,31 +717,13 @@
+ 
+         Support swap with a specific rectangle.
+ 
+-        Set the rectangle with eglSetSwapRectangleANDROID api.
++        Set the rectangle with eglSetSwapRectangleVIV api.
+ */
+ #ifndef gcdSUPPORT_SWAP_RECTANGLE
+ #   define gcdSUPPORT_SWAP_RECTANGLE            0
+ #endif
+ 
+ /*
+-    gcdDEFER_RESOLVES
+-
+-        Support deferred resolves for 3D apps.
+-*/
+-#ifndef gcdDEFER_RESOLVES
+-#   define gcdDEFER_RESOLVES                    0
+-#endif
+-
+-/*
+-    gcdCOPYBLT_OPTIMIZATION
+-
+-        Combine dirty areas resulting from Android's copyBlt.
+-*/
+-#ifndef gcdCOPYBLT_OPTIMIZATION
+-#   define gcdCOPYBLT_OPTIMIZATION              0
+-#endif
+-
+-/*
+     gcdGPU_LINEAR_BUFFER_ENABLED
+ 
+         Use linear buffer for GPU apps so HWC can do 2D composition.
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h
+index 808fde0..03cb4d6 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h
+@@ -28,7 +28,7 @@
+ 
+ #define gcvVERSION_PATCH        9
+ 
+-#define gcvVERSION_BUILD     4651
++#define gcvVERSION_BUILD     6622
+ 
+ #define gcvVERSION_DATE      __DATE__
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_vg.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_vg.h
+index 5ff0281..2a910e8 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_vg.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_vg.h
+@@ -552,6 +552,12 @@ gckVGHARDWARE_QueryPowerManagementState(
+     );
+ 
+ gceSTATUS
++gckVGHARDWARE_SetPowerManagement(
++    IN gckVGHARDWARE Hardware,
++    IN gctBOOL PowerManagement
++    );
++
++gceSTATUS
+ gckVGHARDWARE_SetPowerOffTimeout(
+     IN gckVGHARDWARE  Hardware,
+     IN gctUINT32    Timeout
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.c
+index 7168f0e..168987a 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.c
+@@ -304,6 +304,7 @@ gckGALDEVICE_Construct(
+     IN gctINT Signal,
+     IN gctUINT LogFileSize,
+     IN struct device *pdev,
++    IN gctINT PowerManagement,
+     OUT gckGALDEVICE *Device
+     )
+ {
+@@ -538,6 +539,9 @@ gckGALDEVICE_Construct(
+             device->kernels[gcvCORE_MAJOR]->hardware, FastClear, Compression
+             ));
+ 
++        gcmkONERROR(gckHARDWARE_SetPowerManagement(
++            device->kernels[gcvCORE_MAJOR]->hardware, PowerManagement
++            ));
+ 
+ #if COMMAND_PROCESSOR_VERSION == 1
+         /* Start the command queue. */
+@@ -593,6 +597,10 @@ gckGALDEVICE_Construct(
+             device
+             ));
+ 
++        gcmkONERROR(gckHARDWARE_SetPowerManagement(
++            device->kernels[gcvCORE_2D]->hardware, PowerManagement
++            ));
++
+ #if COMMAND_PROCESSOR_VERSION == 1
+         /* Start the command queue. */
+         gcmkONERROR(gckCOMMAND_Start(device->kernels[gcvCORE_2D]->command));
+@@ -624,6 +632,11 @@ gckGALDEVICE_Construct(
+             device->coreMapping[gcvHARDWARE_VG] = gcvCORE_VG;
+         }
+ 
++
++        gcmkONERROR(gckVGHARDWARE_SetPowerManagement(
++            device->kernels[gcvCORE_VG]->vg->hardware,
++            PowerManagement
++            ));
+ #endif
+     }
+     else
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.h b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.h
+index 460f022..d488fc8 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.h
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_device.h
+@@ -169,6 +169,7 @@ gceSTATUS gckGALDEVICE_Construct(
+     IN gctINT Signal,
+     IN gctUINT LogFileSize,
+     IN struct device *pdev,
++    IN gctINT PowerManagement,
+     OUT gckGALDEVICE *Device
+     );
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+index 64cace1..183000d 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+@@ -131,6 +131,9 @@ module_param(fastClear, int, 0644);
+ static int compression = -1;
+ module_param(compression, int, 0644);
+ 
++static int powerManagement = 1;
++module_param(powerManagement, int, 0644);
++
+ static int signal = 48;
+ module_param(signal, int, 0644);
+ 
+@@ -781,6 +784,9 @@ static int drv_init(struct device *pdev)
+     }
+ #endif
+ 
++    printk(KERN_INFO "Galcore version %d.%d.%d.%d\n",
++        gcvVERSION_MAJOR, gcvVERSION_MINOR, gcvVERSION_PATCH, gcvVERSION_BUILD);
++
+     if (showArgs)
+     {
+         printk("galcore options:\n");
+@@ -810,7 +816,8 @@ static int drv_init(struct device *pdev)
+         printk("  signal            = %d\n",      signal);
+         printk("  baseAddress       = 0x%08lX\n", baseAddress);
+         printk("  physSize          = 0x%08lX\n", physSize);
+-	printk(" logFileSize         = %d KB \n",     logFileSize);
++        printk("  logFileSize       = %d KB \n",  logFileSize);
++        printk("  powerManagement   = %d\n",      powerManagement);
+ #if ENABLE_GPU_CLOCK_BY_DRIVER
+         printk("  coreClock       = %lu\n",     coreClock);
+ #endif
+@@ -833,6 +840,7 @@ static int drv_init(struct device *pdev)
+         bankSize, fastClear, compression, baseAddress, physSize, signal,
+         logFileSize,
+         pdev,
++        powerManagement,
+         &device
+         ));
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+index dfbc699..6a0295d 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -55,6 +55,7 @@ const char * _PLATFORM = "\n\0$PLATFORM$Linux$\n";
+ #endif
+ 
+ #define USER_SIGNAL_TABLE_LEN_INIT  64
++#define gcdSUPPRESS_OOM_MESSAGE 1
+ 
+ #define MEMORY_LOCK(os) \
+     gcmkVERIFY_OK(gckOS_AcquireMutex( \
+@@ -85,6 +86,12 @@ const char * _PLATFORM = "\n\0$PLATFORM$Linux$\n";
+ #define gcmkNONPAGED_MEMROY_PROT(x) pgprot_noncached(x)
+ #endif
+ 
++#if gcdSUPPRESS_OOM_MESSAGE
++#define gcdNOWARN __GFP_NOWARN
++#else
++#define gcdNOWARN 0
++#endif
++
+ #define gcdINFINITE_TIMEOUT     (60 * 1000)
+ #define gcdDETECT_TIMEOUT       0
+ #define gcdDETECT_DMA_ADDRESS   1
+@@ -261,7 +268,7 @@ _CreateMdl(
+ 
+     gcmkHEADER_ARG("ProcessID=%d", ProcessID);
+ 
+-    mdl = (PLINUX_MDL)kzalloc(sizeof(struct _LINUX_MDL), GFP_KERNEL | __GFP_NOWARN);
++    mdl = (PLINUX_MDL)kzalloc(sizeof(struct _LINUX_MDL), GFP_KERNEL | gcdNOWARN);
+     if (mdl == gcvNULL)
+     {
+         gcmkFOOTER_NO();
+@@ -322,7 +329,7 @@ _CreateMdlMap(
+ 
+     gcmkHEADER_ARG("Mdl=0x%X ProcessID=%d", Mdl, ProcessID);
+ 
+-    mdlMap = (PLINUX_MDL_MAP)kmalloc(sizeof(struct _LINUX_MDL_MAP), GFP_KERNEL | __GFP_NOWARN);
++    mdlMap = (PLINUX_MDL_MAP)kmalloc(sizeof(struct _LINUX_MDL_MAP), GFP_KERNEL | gcdNOWARN);
+     if (mdlMap == gcvNULL)
+     {
+         gcmkFOOTER_NO();
+@@ -481,7 +488,7 @@ _NonContiguousAlloc(
+ 
+     size = NumPages * sizeof(struct page *);
+ 
+-    pages = kmalloc(size, GFP_KERNEL | __GFP_NOWARN);
++    pages = kmalloc(size, GFP_KERNEL | gcdNOWARN);
+ 
+     if (!pages)
+     {
+@@ -496,7 +503,7 @@ _NonContiguousAlloc(
+ 
+     for (i = 0; i < NumPages; i++)
+     {
+-        p = alloc_page(GFP_KERNEL | __GFP_HIGHMEM | __GFP_NOWARN);
++        p = alloc_page(GFP_KERNEL | __GFP_HIGHMEM | gcdNOWARN);
+ 
+         if (!p)
+         {
+@@ -762,7 +769,7 @@ _AllocateIntegerId(
+     int result;
+ 
+ again:
+-    if (idr_pre_get(&Database->idr, GFP_KERNEL | __GFP_NOWARN) == 0)
++    if (idr_pre_get(&Database->idr, GFP_KERNEL | gcdNOWARN) == 0)
+     {
+         return gcvSTATUS_OUT_OF_MEMORY;
+     }
+@@ -954,7 +961,7 @@ gckOS_Construct(
+     gcmkVERIFY_ARGUMENT(Os != gcvNULL);
+ 
+     /* Allocate the gckOS object. */
+-    os = (gckOS) kmalloc(gcmSIZEOF(struct _gckOS), GFP_KERNEL | __GFP_NOWARN);
++    os = (gckOS) kmalloc(gcmSIZEOF(struct _gckOS), GFP_KERNEL | gcdNOWARN);
+ 
+     if (os == gcvNULL)
+     {
+@@ -1171,7 +1178,7 @@ _CreateKernelVirtualMapping(
+ 
+     if (Mdl->contiguous)
+     {
+-        pages = kmalloc(sizeof(struct page *) * numPages, GFP_KERNEL | __GFP_NOWARN);
++        pages = kmalloc(sizeof(struct page *) * numPages, GFP_KERNEL | gcdNOWARN);
+ 
+         if (!pages)
+         {
+@@ -1385,7 +1392,7 @@ gckOS_AllocateMemory(
+     }
+     else
+     {
+-        memory = (gctPOINTER) kmalloc(Bytes, GFP_KERNEL | __GFP_NOWARN);
++        memory = (gctPOINTER) kmalloc(Bytes, GFP_KERNEL | gcdNOWARN);
+     }
+ 
+     if (memory == gcvNULL)
+@@ -1904,7 +1911,7 @@ gckOS_AllocateNonPagedMemory(
+         addr = dma_alloc_coherent(gcvNULL,
+                 mdl->numPages * PAGE_SIZE,
+                 &mdl->dmaHandle,
+-                GFP_KERNEL | __GFP_NOWARN);
++                GFP_KERNEL | gcdNOWARN);
+     }
+ #else
+     size    = mdl->numPages * PAGE_SIZE;
+@@ -1915,7 +1922,7 @@ gckOS_AllocateNonPagedMemory(
+     if (page == gcvNULL)
+ #endif
+     {
+-        page = alloc_pages(GFP_KERNEL | __GFP_NOWARN, order);
++        page = alloc_pages(GFP_KERNEL | gcdNOWARN, order);
+     }
+ 
+     if (page == gcvNULL)
+@@ -3848,6 +3855,9 @@ gckOS_AllocatePagedMemoryEx(
+     gctSIZE_T bytes;
+     gctBOOL locked = gcvFALSE;
+     gceSTATUS status;
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
++    gctPOINTER addr = gcvNULL;
++#endif
+ 
+     gcmkHEADER_ARG("Os=0x%X Contiguous=%d Bytes=%lu", Os, Contiguous, Bytes);
+ 
+@@ -3873,13 +3883,27 @@ gckOS_AllocatePagedMemoryEx(
+     {
+         /* Get contiguous pages, and suppress warning (stack dump) from kernel when
+            we run out of memory. */
+-        mdl->u.contiguousPages =
+-            alloc_pages(GFP_KERNEL | __GFP_NOWARN | __GFP_NORETRY, GetOrder(numPages));
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
++        addr =
++            alloc_pages_exact(numPages * PAGE_SIZE, GFP_KERNEL | gcdNOWARN | __GFP_NORETRY);
+ 
++        mdl->u.contiguousPages = addr
++                               ? virt_to_page(addr)
++                               : gcvNULL;
++
++        mdl->exact = gcvTRUE;
++#else
++        mdl->u.contiguousPages =
++            alloc_pages(GFP_KERNEL | gcdNOWARN | __GFP_NORETRY, GetOrder(numPages));
++#endif
+         if (mdl->u.contiguousPages == gcvNULL)
+         {
+             mdl->u.contiguousPages =
+-                alloc_pages(GFP_KERNEL | __GFP_HIGHMEM | __GFP_NOWARN, GetOrder(numPages));
++                alloc_pages(GFP_KERNEL | __GFP_HIGHMEM | gcdNOWARN, GetOrder(numPages));
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
++            mdl->exact = gcvFALSE;
++#endif
+         }
+     }
+     else
+@@ -4024,7 +4048,16 @@ gckOS_FreePagedMemory(
+ 
+     if (mdl->contiguous)
+     {
+-        __free_pages(mdl->u.contiguousPages, GetOrder(mdl->numPages));
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
++        if (mdl->exact == gcvTRUE)
++        {
++            free_pages_exact(page_address(mdl->u.contiguousPages), mdl->numPages * PAGE_SIZE);
++        }
++        else
++#endif
++        {
++            __free_pages(mdl->u.contiguousPages, GetOrder(mdl->numPages));
++        }
+     }
+     else
+     {
+@@ -4859,7 +4892,7 @@ gckOS_MapUserPointer(
+     gcmkVERIFY_ARGUMENT(Size > 0);
+     gcmkVERIFY_ARGUMENT(KernelPointer != gcvNULL);
+ 
+-    buf = kmalloc(Size, GFP_KERNEL | __GFP_NOWARN);
++    buf = kmalloc(Size, GFP_KERNEL | gcdNOWARN);
+     if (buf == gcvNULL)
+     {
+         gcmkTRACE(
+@@ -5274,7 +5307,7 @@ OnError:
+         MEMORY_MAP_LOCK(Os);
+ 
+         /* Allocate the Info struct. */
+-        info = (gcsPageInfo_PTR)kmalloc(sizeof(gcsPageInfo), GFP_KERNEL | __GFP_NOWARN);
++        info = (gcsPageInfo_PTR)kmalloc(sizeof(gcsPageInfo), GFP_KERNEL | gcdNOWARN);
+ 
+         if (info == gcvNULL)
+         {
+@@ -5283,7 +5316,7 @@ OnError:
+         }
+ 
+         /* Allocate the array of page addresses. */
+-        pages = (struct page **)kmalloc(pageCount * sizeof(struct page *), GFP_KERNEL | __GFP_NOWARN);
++        pages = (struct page **)kmalloc(pageCount * sizeof(struct page *), GFP_KERNEL | gcdNOWARN);
+ 
+         if (pages == gcvNULL)
+         {
+@@ -6502,7 +6535,7 @@ gckOS_CreateSemaphore(
+     gcmkVERIFY_ARGUMENT(Semaphore != gcvNULL);
+ 
+     /* Allocate the semaphore structure. */
+-    sem = (struct semaphore *)kmalloc(gcmSIZEOF(struct semaphore), GFP_KERNEL | __GFP_NOWARN);
++    sem = (struct semaphore *)kmalloc(gcmSIZEOF(struct semaphore), GFP_KERNEL | gcdNOWARN);
+     if (sem == gcvNULL)
+     {
+         gcmkONERROR(gcvSTATUS_OUT_OF_MEMORY);
+@@ -6942,6 +6975,7 @@ gckOS_SetGPUPower(
+ #else
+     		imx_gpc_power_up_pu(false);
+ #endif
++
+ 	}
+     /* TODO: Put your code here. */
+     gcmkFOOTER_NO();
+@@ -7255,7 +7289,7 @@ gckOS_CreateSignal(
+     gcmkVERIFY_ARGUMENT(Signal != gcvNULL);
+ 
+     /* Create an event structure. */
+-    signal = (gcsSIGNAL_PTR) kmalloc(sizeof(gcsSIGNAL), GFP_KERNEL | __GFP_NOWARN);
++    signal = (gcsSIGNAL_PTR) kmalloc(sizeof(gcsSIGNAL), GFP_KERNEL | gcdNOWARN);
+ 
+     if (signal == gcvNULL)
+     {
+@@ -8000,7 +8034,7 @@ gckOS_CreateSemaphoreVG(
+     do
+     {
+         /* Allocate the semaphore structure. */
+-    	newSemaphore = (struct semaphore *)kmalloc(gcmSIZEOF(struct semaphore), GFP_KERNEL | __GFP_NOWARN);
++    	newSemaphore = (struct semaphore *)kmalloc(gcmSIZEOF(struct semaphore), GFP_KERNEL | gcdNOWARN);
+     	if (newSemaphore == gcvNULL)
+     	{
+         	gcmkERR_BREAK(gcvSTATUS_OUT_OF_MEMORY);
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.h b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.h
+index e970477..006632c 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.h
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.h
+@@ -54,6 +54,9 @@ typedef struct _LINUX_MDL
+     gctINT                  numPages;
+     gctINT                  pagedMem;
+     gctBOOL                 contiguous;
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
++    gctBOOL                 exact;
++#endif
+     dma_addr_t              dmaHandle;
+     PLINUX_MDL_MAP          maps;
+     struct _LINUX_MDL *     prev;
+-- 
+1.8.3.2
+

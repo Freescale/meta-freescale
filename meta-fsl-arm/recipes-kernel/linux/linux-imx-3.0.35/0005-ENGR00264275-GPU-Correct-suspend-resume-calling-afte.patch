@@ -1,0 +1,61 @@
+From a845abe4589366d3e37b5a646be6337984074b28 Mon Sep 17 00:00:00 2001
+From: Loren HUANG <b02279@freescale.com>
+Date: Wed, 22 May 2013 17:21:30 +0800
+Subject: [PATCH 5/6] ENGR00264275 [GPU]Correct suspend/resume calling after
+ adding runtime pm.
+
+After enabling runtime pm the suspend/resume entry is changed.
+
+-Add new entry for suspend/resume in runtime pm frame work.
+-Add static define for all runtime pm function.
+
+Upstream-Status: Backport [3.5.7-1.0.0]
+
+Signed-off-by: Loren HUANG <b02279@freescale.com>
+Acked-by: Lily Zhang
+---
+ .../gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c   | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+index 183000d..3632a6c 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+@@ -1252,20 +1252,32 @@ static const struct of_device_id mxs_gpu_dt_ids[] = {
+ MODULE_DEVICE_TABLE(of, mxs_gpu_dt_ids);
+ 
+ #ifdef CONFIG_PM
+-int gpu_runtime_suspend(struct device *dev)
++static int gpu_runtime_suspend(struct device *dev)
+ {
+ 	release_bus_freq(BUS_FREQ_HIGH);
+ 	return 0;
+ }
+ 
+-int gpu_runtime_resume(struct device *dev)
++static int gpu_runtime_resume(struct device *dev)
+ {
+ 	request_bus_freq(BUS_FREQ_HIGH);
+ 	return 0;
+ }
+ 
++static int gpu_system_suspend(struct device *dev)
++{
++	pm_message_t state={0};
++	return gpu_suspend(to_platform_device(dev), state);
++}
++
++static int gpu_system_resume(struct device *dev)
++{
++	return gpu_resume(to_platform_device(dev));
++}
++
+ static const struct dev_pm_ops gpu_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(gpu_runtime_suspend, gpu_runtime_resume, NULL)
++	SET_SYSTEM_SLEEP_PM_OPS(gpu_system_suspend, gpu_system_resume)
+ };
+ #endif
+ #endif
+-- 
+1.8.3.2
+

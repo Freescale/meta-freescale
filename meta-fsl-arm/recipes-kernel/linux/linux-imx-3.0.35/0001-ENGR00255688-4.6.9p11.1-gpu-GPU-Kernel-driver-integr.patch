@@ -1,0 +1,1040 @@
+From 46e3a6de5adb9379f9d6eef2c038c2f18637d407 Mon Sep 17 00:00:00 2001
+From: Loren Huang <b02279@freescale.com>
+Date: Mon, 25 Mar 2013 15:43:57 +0800
+Subject: [PATCH 1/6] ENGR00255688 4.6.9p11.1 [gpu]GPU Kernel driver
+ integration
+
+4.6.9p11.1 GPU kernel driver integration
+Cherry pick from imx_3.0.35
+
+Upstream-Status: Backport [3.5.7-1.0.0]
+
+Signed-off-by: Loren Huang <b02279@freescale.com>
+Acked-by: Lily Zhang
+---
+ drivers/mxc/gpu-viv/Kbuild                         |   2 +-
+ .../arch/XAQ2/hal/kernel/gc_hal_kernel_context.c   |   2 +-
+ .../arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c  |   7 +-
+ drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.h     |   2 +-
+ drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c  |  53 ++++--
+ .../mxc/gpu-viv/hal/kernel/gc_hal_kernel_event.c   |   5 +-
+ drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c | 178 ++++++++++++---------
+ .../hal/kernel/gc_hal_kernel_video_memory.c        |   3 +-
+ .../gpu-viv/hal/kernel/inc/gc_hal_eglplatform.h    |  13 +-
+ drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h |  25 +++
+ .../mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h    |  35 ++++
+ .../mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h    |   2 +-
+ .../hal/os/linux/kernel/gc_hal_kernel_driver.c     |   2 +-
+ .../hal/os/linux/kernel/gc_hal_kernel_linux.h      |   6 +
+ .../gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c |  82 +++++++++-
+ 15 files changed, 304 insertions(+), 113 deletions(-)
+
+diff --git a/drivers/mxc/gpu-viv/Kbuild b/drivers/mxc/gpu-viv/Kbuild
+index 0b18a7b..93b1259 100644
+--- a/drivers/mxc/gpu-viv/Kbuild
++++ b/drivers/mxc/gpu-viv/Kbuild
+@@ -1,6 +1,6 @@
+ ##############################################################################
+ #
+-#    Copyright (C) 2005 - 2012 by Vivante Corp.
++#    Copyright (C) 2005 - 2013 by Vivante Corp.
+ #
+ #    This program is free software; you can redistribute it and/or modify
+ #    it under the terms of the GNU General Public License as published by
+diff --git a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_context.c b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_context.c
+index 22e1f27..24003e7 100644
+--- a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_context.c
++++ b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_context.c
+@@ -471,7 +471,7 @@ _InitializeContextBuffer(
+     index += _SwitchPipe(Context, index, gcvPIPE_3D);
+ 
+     /* Current context pointer. */
+-#if gcdDEBUG 
++#if gcdDEBUG
+     index += _State(Context, index, 0x03850 >> 2, 0x00000000, 1, gcvFALSE, gcvFALSE);
+ #endif
+ 
+diff --git a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
+index a87259e..3829999 100644
+--- a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
++++ b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
+@@ -232,7 +232,8 @@ _IdentifyHardware(
+     }
+ 
+     /* Exception for GC1000, revision 5035 &  GC800, revision 4612 */
+-    if (((Identity->chipModel == gcv1000) && (Identity->chipRevision == 0x5035))
++    if (((Identity->chipModel == gcv1000) && ((Identity->chipRevision == 0x5035)
++                                           || (Identity->chipRevision == 0x5036)))
+ 	 || ((Identity->chipModel == gcv800) && (Identity->chipRevision == 0x4612)))
+     {
+         Identity->superTileMode = 1;
+@@ -751,7 +752,7 @@ gckHARDWARE_Construct(
+     /* Initialize the fast clear. */
+     gcmkONERROR(gckHARDWARE_SetFastClear(hardware, -1, -1));
+ 
+-#if !gcdENABLE_128B_MERGE  
++#if !gcdENABLE_128B_MERGE
+ 
+     if (((((gctUINT32) (hardware->identity.chipMinorFeatures2)) >> (0 ? 21:21) & ((gctUINT32) ((((1 ? 21:21) - (0 ? 21:21) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 21:21) - (0 ? 21:21) + 1)))))) == (0x1  & ((gctUINT32) ((((1 ? 21:21) - (0 ? 21:21) + 1) == 32) ? ~0 : (~(~0 << ((1 ? 21:21) - (0 ? 21:21) + 1))))))))
+     {
+@@ -1027,7 +1028,7 @@ gckHARDWARE_InitializeHardware(
+                                       0x00424,
+                                       baseAddress));
+ 
+-#if !VIVANTE_PROFILER 
++#if !VIVANTE_PROFILER
+     {
+         gctUINT32 data;
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.h b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.h
+index 1da80b7..5896e93 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel.h
+@@ -186,7 +186,7 @@ typedef struct _gcsDATABASE
+     gctUINT64                           idle;
+ 
+     /* Pointer to database. */
+-    gcsDATABASE_RECORD_PTR              list;
++    gcsDATABASE_RECORD_PTR              list[48];
+ 
+ #if gcdSECURE_USER
+     /* Secure cache. */
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c
+index 1fb18fb..bc5f083 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_db.c
+@@ -26,6 +26,9 @@
+ /*******************************************************************************
+ ***** Private fuctions ********************************************************/
+ 
++#define _GetSlot(database, x) \
++    (gctUINT32)(((gcmPTR_TO_UINT64(x) >> 7) % gcmCOUNTOF(database->list)))
++
+ /*******************************************************************************
+ **  gckKERNEL_NewDatabase
+ **
+@@ -56,6 +59,7 @@ gckKERNEL_NewDatabase(
+     gcsDATABASE_PTR database;
+     gctBOOL acquired = gcvFALSE;
+     gctSIZE_T slot;
++    gcsDATABASE_PTR existingDatabase;
+ 
+     gcmkHEADER_ARG("Kernel=0x%x ProcessID=%d", Kernel, ProcessID);
+ 
+@@ -63,6 +67,21 @@ gckKERNEL_NewDatabase(
+     gcmkONERROR(gckOS_AcquireMutex(Kernel->os, Kernel->db->dbMutex, gcvINFINITE));
+     acquired = gcvTRUE;
+ 
++    /* Compute the hash for the database. */
++    slot = ProcessID % gcmCOUNTOF(Kernel->db->db);
++
++    /* Walk the hash list. */
++    for (existingDatabase = Kernel->db->db[slot];
++         existingDatabase != gcvNULL;
++         existingDatabase = existingDatabase->next)
++    {
++        if (existingDatabase->processID == ProcessID)
++        {
++            /* One process can't be added twice. */
++            gcmkONERROR(gcvSTATUS_NOT_SUPPORTED);
++        }
++    }
++
+     if (Kernel->db->freeDatabase != gcvNULL)
+     {
+         /* Allocate a database from the free list. */
+@@ -81,9 +100,6 @@ gckKERNEL_NewDatabase(
+         database = pointer;
+     }
+ 
+-    /* Compute the hash for the database. */
+-    slot = ProcessID % gcmCOUNTOF(Kernel->db->db);
+-
+     /* Insert the database into the hash. */
+     database->next   = Kernel->db->db[slot];
+     Kernel->db->db[slot] = database;
+@@ -350,6 +366,7 @@ static gceSTATUS
+ gckKERNEL_NewRecord(
+     IN gckKERNEL Kernel,
+     IN gcsDATABASE_PTR Database,
++    IN gctUINT32 Slot,
+     OUT gcsDATABASE_RECORD_PTR * Record
+     )
+ {
+@@ -383,8 +400,8 @@ gckKERNEL_NewRecord(
+     }
+ 
+     /* Insert the record in the database. */
+-    record->next   = Database->list;
+-    Database->list = record;
++    record->next         = Database->list[Slot];
++    Database->list[Slot] = record;
+ 
+     /* Release the database mutex. */
+     gcmkONERROR(gckOS_ReleaseMutex(Kernel->os, Kernel->db->dbMutex));
+@@ -449,6 +466,7 @@ gckKERNEL_DeleteRecord(
+     gceSTATUS status;
+     gctBOOL acquired = gcvFALSE;
+     gcsDATABASE_RECORD_PTR record, previous;
++    gctUINT32 slot = _GetSlot(Database, Data);
+ 
+     gcmkHEADER_ARG("Kernel=0x%x Database=0x%x Type=%d Data=0x%x",
+                    Kernel, Database, Type, Data);
+@@ -458,8 +476,9 @@ gckKERNEL_DeleteRecord(
+         gckOS_AcquireMutex(Kernel->os, Kernel->db->dbMutex, gcvINFINITE));
+     acquired = gcvTRUE;
+ 
++
+     /* Scan the database for this record. */
+-    for (record = Database->list, previous = gcvNULL;
++    for (record = Database->list[slot], previous = gcvNULL;
+          record != gcvNULL;
+          record = record->next
+     )
+@@ -490,7 +509,7 @@ gckKERNEL_DeleteRecord(
+     /* Remove record from database. */
+     if (previous == gcvNULL)
+     {
+-        Database->list = record->next;
++        Database->list[slot] = record->next;
+     }
+     else
+     {
+@@ -557,6 +576,7 @@ gckKERNEL_FindRecord(
+     gceSTATUS status;
+     gctBOOL acquired = gcvFALSE;
+     gcsDATABASE_RECORD_PTR record;
++    gctUINT32 slot = _GetSlot(Database, Data);
+ 
+     gcmkHEADER_ARG("Kernel=0x%x Database=0x%x Type=%d Data=0x%x",
+                    Kernel, Database, Type, Data);
+@@ -567,7 +587,7 @@ gckKERNEL_FindRecord(
+     acquired = gcvTRUE;
+ 
+     /* Scan the database for this record. */
+-    for (record = Database->list;
++    for (record = Database->list[slot];
+          record != gcvNULL;
+          record = record->next
+     )
+@@ -642,6 +662,7 @@ gckKERNEL_CreateProcessDB(
+ {
+     gceSTATUS status;
+     gcsDATABASE_PTR database = gcvNULL;
++    gctUINT32 i;
+ 
+     gcmkHEADER_ARG("Kernel=0x%x ProcessID=%d", Kernel, ProcessID);
+ 
+@@ -668,7 +689,11 @@ gckKERNEL_CreateProcessDB(
+     database->mapUserMemory.bytes      = 0;
+     database->mapUserMemory.maxBytes   = 0;
+     database->mapUserMemory.totalBytes = 0;
+-    database->list                  = gcvNULL;
++
++    for (i = 0; i < gcmCOUNTOF(database->list); i++)
++    {
++        database->list[i]              = gcvNULL;
++    }
+ 
+ #if gcdSECURE_USER
+     {
+@@ -848,7 +873,7 @@ gckKERNEL_AddProcessDB(
+     gcmkONERROR(gckKERNEL_FindDatabase(Kernel, ProcessID, gcvFALSE, &database));
+ 
+     /* Create a new record in the database. */
+-    gcmkONERROR(gckKERNEL_NewRecord(Kernel, database, &record));
++    gcmkONERROR(gckKERNEL_NewRecord(Kernel, database, _GetSlot(database, Pointer), &record));
+ 
+     /* Initialize the record. */
+     record->kernel   = Kernel;
+@@ -1086,6 +1111,7 @@ gckKERNEL_DestroyProcessDB(
+     gctPHYS_ADDR physical;
+     gcuVIDMEM_NODE_PTR node;
+     gckKERNEL kernel = Kernel;
++    gctUINT32 i;
+ 
+     gcmkHEADER_ARG("Kernel=0x%x ProcessID=%d", Kernel, ProcessID);
+ 
+@@ -1126,8 +1152,11 @@ gckKERNEL_DestroyProcessDB(
+                        ProcessID);
+     }
+ 
++    for(i = 0; i < gcmCOUNTOF(database->list); i++)
++    {
++
+     /* Walk all records. */
+-    for (record = database->list; record != gcvNULL; record = next)
++    for (record = database->list[i]; record != gcvNULL; record = next)
+     {
+         /* Next next record. */
+         next = record->next;
+@@ -1293,6 +1322,8 @@ gckKERNEL_DestroyProcessDB(
+                                            gcvNULL));
+     }
+ 
++    }
++
+     /* Delete the database. */
+     gcmkONERROR(gckKERNEL_DeleteDatabase(Kernel, database));
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_event.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_event.c
+index f78d096..217f7f1 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_event.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_event.c
+@@ -959,6 +959,8 @@ gckEVENT_AddList(
+     record->kernel = Event->kernel;
+ #endif
+ 
++    gcmkONERROR(__RemoveRecordFromProcessDB(Event, record));
++
+     /* Acquire the mutex. */
+     gcmkONERROR(gckOS_AcquireMutex(Event->os, Event->eventListMutex, gcvINFINITE));
+     acquired = gcvTRUE;
+@@ -1539,9 +1541,6 @@ gckEVENT_Submit(
+             gcmkONERROR(gckOS_ReleaseMutex(Event->os, Event->eventListMutex));
+             acquired = gcvFALSE;
+ 
+-            gcmkONERROR(__RemoveRecordFromProcessDB(Event,
+-                Event->queues[id].head));
+-
+ #if gcdNULL_DRIVER
+             /* Notify immediately on infinite hardware. */
+             gcmkONERROR(gckEVENT_Interrupt(Event, 1 << id));
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c
+index 0c71e28..43c9297 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_mmu.c
+@@ -97,6 +97,43 @@ static gcsMirrorPageTable_PTR mirrorPageTable = gcvNULL;
+ static gctPOINTER mirrorPageTableMutex = gcvNULL;
+ #endif
+ 
++static void
++_WritePageEntry(
++    IN gctUINT32_PTR PageEntry,
++    IN gctUINT32     EntryValue
++    )
++{
++    static gctUINT16 data = 0xff00;
++
++    if (*(gctUINT8 *)&data == 0xff)
++    {
++        *PageEntry = gcmSWAB32(EntryValue);
++    }
++    else
++    {
++        *PageEntry = EntryValue;
++    }
++}
++
++static gctUINT32
++_ReadPageEntry(
++    IN gctUINT32_PTR PageEntry
++    )
++{
++    static gctUINT16 data = 0xff00;
++    gctUINT32 entryValue;
++
++    if (*(gctUINT8 *)&data == 0xff)
++    {
++        entryValue = *PageEntry;
++        return gcmSWAB32(entryValue);
++    }
++    else
++    {
++        return *PageEntry;
++    }
++}
++
+ static gceSTATUS
+ _FillPageTable(
+     IN gctUINT32_PTR PageTable,
+@@ -108,7 +145,7 @@ _FillPageTable(
+ 
+     for (i = 0; i < PageCount; i++)
+     {
+-        PageTable[i] = EntryValue;
++        _WritePageEntry(PageTable + i, EntryValue);
+     }
+ 
+     return gcvSTATUS_OK;
+@@ -132,16 +169,16 @@ _Link(
+         gctUINT32_PTR pageTable = Mmu->pageTableLogical;
+ 
+         /* Dispatch on node type. */
+-        switch (gcmENTRY_TYPE(pageTable[Index]))
++        switch (gcmENTRY_TYPE(_ReadPageEntry(&pageTable[Index])))
+         {
+         case gcvMMU_SINGLE:
+             /* Set single index. */
+-            pageTable[Index] = (Next << 8) | gcvMMU_SINGLE;
++            _WritePageEntry(&pageTable[Index], (Next << 8) | gcvMMU_SINGLE);
+             break;
+ 
+         case gcvMMU_FREE:
+             /* Set index. */
+-            pageTable[Index + 1] = Next;
++            _WritePageEntry(&pageTable[Index + 1], Next);
+             break;
+ 
+         default:
+@@ -167,13 +204,13 @@ _AddFree(
+     if (Count == 1)
+     {
+         /* Initialize a single page node. */
+-        pageTable[Node] = (~((1U<<8)-1)) | gcvMMU_SINGLE;
++        _WritePageEntry(pageTable + Node, (~((1U<<8)-1)) | gcvMMU_SINGLE);
+     }
+     else
+     {
+         /* Initialize the node. */
+-        pageTable[Node + 0] = (Count << 8) | gcvMMU_FREE;
+-        pageTable[Node + 1] = ~0U;
++        _WritePageEntry(pageTable + Node + 0, (Count << 8) | gcvMMU_FREE);
++        _WritePageEntry(pageTable + Node + 1, ~0U);
+     }
+ 
+     /* Append the node. */
+@@ -196,7 +233,7 @@ _Collect(
+     for (i = 0; i < Mmu->pageTableEntries; ++i)
+     {
+         /* Dispatch based on type of page. */
+-        switch (gcmENTRY_TYPE(pageTable[i]))
++        switch (gcmENTRY_TYPE(_ReadPageEntry(&pageTable[i])))
+         {
+         case gcvMMU_USED:
+             /* Used page, so close any open node. */
+@@ -229,10 +266,10 @@ _Collect(
+             }
+ 
+             /* Advance the count. */
+-            count += pageTable[i] >> 8;
++            count += _ReadPageEntry(&pageTable[i]) >> 8;
+ 
+             /* Advance the index into the page table. */
+-            i     += (pageTable[i] >> 8) - 1;
++            i     += (_ReadPageEntry(&pageTable[i]) >> 8) - 1;
+             break;
+ 
+         default:
+@@ -341,19 +378,20 @@ _FillFlatMapping(
+                 gcmkONERROR(gcvSTATUS_NOT_ALIGNED);
+             }
+ 
+-            *(Mmu->mtlbLogical + mStart)
+-                      = stlb->physBase
+-                        /* 64KB page size */
+-                        | (1 << 2)
+-                        /* Ignore exception */
+-                        | (0 << 1)
+-                        /* Present */
+-                        | (1 << 0);
++            _WritePageEntry(Mmu->mtlbLogical + mStart,
++                            stlb->physBase
++                            /* 64KB page size */
++                            | (1 << 2)
++                            /* Ignore exception */
++                            | (0 << 1)
++                            /* Present */
++                            | (1 << 0)
++                            );
+ #if gcdMMU_TABLE_DUMP
+             gckOS_Print("%s(%d): insert MTLB[%d]: %08x\n",
+                 __FUNCTION__, __LINE__,
+                 mStart,
+-                *(Mmu->mtlbLogical + mStart));
++                _ReadPageEntry(Mmu->mtlbLogical + mStart));
+ #endif
+ 
+             stlb->mtlbIndex = mStart;
+@@ -368,12 +406,12 @@ _FillFlatMapping(
+             while (sStart <= last)
+             {
+                 gcmkASSERT(!(start & gcdMMU_PAGE_64K_MASK));
+-                *(stlb->logical + sStart) = _SetPage(start);
++                _WritePageEntry(stlb->logical + sStart, _SetPage(start));
+ #if gcdMMU_TABLE_DUMP
+                 gckOS_Print("%s(%d): insert STLB[%d]: %08x\n",
+                     __FUNCTION__, __LINE__,
+                     sStart,
+-                    *(stlb->logical + sStart));
++                    _ReadPageEntry(stlb->logical + sStart));
+ #endif
+                 /* next page. */
+                 start += gcdMMU_PAGE_64K_SIZE;
+@@ -428,7 +466,7 @@ OnError:
+         if (pre->mtlbEntryNum != 0)
+         {
+             gcmkASSERT(pre->mtlbEntryNum == 1);
+-            *(Mmu->mtlbLogical + pre->mtlbIndex) = 0;
++            _WritePageEntry(Mmu->mtlbLogical + pre->mtlbIndex, 0);
+         }
+ 
+         gcmkVERIFY_OK(gcmkOS_SAFE_FREE(Mmu->os, pre));
+@@ -493,8 +531,8 @@ _SetupDynamicSpace(
+ 
+     /* Initilization. */
+     pageTable      = Mmu->pageTableLogical;
+-    pageTable[0]   = (Mmu->pageTableEntries << 8) | gcvMMU_FREE;
+-    pageTable[1]   = ~0U;
++    _WritePageEntry(pageTable,     (Mmu->pageTableEntries << 8) | gcvMMU_FREE);
++    _WritePageEntry(pageTable + 1, ~0U);
+     Mmu->heapList  = 0;
+     Mmu->freeNodes = gcvFALSE;
+ 
+@@ -509,18 +547,20 @@ _SetupDynamicSpace(
+     /* Map to Master TLB. */
+     for (; i < gcdMMU_MTLB_ENTRY_NUM; i++)
+     {
+-        Mmu->mtlbLogical[i] = physical
+-                            /* 4KB page size */
+-                            | (0 << 2)
+-                            /* Ignore exception */
+-                            | (0 << 1)
+-                            /* Present */
+-                            | (1 << 0);
++        _WritePageEntry(Mmu->mtlbLogical + i,
++                        physical
++                        /* 4KB page size */
++                        | (0 << 2)
++                        /* Ignore exception */
++                        | (0 << 1)
++                        /* Present */
++                        | (1 << 0)
++                        );
+ #if gcdMMU_TABLE_DUMP
+         gckOS_Print("%s(%d): insert MTLB[%d]: %08x\n",
+                 __FUNCTION__, __LINE__,
+                 i,
+-                *(Mmu->mtlbLogical + i));
++                _ReadPageEntry(Mmu->mtlbLogical + i));
+ #endif
+         physical += gcdMMU_STLB_4K_SIZE;
+     }
+@@ -645,18 +685,11 @@ _Construct(
+         pageTable      = mmu->pageTableLogical;
+ 
+ #if gcdMMU_CLEAR_VALUE
+-        {
+-            gctUINT32 i;
+-
+-            for (i = 0; i < mmu->pageTableEntries; ++i)
+-            {
+-                pageTable[i] = gcdMMU_CLEAR_VALUE;
+-            }
+-        }
++        _FillPageTable(pageTable, mmu->pageTableEntries, gcdMMU_CLEAR_VALUE);
+ #endif
+ 
+-        pageTable[0]   = (mmu->pageTableEntries << 8) | gcvMMU_FREE;
+-        pageTable[1]   = ~0U;
++        _WritePageEntry(pageTable,     (mmu->pageTableEntries << 8) | gcvMMU_FREE);
++        _WritePageEntry(pageTable + 1, ~0U);
+         mmu->heapList  = 0;
+         mmu->freeNodes = gcvFALSE;
+ 
+@@ -797,7 +830,7 @@ _Destroy(
+         if (pre->mtlbEntryNum != 0)
+         {
+             gcmkASSERT(pre->mtlbEntryNum == 1);
+-            *(Mmu->mtlbLogical + pre->mtlbIndex) = 0;
++            _WritePageEntry(Mmu->mtlbLogical + pre->mtlbIndex, 0);
+ #if gcdMMU_TABLE_DUMP
+             gckOS_Print("%s(%d): clean MTLB[%d]\n",
+                 __FUNCTION__, __LINE__,
+@@ -1044,7 +1077,7 @@ _AllocatePages(
+         for (index = Mmu->heapList; !gotIt && (index < Mmu->pageTableEntries);)
+         {
+             /* Check the node type. */
+-            switch (gcmENTRY_TYPE(pageTable[index]))
++            switch (gcmENTRY_TYPE(_ReadPageEntry(&pageTable[index])))
+             {
+             case gcvMMU_SINGLE:
+                 /* Single odes are valid if we only need 1 page. */
+@@ -1056,13 +1089,13 @@ _AllocatePages(
+                 {
+                     /* Move to next node. */
+                     previous = index;
+-                    index    = pageTable[index] >> 8;
++                    index    = _ReadPageEntry(&pageTable[index]) >> 8;
+                 }
+                 break;
+ 
+             case gcvMMU_FREE:
+                 /* Test if the node has enough space. */
+-                if (PageCount <= (pageTable[index] >> 8))
++                if (PageCount <= (_ReadPageEntry(&pageTable[index]) >> 8))
+                 {
+                     gotIt = gcvTRUE;
+                 }
+@@ -1070,7 +1103,7 @@ _AllocatePages(
+                 {
+                     /* Move to next node. */
+                     previous = index;
+-                    index    = pageTable[index + 1];
++                    index    = _ReadPageEntry(&pageTable[index + 1]);
+                 }
+                 break;
+ 
+@@ -1099,36 +1132,36 @@ _AllocatePages(
+         }
+     }
+ 
+-    switch (gcmENTRY_TYPE(pageTable[index]))
++    switch (gcmENTRY_TYPE(_ReadPageEntry(&pageTable[index])))
+     {
+     case gcvMMU_SINGLE:
+         /* Unlink single node from free list. */
+         gcmkONERROR(
+-            _Link(Mmu, previous, pageTable[index] >> 8));
++            _Link(Mmu, previous, _ReadPageEntry(&pageTable[index]) >> 8));
+         break;
+ 
+     case gcvMMU_FREE:
+         /* Check how many pages will be left. */
+-        left = (pageTable[index] >> 8) - PageCount;
++        left = (_ReadPageEntry(&pageTable[index]) >> 8) - PageCount;
+         switch (left)
+         {
+         case 0:
+             /* The entire node is consumed, just unlink it. */
+             gcmkONERROR(
+-                _Link(Mmu, previous, pageTable[index + 1]));
++                _Link(Mmu, previous, _ReadPageEntry(&pageTable[index + 1])));
+             break;
+ 
+         case 1:
+             /* One page will remain.  Convert the node to a single node and
+             ** advance the index. */
+-            pageTable[index] = (pageTable[index + 1] << 8) | gcvMMU_SINGLE;
++            _WritePageEntry(&pageTable[index], (_ReadPageEntry(&pageTable[index + 1]) << 8) | gcvMMU_SINGLE);
+             index ++;
+             break;
+ 
+         default:
+             /* Enough pages remain for a new node.  However, we will just adjust
+             ** the size of the current node and advance the index. */
+-            pageTable[index] = (left << 8) | gcvMMU_FREE;
++            _WritePageEntry(&pageTable[index], (left << 8) | gcvMMU_FREE);
+             index += left;
+             break;
+         }
+@@ -1232,35 +1265,32 @@ _FreePages(
+ #if gcdMMU_CLEAR_VALUE
+     if (Mmu->hardware->mmuVersion == 0)
+     {
+-        gctUINT32 i;
+-
+-        for (i = 0; i < PageCount; ++i)
+-        {
+-            pageTable[i] = gcdMMU_CLEAR_VALUE;
+-        }
++        _FillPageTable(pageTable, PageCount, gcdMMU_CLEAR_VALUE);
+     }
+ #endif
+ 
+     if (PageCount == 1)
+     {
+         /* Single page node. */
+-        pageTable[0] = (~((1U<<8)-1)) | gcvMMU_SINGLE
++        _WritePageEntry(pageTable,
++                        (~((1U<<8)-1)) | gcvMMU_SINGLE
+ #if gcdUSE_MMU_EXCEPTION
+-                     /* Enable exception */
+-                     | (1 << 1)
++                        /* Enable exception */
++                        | 1 << 1
+ #endif
+-                     ;
++                        );
+     }
+     else
+     {
+         /* Mark the node as free. */
+-        pageTable[0] = (PageCount << 8) | gcvMMU_FREE
++        _WritePageEntry(pageTable,
++                        (PageCount << 8) | gcvMMU_FREE
+ #if gcdUSE_MMU_EXCEPTION
+-                     /* Enable exception */
+-                     | (1 << 1)
++                        /* Enable exception */
++                        | 1 << 1
+ #endif
+-                     ;
+-        pageTable[1] = ~0U;
++                       );
++        _WritePageEntry(pageTable + 1, ~0U);
+ 
+ #if gcdUSE_MMU_EXCEPTION
+         /* Enable exception */
+@@ -1509,12 +1539,8 @@ gckMMU_SetPage(
+         data = _SetPage(PageAddress);
+     }
+ 
+-    if (Mmu->hardware->bigEndian)
+-    {
+-        data = gcmSWAB32(data);
+-    }
++    _WritePageEntry(PageEntry, data);
+ 
+-    *PageEntry = data;
+ #if gcdMIRROR_PAGETABLE
+     for (i = 0; i < mirrorPageTable->reference; i++)
+     {
+@@ -1526,11 +1552,11 @@ gckMMU_SetPage(
+ 
+             if (mmu->hardware->mmuVersion == 0)
+             {
+-                *pageEntry = PageAddress;
++                _WritePageEntry(pageEntry, PageAddress);
+             }
+             else
+             {
+-                *pageEntry = _SetPage(PageAddress);
++                _WritePageEntry(pageEntry, _SetPage(PageAddress));
+             }
+         }
+ 
+@@ -1734,7 +1760,7 @@ gckMMU_DumpPageTableEntry(
+               * gcdMMU_STLB_4K_ENTRY_NUM
+               + stlb;
+ 
+-        gcmkPRINT("    Page table entry = 0x%08X", pageTable[index]);
++        gcmkPRINT("    Page table entry = 0x%08X", _ReadPageEntry(pageTable + index));
+     }
+ 
+     gcmkFOOTER_NO();
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c
+index d49aa64..8a442a2 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c
++++ b/drivers/mxc/gpu-viv/hal/kernel/gc_hal_kernel_video_memory.c
+@@ -1027,7 +1027,8 @@ gckVIDMEM_AllocateLinear(
+     )
+     {
+         /* The left memory is for small memory.*/
+-        gcmkONERROR(gcvSTATUS_OUT_OF_MEMORY);
++        status = gcvSTATUS_OUT_OF_MEMORY;
++        goto OnError;
+     }
+ #endif
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_eglplatform.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_eglplatform.h
+index 496276e..06eea79 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_eglplatform.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_eglplatform.h
+@@ -227,7 +227,8 @@ gcoOS_GetDisplayInfoEx(
+     );
+ 
+ gceSTATUS
+-gcoOS_GetNextDisplayInfoEx(
++gcoOS_GetNextDisplayInfoExByIndex(
++    IN gctINT Index,
+     IN HALNativeDisplayType Display,
+     IN HALNativeWindowType Window,
+     IN gctUINT DisplayInfoSize,
+@@ -274,15 +275,15 @@ gcoOS_SetDisplayVirtualEx(
+ 
+ gceSTATUS
+ gcoOS_SetSwapInterval(
+-	IN HALNativeDisplayType Display,
+-	IN gctINT Interval
++    IN HALNativeDisplayType Display,
++    IN gctINT Interval
+ );
+ 
+ gceSTATUS
+ gcoOS_GetSwapInterval(
+-	IN HALNativeDisplayType Display,
+-	IN gctINT_PTR Min,
+-	IN gctINT_PTR Max
++    IN HALNativeDisplayType Display,
++    IN gctINT_PTR Min,
++    IN gctINT_PTR Max
+ );
+ 
+ gceSTATUS
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h
+index d441d1d..249b61b 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_engine.h
+@@ -1430,6 +1430,16 @@ typedef enum _gceTEXTURE_FACE
+ }
+ gceTEXTURE_FACE;
+ 
++#if gcdFORCE_MIPMAP
++typedef enum
++{
++    gcvForceMipDisabled  = 0,
++    gcvForceMipEnable    = 1,
++    gcvForceMipGenerated = 2,
++    gcvForceMipNever     = 3,
++}gceFORCE_MIPMAP;
++#endif
++
+ typedef struct _gcsTEXTURE
+ {
+     /* Addressing modes. */
+@@ -1446,6 +1456,10 @@ typedef struct _gcsTEXTURE
+     gceTEXTURE_FILTER           mipFilter;
+     gctUINT                     anisoFilter;
+     gctBOOL                     forceTopLevel;
++    gctBOOL                     autoMipmap;
++#if gcdFORCE_MIPMAP
++    gceFORCE_MIPMAP             forceMipmap;
++#endif
+     /* Level of detail. */
+     gctFIXED_POINT              lodBias;
+     gctFIXED_POINT              lodMin;
+@@ -1479,7 +1493,18 @@ gceSTATUS
+ gcoTEXTURE_Destroy(
+     IN gcoTEXTURE Texture
+     );
++#if gcdFORCE_MIPMAP
++gceSTATUS
++gcoTEXTURE_DestroyForceMipmap(
++    IN gcoTEXTURE Texture
++    );
+ 
++gceSTATUS
++gcoTEXTURE_GetMipLevels(
++    IN gcoTEXTURE Texture,
++    OUT gctINT * levels
++    );
++#endif
+ /* Replace a mipmap in gcoTEXTURE object. */
+ gceSTATUS
+ gcoTEXTURE_ReplaceMipMap(
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h
+index 86e9133..afe83d0 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_options.h
+@@ -114,6 +114,30 @@
+ #define COMMAND_PROCESSOR_VERSION               1
+ 
+ /*
++    gcdDUMP_KEY
++
++        Set this to a string that appears in 'cat /proc/<pid>/cmdline'. E.g. 'camera'.
++        HAL will create dumps for the processes matching this key.
++*/
++#ifndef gcdDUMP_KEY
++#   define gcdDUMP_KEY                          "process"
++#endif
++
++/*
++    gcdDUMP_PATH
++
++        The dump file location. Some processes cannot write to the sdcard.
++        Try apps' data dir, e.g. /data/data/com.android.launcher
++*/
++#ifndef gcdDUMP_PATH
++#if defined(ANDROID)
++#   define gcdDUMP_PATH                         "/mnt/sdcard/"
++#else
++#   define gcdDUMP_PATH                         "./"
++#endif
++#endif
++
++/*
+     gcdDUMP
+ 
+         When set to 1, a dump of all states and memory uploads, as well as other
+@@ -342,6 +366,17 @@
+ #endif
+ 
+ /*
++    gcdUSER_HEAP_ALLOCATOR
++
++        Set to 1 to enable user mode heap allocator for fast memory allocation
++        and destroying. Otherwise, memory allocation/destroying in user mode
++        will be directly managed by system. Only for linux for now.
++*/
++#ifndef gcdUSER_HEAP_ALLOCATOR
++#   define gcdUSER_HEAP_ALLOCATOR               1
++#endif
++
++/*
+     gcdHEAP_SIZE
+ 
+         Set the allocation size for the internal heaps.  Each time a heap is
+diff --git a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h
+index 2881604..808fde0 100644
+--- a/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h
++++ b/drivers/mxc/gpu-viv/hal/kernel/inc/gc_hal_version.h
+@@ -28,7 +28,7 @@
+ 
+ #define gcvVERSION_PATCH        9
+ 
+-#define gcvVERSION_BUILD     1210
++#define gcvVERSION_BUILD     4651
+ 
+ #define gcvVERSION_DATE      __DATE__
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+index 4e3819c..2ed3d0e 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+@@ -663,7 +663,7 @@ static int drv_mmap(
+ 
+ #if !gcdPAGED_MEMORY_CACHEABLE
+     vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
+-    vma->vm_flags    |= VM_IO | VM_DONTCOPY | VM_DONTEXPAND;
++    vma->vm_flags    |= gcdVM_FLAGS;
+ #endif
+     vma->vm_pgoff     = 0;
+ 
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h
+index 9c0bcd5..3c148f6 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h
+@@ -73,6 +73,12 @@
+ 
+ #define GetPageCount(size, offset) 	((((size) + ((offset) & ~PAGE_CACHE_MASK)) + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT)
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION (3,7,0)
++#define gcdVM_FLAGS (VM_IO | VM_DONTCOPY | VM_DONTEXPAND | VM_DONTDUMP)
++#else
++#define gcdVM_FLAGS (VM_IO | VM_DONTCOPY | VM_DONTEXPAND | VM_RESERVED)
++#endif
++
+ static inline gctINT
+ GetOrder(
+ 	IN gctINT numPages
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+index c07ded8..9c2bae6 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -869,6 +869,60 @@ _UnmapUserLogical(
+ #endif
+ }
+ 
++gceSTATUS
++_QueryProcessPageTable(
++    IN gctPOINTER Logical,
++    OUT gctUINT32 * Address
++    )
++{
++    spinlock_t *lock;
++    gctUINTPTR_T logical = (gctUINTPTR_T)Logical;
++    pgd_t *pgd;
++    pud_t *pud;
++    pmd_t *pmd;
++    pte_t *pte;
++
++    if (!current->mm)
++    {
++        return gcvSTATUS_NOT_FOUND;
++    }
++
++    pgd = pgd_offset(current->mm, logical);
++    if (pgd_none(*pgd) || pgd_bad(*pgd))
++    {
++        return gcvSTATUS_NOT_FOUND;
++    }
++
++    pud = pud_offset(pgd, logical);
++    if (pud_none(*pud) || pud_bad(*pud))
++    {
++        return gcvSTATUS_NOT_FOUND;
++    }
++
++    pmd = pmd_offset(pud, logical);
++    if (pmd_none(*pmd) || pmd_bad(*pmd))
++    {
++        return gcvSTATUS_NOT_FOUND;
++    }
++
++    pte = pte_offset_map_lock(current->mm, pmd, logical, &lock);
++    if (!pte)
++    {
++        return gcvSTATUS_NOT_FOUND;
++    }
++
++    if (!pte_present(*pte))
++    {
++        pte_unmap_unlock(pte, lock);
++        return gcvSTATUS_NOT_FOUND;
++    }
++
++    *Address = (pte_pfn(*pte) << PAGE_SHIFT) | (logical & ~PAGE_MASK);
++    pte_unmap_unlock(pte, lock);
++
++    return gcvSTATUS_OK;
++}
++
+ /*******************************************************************************
+ **
+ **  gckOS_Construct
+@@ -1106,6 +1160,9 @@ _CreateKernelVirtualMapping(
+                     numPages,
+                     0,
+                     PAGE_KERNEL);
++
++        /* Trigger a page fault. */
++        memset(addr, 0, numPages * PAGE_SIZE);
+     }
+ #else
+     struct page ** pages;
+@@ -1136,6 +1193,9 @@ _CreateKernelVirtualMapping(
+     /* ioremap() can't work on system memory since 2.6.38. */
+     addr = vmap(pages, numPages, 0, gcmkNONPAGED_MEMROY_PROT(PAGE_KERNEL));
+ 
++    /* Trigger a page fault. */
++    memset(addr, 0, numPages * PAGE_SIZE);
++
+     if (free)
+     {
+         kfree(pages);
+@@ -1540,7 +1600,7 @@ gckOS_MapMemory(
+ #else
+ #if !gcdPAGED_MEMORY_CACHEABLE
+         mdlMap->vma->vm_page_prot = gcmkPAGED_MEMROY_PROT(mdlMap->vma->vm_page_prot);
+-        mdlMap->vma->vm_flags |= VM_IO | VM_DONTCOPY | VM_DONTEXPAND | VM_RESERVED;
++        mdlMap->vma->vm_flags |= gcdVM_FLAGS;
+ #   endif
+         mdlMap->vma->vm_pgoff = 0;
+ 
+@@ -1987,7 +2047,7 @@ gckOS_AllocateNonPagedMemory(
+         }
+ #else
+         mdlMap->vma->vm_page_prot = gcmkNONPAGED_MEMROY_PROT(mdlMap->vma->vm_page_prot);
+-        mdlMap->vma->vm_flags |= VM_IO | VM_DONTCOPY | VM_DONTEXPAND | VM_RESERVED;
++        mdlMap->vma->vm_flags |= gcdVM_FLAGS;
+         mdlMap->vma->vm_pgoff = 0;
+ 
+         if (remap_pfn_range(mdlMap->vma,
+@@ -2367,12 +2427,18 @@ gckOS_GetPhysicalAddress(
+     gcmkVERIFY_OBJECT(Os, gcvOBJ_OS);
+     gcmkVERIFY_ARGUMENT(Address != gcvNULL);
+ 
+-    /* Get current process ID. */
+-    processID = _GetProcessID();
++    /* Query page table of current process first. */
++    status = _QueryProcessPageTable(Logical, Address);
+ 
+-    /* Route through other function. */
+-    gcmkONERROR(
+-        gckOS_GetPhysicalAddressProcess(Os, Logical, processID, Address));
++    if (gcmIS_ERROR(status))
++    {
++        /* Get current process ID. */
++        processID = _GetProcessID();
++
++        /* Route through other function. */
++        gcmkONERROR(
++            gckOS_GetPhysicalAddressProcess(Os, Logical, processID, Address));
++    }
+ 
+     /* Success. */
+     gcmkFOOTER_ARG("*Address=0x%08x", *Address);
+@@ -4139,7 +4205,7 @@ gckOS_LockPages(
+             return gcvSTATUS_OUT_OF_RESOURCES;
+         }
+ 
+-        mdlMap->vma->vm_flags |= VM_RESERVED;
++        mdlMap->vma->vm_flags |= gcdVM_FLAGS;
+ #if !gcdPAGED_MEMORY_CACHEABLE
+         if (Cacheable == gcvFALSE)
+         {
+-- 
+1.8.3.2
+

@@ -1,0 +1,62 @@
+From 2df4dba8faa9a781a5a1c6c09d646d2b692c9a0c Mon Sep 17 00:00:00 2001
+From: Loren Huang <b02279@freescale.com>
+Date: Tue, 4 Jun 2013 15:08:15 +0800
+Subject: [PATCH 2/6] ENGR00265465 gpu:Add global value for minimum 3D clock
+ export
+
+Add global value gpu3DMinClock so that minimum 3D clock can be change by user.
+When gpu min clock is too low, it may cause IPU starvation issue in certain case.
+Use echo x > /sys/module/galcore/parameters/gpu3DMinClock to change it.
+
+Cherry-pick from 3.0.35 branch.
+
+Upstream-Status: Backport [3.5.7-1.0.0]
+
+Signed-off-by: Loren Huang <b02279@freescale.com>
+Acked-by: Lily Zhang
+---
+ drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c | 6 +++++-
+ drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c    | 3 +++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
+index 3829999..ebd36fe 100644
+--- a/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
++++ b/drivers/mxc/gpu-viv/arch/XAQ2/hal/kernel/gc_hal_kernel_hardware.c
+@@ -36,6 +36,7 @@ typedef struct _gcsiDEBUG_REGISTERS
+ }
+ gcsiDEBUG_REGISTERS;
+ 
++extern int gpu3DMinClock;
+ /******************************************************************************\
+ ********************************* Support Code *********************************
+ \******************************************************************************/
+@@ -4630,7 +4631,10 @@ gckHARDWARE_GetFscaleValue(
+     )
+ {
+     *FscaleValue = Hardware->powerOnFscaleVal;
+-    *MinFscaleValue = 1;
++    if ((gpu3DMinClock > 0) && (gpu3DMinClock <= 64) && (Hardware->core == gcvCORE_MAJOR))
++        *MinFscaleValue = gpu3DMinClock;
++    else
++        *MinFscaleValue = 1;
+     *MaxFscaleValue = 64;
+ 
+     return gcvSTATUS_OK;
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+index 2ed3d0e..64cace1 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_driver.c
+@@ -146,6 +146,9 @@ module_param(logFileSize,uint, 0644);
+ static int showArgs = 0;
+ module_param(showArgs, int, 0644);
+ 
++int gpu3DMinClock = 0;
++module_param(gpu3DMinClock, int, 0644);
++
+ #if ENABLE_GPU_CLOCK_BY_DRIVER
+     unsigned long coreClock = 156000000;
+     module_param(coreClock, ulong, 0644);
+-- 
+1.8.3.2
+
