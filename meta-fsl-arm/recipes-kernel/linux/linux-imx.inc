@@ -57,7 +57,7 @@ do_install_append() {
 	if [ "${IMX_TEST_SUPPORT}" = "y" ]; then
 		# bounds.h may be used by a module and is currently missing
 		if [ -d include/generated ]; then
-			cp include/generated/* $kerneldir/include/generated/
+			cp -r include/generated/* $kerneldir/include/generated/
 		fi
 
 		# Host architecture object file
