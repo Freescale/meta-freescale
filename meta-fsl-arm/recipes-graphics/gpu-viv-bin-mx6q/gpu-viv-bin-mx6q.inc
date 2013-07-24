@@ -137,7 +137,7 @@ FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
 
 FILES_libegl-mx6 = "${libdir}/libEGL${REALSOLIBS}"
-FILES_libegl-mx6-dev = "${libdir}/libEGL${SOLIBSDEV} ${libdir}/pkgconfig/egl.pc"
+FILES_libegl-mx6-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/libEGL${SOLIBSDEV} ${libdir}/pkgconfig/egl.pc"
 FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
