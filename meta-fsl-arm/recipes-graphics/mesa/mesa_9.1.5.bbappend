@@ -39,5 +39,5 @@ python __anonymous () {
 
 # FIXME: Dirty hack to allow use of Vivante GPU libGL binary
 do_install_append_mx6 () {
-    rm ${D}${libdir}/libGL.*
+    rm -f ${D}${libdir}/libGL.*
 }
