@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: wayland-egl
+Description: Bind the driver EGL to the Wayland API
+Version: 0.1
+Libs: -L${libdir} -lEGL
+Cflags: -I${includedir}

@@ -7,7 +7,7 @@ SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=19f5925343fa3da65596eeaa4ddb5fd3"
 DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes', '', d)} mesa"
-PROVIDES += "virtual/libgl virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2"
+PROVIDES += "virtual/wayland-egl virtual/libgl virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2"
 
 PE = "1"
 
@@ -20,6 +20,9 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://glesv1_cm_x11.pc \
            file://glesv2.pc \
            file://glesv2_x11.pc \
+           file://gc_wayland_protocol.pc \
+           file://wayland-egl.pc \
+           file://wayland-viv.pc \
           "
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
@@ -34,10 +37,14 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgal-mx6 libgal-mx6-dev libgal-mx6-dbg \
 	libvivante-mx6 libvivante-mx6-dev libvivante-mx6-dbg \
 	libvivante-dri-mx6 \
+	libwayland-viv-mx6 libwayland-viv-mx6-dev libwayland-viv-mx6-dbg \
+	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev libgc-wayland-protocol-mx6-dbg \
+	libwayland-egl-mx6-dev \
 "
 
 USE_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
 USE_DFB = "${@base_contains("DISTRO_FEATURES", "directfb", "yes", "no", d)}"
+USE_WL = "${@base_contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
 
 # Inhibit warnings about files being stripped.
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
@@ -86,12 +93,18 @@ do_install () {
 
     install -d ${D}${libdir}/pkgconfig
 
-    # FIXME: Remove Wayland contents
-    rm -r ${D}${includedir}/wayland-viv
-    find ${D}${libdir} -name '*-wl.so' -exec rm '{}' ';'
-    rm ${D}${libdir}/*wayland*.so*
+    # If both X11 and Wayland are set in DISTRO_FEATURES then use Wayland as base window system
+    if [ "${USE_WL}" = "yes" ]; then
+        backend=wl
 
-    if [ "${USE_X11}" = "yes" ]; then
+        install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
+        install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+        install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
+        install -m 0644 ${WORKDIR}/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
+        install -m 0644 ${WORKDIR}/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
+        install -m 0644 ${WORKDIR}/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
+
+    elif [ "${USE_X11}" = "yes" ]; then
         cp -r ${S}/usr/lib/dri ${D}${libdir}
         backend=x11
 
@@ -118,7 +131,7 @@ do_install () {
     mv ${D}${libdir}/libGAL-${backend}.so ${D}${libdir}/libGAL.so
     mv ${D}${libdir}/libVIVANTE-${backend}.so ${D}${libdir}/libVIVANTE.so
 
-    for backend in x11 fb dfb; do
+    for backend in wl x11 fb dfb; do
         find ${D}${libdir} -name "*-$backend.so" -exec rm '{}' ';'
     done
 
@@ -183,6 +196,18 @@ FILES_libvivante-mx6-dev = "${libdir}/libVIVANTE${SOLIBSDEV}"
 FILES_libvivante-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
 
 FILES_libvivante-dri-mx6 = "${libdir}/dri/vivante_dri.so"
+
+INSANE_SKIP_libwayland-viv-mx6 += "dev-so"
+FILES_libwayland-viv-mx6 =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"
+FILES_libwayland-viv-mx6-dev = "${libdir})/libwayland-viv${SOLIBSDEV} ${libdir}/pkgconfig/wayland-viv.pc"
+FILES_libwayland-viv-mx6-dbg = "${libdir}/.debug/libwayland-viv${SOLIBS}"
+
+INSANE_SKIP_libgc-wayland-protocol-mx6 += "dev-so"
+FILES_libgc-wayland-protocol-mx6 = "${libdir}/libgc_wayland_protocol${REALSOLIBS} ${libdir}/libgc_wayland_protocol${SOLIBS}"
+FILES_libgc-wayland-protocol-mx6-dev = "${libdir}/libgc_wayland_protocol${SOLIBSDEV} ${libdir}/pkgconfig/gc_wayland_protocol.pc"
+FILES_libgc-wayland-protocol-mx6-dbg = "${libdir}/libgc_wayland_protocol${SOLIBS}"
+
+FILES_libwayland-egl-mx6-dev = "${libdir}/pkgconfig/wayland-egl.pc"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
