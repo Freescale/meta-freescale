@@ -149,8 +149,10 @@ FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
 
-FILES_libegl-mx6 = "${libdir}/libEGL${REALSOLIBS}"
-FILES_libegl-mx6-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/libEGL${SOLIBSDEV} ${libdir}/pkgconfig/egl.pc"
+# libEGL.so is used by some demo apps from Freescale
+INSANE_SKIP_libegl-mx6 += "dev-so"
+FILES_libegl-mx6 = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
+FILES_libegl-mx6-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
