@@ -1,0 +1,37 @@
+From 05143ab75368653deee90dd24f26fa17e21711e9 Mon Sep 17 00:00:00 2001
+From: Andy Voltz <andy.voltz@timesys.com>
+Date: Thu, 6 Jun 2013 11:48:44 -0400
+Subject: [PATCH 1/2] mvf_fec.c: Fix mac address read to match fuse layout for
+ latest u-boot
+
+---
+ arch/arm/mach-mvf/mvf_fec.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/mach-mvf/mvf_fec.c b/arch/arm/mach-mvf/mvf_fec.c
+index d51f205..1ab339b 100644
+--- a/arch/arm/mach-mvf/mvf_fec.c
++++ b/arch/arm/mach-mvf/mvf_fec.c
+@@ -35,13 +35,13 @@ static int fec_get_mac_addr(unsigned char *mac)
+ 	unsigned int value;
+ 
+ 	value = readl(MVF_IO_ADDRESS(MVF_FEC_BASE_ADDR) + ENET_PALR);
+-	mac[2] = value & 0xff;
+-	mac[3] = (value >> 8) & 0xff;
+-	mac[4] = (value >> 16) & 0xff;
+-	mac[5] = (value >> 24) & 0xff;
++	mac[3] = value & 0xff;
++	mac[2] = (value >> 8) & 0xff;
++	mac[1] = (value >> 16) & 0xff;
++	mac[0] = (value >> 24) & 0xff;
+ 	value = readl(MVF_IO_ADDRESS(MVF_FEC_BASE_ADDR) + ENET_PAUR);
+-	mac[0] = (value >> 16) & 0xff;
+-	mac[1] = (value >> 24) & 0xff;
++	mac[5] = (value >> 16) & 0xff;
++	mac[4] = (value >> 24) & 0xff;
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
+

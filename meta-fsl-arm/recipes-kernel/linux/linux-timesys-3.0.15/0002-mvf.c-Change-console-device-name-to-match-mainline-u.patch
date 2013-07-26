@@ -1,0 +1,35 @@
+From bf6634e8ad489e47150c0acb8efbe5ddd89066f5 Mon Sep 17 00:00:00 2001
+From: Andy Voltz <andy.voltz@timesys.com>
+Date: Thu, 27 Jun 2013 15:20:27 -0400
+Subject: [PATCH 2/2] mvf.c: Change console device name to match mainline
+ u-boot
+
+---
+ drivers/tty/serial/mvf.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/mvf.c b/drivers/tty/serial/mvf.c
+index 814a7da..4f7a82f 100644
+--- a/drivers/tty/serial/mvf.c
++++ b/drivers/tty/serial/mvf.c
+@@ -55,7 +55,7 @@
+ /* We've been assigned a range on the "Low-density serial ports" major */
+ #define SERIAL_IMX_MAJOR        207
+ #define MINOR_START	        16
+-#define DEV_NAME		"ttymxc"
++#define DEV_NAME		"ttyLP"
+ #define MAX_INTERNAL_IRQ	MXC_INTERNAL_IRQS
+ 
+ /*
+@@ -605,7 +605,7 @@ static int imx_startup(struct uart_port *port)
+ 	if (sport->enable_dma) {
+ 		/* request eDMA channel and buffer */
+ 		sport->dma_tx_ch = mcf_edma_request_channel(pdata->dma_req_tx,
+-			dma_tx_callback, NULL, 1, sport, NULL, "ttymxc");
++			dma_tx_callback, NULL, 1, sport, NULL, DEV_NAME);
+ 
+ 		sport->dma_is_txing = 0;
+ 
+-- 
+1.7.9.5
+
