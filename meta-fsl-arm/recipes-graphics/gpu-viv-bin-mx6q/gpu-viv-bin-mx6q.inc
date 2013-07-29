@@ -104,6 +104,10 @@ do_install () {
         install -m 0644 ${WORKDIR}/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
         install -m 0644 ${WORKDIR}/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
 
+        # Wayland + X11 support
+        if [ "${USE_X11}" = "yes" ]; then
+            cp -r ${S}/usr/lib/dri ${D}${libdir}
+        fi
     elif [ "${USE_X11}" = "yes" ]; then
         cp -r ${S}/usr/lib/dri ${D}${libdir}
         backend=x11
