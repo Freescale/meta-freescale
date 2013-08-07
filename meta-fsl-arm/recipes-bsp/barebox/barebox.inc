@@ -20,10 +20,11 @@ BAREBOXENV_SYMLINK ?= "bareboxenv-${MACHINE}.bin"
 
 INSANE_SKIP_${PN} = "True"
 
-do_configure_prepend() {
+do_pre_configure() {
 	   cp ${WORKDIR}/defconfig ${S}/.config
 	   oe_runmake oldconfig
 }
+addtask pre_configure before do_configure after do_patch
 
 do_compile () {
 	if [ "${@base_contains('DISTRO_FEATURES', 'ld-is-gold', 'ld-is-gold', '', d)}" = "ld-is-gold" ] ; then
