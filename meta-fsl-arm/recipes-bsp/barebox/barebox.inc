@@ -39,13 +39,10 @@ do_compile () {
 do_deploy () {
 	install -d ${DEPLOY_DIR_IMAGE}
 	install ${S}/${BAREBOX_BINARY} ${DEPLOY_DIR_IMAGE}/${BAREBOX_IMAGE}
-	install ${S}/barebox_default_env ${DEPLOY_DIR_IMAGE}/${BAREBOXENV_BIN}
 
 	cd ${DEPLOY_DIR_IMAGE}
 	rm -f ${BAREBOX_SYMLINK}
-	rm -f ${BAREBOXENV_SYMLINK}
 	ln -sf ${BAREBOX_IMAGE} ${BAREBOX_SYMLINK}
-	ln -sf ${BAREBOXENV_BIN} ${BAREBOXENV_SYMLINK}
 
 	install -d ${STAGING_BINDIR_NATIVE}
 	cd ${S}
@@ -55,3 +52,12 @@ do_deploy () {
 
 do_deploy[dirs] = "${S}"
 addtask deploy before do_build after do_compile
+
+do_env_deploy() {
+	install ${S}/barebox_default_env ${DEPLOY_DIR_IMAGE}/${BAREBOXENV_BIN}
+
+	cd ${DEPLOY_DIR_IMAGE}
+	rm -f ${BAREBOXENV_SYMLINK}
+	ln -sf ${BAREBOXENV_BIN} ${BAREBOXENV_SYMLINK}
+}
+addtask env_deploy before do_build after do_deploy
