@@ -1,0 +1,46 @@
+From 023befba9aad60ef58177fd987a6aa40c357b2b2 Mon Sep 17 00:00:00 2001
+From: Eric Nelson <eric.nelson@boundarydevices.com>
+Date: Fri, 16 Aug 2013 11:42:23 -0700
+Subject: [PATCH] i.MX video renderer: Allow v4l device from environment
+
+The i.MX6 supports multiple IPUs and multiple V4L2 output
+devices for each.
+
+Devices are numbered starting with /dev/video16 and defined
+for each configured display. In general, /dev/video16 will
+correspond to the RGB (background) layer for /dev/fb0.
+If a display is the first on an IPU, an additional V4L2
+output will be defined that corresponds to the normally
+YUV overlay (foreground) layer.
+
+This patch allows association of the proper device for
+a particular session for use in multi-headed applications.
+The default is /dev/video17:
+	export v4lsinkdev=/dev/video17
+
+Signed-off-by: Eric Nelson <eric.nelson@boundarydevices.com>
+---
+ src/3rdparty/phonon/gstreamer/widgetrenderer.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp b/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp
+index aa4925a..a502ccd 100644
+--- a/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp
++++ b/src/3rdparty/phonon/gstreamer/widgetrenderer.cpp
+@@ -58,9 +58,12 @@ WidgetRenderer::WidgetRenderer(VideoWidget *videoWidget)
+         : AbstractRenderer(videoWidget)
+ {
+     if ((m_videoSink = gst_element_factory_make("mfw_v4lsink", NULL)) && m_videoSink != NULL) {
+-	
++	char *videodev;
+ 	gst_object_ref (GST_OBJECT (m_videoSink)); //Take ownership
+         gst_object_sink (GST_OBJECT (m_videoSink));
++	videodev=getenv("v4lsinkdev");
++	if (videodev)
++                g_object_set (G_OBJECT (m_videoSink), "device", videodev, NULL);
+     }
+ 
+     // Clear the background with black by default
+-- 
+1.8.1.2
+
