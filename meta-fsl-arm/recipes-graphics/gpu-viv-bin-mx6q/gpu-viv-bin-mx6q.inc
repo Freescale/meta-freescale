@@ -37,6 +37,7 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgal-mx6 libgal-mx6-dev libgal-mx6-dbg \
 	libvivante-mx6 libvivante-mx6-dev libvivante-mx6-dbg \
 	libvivante-dri-mx6 \
+	libvivante-dfb-mx6 \
 	libwayland-viv-mx6 libwayland-viv-mx6-dev libwayland-viv-mx6-dbg \
 	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev libgc-wayland-protocol-mx6-dbg \
 	libwayland-egl-mx6-dev \
@@ -121,6 +122,7 @@ do_install () {
         install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
 
         if [ "${USE_DFB}" = "yes" ]; then
+            cp -r ${S}/usr/lib/directfb-1.6-0 ${D}${libdir}
             backend=dfb
         else
             # Regular framebuffer
@@ -206,6 +208,8 @@ FILES_libvivante-mx6-dev = "${libdir}/libVIVANTE${SOLIBSDEV}"
 FILES_libvivante-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
 
 FILES_libvivante-dri-mx6 = "${libdir}/dri/vivante_dri.so"
+
+FILES_libvivante-dfb-mx6 = "${libdir}/directfb-1.6-0/gfxdrivers/libdirectfb_gal.so"
 
 INSANE_SKIP_libwayland-viv-mx6 += "dev-so"
 FILES_libwayland-viv-mx6 =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"
