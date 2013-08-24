@@ -1,0 +1,32 @@
+This patch adds the proper version suffix to the libmcc shared libs.
+
+Upstream-status: Pending
+
+diff -Nuar libmcc-1.03-orig/Makefile libmcc-1.03/Makefile
+--- libmcc-1.03-orig/Makefile	2013-08-13 10:05:46.187200835 -0400
++++ libmcc-1.03/Makefile	2013-08-13 12:23:45.167119943 -0400
+@@ -1,4 +1,4 @@
+-all: build/libmcc.a build/libmcc.so
++all: build/libmcc.a build/libmcc.so.1.0
+ 
+ build/libmcc.o: src/libmcc.c
+ 	mkdir -p build/
+@@ -7,13 +7,16 @@
+ build/libmcc.a: build/libmcc.o
+ 	$(AR) rcs $@ $<
+ 
+-build/libmcc.so: build/libmcc.o
++build/libmcc.so.1.0: build/libmcc.o
+ 	$(CC) -shared -o $@  $<
+ 
+ install:
+ 	mkdir -p $(DESTDIR)/usr/{lib,include}
+-	cp -f build/libmcc.{so,a} $(DESTDIR)/usr/lib
++	cp -f build/libmcc.{so.*,a} $(DESTDIR)/usr/lib
+ 	cp -f include/*.h $(DESTDIR)/usr/include
++	cd $(DESTDIR)/usr/lib/
++	ln -sf libmcc.so.1.0 libmcc.so.1
++	ln -sf libmcc.so.1 libmcc.so
+ 
+ clean:
+ 	rm -rf build

@@ -1,0 +1,18 @@
+This patch is required with the Yocto toolchain.
+
+Upstream-status: Pending
+
+diff -Nuar libmcc-1.03-orig/Makefile libmcc-1.03/Makefile
+--- libmcc-1.03-orig/Makefile	2013-08-12 14:43:50.063656300 -0400
++++ libmcc-1.03/Makefile	2013-08-12 14:44:10.007427139 -0400
+@@ -1,9 +1,8 @@
+-CFLAGS+=-Iinclude/
+ all: build/libmcc.a build/libmcc.so
+ 
+ build/libmcc.o: src/libmcc.c
+ 	mkdir -p build/
+-	$(CC) -c -fPIC $< -o $@ $(CFLAGS)
++	$(CC) -c -fPIC $< -o $@ -Iinclude/ $(CFLAGS)
+ 
+ build/libmcc.a: build/libmcc.o
+ 	$(AR) rcs $@ $<
