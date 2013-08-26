@@ -6,7 +6,8 @@ PR = "r2"
 
 SRC_URI = "http://download.ossystems.com.br/bsp/freescale/source/imx-bootlets-src-${PV}.tar.gz \
            file://linux-fix-paths.patch \
-           file://linux_prep-fix-cmdlines.patch"
+           file://linux_prep-fix-cmdlines.patch \
+           file://add-command-script-for-barebox.patch"
 
 SRC_URI[md5sum] = "cf0ab3822dca694b930a051501c1d0e4"
 SRC_URI[sha256sum] = "63f6068ae36884adef4259bbb1fe2591755718f22c46d0a59d854883dfab1ffc"
@@ -32,6 +33,7 @@ do_configure () {
     # Use machine specific binaries
     sed 's,@MACHINE@,${MACHINE},g;s,@DTB@,-dtb,g' < linux.bd > linux.bd-dtb
     sed -i 's,@MACHINE@,${MACHINE},g;s,@DTB@,,g' linux.bd
+    sed -i 's,@MACHINE@,${MACHINE},g' barebox_ivt.bd
 }
 
 do_compile () {
@@ -45,6 +47,7 @@ do_install () {
     install -m 644 boot_prep/boot_prep power_prep/power_prep \
                    linux_prep/output-target/linux_prep \
                    linux.bd linux.bd-dtb \
+                   barebox_ivt.bd \
                    ${D}/boot
 }
 
@@ -56,6 +59,7 @@ do_deploy () {
 	for f in boot_prep/boot_prep \
              power_prep/power_prep \
              linux_prep/output-target/linux_prep \
+             barebox_ivt.bd \
              linux.bd linux.bd-dtb; do
         full_name="imx-bootlets-`basename $f`-${MACHINE}-${PV}-${PR}"
         symlink_name="imx-bootlets-`basename $f`-${MACHINE}"

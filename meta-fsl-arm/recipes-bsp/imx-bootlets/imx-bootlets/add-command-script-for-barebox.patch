@@ -1,0 +1,46 @@
+imx-bootlets: Add command script for barebox
+
+Upstream-Status: Inappropriate [configuration]
+
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+
+diff --git a/barebox_ivt.bd b/barebox_ivt.bd
+new file mode 100644
+index 0000000..79cbccf
+--- /dev/null
++++ b/barebox_ivt.bd
+@@ -0,0 +1,34 @@
++// STMP378x ROM command script to load and run barebox
++
++sources {
++	power_prep="imx-bootlets-power_prep-@MACHINE@";
++	sdram_prep="imx-bootlets-boot_prep-@MACHINE@";
++	barebox="barebox-@MACHINE@.bin";
++}
++
++section (0) {
++
++	//----------------------------------------------------------
++	// Power Supply initialization
++	//----------------------------------------------------------
++
++	load power_prep;
++	load ivt (entry = power_prep:_start) > 0x8000;
++	hab call 0x8000;
++
++	//----------------------------------------------------------
++	// SDRAM initialization
++	//----------------------------------------------------------
++
++	load sdram_prep;
++	load ivt (entry = sdram_prep:_start) > 0x8000;
++	hab call 0x8000;
++	//----------------------------------------------------------
++	//  Load and call barebox - ELF ARM image
++	//----------------------------------------------------------
++
++	load barebox;
++	load ivt (entry = barebox:start) > 0x8000;
++	hab call 0x8000;
++
++}
