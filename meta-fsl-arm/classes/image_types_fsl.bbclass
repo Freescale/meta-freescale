@@ -36,6 +36,16 @@ IMAGE_CMD_linux.sb () {
 	rm -f $kernel_bin-dtb
 }
 
+# IMX Bootlets barebox bootstream
+IMAGE_DEPENDS_barebox.mxsboot-sdcard = "elftosb-native u-boot-mxsboot-native imx-bootlets barebox"
+IMAGE_CMD_barebox.mxsboot-sdcard () {
+	barebox_bd_file=imx-bootlets-barebox_ivt.bd-${MACHINE}
+
+	# Ensure the files are generated
+	rm -f ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard
+	elftosb -f mx28 -z -c $barebox_bd_file -o ${IMAGE_NAME}.barebox.sb
+	mxsboot sd ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard
+}
 
 # U-Boot mxsboot generation to SD-Card
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
@@ -48,6 +58,9 @@ BOOTDD_VOLUME_ID ?= "Boot ${MACHINE}"
 
 # Boot partition size [in KiB]
 BOOT_SPACE ?= "8192"
+
+# Barebox environment size [in KiB]
+BAREBOX_ENV_SPACE ?= "512"
 
 # Set alignment to 4MB [in KiB]
 IMAGE_ROOTFS_ALIGNMENT = "4096"
@@ -237,6 +250,15 @@ generate_mxs_sdcard () {
 		fi
 
 		dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=2 bs=$(expr 1024 \* 1024)
+		;;
+		barebox)
+		# BAREBOX_ENV_SPACE is taken on BOOT_SPACE_ALIGNED but it doesn't really matter as long as the rootfs is aligned
+		parted -s ${SDCARD} unit KiB mkpart primary 1024 $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} - ${BAREBOX_ENV_SPACE})
+		parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} - ${BAREBOX_ENV_SPACE}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
+		parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
+
+		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.barebox.mxsboot-sdcard of=${SDCARD} conv=notrunc seek=1 bs=$(expr 1024 \* 1024)
+		dd if=${DEPLOY_DIR_IMAGE}/bareboxenv-${MACHINE}.bin of=${SDCARD} conv=notrunc seek=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} - ${BAREBOX_ENV_SPACE}) bs=1024
 		;;
 		*)
 		bberror "Unkown IMAGE_BOOTLOADER value"
