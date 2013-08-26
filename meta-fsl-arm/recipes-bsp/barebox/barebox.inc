@@ -54,7 +54,7 @@ do_deploy[dirs] = "${S}"
 addtask deploy before do_build after do_compile
 
 do_env_deploy() {
-	install ${S}/barebox_default_env ${DEPLOY_DIR_IMAGE}/${BAREBOXENV_BIN}
+	install ${S}/common/barebox_default_env ${DEPLOY_DIR_IMAGE}/${BAREBOXENV_BIN}
 
 	cd ${DEPLOY_DIR_IMAGE}
 	rm -f ${BAREBOXENV_SYMLINK}
