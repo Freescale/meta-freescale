@@ -106,8 +106,15 @@ do_install () {
 
     install -d ${D}${libdir}/pkgconfig
 
-    # If both X11 and Wayland are set in DISTRO_FEATURES then use Wayland as base window system
-    if [ "${USE_WL}" = "yes" ]; then
+    # The preference order, based in DISTRO_FEATURES, is x11, wayland, directfb and fb
+    if [ "${USE_X11}" = "yes" ]; then
+        cp -r ${S}/usr/lib/dri ${D}${libdir}
+        backend=x11
+
+        install -m 0644 ${WORKDIR}/egl_x11.pc ${D}${libdir}/pkgconfig/egl.pc
+        install -m 0644 ${WORKDIR}/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+        install -m 0644 ${WORKDIR}/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
+    elif [ "${USE_WL}" = "yes" ]; then
         backend=wl
 
         install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
@@ -121,13 +128,6 @@ do_install () {
         if [ "${USE_X11}" = "yes" ]; then
             cp -r ${S}/usr/lib/dri ${D}${libdir}
         fi
-    elif [ "${USE_X11}" = "yes" ]; then
-        cp -r ${S}/usr/lib/dri ${D}${libdir}
-        backend=x11
-
-        install -m 0644 ${WORKDIR}/egl_x11.pc ${D}${libdir}/pkgconfig/egl.pc
-        install -m 0644 ${WORKDIR}/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
-        install -m 0644 ${WORKDIR}/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
     else
         install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
         install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
