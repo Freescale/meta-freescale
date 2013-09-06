@@ -1,0 +1,2 @@
+xinput set-int-prop "MXS touchscreen" "Evdev Axis Calibration" 32 194 3938 301 3878
+xinput set-int-prop "MXS touchscreen" "Evdev Axes Swap" 8 1

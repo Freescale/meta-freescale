@@ -1,0 +1,3 @@
+xinput set-int-prop "eGalax Touch Screen" "Evdev Axis Calibration" 42060 2062 -8 -783544 1 1549 65536
+xinput set-int-prop "eGalax Touch Screen" "Evdev Axes Swap" 8 0
+`
