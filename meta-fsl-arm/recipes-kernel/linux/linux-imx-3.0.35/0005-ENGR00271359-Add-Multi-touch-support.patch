@@ -1,0 +1,98 @@
+From 538f4bb2f7a51f267395550a5be9f0ab2e426712 Mon Sep 17 00:00:00 2001
+From: Erik Boto <erik.boto@pelagicore.com>
+Date: Tue, 16 Jul 2013 12:06:05 -0500
+Subject: [PATCH] ENGR00271359 Add Multi-touch support
+Organization: O.S. Systems Software LTDA.
+
+The previous behavior of the driver did not work properly with Qt5
+QtQuick multi touch-point gestures, due to how touch-points are
+reported when removing a touch-point. My interpretation of the
+available documentation [1] was that the driver should report all
+touch-points between SYN_REPORTs, but it is not explicitly stated so.
+I've found another mail-thread [2] where the creator of the protocol
+states:
+
+"The protocol defines a generic way of sending a variable amount of
+contacts. The contact count is obtained by counting the number of
+non-empty finger packets between SYN_REPORT events."-Henrik Rydberg
+
+I think this verifies my assumption that all touch-points should be
+reported between SYN_REPORTs, otherwise it can not be used to obtain
+the count.
+
+[1] https://www.kernel.org/doc/Documentation/input/multi-touch-protocol.txt
+[2] http://lists.x.org/archives/xorg-devel/2010-March/006466.html
+
+Upstream-Status: Pending
+
+Signed-off-by: Erik Boto <erik.boto@pelagicore.com>
+Signed-off-by: Mahesh Mahadevan <Mahesh.Mahadevan@freescale.com>
+(cherry picked from commit 7cba001c5a502680f6dbf902821726779a9c9287)
+---
+ drivers/input/touchscreen/egalax_ts.c | 36 +++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/input/touchscreen/egalax_ts.c b/drivers/input/touchscreen/egalax_ts.c
+index 0b6cde7..271f820 100644
+--- a/drivers/input/touchscreen/egalax_ts.c
++++ b/drivers/input/touchscreen/egalax_ts.c
+@@ -133,7 +133,6 @@ retry:
+ 	}
+ 
+ 	if (down) {
+-		/* should also report old pointers */
+ 		events[id].valid = valid;
+ 		events[id].status = down;
+ 		events[id].x = x;
+@@ -144,23 +143,6 @@ retry:
+ 		input_report_abs(input_dev, ABS_Y, y);
+ 		input_event(data->input_dev, EV_KEY, BTN_TOUCH, 1);
+ 		input_report_abs(input_dev, ABS_PRESSURE, 1);
+-#else
+-		for (i = 0; i < MAX_SUPPORT_POINTS; i++) {
+-			if (!events[i].valid)
+-				continue;
+-			dev_dbg(&client->dev, "report id:%d valid:%d x:%d y:%d",
+-				i, valid, x, y);
+-
+-			input_report_abs(input_dev,
+-					 ABS_MT_TRACKING_ID, i);
+-			input_report_abs(input_dev,
+-					 ABS_MT_TOUCH_MAJOR, 1);
+-			input_report_abs(input_dev,
+-					 ABS_MT_POSITION_X, events[i].x);
+-			input_report_abs(input_dev,
+-					 ABS_MT_POSITION_Y, events[i].y);
+-			input_mt_sync(input_dev);
+-		}
+ #endif
+ 	} else {
+ 		dev_dbg(&client->dev, "release id:%d\n", id);
+@@ -176,6 +158,24 @@ retry:
+ #endif
+ 	}
+ 
++#ifndef CONFIG_TOUCHSCREEN_EGALAX_SINGLE_TOUCH
++	/* report all pointers */
++	for (i = 0; i < MAX_SUPPORT_POINTS; i++) {
++		if (!events[i].valid)
++			continue;
++		dev_dbg(&client->dev, "report id:%d valid:%d x:%d y:%d",
++			i, valid, x, y);
++			input_report_abs(input_dev,
++				 ABS_MT_TRACKING_ID, i);
++		input_report_abs(input_dev,
++				 ABS_MT_TOUCH_MAJOR, 1);
++		input_report_abs(input_dev,
++				 ABS_MT_POSITION_X, events[i].x);
++		input_report_abs(input_dev,
++				 ABS_MT_POSITION_Y, events[i].y);
++		input_mt_sync(input_dev);
++	}
++#endif
+ 	input_sync(input_dev);
+ 	return IRQ_HANDLED;
+ }
+-- 
+1.8.4.rc3
+

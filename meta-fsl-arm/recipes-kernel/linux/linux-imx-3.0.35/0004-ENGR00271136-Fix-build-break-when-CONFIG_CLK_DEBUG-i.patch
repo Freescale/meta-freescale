@@ -1,0 +1,43 @@
+From d8601292ae25e0af47aa4486055221ab44113f0e Mon Sep 17 00:00:00 2001
+From: Mahesh Mahadevan <Mahesh.Mahadevan@freescale.com>
+Date: Mon, 15 Jul 2013 15:34:54 -0500
+Subject: [PATCH] ENGR00271136 Fix build break when CONFIG_CLK_DEBUG is
+ disabled
+Organization: O.S. Systems Software LTDA.
+
+clk structure member name is defined only when CONFIG_CLK_DEBUG is enabled.
+Hence need to encapsulate the code with this config.
+
+Patch received from imx community:
+https://community.freescale.com/thread/308482
+
+Upstream-Status: Pending
+
+Signed-off-by: xiongweihuang
+Signed-off-by: Mahesh Mahadevan <Mahesh.Mahadevan@freescale.com>
+---
+ arch/arm/plat-mxc/clock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/plat-mxc/clock.c b/arch/arm/plat-mxc/clock.c
+index 93347eb..1aa2664 100755
+--- a/arch/arm/plat-mxc/clock.c
++++ b/arch/arm/plat-mxc/clock.c
+@@ -58,12 +58,12 @@ static void __clk_disable(struct clk *clk)
+ {
+ 	if (clk == NULL || IS_ERR(clk))
+ 		return;
+-
++#ifdef CONFIG_CLK_DEBUG
+ 	if (!clk->usecount) {
+ 		WARN(1, "clock enable/disable mismatch! clk  %s\n", clk->name);
+ 		return;
+ 	}
+-
++#endif
+ 	if (!(--clk->usecount)) {
+ 		if (clk->disable)
+ 			clk->disable(clk);
+-- 
+1.8.4.rc3
+

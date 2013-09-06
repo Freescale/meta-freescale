@@ -1,0 +1,43 @@
+From 503daf4789dd23e4dc1e16c256de0c163fc2bf87 Mon Sep 17 00:00:00 2001
+From: Markus Trippelsdorf <markus@trippelsdorf.de>
+Date: Wed, 4 Apr 2012 10:45:27 +0200
+Subject: [PATCH] perf tools: Fix getrusage() related build failure on glibc
+ trunk
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Organization: O.S. Systems Software LTDA.
+
+On a system running glibc trunk perf doesn't build:
+
+    CC builtin-sched.o
+builtin-sched.c: In function ‘get_cpu_usage_nsec_parent’: builtin-sched.c:399:16: error: storage size of ‘ru’ isn’t known builtin-sched.c:403:2: error: implicit declaration of function ‘getrusage’ [-Werror=implicit-function-declaration]
+    [...]
+
+Fix it by including sys/resource.h.
+
+Upstream-Status: Pending
+
+Signed-off-by: Markus Trippelsdorf <markus@trippelsdorf.de>
+Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Link: http://lkml.kernel.org/r/20120404084527.GA294@x4
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ tools/perf/builtin-sched.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
+index dcfe887..3632c2f 100644
+--- a/tools/perf/builtin-sched.c
++++ b/tools/perf/builtin-sched.c
+@@ -14,6 +14,7 @@
+ #include "util/debug.h"
+ 
+ #include <sys/prctl.h>
++#include <sys/resource.h>
+ 
+ #include <semaphore.h>
+ #include <pthread.h>
+-- 
+1.8.4.rc3
+

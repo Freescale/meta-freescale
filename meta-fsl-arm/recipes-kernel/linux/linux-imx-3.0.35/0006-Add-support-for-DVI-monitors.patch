@@ -1,0 +1,227 @@
+From 3e6441d113f72b412081a2c87f39011e4c253a35 Mon Sep 17 00:00:00 2001
+From: Robert Winkler <robert.winkler@boundarydevices.com>
+Date: Fri, 19 Jul 2013 19:00:41 -0700
+Subject: [PATCH] Add support for DVI monitors
+Organization: O.S. Systems Software LTDA.
+
+Upstream-Status: Pending
+
+Signed-off-by: Robert Winkler <robert.winkler@boundarydevices.com>
+---
+ arch/arm/plat-mxc/include/mach/mxc_hdmi.h |  7 +++
+ drivers/video/mxc_hdmi.c                  | 98 +++++++++++++------------------
+ 2 files changed, 49 insertions(+), 56 deletions(-)
+
+diff --git a/arch/arm/plat-mxc/include/mach/mxc_hdmi.h b/arch/arm/plat-mxc/include/mach/mxc_hdmi.h
+index 94f7638..af59c62 100644
+--- a/arch/arm/plat-mxc/include/mach/mxc_hdmi.h
++++ b/arch/arm/plat-mxc/include/mach/mxc_hdmi.h
+@@ -605,6 +605,10 @@ enum {
+ 	HDMI_IH_MUTE_PHY_STAT0_TX_PHY_LOCK = 0x2,
+ 	HDMI_IH_MUTE_PHY_STAT0_HPD = 0x1,
+ 
++/* IH and IH_MUTE convenience macro RX_SENSE | HPD*/
++	HDMI_DVI_IH_STAT = 0x3D,
++
++
+ /* IH_AHBDMAAUD_STAT0 field values */
+ 	HDMI_IH_AHBDMAAUD_STAT0_ERROR = 0x20,
+ 	HDMI_IH_AHBDMAAUD_STAT0_LOST = 0x10,
+@@ -903,6 +907,9 @@ enum {
+ 	HDMI_PHY_HPD = 0x02,
+ 	HDMI_PHY_TX_PHY_LOCK = 0x01,
+ 
++/* HDMI STAT convenience RX_SENSE | HPD */
++	HDMI_DVI_STAT = 0xF2,
++
+ /* PHY_I2CM_SLAVE_ADDR field values */
+ 	HDMI_PHY_I2CM_SLAVE_ADDR_PHY_GEN2 = 0x69,
+ 	HDMI_PHY_I2CM_SLAVE_ADDR_HEAC_PHY = 0x49,
+diff --git a/drivers/video/mxc_hdmi.c b/drivers/video/mxc_hdmi.c
+index c5069aa..544f352 100644
+--- a/drivers/video/mxc_hdmi.c
++++ b/drivers/video/mxc_hdmi.c
+@@ -180,7 +180,6 @@ struct mxc_hdmi {
+ 	bool dft_mode_set;
+ 	char *dft_mode_str;
+ 	int default_bpp;
+-	u8 latest_intr_stat;
+ 	bool irq_enabled;
+ 	spinlock_t irq_lock;
+ 	bool phy_enabled;
+@@ -1996,58 +1995,48 @@ static void hotplug_worker(struct work_struct *work)
+ 	struct delayed_work *delay_work = to_delayed_work(work);
+ 	struct mxc_hdmi *hdmi =
+ 		container_of(delay_work, struct mxc_hdmi, hotplug_work);
+-	u32 phy_int_stat, phy_int_pol, phy_int_mask;
+-	u8 val;
++	u32 hdmi_phy_stat0, hdmi_phy_pol0, hdmi_phy_mask0;
+ 	unsigned long flags;
+ 	char event_string[32];
+ 	char *envp[] = { event_string, NULL };
+ 
+-	phy_int_stat = hdmi->latest_intr_stat;
+-	phy_int_pol = hdmi_readb(HDMI_PHY_POL0);
+ 
+-	dev_dbg(&hdmi->pdev->dev, "phy_int_stat=0x%x, phy_int_pol=0x%x\n",
+-			phy_int_stat, phy_int_pol);
++	hdmi_phy_stat0 = hdmi_readb(HDMI_PHY_STAT0);
++	hdmi_phy_pol0 = hdmi_readb(HDMI_PHY_POL0);
++
++	dev_dbg(&hdmi->pdev->dev, "hdmi_phy_stat0=0x%x, hdmi_phy_pol0=0x%x\n",
++			hdmi_phy_stat0, hdmi_phy_pol0);
++
++	/* Make HPD intr active low to capture unplug event or
++	 * active high to capture plugin event */
++	hdmi_writeb((HDMI_DVI_STAT & ~hdmi_phy_stat0), HDMI_PHY_POL0);
+ 
+ 	/* check cable status */
+-	if (phy_int_stat & HDMI_IH_PHY_STAT0_HPD) {
+-		/* cable connection changes */
+-		if (phy_int_pol & HDMI_PHY_HPD) {
+-			/* Plugin event */
+-			dev_dbg(&hdmi->pdev->dev, "EVENT=plugin\n");
+-			mxc_hdmi_cable_connected(hdmi);
+-
+-			/* Make HPD intr active low to capture unplug event */
+-			val = hdmi_readb(HDMI_PHY_POL0);
+-			val &= ~HDMI_PHY_HPD;
+-			hdmi_writeb(val, HDMI_PHY_POL0);
+-
+-			sprintf(event_string, "EVENT=plugin");
+-			kobject_uevent_env(&hdmi->pdev->dev.kobj, KOBJ_CHANGE, envp);
++	if (hdmi_phy_stat0 & HDMI_DVI_STAT) {
++		/* Plugin event */
++		dev_dbg(&hdmi->pdev->dev, "EVENT=plugin\n");
++		mxc_hdmi_cable_connected(hdmi);
++
++		sprintf(event_string, "EVENT=plugin");
++		kobject_uevent_env(&hdmi->pdev->dev.kobj, KOBJ_CHANGE, envp);
+ #ifdef CONFIG_MXC_HDMI_CEC
+-			mxc_hdmi_cec_handle(0x80);
++		mxc_hdmi_cec_handle(0x80);
+ #endif
+-			hdmi_set_cable_state(1);
+-
+-		} else if (!(phy_int_pol & HDMI_PHY_HPD)) {
+-			/* Plugout event */
+-			dev_dbg(&hdmi->pdev->dev, "EVENT=plugout\n");
+-			hdmi_set_cable_state(0);
+-			mxc_hdmi_abort_stream();
+-			mxc_hdmi_cable_disconnected(hdmi);
++		hdmi_set_cable_state(1);
+ 
+-			/* Make HPD intr active high to capture plugin event */
+-			val = hdmi_readb(HDMI_PHY_POL0);
+-			val |= HDMI_PHY_HPD;
+-			hdmi_writeb(val, HDMI_PHY_POL0);
++	} else {
++		/* Plugout event */
++		dev_dbg(&hdmi->pdev->dev, "EVENT=plugout\n");
++		hdmi_set_cable_state(0);
++		mxc_hdmi_abort_stream();
++		mxc_hdmi_cable_disconnected(hdmi);
+ 
+-			sprintf(event_string, "EVENT=plugout");
+-			kobject_uevent_env(&hdmi->pdev->dev.kobj, KOBJ_CHANGE, envp);
++		sprintf(event_string, "EVENT=plugout");
++		kobject_uevent_env(&hdmi->pdev->dev.kobj, KOBJ_CHANGE, envp);
+ #ifdef CONFIG_MXC_HDMI_CEC
+-			mxc_hdmi_cec_handle(0x100);
++		mxc_hdmi_cec_handle(0x100);
+ #endif
+ 
+-		} else
+-			dev_dbg(&hdmi->pdev->dev, "EVENT=none?\n");
+ 	}
+ 
+ 	/* Lock here to ensure full powerdown sequence
+@@ -2055,12 +2044,12 @@ static void hotplug_worker(struct work_struct *work)
+ 	spin_lock_irqsave(&hdmi->irq_lock, flags);
+ 
+ 	/* Re-enable HPD interrupts */
+-	phy_int_mask = hdmi_readb(HDMI_PHY_MASK0);
+-	phy_int_mask &= ~HDMI_PHY_HPD;
+-	hdmi_writeb(phy_int_mask, HDMI_PHY_MASK0);
++	hdmi_phy_mask0 = hdmi_readb(HDMI_PHY_MASK0);
++	hdmi_phy_mask0 &= ~HDMI_DVI_STAT;
++	hdmi_writeb(hdmi_phy_mask0, HDMI_PHY_MASK0);
+ 
+ 	/* Unmute interrupts */
+-	hdmi_writeb(~HDMI_IH_MUTE_PHY_STAT0_HPD, HDMI_IH_MUTE_PHY_STAT0);
++	hdmi_writeb(~HDMI_DVI_IH_STAT, HDMI_IH_MUTE_PHY_STAT0);
+ 
+ 	if (hdmi_readb(HDMI_IH_FC_STAT2) & HDMI_IH_FC_STAT2_OVERFLOW_MASK)
+ 		mxc_hdmi_clear_overflow();
+@@ -2086,7 +2075,7 @@ static void hdcp_hdp_worker(struct work_struct *work)
+ static irqreturn_t mxc_hdmi_hotplug(int irq, void *data)
+ {
+ 	struct mxc_hdmi *hdmi = data;
+-	u8 val, intr_stat;
++	u8 val;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&hdmi->irq_lock, flags);
+@@ -2108,25 +2097,22 @@ static irqreturn_t mxc_hdmi_hotplug(int irq, void *data)
+ 	 * HDMI registers.
+ 	 */
+ 	/* Capture status - used in hotplug_worker ISR */
+-	intr_stat = hdmi_readb(HDMI_IH_PHY_STAT0);
+-
+-	if (intr_stat & HDMI_IH_PHY_STAT0_HPD) {
++	if (hdmi_readb(HDMI_IH_PHY_STAT0) & HDMI_DVI_IH_STAT) {
+ 
+ 		dev_dbg(&hdmi->pdev->dev, "Hotplug interrupt received\n");
+-		hdmi->latest_intr_stat = intr_stat;
+ 
+ 		/* Mute interrupts until handled */
+ 
+ 		val = hdmi_readb(HDMI_IH_MUTE_PHY_STAT0);
+-		val |= HDMI_IH_MUTE_PHY_STAT0_HPD;
++		val |= HDMI_DVI_IH_STAT;
+ 		hdmi_writeb(val, HDMI_IH_MUTE_PHY_STAT0);
+ 
+ 		val = hdmi_readb(HDMI_PHY_MASK0);
+-		val |= HDMI_PHY_HPD;
++		val |= HDMI_DVI_STAT;
+ 		hdmi_writeb(val, HDMI_PHY_MASK0);
+ 
+ 		/* Clear Hotplug interrupts */
+-		hdmi_writeb(HDMI_IH_PHY_STAT0_HPD, HDMI_IH_PHY_STAT0);
++		hdmi_writeb(HDMI_DVI_IH_STAT, HDMI_IH_PHY_STAT0);
+ 
+ 		schedule_delayed_work(&(hdmi->hotplug_work), msecs_to_jiffies(20));
+ 	}
+@@ -2282,13 +2268,13 @@ static void mxc_hdmi_fb_registered(struct mxc_hdmi *hdmi)
+ 		    HDMI_PHY_I2CM_CTLINT_ADDR);
+ 
+ 	/* enable cable hot plug irq */
+-	hdmi_writeb((u8)~HDMI_PHY_HPD, HDMI_PHY_MASK0);
++	hdmi_writeb((u8)~HDMI_DVI_STAT, HDMI_PHY_MASK0);
+ 
+ 	/* Clear Hotplug interrupts */
+-	hdmi_writeb(HDMI_IH_PHY_STAT0_HPD, HDMI_IH_PHY_STAT0);
++	hdmi_writeb(HDMI_DVI_IH_STAT, HDMI_IH_PHY_STAT0);
+ 
+ 	/* Unmute interrupts */
+-	hdmi_writeb(~HDMI_IH_MUTE_PHY_STAT0_HPD, HDMI_IH_MUTE_PHY_STAT0);
++	hdmi_writeb(~HDMI_DVI_IH_STAT, HDMI_IH_MUTE_PHY_STAT0);
+ 
+ 	hdmi->fb_reg = true;
+ 
+@@ -2522,10 +2508,10 @@ static int mxc_hdmi_disp_init(struct mxc_dispdrv_handle *disp,
+ 
+ 	/* Configure registers related to HDMI interrupt
+ 	 * generation before registering IRQ. */
+-	hdmi_writeb(HDMI_PHY_HPD, HDMI_PHY_POL0);
++	hdmi_writeb(HDMI_DVI_STAT, HDMI_PHY_POL0);
+ 
+ 	/* Clear Hotplug interrupts */
+-	hdmi_writeb(HDMI_IH_PHY_STAT0_HPD, HDMI_IH_PHY_STAT0);
++	hdmi_writeb(HDMI_DVI_IH_STAT, HDMI_IH_PHY_STAT0);
+ 
+ 	hdmi->nb.notifier_call = mxc_hdmi_fb_event;
+ 	ret = fb_register_client(&hdmi->nb);
+-- 
+1.8.4.rc3
+
