@@ -33,6 +33,9 @@ do_install() {
         install -m 755 test-utils.sh ${D}/unit_tests/test-utils.sh
         install -m 0755 ${WORKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
         install -m 755 ${S}/platform/${PLATFORM}/* ${D}/unit_tests/
+        if [ -e ${S}/test/mxc_vpu_test/mxc-vpu-test.out ]; then
+            install -m 755 ${S}/test/mxc_vpu_test/configs/* ${D}/unit_tests/
+        fi
 }
 
 FILES_${PN} += "/unit_tests"
