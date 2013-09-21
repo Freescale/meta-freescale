@@ -39,7 +39,9 @@ do_configure () {
 do_compile () {
     oe_runmake BOARD=${IMXBOOTLETS_MACHINE} linux_prep \
                                             boot_prep \
-                                            power_prep
+                                            power_prep \
+               'CC=${TARGET_PREFIX}gcc --sysroot="${STAGING_DIR_TARGET}"' \
+               'LD=${TARGET_PREFIX}ld --sysroot="${STAGING_DIR_TARGET}"'
 }
 
 do_install () {
