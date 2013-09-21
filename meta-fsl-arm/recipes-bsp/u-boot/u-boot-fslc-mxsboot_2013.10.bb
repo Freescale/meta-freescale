@@ -2,11 +2,12 @@ DESCRIPTION = "U-boot bootloader mxsboot tool"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=6bc50ecab884fce80cd3ef3da8852b08"
 SECTION = "bootloader"
+DEPENDS = "openssl"
 PROVIDES = "u-boot-mxsboot"
 
 PV = "v2013.10"
 
-SRCREV = "fb18fa95a14ae875ef0a5421cd9fecc00c7c3a4c"
+SRCREV = "aa822f4980039073e03f98998813061af833b2bf"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
