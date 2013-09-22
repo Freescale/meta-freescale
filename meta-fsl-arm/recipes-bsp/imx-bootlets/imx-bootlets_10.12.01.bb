@@ -14,6 +14,8 @@ SRC_URI[sha256sum] = "63f6068ae36884adef4259bbb1fe2591755718f22c46d0a59d854883df
 
 S = "${WORKDIR}/imx-bootlets-src-${PV}"
 
+inherit deploy
+
 # Disable parallel building or it may fail to build.
 PARALLEL_MAKE = ""
 
@@ -56,7 +58,7 @@ do_install () {
 FILES_${PN} = "/boot"
 
 do_deploy () {
-    install -d ${DEPLOY_DIR_IMAGE}
+    install -d ${DEPLOYDIR}
 
 	for f in boot_prep/boot_prep \
              power_prep/power_prep \
@@ -66,8 +68,8 @@ do_deploy () {
         full_name="imx-bootlets-`basename $f`-${MACHINE}-${PV}-${PR}"
         symlink_name="imx-bootlets-`basename $f`-${MACHINE}"
 
-        install -m 644 ${S}/$f ${DEPLOY_DIR_IMAGE}/$full_name
-        (cd ${DEPLOY_DIR_IMAGE} ; rm -f $symlink_nake ; ln -sf $full_name $symlink_name)
+        install -m 644 ${S}/$f ${DEPLOYDIR}/$full_name
+        (cd ${DEPLOYDIR} ; rm -f $symlink_nake ; ln -sf $full_name $symlink_name)
     done
 }
 
