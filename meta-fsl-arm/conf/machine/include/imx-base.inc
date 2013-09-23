@@ -33,6 +33,20 @@ MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 # Float-Point setting
 DEFAULTTUNE_mx6 ?= "cortexa9hf-neon"
 
+# Sub-architecture support
+MACHINE_SOCARCH ?= ""
+MACHINE_SOCARCH_mx3 = "${TUNE_PKGARCH}-mx3"
+MACHINE_SOCARCH_mx5 = "${TUNE_PKGARCH}-mx5"
+MACHINE_SOCARCH_mx6 = "${TUNE_PKGARCH}-mx6"
+MACHINE_SOCARCH_vf60 = "${TUNE_PKGARCH}-vf60"
+PACKAGE_EXTRA_ARCHS_append = " ${MACHINE_SOCARCH}"
+
+MACHINE_ARCH_FILTER = "virtual/kernel"
+MACHINE_SOCARCH_FILTER_mx5 = "virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
+MACHINE_SOCARCH_FILTER_mx6 = "virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
+
+INHERIT += "fsl-dynamic-packagearch"
+
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE_append_mx6q = " firmware-imx-vpu-imx6q"
