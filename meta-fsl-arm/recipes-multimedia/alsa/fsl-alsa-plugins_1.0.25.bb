@@ -23,5 +23,4 @@ FILES_${PN} += "${libdir}/alsa-lib/libasound_*.so"
 FILES_${PN}-dbg += "${libdir}/alsa-lib/.debug"
 FILES_${PN}-dev += "${libdir}/alsa-lib/*.la"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
