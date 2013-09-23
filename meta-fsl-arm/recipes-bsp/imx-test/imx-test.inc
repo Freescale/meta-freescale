@@ -40,5 +40,3 @@ do_install() {
 
 FILES_${PN} += "/unit_tests"
 FILES_${PN}-dbg += "/unit_tests/.debug"
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
