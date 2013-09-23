@@ -55,5 +55,5 @@ RDEPENDS_${PN} += "libvivante-dri-mx6 \
                    xserver-xorg-extension-dri2 \
                    xserver-xorg-extension-glx"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
