@@ -1,4 +1,4 @@
-# Copyright (C) 2011, 2012 Freescale
+# Copyright (C) 2011, 2012, 2013 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 LICENSE = "Proprietary"
@@ -80,5 +80,3 @@ FILES_lib2dz160-mx51-dbg = "${libdir}/.debug/lib2dz160${SOLIBS}"
 
 FILES_lib2dz430-mx51 = "${libdir}/lib2dz430${SOLIBS}"
 FILES_lib2dz430-mx51-dbg = "${libdir}/.debug/lib2dz430${SOLIBS}"
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
