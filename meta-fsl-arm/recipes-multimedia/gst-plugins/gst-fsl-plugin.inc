@@ -59,5 +59,3 @@ FILES_${PN}-libme = "${libdir}/libme${SOLIBS}"
 FILES_${PN}-libgstbufmeta = "${libdir}/libgstbufmeta${SOLIBS}"
 FILES_${PN}-libmfwba =  "${libdir}/libmfwba${SOLIBS}"
 FILES_${PN}-libfwvss = "${libdir}/libmfwvss${SOLIBS}"
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
