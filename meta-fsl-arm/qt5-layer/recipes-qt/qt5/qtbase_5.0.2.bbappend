@@ -18,9 +18,6 @@ QT_TSLIB_mx6 = "-tslib"
 TSLIB_DEPENDS_mx5 = "tslib"
 QT_TSLIB_mx5 = "-tslib"
 
-PACKAGE_ARCH_mx6 = "${MACHINE_ARCH}"
-PACKAGE_ARCH_mx5 = "${MACHINE_ARCH}"
-
 FILESEXTRAPATHS_prepend_mx5 := "${THISDIR}/${PN}:"
 SRC_URI_append_mx5 += " \
     file://qeglfshooks_imx5.cpp \
