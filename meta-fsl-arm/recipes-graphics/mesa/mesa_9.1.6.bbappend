@@ -32,9 +32,6 @@ python __anonymous () {
                 new_provides.append(i)
 
         d.setVar('PROVIDES', ' '.join(new_provides))
-
-        # We are now machine specific
-        d.setVar('PACKAGE_ARCH', d.getVar('MACHINE_ARCH'))
 }
 
 # FIXME: Dirty hack to allow use of Vivante GPU libGL binary
