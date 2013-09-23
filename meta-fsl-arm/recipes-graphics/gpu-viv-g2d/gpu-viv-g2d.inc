@@ -39,5 +39,4 @@ FILES_${PN} = "/opt ${libdir}/libg2d${SOLIBS} "
 FILES_${PN}-dev = "${includedir}"
 FILES_${PN}-dbg = "${libdir}/.debug/libg2d${SOLIBS}"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"
