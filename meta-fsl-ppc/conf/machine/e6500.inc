@@ -7,7 +7,6 @@ MACHINE_EXTRA_RRECOMMENDS = "u-boot udev-extraconf"
 
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq-sdk"
 PREFERRED_VERSION_virtual/kernel ?= "3.0.34"
-PREFERRED_PROVIDER_linux-libc-headers ?= "linux-qoriq-sdk-headers"
 PREFERRED_VERSION_qemu = "1.4+fsl"
 
 KERNEL_IMAGETYPE ?= "uImage"
