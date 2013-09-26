@@ -22,6 +22,10 @@ XSERVER = "xserver-xorg \
            xf86-input-evdev \
            xf86-video-fbdev"
 
+# Gstreamer plugin
+MACHINE_GSTREAMER_PLUGIN ?= ""
+MACHINE_GSTREAMER_PLUGIN_mx28 ?= "gst-fsl-plugin"
+
 # Sub-architecture support
 MACHINE_SOCARCH ?= ""
 MACHINE_SOCARCH_mx23 = "${TUNE_PKGARCH}-mx23"
