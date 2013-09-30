@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
 
 PR = "r1"
 
-DEPENDS = "linux-libc-headers"
 DEPENDS_virtclass-native = ""
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git"
@@ -20,7 +19,7 @@ COMPATIBLE_HOST_fslmachine = ".*"
 COMPATIBLE_HOST ?= "(none)"
 
 EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
-        CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_EXECPREFIXDIR}"
+        CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
 do_compile () {
       oe_runmake libfm-${TARGET_ARCH_FMLIB}.a
