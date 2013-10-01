@@ -3,7 +3,7 @@
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://EULA.txt;md5=ea4d5c069d7aef0838a110409ea78a01"
+LIC_FILES_CHKSUM = "file://EULA.txt;md5=93b784b1c11b3fffb1638498a8dde3f6"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
@@ -44,8 +44,9 @@ python populate_packages_prepend() {
 
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
+    # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
     for p in d.getVar('PACKAGES', True).split():
-        d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
+        d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel dev-so")
         d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
 
     # Allow addition of all codecs in a image; useful specially for
@@ -58,7 +59,8 @@ python populate_packages_prepend() {
 FILES_${PN} = ""
 
 FILES_${PN}-dev += "${libdir}/imx-mm/*/*${SOLIBSDEV} \
-                    ${libdir}/imx-mm/*/*/*${SOLIBSDEV}"
+                    ${libdir}/imx-mm/*/*/*${SOLIBSDEV} \
+                    ${libdir}/pkgconfig/*.pc ${includedir}/imx-mm/*"
 
 # FIXME: The wrap and lib names does not match
 FILES_${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm*_elinux.so.*"
