@@ -15,9 +15,4 @@ SRC_URI = "git://github.com/Freescale/u-boot-imx.git"
 
 S = "${WORKDIR}/git"
 
-do_configure_prepend() {
-    # FIXME: Ensure we don't do host binaries build
-    sed -i 's,SUBDIR_TOOLS = tools,SUBDIR_TOOLS = #tools,g' ${S}/Makefile
-}
-
 PACKAGE_ARCH = "${MACHINE_ARCH}"
