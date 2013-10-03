@@ -7,7 +7,8 @@ SECTION = "multimedia"
 
 DEPENDS = "gstreamer gst-plugins-base libfslcodec libfslparser virtual/kernel"
 DEPENDS_append_mx5 = " imx-lib imx-vpu"
-DEPENDS_append_mx6 = " imx-lib libfslvpuwrap"
+DEPENDS_append_mx6 = " imx-lib imx-vpu libfslvpuwrap"
+DEPENDS_append_mx6sl = " imx-lib"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
@@ -21,12 +22,13 @@ inherit autotools pkgconfig
 
 PLATFORM_mx5 = "MX51"
 PLATFORM_mx6 = "MX6"
+PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx28 = "MX28"
 
 # Todo add a mechanism to map posible build targets
-INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include"
-EXTRA_OEMAKE = "INCLUDES=${INCLUDE_DIR}"
-EXTRA_OECONF = "PLATFORM=${PLATFORM} --disable-valgrind --disable-examples --disable-debug"
+INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include"
+EXTRA_OEMAKE = "INCLUDES="${INCLUDE_DIR}""
+EXTRA_OECONF = "PLATFORM=${PLATFORM} --disable-valgrind --disable-examples --disable-debug CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR}"
 CACHED_CONFIGUREVARS += "CROSS_ROOT=${STAGING_DIR_TARGET}"
 
 PACKAGES += "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \

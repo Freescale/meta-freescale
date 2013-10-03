@@ -1,0 +1,40 @@
+From 28ad25933dc51d8af13927a9943a353677c31a3a Mon Sep 17 00:00:00 2001
+From: Lyon Wang <lyon.wang@freescale.com>
+Date: Tue, 22 Oct 2013 16:15:43 +0800
+Subject: [PATCH] remove GST_INFO in mfw_gst_utils.h
+
+GST_INFO() should not be used in the global header
+or it will cause some macro definiation error.
+
+so comment the GST_INFO() in the mfw_gst_utils.h
+
+Upstream-Status: Backport [GIT]
+---
+ inc/plugin/mfw_gst_utils.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/inc/plugin/mfw_gst_utils.h b/inc/plugin/mfw_gst_utils.h
+index 366d50e..c1b6f90 100755
+--- a/inc/plugin/mfw_gst_utils.h
++++ b/inc/plugin/mfw_gst_utils.h
+@@ -876,7 +876,7 @@ getChipCodeFromSocid (void)
+   }
+   fclose(fp);
+ 
+-  GST_INFO("SOC is %s\n", soc_name);
++  //GST_INFO("SOC is %s\n", soc_name);
+ 
+   int num = sizeof(soc_info) / sizeof(SOC_INFO);
+   int i;
+@@ -913,7 +913,7 @@ getChipCode (void)
+   }
+ 
+   kv = ((kv_major << 16) + (kv_minor << 8) + kv_rel);
+-  GST_INFO("kernel:%s, %d.%d.%d\n", sys_name.release, kv_major, kv_minor, kv_rel);
++  //GST_INFO("kernel:%s, %d.%d.%d\n", sys_name.release, kv_major, kv_minor, kv_rel);
+ 
+   if (kv < KERN_VER(3, 10, 0))
+     return getChipCodeFromCpuinfo();
+-- 
+1.7.9.5
+
