@@ -1,0 +1,38 @@
+From cd31abbe08372fa870fac78ae845edd4859f8835 Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Sat, 28 Sep 2013 18:46:18 -0300
+Subject: [PATCH] ARM: mach-mx6: board-mx6q_sabresd: Register SDHC3 first
+Organization: O.S. Systems Software LTDA.
+
+On sabresd boards we boot from SDHC3, so let's register it as mmc0.
+
+Currently eMMC is mmc0 and mmc1 can be SDHC3 or SDHC2 (if present).
+
+Registering SDHC3 is safer as we can always find the rootfs.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ arch/arm/mach-mx6/board-mx6q_sabresd.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/arch/arm/mach-mx6/board-mx6q_sabresd.c b/arch/arm/mach-mx6/board-mx6q_sabresd.c
+index 3f9a845..4e6b323 100644
+--- a/arch/arm/mach-mx6/board-mx6q_sabresd.c
++++ b/arch/arm/mach-mx6/board-mx6q_sabresd.c
+@@ -1847,12 +1847,9 @@ static void __init mx6_sabresd_board_init(void)
+ 
+ 	imx6q_add_pm_imx(0, &mx6q_sabresd_pm_data);
+ 
+-	/* Move sd4 to first because sd4 connect to emmc.
+-	   Mfgtools want emmc is mmcblk0 and other sd card is mmcblk1.
+-	*/
++	imx6q_add_sdhci_usdhc_imx(2, &mx6q_sabresd_sd3_data);
+ 	imx6q_add_sdhci_usdhc_imx(3, &mx6q_sabresd_sd4_data);
+ 	imx6q_add_sdhci_usdhc_imx(1, &mx6q_sabresd_sd2_data);
+-	imx6q_add_sdhci_usdhc_imx(2, &mx6q_sabresd_sd3_data);
+ 	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
+ 	imx6q_sabresd_init_usb();
+ 	/* SATA is not supported by MX6DL/Solo */
+-- 
+1.8.4.rc3
+
