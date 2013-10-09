@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
 
 PR = "r30"
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
+DEPENDS = "boot-format-native libgcc ${@base_contains('TCMODE', 'external-fsl', '', 'virtual/${TARGET_PREFIX}gcc', d)}"
 
 inherit deploy
 
@@ -17,6 +17,9 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
 SRCREV = "831b30de4b768f0b3b7dbfa11739b14cea612d7e"
 
 python () {
+	if d.getVar("TCMODE", True) == "external-fsl":
+		return
+
 	ml = d.getVar("MULTILIB_VARIANTS", True)
 	arch = d.getVar("OVERRIDES", True)
 
@@ -24,20 +27,18 @@ python () {
 		raise bb.parse.SkipPackage("Building the u-boot for this arch requires multilib to be enabled")
 }
 
-DEPENDS_append_e5500-64b = " lib32-gcc-cross lib32-libgcc"
+DEPENDS_append_e5500-64b = "${@base_contains('TCMODE', 'external-fsl', '', ' lib32-gcc-cross lib32-libgcc', d)}"
 PATH_append_e5500-64b = ":${STAGING_BINDIR_NATIVE}/${DEFAULTTUNE_virtclass-multilib-lib32}${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}/"
-TOOLCHAIN_OPTIONS_append_e5500-64b = "/../lib32-${MACHINE}"
-TARGET_VENDOR_virtclass-multilib-lib32 ?= "-${DISTRO}mllib32"
-WRAP_TARGET_PREFIX_e5500-64b = "powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}-"
+TOOLCHAIN_OPTIONS_append_e5500-64b = "${@base_contains('TCMODE', 'external-fsl', '', '/../lib32-${MACHINE}', d)}"
+TARGET_VENDOR_virtclass-multilib-lib32 ?= "${@base_contains('TCMODE', 'external-fsl', '', '-${DISTRO}mllib32', d)}"
+WRAP_TARGET_PREFIX_e5500-64b := "powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}-"
 
-DEPENDS_append_e6500-64b = " lib32-gcc-cross lib32-libgcc"
+DEPENDS_append_e6500-64b = "${@base_contains('TCMODE', 'external-fsl', '', ' lib32-gcc-cross lib32-libgcc', d)}"
 PATH_append_e6500-64b = ":${STAGING_BINDIR_NATIVE}/${DEFAULTTUNE_virtclass-multilib-lib32}${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}/"
-TOOLCHAIN_OPTIONS_append_e6500-64b = "/../lib32-${MACHINE}"
-TARGET_VENDOR_virtclass-multilib-lib32 ?= "-${DISTRO}mllib32"
-WRAP_TARGET_PREFIX_e6500-64b = "powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}-"
-
+TOOLCHAIN_OPTIONS_append_e6500-64b = "${@base_contains('TCMODE', 'external-fsl', '', '/../lib32-${MACHINE}', d)}"
+TARGET_VENDOR_virtclass-multilib-lib32 ?= "${@base_contains('TCMODE', 'external-fsl', '', '-${DISTRO}mllib32', d)}"
+WRAP_TARGET_PREFIX_e6500-64b := "powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}-"
 WRAP_TARGET_PREFIX = "${TARGET_PREFIX}"
-EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -45,6 +46,9 @@ UBOOT_LOCALVERSION = "${@d.getVar('SDK_VERSION', True).partition(' ')[0]}"
 
 USRC ?= ""
 S = '${@base_conditional("USRC", "", "${WORKDIR}/git", "${USRC}", d)}'
+
+CROSS_COMPILE = '${@base_conditional("TCMODE", "external-fsl", "${TARGET_PREFIX}", "${WRAP_TARGET_PREFIX}", d)}'
+EXTRA_OEMAKE = 'CROSS_COMPILE=${CROSS_COMPILE} CC="${CROSS_COMPILE}gcc ${TOOLCHAIN_OPTIONS}"'
 
 do_compile () {
 	unset LDFLAGS
