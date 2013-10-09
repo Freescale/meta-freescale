@@ -1,7 +1,7 @@
 require recipes-bsp/u-boot/u-boot.inc
 
 LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://Licenses/README;md5=6bc50ecab884fce80cd3ef3da8852b08"
+LIC_FILES_CHKSUM = "file://Licenses/README;md5=bc069111b5e5b1ed8bed98ae73b596ec"
 COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6|vf60)"
 
 DEPENDS_mxs += "elftosb-native openssl-native"
