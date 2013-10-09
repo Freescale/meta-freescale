@@ -12,7 +12,8 @@ inherit module
 
 S = "${WORKDIR}/git/asfmodule"
 
-EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX} KERNEL_PATH=${STAGING_KERNEL_DIR}"
+EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
+export KERNEL_PATH = "${STAGING_KERNEL_DIR}"
 
 python () {
     ma = d.getVar("DISTRO_FEATURES", True)
