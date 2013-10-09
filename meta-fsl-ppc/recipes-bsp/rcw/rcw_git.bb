@@ -18,6 +18,8 @@ SRCREV = "5d3c819bcca6d09dcf7b52b3f2855dda304a5997"
 
 S = "${WORKDIR}/git"
 
+export PYTHON
+
 do_install () {
 	make install
 
