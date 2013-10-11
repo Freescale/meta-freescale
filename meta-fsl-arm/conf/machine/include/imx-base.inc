@@ -66,8 +66,7 @@ MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
 # Extra audio support
 # FIXME: Add support for ALL SoC families
-MACHINE_EXTRA_RRECOMMENDS_append_mx5 = " imx-audio"
-MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " imx-audio fsl-alsa-plugins"
+MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " fsl-alsa-plugins"
 
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf"
