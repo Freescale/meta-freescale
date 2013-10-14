@@ -1,0 +1,191 @@
+state.mxsevk {
+	control.1 {
+		iface MIXER
+		name 'MIC GAIN'
+		value '0dB'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '0dB'
+			item.1 '20dB'
+			item.2 '30dB'
+			item.3 '40dB'
+		}
+	}
+	control.2 {
+		iface MIXER
+		name 'Capture Volume'
+		value.0 12
+		value.1 12
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 15'
+		}
+	}
+	control.3 {
+		iface MIXER
+		name 'Capture Vol Reduction'
+		value 'No Change'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'No Change'
+			item.1 'Reduced by 6dB'
+		}
+	}
+	control.4 {
+		iface MIXER
+		name 'Playback Volume'
+		value.0 156
+		value.1 156
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 192'
+		}
+	}
+	control.5 {
+		iface MIXER
+		name 'Headphone Volume'
+		value.0 127
+		value.1 127
+		comment {
+			access 'read write'
+			type INTEGER
+			count 2
+			range '0 - 127'
+		}
+	}
+	control.6 {
+		iface MIXER
+		name 'DAC Mux'
+		value DAC
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 DAC
+			item.1 LINE_IN
+		}
+	}
+	control.7 {
+		iface MIXER
+		name 'ADC Mux'
+		value MIC_IN
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 MIC_IN
+			item.1 LINE_IN
+		}
+	}
+}
+state.mxsevk_1 {
+	control.1 {
+		iface MIXER
+		name PRO
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.2 {
+		iface MIXER
+		name AUDIO
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.3 {
+		iface MIXER
+		name COPY
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.4 {
+		iface MIXER
+		name PRE
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.5 {
+		iface MIXER
+		name CC
+		value 0
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 127'
+		}
+	}
+	control.6 {
+		iface MIXER
+		name L
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.7 {
+		iface MIXER
+		name V
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.8 {
+		iface MIXER
+		name 'USER DATA'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.9 {
+		iface MIXER
+		name 'AUTO MUTE'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.10 {
+		iface MIXER
+		name 'V CONFIG'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+}
