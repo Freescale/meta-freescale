@@ -3,9 +3,9 @@
 
 include linux-fslc.inc
 
-PV = "3.11+git${SRCPV}"
+PV = "3.12+git${SRCPV}"
 
-# patches-3.11
-SRCREV = "a318c1dd398d8cb44e98964825ab038010793142"
+# patches-3.12
+SRCREV = "83cc0743f5cbcf1f741867d5c193b09dd9be1adf"
 
 COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6)"
