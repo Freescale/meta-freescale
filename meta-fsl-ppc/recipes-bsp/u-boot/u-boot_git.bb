@@ -11,10 +11,10 @@ DEPENDS = "boot-format-native libgcc ${@base_contains('TCMODE', 'external-fsl', 
 
 inherit deploy
 
-SRCBRANCH = "sdk-v1.4.x"
+SRCBRANCH = "sdk-v1.5.x"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
 	file://Fix-the-depend-race-issue.patch"
-SRCREV = "831b30de4b768f0b3b7dbfa11739b14cea612d7e"
+SRCREV = "5438fc1ca159c8f5724272efd1289e6d49771e69"
 
 python () {
     if d.getVar("TCMODE", True) == "external-fsl":
@@ -82,15 +82,15 @@ do_compile () {
         if [ "x${UBOOT_TARGET}" != "x" ]; then
             # some boards' nand image was named as u-boot-with-spl
             if [ "${UBOOT_TARGET}" = "u-boot-nand" ];then
-                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P1024RDB|P2020RDB|P1022DS|P1025RDB|BSC913)";then
+                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS|BSC913)";then
                     UBOOT_SOURCE=u-boot-with-spl
                 fi
             elif [ "${UBOOT_TARGET}" = "u-boot-spi" ];then
-                if echo $board |egrep -q "(P1020RDB|P1021RDB|P2020RDB|P1022DS)";then
+                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS)";then
                     UBOOT_SOURCE=u-boot-with-spl
                 fi
             elif [ "${UBOOT_TARGET}" = "u-boot-sd" ];then
-                if echo $board |egrep -q "(P1020RDB|P1021RDB|P2020RDB|P1022DS)";then
+                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS)";then
                     UBOOT_SOURCE=u-boot-with-spl
                 fi
             fi
