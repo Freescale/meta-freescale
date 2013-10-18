@@ -11,7 +11,7 @@ SRC_URI += "file://libtraceevent-Remove-hard-coded-include-to-usr-local-include-
 
 PR = "${INC_PR}.1"
 
-DEPENDS_append = " libgcc kern-tools-native"
+DEPENDS_append = " libgcc"
 KERNEL_CC_append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD_append = " ${TOOLCHAIN_OPTIONS}"
 
@@ -20,8 +20,8 @@ do_configure_prepend() {
 	cp ${KERNEL_DEFCONFIG} ${B}/.config
     
 	# add config fragments    
-    	if [ -a "${DELTA_KERNEL_DEFCONFIG}" ]; then
-        	merge_config.sh -m .config ${DELTA_KERNEL_DEFCONFIG}
+    	if [ -f "${DELTA_KERNEL_DEFCONFIG}" ]; then
+        	${S}/scripts/kconfig/merge_config.sh -m .config ${DELTA_KERNEL_DEFCONFIG}
     	fi
 
 	# append sdk version in kernel version if SDK_VERSION is defined
