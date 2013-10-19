@@ -1,0 +1,143 @@
+From 149545df26169d257b144ff78934ce9cb5b6818b Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Sat, 19 Oct 2013 10:55:11 -0300
+Subject: [PATCH] epdc: Rename mxcfb_epdc_kernel.h to mxc_epdc.h
+Organization: O.S. Systems Software LTDA.
+
+This allow for forward compatibility with imx-test >= 3.10.9-1.0.0.
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ drivers/video/mxc/mxc_epdc_fb.c   |  2 +-
+ include/linux/mxcfb_epdc.h        | 49 +++++++++++++++++++++++++++++++++++++++
+ include/linux/mxcfb_epdc_kernel.h | 49 ---------------------------------------
+ 3 files changed, 50 insertions(+), 50 deletions(-)
+ create mode 100644 include/linux/mxcfb_epdc.h
+ delete mode 100644 include/linux/mxcfb_epdc_kernel.h
+
+diff --git a/drivers/video/mxc/mxc_epdc_fb.c b/drivers/video/mxc/mxc_epdc_fb.c
+index 4103498..b3ef8ea 100644
+--- a/drivers/video/mxc/mxc_epdc_fb.c
++++ b/drivers/video/mxc/mxc_epdc_fb.c
+@@ -43,7 +43,7 @@
+ #include <linux/dmaengine.h>
+ #include <linux/pxp_dma.h>
+ #include <linux/mxcfb.h>
+-#include <linux/mxcfb_epdc_kernel.h>
++#include <linux/mxcfb_epdc.h>
+ #include <linux/gpio.h>
+ #include <linux/regulator/driver.h>
+ #include <linux/fsl_devices.h>
+diff --git a/include/linux/mxcfb_epdc.h b/include/linux/mxcfb_epdc.h
+new file mode 100644
+index 0000000..06fea6f
+--- /dev/null
++++ b/include/linux/mxcfb_epdc.h
+@@ -0,0 +1,49 @@
++/*
++ * Copyright (C) 2010-2012 Freescale Semiconductor, Inc. All Rights Reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
++ *
++ */
++#ifndef _MXCFB_EPDC_KERNEL
++#define _MXCFB_EPDC_KERNEL
++
++void mxc_epdc_fb_set_waveform_modes(struct mxcfb_waveform_modes *modes,
++						struct fb_info *info);
++int mxc_epdc_fb_set_temperature(int temperature, struct fb_info *info);
++int mxc_epdc_fb_set_auto_update(u32 auto_mode, struct fb_info *info);
++int mxc_epdc_fb_send_update(struct mxcfb_update_data *upd_data,
++				   struct fb_info *info);
++int mxc_epdc_fb_wait_update_complete(
++				struct mxcfb_update_marker_data *marker_data,
++				struct fb_info *info);
++int mxc_epdc_fb_set_pwrdown_delay(u32 pwrdown_delay,
++					    struct fb_info *info);
++int mxc_epdc_get_pwrdown_delay(struct fb_info *info);
++int mxc_epdc_fb_set_upd_scheme(u32 upd_scheme, struct fb_info *info);
++
++void mxc_spdc_fb_set_waveform_modes(struct mxcfb_waveform_modes *modes,
++						struct fb_info *info);
++int mxc_spdc_fb_set_temperature(int temperature, struct fb_info *info);
++int mxc_spdc_fb_set_auto_update(u32 auto_mode, struct fb_info *info);
++int mxc_spdc_fb_send_update(struct mxcfb_update_data *upd_data,
++				   struct fb_info *info);
++int mxc_spdc_fb_wait_update_complete(
++				struct mxcfb_update_marker_data *marker_data,
++				struct fb_info *info);
++int mxc_spdc_fb_set_pwrdown_delay(u32 pwrdown_delay,
++					    struct fb_info *info);
++int mxc_spdc_get_pwrdown_delay(struct fb_info *info);
++int mxc_spdc_fb_set_upd_scheme(u32 upd_scheme, struct fb_info *info);
++#endif
+diff --git a/include/linux/mxcfb_epdc_kernel.h b/include/linux/mxcfb_epdc_kernel.h
+deleted file mode 100644
+index 06fea6f..0000000
+--- a/include/linux/mxcfb_epdc_kernel.h
++++ /dev/null
+@@ -1,49 +0,0 @@
+-/*
+- * Copyright (C) 2010-2012 Freescale Semiconductor, Inc. All Rights Reserved.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+- *
+- */
+-#ifndef _MXCFB_EPDC_KERNEL
+-#define _MXCFB_EPDC_KERNEL
+-
+-void mxc_epdc_fb_set_waveform_modes(struct mxcfb_waveform_modes *modes,
+-						struct fb_info *info);
+-int mxc_epdc_fb_set_temperature(int temperature, struct fb_info *info);
+-int mxc_epdc_fb_set_auto_update(u32 auto_mode, struct fb_info *info);
+-int mxc_epdc_fb_send_update(struct mxcfb_update_data *upd_data,
+-				   struct fb_info *info);
+-int mxc_epdc_fb_wait_update_complete(
+-				struct mxcfb_update_marker_data *marker_data,
+-				struct fb_info *info);
+-int mxc_epdc_fb_set_pwrdown_delay(u32 pwrdown_delay,
+-					    struct fb_info *info);
+-int mxc_epdc_get_pwrdown_delay(struct fb_info *info);
+-int mxc_epdc_fb_set_upd_scheme(u32 upd_scheme, struct fb_info *info);
+-
+-void mxc_spdc_fb_set_waveform_modes(struct mxcfb_waveform_modes *modes,
+-						struct fb_info *info);
+-int mxc_spdc_fb_set_temperature(int temperature, struct fb_info *info);
+-int mxc_spdc_fb_set_auto_update(u32 auto_mode, struct fb_info *info);
+-int mxc_spdc_fb_send_update(struct mxcfb_update_data *upd_data,
+-				   struct fb_info *info);
+-int mxc_spdc_fb_wait_update_complete(
+-				struct mxcfb_update_marker_data *marker_data,
+-				struct fb_info *info);
+-int mxc_spdc_fb_set_pwrdown_delay(u32 pwrdown_delay,
+-					    struct fb_info *info);
+-int mxc_spdc_get_pwrdown_delay(struct fb_info *info);
+-int mxc_spdc_fb_set_upd_scheme(u32 upd_scheme, struct fb_info *info);
+-#endif
+-- 
+1.8.4.rc3
+
