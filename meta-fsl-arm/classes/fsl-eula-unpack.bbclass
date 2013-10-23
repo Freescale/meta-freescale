@@ -59,3 +59,5 @@ python do_unpack() {
 
     bb.build.exec_func('fsl_bin_do_unpack', d)
 }
+
+do_unpack[vardepsexclude] += "FSL_EULA_FILE"
