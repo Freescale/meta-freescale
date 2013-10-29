@@ -77,25 +77,22 @@ do_compile () {
             *)      UBOOT_TARGET="";;
         esac
 
+        # deal with sd/spi/nand image
+        UBOOT_SOURCE=u-boot
         if [ "x${UBOOT_TARGET}" != "x" ]; then
-            if [ "${UBOOT_TARGET}" = "u-boot-sd" ]; then
-                cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
-            elif [ "${UBOOT_TARGET}" = "u-boot-nand" ];then
-                if [ "${DEFAULTTUNE}" = "ppce500v2" ];then
-                    if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P1024RDB|P2020RDB|P1022DS|P1025RDB|BSC9131)";then
-                        cp ${S}/${board}/u-boot-with-spl.bin ${S}/${board}/${UBOOT_TARGET}.bin
-                    fi
-                else
-                    cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+            # some boards' nand image was named as u-boot-with-spl
+            if [ "${UBOOT_TARGET}" = "u-boot-nand" ];then
+                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P1024RDB|P2020RDB|P1022DS|P1025RDB|BSC913)";then
+                    UBOOT_SOURCE=u-boot-with-spl
                 fi
-            else
-                if [ -n "${BOOTFORMAT_CONFIG}" ];then
-                    ${STAGING_BINDIR_NATIVE}/boot_format \
-                    ${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
-                    ${S}/${board}/u-boot.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
-                else
-                    cp ${S}/${board}/u-boot.bin  ${S}/${board}/${UBOOT_TARGET}.bin
-                fi
+            fi
+            cp ${S}/${board}/${UBOOT_SOURCE}.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+
+            # use boot-format to regenerate spi image if BOOTFORMAT_CONFIG is not empty
+            if [ "${UBOOT_TARGET}" = "u-boot-spi" ] && [ -n "${BOOTFORMAT_CONFIG}" ];then
+                ${STAGING_BINDIR_NATIVE}/boot_format \
+                ${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
+                ${S}/${board}/${UBOOT_SOURCE}.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
             fi
         fi
     done
