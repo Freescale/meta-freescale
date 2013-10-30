@@ -9,7 +9,7 @@ include conf/machine/include/tune-arm926ejs.inc
 
 SOC_FAMILY = "mxs"
 
-PREFERRED_PROVIDER_virtual/kernel_mx23 = "linux-fslc"
+PREFERRED_PROVIDER_virtual/kernel_mx23 ?= "linux-fslc"
 
 UBOOT_ENTRYPOINT = "0x40008000"
 UBOOT_MAKE_TARGET = "u-boot.sb"
