@@ -1,7 +1,7 @@
 DESCRIPTION = "Non-DPAA software Application Specific Fast-path"
 SECTION = "asf"
-LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=9960b017720861b8c50c8c08723e57aa"
+LICENSE = "GPLv2 & GPLv2+ & BSD"
+LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;nobranch=1"
 SRCREV = "c262d7701af325b50cae54279a021ae7b5081e24"
