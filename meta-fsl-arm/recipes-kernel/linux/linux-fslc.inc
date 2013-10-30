@@ -4,7 +4,7 @@
 DESCRIPTION = "Freescale Community mainline based Linux kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-DEPENDS += "lzop-native"
+DEPENDS += "lzop-native bc-native"
 PROVIDES = "virtual/kernel linux-mainline"
 
 inherit kernel
