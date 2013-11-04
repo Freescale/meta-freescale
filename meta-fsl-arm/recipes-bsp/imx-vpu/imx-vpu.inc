@@ -6,6 +6,7 @@ DEPENDS = "virtual/kernel"
 inherit fsl-eula-unpack
 
 PLATFORM_mx5 = "IMX51"
+PLATFORM_mx6 = "IMX6Q"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
