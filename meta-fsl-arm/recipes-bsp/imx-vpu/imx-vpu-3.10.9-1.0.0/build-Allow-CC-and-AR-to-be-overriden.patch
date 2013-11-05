@@ -1,0 +1,33 @@
+From 97cb0b711ce1a9d0dd3de51480d2e3a1399ce34c Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Tue, 5 Nov 2013 15:20:15 -0200
+Subject: [PATCH] build: Allow CC and AR to be overriden
+Organization: O.S. Systems Software LTDA.
+
+This is need to allow proper building when using Yocto and multiple
+machines sharing sstate-cache, otherwise the toolchain is going to
+default to use the first build machine sysroot due lack of '-sysroot'
+option.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ vpu/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/vpu/Makefile b/vpu/Makefile
+index b106631..dec2429 100644
+--- a/vpu/Makefile
++++ b/vpu/Makefile
+@@ -1,5 +1,5 @@
+-CC=$(CROSS_COMPILE)gcc
+-AR=$(CROSS_COMPILE)ar
++CC ?= $(CROSS_COMPILE)gcc
++AR ?= $(CROSS_COMPILE)ar
+ 
+ # list of platforms which want this test case
+ INCLUDE_LIST:= IMX27ADS IMX51 IMX53 IMX6Q
+-- 
+1.8.4.rc3
+
