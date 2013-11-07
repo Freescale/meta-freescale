@@ -16,7 +16,7 @@ EXTRA_OEMAKE = ""
 SRC_URI = "${FSL_MIRROR}/imx-lib-${PV}.tar.gz"
 
 do_compile () {
-    INCLUDE_DIR="-I${STAGING_INCDIR}/uapi -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include \
+    INCLUDE_DIR="-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include \
                  -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
                  -I${STAGING_KERNEL_DIR}/drivers/mxc/security/sahara2/include"
 
