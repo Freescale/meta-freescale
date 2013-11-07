@@ -1,0 +1,63 @@
+From be38dc1816d4de1a1b463988763f50226eb8417f Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Thu, 7 Nov 2013 10:50:51 -0200
+Subject: [PATCH] configure.ac: Fix checking for include headers in multiple
+ paths
+Organization: O.S. Systems Software LTDA.
+
+This fixes the support for proper detecting Freescale specific headers
+in include/linux and include/uapi.
+
+Without this patch we have the configure log with the same feature in
+'enabled' and 'disabled' state and it was impossible to override the
+CPPFLAGS.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ configure.ac | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index d74ee0e..f11c76c 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -58,13 +58,9 @@ AC_DEFUN([CHECK_DISABLE_FEATURE],
+         [use_[$1]=$enableval],
+         [use_[$1]=yes])
+     if test "$use_[$1]" = "yes"; then
+-        SAVE_CPPFLAGS="$CPPFLAGS"
+-        CPPFLAGS=`$PKG_CONFIG --cflags libfslaudiocodec`
+-        CPPFLAGS+=`$PKG_CONFIG --cflags libfslvideocodec`
+-        CPPFLAGS+=`$PKG_CONFIG --cflags libfslparser`
+-        CPPFLAGS+=`$PKG_CONFIG --cflags libfslvpuwrap`
+-        AC_CHECK_HEADERS([$4], HAVE_[$3]=yes, HAVE_[$3]=no && break)
+-        CPPFLAGS="$SAVE_CPPFLAGS"
++        for h in "$4"; do
++            AC_CHECK_HEADERS([$h], HAVE_[$3]=yes && break, HAVE_[$3]=no)
++        done
+         if test "x$HAVE_[$3]" = "xyes"; then
+             enabled_feature="$enabled_feature\n\t\t[$5]"
+         else
+@@ -283,12 +279,13 @@ CHECK_DISABLE_FEATURE(beep, [Disable beep audio decoder], [BEEP], [fsl_unia.h],
+ 
+ CHECK_DISABLE_FEATURE(v4lsink, [Disable fsl v4l sink], [V4L_SINK], [linux/videodev2.h], [plugin: v4lsink])
+ 
++# Allow headers to be inside include/uapi and include/linux
+ saved_CFLAGS="$CFLAGS"
+ CFLAGS="$CFLAGS $IPU_CFLAGS"
+-CHECK_DISABLE_FEATURE(isink, [Disable fsl ipu sink], [I_SINK], [linux/mxcfb.h], [plugin: isink])
+-CHECK_DISABLE_FEATURE(isink, [Disable fsl ipu sink], [I_SINK], [uapi/mxcfb.h], [plugin: isink])
+-CHECK_DISABLE_FEATURE(ipucsc, [Disable fsl ipu csc], [I_CSC], [linux/mxcfb.h], [plugin: ipucsc])
+-CHECK_DISABLE_FEATURE(ipucsc, [Disable fsl ipu csc], [I_CSC], [uapi/mxcfb.h], [plugin: ipucsc])
++
++CHECK_DISABLE_FEATURE(isink, [Disable fsl ipu sink], [I_SINK], [linux/mxcfb.h uapi/mxcfb.h], [plugin: isink])
++CHECK_DISABLE_FEATURE(ipucsc, [Disable fsl ipu csc], [I_CSC], [linux/mxcfb.h uapi/mxcfb.h], [plugin: ipucsc])
++
+ CFLAGS=$saved_CFLAGS
+ 
+ CHECK_DISABLE_FEATURE(ipulib, [Disable ipu lib], [IPU_LIB], [mxc_ipu_hl_lib.h], [library: libipu])
+-- 
+1.8.4.rc3
+
