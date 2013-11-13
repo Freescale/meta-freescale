@@ -64,11 +64,3 @@ do_install_append() {
 		rm -f $kerneldir/scripts/kconfig/kxgettext.o
 	fi
 }
-
-sysroot_stage_all_append() {
-	# Copy native binaries need for imx-test build onto sysroot
-	mkdir -p ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/basic \
-	         ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/mod
-	cp ${S}/scripts/basic/fixdep ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/basic
-	cp ${S}/scripts/mod/modpost ${SYSROOT_DESTDIR}${KERNEL_SRC_PATH}/scripts/mod
-}
