@@ -69,7 +69,7 @@ do_deploy () {
         symlink_name="imx-bootlets-`basename $f`-${MACHINE}"
 
         install -m 644 ${S}/$f ${DEPLOYDIR}/$full_name
-        (cd ${DEPLOYDIR} ; rm -f $symlink_nake ; ln -sf $full_name $symlink_name)
+        (cd ${DEPLOYDIR} ; rm -f $symlink_name ; ln -sf $full_name $symlink_name)
     done
 }
 
