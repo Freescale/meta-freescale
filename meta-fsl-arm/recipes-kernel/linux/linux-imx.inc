@@ -1,4 +1,4 @@
-# Copyright (C) 2012 O.S. Systems Software LTDA.
+# Copyright (C) 2012, 2013 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Linux kernel for imx platforms"
@@ -12,9 +12,6 @@ inherit kernel
 # Put a local version until we have a true SRCREV to point to
 LOCALVERSION ?= "+yocto"
 SCMVERSION ?= "y"
-
-# Add imx-test support hacks
-IMX_TEST_SUPPORT ?= "y"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git \
            file://defconfig \
@@ -49,18 +46,5 @@ do_configure_prepend() {
 		# Add GIT revision to the local version
 		head=`git rev-parse --verify --short HEAD 2> /dev/null`
 		printf "%s%s" +g $head > ${S}/.scmversion
-	fi
-}
-
-# install nedded headers for imx-test compilation
-do_install_append() {
-	if [ "${IMX_TEST_SUPPORT}" = "y" ]; then
-		# bounds.h may be used by a module and is currently missing
-		if [ -d include/generated ]; then
-			cp -r include/generated/* $kerneldir/include/generated/
-		fi
-
-		# Host architecture object file
-		rm -f $kerneldir/scripts/kconfig/kxgettext.o
 	fi
 }
