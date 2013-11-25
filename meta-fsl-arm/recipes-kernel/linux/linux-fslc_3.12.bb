@@ -6,6 +6,6 @@ include linux-fslc.inc
 PV = "3.12+git${SRCPV}"
 
 # patches-3.12
-SRCREV = "928c8b1f048424c90960c9c6275b3b34a850fe16"
+SRCREV = "9ab58339c5e84c34df82f8a2f68b8b033b9bd03f"
 
 COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6)"
