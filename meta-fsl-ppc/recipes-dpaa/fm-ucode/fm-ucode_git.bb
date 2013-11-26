@@ -5,22 +5,22 @@ LIC_FILES_CHKSUM = "file://EULA;md5=60037ccba533a5995e8d1a838d85799c"
 
 PR = "r1"
 
-COMPATIBLE_MACHINE = "(p1023rdb|p2041rdb|p3041ds|p4080ds|p5020ds|p5040ds|p5020ds-64b|p5040ds-64b|b4420qds|b4420qds-64b|b4860qds|b4860qds-64b|t4160qds|t4160qds-64b|t2080qds|t2080qds-64b|t4240qds|t4240qds-64b)"
 inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fm-ucode.git;nobranch=1"
-SRCREV = "c8fe73d734ed733f39c80aa3a8f167808ba3913c"
+SRCREV = "517267e5f9ca9ab13cb2e94e0a20f555f73885ee"
 
 S = "${WORKDIR}/git"
 
 ALLOW_EMPTY_${PN} = "1"
 do_install () {
     case ${MACHINE} in
-        b4420qds|b4420qds-64b|b4860qds|b4860qds-64b) UCODE=b4860qds;;
-        t4240qds|t4240qds-64b|t4160qds|t4160qds-64b) UCODE=t4240qds;;
-        p5020ds|p5020ds-64b) UCODE=p5020ds;;
-        p5040ds|p5040ds-64b) UCODE=p5040ds;;
-        t2080qds|t2080qds-64b) UCODE=t2080qds;;
+        t1040qds|t1040qds-64b|t1040rdb|t1040rdb-64b|t1042rdb|t1042rdb-64b) UCODE=t1040;;
+        t2080qds|t2080qds-64b|t2080rdb|t2080rdb-64b) UCODE=t2080;;
+        b4420qds|b4420qds-64b|b4860qds|b4860qds-64b) UCODE=b4860;;
+        t4240qds|t4240qds-64b|t4240rdb|t4240rdb-64b|t4160qds|t4160qds-64b) UCODE=t4240;;
+        p5020ds|p5020ds-64b) UCODE=p5020;;
+        p5040ds|p5040ds-64b) UCODE=p5040;;
         *) UCODE=${MACHINE};;
     esac
     UCODE=`echo $UCODE | sed -e 's,[a-zA-Z]*$,,'`
@@ -30,11 +30,12 @@ do_install () {
 
 do_deploy () {
     case ${MACHINE} in
-        b4420qds|b4420qds-64b|b4860qds|b4860qds-64b) UCODE=b4860qds;;
-        t4240qds|t4240qds-64b|t4160qds|t4160qds-64b) UCODE=t4240qds;;
-        p5020ds|p5020ds-64b) UCODE=p5020ds;;
-        p5040ds|p5040ds-64b) UCODE=p5040ds;;
-        t2080qds|t2080qds-64b) UCODE=t2080qds;;
+        t1040qds|t1040qds-64b|t1040rdb|t1040rdb-64b|t1042rdb|t1042rdb-64b) UCODE=t1040;;
+        t2080qds|t2080qds-64b|t2080rdb|t2080rdb-64b) UCODE=t2080;;
+        b4420qds|b4420qds-64b|b4860qds|b4860qds-64b) UCODE=b4860;;
+        t4240qds|t4240qds-64b|t4240rdb|t4240rdb-64b|t4160qds|t4160qds-64b) UCODE=t4240;;
+        p5020ds|p5020ds-64b) UCODE=p5020;;
+        p5040ds|p5040ds-64b) UCODE=p5040;;
         *) UCODE=${MACHINE};;
     esac
     UCODE=`echo $UCODE | sed -e 's,[a-zA-Z]*$,,'`
@@ -45,4 +46,5 @@ addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
+COMPATIBLE_MACHINE = "(p1023rdb|e500mc|e5500|e5500-64b|e6500|e6500-64b)"
 
