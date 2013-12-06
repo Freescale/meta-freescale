@@ -4,7 +4,7 @@
 require recipes-kernel/linux/linux-imx.inc
 require recipes-kernel/linux/linux-dtb.inc
 
-DEPENDS += "bc-native"
+DEPENDS += "lzop-native bc-native"
 
 DEFAULT_PREFERENCE = "-1"
 
