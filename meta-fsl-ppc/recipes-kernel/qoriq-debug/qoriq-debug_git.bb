@@ -5,7 +5,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=e29234dd5d40dc352cc60cc0c93437ba"
 
 inherit module autotools
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/qoriq-debug.git"
+SRCBRANCH = "sdk-v1.4.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/qoriq-debug.git;branch=${SRCBRANCH}"
 SRCREV = "08de2902af9a79ba9e436a284b8d7754b351f608"
 
 S = "${WORKDIR}/git"

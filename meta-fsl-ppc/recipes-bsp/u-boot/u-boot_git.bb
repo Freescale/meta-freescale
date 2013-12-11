@@ -11,7 +11,8 @@ DEPENDS = "boot-format-native virtual/${TARGET_PREFIX}gcc libgcc"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git \
+SRCBRANCH = "sdk-v1.4.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
 	file://Fix-the-depend-race-issue.patch"
 SRCREV = "831b30de4b768f0b3b7dbfa11739b14cea612d7e"
 

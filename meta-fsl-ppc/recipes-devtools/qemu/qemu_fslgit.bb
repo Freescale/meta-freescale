@@ -6,7 +6,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
 # This means v1.4 with FSL specific patches applied
 PV = "1.4+fsl"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git"
+SRCBRANCH = "sdk-v1.4.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;branch=${SRCBRANCH}"
 SRCREV = "8713c58725df407dbbedb48fa315248d0100720c"
 
 SRC_URI += " \

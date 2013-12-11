@@ -7,7 +7,8 @@ LIC_FILES_CHKSUM = "file://RELEASENOTES;beginline=8;endline=43;md5=5a7b22a2c96b5
 
 DEPENDS += "openssl"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git"
+SRCBRANCH = "sdk-v1.4.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;branch=${SRCBRANCH}"
 SRCREV = "e4035cbf54ed481147c6ae65c741ef75dc9ec37f"
 
 S = "${WORKDIR}/git"

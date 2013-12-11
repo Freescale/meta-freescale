@@ -3,7 +3,8 @@ LICENSE = "GPLv2"
 PR = "r6"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/boot-format.git"
+SRCBRANCH = "sdk-v1.4.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/boot-format.git;branch=${SRCBRANCH}"
 SRCREV = "d9bbfaba0c9316ae33455099c47bae429479e530"
 
 S = "${WORKDIR}/git"

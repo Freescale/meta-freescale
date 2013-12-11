@@ -5,7 +5,8 @@ LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=39e58bedc879163c9338596e52df5
 
 DEPENDS = "libedit"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git"
+SRCBRANCH = "sdk-v1.4.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;branch=${SRCBRANCH}"
 SRCREV = "80d8393a2033b3b0cc8f885702d7b288956f3a37"
 
 COMPATIBLE_MACHINE = "(p4080ds|t4240qds)"

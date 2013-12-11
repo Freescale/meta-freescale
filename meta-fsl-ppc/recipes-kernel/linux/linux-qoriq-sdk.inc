@@ -3,8 +3,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 PV = "3.8"
 INC_PR = "r11"
 
+SRCBRANCH = "sdk-v1.4.x"
 SRCREV = "4b66366af2d77de68f4bd6548d07421e13d3df05"
-SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git \
+SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;branch=${SRCBRANCH} \
 	  "
 
 KSRC ?= ""

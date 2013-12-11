@@ -13,7 +13,8 @@ COMPATIBLE_HOST ?= "(none)"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git"
+SRCBRANCH = "sdk-v1.4.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;branch=${SRCBRANCH}"
 SRCREV = "5d3c819bcca6d09dcf7b52b3f2855dda304a5997"
 
 S = "${WORKDIR}/git"
