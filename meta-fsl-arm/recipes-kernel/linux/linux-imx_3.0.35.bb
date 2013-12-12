@@ -10,6 +10,7 @@ COMPATIBLE_MACHINE = "(mx6)"
 # Revision of 4.1.0 branch
 SRCREV = "bdde708ebfde4a8c1d3829578d3f6481a343533a"
 LOCALVERSION = "-4.1.0+yocto"
+SRCBRANCH = "imx_3.0.35_4.1.0"
 
 # Patches need for Yocto and not applied by Freescale when doing 4.1.0 branch
 SRC_URI += "file://drm-vivante-Add-00-sufix-in-returned-bus-Id.patch \

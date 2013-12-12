@@ -10,6 +10,7 @@ COMPATIBLE_MACHINE = "(mx28|mx5)"
 # Revision of imx_2.6.35_maintain branch
 SRCREV = "903363ed80a113f2d1e3e96e508ecf128d9af323"
 LOCALVERSION = "-maintain+yocto"
+SRCBRANCH = "imx_2.6.35_maintain"
 
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
             file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
