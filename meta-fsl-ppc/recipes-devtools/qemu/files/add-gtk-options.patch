@@ -1,0 +1,13 @@
+--- a/configure.old	2013-12-11 21:24:44.422276752 -0600
++++ b/configure	2013-12-11 21:27:26.954335983 -0600
+@@ -897,6 +897,10 @@
+   ;;
+   --enable-virtio-blk-data-plane) virtio_blk_data_plane="yes"
+   ;;
++  --disable-gtk) gtk="no"
++  ;;
++  --enable-gtk) gtk="yes"
++  ;;
+   *) echo "ERROR: unknown option $opt"; show_help="yes"
+   ;;
+   esac

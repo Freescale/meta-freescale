@@ -14,6 +14,7 @@ SRC_URI += " \
    file://0001-doc-Fix-texinfo-table-markup-in-qemu-options.hx.patch \
    file://0002-docs-Fix-generating-qemu-doc.html-with-texinfo-5.patch \
    file://fdt_header.patch \
+   file://add-gtk-options.patch \
 "
 
 S = "${WORKDIR}/git"
