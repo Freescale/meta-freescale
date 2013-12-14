@@ -3,9 +3,8 @@ SECTION = "asf"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=9960b017720861b8c50c8c08723e57aa"
 
-SRCBRANCH = "sdk-v1.4.x"
-SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;branch=${SRCBRANCH}"
-SRCREV = "0b80c1df6a7490486d5106b28103598906793da0"
+SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;nobranch=1"
+SRCREV = "c262d7701af325b50cae54279a021ae7b5081e24"
 
 DEPENDS="virtual/kernel"
 
