@@ -13,19 +13,18 @@ S = "${WORKDIR}/git"
 
 # TODO: fix dtc to use the already built package
 SRC_URI = " \
-	git://git.freescale.com/ppc/sdk/hypervisor/hypervisor.git;name=hypervisor \
-	git://git.freescale.com/ppc/sdk/hypervisor/kconfig.git;name=kconfig;destsuffix=git/kconfig \
-	git://git.freescale.com/ppc/sdk/hypervisor/libos.git;name=libos;destsuffix=git/libos \
+	git://git.freescale.com/ppc/sdk/hypervisor/hypervisor.git;name=hypervisor;nobranch=1 \
+	git://git.freescale.com/ppc/sdk/hypervisor/kconfig.git;name=kconfig;destsuffix=git/kconfig;nobranch=1 \
+	git://git.freescale.com/ppc/sdk/hypervisor/libos.git;name=libos;destsuffix=git/libos;nobranch=1 \
 	git://www.jdl.com/software/dtc.git;name=dtc;destsuffix=dtc \
-	git://git.freescale.com/ppc/sdk/hypertrk.git;name=hypertrk;destsuffix=git/hypertrk \
-	file://0001-fix-sizeof-pointer-memaccess-error.patch \
+	git://git.freescale.com/ppc/sdk/hypertrk.git;name=hypertrk;destsuffix=git/hypertrk;nobranch=1 \
 	file://81-fsl-embedded-hv.rules \
 	  "
 
 SRCREV_FORMAT="hypervisor"
-SRCREV = "e6092cdf2a225c66c1ea46b1151eb828da29d139"
+SRCREV = "acbde15272d46a80bcf4a00d7d18ca4a86e49c16"
 SRCREV_kconfig = "a56025d4da992b856796b0eccac2e410d751dbac"
-SRCREV_libos = "5268371581f3ef3959be2a53235edfa6a8c6aa7c"
+SRCREV_libos = "4691387e15be78d140142104f30b3f356281c46a"
 SRCREV_dtc = "033089f29099bdfd5c2d6986cdb9fd07b16cfde0"
 SRCREV_hypertrk = "975c98b562186afbd3bbf103ae54b96cf9b3e533"
 
