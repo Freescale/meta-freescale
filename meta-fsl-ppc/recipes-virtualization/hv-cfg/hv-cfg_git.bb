@@ -15,13 +15,11 @@ DEPENDS += "dtc-native"
 # this package is specific to the machine itself
 INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_HOST_fslmachine = ".*"
-COMPATIBLE_HOST ?= "(none)"
 
 inherit deploy
 
-SRCREV = "d037ab9d5b9ecd58e10a7dac2b601d781ed9b5bf"
-SRC_URI = "git://git.freescale.com/ppc/sdk/hv-cfg.git"
+SRC_URI = "git://git.freescale.com/ppc/sdk/hv-cfg.git;nobranch=1"
+SRCREV = "39f1e585e0a70634e009b2e720407b27f787ace1"
 
 S = "${WORKDIR}/git"
 
@@ -43,4 +41,6 @@ addtask deploy after do_install
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 
+COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST ?= "(none)"
 ALLOW_EMPTY_${PN} = "1"
