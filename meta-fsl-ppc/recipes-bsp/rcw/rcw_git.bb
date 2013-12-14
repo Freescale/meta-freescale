@@ -8,14 +8,11 @@ LIC_FILES_CHKSUM = "file://rcw.py;beginline=8;endline=28;md5=9ba0b28922dd187b06b
 # this package is specific to the machine itself
 INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_HOST_fslmachine = ".*"
-COMPATIBLE_HOST ?= "(none)"
 
 inherit deploy
 
-SRCBRANCH = "sdk-v1.4.x"
-SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;branch=${SRCBRANCH}"
-SRCREV = "5d3c819bcca6d09dcf7b52b3f2855dda304a5997"
+SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;nobranch=1"
+SRCREV = "bc38737b5cb08336a075cb38481881f87b33b7a1"
 
 S = "${WORKDIR}/git"
 
@@ -39,4 +36,6 @@ addtask deploy after do_install
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 
+COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST ?= "(none)"
 ALLOW_EMPTY_${PN} = "1"
