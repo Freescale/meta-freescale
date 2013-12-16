@@ -56,11 +56,7 @@ FILES_${PN}-staticdev += "${libdir}/gstreamer-0.10/*.a"
 FILES_${PN}-gplay = "${bindir}/gplay"
 FILES_${PN}-libmfwsconf = "${libdir}/libmfwsconf${SOLIBS}"
 FILES_${PN}-libgplaycore = "${libdir}/libgplaycore${SOLIBS}"
-
-# FIXME: The plugins look for the .so file, so add it here
-FILES_${PN}-libgstfsl = "${libdir}/libgstfsl-0.10${SOLIBS} ${libdir}/libgstfsl-0.10${SOLIBSDEV}"
-INSANE_SKIP_${PN}-libgstfsl = "dev-so"
-
+FILES_${PN}-libgstfsl = "${libdir}/libgstfsl-0.10${SOLIBS}"
 FILES_${PN}-libme = "${libdir}/libme${SOLIBS}"
 FILES_${PN}-libgstbufmeta = "${libdir}/libgstbufmeta${SOLIBS}"
 FILES_${PN}-libmfwba =  "${libdir}/libmfwba${SOLIBS}"
