@@ -1,0 +1,30 @@
+From e559eb0a9573b9011c03efaf42364dce67af893a Mon Sep 17 00:00:00 2001
+From: Lauren Post <lauren.post@freescale.com>
+Date: Tue, 10 Sep 2013 10:58:28 -0500
+Subject: [PATCH] ENGR00279068-2 epdc_test_driver: Update header name change
+ of mxc_epdc.h
+
+Upstream-Status: Pending
+
+Signed-off-by: Lauren Post <lauren.post@freescale.com>
+Signed-off-by: Frank Li <Frank.li@freescale.com>
+---
+ module_test/epdc_test_driver.c |    4 ++--
+ 1 file changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/module_test/epdc_test_driver.c b/module_test/epdc_test_driver.c
+index fb15aec..447246f 100644
+--- a/module_test/epdc_test_driver.c
++++ b/module_test/epdc_test_driver.c
+@@ -36,7 +36,7 @@
+ 
+ #include <linux/device.h>
+ #include <linux/mxcfb.h>
+-#include <linux/mxcfb_epdc.h>
++#include <linux/mxcfb_epdc_kernel.h>
+ 
+ /* major number of device */
+ static int gMajor;
+-- 
+1.7.9.5
+
