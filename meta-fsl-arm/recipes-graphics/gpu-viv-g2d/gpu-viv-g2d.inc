@@ -13,7 +13,9 @@ inherit fsl-eula-unpack
 
 PE = "1"
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+# FIXME: Drop 'beta' suffix for GA release
+SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.0.0', '1.0.0-beta')}.bin;fsl-eula=true"
+S = "${WORKDIR}/${PN}-${@'${PV}'.replace('1.0.0', '1.0.0-beta')}"
 
 PACKAGES += "libg2d"
 
