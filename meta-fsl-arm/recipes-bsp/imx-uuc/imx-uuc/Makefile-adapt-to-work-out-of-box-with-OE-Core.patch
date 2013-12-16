@@ -1,0 +1,46 @@
+From 9087941bab06f31166283ac66f03b8c4d75e9db8 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Fri, 17 Jan 2014 10:04:56 -0200
+Subject: [PATCH] Makefile: adapt to work out of box with OE-Core
+Organization: O.S. Systems Software LTDA.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ Makefile | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 29ce91a..77f594e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,6 @@
+-CC=$(CROSS_COMPILE)gcc
+-AR=$(CROSS_COMPILE)AR
++CC ?= $(CROSS_COMPILE)gcc
++AR ?= $(CROSS_COMPILE)AR
++BINDIR ?= /usr/bin
+ 
+ all: uuc sdimage
+ 
+@@ -10,11 +11,11 @@ sdimage: sdimage.c
+ 	$(CC) sdimage.c -o sdimage
+ 
+ install:
+-	mkdir -p   $(DEST_DIR)
+-	cp linuxrc $(DEST_DIR)
+-	mkdir -p   $(DEST_DIR)/usr/bin
+-	cp uuc	   $(DEST_DIR)/usr/bin
+-	cp sdimage $(DEST_DIR)/usr/bin
++	install -d $(DESTDIR)$(BINDIR)
++	install -m 755 linuxrc $(DESTDIR)
++	install -m 755 uuc $(DESTDIR)$(BINDIR)
++	install -m 755 sdimage $(DESTDIR)$(BINDIR)
++
+ clean:
+ 	rm -f uuc
+ 	rm -f sdimage
+-- 
+1.8.5.2
+

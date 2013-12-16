@@ -1,0 +1,46 @@
+From 9cfd20c9767082c43670204994de20ba4c886584 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Mon, 20 Jan 2014 16:53:39 -0200
+Subject: [PATCH] linuxrc: Use devtmpfs and general cleanup
+Organization: O.S. Systems Software LTDA.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ linuxrc | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/linuxrc b/linuxrc
+index 88dd124..8ea34da 100755
+--- a/linuxrc
++++ b/linuxrc
+@@ -1,15 +1,14 @@
+ #!/bin/sh
+-#mkdir /sys /proc
++export PATH=/sbin:/bin:/usr/sbin:/usr/bin
++
+ mount -t sysfs none /sys
+ mount -t proc none /proc
+-export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+-echo "Starting UTP"
+-cd /home
+-#disable turn off display
+-mknod /dev/tty0 c 4 0
+-#get up-to-date mount information
+-ln -s /proc/mounts /etc/mtab
+-echo "disable turn off display"
++mount -t devtmpfs none /dev
++
++# disable turn off display
+ echo -e "\033[9;0]" > /dev/tty0
+-/etc/init.d/udev start
+-/usr/bin/uuc
++
++cd /home
++
++echo "Starting UTP"
++uuc
+-- 
+1.8.5.3
+
