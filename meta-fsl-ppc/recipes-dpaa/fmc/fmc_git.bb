@@ -24,7 +24,7 @@ EXTRA_OEMAKE_virtclass-native = 'FMCHOSTMODE=1 FMD_USPACE_HEADER_PATH="${STAGING
 PARALLEL_MAKE = ""
 
 do_compile () {
-    if [ "b4860qds" = "${MACHINE}" ] || [ "b4420qds" = "${MACHINE}" ];then
+    if [ "b4860qds" = "${MACHINE}" ] || [ "t2080qds" = "${MACHINE}" ] || [ "b4420qds" = "${MACHINE}" ];then 
         EXTRA_OEMAKE_PLATFORM="b4860qds"
     elif [ "t4240qds" = "${MACHINE}" ] || [ "t4160qds" = "${MACHINE}" ];then
         EXTRA_OEMAKE_PLATFORM="t4240qds"
