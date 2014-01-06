@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2013 Freescale Semiconductor
+# Copyright (C) 2011-2014 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "bootloader for imx platforms"
@@ -13,16 +13,16 @@ DEPENDS_mxs += "elftosb-native"
 
 PR = "r15"
 
-# Revision of imx_2.6.35_10.12.01 branch
+SRCBRANCH_mx5 = "imx_v2009.08_10.12.01"
 SRCREV_mxs = "e4437f1c192a1a68028e6fcff3f50ff50352041d"
 
-# Revision of imx_2.6.35_11.09.01 branch
+SRCBRANCH_mx5 = "imx_v2009.08_11.09.01"
 SRCREV_mx5 = "897922d01c812be802e4a928b937535ea1b8e076"
 SRC_URI_append_imx5 = " \
            file://mx53_loco_bootenv.patch \
 "
 
-# Revision of imx_3.0.35_4.0.0 branch
+SRCBRANCH_mx6 = "imx_v2009.08_3.0.35_4.0.0"
 SRCREV_mx6 = "5899674bf39544bec47e209649a723cf7348d3ba"
 SRC_URI_append_mx6 = " \
    file://mx6q_sabreauto-Fix-the-patch-for-the-default-environ.patch \
@@ -31,7 +31,7 @@ SRC_URI_append_mx6 = " \
    file://mx6dl_sabresd-Change-default-environment-to-work-wit.patch \
 "
 
-SRC_URI = "git://git.freescale.com/imx/uboot-imx.git"
+SRC_URI = "git://git.freescale.com/imx/uboot-imx.git;branch=${SRCBRANCH}"
 
 UBOOT_MACHINE_imx53qsb = "mx53_loco_config"
 UBOOT_MACHINE_imx53ard = "mx53_ard_ddr3_config"
