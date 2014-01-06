@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2013 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2014 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale Community mainline based Linux kernel"
@@ -12,6 +12,8 @@ inherit kernel
 require recipes-kernel/linux/linux-imx.inc
 require recipes-kernel/linux/linux-dtb.inc
 
-SRC_URI = "git://github.com/Freescale/linux-mainline.git \
+SRCBRANCH ?= ""
+
+SRC_URI = "git://github.com/Freescale/linux-mainline.git;branch=${SRCBRANCH} \
            file://defconfig"
 LOCALVERSION = "-fslc"
