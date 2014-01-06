@@ -8,7 +8,7 @@ DEPENDS_mx6s  = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6sl = "virtual/kernel imx-lib"
 
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=3f40d7994397109285ec7b81fdeb3b58"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
 INC_PR = "r7"
 
