@@ -2,18 +2,8 @@ DESCRIPTION = "U-boot bootloader"
 HOMEPAGE = "http://u-boot.sf.net"
 SECTION = "bootloaders"
 PROVIDES = "virtual/bootloader"
-LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
-LICENSE_t2080qds = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
-LIC_FILES_CHKSUM_t2080qds = " \
-    file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
-    file://Licenses/bsd-2-clause.txt;md5=6a31f076f5773aabd8ff86191ad6fdd5 \
-    file://Licenses/bsd-3-clause.txt;md5=4a1190eac56a9db675d58ebe86eaf50c \
-    file://Licenses/lgpl-2.0.txt;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
-    file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
-"
-LICENSE_t2080qds-64b = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
-LIC_FILES_CHKSUM_t2080qds-64b = " \
+LICENSE = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
+LIC_FILES_CHKSUM = " \
     file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
     file://Licenses/bsd-2-clause.txt;md5=6a31f076f5773aabd8ff86191ad6fdd5 \
     file://Licenses/bsd-3-clause.txt;md5=4a1190eac56a9db675d58ebe86eaf50c \
@@ -21,17 +11,14 @@ LIC_FILES_CHKSUM_t2080qds-64b = " \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-PR = "r30"
+PV = "2014.01+fslgit"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native libgcc ${@base_contains('TCMODE', 'external-fsl', '', 'virtual/${TARGET_PREFIX}gcc', d)}"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1 \
-	file://Fix-the-depend-race-issue.patch"
-SRCREV = "5438fc1ca159c8f5724272efd1289e6d49771e69"
-SRCREV_t2080qds = "fc03874549668c1a10f97c10b3a77cb0f236df19"
-SRCREV_t2080qds-64b = "fc03874549668c1a10f97c10b3a77cb0f236df19"
+SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1"
+SRCREV = "fe1d4f5739e752ad45ada6227a9fb19590af7194"
 
 python () {
     if d.getVar("TCMODE", True) == "external-fsl":
@@ -84,6 +71,11 @@ do_compile () {
     fi
 
     for board in ${UBOOT_MACHINES}; do
+        if ! grep -wq $board ${S}/boards.cfg;then
+            echo "WARNING: $board not supported in boards.cfg"
+            continue
+        fi
+
         oe_runmake O=${board} distclean
         oe_runmake O=${board} ${board}
         oe_runmake O=${board} all
@@ -101,7 +93,7 @@ do_compile () {
         if [ "x${UBOOT_TARGET}" != "x" ]; then
             # some boards' nand image was named as u-boot-with-spl
             if [ "${UBOOT_TARGET}" = "u-boot-nand" ];then
-                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS|BSC913)";then
+                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS|BSC913|C293)";then
                     UBOOT_SOURCE=u-boot-with-spl
                 fi
             elif [ "${UBOOT_TARGET}" = "u-boot-spi" ];then
@@ -131,6 +123,10 @@ do_install(){
     fi
 
     for board in ${UBOOT_MACHINES}; do
+        if ! grep -wq $board ${S}/boards.cfg;then
+            continue
+        fi
+
         case "${board}" in
             *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
             *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
@@ -153,6 +149,10 @@ do_deploy(){
     fi
 
     for board in ${UBOOT_MACHINES}; do
+        if ! grep -wq $board ${S}/boards.cfg;then
+            continue
+        fi
+
         case "${board}" in
             *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
             *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
