@@ -20,6 +20,8 @@ PLATFORM_mx51 = "IMX51"
 SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz \
            file://clocks.sh"
 
+inherit module-base
+
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 INCLUDE_DIR="-I${STAGING_INCDIR} \
@@ -29,6 +31,11 @@ INCLUDE_DIR="-I${STAGING_INCDIR} \
              -I${STAGING_KERNEL_DIR}/arch/arm/include \
              -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
              -I${STAGING_KERNEL_DIR}/drivers/mxc/security/sahara2/include"
+
+# Required so the fixdep binary is generated
+addtask make_scripts after do_patch before do_compile
+do_make_scripts[lockfiles] = "${TMPDIR}/kernel-scripts.lock"
+do_make_scripts[deptask] = "do_populate_sysroot"
 
 do_compile() {
         LDFLAGS="" make PLATFORM=${PLATFORM} LINUXPATH=${STAGING_KERNEL_DIR} \
