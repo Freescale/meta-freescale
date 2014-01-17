@@ -18,8 +18,7 @@ PLATFORM_mx6sl = "IMX6S"
 PLATFORM_mx53 = "IMX53"
 PLATFORM_mx51 = "IMX51"
 
-SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz \
-           file://clocks.sh"
+SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz"
 
 inherit module-base
 
@@ -48,8 +47,10 @@ do_compile() {
 do_install() {
         install -d ${D}/unit_tests
         install -m 755 test-utils.sh ${D}/unit_tests/test-utils.sh
-        install -m 0755 ${WORKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
         install -m 755 ${S}/platform/${PLATFORM}/* ${D}/unit_tests/
+        if [ -e ${WORKDIR}/clocks.sh ]; then
+                install -m 755 ${WORKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
+        fi
 }
 
 FILES_${PN} += "/unit_tests"

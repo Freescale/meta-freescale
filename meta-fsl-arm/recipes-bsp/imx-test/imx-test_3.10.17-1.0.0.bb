@@ -3,8 +3,7 @@
 include imx-test.inc
 
 # FIXME: Drop 'beta' suffix for GA release
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}_beta.tar.gz \
-           file://clocks.sh"
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}_beta.tar.gz"
 S="${WORKDIR}/${PN}-${PV}_beta"
 
 PE = "1"
