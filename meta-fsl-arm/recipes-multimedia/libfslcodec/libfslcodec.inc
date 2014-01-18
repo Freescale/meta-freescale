@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2013 Freescale Semiconductor
+# Copyright (C) 2012-2014 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
@@ -20,6 +20,13 @@ ALLOW_EMPTY_${PN}-meta = "1"
 
 # Choose between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d)}"
+
+# VPU Hardware acceleration
+VPU_SUPPORT = "--disable-vpu"
+VPU_SUPPORT_mx6 = "--enable-vpu"
+VPU_SUPPORT_mx6sl = "--disable-vpu"
+VPU_SUPPORT_mx5 = "--enable-vpu"
+EXTRA_OECONF += "${VPU_SUPPORT}"
 
 do_install_append() {
 	# FIXME: This link points to nowhere
