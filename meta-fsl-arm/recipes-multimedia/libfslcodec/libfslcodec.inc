@@ -45,10 +45,9 @@ python populate_packages_prepend() {
 
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
-    # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
     for p in d.getVar('PACKAGES', True).split():
-        d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel dev-so")
         d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
+        d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
 
     # Allow addition of all codecs in a image; useful specially for
     # debugging.
