@@ -13,7 +13,7 @@ PACKAGES_DYNAMIC = "${PN}-*"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
-PACKAGES += "${PN}-meta"
+PACKAGES += "${PN}-meta ${PN}-test-bin ${PN}-test-source"
 
 ALLOW_EMPTY_${PN} = "1"
 ALLOW_EMPTY_${PN}-meta = "1"
@@ -38,8 +38,6 @@ do_install_append() {
     done
     rmdir ${D}${libdir}/imx-mm/video-codec
 
-	# FIXME: Drop examples
-	rm -r ${D}${datadir}/imx-mm
 }
 
 python populate_packages_prepend() {
@@ -54,11 +52,18 @@ python populate_packages_prepend() {
     # the source we cannot fix it. Disable the insane check for now.
     for p in d.getVar('PACKAGES', True).split():
         d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
-        d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
+
+        if p == 'libfslcodec-test-bin':
+            # FIXME: includes the DUT .so files so we need to deploy those
+            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel libdir")
+        else:
+            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
 
     # Allow addition of all codecs in a image; useful specially for
     # debugging.
     codec_pkgs = oe.utils.packages_filter_out_system(d)
+    codec_pkgs = filter(lambda x: x not in ['libfslcodec-test-bin', 'libfslcodec-test-source'],
+                        codec_pkgs)
     d.appendVar('RDEPENDS_libfslcodec-meta', ' ' + ' '.join(codec_pkgs))
 }
 
@@ -68,6 +73,10 @@ FILES_${PN} = ""
 FILES_${PN}-dev += "${libdir}/imx-mm/*/*${SOLIBSDEV} \
                     ${libdir}/imx-mm/*/*/*${SOLIBSDEV} \
                     ${libdir}/pkgconfig/*.pc ${includedir}/imx-mm/*"
+
+FILES_${PN}-test-bin += "${datadir}/imx-mm/*/examples/*/bin"
+
+FILES_${PN}-test-source += "${datadir}/imx-mm/*"
 
 # FIXME: The wrap and lib names does not match
 FILES_${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm*_elinux.so.*"
