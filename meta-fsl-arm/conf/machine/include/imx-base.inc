@@ -93,8 +93,6 @@ PREFERRED_PROVIDER_virtual/libgles2_mx6 ?= "gpu-viv-bin-mx6q"
 
 PREFERRED_PROVIDER_virtual/kernel_mx3 ?= "linux-fslc"
 
-EXTRA_IMAGEDEPENDS = "u-boot"
-
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
 IMAGE_FSTYPES ?= "tar.bz2 ext3 sdcard"
 
