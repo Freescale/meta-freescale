@@ -12,6 +12,8 @@ RDEPENDS_${PN} = "libgcc bash"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git;nobranch=1"
 SRCREV = "cc8e332c64e5840ea2037624159801284434caba"
+SRCREV_t2080qds = "e6659c7a473fbaa64313c941d5fb10c723c64731"
+SRCREV_t2080qds-64b = "e6659c7a473fbaa64313c941d5fb10c723c64731"
 
 S = "${WORKDIR}/git"
 
