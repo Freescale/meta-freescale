@@ -5,6 +5,8 @@ INC_PR = "r11"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1"
 SRCREV = "3edd71eeb4e4ae27baf539e0a5f0c8e8261bf65b"
+SRCREV_t2080qds = "47914f6cf77197921c648c6ea8977974fa54d03a"
+SRCREV_t2080qds-64b = "47914f6cf77197921c648c6ea8977974fa54d03a"
 
 KSRC ?= ""
 S = '${@base_conditional("KSRC", "", "${WORKDIR}/git", "${KSRC}", d)}'
