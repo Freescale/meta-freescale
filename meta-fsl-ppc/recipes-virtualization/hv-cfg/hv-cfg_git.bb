@@ -20,6 +20,8 @@ inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/hv-cfg.git;nobranch=1"
 SRCREV = "39f1e585e0a70634e009b2e720407b27f787ace1"
+SRCREV_t2080qds = "46065e277a853ca3fa80040d3b00d7582b619a47"
+SRCREV_t2080qds-64b = "46065e277a853ca3fa80040d3b00d7582b619a47"
 
 S = "${WORKDIR}/git"
 
