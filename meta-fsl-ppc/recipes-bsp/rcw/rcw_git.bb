@@ -13,6 +13,8 @@ inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;nobranch=1"
 SRCREV = "bc38737b5cb08336a075cb38481881f87b33b7a1"
+SRCREV_t2080qds = "a694a89f4b57ce700b5b2ea84302c8618ece2f0f"
+SRCREV_t2080qds-64b = "a694a89f4b57ce700b5b2ea84302c8618ece2f0f"
 
 S = "${WORKDIR}/git"
 
