@@ -27,10 +27,11 @@ DEPENDS = "boot-format-native libgcc ${@base_contains('TCMODE', 'external-fsl', 
 
 inherit deploy
 
-SRCBRANCH = "sdk-v1.5.x"
-SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
+SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1 \
 	file://Fix-the-depend-race-issue.patch"
 SRCREV = "5438fc1ca159c8f5724272efd1289e6d49771e69"
+SRCREV_t2080qds = "fc03874549668c1a10f97c10b3a77cb0f236df19"
+SRCREV_t2080qds-64b = "fc03874549668c1a10f97c10b3a77cb0f236df19"
 
 python () {
     if d.getVar("TCMODE", True) == "external-fsl":
