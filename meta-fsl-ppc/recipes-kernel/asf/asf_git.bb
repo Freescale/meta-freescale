@@ -5,6 +5,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;nobranch=1"
 SRCREV = "c262d7701af325b50cae54279a021ae7b5081e24"
+SRCREV_t2080qds = "6af9df06e2747bdee91c21d1626b5b53b97849c5"
+SRCREV_t2080qds-64b = "6af9df06e2747bdee91c21d1626b5b53b97849c5"
 
 DEPENDS="virtual/kernel"
 RDEPENDS_${PN} += "ipsec-tools"
