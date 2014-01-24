@@ -26,7 +26,7 @@ PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx28 = "MX28"
 
 # Todo add a mechanism to map posible build targets
-EXTRA_OECONF = "PLATFORM=${PLATFORM} --disable-valgrind --disable-examples --disable-debug \
+EXTRA_OECONF = "PLATFORM=${PLATFORM} \
                 CPPFLAGS="-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include""
 
 PACKAGES =+ "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \
