@@ -4,6 +4,22 @@ SECTION = "bootloaders"
 PROVIDES = "virtual/bootloader"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
+LICENSE_t2080qds = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
+LIC_FILES_CHKSUM_t2080qds = " \
+    file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+    file://Licenses/bsd-2-clause.txt;md5=6a31f076f5773aabd8ff86191ad6fdd5 \
+    file://Licenses/bsd-3-clause.txt;md5=4a1190eac56a9db675d58ebe86eaf50c \
+    file://Licenses/lgpl-2.0.txt;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
+    file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
+"
+LICENSE_t2080qds-64b = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
+LIC_FILES_CHKSUM_t2080qds-64b = " \
+    file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+    file://Licenses/bsd-2-clause.txt;md5=6a31f076f5773aabd8ff86191ad6fdd5 \
+    file://Licenses/bsd-3-clause.txt;md5=4a1190eac56a9db675d58ebe86eaf50c \
+    file://Licenses/lgpl-2.0.txt;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
+    file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
+"
 
 PR = "r30"
 INHIBIT_DEFAULT_DEPS = "1"
