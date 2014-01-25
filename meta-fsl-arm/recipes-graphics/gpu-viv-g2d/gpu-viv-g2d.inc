@@ -3,7 +3,11 @@
 DESCRIPTION = "GPU Vivante G2D library and sample applications for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
+LIC_FILES_CHKSUM = "file://usr/include/g2d.h;endline=7;md5=861ebad4adc7236f8d1905338abd7eb2"
+
 PROVIDES += "virtual/libg2d"
+
+PACKAGES = "${PN} ${PN}-dev ${PN}-dbg"
 
 inherit fsl-eula-unpack
 
@@ -37,6 +41,5 @@ SOLIBS = "${SOLIBSDEV}"
 FILES_${PN} = "/opt"
 FILES_libg2d = "${libdir}/libg2d${SOLIBS}"
 FILES_${PN}-dev = "${includedir}"
-FILES_${PN}-dbg = "${libdir}/.debug/libg2d${SOLIBS}"
 
 COMPATIBLE_MACHINE = "(mx6)"
