@@ -1,0 +1,75 @@
+#!/bin/sh
+# -*- mode: shell-script; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+#
+# Copyright (C) 2014 O.S. Systems Software LTDA.
+# Authored-by:  Otavio Salvador <otavio@ossystems.com.br>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+usage() {
+	cat<<EOF
+Usage:
+
+ $0 <path> [machine]
+
+ Options:
+
+   path: directory to look for machine definition files
+   machine: optinal param to restrict the printing for a specific machine name
+
+
+EOF
+}
+
+path=$1
+specific_machine=$2
+
+if [ -z "$1" ]; then
+	usage
+	return 1
+fi
+
+maintained=`mktemp`
+orphan=`mktemp`
+
+machines=`find $path -wholename '*/conf/machine/*.conf'`
+for m in $machines; do
+	machine=`basename $m | sed 's,\.conf$,,g'`
+	if [ -n "$specific_machine" ] && [ "$machine" != "$specific_machine" ]; then
+		continue
+	fi
+
+	name=`sed -n 's,#@NAME:\s*\(.*\)\s*,\1,p' $m`
+	maint=`sed -n 's,#@MAINTAINER:\s*\(.*\)\s*,\1,p' $m`
+
+	if [ -n "$maint" ]; then
+		printf "%-25s  %-50s  %-50s\n" "$machine" "$name" "$maint" >> $maintained
+	else
+		printf "%-25s  %-50s  %-50s\n" "$machine" "$name" "Orphan" >> $orphan
+	fi
+done
+
+cat <<EOF
+=========================  ==================================================  ==================================================
+         Machine             Name                                               Maintainer
+=========================  ==================================================  ==================================================
+EOF
+sort -u -k 2 $maintained | grep -v $^
+
+sort -u -k 2 $orphan | grep -v $^
+
+cat <<EOF
+=========================  ==================================================  ==================================================
+EOF
+rm $maintained $orphan
