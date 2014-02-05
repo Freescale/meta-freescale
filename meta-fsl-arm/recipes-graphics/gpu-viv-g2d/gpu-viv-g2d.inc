@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Freescale Semiconductor
+# Copyright (C) 2013, 2014 Freescale Semiconductor
 
 DESCRIPTION = "GPU Vivante G2D library and sample applications for imx6"
 SECTION = "libs"
@@ -11,12 +11,10 @@ PE = "1"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-PACKAGES = "gpu-viv-g2d gpu-viv-g2d-dev gpu-viv-g2d-dbg"
+PACKAGES += "libg2d"
 
 # Inhibit warnings about files being stripped.
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-
-S = "${WORKDIR}/${PN}-${PV}"
 
 do_install () {
     install -d ${D}${libdir}
@@ -35,7 +33,8 @@ do_install () {
 REALSOLIBS := "${SOLIBS}"
 SOLIBS = "${SOLIBSDEV}"
 
-FILES_${PN} = "/opt ${libdir}/libg2d${SOLIBS} "
+FILES_${PN} = "/opt"
+FILES_libg2d = "${libdir}/libg2d${SOLIBS}"
 FILES_${PN}-dev = "${includedir}"
 FILES_${PN}-dbg = "${libdir}/.debug/libg2d${SOLIBS}"
 
