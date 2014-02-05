@@ -52,4 +52,6 @@ do_install() {
 }
 
 FILES_${PN} += "/unit_tests"
+RDEPENDS_${PN} = "bash"
+
 FILES_${PN}-dbg += "/unit_tests/.debug"
