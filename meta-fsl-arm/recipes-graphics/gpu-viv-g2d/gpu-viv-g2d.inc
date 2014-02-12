@@ -14,6 +14,7 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 PACKAGES += "libg2d"
 
 # Inhibit warnings about files being stripped.
+INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 do_install () {
