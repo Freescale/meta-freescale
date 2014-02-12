@@ -13,7 +13,7 @@ DEPENDS_mxs += "elftosb-native"
 
 PR = "r15"
 
-SRCBRANCH_mx5 = "imx_v2009.08_10.12.01"
+SRCBRANCH_mxs = "imx_v2009.08_10.12.01"
 SRCREV_mxs = "e4437f1c192a1a68028e6fcff3f50ff50352041d"
 
 SRCBRANCH_mx5 = "imx_v2009.08_11.09.01"
