@@ -23,6 +23,7 @@ SRC_URI = "${FSL_MIRROR}/imx-test-${PV}.tar.gz \
 
 inherit module-base
 
+INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 INCLUDE_DIR="-I${STAGING_INCDIR} \
