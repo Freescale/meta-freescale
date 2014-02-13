@@ -145,7 +145,7 @@ generate_imx_sdcard () {
 		src=`echo $item | awk -F':' '{ print $1 }'`
 		dst=`echo $item | awk -F':' '{ print $2 }'`
 
-		mcopy -i ${WORKDIR}/boot.img -s $src ::/$dst
+		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/$src ::/$dst
 	done
 
 	# Copy device tree file
