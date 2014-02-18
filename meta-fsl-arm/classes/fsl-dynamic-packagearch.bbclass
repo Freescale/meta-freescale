@@ -5,10 +5,10 @@
 # boards.
 #
 # MACHINE_SOCARCH_FILTER list all packages associated with
-# MACHINE_SOCARCH and, when match, will set PACHAGE_ARCH as MACHINE_SOCARCH
+# MACHINE_SOCARCH and, when match, will set PACKAGE_ARCH as MACHINE_SOCARCH
 #
 # MACHINE_ARCH_FILTER list all packages associated with
-# MACHINE_ARCH and, when match, will set PACHAGE_ARCH as MACHINE_ARCH
+# MACHINE_ARCH and, when match, will set PACKAGE_ARCH as MACHINE_ARCH
 #
 # For example, in meta-fsl-arm, this is used to share GPU packages for
 # i.MX53 boards (as all them share the AMD GPU) and i.MX6 based boards
