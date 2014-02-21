@@ -9,9 +9,7 @@ DEPENDS += "virtual/kernel"
 DEPENDS_virtclass-native = ""
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;nobranch=1"
-SRCREV = "1fce11f17a102820a20cdbf80f557d74b169fc4c"
-SRCREV_t2080qds = "49f50a4bf4f0e34708003d7b49ce629630b68489"
-SRCREV_t2080qds-64b = "49f50a4bf4f0e34708003d7b49ce629630b68489"
+SRCREV = "6efc100cf470f271a312860c06717928554e3492"
 
 S = "${WORKDIR}/git"
 
@@ -25,19 +23,27 @@ EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
         CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
 do_compile () {
-      oe_runmake libfm-${TARGET_ARCH_FMLIB}.a
+    if [ "t1040" = "${SOC_FAMILY}" -o "t1042" = "${SOC_FAMILY}" ];then
+        oe_runmake libfm-${TARGET_ARCH_FMLIB}-fmv3.a
+    else
+        oe_runmake libfm-${TARGET_ARCH_FMLIB}.a
+    fi
 }
 
 do_compile_virtclass-native () {
 }
 
 do_install () {
-      oe_runmake install-libfm-${TARGET_ARCH_FMLIB}
+    if [ "t1040" = "${SOC_FAMILY}" -o "t1042" = "${SOC_FAMILY}" ];then
+        oe_runmake install-libfm-${TARGET_ARCH_FMLIB}-fmv3
+    else
+        oe_runmake install-libfm-${TARGET_ARCH_FMLIB}
+    fi
 }
 
 do_install_virtclass-native () {
-      install -d ${D}/${includedir}
-      cp -rf ${S}/include/* ${D}/${includedir}
+    install -d ${D}/${includedir}
+    cp -rf ${S}/include/* ${D}/${includedir}
 }
 
 ALLOW_EMPTY_${PN} = "1"
