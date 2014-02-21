@@ -36,3 +36,4 @@ RDEPENDS_${PN} += "xserver-xorg-module-exa"
 
 INSANE_SKIP_${PN} = "ldflags"
 INSANE_SKIP_${PN}-dbg = "ldflags"
+COMPATIBLE_MACHINE = "(mx5)"
