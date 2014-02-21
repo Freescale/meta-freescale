@@ -12,26 +12,30 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;nobranch=1"
-SRCREV = "bc38737b5cb08336a075cb38481881f87b33b7a1"
-SRCREV_t2080qds = "a694a89f4b57ce700b5b2ea84302c8618ece2f0f"
-SRCREV_t2080qds-64b = "a694a89f4b57ce700b5b2ea84302c8618ece2f0f"
+SRCREV = "261b2355e9936ecb37b61e6f58dfc48dcfb805b3"
 
 S = "${WORKDIR}/git"
 
 export PYTHON
 
 do_install () {
-	make install
+    make install
 
-	M=`echo ${MACHINE} | sed s/-64b//g`
-	install -d ${D}/boot/rcw
-	cp -r ${S}/${M}/${M}/* ${D}/boot/rcw
+    M=`echo ${MACHINE} | sed s/-64b//g`
+    if [ "t1042rdb" = "${M}" ];then
+        M=${M}_pi
+    fi
+    install -d ${D}/boot/rcw
+    cp -r ${S}/${M}/${M}/* ${D}/boot/rcw
 }
 
 do_deploy () {
-	M=`echo ${MACHINE} | sed s/-64b//g`
-	install -d ${DEPLOYDIR}/rcw
-	cp -r ${S}/${M}/${M}/* ${DEPLOYDIR}/rcw
+    M=`echo ${MACHINE} | sed s/-64b//g`
+    if [ "t1042rdb" = "${M}" ];then
+        M=${M}_pi
+    fi
+    install -d ${DEPLOYDIR}/rcw
+    cp -r ${S}/${M}/${M}/* ${DEPLOYDIR}/rcw
 }
 addtask deploy after do_install
 
