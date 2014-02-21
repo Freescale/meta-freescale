@@ -27,6 +27,9 @@ XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
 
+# Use an older Xorg version until Vivante provides a valid GL API
+PREFERRED_VERSION_xserver-xorg_mx6 = "2:1.14.4"
+
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
