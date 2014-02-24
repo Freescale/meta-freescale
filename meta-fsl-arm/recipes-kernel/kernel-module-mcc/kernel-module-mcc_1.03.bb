@@ -1,6 +1,5 @@
 # Copyright (C) 2013 Timesys Corporation
-SUMMARY = "MCC KERNEL MODULE"
-DESCRIPTION = "Timesys Multicore communication kernel module"
+SUMMARY = "Multicore communication kernel module"
 LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c8959abcbbe4d6676c58eab9354019e6"
 
