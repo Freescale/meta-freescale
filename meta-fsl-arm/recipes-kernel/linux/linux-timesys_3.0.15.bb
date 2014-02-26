@@ -9,8 +9,8 @@ SRC_URI = "git://github.com/Timesys/linux-timesys.git;protocol=git;branch=${SRCB
            file://0002-mvf.c-Change-console-device-name-to-match-mainline-u.patch \
 "
 
-SRCBRANCH = "3.0.15_vybrid"
-SRCREV = "dea13473ce0c106fc56af798eefc7196bb150695"
+SRCBRANCH = "3.0.15_vybrid-twr"
+SRCREV = "50c4c848d6b8743894cfcec166db475ef6140504"
 LOCALVERSION = "-3.0-mvf+yocto"
 
 COMPATIBLE_MACHINE = "(vf60)"
