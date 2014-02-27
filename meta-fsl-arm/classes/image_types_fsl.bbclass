@@ -42,9 +42,9 @@ IMAGE_CMD_barebox.mxsboot-sdcard () {
 	barebox_bd_file=imx-bootlets-barebox_ivt.bd-${MACHINE}
 
 	# Ensure the files are generated
-	rm -f ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard
-	elftosb -f mx28 -z -c $barebox_bd_file -o ${IMAGE_NAME}.barebox.sb
-	mxsboot sd ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard
+	(cd ${DEPLOY_DIR_IMAGE}; rm -f ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard; \
+	 elftosb -f mx28 -z -c $barebox_bd_file -o ${IMAGE_NAME}.barebox.sb; \
+	 mxsboot sd ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard)
 }
 
 # U-Boot mxsboot generation to SD-Card
