@@ -15,8 +15,8 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 IMAGE_DEPENDS_linux.sb = "elftosb-native imx-bootlets virtual/kernel"
 IMAGE_LINK_NAME_linux.sb = ""
 IMAGE_CMD_linux.sb () {
-	kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
-	kernel_dtb="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.dtb || true`"
+	kernel_bin="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
+	kernel_dtb="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.dtb || true`"
 	linux_bd_file=imx-bootlets-linux.bd-${MACHINE}
 	if [ `basename $kernel_bin .bin` = `basename $kernel_dtb .dtb` ]; then
 		# When using device tree we build a zImage with the dtb
@@ -24,16 +24,16 @@ IMAGE_CMD_linux.sb () {
 		linux_bd_file=imx-bootlets-linux.bd-dtb-${MACHINE}
 		cat $kernel_bin $kernel_dtb \
 		    > $kernel_bin-dtb
-		rm -f ${KERNEL_IMAGETYPE}-${MACHINE}.bin-dtb
-		ln -s $kernel_bin-dtb ${KERNEL_IMAGETYPE}-${MACHINE}.bin-dtb
+		rm -f ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin-dtb
+		ln -s $kernel_bin-dtb ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin-dtb
 	fi
 
 	# Ensure the file is generated
-	rm -f ${IMAGE_NAME}.linux.sb
-	elftosb -z -c $linux_bd_file -o ${IMAGE_NAME}.linux.sb
+	rm -f ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.linux.sb
+	(cd ${DEPLOY_DIR_IMAGE}; elftosb -z -c $linux_bd_file -o ${IMAGE_NAME}.linux.sb)
 
 	# Remove the appended file as it is only used here
-	rm -f $kernel_bin-dtb
+	rm -f ${DEPLOY_DIR_IMAGE}/$kernel_bin-dtb
 }
 
 # IMX Bootlets barebox bootstream
