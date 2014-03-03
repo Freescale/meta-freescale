@@ -5,10 +5,10 @@ SECTION = "bootloader"
 DEPENDS = "openssl"
 PROVIDES = "u-boot-mxsboot"
 
-PV = "v2013.10"
+PV = "v2014.01"
 
-SRCREV = "079e214888279518ce061c71238a74a0c3db2c28"
-SRCBRANCH = "patches-2013.10"
+SRCREV = "490069b30d013a7d35ce7fe37b1ecd53f6c8e352"
+SRCBRANCH = "patches-2014.01"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
