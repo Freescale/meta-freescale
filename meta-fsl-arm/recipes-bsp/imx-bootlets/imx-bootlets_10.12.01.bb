@@ -2,7 +2,7 @@ DESCRIPTION = "i.MXS boot streams"
 LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
-PR = "r2"
+PR = "r5"
 
 SRC_URI = "http://download.ossystems.com.br/bsp/freescale/source/imx-bootlets-src-${PV}.tar.gz \
            file://linux-fix-paths.patch \
