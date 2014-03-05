@@ -12,7 +12,9 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 #
 
 # IMX Bootlets Linux bootstream
-IMAGE_DEPENDS_linux.sb = "elftosb-native imx-bootlets virtual/kernel"
+IMAGE_DEPENDS_linux.sb = "elftosb-native:do_populate_sysroot \
+                          imx-bootlets:do_deploy \
+                          virtual/kernel:do_deploy"
 IMAGE_LINK_NAME_linux.sb = ""
 IMAGE_CMD_linux.sb () {
 	kernel_bin="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
@@ -37,7 +39,10 @@ IMAGE_CMD_linux.sb () {
 }
 
 # IMX Bootlets barebox bootstream
-IMAGE_DEPENDS_barebox.mxsboot-sdcard = "elftosb-native u-boot-mxsboot-native imx-bootlets barebox"
+IMAGE_DEPENDS_barebox.mxsboot-sdcard = "elftosb-native:do_populate_sysroot \
+                                        u-boot-mxsboot-native:do_populate_sysroot \
+                                        imx-bootlets:do_deploy \
+                                        barebox:do_deploy"
 IMAGE_CMD_barebox.mxsboot-sdcard () {
 	barebox_bd_file=imx-bootlets-barebox_ivt.bd-${MACHINE}
 
@@ -49,7 +54,8 @@ IMAGE_CMD_barebox.mxsboot-sdcard () {
 
 # U-Boot mxsboot generation to SD-Card
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
-IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native u-boot"
+IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native:do_populate_sysroot \
+                                      u-boot:do_deploy"
 IMAGE_CMD_uboot.mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
                                              ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot.mxsboot-sdcard"
 
@@ -65,8 +71,10 @@ BAREBOX_ENV_SPACE ?= "512"
 # Set alignment to 4MB [in KiB]
 IMAGE_ROOTFS_ALIGNMENT = "4096"
 
-IMAGE_DEPENDS_sdcard = "parted-native dosfstools-native mtools-native \
-                        virtual/kernel ${IMAGE_BOOTLOADER}"
+IMAGE_DEPENDS_sdcard = "parted-native:do_populate_sysroot \
+                        dosfstools-native:do_populate_sysroot \
+                        mtools-native:do_populate_sysroot \
+                        virtual/kernel:do_deploy ${IMAGE_BOOTLOADER}:do_deploy"
 
 SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.sdcard"
 
