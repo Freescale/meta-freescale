@@ -1,0 +1,35 @@
+From: Javier Viguera <javier.viguera@digi.com>
+Date: Mon, 3 Mar 2014 17:10:41 +0100
+Subject: [PATCH] i.MX6: force egl visual ID 33
+
+Workaround mismatch between EGL binary libraries and QT for FSL MX6
+based platforms.
+
+Error:
+Warning: EGL suggested using X Visual ID 33 (ARGB0888) for EGL config 28 (ARGB0444), but this is incompatable
+Unable to find an X11 visual which matches EGL config 28
+
+Patch adapted from:
+
+http://wiki.wandboard.org/index.php/Integrate_Qt5_into_yocto_sato_image_on_Wandboard
+
+Upstream-Status: Inappropriate [workaround]
+
+Signed-off-by: Javier Viguera <javier.viguera@digi.com>
+---
+ src/gui/egl/qegl_x11.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gui/egl/qegl_x11.cpp b/src/gui/egl/qegl_x11.cpp
+index 196d0f77bf2d..8acf5a6c99d4 100644
+--- a/src/gui/egl/qegl_x11.cpp
++++ b/src/gui/egl/qegl_x11.cpp
+@@ -319,7 +319,7 @@ VisualID QEgl::getCompatibleVisualId(EGLConfig config)
+     }
+ 
+     qWarning("Unable to find an X11 visual which matches EGL config %d", configId);
+-    return (VisualID)0;
++    return (VisualID)33;
+ }
+ 
+ void qt_set_winid_on_widget(QWidget* w, Qt::HANDLE id)
