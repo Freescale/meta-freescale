@@ -3,7 +3,7 @@
 
 include linux-imx.inc
 
-PR = "${INC_PR}.14"
+PR = "r38"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
