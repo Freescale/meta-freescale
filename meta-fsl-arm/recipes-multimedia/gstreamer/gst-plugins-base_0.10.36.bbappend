@@ -1,7 +1,6 @@
 # Freescale gstplaybin2 rawvideo support
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-PRINC := "${@int(PRINC) + 1}"
 
 SRC_URI_append_mxs = " file://gstplaybin2-rawvideo-support.patch"
 SRC_URI_append_mx5 = " file://gstplaybin2-rawvideo-support.patch"
