@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+Name: glesv2
+Description: AMD OpenGL ES 2.0 library
+Requires.private:
+Version: 8.0
+Libs: -L${libdir} -lGLESv2 -lEGL
+Cflags: -I${includedir}

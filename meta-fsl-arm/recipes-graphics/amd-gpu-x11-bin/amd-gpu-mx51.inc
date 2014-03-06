@@ -1,4 +1,5 @@
 # Copyright (C) 2011, 2012, 2013 Freescale
+# Copyright (C) 2011-2014 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 LICENSE = "Proprietary"
@@ -10,6 +11,8 @@ LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd7696
 PROVIDES = "virtual/egl virtual/libgles1 virtual/libgles2"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
+           file://egl.pc \
+           file://glesv2.pc \
            file://fix-linux-build-check.patch"
 
 inherit fsl-eula-unpack
@@ -43,6 +46,11 @@ do_install () {
     # FIXME: Remove unkown files
     rm -r ${D}${libdir}/libcsi.a \
           ${D}${libdir}/libres.a
+
+    # FIXME: Add pkgconfig files
+    install -d ${D}${libdir}/pkgconfig
+    install -m 644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig
+    install -m 644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig
 }
 
 PACKAGES =+ "libgsl-fsl-mx51 libgsl-fsl-mx51-dev libgsl-fsl-mx51-dbg \
