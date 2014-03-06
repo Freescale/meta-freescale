@@ -1,5 +1,9 @@
 # Copyright (C) 2013 Eric Bénard - Eukréa Electromatique
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
+SRC_URI += "file://Force_egl_visual_ID_33.patch"
+
 HAS_X11 = "${@base_contains('DISTRO_FEATURES', 'x11', 1, 0, d)}"
 
 PACKAGECONFIG_GL_mx5 = "gles2"
@@ -7,6 +11,7 @@ PACKAGECONFIG_append_mx5 = " tslib icu examples"
 
 PACKAGECONFIG_GL_mx6 = "gles2"
 PACKAGECONFIG_append_mx6 = " tslib icu examples"
+QT_CONFIG_FLAGS_append_mx6 = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', '', d)}"
 
 do_configure_prepend_mx5() {
     sed -i 's!load(qt_config)!!' ${S}/mkspecs/linux-oe-g++/qmake.conf
