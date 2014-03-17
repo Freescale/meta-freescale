@@ -74,7 +74,8 @@ IMAGE_ROOTFS_ALIGNMENT = "4096"
 IMAGE_DEPENDS_sdcard = "parted-native:do_populate_sysroot \
                         dosfstools-native:do_populate_sysroot \
                         mtools-native:do_populate_sysroot \
-                        virtual/kernel:do_deploy ${IMAGE_BOOTLOADER}:do_deploy"
+                        virtual/kernel:do_deploy \
+                        ${@d.getVar('IMAGE_BOOTLOADER', True) and d.getVar('IMAGE_BOOTLOADER', True) + ':do_deploy' or ''}"
 
 SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.sdcard"
 
