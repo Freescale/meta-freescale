@@ -24,6 +24,7 @@ RDEPENDS_${PN}-base = " \
     util-linux \
     coreutils \
     dosfstools \
+    mmc-utils \
     base-files \
     base-passwd \
     busybox \
