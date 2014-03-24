@@ -11,7 +11,7 @@ PACKAGECONFIG_append_mx5 = " tslib icu examples"
 
 PACKAGECONFIG_GL_mx6 = "gles2"
 PACKAGECONFIG_append_mx6 = " tslib icu examples"
-QT_CONFIG_FLAGS_append_mx6 = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', '', d)}"
+QT_CONFIG_FLAGS_append_mx6 = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
 
 do_configure_prepend_mx5() {
     sed -i 's!load(qt_config)!!' ${S}/mkspecs/linux-oe-g++/qmake.conf
