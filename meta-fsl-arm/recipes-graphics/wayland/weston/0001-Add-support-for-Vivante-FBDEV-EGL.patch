@@ -1,0 +1,69 @@
+From bc8f870072b134ffc9b8047a53835b7b6f714d5d Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Tue, 11 Mar 2014 17:35:52 -0500
+Subject: [PATCH] Add support for Vivante FBDEV EGL
+
+Upstream-Status: Pending
+
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ src/compositor-fbdev.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
+index 0d96269..ada0019 100644
+--- a/src/compositor-fbdev.c
++++ b/src/compositor-fbdev.c
+@@ -53,6 +53,7 @@ struct fbdev_compositor {
+ 	struct udev_input input;
+ 	int use_pixman;
+ 	struct wl_listener session_listener;
++	EGLNativeDisplayType display;
+ };
+ 
+ struct fbdev_screeninfo {
+@@ -87,6 +88,9 @@ struct fbdev_output {
+ 	pixman_image_t *shadow_surface;
+ 	void *shadow_buf;
+ 	uint8_t depth;
++
++	EGLNativeDisplayType display;
++	EGLNativeWindowType  window;
+ };
+ 
+ struct fbdev_parameters {
+@@ -626,9 +630,13 @@ fbdev_output_create(struct fbdev_compositor *compositor,
+ 		if (pixman_renderer_output_create(&output->base) < 0)
+ 			goto out_shadow_surface;
+ 	} else {
+-		setenv("HYBRIS_EGLPLATFORM", "wayland", 1);
++		output->window = fbCreateWindow(compositor->display, -1, -1, 0, 0);
++	    if (output->window == NULL) {
++	       fprintf(stderr, "failed to create window\n");
++	       return 0;
++	    }
+ 		if (gl_renderer->output_create(&output->base,
+-					(EGLNativeWindowType)NULL) < 0) {
++					(EGLNativeWindowType)output->window) < 0) {
+ 			weston_log("gl_renderer_output_create failed.\n");
+ 			goto out_shadow_surface;
+ 		}
+@@ -920,8 +928,14 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
+ 			weston_log("could not load gl renderer\n");
+ 			goto out_launcher;
+ 		}
++		
++		compositor->display = fbGetDisplay(compositor->base.wl_display);
++	    if (compositor->display == NULL) {
++			weston_log("fbGetDisplay failed.\n");
++			goto out_launcher;
++	    }
+ 
+-		if (gl_renderer->create(&compositor->base, EGL_DEFAULT_DISPLAY,
++		if (gl_renderer->create(&compositor->base, compositor->display,
+ 					gl_renderer->opaque_attribs,
+ 					NULL) < 0) {
+ 			weston_log("gl_renderer_create failed.\n");
+-- 
+1.8.1.2
+
