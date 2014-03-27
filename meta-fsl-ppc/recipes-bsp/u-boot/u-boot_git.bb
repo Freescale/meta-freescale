@@ -74,8 +74,9 @@ do_compile () {
 
     if [ ! -e ${B}/.scmversion -a ! -e ${S}/.scmversion ]
     then
-        echo ${UBOOT_LOCALVERSION} > ${B}/.scmversion
-        echo ${UBOOT_LOCALVERSION} > ${S}/.scmversion
+        head=`git rev-parse --verify --short HEAD 2> /dev/null`
+        printf "%s%s%s" ${UBOOT_LOCALVERSION} +g $head > ${B}/.scmversion
+        printf "%s%s%s" ${UBOOT_LOCALVERSION} +g $head > ${S}/.scmversion
     fi
 
     if [ "x${UBOOT_MACHINES}" = "x" ]; then
