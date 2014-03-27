@@ -9,6 +9,8 @@ require recipes-kernel/linux/linux-qoriq-sdk.inc
 
 PR = "${INC_PR}.1"
 
+SCMVERSION ?= "y"
+
 DEPENDS_append = " libgcc"
 KERNEL_CC_append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD_append = " ${TOOLCHAIN_OPTIONS}"
@@ -23,7 +25,13 @@ do_configure_prepend() {
     	fi
 
 	# append sdk version in kernel version if SDK_VERSION is defined
-	if [ -n "${SDK_VERSION}" ]; then
-		echo "CONFIG_LOCALVERSION=\"-${SDK_VERSION}\"" >> ${S}/.config
-	fi
+        if [ -n "${SDK_VERSION}" ]; then
+                 echo "CONFIG_LOCALVERSION=\"-${SDK_VERSION}\"" >> ${S}/.config
+        fi
+    
+        # Add GIT revision to the local version 
+        if [ "${SCMVERSION}" = "y" ]; then
+               head=`git rev-parse --verify --short HEAD 2> /dev/null`
+               printf "%s%s" +g $head > ${S}/.scmversion
+        fi
 }
