@@ -1,0 +1,111 @@
+Fix the build errors listed below, when PREEMPT_RT_FULL is enabled
+
+Upstream-Status: Pending
+
+Signed-off-by: Jacob Kroon <jacob.kroon@mikrodidakt.se>
+
+  CC      drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.o
+In file included from include/linux/seqlock.h:29:0,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c: In function 'gckOS_CreateMutex':
+include/linux/mutex_rt.h:74:24: error: dereferencing 'void *' pointer [-Werror]
+  rt_mutex_init(&(mutex)->lock);   \
+                        ^
+include/linux/spinlock.h:104:9: note: in definition of macro 'raw_spin_lock_init'
+  do { *(lock) = __RAW_SPIN_LOCK_UNLOCKED(lock); } while (0)
+         ^
+include/linux/mutex_rt.h:74:2: note: in expansion of macro 'rt_mutex_init'
+  rt_mutex_init(&(mutex)->lock);   \
+  ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:3046:5: note: in expansion of macro 'mutex_init'
+     mutex_init(*Mutex);
+     ^
+include/linux/mutex_rt.h:74:24: error: request for member 'lock' in something not a structure or union
+  rt_mutex_init(&(mutex)->lock);   \
+                        ^
+include/linux/spinlock.h:104:9: note: in definition of macro 'raw_spin_lock_init'
+  do { *(lock) = __RAW_SPIN_LOCK_UNLOCKED(lock); } while (0)
+         ^
+include/linux/mutex_rt.h:74:2: note: in expansion of macro 'rt_mutex_init'
+  rt_mutex_init(&(mutex)->lock);   \
+  ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:3046:5: note: in expansion of macro 'mutex_init'
+     mutex_init(*Mutex);
+     ^
+In file included from include/linux/spinlock_types.h:18:0,
+                 from include/linux/spinlock.h:81,
+                 from include/linux/seqlock.h:29,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+include/linux/mutex_rt.h:74:24: error: dereferencing 'void *' pointer [-Werror]
+  rt_mutex_init(&(mutex)->lock);   \
+                        ^
+include/linux/mutex_rt.h:74:2: note: in expansion of macro 'rt_mutex_init'
+  rt_mutex_init(&(mutex)->lock);   \
+  ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:3046:5: note: in expansion of macro 'mutex_init'
+     mutex_init(*Mutex);
+     ^
+include/linux/mutex_rt.h:74:24: error: request for member 'lock' in something not a structure or union
+  rt_mutex_init(&(mutex)->lock);   \
+                        ^
+include/linux/mutex_rt.h:74:2: note: in expansion of macro 'rt_mutex_init'
+  rt_mutex_init(&(mutex)->lock);   \
+  ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:3046:5: note: in expansion of macro 'mutex_init'
+     mutex_init(*Mutex);
+     ^
+In file included from include/linux/mutex.h:28:0,
+                 from include/linux/notifier.h:13,
+                 from include/linux/memory_hotplug.h:6,
+                 from include/linux/mmzone.h:771,
+                 from include/linux/gfp.h:4,
+                 from include/linux/kmod.h:22,
+                 from include/linux/module.h:13,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c: In function 'gckOS_DeleteMutex':
+include/linux/mutex_rt.h:46:48: error: dereferencing 'void *' pointer [-Werror]
+ #define mutex_destroy(l)  rt_mutex_destroy(&(l)->lock)
+                                                ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:3091:5: note: in expansion of macro 'mutex_destroy'
+     mutex_destroy(Mutex);
+     ^
+include/linux/mutex_rt.h:46:48: error: request for member 'lock' in something not a structure or union
+ #define mutex_destroy(l)  rt_mutex_destroy(&(l)->lock)
+                                                ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:3091:5: note: in expansion of macro 'mutex_destroy'
+     mutex_destroy(Mutex);
+     ^
+cc1: all warnings being treated as errors
+make[4]: *** [drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.o] Error 1
+
+Index: git/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+===================================================================
+--- git.orig/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ git/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -3043,7 +3043,7 @@ gckOS_CreateMutex(
+     gcmkONERROR(gckOS_Allocate(Os, gcmSIZEOF(struct mutex), Mutex));
+ 
+     /* Initialize the mutex. */
+-    mutex_init(*Mutex);
++    mutex_init((struct mutex*)*Mutex);
+ 
+     /* Return status. */
+     gcmkFOOTER_ARG("*Mutex=0x%X", *Mutex);
+@@ -3088,7 +3088,7 @@ gckOS_DeleteMutex(
+     gcmkVERIFY_ARGUMENT(Mutex != gcvNULL);
+ 
+     /* Destroy the mutex. */
+-    mutex_destroy(Mutex);
++    mutex_destroy((struct mutex*)Mutex);
+ 
+     /* Free the mutex structure. */
+     gcmkONERROR(gckOS_Free(Os, Mutex));

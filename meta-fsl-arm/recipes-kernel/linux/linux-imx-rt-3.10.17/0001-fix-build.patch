@@ -1,0 +1,139 @@
+Fix the build errors listed below
+
+Upstream-Status: Inappropriate [other]
+Freescale does not currently support the real-time kernel
+
+Signed-off-by: Jacob Kroon <jacob.kroon@mikrodidakt.se>
+
+  CC      drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.o
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c: In function 'gckOS_WaitSignal':
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:7835:5: error: passing argument 1 of 'spin_lock_irq' from incompatible pointer type [-Werror]
+     spin_lock_irq(&signal->obj.wait.lock);
+     ^
+In file included from include/linux/seqlock.h:29:0,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+include/linux/spinlock.h:316:20: note: expected 'struct spinlock_t *' but argument is of type 'struct raw_spinlock_t *'
+ static inline void spin_lock_irq(spinlock_t *lock)
+                    ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:7867:9: error: passing argument 1 of '__add_wait_queue_tail' from incompatible pointer type [-Werror]
+         __add_wait_queue_tail(&signal->obj.wait, &wait);
+         ^
+In file included from include/linux/mmzone.h:9:0,
+                 from include/linux/gfp.h:4,
+                 from include/linux/kmod.h:22,
+                 from include/linux/module.h:13,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+include/linux/wait.h:120:20: note: expected 'struct wait_queue_head_t *' but argument is of type 'struct swait_head *'
+ static inline void __add_wait_queue_tail(wait_queue_head_t *head,
+                    ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:7879:13: error: passing argument 1 of 'spin_unlock_irq' from incompatible pointer type [-Werror]
+             spin_unlock_irq(&signal->obj.wait.lock);
+             ^
+In file included from include/linux/seqlock.h:29:0,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+include/linux/spinlock.h:341:20: note: expected 'struct spinlock_t *' but argument is of type 'struct raw_spinlock_t *'
+ static inline void spin_unlock_irq(spinlock_t *lock)
+                    ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:7881:13: error: passing argument 1 of 'spin_lock_irq' from incompatible pointer type [-Werror]
+             spin_lock_irq(&signal->obj.wait.lock);
+             ^
+In file included from include/linux/seqlock.h:29:0,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+include/linux/spinlock.h:316:20: note: expected 'struct spinlock_t *' but argument is of type 'struct raw_spinlock_t *'
+ static inline void spin_lock_irq(spinlock_t *lock)
+                    ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:7945:9: error: passing argument 1 of '__remove_wait_queue' from incompatible pointer type [-Werror]
+         __remove_wait_queue(&signal->obj.wait, &wait);
+         ^
+In file included from include/linux/mmzone.h:9:0,
+                 from include/linux/gfp.h:4,
+                 from include/linux/kmod.h:22,
+                 from include/linux/module.h:13,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+include/linux/wait.h:133:20: note: expected 'struct wait_queue_head_t *' but argument is of type 'struct swait_head *'
+ static inline void __remove_wait_queue(wait_queue_head_t *head,
+                    ^
+drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:7958:5: error: passing argument 1 of 'spin_unlock_irq' from incompatible pointer type [-Werror]
+     spin_unlock_irq(&signal->obj.wait.lock);
+     ^
+In file included from include/linux/seqlock.h:29:0,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:27,
+                 from drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:22:
+include/linux/spinlock.h:341:20: note: expected 'struct spinlock_t *' but argument is of type 'struct raw_spinlock_t *'
+ static inline void spin_unlock_irq(spinlock_t *lock)
+                    ^
+cc1: all warnings being treated as errors
+make[4]: *** [drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.o] Error 1
+
+Index: git/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+===================================================================
+--- git.orig/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ git/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -7832,7 +7832,7 @@ gckOS_WaitSignal(
+ 
+     might_sleep();
+ 
+-    spin_lock_irq(&signal->obj.wait.lock);
++    raw_spin_lock_irq(&signal->obj.wait.lock);
+ 
+     if (signal->obj.done)
+     {
+@@ -7862,9 +7862,8 @@ gckOS_WaitSignal(
+             : Wait * HZ / 1000;
+ #endif
+ 
+-        DECLARE_WAITQUEUE(wait, current);
+-        wait.flags |= WQ_FLAG_EXCLUSIVE;
+-        __add_wait_queue_tail(&signal->obj.wait, &wait);
++        DEFINE_SWAITER(wait);
++        swait_prepare_locked(&signal->obj.wait, &wait);
+ 
+         while (gcvTRUE)
+         {
+@@ -7876,9 +7875,9 @@ gckOS_WaitSignal(
+             }
+ 
+             __set_current_state(TASK_INTERRUPTIBLE);
+-            spin_unlock_irq(&signal->obj.wait.lock);
++            raw_spin_unlock_irq(&signal->obj.wait.lock);
+             timeout = schedule_timeout(timeout);
+-            spin_lock_irq(&signal->obj.wait.lock);
++            raw_spin_lock_irq(&signal->obj.wait.lock);
+ 
+             if (signal->obj.done)
+             {
+@@ -7942,7 +7941,7 @@ gckOS_WaitSignal(
+             }
+         }
+ 
+-        __remove_wait_queue(&signal->obj.wait, &wait);
++        swait_finish_locked(&signal->obj.wait, &wait);
+ 
+ #if gcdDETECT_TIMEOUT
+         if (complained)
+@@ -7955,7 +7954,7 @@ gckOS_WaitSignal(
+ #endif
+     }
+ 
+-    spin_unlock_irq(&signal->obj.wait.lock);
++    raw_spin_unlock_irq(&signal->obj.wait.lock);
+ 
+ OnError:
+     /* Return status. */
