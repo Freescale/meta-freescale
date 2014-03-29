@@ -7,11 +7,8 @@ SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=19f5925343fa3da65596eeaa4ddb5fd3"
 
-X11_DEPENDS = "virtual/libx11 libxdamage libxext libxfixes mesa"
-WL_DEPENDS = "wayland"
-
-DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', '${X11_DEPENDS}', \
-                             base_contains('DISTRO_FEATURES', 'wayland', '${WL_DEPENDS}', \
+DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
+                             base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
                                            '', d), d)}"
 
 PROVIDES += "virtual/wayland-egl virtual/libgl virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2 virtual/libopenvg"
