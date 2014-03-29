@@ -27,8 +27,10 @@ XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
 
-# Use an older Xorg version until Vivante provides a valid GL API
+# FIXME: Use older versions until Vivante GPU is made compatible
 PREFERRED_VERSION_xserver-xorg_mx6 = "2:1.14.4"
+PREFERRED_VERSION_directfb_mx6 = "1.6.3"
+PREFERRED_VERSION_directfb-examples_mx6 = "1.6.0"
 
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
