@@ -6,4 +6,5 @@ CFLAGS_append_mx6 = " -DLINUX \
                                                        '-DEGL_API_DFB', '-DEGL_API_FB', d),d),d)}"
 
 
-PACKAGECONFIG_mx6 ??= "egl glesv2"
+PACKAGECONFIG_mx6 = "egl glesv2 \
+                     ${@base_contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)}"
