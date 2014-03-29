@@ -205,7 +205,6 @@ FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
 FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-mx6-dev = "${libdir}/libGL${SOLIBSDEV}"
 FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
-RDEPENDS_libgl-mx6-dev = "libgl-mesa-dev"
 
 # libEGL needs to open libGLESv1.so
 INSANE_SKIP_libgles-mx6 += "dev-so"
