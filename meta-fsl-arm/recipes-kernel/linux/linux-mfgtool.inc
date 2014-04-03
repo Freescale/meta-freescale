@@ -3,7 +3,7 @@
 # This makes a separated binary set for Manufacturing Tool use
 # without clobbering the Linux Kernel used for normal use.
 #
-# This file must to be included after the original linux-imx.inc file
+# This file must be included after the original linux-imx.inc file
 # as it overrides the needed values.
 #
 # Copyright (C) 2014 O.S. Systems Software LTDA.
