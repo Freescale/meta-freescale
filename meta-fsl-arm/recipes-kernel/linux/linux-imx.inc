@@ -1,9 +1,6 @@
 # Copyright (C) 2012, 2014 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-SUMMARY = "Linux Kernel provided and supported by Freescale"
-DESCRIPTION = "Linux Kernel provided and supported by Freescale with focus on \
-i.MX Family Reference Boards. It includes support for many IPs such as GPU, VPU and IPU."
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
