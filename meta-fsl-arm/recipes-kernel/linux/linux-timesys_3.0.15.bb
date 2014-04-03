@@ -2,6 +2,8 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 include linux-imx.inc
 
+SUMMARY = "Linux Kernel with added drivers and board support for Vybrid-based platforms"
+
 # Revision of 3.0.15_vybrid branch
 SRC_URI = "git://github.com/Timesys/linux-timesys.git;protocol=git;branch=${SRCBRANCH} \
            file://defconfig \
