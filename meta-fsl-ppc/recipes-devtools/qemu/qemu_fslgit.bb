@@ -3,24 +3,16 @@ require recipes-devtools/qemu/qemu.inc
 LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
                     file://COPYING.LIB;endline=24;md5=c04def7ae38850e7d3ef548588159913"
 
-# This means v1.4 with FSL specific patches applied
-PV = "1.4+fsl"
+# This means QEMU v1.7 with FSL specific patches applied
+PV = "1.7+fsl"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;nobranch=1"
-SRCREV = "99231018edf75522aea2630e4089c9163566fb73"
-
-SRC_URI += " \
-   file://0001-doc-Fix-texinfo-table-markup-in-qemu-options.hx.patch \
-   file://0002-docs-Fix-generating-qemu-doc.html-with-texinfo-5.patch \
-   file://fdt_header.patch \
-   file://add-gtk-options.patch \
-   file://add-libssh2-options.patch \
-"
+SRCREV = "9e38e640275beabf6468a04cec5c403b2ac566ad"
 
 S = "${WORKDIR}/git"
 
 QEMU_TARGETS = "ppc"
-PPC_OECONF = '${SDL} --cross-prefix=${TARGET_PREFIX} --disable-werror --disable-vnc --audio-drv-list="" --audio-card-list="" --disable-bluez --disable-curl'
+PPC_OECONF = '${SDL} --cross-prefix=${TARGET_PREFIX} --disable-werror --disable-vnc --disable-bluez --disable-curl --enable-libusb'
 EXTRA_OECONF_e5500-64b = "--target-list=ppc64-softmmu ${PPC_OECONF}"
 EXTRA_OECONF_e6500-64b = "--target-list=ppc64-softmmu ${PPC_OECONF}"
 EXTRA_OECONF_e6500 = "--target-list=ppc64-softmmu ${PPC_OECONF}"

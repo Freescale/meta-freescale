@@ -7,7 +7,7 @@ MACHINE_EXTRA_RRECOMMENDS = "u-boot udev-extraconf kernel-modules"
 
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq-sdk"
 PREFERRED_VERSION_virtual/kernel ?= "3.0.34"
-PREFERRED_VERSION_qemu = "1.4+fsl"
+PREFERRED_VERSION_qemu = "1.7+fsl"
 
 KERNEL_IMAGETYPE ?= "uImage"
 # disable the images below for now
