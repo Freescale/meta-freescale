@@ -11,7 +11,7 @@ DEPENDS += "lzop-native bc-native"
 
 SRCBRANCH = "imx_3.10.17_1.0.0_beta"
 SRCREV = "ec1af9f898d234001d8fc7d720382de34cb6580f"
-LOCALVERSION = "-rt-1.0.0_beta"
+LOCALVERSION = "-1.0.0_beta"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
