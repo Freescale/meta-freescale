@@ -1,4 +1,4 @@
-# Copyright (C) 2012, 2013 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2014 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require recipes-bsp/u-boot/u-boot.inc
@@ -22,7 +22,7 @@ S = "${WORKDIR}/git"
 #        used for generating the boot logo and other tools used
 #        during the build process.
 EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
-                 HOSTLDFLAGS="-L${STAGING_BASE_LIBDIR_NATIVE} -L${STAGING_LIBDIR_NATIVE}" \
+                 HOSTLDFLAGS="${BUILD_LDFLAGS}" \
                  HOSTSTRIP=true'
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
