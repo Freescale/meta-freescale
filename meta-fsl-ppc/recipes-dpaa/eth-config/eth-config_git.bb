@@ -1,7 +1,7 @@
 DESCRIPTION = "Ethernet Configuration Files"
 SECTION = "eth-config"
 LICENSE = "Freescale-EULA"
-LIC_FILES_CHKSUM = "file://COPYING;md5=cf02dc8eb5ac4a76f3812826520dea87"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ee9cce4f1b396a50469f4dbde064e866"
 
 PR = "r2"
 
