@@ -4,7 +4,6 @@ SECTION = "base"
 DEPENDS_mx5   = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6q  = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6dl = "virtual/kernel imx-lib imx-vpu"
-DEPENDS_mx6s  = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6sl = "virtual/kernel imx-lib"
 DEPENDS_mxs   = "virtual/kernel"
 

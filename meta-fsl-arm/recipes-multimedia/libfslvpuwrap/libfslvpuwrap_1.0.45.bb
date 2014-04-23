@@ -18,4 +18,4 @@ do_install_append() {
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6s)"
+COMPATIBLE_MACHINE = "(mx6q|mx6dl)"
