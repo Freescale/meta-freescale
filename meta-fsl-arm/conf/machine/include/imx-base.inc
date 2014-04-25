@@ -55,7 +55,6 @@ INHERIT += "fsl-dynamic-packagearch"
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE_append_mx6q = " firmware-imx-vpu-imx6q"
-MACHINE_FIRMWARE_append_mx6d = " firmware-imx-vpu-imx6d"
 MACHINE_FIRMWARE_append_mx6dl = " firmware-imx-vpu-imx6d"
 MACHINE_FIRMWARE_append_mx53 = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_append_mx51 = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
