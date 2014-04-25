@@ -21,21 +21,31 @@ usage() {
 	cat<<EOF
 Usage:
 
- $0 <path> [machine]
+ $0 [ --machine=<machine> ] <path> ...
+
+   <path>
+       Directory(ies) where to look for machine definition files.
 
  Options:
 
-   path: directory to look for machine definition files
-   machine: optinal param to restrict the printing for a specific machine name
-
+   --machine=<machine>
+      Optional param to restrict the printing for a specific machine name.
 
 EOF
 }
 
-path=$1
-specific_machine=$2
+path=
+specific_machine=
 
-if [ -z "$1" ]; then
+for opt in ${*}; do
+    if [ "`echo $opt | cut -b-10`" = "--machine=" ]; then
+        specific_machine="`echo $opt | cut -b11-`"
+    else
+        path="$path $opt"
+    fi
+done
+
+if [ -z "$path" ]; then
 	usage
 	return 1
 fi
