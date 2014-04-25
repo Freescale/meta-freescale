@@ -31,15 +31,23 @@ Usage:
    --machine=<machine>
       Optional param to restrict the printing for a specific machine name.
 
+   --dump
+      Generate output in a format which is easier to parse.  Columns
+      are separated by TAB.  Empty cells for the "Maintainer" column
+      represent "no maintainer".
+
 EOF
 }
 
 path=
 specific_machine=
+dump_mode=
 
 for opt in ${*}; do
     if [ "`echo $opt | cut -b-10`" = "--machine=" ]; then
         specific_machine="`echo $opt | cut -b11-`"
+    elif [ "$opt" = "--dump" ]; then
+        dump_mode=1
     else
         path="$path $opt"
     fi
@@ -63,23 +71,37 @@ for m in $machines; do
 	name=`sed -n 's,#@NAME:\s*\(.*\)\s*,\1,p' $m`
 	maint=`sed -n 's,#@MAINTAINER:\s*\(.*\)\s*,\1,p' $m`
 
-	if [ -n "$maint" ]; then
-		printf "%-25s  %-50s  %-50s\n" "$machine" "$name" "$maint" >> $maintained
-	else
-		printf "%-25s  %-50s  %-50s\n" "$machine" "$name" "Orphan" >> $orphan
-	fi
+    if [ -n "$dump_mode" ]; then
+	    if [ -n "$maint" ]; then
+		    echo -e "${machine}\t${name}\t${maint}" >> $maintained
+	    else
+		    echo -e "${machine}\t${name}" >> $orphan
+	    fi
+    else
+	    if [ -n "$maint" ]; then
+		    printf "%-25s  %-50s  %-50s\n" "$machine" "$name" "$maint" >> $maintained
+	    else
+		    printf "%-25s  %-50s  %-50s\n" "$machine" "$name" "Orphan" >> $orphan
+	    fi
+    fi
 done
 
-cat <<EOF
+display() {
+    sort -u -k 2 $maintained | grep -v $^
+    sort -u -k 2 $orphan | grep -v $^
+}
+
+if [ -n "$dump_mode" ]; then
+    display
+else
+    cat <<EOF
 =========================  ==================================================  ==================================================
          Machine             Name                                               Maintainer
 =========================  ==================================================  ==================================================
 EOF
-sort -u -k 2 $maintained | grep -v $^
-
-sort -u -k 2 $orphan | grep -v $^
-
-cat <<EOF
+    display
+    cat <<EOF
 =========================  ==================================================  ==================================================
 EOF
+fi
 rm $maintained $orphan
