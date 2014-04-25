@@ -47,7 +47,7 @@ done
 
 if [ -z "$path" ]; then
 	usage
-	return 1
+	exit 1
 fi
 
 maintained=`mktemp`
