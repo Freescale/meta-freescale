@@ -1,7 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PRINC := "${@int(PRINC) + 2}"
-
 SRC_URI_append = " file://${@bb.utils.contains("TUNE_FEATURES", "e6500", \
     "72-fsl-dpaa-persistent-networking.rules", "71-fsl-dpaa-persistent-networking.rules", d)}"
 
