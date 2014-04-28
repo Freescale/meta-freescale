@@ -2,13 +2,9 @@
 
 include imx-lib.inc
 
-# FIXME: Drop 'beta' suffix for GA release
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}_beta.tar.gz"
-S="${WORKDIR}/${PN}-${PV}_beta"
-
 PE = "1"
 
-SRC_URI[md5sum] = "6c6769c2e6a2918a57a3754adcebff12"
-SRC_URI[sha256sum] = "abb025eeab9e8191f4089e70716a1695dc263c5b68f42a8b28329e81889b3312"
+SRC_URI[md5sum] = "8e3346d5f33b5aa5f915a0dd8aa99cc9"
+SRC_URI[sha256sum] = "f42605971977e5fe1ed9e7ce17ea3f97586a23fbc60fa0f679940d379c72303e"
 
 COMPATIBLE_MACHINE = "(mx6)"
