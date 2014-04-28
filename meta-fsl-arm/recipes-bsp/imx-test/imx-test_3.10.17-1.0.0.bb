@@ -2,16 +2,12 @@
 
 include imx-test.inc
 
-# FIXME: Drop 'beta' suffix for GA release
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}_beta.tar.gz"
-S="${WORKDIR}/${PN}-${PV}_beta"
-
 SRC_URI_append_mx5 = " file://revert_epdc_hdr_change.patch \
                        file://clocks.sh"
 SRC_URI_append_mxs = " file://revert_epdc_hdr_change.patch \
                        file://clocks.sh"
 
-SRC_URI[md5sum] = "fd3de6e882a7b5425853083ec8d4951e"
-SRC_URI[sha256sum] = "1e86cfe800fbf2db2a52ce0155ab2d2ba70913a30974b3f66879198eaf9da21b"
+SRC_URI[md5sum] = "3e066a84878b93ee52e54a040a7b2b61"
+SRC_URI[sha256sum] = "21bedcbd707e392d8558ec5a73095ca15b4c95ab66deabb06876aaf3f8dac2c4"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6)"
