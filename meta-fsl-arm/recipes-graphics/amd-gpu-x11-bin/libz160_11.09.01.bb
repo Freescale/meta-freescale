@@ -29,3 +29,5 @@ INSANE_SKIP_${PN} = "ldflags"
 INSANE_SKIP_${PN}-dev = "ldflags"
 FILES_${PN} = "${libdir}/*.so"
 FILES_${PN}-dev = "${includedir}"
+
+COMPATIBLE_MACHINE = "(mx5)"
