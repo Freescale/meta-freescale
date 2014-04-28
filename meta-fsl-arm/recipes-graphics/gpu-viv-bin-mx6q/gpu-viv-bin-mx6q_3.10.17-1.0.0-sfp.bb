@@ -3,7 +3,7 @@
 
 require gpu-viv-bin-mx6q.inc
 
-SRC_URI[md5sum] = "7bc440bd2adf2cb2c463f41f01e0412e"
-SRC_URI[sha256sum] = "c6fc0b387879f5826edbb0d51ea2726eb16031a3aed77e88833d3fb7de445a7a"
+SRC_URI[md5sum] = "d1137c148aff0a25bd19feca889329c2"
+SRC_URI[sha256sum] = "e6af458221041d2d1ce6338a666969bbda73aa26270b243cfc4d22f9c0d913c9"
 
 PACKAGE_FP_TYPE = "softfp"

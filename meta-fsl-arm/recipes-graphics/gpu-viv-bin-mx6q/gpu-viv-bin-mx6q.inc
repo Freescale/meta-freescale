@@ -17,8 +17,7 @@ PE = "1"
 
 inherit fsl-eula-unpack
 
-# FIXME: Drop 'beta' suffix for GA release
-SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.0.0', '1.0.0-beta')}.bin;fsl-eula=true \
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://egl.pc \
            file://egl_x11.pc \
            file://glesv1_cm.pc \
@@ -32,7 +31,6 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.0.0', '1.0.0-beta')}.bin;fs
            file://wayland-viv.pc \
            file://directfbrc \
           "
-S = "${WORKDIR}/${PN}-${@'${PV}'.replace('1.0.0', '1.0.0-beta')}"
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
