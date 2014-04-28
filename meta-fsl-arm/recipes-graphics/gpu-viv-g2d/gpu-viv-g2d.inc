@@ -13,9 +13,7 @@ inherit fsl-eula-unpack
 
 PE = "1"
 
-# FIXME: Drop 'beta' suffix for GA release
-SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.0.0', '1.0.0-beta')}.bin;fsl-eula=true"
-S = "${WORKDIR}/${PN}-${@'${PV}'.replace('1.0.0', '1.0.0-beta')}"
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
 PACKAGES += "libg2d"
 
@@ -41,7 +39,7 @@ REALSOLIBS := "${SOLIBS}"
 SOLIBS = "${SOLIBSDEV}"
 
 FILES_${PN} = "/opt"
-FILES_libg2d = "${libdir}/libg2d${SOLIBS}"
+FILES_libg2d =  "${libdir}/libg2d-viv${SOLIBS} ${libdir}/libg2d${SOLIBS}"
 FILES_${PN}-dev = "${includedir}"
 
 COMPATIBLE_MACHINE = "(mx6)"
