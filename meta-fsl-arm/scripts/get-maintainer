@@ -73,9 +73,9 @@ for m in $machines; do
 
     if [ -n "$dump_mode" ]; then
 	    if [ -n "$maint" ]; then
-		    echo -e "${machine}\t${name}\t${maint}" >> $maintained
+		    printf "${machine}\t${name}\t${maint}\n" >> $maintained
 	    else
-		    echo -e "${machine}\t${name}" >> $orphan
+		    printf "${machine}\t${name}\n" >> $orphan
 	    fi
     else
 	    if [ -n "$maint" ]; then
