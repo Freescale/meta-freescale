@@ -13,10 +13,11 @@ SRC_URI = "${FSL_MIRROR}/imx-uuc-3.10.17-1.0.0_beta.tar.gz \
            file://sdimage.c-uu.c-update-license-header.patch \
            file://Makefile-adapt-to-work-out-of-box-with-OE-Core.patch \
            file://linuxrc-Use-devtmpfs-and-general-cleanup.patch"
-S = "${WORKDIR}/${PN}-3.10.17-1.0.0_beta"
 
-SRC_URI[md5sum] = "22cc43c9a3b1a0eb1a82e0fcbade8c37"
-SRC_URI[sha256sum] = "bd96d19ec0399fbebf09c3692f77ee8c76b27988c3bf616d3cecb67a8552ba96"
+S = "${WORKDIR}/${PN}-3.10.17-1.0.0"
+
+SRC_URI[md5sum] = "c111a44b436a5715babef897fc13ca2d"
+SRC_URI[sha256sum] = "7f398aa3e735ad7176986c1c8cb08a8d9bd4d9c989b2e129ae8c9fd718f9b669"
 
 inherit autotools
 
