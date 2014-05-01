@@ -1,4 +1,5 @@
 # Copyright (C) 2011-2013 Freescale Semiconductor
+# Copytight (C) 2012-2014 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Gstreamer freescale plugins"
@@ -17,7 +18,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
 
 S = "${WORKDIR}/gst-fsl-plugins-${PV}"
 
-SRC_URI = "${FSL_MIRROR}/gst-fsl-plugins-${PV}.tar.gz"
+SRC_URI = "${FSL_MIRROR}/gst-fsl-plugins-${PV}.tar.gz \
+           file://build-Fix-out-of-tree-build.patch"
 
 inherit autotools pkgconfig
 

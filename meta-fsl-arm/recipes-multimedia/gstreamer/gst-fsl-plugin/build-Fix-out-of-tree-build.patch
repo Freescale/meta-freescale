@@ -1,0 +1,617 @@
+From 5b3b8e03df1fadb3ca37c9119cd0089c5171fb05 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Thu, 1 May 2014 15:44:51 -0300
+Subject: [PATCH] build: Fix out of tree build
+Organization: O.S. Systems Software LTDA.
+
+The build system had relative include paths which didn't take into
+account the origial source path makes it impossible to do out of tree
+builds. To fix it, every relative include path was replaced with
+$(top_srcdir) so it works independetly of build diretory location.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ libs/Makefile.am                       |  2 +-
+ src/audio/aac_dec/src/Makefile.am      |  2 +-
+ src/audio/aacplus_dec/src/Makefile.am  |  2 +-
+ src/audio/ac3_dec/src/Makefile.am      |  2 +-
+ src/audio/amr_dec/src/Makefile.am      |  2 +-
+ src/audio/amr_dec/src/Makefile.in      |  2 +-
+ src/audio/amr_enc/src/Makefile.am      |  2 +-
+ src/audio/amr_enc/src/Makefile.in      |  2 +-
+ src/audio/audio_pp/src/Makefile.am     |  2 +-
+ src/audio/beep/src/Makefile.am         |  8 ++++----
+ src/audio/down_mix/src/Makefile.am     |  2 +-
+ src/audio/mp3_dec/src/Makefile.am      |  8 ++++----
+ src/audio/mp3_enc/src/Makefile.am      |  8 ++++----
+ src/audio/spdif_rx/src/Makefile.am     |  2 +-
+ src/audio/spdif_tx/src/Makefile.am     |  2 +-
+ src/audio/vorbis_dec/src/Makefile.am   |  2 +-
+ src/audio/wma10_dec/src/Makefile.am    |  8 ++++----
+ src/audio/wma8_enc/src/Makefile.am     |  2 +-
+ src/misc/i_sink/src/Makefile.am        |  2 +-
+ src/misc/tvsrc/src/Makefile.am         |  2 +-
+ src/misc/v4l_sink/src/Makefile.am      | 16 ++++++++--------
+ src/misc/v4l_source/src/Makefile.am    |  2 +-
+ src/parser/aiur/src/Makefile.am        |  2 +-
+ src/video/deinterlace/src/Makefile.am  |  2 +-
+ src/video/h264_dec/src/Makefile.am     |  8 ++++----
+ src/video/ipu_csc/src/Makefile.am      |  2 +-
+ src/video/mpeg2_dec/src/Makefile.am    |  2 +-
+ src/video/mpeg4asp_dec/src/Makefile.am |  8 ++++----
+ src/video/vpu/src/Makefile.am          |  2 +-
+ src/video/vpu_dec.full/src/Makefile.am |  2 +-
+ src/video/vpu_enc/src/Makefile.am      |  2 +-
+ src/video/wmv9mp_dec/src/Makefile.am   |  2 +-
+ src/video/wmv_dec/src/Makefile.am      |  2 +-
+ 33 files changed, 58 insertions(+), 58 deletions(-)
+
+diff --git a/libs/Makefile.am b/libs/Makefile.am
+index a9e5e0f..47d1e8b 100755
+--- a/libs/Makefile.am
++++ b/libs/Makefile.am
+@@ -35,7 +35,7 @@ endif
+ endif
+ 
+ 
+-libgstfsl_@GST_MAJORMINOR@_la_CFLAGS  = $(GST_BASE_CFLAGS) $(IPU_CFLAGS) -I../inc/common
++libgstfsl_@GST_MAJORMINOR@_la_CFLAGS  = $(GST_BASE_CFLAGS) $(IPU_CFLAGS) -I$(top_srcdir)/inc/common
+ 
+ if PLATFORM_IS_MX5X
+ libgstfsl_@GST_MAJORMINOR@_la_CFLAGS  += -DIPULIB
+diff --git a/src/audio/aac_dec/src/Makefile.am b/src/audio/aac_dec/src/Makefile.am
+index 143f0b3..85a3b07 100755
+--- a/src/audio/aac_dec/src/Makefile.am
++++ b/src/audio/aac_dec/src/Makefile.am
+@@ -22,7 +22,7 @@ libmfw_gst_aacdec_la_SOURCES =  mfw_gst_aacdec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ libmfw_gst_aacdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -DMPEG4 -DARM_OPT_MACROS -DLC -DPUSH_MODE -fno-omit-frame-pointer -fPIC
+-libmfw_gst_aacdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_aacdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ 
+ 
+ if PLATFORM_IS_MX2X
+diff --git a/src/audio/aacplus_dec/src/Makefile.am b/src/audio/aacplus_dec/src/Makefile.am
+index a5453f9..9d8adfe 100755
+--- a/src/audio/aacplus_dec/src/Makefile.am
++++ b/src/audio/aacplus_dec/src/Makefile.am
+@@ -35,7 +35,7 @@ libmfw_gst_aacplusdec_la_SOURCES =  mfw_gst_aacplusdec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ libmfw_gst_aacplusdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -DMPEG4 -DARM_OPT_MACROS -DLC -DPUSH_MODE -fno-omit-frame-pointer -fPIC 
+-libmfw_gst_aacplusdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_aacplusdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ if PLATFORM_IS_MX2X
+ libmfw_gst_aacplusdec_la_CFLAGS += -march=armv5te -mcpu=arm926ej-s
+ libmfw_gst_aacplusdec_la_CPPFLAGS += -march=armv5te -mcpu=arm926ej-s
+diff --git a/src/audio/ac3_dec/src/Makefile.am b/src/audio/ac3_dec/src/Makefile.am
+index 4916a32..0e2632d 100755
+--- a/src/audio/ac3_dec/src/Makefile.am
++++ b/src/audio/ac3_dec/src/Makefile.am
+@@ -10,7 +10,7 @@ libmfw_gst_ac3dec_la_SOURCES = mfw_gst_ac3dec.c
+ 
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+-libmfw_gst_ac3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_ac3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ libmfw_gst_ac3dec_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -lgstaudio-$(GST_MAJORMINOR) -l_ac3_dec_arm11_elinux 
+ libmfw_gst_ac3dec_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)   $(FSL_MM_CORE_LIBS) -lgstriff-@GST_MAJORMINOR@
+ # headers we need but don't want installed
+diff --git a/src/audio/amr_dec/src/Makefile.am b/src/audio/amr_dec/src/Makefile.am
+index bf32d57..095a659 100755
+--- a/src/audio/amr_dec/src/Makefile.am
++++ b/src/audio/amr_dec/src/Makefile.am
+@@ -19,7 +19,7 @@ libmfw_gst_amrdec_la_SOURCES =  mfw_gst_amrdec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ libmfw_gst_amrdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -DMPEG4 -DARM_OPT_MACROS -DLC -fno-omit-frame-pointer -fPIC 
+-libmfw_gst_amrdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib
++libmfw_gst_amrdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib
+ libmfw_gst_amrdec_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) $(CORELIB) -lgstaudio-$(GST_MAJORMINOR)
+ libmfw_gst_amrdec_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) -lgstriff-@GST_MAJORMINOR@
+ 
+diff --git a/src/audio/amr_dec/src/Makefile.in b/src/audio/amr_dec/src/Makefile.in
+index 7ae3497..f282ef9 100644
+--- a/src/audio/amr_dec/src/Makefile.in
++++ b/src/audio/amr_dec/src/Makefile.in
+@@ -381,7 +381,7 @@ libmfw_gst_amrdec_la_SOURCES = mfw_gst_amrdec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ libmfw_gst_amrdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -DMPEG4 -DARM_OPT_MACROS -DLC -fno-omit-frame-pointer -fPIC 
+-libmfw_gst_amrdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib
++libmfw_gst_amrdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib
+ libmfw_gst_amrdec_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) $(CORELIB) -lgstaudio-$(GST_MAJORMINOR)
+ libmfw_gst_amrdec_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) -lgstriff-@GST_MAJORMINOR@
+ 
+diff --git a/src/audio/amr_enc/src/Makefile.am b/src/audio/amr_enc/src/Makefile.am
+index 4dcc25e..a4d56c9 100755
+--- a/src/audio/amr_enc/src/Makefile.am
++++ b/src/audio/amr_enc/src/Makefile.am
+@@ -19,7 +19,7 @@ libmfw_gst_amrenc_la_SOURCES =  mfw_gst_amrenc.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ libmfw_gst_amrenc_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -DMPEG4 -DARM_OPT_MACROS -DLC -fno-omit-frame-pointer -fPIC 
+-libmfw_gst_amrenc_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_amrenc_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ libmfw_gst_amrenc_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) $(CORELIB) -lgstaudio-$(GST_MAJORMINOR)
+ libmfw_gst_amrenc_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) -lgstriff-@GST_MAJORMINOR@
+ 
+diff --git a/src/audio/amr_enc/src/Makefile.in b/src/audio/amr_enc/src/Makefile.in
+index 3792973..575bb90 100644
+--- a/src/audio/amr_enc/src/Makefile.in
++++ b/src/audio/amr_enc/src/Makefile.in
+@@ -381,7 +381,7 @@ libmfw_gst_amrenc_la_SOURCES = mfw_gst_amrenc.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ libmfw_gst_amrenc_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -DMPEG4 -DARM_OPT_MACROS -DLC -fno-omit-frame-pointer -fPIC 
+-libmfw_gst_amrenc_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_amrenc_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ libmfw_gst_amrenc_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) $(CORELIB) -lgstaudio-$(GST_MAJORMINOR)
+ libmfw_gst_amrenc_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) -lgstriff-@GST_MAJORMINOR@
+ 
+diff --git a/src/audio/audio_pp/src/Makefile.am b/src/audio/audio_pp/src/Makefile.am
+index 42365a0..32569fe 100755
+--- a/src/audio/audio_pp/src/Makefile.am
++++ b/src/audio/audio_pp/src/Makefile.am
+@@ -1,7 +1,7 @@
+ plugin_LTLIBRARIES = libmfw_gst_audio_pp.la 
+ 
+ libmfw_gst_audio_pp_la_SOURCES =  mfw_gst_audio_pp.c 
+-libmfw_gst_audio_pp_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib
++libmfw_gst_audio_pp_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib
+ libmfw_gst_audio_pp_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -l_peq_arm11_elinux
+ libmfw_gst_audio_pp_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS)
+ 
+diff --git a/src/audio/beep/src/Makefile.am b/src/audio/beep/src/Makefile.am
+index fdd6669..4e92b92 100755
+--- a/src/audio/beep/src/Makefile.am
++++ b/src/audio/beep/src/Makefile.am
+@@ -8,24 +8,24 @@ libmfw_gst_beep_la_SOURCES =  beep.c beepregistry.c beepdec.c beeptypefind.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ if PLATFORM_IS_MX2X
+-libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../libs -I../../../../inc/core_lib/uni_audio -D_ARM9 -march=armv5te -mcpu=arm926ej-s
++libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/libs -I$(top_srcdir)/inc/core_lib/uni_audio -D_ARM9 -march=armv5te -mcpu=arm926ej-s
+ libmfw_gst_beep_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -lgstaudio-$(GST_MAJORMINOR) -lgstriff-@GST_MAJORMINOR@ -lgsttag-@GST_MAJORMINOR@ -ldl ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ endif
+ 
+ 
+ if PLATFORM_IS_MX3X
+-libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../libs -I../../../../inc/core_lib/uni_audio -D_ARM11
++libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/libs -I$(top_srcdir)/inc/core_lib/uni_audio -D_ARM11
+ libmfw_gst_beep_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -lgstaudio-$(GST_MAJORMINOR) -lgstriff-@GST_MAJORMINOR@ -lgsttag-@GST_MAJORMINOR@ -ldl ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ endif
+ 
+ 
+ if PLATFORM_IS_MX5X
+-libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../libs -I../../../../inc/core_lib/uni_audio -D_ARM12
++libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/libs -I$(top_srcdir)/inc/core_lib/uni_audio -D_ARM12
+ libmfw_gst_beep_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -lgstaudio-$(GST_MAJORMINOR) -lgstriff-@GST_MAJORMINOR@ -lgsttag-@GST_MAJORMINOR@ -ldl ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ endif
+ 
+ if PLATFORM_IS_MX6X
+-libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../libs -I../../../../inc/core_lib/uni_audio -D_ARM12
++libmfw_gst_beep_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/libs -I$(top_srcdir)/inc/core_lib/uni_audio -D_ARM12
+ libmfw_gst_beep_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -lgstaudio-$(GST_MAJORMINOR) -lgstriff-@GST_MAJORMINOR@ -lgsttag-@GST_MAJORMINOR@ -ldl ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ endif
+ 
+diff --git a/src/audio/down_mix/src/Makefile.am b/src/audio/down_mix/src/Makefile.am
+index 9fa392c..ff7b589 100755
+--- a/src/audio/down_mix/src/Makefile.am
++++ b/src/audio/down_mix/src/Makefile.am
+@@ -1,7 +1,7 @@
+ plugin_LTLIBRARIES = libmfw_gst_downmix.la 
+ 
+ libmfw_gst_downmix_la_SOURCES =  mfw_gst_downmix.c 
+-libmfw_gst_downmix_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib
++libmfw_gst_downmix_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib
+ libmfw_gst_downmix_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -l_downmix_arm11_elinux
+ libmfw_gst_downmix_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS)
+ 
+diff --git a/src/audio/mp3_dec/src/Makefile.am b/src/audio/mp3_dec/src/Makefile.am
+index 9361da7..bd79288 100755
+--- a/src/audio/mp3_dec/src/Makefile.am
++++ b/src/audio/mp3_dec/src/Makefile.am
+@@ -27,23 +27,23 @@ libmfw_gst_mp3dec_la_SOURCES = mfw_gst_mp3dec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ if PLATFORM_IS_MX2X
+-libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I../../../../inc/plugin -march=armv5te -mcpu=arm926ej-s
++libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I$(top_srcdir)/inc/plugin -march=armv5te -mcpu=arm926ej-s
+ libmfw_gst_mp3dec_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -l$(CORELIB) -l_mp3_parser_arm9_elinux
+ endif
+ 
+ 
+ 
+ if PLATFORM_IS_MX3X
+-libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I../../../../inc/plugin
++libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I$(top_srcdir)/inc/plugin
+ libmfw_gst_mp3dec_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -l$(CORELIB) -l_mp3_parser_arm11_elinux
+ endif
+ 
+ if PLATFORM_IS_MX5X
+-libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I../../../../inc/plugin
++libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I$(top_srcdir)/inc/plugin
+ libmfw_gst_mp3dec_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -l$(CORELIB) -l_mp3_parser_arm11_elinux
+ endif
+ if PLATFORM_IS_MX6X
+-libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I../../../../inc/plugin
++libmfw_gst_mp3dec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DMP3D_HUF_DEQ_BYTEBUF_OPT_C -DMPEGLAYER2 -DPUSH_MODE  $(FSL_MM_CORE_CFLAGS)  -I$(top_srcdir)/inc/plugin
+ libmfw_gst_mp3dec_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -l$(CORELIB) -l_mp3_parser_arm11_elinux
+ endif
+  
+diff --git a/src/audio/mp3_enc/src/Makefile.am b/src/audio/mp3_enc/src/Makefile.am
+index 0d9b79c..934fc80 100755
+--- a/src/audio/mp3_enc/src/Makefile.am
++++ b/src/audio/mp3_enc/src/Makefile.am
+@@ -26,19 +26,19 @@ libmfw_gst_mp3enc_la_SOURCES = mfw_gst_mp3enc.c
+ # flags used to compile this plugin
+ # add other _CFLAGS and _LIBS as needed
+ if PLATFORM_IS_MX2X
+-libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -march=armv5te -mcpu=arm926ej-s
++libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -march=armv5te -mcpu=arm926ej-s
+ endif
+ 
+ 
+ if PLATFORM_IS_MX3X
+-libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib 
++libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib 
+ endif
+ 
+ if PLATFORM_IS_MX5X
+-libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib 
++libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib 
+ endif
+ if PLATFORM_IS_MX6X
+-libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib 
++libmfw_gst_mp3enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib 
+ endif
+ 
+ 
+diff --git a/src/audio/spdif_rx/src/Makefile.am b/src/audio/spdif_rx/src/Makefile.am
+index 80dfb73..f22c6fb 100755
+--- a/src/audio/spdif_rx/src/Makefile.am
++++ b/src/audio/spdif_rx/src/Makefile.am
+@@ -1,7 +1,7 @@
+ plugin_LTLIBRARIES = libmfw_gst_spdifrx.la 
+ 
+ libmfw_gst_spdifrx_la_SOURCES =  mfw_gst_spdifrx.c 
+-libmfw_gst_spdifrx_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -I../../../../inc/plugin
++libmfw_gst_spdifrx_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -I$(top_srcdir)/inc/plugin
+ libmfw_gst_spdifrx_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS)
+ libmfw_gst_spdifrx_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) -lgstriff-@GST_MAJORMINOR@
+ 
+diff --git a/src/audio/spdif_tx/src/Makefile.am b/src/audio/spdif_tx/src/Makefile.am
+index 6b17886..a330e5d 100755
+--- a/src/audio/spdif_tx/src/Makefile.am
++++ b/src/audio/spdif_tx/src/Makefile.am
+@@ -1,7 +1,7 @@
+ plugin_LTLIBRARIES = libmfw_gst_spdiftx.la 
+ 
+ libmfw_gst_spdiftx_la_SOURCES =  mfw_gst_spdiftx.c 
+-libmfw_gst_spdiftx_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -I../../../../inc/plugin
++libmfw_gst_spdiftx_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -I$(top_srcdir)/inc/plugin
+ libmfw_gst_spdiftx_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS)
+ libmfw_gst_spdiftx_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) -lgstriff-@GST_MAJORMINOR@
+ 
+diff --git a/src/audio/vorbis_dec/src/Makefile.am b/src/audio/vorbis_dec/src/Makefile.am
+index f43751b..9fc922d 100755
+--- a/src/audio/vorbis_dec/src/Makefile.am
++++ b/src/audio/vorbis_dec/src/Makefile.am
+@@ -10,7 +10,7 @@ libmfw_gst_vorbisdec_la_SOURCES =  mfw_gst_vorbisdec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ libmfw_gst_vorbisdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -DMPEG4 -DARM_OPT_MACROS -DLC -DPUSH_MODE -fno-omit-frame-pointer -fPIC
+-libmfw_gst_vorbisdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_vorbisdec_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ 
+ 
+ libmfw_gst_vorbisdec_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -lgstaudio-$(GST_MAJORMINOR) -l$(CORELIB)
+diff --git a/src/audio/wma10_dec/src/Makefile.am b/src/audio/wma10_dec/src/Makefile.am
+index 50f5314..ab9147f 100755
+--- a/src/audio/wma10_dec/src/Makefile.am
++++ b/src/audio/wma10_dec/src/Makefile.am
+@@ -26,21 +26,21 @@ libmfw_gst_wma10dec_la_SOURCES = mfw_gst_wma10dec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ if PLATFORM_IS_MX2X
+-libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -march=armv5te -mcpu=arm926ej-s
++libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -march=armv5te -mcpu=arm926ej-s
+ endif
+ 
+ 
+ if PLATFORM_IS_MX3X
+-libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ endif
+ 
+ 
+ 
+ if PLATFORM_IS_MX5X
+-libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ endif
+ if PLATFORM_IS_MX6X
+-libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin
++libmfw_gst_wma10dec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DGST_API -DGST_RAW_DECODER $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin
+ endif
+ 
+ 
+diff --git a/src/audio/wma8_enc/src/Makefile.am b/src/audio/wma8_enc/src/Makefile.am
+index 82ed82e..04c93bb 100755
+--- a/src/audio/wma8_enc/src/Makefile.am
++++ b/src/audio/wma8_enc/src/Makefile.am
+@@ -11,7 +11,7 @@ libmfw_gst_wma8enc_la_SOURCES = mfw_gst_wma8enc.c
+ 
+ # flags used to compile this plugin
+ # add other _CFLAGS and _LIBS as needed
+-libmfw_gst_wma8enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS)  -I../../../../inc/plugin -I../../../../inc/core_lib
++libmfw_gst_wma8enc_la_CFLAGS = $(GST_CFLAGS) $(FSL_MM_CORE_CFLAGS)  -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib
+ libmfw_gst_wma8enc_la_LIBADD = $(GST_LIBS) -l_wma_muxer_arm11_ELINUX -lgstbase-$(GST_MAJORMINOR) -l_wma8_enc_arm11_elinux 
+ libmfw_gst_wma8enc_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) 
+ 
+diff --git a/src/misc/i_sink/src/Makefile.am b/src/misc/i_sink/src/Makefile.am
+index 721d10c..a6dfaf5 100755
+--- a/src/misc/i_sink/src/Makefile.am
++++ b/src/misc/i_sink/src/Makefile.am
+@@ -6,7 +6,7 @@ endif
+ plugin_LTLIBRARIES = libmfw_gst_isink.la 
+ 
+ libmfw_gst_isink_la_SOURCES =  mfw_gst_isink.c 
+-libmfw_gst_isink_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer $(IPU_CFLAGS) -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/common -I../../../../libs/vss -I../../../../libs/gstbufmeta -I../../../../libs/hbuf_alloc -I$(FBHEADER_PATH) -I. -I/usr/src/linux-headers-2.6.35-1000-linaro-imx5/include
++libmfw_gst_isink_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer $(IPU_CFLAGS) -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/common -I$(top_srcdir)/libs/vss -I$(top_srcdir)/libs/gstbufmeta -I$(top_srcdir)/libs/hbuf_alloc -I$(FBHEADER_PATH) -I. -I/usr/src/linux-headers-2.6.35-1000-linaro-imx5/include
+ libmfw_gst_isink_la_LIBADD = $(GST_BASE_LIBS) -lgstvideo-$(GST_MAJORMINOR) -lgstinterfaces-$(GST_MAJORMINOR) 
+ libmfw_gst_isink_la_LIBADD += ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_isink_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) 
+diff --git a/src/misc/tvsrc/src/Makefile.am b/src/misc/tvsrc/src/Makefile.am
+index dfe080b..a765e87 100755
+--- a/src/misc/tvsrc/src/Makefile.am
++++ b/src/misc/tvsrc/src/Makefile.am
+@@ -7,7 +7,7 @@ endif
+ plugin_LTLIBRARIES = libmfw_gst_tvsrc.la 
+ 
+ libmfw_gst_tvsrc_la_SOURCES =  mfw_gst_tvsrc.c 
+-libmfw_gst_tvsrc_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(IPU_CFLAGS) -D$(PLATFORM) -I$(FBHEADER_PATH) -I. -I../../../../inc/plugin -I../../../../libs/gstbufmeta 
++libmfw_gst_tvsrc_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(IPU_CFLAGS) -D$(PLATFORM) -I$(FBHEADER_PATH) -I. -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/libs/gstbufmeta 
+ libmfw_gst_tvsrc_la_LIBADD = $(GST_BASE_LIBS) -lgstvideo-$(GST_MAJORMINOR) -lgstinterfaces-$(GST_MAJORMINOR) ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_tvsrc_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+ 
+diff --git a/src/misc/v4l_sink/src/Makefile.am b/src/misc/v4l_sink/src/Makefile.am
+index 4489cc4..a1f6cb8 100755
+--- a/src/misc/v4l_sink/src/Makefile.am
++++ b/src/misc/v4l_sink/src/Makefile.am
+@@ -3,32 +3,32 @@ plugin_LTLIBRARIES = libmfw_gst_v4lsink.la
+ libmfw_gst_v4lsink_la_SOURCES =  mfw_gst_fb.c mfw_gst_v4l.c mfw_gst_v4l_buffer.c mfw_gst_v4lsink.c
+ libmfw_gst_v4lsink_la_CFLAGS = -I/usr/src/linux-headers-2.6.35-1000-linaro-imx5/include
+ if PLATFORM_IS_MX233
+-libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/misc -march=armv5te
++libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/misc -march=armv5te
+ endif
+ if PLATFORM_IS_MX25
+-libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/misc -march=armv5te
++libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/misc -march=armv5te
+ endif
+ if PLATFORM_IS_MX27
+-libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/misc -march=armv5te
++libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/misc -march=armv5te
+ endif
+ if PLATFORM_IS_MX28
+-libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/misc -march=armv5te
++libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/misc -march=armv5te
+ endif
+ 
+ if PLATFORM_IS_MX3X
+-libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/misc
++libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/misc
+ endif
+ if PLATFORM_IS_MX5X
+-libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/misc
++libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/misc
+ endif
+ if PLATFORM_IS_MX6X
+-libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I../../../../inc/plugin -I../../../../inc/misc
++libmfw_gst_v4lsink_la_CFLAGS += -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -DENABLE_TVOUT -D_$(PLATFORM) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/misc
+ endif
+ 
+ libmfw_gst_v4lsink_la_LIBADD = $(GST_BASE_LIBS) -lgstvideo-$(GST_MAJORMINOR) -lgstinterfaces-$(GST_MAJORMINOR) ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ 
+ 
+-libmfw_gst_v4lsink_la_CFLAGS += $(IPU_CFLAGS) -I. -I../../../../libs/gstbufmeta
++libmfw_gst_v4lsink_la_CFLAGS += $(IPU_CFLAGS) -I. -I$(top_srcdir)/libs/gstbufmeta
+ 
+ if USE_X11
+ libmfw_gst_v4lsink_la_SOURCES +=  mfw_gst_v4l_xlib.c mfw_gst_xlib.c mfw_gst_v4l_suspend.c
+diff --git a/src/misc/v4l_source/src/Makefile.am b/src/misc/v4l_source/src/Makefile.am
+index b80d27e..4ef1351 100755
+--- a/src/misc/v4l_source/src/Makefile.am
++++ b/src/misc/v4l_source/src/Makefile.am
+@@ -7,7 +7,7 @@ endif
+ plugin_LTLIBRARIES = libmfw_gst_v4lsrc.la 
+ 
+ libmfw_gst_v4lsrc_la_SOURCES =  mfw_gst_v4lsrc.c 
+-libmfw_gst_v4lsrc_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(IPU_CFLAGS) -D$(PLATFORM) -I$(FBHEADER_PATH) -I. -I../../../../inc/plugin -I../../../../libs/gstbufmeta 
++libmfw_gst_v4lsrc_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(IPU_CFLAGS) -D$(PLATFORM) -I$(FBHEADER_PATH) -I. -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/libs/gstbufmeta 
+ libmfw_gst_v4lsrc_la_LIBADD = $(GST_BASE_LIBS) -lgstvideo-$(GST_MAJORMINOR) -lgstinterfaces-$(GST_MAJORMINOR) ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_v4lsrc_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+ 
+diff --git a/src/parser/aiur/src/Makefile.am b/src/parser/aiur/src/Makefile.am
+index 24ac78e..752a155 100755
+--- a/src/parser/aiur/src/Makefile.am
++++ b/src/parser/aiur/src/Makefile.am
+@@ -4,7 +4,7 @@ plugin_LTLIBRARIES = libmfw_gst_aiur_demux.la
+ # for the next set of variables, rename the prefix if you renamed the .la
+ # sources used to compile this plug-in
+ libmfw_gst_aiur_demux_la_SOURCES =  aiur.c aiurregistry.c aiurstreamcache.c aiuridxtab.c aiurdemux.c aiurtypefind.c
+-libmfw_gst_aiur_demux_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DFSL_AVI_DRM_SUPPORT $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib/parser -I../../../../libs
++libmfw_gst_aiur_demux_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -DFSL_AVI_DRM_SUPPORT $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib/parser -I$(top_srcdir)/libs
+ libmfw_gst_aiur_demux_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS)  -lgstriff-@GST_MAJORMINOR@ -lgsttag-@GST_MAJORMINOR@ -ldl ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_aiur_demux_la_CPPFLAGS = $(GST_LIBS_CPPFLAGS) 
+ libmfw_gst_aiur_demux_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) 
+diff --git a/src/video/deinterlace/src/Makefile.am b/src/video/deinterlace/src/Makefile.am
+index 08150f9..4f20d58 100755
+--- a/src/video/deinterlace/src/Makefile.am
++++ b/src/video/deinterlace/src/Makefile.am
+@@ -1,7 +1,7 @@
+ plugin_LTLIBRARIES = libmfw_gst_deinterlace.la 
+ 
+ libmfw_gst_deinterlace_la_SOURCES =  mfw_gst_deinterlace.c 
+-libmfw_gst_deinterlace_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -I../../../../inc/plugin -I../../../../inc/core_lib $(FSL_MM_CORE_CFLAGS)
++libmfw_gst_deinterlace_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib $(FSL_MM_CORE_CFLAGS)
+ libmfw_gst_deinterlace_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -l_deinterlace_arm11_elinux
+ libmfw_gst_deinterlace_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS)
+ 
+diff --git a/src/video/h264_dec/src/Makefile.am b/src/video/h264_dec/src/Makefile.am
+index af2b3ac..278f748 100755
+--- a/src/video/h264_dec/src/Makefile.am
++++ b/src/video/h264_dec/src/Makefile.am
+@@ -28,21 +28,21 @@ libmfw_gst_h264dec_la_SOURCES = mfw_gst_h264dec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ if PLATFORM_IS_MX2X
+-libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -O2 -DDPB_FIX -D_$(PLATFORM) -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -march=armv5te -mcpu=arm926ej-s  -I../../../../libs/me -I../../../../libs/gstbufmeta 
++libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -O2 -DDPB_FIX -D_$(PLATFORM) -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -march=armv5te -mcpu=arm926ej-s  -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta 
+ endif
+ 
+ 
+ if PLATFORM_IS_MX3X
+-libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -O2 -DDPB_FIX -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED  -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -O2 -DDPB_FIX -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED  -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ endif
+ 
+ 
+ if PLATFORM_IS_MX5X
+-libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -O2 -DDPB_FIX -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED  -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -O2 -DDPB_FIX -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED  -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ endif
+ 
+ if PLATFORM_IS_MX6X
+-libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -O2 -DDPB_FIX -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED  -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_h264dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -O2 -DDPB_FIX -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED  -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ endif
+ 
+ libmfw_gst_h264dec_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -l$(CORELIB)
+diff --git a/src/video/ipu_csc/src/Makefile.am b/src/video/ipu_csc/src/Makefile.am
+index 8015448..12b44a1 100755
+--- a/src/video/ipu_csc/src/Makefile.am
++++ b/src/video/ipu_csc/src/Makefile.am
+@@ -6,7 +6,7 @@ endif
+ plugin_LTLIBRARIES = libmfw_gst_ipu_csc.la 
+ 
+ libmfw_gst_ipu_csc_la_SOURCES =  mfw_gst_ipu_csc.c 
+-libmfw_gst_ipu_csc_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer  -I../../../../inc/plugin   -I../../../../  
++libmfw_gst_ipu_csc_la_CFLAGS = -O2 $(GST_BASE_CFLAGS) -fPIC -fno-omit-frame-pointer  -I$(top_srcdir)/inc/plugin  -I$(top_srcdir)
+ libmfw_gst_ipu_csc_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) $(IPU_LIBS) ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_ipu_csc_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+ 
+diff --git a/src/video/mpeg2_dec/src/Makefile.am b/src/video/mpeg2_dec/src/Makefile.am
+index 006f740..d44a9b0 100755
+--- a/src/video/mpeg2_dec/src/Makefile.am
++++ b/src/video/mpeg2_dec/src/Makefile.am
+@@ -7,7 +7,7 @@ libmfw_gst_mpeg2dec_la_SOURCES =  mfw_gst_mpeg2dec.c
+ 
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+-libmfw_gst_mpeg2dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -DDIRECT_RENDER_VERSION=2 -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_mpeg2dec_la_CFLAGS = $(GST_BASE_CFLAGS) -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -DDIRECT_RENDER_VERSION=2 -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ libmfw_gst_mpeg2dec_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS) -l_mpeg2_dec_arm11_elinux
+ libmfw_gst_mpeg2dec_la_LIBADD +=  ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_mpeg2dec_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS)
+diff --git a/src/video/mpeg4asp_dec/src/Makefile.am b/src/video/mpeg4asp_dec/src/Makefile.am
+index 97dd578..394d42d 100755
+--- a/src/video/mpeg4asp_dec/src/Makefile.am
++++ b/src/video/mpeg4asp_dec/src/Makefile.am
+@@ -28,19 +28,19 @@ libmfw_gst_mpeg4aspdec_la_SOURCES = mfw_gst_mpeg4asp_dec.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ if PLATFORM_IS_MX2X
+-libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -march=armv5te -mcpu=arm926ej-s -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -march=armv5te -mcpu=arm926ej-s -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ endif
+ 
+ if PLATFORM_IS_MX3X
+-libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ endif
+ 
+ if PLATFORM_IS_MX5X
+-libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ endif
+ 
+ if PLATFORM_IS_MX6X
+-libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I../../../../libs/me -I../../../../libs/gstbufmeta
++libmfw_gst_mpeg4aspdec_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DPADDED_OUTPUT -DOUTPUT_BUFFER_CHANGES $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta
+ endif
+ 
+ 
+diff --git a/src/video/vpu/src/Makefile.am b/src/video/vpu/src/Makefile.am
+index c8b64ea..cb66817 100755
+--- a/src/video/vpu/src/Makefile.am
++++ b/src/video/vpu/src/Makefile.am
+@@ -8,7 +8,7 @@ libmfw_vpu_la_SOURCES =  vpu.c vpudec.c vpuenc.c
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+ 
+-libmfw_vpu_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin  -I../../../../libs/me -I../../../../libs/gstbufmeta -I../../../../libs/gstsutils -I../../../../libs/gstnext -I../../../../inc/core_lib
++libmfw_vpu_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin  -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta -I$(top_srcdir)/libs/gstsutils -I$(top_srcdir)/libs/gstnext -I$(top_srcdir)/inc/core_lib
+ libmfw_vpu_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_LIBS)  -lgstriff-@GST_MAJORMINOR@ -lgsttag-@GST_MAJORMINOR@  
+ 
+ libmfw_vpu_la_LIBADD += ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+diff --git a/src/video/vpu_dec.full/src/Makefile.am b/src/video/vpu_dec.full/src/Makefile.am
+index 7c878a8..be682fd 100755
+--- a/src/video/vpu_dec.full/src/Makefile.am
++++ b/src/video/vpu_dec.full/src/Makefile.am
+@@ -27,7 +27,7 @@ libmfw_gst_vpu_dec_la_SOURCES = mfw_gst_vpu_decoder.c mfw_gst_vpu_thread.c
+ 
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+-libmfw_gst_vpu_dec_la_CFLAGS = $(GST_BASE_CFLAGS)  -O2 $(VPU_CFLAGS) -I../../../../inc/plugin $(GST_PLATFORM_FLAGS) -DREALMEDIA -DDIVX -I../../../../libs/me -I../../../../libs/gstbufmeta 
++libmfw_gst_vpu_dec_la_CFLAGS = $(GST_BASE_CFLAGS)  -O2 $(VPU_CFLAGS) -I$(top_srcdir)/inc/plugin $(GST_PLATFORM_FLAGS) -DREALMEDIA -DDIVX -I$(top_srcdir)/libs/me -I$(top_srcdir)/libs/gstbufmeta 
+ libmfw_gst_vpu_dec_la_LIBADD =  $(GST_BASE_LIBS) $(GST_LIBS) -lvpu -lgstvideo-0.10
+ libmfw_gst_vpu_dec_la_LIBADD += ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_vpu_dec_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(VPU_LIBS)
+diff --git a/src/video/vpu_enc/src/Makefile.am b/src/video/vpu_enc/src/Makefile.am
+index ac8f272..a1da20b 100755
+--- a/src/video/vpu_enc/src/Makefile.am
++++ b/src/video/vpu_enc/src/Makefile.am
+@@ -10,7 +10,7 @@ libmfw_gst_vpu_enc_la_SOURCES = mfw_gst_vpu_encoder.c
+ 
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+-libmfw_gst_vpu_enc_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 $(VPU_CFLAGS) -I../../../../inc/plugin -DVPU_$(PLATFORM) -I../../../../libs/gstbufmeta -I../../../../libs/vss -I../../../../libs/hbuf_alloc -I../../../../libs/me 
++libmfw_gst_vpu_enc_la_CFLAGS = $(GST_BASE_CFLAGS) -O2 $(VPU_CFLAGS) -I$(top_srcdir)/inc/plugin -DVPU_$(PLATFORM) -I$(top_srcdir)/libs/gstbufmeta -I$(top_srcdir)/libs/vss -I$(top_srcdir)/libs/hbuf_alloc -I$(top_srcdir)/libs/me 
+ 
+ libmfw_gst_vpu_enc_la_LIBADD = $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -lvpu 
+ libmfw_gst_vpu_enc_la_LIBADD += ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+diff --git a/src/video/wmv9mp_dec/src/Makefile.am b/src/video/wmv9mp_dec/src/Makefile.am
+index 49c0953..4bd7bda 100755
+--- a/src/video/wmv9mp_dec/src/Makefile.am
++++ b/src/video/wmv9mp_dec/src/Makefile.am
+@@ -7,7 +7,7 @@ libmfw_gst_wmv9mpdec_la_SOURCES =  mfw_gst_wmv9mpdec.c
+ 
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+-libmfw_gst_wmv9mpdec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DOUTPUT_BUFFER_CHANGES -DPADDED_OUTPUT $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I../../../../libs/gstbufmeta 
++libmfw_gst_wmv9mpdec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DOUTPUT_BUFFER_CHANGES -DPADDED_OUTPUT $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib -DDIRECT_RENDER_VERSION=2 -DFRAMEDROPING_ENALBED -I$(top_srcdir)/libs/gstbufmeta 
+ libmfw_gst_wmv9mpdec_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -l_WMV9MP_dec_MP_arm11_elinux ../../../../libs/libgstfsl-@GST_MAJORMINOR@.la
+ libmfw_gst_wmv9mpdec_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) -lgstriff-@GST_MAJORMINOR@
+ 
+diff --git a/src/video/wmv_dec/src/Makefile.am b/src/video/wmv_dec/src/Makefile.am
+index 95d563a..3e87976 100755
+--- a/src/video/wmv_dec/src/Makefile.am
++++ b/src/video/wmv_dec/src/Makefile.am
+@@ -7,7 +7,7 @@ libmfw_gst_wmvdec_la_SOURCES =  mfw_gst_wmvdec.c
+ 
+ # flags used to compile this plugin
+ # we use the GST_LIBS flags because we might be using plug-in libs
+-libmfw_gst_wmvdec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DOUTPUT_BUFFER_CHANGES -DWMV9_SIMPLE_ONLY -DPADDED_OUTPUT $(FSL_MM_CORE_CFLAGS) -I../../../../inc/plugin -I../../../../inc/core_lib
++libmfw_gst_wmvdec_la_CFLAGS = $(GST_BASE_CFLAGS) $(GST_BASE_CFLAGS) -O2 -fno-omit-frame-pointer -fPIC -DOUTPUT_BUFFER_CHANGES -DWMV9_SIMPLE_ONLY -DPADDED_OUTPUT $(FSL_MM_CORE_CFLAGS) -I$(top_srcdir)/inc/plugin -I$(top_srcdir)/inc/core_lib
+ libmfw_gst_wmvdec_la_LIBADD = $(GST_BASE_LIBS) $(GST_PLUGINS_BASE_LIBS) $(GST_BASE_LIBS) $(GST_LIBS) -l_WMV789_dec_arm11_elinux
+ libmfw_gst_wmvdec_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS) $(FSL_MM_CORE_LIBS) -lgstriff-@GST_MAJORMINOR@
+ 
+-- 
+2.0.0.rc0
+
