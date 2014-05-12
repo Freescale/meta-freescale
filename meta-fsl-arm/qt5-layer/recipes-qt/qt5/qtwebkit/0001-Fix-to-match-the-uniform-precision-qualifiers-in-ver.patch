@@ -1,0 +1,42 @@
+From 66dab98c3f42eb70a4c6761a8694e374b8578e99 Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Thu, 8 May 2014 09:27:04 -0700
+Subject: [PATCH] Fix to match the uniform precision qualifiers in vertex and
+ fragment shaders
+
+When the vertex and fragment shaders are linked together, then they will
+share a single global uniform name space. Hence, types and precisions of
+uniforms with the same name must match across all shaders that are linked
+into a single executable.
+
+As per GLSL_ES_Specification_3.00.3.pdf
+Page 124 12.3 Numeric Precision
+The fragment language has no default precision qualifier for floating point types.
+Hence for float, floating point vector and matrix variable declarations, either
+the declaration must include a precision qualifier or the default float
+precision must have been previously declared.
+
+Upstream-Status: Submitted [https://bugs.webkit.org/show_bug.cgi?id=124653#c9]
+
+Change-Id: I4eb3363b3bca8bc3c839212ec7c966201a3e65e2
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ Source/WebCore/platform/graphics/texmap/TextureMapperShaderProgram.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperShaderProgram.cpp b/Source/WebCore/platform/graphics/texmap/TextureMapperShaderProgram.cpp
+index f4b9a7e..7e991bf 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperShaderProgram.cpp
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperShaderProgram.cpp
+@@ -208,7 +208,7 @@ static const char* fragmentTemplate =
+     ANTIALIASING_TEX_COORD_DIRECTIVE
+     BLUR_CONSTANTS
+     STRINGIFY(
+-        precision mediump float;
++        precision highp float;
+         uniform SamplerType s_sampler;
+         uniform sampler2D s_contentTexture;
+         uniform float u_opacity;
+-- 
+1.9.1
+
