@@ -33,6 +33,7 @@ MACHINE_SOCARCH_mx28 = "${TUNE_PKGARCH}-mx28"
 PACKAGE_EXTRA_ARCHS_append = " ${MACHINE_SOCARCH}"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
+MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser gst-fsl-plugins"
 
 INHERIT += "fsl-dynamic-packagearch"
 
