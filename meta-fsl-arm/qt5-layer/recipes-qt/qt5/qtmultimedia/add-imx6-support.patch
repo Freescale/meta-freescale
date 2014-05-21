@@ -1,0 +1,846 @@
+adding zero-copy-QSGVideoNode for imx6
+
+On imx6 there is a platform-specific API to implement
+memory-mapping from gstreamer-buffer to opengl-texture.
+
+This plugin uses this API to avoid CPU-based-memory-copy.
+
+This allows fluid video-playback up to 1080p with very little CPU load.
+Before even 720p used one cpu-core completely and wasn't fluid.
+
+Change-Id: I0c33eb5d475393a65459291ce9290fa0753de4a5
+
+Upstream-Status: Backport [5.3]
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+
+diff --git a/src/plugins/plugins.pro b/src/plugins/plugins.pro
+index d947f3b..c107599 100644
+--- a/src/plugins/plugins.pro
++++ b/src/plugins/plugins.pro
+@@ -6,7 +6,7 @@
+ 
+ TEMPLATE = subdirs
+ 
+-SUBDIRS += m3u
++SUBDIRS += m3u videonode
+ 
+ android {
+    SUBDIRS += android opensles
+diff --git a/src/plugins/videonode/imx6/imx6.json b/src/plugins/videonode/imx6/imx6.json
+new file mode 100644
+index 0000000..08bb12c
+--- /dev/null
++++ b/src/plugins/videonode/imx6/imx6.json
+@@ -0,0 +1,3 @@
++{
++    "Keys": ["sgvideonodes"]
++}
+diff --git a/src/plugins/videonode/imx6/imx6.pro b/src/plugins/videonode/imx6/imx6.pro
+new file mode 100644
+index 0000000..a2e6798
+--- /dev/null
++++ b/src/plugins/videonode/imx6/imx6.pro
+@@ -0,0 +1,21 @@
++TARGET = imx6vivantevideonode
++QT += multimedia-private qtmultimediaquicktools-private
++
++PLUGIN_TYPE=video/videonode
++PLUGIN_CLASS_NAME = QSGVivanteVideoNodeFactory
++load(qt_plugin)
++
++HEADERS += \
++    qsgvivantevideonode.h \
++    qsgvivantevideomaterialshader.h \
++    qsgvivantevideomaterial.h \
++    qsgvivantevideonodefactory.h
++
++SOURCES += \
++    qsgvivantevideonode.cpp \
++    qsgvivantevideomaterialshader.cpp \
++    qsgvivantevideomaterial.cpp \
++    qsgvivantevideonodefactory.cpp
++
++OTHER_FILES += \
++    imx6.json
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideomaterial.cpp b/src/plugins/videonode/imx6/qsgvivantevideomaterial.cpp
+new file mode 100644
+index 0000000..0ed4e1a
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideomaterial.cpp
+@@ -0,0 +1,196 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include <GLES2/gl2.h>
++#include <GLES2/gl2ext.h>
++
++#include "qsgvivantevideomaterial.h"
++#include "qsgvivantevideomaterialshader.h"
++#include "qsgvivantevideonode.h"
++
++#include <QOpenGLContext>
++#include <QThread>
++
++#include <unistd.h>
++
++
++//#define QT_VIVANTE_VIDEO_DEBUG
++
++QSGVivanteVideoMaterial::QSGVivanteVideoMaterial() :
++    mOpacity(1.0),
++    mCurrentTexture(0)
++{
++#ifdef QT_VIVANTE_VIDEO_DEBUG
++    qDebug() << Q_FUNC_INFO;
++#endif
++
++    setFlag(Blending, false);
++}
++
++QSGVivanteVideoMaterial::~QSGVivanteVideoMaterial()
++{
++    for (GLuint id : mBitsToTextureMap.values()) {
++#ifdef QT_VIVANTE_VIDEO_DEBUG
++        qDebug() << "delete texture: " << id;
++#endif
++        glDeleteTextures(1, &id);
++    }
++}
++
++QSGMaterialType *QSGVivanteVideoMaterial::type() const {
++    static QSGMaterialType theType;
++    return &theType;
++}
++
++QSGMaterialShader *QSGVivanteVideoMaterial::createShader() const {
++    return new QSGVivanteVideoMaterialShader;
++}
++
++int QSGVivanteVideoMaterial::compare(const QSGMaterial *other) const {
++    if (this->type() == other->type()) {
++        const QSGVivanteVideoMaterial *m = static_cast<const QSGVivanteVideoMaterial *>(other);
++        if (this->mBitsToTextureMap == m->mBitsToTextureMap)
++            return 0;
++        else
++            return 1;
++    }
++    return 1;
++}
++
++void QSGVivanteVideoMaterial::updateBlending() {
++    setFlag(Blending, qFuzzyCompare(mOpacity, qreal(1.0)) ? false : true);
++}
++
++void QSGVivanteVideoMaterial::setCurrentFrame(const QVideoFrame &frame) {
++    QMutexLocker lock(&mFrameMutex);
++    mNextFrame = frame;
++
++#ifdef QT_VIVANTE_VIDEO_DEBUG
++    qDebug() << Q_FUNC_INFO << " new frame: " << frame;
++#endif
++}
++
++void QSGVivanteVideoMaterial::bind()
++{
++    QOpenGLContext *glcontext = QOpenGLContext::currentContext();
++    if (glcontext == 0) {
++        qWarning() << Q_FUNC_INFO << "no QOpenGLContext::currentContext() => return";
++        return;
++    }
++
++    QMutexLocker lock(&mFrameMutex);
++    if (mNextFrame.isValid()) {
++        mCurrentFrame.unmap();
++
++        mCurrentFrame = mNextFrame;
++        mCurrentTexture = vivanteMapping(mNextFrame);
++    }
++    else
++        glBindTexture(GL_TEXTURE_2D, mCurrentTexture);
++}
++
++GLuint QSGVivanteVideoMaterial::vivanteMapping(QVideoFrame vF)
++{
++    QOpenGLContext *glcontext = QOpenGLContext::currentContext();
++    if (glcontext == 0) {
++        qWarning() << Q_FUNC_INFO << "no QOpenGLContext::currentContext() => return 0";
++        return 0;
++    }
++
++    static PFNGLTEXDIRECTVIVMAPPROC glTexDirectVIVMap_LOCAL = 0;
++    static PFNGLTEXDIRECTINVALIDATEVIVPROC glTexDirectInvalidateVIV_LOCAL = 0;
++
++    if (glTexDirectVIVMap_LOCAL == 0 || glTexDirectInvalidateVIV_LOCAL == 0) {
++        glTexDirectVIVMap_LOCAL = reinterpret_cast<PFNGLTEXDIRECTVIVMAPPROC>(glcontext->getProcAddress("glTexDirectVIVMap"));
++        glTexDirectInvalidateVIV_LOCAL = reinterpret_cast<PFNGLTEXDIRECTINVALIDATEVIVPROC>(glcontext->getProcAddress("glTexDirectInvalidateVIV"));
++    }
++    if (glTexDirectVIVMap_LOCAL == 0 || glTexDirectInvalidateVIV_LOCAL == 0) {
++        qWarning() << Q_FUNC_INFO << "couldn't find \"glTexDirectVIVMap\" and/or \"glTexDirectInvalidateVIV\" => do nothing and return";
++        return 0;
++    }
++
++
++    if (vF.map(QAbstractVideoBuffer::ReadOnly)) {
++
++        if (!mBitsToTextureMap.contains(vF.bits())) {
++            GLuint tmpTexId;
++            glGenTextures(1, &tmpTexId);
++            mBitsToTextureMap.insert(vF.bits(), tmpTexId);
++
++            const uchar *constBits = vF.bits();
++            void *bits = (void*)constBits;
++
++#ifdef QT_VIVANTE_VIDEO_DEBUG
++            qDebug() << Q_FUNC_INFO << "new texture, texId: " << tmpTexId << "; constBits: " << constBits;
++#endif
++
++            GLuint physical = ~0U;
++
++            glBindTexture(GL_TEXTURE_2D, tmpTexId);
++            glTexDirectVIVMap_LOCAL(GL_TEXTURE_2D,
++                                     vF.width(), vF.height(),
++                                     QSGVivanteVideoNode::getVideoFormat2GLFormatMap().value(vF.pixelFormat()),
++                                     &bits, &physical);
++
++            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
++            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
++            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++            glTexDirectInvalidateVIV_LOCAL(GL_TEXTURE_2D);
++
++            return tmpTexId;
++        }
++        else {
++            glBindTexture(GL_TEXTURE_2D, mBitsToTextureMap.value(vF.bits()));
++            glTexDirectInvalidateVIV_LOCAL(GL_TEXTURE_2D);
++            return mBitsToTextureMap.value(vF.bits());
++        }
++    }
++    else {
++#ifdef QT_VIVANTE_VIDEO_DEBUG
++        qWarning() << " couldn't map the QVideoFrame vF: " << vF;
++#endif
++        return 0;
++    }
++
++    Q_ASSERT(false); // should never reach this line!;
++    return 0;
++}
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideomaterial.h b/src/plugins/videonode/imx6/qsgvivantevideomaterial.h
+new file mode 100644
+index 0000000..9d792b7
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideomaterial.h
+@@ -0,0 +1,80 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef QSGVIDEOMATERIAL_VIVMAP_H
++#define QSGVIDEOMATERIAL_VIVMAP_H
++
++#include <QList>
++#include <QPair>
++
++#include <QSGMaterial>
++#include <QVideoFrame>
++#include <QMutex>
++
++
++class QSGVivanteVideoMaterial : public QSGMaterial
++{
++public:
++    QSGVivanteVideoMaterial();
++    ~QSGVivanteVideoMaterial();
++
++    virtual QSGMaterialType *type() const;
++    virtual QSGMaterialShader *createShader() const;
++    virtual int compare(const QSGMaterial *other) const;
++    void updateBlending();
++    void setCurrentFrame(const QVideoFrame &frame);
++
++    void bind();
++    GLuint vivanteMapping(QVideoFrame texIdVideoFramePair);
++
++    void setOpacity(float o) { mOpacity = o; }
++
++private:
++    qreal mOpacity;
++
++    QMap<const uchar*, GLuint> mBitsToTextureMap;
++    QVideoFrame mCurrentFrame, mNextFrame;
++    GLuint mCurrentTexture;
++
++    QMutex mFrameMutex;
++};
++
++#endif // QSGVIDEOMATERIAL_VIVMAP_H
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideomaterialshader.cpp b/src/plugins/videonode/imx6/qsgvivantevideomaterialshader.cpp
+new file mode 100644
+index 0000000..7b5e5e5
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideomaterialshader.cpp
+@@ -0,0 +1,104 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include "qsgvivantevideomaterialshader.h"
++#include "qsgvivantevideonode.h"
++#include "qsgvivantevideomaterial.h"
++
++void QSGVivanteVideoMaterialShader::updateState(const RenderState &state,
++                                                QSGMaterial *newMaterial,
++                                                QSGMaterial *oldMaterial)
++{
++    Q_UNUSED(oldMaterial);
++
++    QSGVivanteVideoMaterial *mat = static_cast<QSGVivanteVideoMaterial *>(newMaterial);
++    program()->setUniformValue(mIdTexture, 0);
++    mat->bind();
++    if (state.isOpacityDirty()) {
++        mat->setOpacity(state.opacity());
++        program()->setUniformValue(mIdOpacity, state.opacity());
++    }
++    if (state.isMatrixDirty())
++        program()->setUniformValue(mIdMatrix, state.combinedMatrix());
++}
++
++const char * const *QSGVivanteVideoMaterialShader::attributeNames() const {
++    static const char *names[] = {
++        "qt_VertexPosition",
++        "qt_VertexTexCoord",
++        0
++    };
++    return names;
++}
++
++const char *QSGVivanteVideoMaterialShader::vertexShader() const {
++    static const char *shader =
++            "uniform highp mat4 qt_Matrix;                      \n"
++            "attribute highp vec4 qt_VertexPosition;            \n"
++            "attribute highp vec2 qt_VertexTexCoord;            \n"
++            "varying highp vec2 qt_TexCoord;                    \n"
++            "void main() {                                      \n"
++            "    qt_TexCoord = qt_VertexTexCoord;               \n"
++            "    gl_Position = qt_Matrix * qt_VertexPosition;   \n"
++            "}";
++    return shader;
++}
++
++const char *QSGVivanteVideoMaterialShader::fragmentShader() const {
++    static const char *shader =
++            "uniform sampler2D texture;"
++            "uniform lowp float opacity;"
++            ""
++            "varying highp vec2 qt_TexCoord;"
++            ""
++            "void main()"
++            "{"
++            "  gl_FragColor = texture2D( texture, qt_TexCoord ) * opacity;\n"
++            "}";
++    return shader;
++}
++
++
++void QSGVivanteVideoMaterialShader::initialize() {
++    mIdMatrix = program()->uniformLocation("qt_Matrix");
++    mIdTexture = program()->uniformLocation("texture");
++    mIdOpacity = program()->uniformLocation("opacity");
++}
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideomaterialshader.h b/src/plugins/videonode/imx6/qsgvivantevideomaterialshader.h
+new file mode 100644
+index 0000000..570be25
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideomaterialshader.h
+@@ -0,0 +1,64 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef QSGVIDEOMATERIALSHADER_VIVANTE_H
++#define QSGVIDEOMATERIALSHADER_VIVANTE_H
++
++#include <QSGMaterial>
++
++class QSGVivanteVideoMaterialShader : public QSGMaterialShader
++{
++public:
++    void updateState(const RenderState &state, QSGMaterial *newMaterial, QSGMaterial *oldMaterial);
++    virtual char const *const *attributeNames() const;
++
++protected:
++    virtual const char *vertexShader() const;
++    virtual const char *fragmentShader() const;
++    virtual void initialize();
++
++private:
++    int mIdMatrix;
++    int mIdTexture;
++    int mIdOpacity;
++};
++
++#endif // QSGVIDEOMATERIALSHADER_VIVANTE_H
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideonode.cpp b/src/plugins/videonode/imx6/qsgvivantevideonode.cpp
+new file mode 100644
+index 0000000..d5f1e61
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideonode.cpp
+@@ -0,0 +1,90 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include <GLES2/gl2.h>
++#include <GLES2/gl2ext.h>
++
++#include "qsgvivantevideonode.h"
++#include "qsgvivantevideomaterialshader.h"
++#include "qsgvivantevideomaterial.h"
++
++QMap<QVideoFrame::PixelFormat, GLenum> QSGVivanteVideoNode::static_VideoFormat2GLFormatMap = QMap<QVideoFrame::PixelFormat, GLenum>();
++
++QSGVivanteVideoNode::QSGVivanteVideoNode(const QVideoSurfaceFormat &format) :
++    mFormat(format)
++{
++    setFlag(QSGNode::OwnsMaterial, true);
++    mMaterial = new QSGVivanteVideoMaterial();
++    setMaterial(mMaterial);
++}
++
++QSGVivanteVideoNode::~QSGVivanteVideoNode()
++{
++}
++
++void QSGVivanteVideoNode::setCurrentFrame(const QVideoFrame &frame)
++{
++    mMaterial->setCurrentFrame(frame);
++    markDirty(DirtyMaterial);
++}
++
++const QMap<QVideoFrame::PixelFormat, GLenum>& QSGVivanteVideoNode::getVideoFormat2GLFormatMap()
++{
++    if (static_VideoFormat2GLFormatMap.isEmpty()) {
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_YV12,     GL_VIV_YV12);
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_NV12,     GL_VIV_NV12);
++
++
++        // The following formats should work but are untested!
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_NV21,     GL_VIV_NV21);
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_UYVY,     GL_VIV_UYVY);
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_YUYV,     GL_VIV_YUY2);
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_RGB32,    GL_RGBA);
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_RGB24,    GL_RGB);
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_RGB565,   GL_RGB565);
++        static_VideoFormat2GLFormatMap.insert(QVideoFrame::Format_BGRA32,   GL_BGRA_EXT);
++    }
++
++    return static_VideoFormat2GLFormatMap;
++}
++
++
++
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideonode.h b/src/plugins/videonode/imx6/qsgvivantevideonode.h
+new file mode 100644
+index 0000000..ae2120a
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideonode.h
+@@ -0,0 +1,67 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef QSGVIDEONODE_VIVANTE_H
++#define QSGVIDEONODE_VIVANTE_H
++
++#include <private/qsgvideonode_p.h>
++#include <QVideoSurfaceFormat>
++
++class QSGVivanteVideoMaterial;
++class QSGVivanteVideoNode : public QSGVideoNode
++{
++public:
++    QSGVivanteVideoNode(const QVideoSurfaceFormat &format);
++    ~QSGVivanteVideoNode();
++
++    virtual QVideoFrame::PixelFormat pixelFormat() const { return mFormat.pixelFormat(); }
++    void setCurrentFrame(const QVideoFrame &frame);
++
++    static const QMap<QVideoFrame::PixelFormat, GLenum>& getVideoFormat2GLFormatMap();
++
++private:
++    QVideoSurfaceFormat mFormat;
++    QSGVivanteVideoMaterial *mMaterial;
++
++    static QMap<QVideoFrame::PixelFormat, GLenum> static_VideoFormat2GLFormatMap;
++};
++
++#endif // QSGVIDEONODE_VIVANTE_H
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideonodefactory.cpp b/src/plugins/videonode/imx6/qsgvivantevideonodefactory.cpp
+new file mode 100644
+index 0000000..e0711e1
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideonodefactory.cpp
+@@ -0,0 +1,60 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include "qsgvivantevideonodefactory.h"
++#include "qsgvivantevideonode.h"
++
++QList<QVideoFrame::PixelFormat> QSGVivanteVideoNodeFactory::supportedPixelFormats(
++        QAbstractVideoBuffer::HandleType handleType) const
++{
++    if (handleType == QAbstractVideoBuffer::NoHandle)
++        return QSGVivanteVideoNode::getVideoFormat2GLFormatMap().keys();
++    else
++        return QList<QVideoFrame::PixelFormat>();
++}
++
++QSGVideoNode *QSGVivanteVideoNodeFactory::createNode(const QVideoSurfaceFormat &format)
++{
++    if (supportedPixelFormats(format.handleType()).contains(format.pixelFormat())) {
++        return new QSGVivanteVideoNode(format);
++    }
++    return 0;
++}
+diff --git a/src/plugins/videonode/imx6/qsgvivantevideonodefactory.h b/src/plugins/videonode/imx6/qsgvivantevideonodefactory.h
+new file mode 100644
+index 0000000..6fda61b
+--- /dev/null
++++ b/src/plugins/videonode/imx6/qsgvivantevideonodefactory.h
+@@ -0,0 +1,58 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Pelagicore AG
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia.  For licensing terms and
++** conditions see http://qt.digia.com/licensing.  For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU Lesser General Public License version 2.1 requirements
++** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights.  These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 3.0 as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL included in the
++** packaging of this file.  Please review the following information to
++** ensure the GNU General Public License version 3.0 requirements will be
++** met: http://www.gnu.org/copyleft/gpl.html.
++**
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef QSGVIDEONODEFACTORY_VIVANTE_H
++#define QSGVIDEONODEFACTORY_VIVANTE_H
++
++#include <QObject>
++#include <private/qsgvideonode_p.h>
++
++class QSGVivanteVideoNodeFactory : public QObject, public QSGVideoNodeFactoryInterface
++{
++public:
++    Q_OBJECT
++    Q_PLUGIN_METADATA(IID QSGVideoNodeFactoryInterface_iid FILE "imx6.json")
++    Q_INTERFACES(QSGVideoNodeFactoryInterface)
++
++    QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
++    QSGVideoNode *createNode(const QVideoSurfaceFormat &format);
++};
++#endif // QSGVIDEONODEFACTORY_VIVANTE_H
+diff --git a/src/plugins/videonode/videonode.pro b/src/plugins/videonode/videonode.pro
+new file mode 100644
+index 0000000..ecc1c0c
+--- /dev/null
++++ b/src/plugins/videonode/videonode.pro
+@@ -0,0 +1,5 @@
++TEMPLATE = subdirs
++
++*imx6* {
++    SUBDIRS += imx6
++}
+-- 
+2.0.0.rc2
+
