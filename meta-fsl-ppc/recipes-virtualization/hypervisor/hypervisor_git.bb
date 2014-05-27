@@ -9,8 +9,6 @@ DEPENDS = "u-boot-mkimage-native"
 
 inherit deploy
 
-S = "${WORKDIR}/git"
-
 # TODO: fix dtc to use the already built package
 SRC_URI = " \
 	git://git.freescale.com/ppc/sdk/hypervisor/hypervisor.git;name=hypervisor;nobranch=1 \
@@ -30,7 +28,12 @@ SRCREV_libos = "4691387e15be78d140142104f30b3f356281c46a"
 SRCREV_dtc = "033089f29099bdfd5c2d6986cdb9fd07b16cfde0"
 SRCREV_hypertrk = "975c98b562186afbd3bbf103ae54b96cf9b3e533"
 
-EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
+S = "${WORKDIR}/git"
+
+OUTPUT ?= "output32"
+OUTPUT_powerpc64 = "output64"
+
+EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}" O="${OUTPUT}"'
 
 DEFCONFIG = "defconfig"
 DEFCONFIG_powerpc64 = "64bit_defconfig"
@@ -60,29 +63,29 @@ do_compile () {
 
 do_install () {
 	install -d ${D}/${bindir}
-	install ${S}/output/bin/linux/partman ${D}/${bindir}/partman
+	install ${B}/${OUTPUT}/bin/linux/partman ${D}/${bindir}/partman
 
         install -d ${D}${sysconfdir}/udev/rules.d
         install -m 0644 ${WORKDIR}/81-fsl-embedded-hv.rules ${D}${sysconfdir}/udev/rules.d
 
 	install -d ${D}/boot/hv
-	install ${S}/output/.config ${D}/boot/hv/hypervisor.config
-	install -m 644 ${S}/output/bin/hv ${S}/output/bin/hv.map \
-                ${S}/output/bin/hv.uImage ${S}/output/bin/hv.bin \
+	install ${B}/${OUTPUT}/.config ${D}/boot/hv/hypervisor.config
+	install -m 644 ${B}/${OUTPUT}/bin/hv ${B}/${OUTPUT}/bin/hv.map \
+                ${B}/${OUTPUT}/bin/hv.uImage ${B}/${OUTPUT}/bin/hv.bin \
                         ${D}/boot/hv/
 }
 
 do_deploy () {
 	install -d ${DEPLOYDIR}/hv/
-	install ${S}/output/.config ${DEPLOYDIR}/hv/hypervisor.config
-	install -m 644 ${S}/output/bin/hv ${S}/output/bin/hv.map \
-                ${S}/output/bin/hv.uImage ${S}/output/bin/hv.bin \
+	install ${B}/${OUTPUT}/.config ${DEPLOYDIR}/hv/hypervisor.config
+	install -m 644 ${B}/${OUTPUT}/bin/hv ${B}/${OUTPUT}/bin/hv.map \
+                ${B}/${OUTPUT}/bin/hv.uImage ${B}/${OUTPUT}/bin/hv.bin \
                         ${DEPLOYDIR}/hv/
 }
 addtask deploy before do_build after do_install
 
 do_deploy_append() {
-	rm -f ${S}/../hv
+	rm -f ${B}/../hv
 }
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
