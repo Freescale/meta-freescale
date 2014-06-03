@@ -75,10 +75,14 @@ MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " fsl-alsa-plugins"
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf"
 
-# Gstreamer plugin
+# GStreamer 0.10 plugins
 MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
 MACHINE_GSTREAMER_PLUGIN_mx3 ?= ""
 MACHINE_GSTREAMER_PLUGIN_vf60 ?= ""
+
+# GStreamer 1.0 plugins
+MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6 ?= "gstreamer1.0-plugins-imx-meta"
 
 # mx5 GPU libraries
 GPU_FLAVOUR = "${@base_contains('DISTRO_FEATURES', 'x11', 'x11-', '', d)}"
