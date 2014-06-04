@@ -1,59 +1,54 @@
-From c5fa88cb08477384430d2ab1123319c9d5dfb31c Mon Sep 17 00:00:00 2001
-From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
-Date: Mon, 24 Mar 2014 07:30:25 -0500
-Subject: [PATCH 2/2] weston : Add Vivante 2D compositor support
+From 2a24c62ef00d1b08974bd8f07e277695ac2911fa Mon Sep 17 00:00:00 2001
+From: Yong Gan <b45748@freescale.com>
+Date: Thu, 22 May 2014 15:26:31 +0800
+Subject: [PATCH 2/3] ENGR00314805-2 Add Vivante GAL2D support
+
+Add Vivante GAL2D compositor support.
 
 Upstream-Status: Pending
 
-Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+[DATE]05-22-2014
+Signed-off-by Yong Gan <B45748@freescale.com>
 ---
- src/Makefile.am        |   14 +
- src/compositor-fbdev.c |  111 ++++-
- src/gal2d-renderer.c   | 1186 ++++++++++++++++++++++++++++++++++++++++++++++++
- src/gal2d-renderer.h   |   43 ++
- 4 files changed, 1340 insertions(+), 14 deletions(-)
+ Makefile.am            |   13 +
+ src/compositor-fbdev.c |  110 ++++-
+ src/gal2d-renderer.c   | 1187 ++++++++++++++++++++++++++++++++++++++++++++++++
+ src/gal2d-renderer.h   |   41 ++
+ 4 files changed, 1337 insertions(+), 14 deletions(-)
  create mode 100644 src/gal2d-renderer.c
  create mode 100644 src/gal2d-renderer.h
 
-diff --git a/src/Makefile.am b/src/Makefile.am
-index 446639c..ef6abd6 100644
---- a/src/Makefile.am
-+++ b/src/Makefile.am
-@@ -112,6 +112,7 @@ module_LTLIBRARIES =				\
- 	$(cms_static)				\
- 	$(cms_colord)				\
- 	$(gl_renderer)				\
-+	$(gal2d_renderer)				\
- 	$(x11_backend)				\
- 	$(drm_backend)				\
- 	$(wayland_backend)			\
-@@ -138,6 +139,19 @@ gl_renderer_la_SOURCES =			\
- 	gl-renderer.c				\
- 	vertex-clipping.c			\
- 	vertex-clipping.h
+diff --git a/Makefile.am b/Makefile.am
+index 343adc6..2bccfe9 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -162,6 +162,19 @@ gl_renderer_la_SOURCES =			\
+ 	src/gl-renderer.c			\
+ 	src/vertex-clipping.c			\
+ 	src/vertex-clipping.h
 +
-+gal2d_renderer = gal2d-renderer.la
++module_LTLIBRARIES += gal2d-renderer.la
 +gal2d_renderer_la_LDFLAGS = -module -avoid-version
 +gal2d_renderer_la_LIBADD = $(COMPOSITOR_LIBS) $(EGL_LIBS)
-+gal2d_renderer_la_CFLAGS =				\
++gal2d_renderer_la_CFLAGS =			\
 +	$(COMPOSITOR_CFLAGS)			\
 +	$(EGL_CFLAGS)				\
 +	$(GCC_CFLAGS)
 +gal2d_renderer_la_SOURCES =			\
-+	gal2d-renderer.h				\
-+	gal2d-renderer.c				\
-+	vertex-clipping.c			\
-+	vertex-clipping.h
++	src/gal2d-renderer.h			\
++	src/gal2d-renderer.c			\
++	src/vertex-clipping.c			\
++	src/vertex-clipping.h
  endif
  
  if ENABLE_X11_COMPOSITOR
 diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
-index 72939b4..28f1fca 100644
+index 3db1d17..a3d32e5 100644
 --- a/src/compositor-fbdev.c
 +++ b/src/compositor-fbdev.c
 @@ -44,6 +44,7 @@
  #include "pixman-renderer.h"
- #include "udev-seat.h"
+ #include "udev-input.h"
  #include "gl-renderer.h"
 +#include "gal2d-renderer.h"
  
@@ -65,7 +60,7 @@ index 72939b4..28f1fca 100644
  	int use_pixman;
 +	int use_gal2d;
  	struct wl_listener session_listener;
- 	NativeDisplayType display;
+ 	EGLNativeDisplayType display;
  };
 @@ -97,9 +99,11 @@ struct fbdev_parameters {
  	int tty;
@@ -107,28 +102,29 @@ index 72939b4..28f1fca 100644
  	                   output->fb_info.height_mm,
  	                   WL_OUTPUT_TRANSFORM_NORMAL,
  			   1);
-@@ -629,14 +634,40 @@ fbdev_output_create(struct fbdev_compositor *compositor,
+@@ -629,8 +634,33 @@ fbdev_output_create(struct fbdev_compositor *compositor,
  	if (compositor->use_pixman) {
  		if (pixman_renderer_output_create(&output->base) < 0)
  			goto out_shadow_surface;
 -	} else {
+-		setenv("HYBRIS_EGLPLATFORM", "wayland", 1);
 +	} 
 +	else if(compositor->use_gal2d) {
 +
 +		char* fbenv = getenv("FB_FRAMEBUFFER_0");
 +		setenv("FB_FRAMEBUFFER_0", device, 1);
 +		output->display = fbGetDisplay(compositor->base.wl_display);
-+	    if (output->display == NULL) {
-+	       fprintf(stderr, "failed to get display\n");
-+	       return 0;
-+	    }
++		if (output->display == NULL) {
++			fprintf(stderr, "failed to get display\n");
++			return 0;
++		}
 +
-+	    output->window = fbCreateWindow(output->display, -1, -1, 0, 0);
-+	    if (output->window == NULL) {
-+	       fprintf(stderr, "failed to create window\n");
-+	       return 0;
-+	    }
-+	    setenv("FB_FRAMEBUFFER_0", fbenv, 1);
++		output->window = fbCreateWindow(output->display, -1, -1, 0, 0);
++		if (output->window == NULL) {
++			fprintf(stderr, "failed to create window\n");
++			 return 0;
++		}
++		setenv("FB_FRAMEBUFFER_0", fbenv, 1);
 +
 +		if (gal2d_renderer->output_create(&output->base,
 +					output->display,
@@ -140,17 +136,9 @@ index 72939b4..28f1fca 100644
 +	}
 +	else {
  		output->window = fbCreateWindow(compositor->display, -1, -1, 0, 0);
- 	    if (output->window == NULL) {
- 	       fprintf(stderr, "failed to create window\n");
- 	       return 0;
- 	    }
- 		if (gl_renderer->output_create(&output->base,
--					(EGLNativeWindowType)output->window) < 0) {
-+					(NativeWindowType)output->window) < 0) {
- 			weston_log("gl_renderer_output_create failed.\n");
- 			goto out_shadow_surface;
- 		}
-@@ -695,7 +726,11 @@ fbdev_output_destroy(struct weston_output *base)
+ 		if (output->window == NULL) {
+ 			fprintf(stderr, "failed to create window\n");
+@@ -698,7 +728,11 @@ fbdev_output_destroy(struct weston_output *base)
  			free(output->shadow_buf);
  			output->shadow_buf = NULL;
  		}
@@ -163,7 +151,7 @@ index 72939b4..28f1fca 100644
  		gl_renderer->output_destroy(base);
  	}
  
-@@ -758,7 +793,7 @@ fbdev_output_reenable(struct fbdev_compositor *compositor,
+@@ -761,7 +795,7 @@ fbdev_output_reenable(struct fbdev_compositor *compositor,
  		 * are re-initialised. */
  		device = output->device;
  		fbdev_output_destroy(base);
@@ -172,7 +160,7 @@ index 72939b4..28f1fca 100644
  
  		return 0;
  	}
-@@ -911,7 +946,10 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
+@@ -914,7 +948,10 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
  	compositor->base.restore = fbdev_restore;
  
  	compositor->prev_state = WESTON_COMPOSITOR_ACTIVE;
@@ -184,7 +172,7 @@ index 72939b4..28f1fca 100644
  
  	for (key = KEY_F1; key < KEY_F9; key++)
  		weston_compositor_add_key_binding(&compositor->base, key,
-@@ -921,7 +959,50 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
+@@ -924,7 +961,50 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
  	if (compositor->use_pixman) {
  		if (pixman_renderer_init(&compositor->base) < 0)
  			goto out_launcher;
@@ -236,7 +224,7 @@ index 72939b4..28f1fca 100644
  		gl_renderer = weston_load_module("gl-renderer.so",
  						 "gl_renderer_interface");
  		if (!gl_renderer) {
-@@ -942,9 +1023,9 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
+@@ -945,9 +1025,9 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
  			goto out_launcher;
  		}
  	}
@@ -249,7 +237,7 @@ index 72939b4..28f1fca 100644
  
  	udev_input_init(&compositor->input, &compositor->base, compositor->udev, seat_id);
  
-@@ -977,13 +1058,15 @@ backend_init(struct wl_display *display, int *argc, char *argv[],
+@@ -980,13 +1060,15 @@ backend_init(struct wl_display *display, int *argc, char *argv[],
  	struct fbdev_parameters param = {
  		.tty = 0, /* default to current tty */
  		.device = "/dev/fb0", /* default frame buffer */
@@ -269,10 +257,10 @@ index 72939b4..28f1fca 100644
  	parse_options(fbdev_options, ARRAY_LENGTH(fbdev_options), argc, argv);
 diff --git a/src/gal2d-renderer.c b/src/gal2d-renderer.c
 new file mode 100644
-index 0000000..be7af3c
+index 0000000..c651573
 --- /dev/null
 +++ b/src/gal2d-renderer.c
-@@ -0,0 +1,1186 @@
+@@ -0,0 +1,1187 @@
 +/*
 + * Copyright (c) 2014 Freescale Semiconductor, Inc.
 + * Copyright © 2012 Intel Corporation
@@ -1228,7 +1216,8 @@ index 0000000..be7af3c
 +	wl_list_remove(&gs->renderer_destroy_listener.link);
 +	if(gs->surface)
 +		gs->surface->renderer_state = NULL;
-+    
++
++	weston_buffer_reference(&gs->buffer_ref, NULL);
 +	free(gs);
 +}
 +
@@ -1461,10 +1450,10 @@ index 0000000..be7af3c
 +};
 diff --git a/src/gal2d-renderer.h b/src/gal2d-renderer.h
 new file mode 100644
-index 0000000..ebffec1
+index 0000000..3b89f73
 --- /dev/null
 +++ b/src/gal2d-renderer.h
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,41 @@
 +/*
 + * Copyright (c) 2014 Freescale Semiconductor, Inc.
 + * Copyright © 2013 Vasily Khoruzhick <anarsoul@gmail.com>
@@ -1505,9 +1494,7 @@ index 0000000..ebffec1
 +	void (*output_destroy)(struct weston_output *output);
 +};
 +
-+struct gal2d_renderer_interface gal2d_renderer_interface;
-+
 +#endif
 -- 
-1.9.0
+1.7.9.5
 
