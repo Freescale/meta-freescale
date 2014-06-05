@@ -10,6 +10,7 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 #
 # Handles i.MX mxs bootstream generation
 #
+MXSBOOT_NAND_ARGS ?= ""
 
 # IMX Bootlets Linux bootstream
 IMAGE_DEPENDS_linux.sb = "elftosb-native:do_populate_sysroot \
@@ -58,6 +59,12 @@ IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native:do_populate_sysroot 
                                       u-boot:do_deploy"
 IMAGE_CMD_uboot.mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
                                              ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot.mxsboot-sdcard"
+
+IMAGE_DEPENDS_uboot.mxsboot-nand = "u-boot-mxsboot-native:do_populate_sysroot \
+                                      u-boot:do_deploy"
+IMAGE_CMD_uboot.mxsboot-nand = "mxsboot ${MXSBOOT_NAND_ARGS} nand \
+                                             ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
+                                             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot.mxsboot-nand"
 
 # Boot partition volume id
 BOOTDD_VOLUME_ID ?= "Boot ${MACHINE}"
