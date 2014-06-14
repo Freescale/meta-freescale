@@ -3,9 +3,8 @@ SECTION = "web-sysmon"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
 
-SRCBRANCH = "sdk-v1.4.x"
-SRC_URI = "git://git.freescale.com/ppc/sdk/web-sysmon.git;branch=${SRCBRANCH}"
-SRCREV = "40b47611378ef5c07d98f0f691bb146ae52dcdc1"
+SRC_URI = "git://git.freescale.com/ppc/sdk/web-sysmon-dev.git;nobranch=1"
+SRCREV = "d8fafc6f223054a4129d5623e89d3dcf42ac8147"
 
 S = "${WORKDIR}/git"
 
