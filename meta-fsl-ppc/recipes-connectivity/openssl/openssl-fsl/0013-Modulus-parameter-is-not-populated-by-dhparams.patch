@@ -1,0 +1,43 @@
+From 8aabfeb1308188a46d3f370cd757de130e73eb9b Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Tue, 22 Apr 2014 22:58:33 +0545
+Subject: [PATCH][fsl 13/15] Modulus parameter is not populated by dhparams
+
+Upstream-status: Pending
+
+When dhparams are created, modulus parameter required for
+private key generation is not populated. So, falling back
+to software for proper population of modulus parameters followed
+by private key generation
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/engine/eng_cryptodev.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 33447c8..8de8f09 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -3370,7 +3370,7 @@ static int cryptodev_dh_keygen_async(DH *dh,  struct pkc_cookie_s *cookie)
+ 	kop->crk_op = CRK_DH_GENERATE_KEY;
+ 	if (bn2crparam(dh->p, &kop->crk_param[0]))
+ 		goto sw_try;
+-	if (bn2crparam(dh->q, &kop->crk_param[1]))
++	if (!dh->q || bn2crparam(dh->q, &kop->crk_param[1]))
+ 		goto sw_try;
+ 	kop->crk_param[2].crp_p = g;
+ 	kop->crk_param[2].crp_nbits = g_len * 8;
+@@ -3425,7 +3425,7 @@ static int cryptodev_dh_keygen(DH *dh)
+ 	kop.crk_op = CRK_DH_GENERATE_KEY;
+ 	if (bn2crparam(dh->p, &kop.crk_param[0]))
+ 		goto sw_try;
+-	if (bn2crparam(dh->q, &kop.crk_param[1]))
++	if (!dh->q || bn2crparam(dh->q, &kop.crk_param[1]))
+ 		goto sw_try;
+ 	kop.crk_param[2].crp_p = g;
+ 	kop.crk_param[2].crp_nbits = g_len * 8;
+-- 
+1.7.9.7
+

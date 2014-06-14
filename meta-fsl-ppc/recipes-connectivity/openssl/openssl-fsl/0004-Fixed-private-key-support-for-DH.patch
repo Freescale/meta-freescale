@@ -1,0 +1,33 @@
+From c994fa6c5eb9b684dd6aff45dd5e8eb98237c31e Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Tue, 11 Mar 2014 05:57:47 +0545
+Subject: [PATCH][fsl 04/15] Fixed private key support for DH
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+---
+ crypto/dh/dh_ameth.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/crypto/dh/dh_ameth.c b/crypto/dh/dh_ameth.c
+index 02ec2d4..ed32004 100644
+--- a/crypto/dh/dh_ameth.c
++++ b/crypto/dh/dh_ameth.c
+@@ -422,6 +422,13 @@ static int dh_copy_parameters(EVP_PKEY *to, const EVP_PKEY *from)
+ 	if (to->pkey.dh->g != NULL)
+ 		BN_free(to->pkey.dh->g);
+ 	to->pkey.dh->g=a;
++	if ((a=BN_dup(from->pkey.dh->q)) != NULL) {
++		if (to->pkey.dh->q != NULL)
++			BN_free(to->pkey.dh->q);
++		to->pkey.dh->q=a;
++	}
++
++	to->pkey.dh->length = from->pkey.dh->length;
+ 
+ 	return 1;
+ 	}
+-- 
+1.7.9.7
+

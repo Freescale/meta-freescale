@@ -1,0 +1,296 @@
+From 1a8886909afc7e4c9e8539644c815baee8ee4816 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Thu, 29 Aug 2013 16:51:18 +0300
+Subject: [PATCH][fsl 03/15] add support for TLS algorithms offload
+
+Upstream-status: Pending
+
+Requires TLS patches on cryptodev and TLS algorithm support in Linux
+kernel driver.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/engine/eng_cryptodev.c |  204 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 193 insertions(+), 11 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 5a715ac..123613d 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -72,6 +72,9 @@ ENGINE_load_cryptodev(void)
+ struct dev_crypto_state {
+ 	struct session_op d_sess;
+ 	int d_fd;
++	unsigned char *aad;
++	unsigned int aad_len;
++	unsigned int len;
+ 
+ #ifdef USE_CRYPTODEV_DIGESTS
+ 	char dummy_mac_key[HASH_MAX_LEN];
+@@ -140,17 +143,19 @@ static struct {
+ 	int	nid;
+ 	int	ivmax;
+ 	int	keylen;
++	int	mackeylen;
+ } ciphers[] = {
+-	{ CRYPTO_ARC4,			NID_rc4,		0,	16, },
+-	{ CRYPTO_DES_CBC,		NID_des_cbc,		8,	 8, },
+-	{ CRYPTO_3DES_CBC,		NID_des_ede3_cbc,	8,	24, },
+-	{ CRYPTO_AES_CBC,		NID_aes_128_cbc,	16,	16, },
+-	{ CRYPTO_AES_CBC,		NID_aes_192_cbc,	16,	24, },
+-	{ CRYPTO_AES_CBC,		NID_aes_256_cbc,	16,	32, },
+-	{ CRYPTO_BLF_CBC,		NID_bf_cbc,		8,	16, },
+-	{ CRYPTO_CAST_CBC,		NID_cast5_cbc,		8,	16, },
+-	{ CRYPTO_SKIPJACK_CBC,		NID_undef,		0,	 0, },
+-	{ 0,				NID_undef,		0,	 0, },
++	{ CRYPTO_ARC4,          NID_rc4,          0,  16, 0},
++	{ CRYPTO_DES_CBC,       NID_des_cbc,	  8,  8,  0},
++	{ CRYPTO_3DES_CBC,      NID_des_ede3_cbc, 8,  24, 0},
++	{ CRYPTO_AES_CBC,       NID_aes_128_cbc,  16, 16, 0},
++	{ CRYPTO_AES_CBC,       NID_aes_192_cbc,  16, 24, 0},
++	{ CRYPTO_AES_CBC,       NID_aes_256_cbc,  16, 32, 0},
++	{ CRYPTO_BLF_CBC,       NID_bf_cbc,       8,  16, 0},
++	{ CRYPTO_CAST_CBC,      NID_cast5_cbc,    8,  16, 0},
++	{ CRYPTO_SKIPJACK_CBC,  NID_undef,        0,  0,  0},
++	{ CRYPTO_TLS10_AES_CBC_HMAC_SHA1, NID_aes_128_cbc_hmac_sha1, 16, 16, 20},
++	{ 0, NID_undef,	0, 0, 0},
+ };
+ 
+ #ifdef USE_CRYPTODEV_DIGESTS
+@@ -250,13 +255,15 @@ get_cryptodev_ciphers(const int **cnids)
+ 	}
+ 	memset(&sess, 0, sizeof(sess));
+ 	sess.key = (caddr_t)"123456789abcdefghijklmno";
++	sess.mackey = (caddr_t)"123456789ABCDEFGHIJKLMNO";
+ 
+ 	for (i = 0; ciphers[i].id && count < CRYPTO_ALGORITHM_MAX; i++) {
+ 		if (ciphers[i].nid == NID_undef)
+ 			continue;
+ 		sess.cipher = ciphers[i].id;
+ 		sess.keylen = ciphers[i].keylen;
+-		sess.mac = 0;
++		sess.mackeylen = ciphers[i].mackeylen;
++
+ 		if (ioctl(fd, CIOCGSESSION, &sess) != -1 &&
+ 		    ioctl(fd, CIOCFSESSION, &sess.ses) != -1)
+ 			nids[count++] = ciphers[i].nid;
+@@ -414,6 +421,67 @@ cryptodev_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+ 	return (1);
+ }
+ 
++
++static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
++		const unsigned char *in, size_t len)
++{
++	struct crypt_auth_op cryp;
++	struct dev_crypto_state *state = ctx->cipher_data;
++	struct session_op *sess = &state->d_sess;
++	const void *iiv;
++	unsigned char save_iv[EVP_MAX_IV_LENGTH];
++
++	if (state->d_fd < 0)
++		return (0);
++	if (!len)
++		return (1);
++	if ((len % ctx->cipher->block_size) != 0)
++		return (0);
++
++	memset(&cryp, 0, sizeof(cryp));
++
++	/* TODO: make a seamless integration with cryptodev flags */
++	switch (ctx->cipher->nid) {
++	case NID_aes_128_cbc_hmac_sha1:
++		cryp.flags = COP_FLAG_AEAD_TLS_TYPE;
++	}
++	cryp.ses = sess->ses;
++	cryp.len = state->len;
++	cryp.dst_len = len;
++	cryp.src = (caddr_t) in;
++	cryp.dst = (caddr_t) out;
++	cryp.auth_src = state->aad;
++	cryp.auth_len = state->aad_len;
++
++	cryp.op = ctx->encrypt ? COP_ENCRYPT : COP_DECRYPT;
++
++	if (ctx->cipher->iv_len) {
++		cryp.iv = (caddr_t) ctx->iv;
++		if (!ctx->encrypt) {
++			iiv = in + len - ctx->cipher->iv_len;
++			memcpy(save_iv, iiv, ctx->cipher->iv_len);
++		}
++	} else
++		cryp.iv = NULL;
++
++	if (ioctl(state->d_fd, CIOCAUTHCRYPT, &cryp) == -1) {
++		/* XXX need better errror handling
++		 * this can fail for a number of different reasons.
++		 */
++		return (0);
++	}
++
++	if (ctx->cipher->iv_len) {
++		if (ctx->encrypt)
++			iiv = out + len - ctx->cipher->iv_len;
++		else
++			iiv = save_iv;
++		memcpy(ctx->iv, iiv, ctx->cipher->iv_len);
++	}
++	return (1);
++}
++
++
+ static int
+ cryptodev_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+     const unsigned char *iv, int enc)
+@@ -452,6 +520,45 @@ cryptodev_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+ 	return (1);
+ }
+ 
++/* Save the encryption key provided by upper layers.
++ *
++ * This function is called by EVP_CipherInit_ex to initialize the algorithm's
++ * extra data. We can't do much here because the mac key is not available.
++ * The next call should/will be to cryptodev_cbc_hmac_sha1_ctrl with parameter
++ * EVP_CTRL_AEAD_SET_MAC_KEY, to set the hmac key. There we call CIOCGSESSION
++ * with both the crypto and hmac keys.
++ */
++static int cryptodev_init_aead_key(EVP_CIPHER_CTX *ctx,
++		const unsigned char *key, const unsigned char *iv, int enc)
++{
++	struct dev_crypto_state *state = ctx->cipher_data;
++	struct session_op *sess = &state->d_sess;
++	int cipher = -1, i;
++
++	for (i = 0; ciphers[i].id; i++)
++		if (ctx->cipher->nid == ciphers[i].nid &&
++		    ctx->cipher->iv_len <= ciphers[i].ivmax &&
++		    ctx->key_len == ciphers[i].keylen) {
++			cipher = ciphers[i].id;
++			break;
++		}
++
++	if (!ciphers[i].id) {
++		state->d_fd = -1;
++		return (0);
++	}
++
++	memset(sess, 0, sizeof(struct session_op));
++
++	sess->key = (caddr_t)key;
++	sess->keylen = ctx->key_len;
++	sess->cipher = cipher;
++
++	/* for whatever reason, (1) means success */
++	return (1);
++}
++
++
+ /*
+  * free anything we allocated earlier when initting a
+  * session, and close the session.
+@@ -488,6 +595,63 @@ cryptodev_cleanup(EVP_CIPHER_CTX *ctx)
+ 	return (ret);
+ }
+ 
++static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg,
++		void *ptr)
++{
++	switch (type) {
++	case EVP_CTRL_AEAD_SET_MAC_KEY:
++	{
++		/* TODO: what happens with hmac keys larger than 64 bytes? */
++		struct dev_crypto_state *state = ctx->cipher_data;
++		struct session_op *sess = &state->d_sess;
++
++		if ((state->d_fd = get_dev_crypto()) < 0)
++			return (0);
++
++		/* the rest should have been set in cryptodev_init_aead_key */
++		sess->mackey = ptr;
++		sess->mackeylen = arg;
++
++		if (ioctl(state->d_fd, CIOCGSESSION, sess) == -1) {
++			put_dev_crypto(state->d_fd);
++			state->d_fd = -1;
++			return (0);
++		}
++		return (1);
++	}
++	case EVP_CTRL_AEAD_TLS1_AAD:
++	{
++		/* ptr points to the associated data buffer of 13 bytes */
++		struct dev_crypto_state *state = ctx->cipher_data;
++		unsigned char *p = ptr;
++		unsigned int cryptlen = p[arg - 2] << 8 | p[arg - 1];
++		unsigned int maclen, padlen;
++		unsigned int bs = ctx->cipher->block_size;
++		int j;
++
++		state->aad = ptr;
++		state->aad_len = arg;
++		state->len = cryptlen;
++
++		/* TODO: this should be an extension of EVP_CIPHER struct */
++		switch (ctx->cipher->nid) {
++		case NID_aes_128_cbc_hmac_sha1:
++			maclen = SHA_DIGEST_LENGTH;
++		}
++
++		/* space required for encryption (not only TLS padding) */
++		padlen = maclen;
++		if (ctx->encrypt) {
++			cryptlen += maclen;
++			padlen += bs - (cryptlen % bs);
++		}
++		return padlen;
++	}
++	default:
++		return -1;
++	}
++}
++
+ /*
+  * libcrypto EVP stuff - this is how we get wired to EVP so the engine
+  * gets called when libcrypto requests a cipher NID.
+@@ -600,6 +764,20 @@ const EVP_CIPHER cryptodev_aes_256_cbc = {
+ 	NULL
+ };
+ 
++const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1 = {
++	NID_aes_128_cbc_hmac_sha1,
++	16, 16, 16,
++	EVP_CIPH_CBC_MODE | EVP_CIPH_FLAG_AEAD_CIPHER,
++	cryptodev_init_aead_key,
++	cryptodev_aead_cipher,
++	cryptodev_cleanup,
++	sizeof(struct dev_crypto_state),
++	EVP_CIPHER_set_asn1_iv,
++	EVP_CIPHER_get_asn1_iv,
++	cryptodev_cbc_hmac_sha1_ctrl,
++	NULL
++};
++
+ /*
+  * Registered by the ENGINE when used to find out how to deal with
+  * a particular NID in the ENGINE. this says what we'll do at the
+@@ -637,6 +815,9 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
+ 	case NID_aes_256_cbc:
+ 		*cipher = &cryptodev_aes_256_cbc;
+ 		break;
++	case NID_aes_128_cbc_hmac_sha1:
++		*cipher = &cryptodev_aes_128_cbc_hmac_sha1;
++		break;
+ 	default:
+ 		*cipher = NULL;
+ 		break;
+@@ -1384,6 +1565,7 @@ ENGINE_load_cryptodev(void)
+ 	}
+ 	put_dev_crypto(fd);
+ 
++	EVP_add_cipher(&cryptodev_aes_128_cbc_hmac_sha1);
+ 	if (!ENGINE_set_id(engine, "cryptodev") ||
+ 	    !ENGINE_set_name(engine, "BSD cryptodev engine") ||
+ 	    !ENGINE_set_ciphers(engine, cryptodev_engine_ciphers) ||
+-- 
+1.7.9.7
+
