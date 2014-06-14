@@ -4,7 +4,7 @@ PR = "r6"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/boot-format.git;nobranch=1"
-SRCREV = "3d5f5ae1461eb14927a89eea12a841983e151ec7"
+SRCREV = "4eb81a6797ef4e58bf7d9b2d58afb37a21c1f550"
 
 S = "${WORKDIR}/git"
 EXTRA_OEMAKE = 'CC="${CC}"'
