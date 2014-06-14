@@ -1,0 +1,64 @@
+From 69e00f8c1633dfe6da20ccd0cf363a481c99fc97 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Wed, 20 Nov 2013 11:29:50 +0200
+Subject: [[Patch][fsl 06/16] fix build error on some targets
+
+Upstream-status: Pending
+
+This updates incomplete patch f681e2e5fd1088bfe0aafd1ae2560c1dc9d04778
+and allows building main.o
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Horia Ioan Geanta Neag <horia.geanta@freescale.com>
+---
+ cryptlib.c |    4 ++--
+ cryptlib.h |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 2986d09..3576f39 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -113,7 +113,7 @@ error:
+ 
+ 
+ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+-				uint8_t *keyp, size_t keylen, int stream, int aead)
++				uint8_t *keyp, unsigned int keylen, int stream, int aead)
+ {
+ 	int ret;
+ 
+@@ -313,7 +313,7 @@ ssize_t cryptodev_cipher_decrypt(struct cipher_data *cdata,
+ /* Hash functions */
+ 
+ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+-			int hmac_mode, void *mackey, size_t mackeylen)
++			int hmac_mode, void *mackey, unsigned int mackeylen)
+ {
+ 	int ret;
+ 
+diff --git a/cryptlib.h b/cryptlib.h
+index a0a8a63..4cb66ad 100644
+--- a/cryptlib.h
++++ b/cryptlib.h
+@@ -23,7 +23,7 @@ struct cipher_data {
+ };
+ 
+ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+-			  uint8_t *key, size_t keylen, int stream, int aead);
++			  uint8_t *key, unsigned int keylen, int stream, int aead);
+ void cryptodev_cipher_deinit(struct cipher_data *cdata);
+ int cryptodev_get_cipher_key(uint8_t *key, struct session_op *sop, int aead);
+ int cryptodev_get_cipher_keylen(unsigned int *keylen, struct session_op *sop,
+@@ -87,7 +87,7 @@ ssize_t cryptodev_hash_update(struct hash_data *hdata,
+ int cryptodev_hash_reset(struct hash_data *hdata);
+ void cryptodev_hash_deinit(struct hash_data *hdata);
+ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+-			int hmac_mode, void *mackey, size_t mackeylen);
++			int hmac_mode, void *mackey, unsigned int mackeylen);
+ 
+ 
+ #endif
+-- 
+1.7.9.7
+

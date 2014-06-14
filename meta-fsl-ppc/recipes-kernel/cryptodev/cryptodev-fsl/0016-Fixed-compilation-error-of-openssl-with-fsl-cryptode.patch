@@ -1,0 +1,116 @@
+From 2215332bff6034d0e22e92e8fda0993f2579a740 Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Thu, 17 Apr 2014 07:08:47 +0545
+Subject: [[Patch][fsl 16/16] Fixed compilation error of openssl with fsl
+ cryptodev
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ cryptlib.c         |    6 +++---
+ crypto/cryptodev.h |    9 ++++++++-
+ cryptodev_int.h    |    2 +-
+ ioctl.c            |    6 +++++-
+ 4 files changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 89af77a..1fc03e5 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -129,7 +129,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 			if (alg->max_keysize > 0 &&
+ 					unlikely((keylen < alg->min_keysize) ||
+ 					(keylen > alg->max_keysize))) {
+-				ddebug(1, "Wrong keylen '%zu' for algorithm '%s'. Use %u to %u.",
++				ddebug(1, "Wrong keylen '%u' for algorithm '%s'. Use %u to %u.",
+ 						keylen, alg_name, alg->min_keysize, alg->max_keysize);
+ 				ret = -EINVAL;
+ 				goto error;
+@@ -156,7 +156,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 	}
+ 
+ 	if (unlikely(ret)) {
+-		ddebug(1, "Setting key failed for %s-%zu.", alg_name, keylen*8);
++		ddebug(1, "Setting key failed for %s-%u.", alg_name, keylen*8);
+ 		ret = -EINVAL;
+ 		goto error;
+ 	}
+@@ -323,7 +323,7 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+ 	if (hmac_mode != 0) {
+ 		ret = crypto_ahash_setkey(hdata->async.s, mackey, mackeylen);
+ 		if (unlikely(ret)) {
+-			ddebug(1, "Setting hmac key failed for %s-%zu.",
++			ddebug(1, "Setting hmac key failed for %s-%u.",
+ 					alg_name, mackeylen*8);
+ 			ret = -EINVAL;
+ 			goto error;
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index 7990f27..77bffc9 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -235,6 +235,13 @@ struct crypt_auth_op {
+ #define	CRYPTO_ALG_FLAG_RNG_ENABLE	2
+ #define	CRYPTO_ALG_FLAG_DSA_SHA		4
+ 
++enum ec_curve_t {
++	EC_DISCRETE_LOG,
++	EC_PRIME,
++	EC_BINARY,
++	MAX_EC_TYPE
++};
++
+ struct crparam {
+ 	__u8	*crp_p;
+ 	__u32	crp_nbits;
+@@ -250,7 +257,7 @@ struct crypt_kop {
+ 	__u16	crk_oparams;
+ 	__u32	crk_pad1;
+ 	struct crparam	crk_param[CRK_MAXPARAM];
+-	enum curve_t curve_type; /* 0 == Discrete Log,
++	enum ec_curve_t curve_type; /* 0 == Discrete Log,
+ 				1 = EC_PRIME, 2 = EC_BINARY */
+ 	void *cookie;
+ };
+diff --git a/cryptodev_int.h b/cryptodev_int.h
+index 7ea6976..e379eaf 100644
+--- a/cryptodev_int.h
++++ b/cryptodev_int.h
+@@ -88,7 +88,7 @@ struct compat_crypt_kop {
+ 	uint16_t	crk_oparams;
+ 	uint32_t	crk_pad1;
+ 	struct compat_crparam	crk_param[CRK_MAXPARAM];
+-	enum curve_t curve_type; /* 0 == Discrete Log, 1 = EC_PRIME,
++	enum ec_curve_t curve_type; /* 0 == Discrete Log, 1 = EC_PRIME,
+ 				 2 = EC_BINARY */
+ 	compat_uptr_t cookie;
+ };
+diff --git a/ioctl.c b/ioctl.c
+index 0344c0c..66cb05a 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -498,6 +498,7 @@ cryptodev_open(struct inode *inode, struct file *filp)
+ 	INIT_LIST_HEAD(&pcr->done.list);
+ 	INIT_LIST_HEAD(&pcr->asym_completed_list);
+ 	spin_lock_init(&pcr->completion_lock);
++
+ 	INIT_WORK(&pcr->cryptask, cryptask_routine);
+ 
+ 	init_waitqueue_head(&pcr->user_waiter);
+@@ -777,8 +778,11 @@ static int fill_kcop_from_cop(struct kernel_crypt_op *kcop, struct fcrypt *fcr)
+ 
+ 	if (cop->iv) {
+ 		rc = copy_from_user(kcop->iv, cop->iv, kcop->ivlen);
+-		if (unlikely(rc))
++		if (unlikely(rc)) {
++			derr(1, "error copying IV (%d bytes), copy_from_user returned %d for address %p",
++					kcop->ivlen, rc, cop->iv);
+ 			return -EFAULT;
++		}
+ 	}
+ 
+ 	return 0;
+-- 
+1.7.9.7
+

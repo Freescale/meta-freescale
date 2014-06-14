@@ -1,0 +1,131 @@
+From 50c116780f736b3e6a11389c9d9b3f4a1d5cab90 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Wed, 19 Mar 2014 17:59:17 +0200
+Subject: [[Patch][fsl 14/16] use static allocation for keys copied from
+ userspace
+
+Upstream-status: Pending
+
+There is no need to keep keys around for the entire duration of the
+session. The keys are copied from user-space and then used to initialize
+the ciphers. After this, the original keys can be discarded.
+The total required space for keys is small and known in advance. This
+patch uses this information to allocate required space on stack.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ cryptodev_int.h |    1 -
+ ioctl.c         |   38 ++++++++++++++++++++------------------
+ 2 files changed, 20 insertions(+), 19 deletions(-)
+
+diff --git a/cryptodev_int.h b/cryptodev_int.h
+index 8beeef0..7ea6976 100644
+--- a/cryptodev_int.h
++++ b/cryptodev_int.h
+@@ -212,7 +212,6 @@ struct csession {
+ 	struct hash_data hdata;
+ 	uint32_t sid;
+ 	uint32_t alignmask;
+-	uint8_t *key;
+ 
+ 	unsigned int array_size;
+ 	unsigned int used_pages; /* the number of pages that are used */
+diff --git a/ioctl.c b/ioctl.c
+index 1752880..16ce72c 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -46,6 +46,8 @@
+ #include <linux/uaccess.h>
+ #include <crypto/cryptodev.h>
+ #include <linux/scatterlist.h>
++#include <linux/rtnetlink.h>
++#include <crypto/authenc.h>
+ 
+ #include <linux/sysctl.h>
+ 
+@@ -136,9 +138,17 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 	const char *alg_name = NULL;
+ 	const char *hash_name = NULL;
+ 	int hmac_mode = 1, stream = 0, aead = 0;
+-	uint8_t *key = NULL;
+-	unsigned int keylen;
+-	uint8_t mackey[CRYPTO_HMAC_MAX_KEY_LEN];
++	/*
++	 * With aead, only ckey is used and it can cover all the struct space;
++	 * otherwise both keys may be used simultaneously but they are confined
++	 * to their spaces
++	 */
++	struct {
++		uint8_t ckey[CRYPTO_CIPHER_MAX_KEY_LEN];
++		uint8_t mkey[CRYPTO_HMAC_MAX_KEY_LEN];
++		/* padding space for aead keys */
++		uint8_t pad[RTA_SPACE(sizeof(struct crypto_authenc_key_param))];
++	} keys;
+ 
+ 	/* Does the request make sense? */
+ 	if (unlikely(!sop->cipher && !sop->mac)) {
+@@ -257,23 +267,17 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 
+ 	/* Set-up crypto transform. */
+ 	if (alg_name) {
++		unsigned int keylen;
+ 		ret = cryptodev_get_cipher_keylen(&keylen, sop, aead);
+ 		if (unlikely(ret < 0))
+ 			goto error_cipher;
+ 
+-		key = kmalloc(keylen, GFP_KERNEL);
+-		ses_new->key = key;
+-		if (unlikely(!key)) {
+-			ret = -ENOMEM;
+-			goto error_cipher;
+-		}
+-
+-		ret = cryptodev_get_cipher_key(key, sop, aead);
++		ret = cryptodev_get_cipher_key(keys.ckey, sop, aead);
+ 		if (unlikely(ret < 0))
+ 			goto error_cipher;
+ 
+-		ret = cryptodev_cipher_init(&ses_new->cdata, alg_name, key, keylen,
+-				stream, aead);
++		ret = cryptodev_cipher_init(&ses_new->cdata, alg_name,
++			keys.ckey, keylen, stream, aead);
+ 		if (ret < 0) {
+ 			ddebug(1, "Failed to load cipher for %s", alg_name);
+ 			ret = -EINVAL;
+@@ -289,14 +293,14 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 			goto error_hash;
+ 		}
+ 
+-		if (sop->mackey && unlikely(copy_from_user(mackey, sop->mackey,
+-					    sop->mackeylen))) {
++		if (sop->mackey && unlikely(copy_from_user(keys.mkey,
++			sop->mackey, sop->mackeylen))) {
+ 			ret = -EFAULT;
+ 			goto error_hash;
+ 		}
+ 
+ 		ret = cryptodev_hash_init(&ses_new->hdata, hash_name, hmac_mode,
+-							mackey, sop->mackeylen);
++			keys.mkey, sop->mackeylen);
+ 		if (ret != 0) {
+ 			ddebug(1, "Failed to load hash for %s", hash_name);
+ 			ret = -EINVAL;
+@@ -349,7 +353,6 @@ error_hash:
+ 	kfree(ses_new->sg);
+ 	kfree(ses_new->pages);
+ error_cipher:
+-	kfree(key);
+ 	kfree(ses_new);
+ 
+ 	return ret;
+@@ -370,7 +373,6 @@ crypto_destroy_session(struct csession *ses_ptr)
+ 	ddebug(2, "freeing space for %d user pages", ses_ptr->array_size);
+ 	kfree(ses_ptr->pages);
+ 	kfree(ses_ptr->sg);
+-	kfree(ses_ptr->key);
+ 	mutex_unlock(&ses_ptr->sem);
+ 	mutex_destroy(&ses_ptr->sem);
+ 	kfree(ses_ptr);
+-- 
+1.7.9.7
+

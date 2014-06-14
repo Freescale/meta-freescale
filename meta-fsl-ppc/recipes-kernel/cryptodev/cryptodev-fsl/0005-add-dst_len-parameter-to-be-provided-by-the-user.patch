@@ -1,0 +1,70 @@
+From e673e6ec09770b624d524bcd82f911e4fe2e2075 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Thu, 31 Oct 2013 13:27:28 +0200
+Subject: [[Patch][fsl 05/16] add dst_len parameter to be provided by the user
+
+Upstream-status: Pending
+
+This allows the user to set the result length and relieves cryptodev
+from making assumptions about it.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Horia Ioan Geanta Neag <horia.geanta@freescale.com>
+---
+ authenc.c          |   13 +++----------
+ crypto/cryptodev.h |    1 +
+ 2 files changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/authenc.c b/authenc.c
+index a183820..5235973 100644
+--- a/authenc.c
++++ b/authenc.c
+@@ -199,7 +199,7 @@ static int fill_kcaop_from_caop(struct kernel_crypt_auth_op *kcaop, struct fcryp
+ 	kcaop->ivlen = caop->iv ? ses_ptr->cdata.ivsize : 0;
+ 
+ 	if (caop->flags & COP_FLAG_AEAD_TLS_TYPE)
+-		kcaop->dst_len = caop->len + ses_ptr->cdata.blocksize /* pad */ + caop->tag_len;
++		kcaop->dst_len = caop->dst_len;
+ 	else
+ 		kcaop->dst_len = caop->len;
+ 
+@@ -645,8 +645,6 @@ __crypto_auth_run_zc(struct csession *ses_ptr, struct kernel_crypt_auth_op *kcao
+ 			ret = tls_auth_n_crypt(ses_ptr, kcaop, auth_sg, caop->auth_len,
+ 				   dst_sg, caop->len);
+ 		} else {
+-			int dst_len;
+-
+ 			if (unlikely(ses_ptr->cdata.init == 0 ||
+ 			             (ses_ptr->cdata.stream == 0 &&
+ 				      ses_ptr->cdata.aead == 0))) {
+@@ -655,13 +653,8 @@ __crypto_auth_run_zc(struct csession *ses_ptr, struct kernel_crypt_auth_op *kcao
+ 				goto free_auth_buf;
+ 			}
+ 
+-			if (caop->op == COP_ENCRYPT)
+-				dst_len = caop->len + cryptodev_cipher_get_tag_size(&ses_ptr->cdata);
+-			else
+-				dst_len = caop->len;
+-
+-			ret = get_userbuf(ses_ptr, caop->src, caop->len, caop->dst, dst_len,
+-					  kcaop->task, kcaop->mm, &src_sg, &dst_sg);
++			ret = get_userbuf(ses_ptr, caop->src, caop->len, caop->dst,
++					caop->dst_len, kcaop->task, kcaop->mm, &src_sg, &dst_sg);
+ 			if (unlikely(ret)) {
+ 				derr(1, "get_userbuf(): Error getting user pages.");
+ 				goto free_auth_buf;
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index c0e8cd4..3ea3d35 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -137,6 +137,7 @@ struct crypt_auth_op {
+ 	__u16	op;		/* COP_ENCRYPT or COP_DECRYPT */
+ 	__u16	flags;		/* see COP_FLAG_AEAD_* */
+ 	__u32	len;		/* length of source data */
++	__u32   dst_len;	/* length of result data */
+ 	__u32	auth_len;	/* length of auth data */
+ 	__u8	__user *auth_src;	/* authenticated-only data */
+ 
+-- 
+1.7.9.7
+

@@ -1,0 +1,170 @@
+From 8cabaedb69acc5b44c7a9cf058045908130a6af7 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Wed, 23 Oct 2013 16:57:22 +0300
+Subject: [[Patch][fsl 03/16] Add support for aead keys for composite
+ algorithms
+
+Upstream-status: Pending
+
+Composite aead algorithms (e.g. AES-CBC + HMAC-SHA1) need two keys to
+operate. The two keys are wrapped in a single buffer in the form
+used also by crypto/authenc.c
+Blockcipher and non-composite aead algorithms (e.g. AES-GCM) use a
+single key which is simply copied from user-space.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Horia Ioan Geanta Neag <horia.geanta@freescale.com>
+---
+ cryptlib.c |   59 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ cryptlib.h |    3 +++
+ ioctl.c    |   24 ++++++++++++++----------
+ 3 files changed, 76 insertions(+), 10 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index a7fbff4..2986d09 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -34,6 +34,8 @@
+ #include <crypto/hash.h>
+ #include <crypto/cryptodev.h>
+ #include <crypto/aead.h>
++#include <linux/rtnetlink.h>
++#include <crypto/authenc.h>
+ #include "cryptodev_int.h"
+ 
+ 
+@@ -53,6 +55,63 @@ static void cryptodev_complete(struct crypto_async_request *req, int err)
+ 	complete(&res->completion);
+ }
+ 
++int cryptodev_get_cipher_keylen(unsigned int *keylen, struct session_op *sop,
++		int aead)
++{
++	unsigned int klen = sop->keylen;
++
++	if (unlikely(sop->keylen > CRYPTO_CIPHER_MAX_KEY_LEN))
++		return -EINVAL;
++
++	if (aead && sop->mackeylen) {
++		if (unlikely(sop->mackeylen > CRYPTO_HMAC_MAX_KEY_LEN))
++			return -EINVAL;
++		klen += sop->mackeylen;
++		klen += RTA_SPACE(sizeof(struct crypto_authenc_key_param));
++	}
++
++	*keylen = klen;
++	return 0;
++}
++
++int cryptodev_get_cipher_key(uint8_t *key, struct session_op *sop, int aead)
++{
++	/* Get algorithm key from user-space. For composite aead algorithms,
++	 * the key representation is in the format used by linux kernel in
++	 * crypto/authenc.c
++	 */
++	struct crypto_authenc_key_param *param;
++	struct rtattr *rta;
++	int ret = 0;
++
++	if (aead && sop->mackeylen) {
++		/* the key header type and header length */
++		rta = (void *)key;
++		rta->rta_type = CRYPTO_AUTHENC_KEYA_PARAM;
++		rta->rta_len = RTA_LENGTH(sizeof(*param));
++
++		/* the key parameter is the length of the encryption key */
++		param = RTA_DATA(rta);
++		param->enckeylen = cpu_to_be32(sop->keylen);
++
++		/* copy the hash key */
++		key += RTA_SPACE(sizeof(*param));
++		if (unlikely(copy_from_user(key, sop->mackey, sop->mackeylen))) {
++			ret = -EFAULT;
++			goto error;
++		}
++		/* get the pointer ready for the encryption key */
++		key += sop->mackeylen;
++	}
++	/* blockcipher algorithms have the key ready to use */
++	if (unlikely(copy_from_user(key, sop->key, sop->keylen)))
++		ret = -EFAULT;
++
++error:
++	return ret;
++}
++
++
+ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 				uint8_t *keyp, size_t keylen, int stream, int aead)
+ {
+diff --git a/cryptlib.h b/cryptlib.h
+index 0744284..a0a8a63 100644
+--- a/cryptlib.h
++++ b/cryptlib.h
+@@ -25,6 +25,9 @@ struct cipher_data {
+ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 			  uint8_t *key, size_t keylen, int stream, int aead);
+ void cryptodev_cipher_deinit(struct cipher_data *cdata);
++int cryptodev_get_cipher_key(uint8_t *key, struct session_op *sop, int aead);
++int cryptodev_get_cipher_keylen(unsigned int *keylen, struct session_op *sop,
++		int aead);
+ ssize_t cryptodev_cipher_decrypt(struct cipher_data *cdata,
+ 			const struct scatterlist *sg1,
+ 			struct scatterlist *sg2, size_t len);
+diff --git a/ioctl.c b/ioctl.c
+index c614373..3baf195 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -109,7 +109,8 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 	const char *alg_name = NULL;
+ 	const char *hash_name = NULL;
+ 	int hmac_mode = 1, stream = 0, aead = 0;
+-	uint8_t enckey[CRYPTO_CIPHER_MAX_KEY_LEN];
++	uint8_t *key = NULL;
++	unsigned int keylen;
+ 	uint8_t mackey[CRYPTO_HMAC_MAX_KEY_LEN];
+ 
+ 	/* Does the request make sense? */
+@@ -229,20 +230,22 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 
+ 	/* Set-up crypto transform. */
+ 	if (alg_name) {
+-		if (unlikely(sop->keylen > CRYPTO_CIPHER_MAX_KEY_LEN)) {
+-			ddebug(1, "Setting key failed for %s-%zu.",
+-				alg_name, (size_t)sop->keylen*8);
+-			ret = -EINVAL;
++		ret = cryptodev_get_cipher_keylen(&keylen, sop, aead);
++		if (unlikely(ret < 0))
+ 			goto error_cipher;
+-		}
+ 
+-		if (unlikely(copy_from_user(enckey, sop->key, sop->keylen))) {
+-			ret = -EFAULT;
++		key = kmalloc(keylen, GFP_KERNEL);
++		if (unlikely(!key)) {
++			ret = -ENOMEM;
+ 			goto error_cipher;
+ 		}
+ 
+-		ret = cryptodev_cipher_init(&ses_new->cdata, alg_name, enckey,
+-						sop->keylen, stream, aead);
++		ret = cryptodev_get_cipher_key(key, sop, aead);
++		if (unlikely(ret < 0))
++			goto error_cipher;
++
++		ret = cryptodev_cipher_init(&ses_new->cdata, alg_name, key, keylen,
++				stream, aead);
+ 		if (ret < 0) {
+ 			ddebug(1, "Failed to load cipher for %s", alg_name);
+ 			ret = -EINVAL;
+@@ -318,6 +321,7 @@ error_hash:
+ 	kfree(ses_new->sg);
+ 	kfree(ses_new->pages);
+ error_cipher:
++	kfree(key);
+ 	kfree(ses_new);
+ 
+ 	return ret;
+-- 
+1.7.9.7
+
