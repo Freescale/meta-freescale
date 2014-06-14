@@ -8,9 +8,7 @@ LIC_FILES_CHKSUM = "file://RELEASENOTES;beginline=8;endline=43;md5=5a7b22a2c96b5
 DEPENDS += "openssl"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;nobranch=1"
-SRCREV = "55223ed64404ee57c55416017a8d65b28314282e"
-SRCREV_t2080qds = "fd8f47ed97bc9a878a203e77ca74b2b8eda86a66"
-SRCREV_t2080qds-64b = "fd8f47ed97bc9a878a203e77ca74b2b8eda86a66"
+SRCREV = "321b798b84cb5fe6564dfb233dea046e779d6f74"
 
 S = "${WORKDIR}/git"
 
