@@ -14,7 +14,13 @@ S = "${WORKDIR}/git"
 inherit waf
 
 # configure the eglvivsink element to use the appropiate EGL platform code
-EGLVIVSINK_PLATFORM = "${@base_contains('DISTRO_FEATURES', 'x11', 'x11', 'fb', d)}"
+# X11 if x11 is present in DISTRO_FEATURES
+# Wayland if x11 is not present in DISTRO_FEATURES, but wayland is
+# Framebuffer otherwise
+EGLVIVSINK_PLATFORM = "${@base_contains('DISTRO_FEATURES', 'x11', 'x11', \
+                          base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+                          'fb', d),d)}"
+
 EXTRA_OECONF = "--egl-platform=${EGLVIVSINK_PLATFORM} --kernel-headers=${STAGING_KERNEL_DIR}/include"
 
 # LIBV is used by gst-plugins-package.inc to specify the GStreamer version (0.10 vs 1.0)
