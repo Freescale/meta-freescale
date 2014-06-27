@@ -1,0 +1,55 @@
+From 0775633e35127e903a1a84d823bf2e7d388d4042 Mon Sep 17 00:00:00 2001
+From: Carlos Rafael Giani <dv@pseudoterminal.org>
+Date: Sun, 1 Jun 2014 01:57:53 +0200
+Subject: [PATCH] Add preprocessor definitions for Vivante GLES headers
+
+The Vivante headers require the LINUX preprocessor definition, otherwise
+compile errors occur
+
+Upstream-Status: Pending
+
+Signed-off-by: Carlos Rafael Giani <dv@pseudoterminal.org>
+---
+ m4/evas_check_engine.m4 | 4 ++--
+ src/Makefile_Evas.am    | 2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/m4/evas_check_engine.m4 b/m4/evas_check_engine.m4
+index 3fd4890..35d1c5f 100644
+--- a/m4/evas_check_engine.m4
++++ b/m4/evas_check_engine.m4
+@@ -26,9 +26,9 @@ EFL_FIND_X(evas_engine_[]$1,
+   [X11 XCreateColormap Xrender XRenderCreatePicture],
+   [
+     CFLAGS_save="$CFLAGS"
+-    CFLAGS="$evas_engine_[]$1[]_cflags $CFLAGS"
++    CFLAGS="$evas_engine_[]$1[]_cflags $CFLAGS -DLINUX"
+     CPPFLAGS_save="$CPPFLAGS"
+-    CPPFLAGS="$evas_engine_[]$1[]_cflags $CPPFLAGS"
++    CPPFLAGS="$evas_engine_[]$1[]_cflags $CPPFLAGS -DLINUX"
+ 
+     AC_CHECK_HEADER([GL/gl.h],
+       [have_dep="yes"],
+diff --git a/src/Makefile_Evas.am b/src/Makefile_Evas.am
+index 644391b..6232f78 100644
+--- a/src/Makefile_Evas.am
++++ b/src/Makefile_Evas.am
+@@ -632,6 +632,7 @@ lib_evas_libevas_la_LIBADD += @evas_engine_gl_common_libs@
+ else
+ noinst_LTLIBRARIES += modules/evas/engines/gl_common/libevas_engine_gl_common.la
+ modules_evas_engines_gl_common_libevas_engine_gl_common_la_SOURCES = $(GL_COMMON_SOURCES)
++modules_evas_engines_gl_common_libevas_engine_gl_common_la_CFLAGS = -DLINUX
+ modules_evas_engines_gl_common_libevas_engine_gl_common_la_CPPFLAGS = -I$(top_builddir)/src/lib/efl \
+ -I$(top_srcdir)/src/lib/evas/include \
+ -I$(top_srcdir)/src/lib/evas/cserve2 \
+@@ -736,6 +737,7 @@ else
+ engineglx11pkgdir = $(libdir)/evas/modules/engines/gl_x11/$(MODULE_ARCH)
+ engineglx11pkg_LTLIBRARIES = modules/evas/engines/gl_x11/module.la
+ modules_evas_engines_gl_x11_module_la_SOURCES = $(GL_X11_SOURCES)
++modules_evas_engines_gl_x11_module_la_CFLAGS = -DLINUX
+ modules_evas_engines_gl_x11_module_la_CPPFLAGS = -I$(top_builddir)/src/lib/efl \
+ -I$(top_srcdir)/src/lib/evas/include \
+ -I$(top_srcdir)/src/lib/evas/cserve2 \
+-- 
+1.8.3.2
+
