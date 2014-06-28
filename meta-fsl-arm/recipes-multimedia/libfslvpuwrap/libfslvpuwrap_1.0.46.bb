@@ -10,6 +10,8 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 SRC_URI[md5sum] = "1f50110cb6de8ebf767fb9c5f8baf20d"
 SRC_URI[sha256sum] = "7fc1258de338339d19a1a35167393fdc4d773682dfd9b951b197403a075f85fd"
 
+SRC_URI_append = " file://0001-vpu_wrapper-fix-tests-of-return-value-from-IOGetVirt.patch"
+
 inherit fsl-eula-unpack autotools pkgconfig
 
 do_install_append() {
