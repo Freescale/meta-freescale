@@ -35,6 +35,8 @@ do_install_prepend() {
 
 do_install_append() {
 	rm ${WORKDIR}/powerpc_rom.bin
+    # Prevent QA warnings about installed ${localstatedir}/run
+    if [ -d ${D}${localstatedir}/run ]; then rmdir ${D}${localstatedir}/run; fi
 }
 
 INSANE_SKIP_${PN} += "dev-deps"
