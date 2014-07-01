@@ -3,7 +3,7 @@ SECTION = "qoriq-debug"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e29234dd5d40dc352cc60cc0c93437ba"
 
-inherit module autotools
+inherit module autotools-brokensep
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/qoriq-debug.git;nobranch=1"
 SRCREV = "20615c1ea332102635f8314cee5787c48c1a4254"
