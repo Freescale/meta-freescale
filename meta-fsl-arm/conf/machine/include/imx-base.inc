@@ -103,6 +103,6 @@ IMAGE_FSTYPES ?= "tar.bz2 ext3 sdcard"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 
-KERNEL_IMAGETYPE = "uImage"
+KERNEL_IMAGETYPE = "zImage"
 
 MACHINE_FEATURES = "apm usbgadget usbhost vfat alsa touchscreen"

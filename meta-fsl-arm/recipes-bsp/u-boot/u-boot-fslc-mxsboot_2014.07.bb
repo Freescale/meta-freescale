@@ -5,10 +5,10 @@ SECTION = "bootloader"
 DEPENDS = "openssl"
 PROVIDES = "u-boot-mxsboot"
 
-PV = "v2014.01"
+PV = "v2014.07"
 
-SRCREV = "f5d80303de12e6fefc022426a73136a288f70294"
-SRCBRANCH = "patches-2014.01"
+SRCREV = "524123a70761110c5cf3ccc5f52f6d4da071b959"
+SRCBRANCH = "patches-2014.07"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
@@ -16,7 +16,7 @@ S = "${WORKDIR}/git"
 EXTRA_OEMAKE = 'HOSTCC="${CC} ${CPPFLAGS}" HOSTLDFLAGS="-L${libdir} -L${base_libdir}" HOSTSTRIP=true CONFIG_MX28=y'
 
 do_compile () {
-    oe_runmake tools
+    oe_runmake tools-only
 }
 
 do_install () {
