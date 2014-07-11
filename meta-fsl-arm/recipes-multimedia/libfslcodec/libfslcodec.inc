@@ -40,25 +40,36 @@ do_install_append() {
 
 }
 
-python populate_packages_prepend() {
+python __set_insane_skip() {
+    # Ensure we have PACKAGES expanded
+    bb.build.exec_func("read_subpackage_metadata", d)
+
+    for p in d.getVar('PACKAGES', True).split():
+        # Even though we are packaging libraries those are plugins so we
+        # shouldn't rename the packages to follow its sonames.
+        d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
+
+        # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
+        # the source we cannot fix it. Disable the insane check for now.
+        if p == 'libfslcodec-test-bin':
+            # FIXME: includes the DUT .so files so we need to deploy those
+            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel libdir")
+        else:
+            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
+}
+
+do_package_qa[prefuncs] += "__set_insane_skip"
+
+python __split_libfslcodec_plugins() {
     codecdir = bb.data.expand('${libdir}', d)
     do_split_packages(d, codecdir, '^lib_([^_]*).*_arm.*_elinux\.so\..*',
                       aux_files_pattern='${libdir}/imx-mm/audio-codec/wrap/lib_%sd_wrap_arm*_elinux.so.*',
                       output_pattern='libfslcodec-%s',
                       description='Freescale i.MX Codec (%s)',
                       extra_depends='')
+}
 
-    # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
-    # the source we cannot fix it. Disable the insane check for now.
-    for p in d.getVar('PACKAGES', True).split():
-        d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
-
-        if p == 'libfslcodec-test-bin':
-            # FIXME: includes the DUT .so files so we need to deploy those
-            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel libdir")
-        else:
-            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
-
+python __set_metapkg_rdepends() {
     # Allow addition of all codecs in a image; useful specially for
     # debugging.
     codec_pkgs = oe.utils.packages_filter_out_system(d)
@@ -66,6 +77,8 @@ python populate_packages_prepend() {
                         codec_pkgs)
     d.appendVar('RDEPENDS_libfslcodec-meta', ' ' + ' '.join(codec_pkgs))
 }
+
+PACKAGESPLITFUNCS =+ "__split_libfslcodec_plugins __set_metapkg_rdepends"
 
 # Ensure we get warnings if we miss something
 FILES_${PN} = ""
