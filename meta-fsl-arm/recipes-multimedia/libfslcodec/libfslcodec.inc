@@ -9,15 +9,6 @@ inherit fsl-eula-unpack autotools pkgconfig
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-PACKAGES_DYNAMIC = "${PN}-*"
-INHIBIT_PACKAGE_STRIP = "1"
-INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-
-PACKAGES += "${PN}-meta ${PN}-test-bin ${PN}-test-source"
-
-ALLOW_EMPTY_${PN} = "1"
-ALLOW_EMPTY_${PN}-meta = "1"
-
 # Choose between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d)}"
 
@@ -79,6 +70,15 @@ python __set_metapkg_rdepends() {
 }
 
 PACKAGESPLITFUNCS =+ "__split_libfslcodec_plugins __set_metapkg_rdepends"
+
+PACKAGES_DYNAMIC = "${PN}-*"
+INHIBIT_PACKAGE_STRIP = "1"
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+
+PACKAGES += "${PN}-meta ${PN}-test-bin ${PN}-test-source"
+
+ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY_${PN}-meta = "1"
 
 # Ensure we get warnings if we miss something
 FILES_${PN} = ""
