@@ -1,5 +1,6 @@
 MACHINE_FEATURES = "keyboard pci ext2 ext3 serial"
-MACHINE_EXTRA_RRECOMMENDS = "u-boot udev-extraconf kernel-modules"
+MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf kernel-modules"
+EXTRA_IMAGEDEPENDS += "u-boot"
 
 KERNEL_IMAGETYPE ?= "uImage"
 # disable the images below for now
