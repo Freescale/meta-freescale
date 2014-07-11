@@ -19,7 +19,7 @@ inherit fsl-eula-unpack
 
 # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
 # the source we cannot fix it. Disable the insane check for now.
-python populate_packages_prepend() {
+python () {
     for p in d.getVar('PACKAGES', True).split():
         d.setVar("INSANE_SKIP_%s" % p, "ldflags")
 }
