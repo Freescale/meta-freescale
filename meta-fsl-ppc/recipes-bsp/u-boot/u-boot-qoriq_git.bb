@@ -1,7 +1,7 @@
 DESCRIPTION = "U-boot bootloader"
 HOMEPAGE = "http://u-boot.sf.net"
 SECTION = "bootloaders"
-PROVIDES = "virtual/bootloader"
+PROVIDES = "virtual/bootloader u-boot"
 LICENSE = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
 LIC_FILES_CHKSUM = " \
     file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
