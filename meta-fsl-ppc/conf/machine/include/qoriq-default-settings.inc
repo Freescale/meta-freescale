@@ -1,5 +1,7 @@
 MACHINE_FEATURES = "keyboard pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf kernel-modules"
+
+IMAGE_CLASSES += "image_types_uboot"
 EXTRA_IMAGEDEPENDS += "u-boot"
 
 KERNEL_IMAGETYPE ?= "uImage"
