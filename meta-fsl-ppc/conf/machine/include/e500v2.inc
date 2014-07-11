@@ -1,6 +1,6 @@
 require conf/machine/include/tune-ppce500v2.inc
 
-MACHINE_FEATURES = "kernel26 pci ext2 ext3 serial"
+MACHINE_FEATURES = "pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS = "u-boot udev-extraconf kernel-modules"
 
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq-sdk"

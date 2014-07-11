@@ -2,7 +2,7 @@ TARGET_FPU = "hard"
 
 require conf/machine/include/tune-ppce500mc.inc
 
-MACHINE_FEATURES = "kernel26 keyboard pci ext2 ext3 serial"
+MACHINE_FEATURES = "keyboard pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS = "u-boot udev-extraconf kernel-modules"
 
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq-sdk"
