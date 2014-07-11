@@ -1,3 +1,4 @@
+# Copyright (C) 2012-2014 O.S. Systems Software LTDA.
 # Copyright (C) 2012-2013 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia parser libs"
@@ -15,13 +16,15 @@ EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
-python populate_packages_prepend() {
+python __set_insane_skip() {
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
     # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
     for p in d.getVar('PACKAGES', True).split():
         d.setVar("INSANE_SKIP_%s" % p, "ldflags dev-so textrel")
 }
+
+do_package_qa[prefuncs] += "__set_insane_skip"
 
 # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
 FILES_${PN} += "${libdir}/imx-mm/*/*${SOLIBS} ${libdir}/imx-mm/*/*${SOLIBSDEV}"
