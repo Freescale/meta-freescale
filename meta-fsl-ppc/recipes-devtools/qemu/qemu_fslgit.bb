@@ -46,4 +46,4 @@ INSANE_SKIP_${PN} += "dev-deps"
 # the package get built. COMPATIBLE_HOST would not work
 # because it was too generic
 COMPATIBLE_MACHINE = "a^"
-COMPATIBLE_MACHINE_libc-glibc_fslmachine = ".*"
+COMPATIBLE_MACHINE_libc-glibc_qoriq-ppc = ".*"

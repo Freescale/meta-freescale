@@ -41,6 +41,6 @@ addtask deploy after do_install
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 
-COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST_qoriq-ppc = ".*"
 COMPATIBLE_HOST ?= "(none)"
 ALLOW_EMPTY_${PN} = "1"

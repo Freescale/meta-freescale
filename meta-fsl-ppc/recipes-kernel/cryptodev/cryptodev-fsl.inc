@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/cryptodev-fsl"
 
-SRC_URI_fslmachine = "git://github.com/nmav/cryptodev-linux.git \
+SRC_URI_qoriq-ppc = "git://github.com/nmav/cryptodev-linux.git \
     file://0001-add-support-for-composite-TLS-SHA1-AES-algorithm-off.patch \
     file://0002-use-function-local-storage-for-cipher-and-hmac-keys.patch \
     file://0003-Add-support-for-aead-keys-for-composite-algorithms.patch \
@@ -18,7 +18,7 @@ SRC_URI_fslmachine = "git://github.com/nmav/cryptodev-linux.git \
     file://0015-Add-RSA-Key-generation-offloading.patch \
     file://0016-Fixed-compilation-error-of-openssl-with-fsl-cryptode.patch \
 "
-SRCREV_fslmachine = "e8609a408d40c83ae8fc11bbe9a7b3847612669b"
+SRCREV_qoriq-ppc = "e8609a408d40c83ae8fc11bbe9a7b3847612669b"
 
-S_fslmachine = "${WORKDIR}/git"
+S_qoriq-ppc = "${WORKDIR}/git"
 

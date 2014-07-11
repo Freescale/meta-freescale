@@ -36,7 +36,7 @@ EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${TARGET_PREFIX}gcc ${TOOLCHA
 DEFCONFIG = "defconfig"
 DEFCONFIG_powerpc64 = "64bit_defconfig"
 
-COMPATIBLE_HOST_fslmachine = ".*"
+COMPATIBLE_HOST_qoriq-ppc = ".*"
 COMPATIBLE_HOST ?= "(none)"
 
 inherit cml1
