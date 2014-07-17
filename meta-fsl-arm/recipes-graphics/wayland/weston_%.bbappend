@@ -1,7 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI += "file://0001-ENGR00314805-1-Add-Vivante-EGL-support.patch \
-            file://0002-ENGR00314805-2-Add-Vivante-GAL2D-support.patch"
+SRC_URI_append_mx6 = " \
+    file://0001-ENGR00314805-1-Add-Vivante-EGL-support.patch \
+    file://0002-ENGR00314805-2-Add-Vivante-GAL2D-support.patch"
 
 PACKAGECONFIG_mx6 = "fbdev egl cairo-glesv2"
 
