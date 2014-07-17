@@ -174,6 +174,12 @@ do_install () {
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so.2
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
+    # skip packaging wayland libraries if no support is requested
+    if [ "${USE_WL}" = "no" ]; then
+        rm ${D}${libdir}/libgc_wayland_protocol.*
+        rm ${D}${libdir}/libwayland-viv.*
+    fi
+
     for backend in wl x11 fb dfb; do
         find ${D}${libdir} -name "*-$backend.so" -exec rm '{}' ';'
     done
