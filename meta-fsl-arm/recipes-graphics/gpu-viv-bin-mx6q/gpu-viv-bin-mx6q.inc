@@ -108,9 +108,9 @@ do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
 
-    cp -a ${S}/usr/lib/*.so* ${D}${libdir}
-    cp -axr ${S}/usr/include/* ${D}${includedir}
-    cp -axr ${S}/opt ${D}
+    cp -P ${S}/usr/lib/*.so* ${D}${libdir}
+    cp -r ${S}/usr/include/* ${D}${includedir}
+    cp -r ${S}/opt ${D}
 
     install -d ${D}${libdir}/pkgconfig
 
@@ -170,7 +170,7 @@ do_install () {
 
     # update libglesv2 as backend dependent
     rm -rf ${D}${libdir}/libGLESv2*
-    cp -a ${S}/usr/lib/libGLESv2-${backend}.so ${D}${libdir}/libGLESv2.so.2.0.0
+    cp ${S}/usr/lib/libGLESv2-${backend}.so ${D}${libdir}/libGLESv2.so.2.0.0
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so.2
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
