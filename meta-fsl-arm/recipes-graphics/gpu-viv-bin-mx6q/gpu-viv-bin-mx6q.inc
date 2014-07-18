@@ -161,6 +161,7 @@ do_install () {
     # and avoid rework in other packages, when possible
     mv ${D}${libdir}/libGL.so.1.2 ${D}${libdir}/libGL.so.1.2.0
     ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1.2
+    ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1
     ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so
     mv ${D}${libdir}/libEGL-${backend}.so ${D}${libdir}/libEGL.so.1.0
     ln -sf libEGL.so.1.0 ${D}${libdir}/libEGL.so.1
