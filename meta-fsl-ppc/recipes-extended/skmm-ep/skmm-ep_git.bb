@@ -5,7 +5,9 @@ LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=39e58bedc879163c9338596e52df5
 
 DEPENDS = "libedit openssl"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;nobranch=1"
+SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;nobranch=1 \
+    file://add-two-missing-header-files.patch \
+"
 SRCREV = "448522aa1ba3f0c4a1481631dc1c3b168d410a61"
 
 COMPATIBLE_MACHINE = "(p4080ds|t4240qds|c293pcie)"
