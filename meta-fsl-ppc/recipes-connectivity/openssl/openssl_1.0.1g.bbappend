@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/openssl-fsl"
+FILESEXTRAPATHS_prepend := "${THISDIR}/openssl-fsl:"
 
 RDEPENDS_${PN}_class-target += "cryptodev-module"
 
