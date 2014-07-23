@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/cryptodev-fsl"
+FILESEXTRAPATHS_prepend := "${THISDIR}/cryptodev-fsl:"
 
 SRC_URI_qoriq-ppc = "git://github.com/nmav/cryptodev-linux.git \
     file://0001-add-support-for-composite-TLS-SHA1-AES-algorithm-off.patch \
