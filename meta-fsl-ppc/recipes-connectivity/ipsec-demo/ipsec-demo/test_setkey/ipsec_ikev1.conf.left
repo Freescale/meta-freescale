@@ -1,0 +1,39 @@
+# /etc/ipsec.conf - strongSwan IPsec configuration file
+
+config setup
+	plutodebug=control
+	crlcheckinterval=180
+	strictcrlpolicy=no
+	charonstart=no
+
+conn %default
+	ikelifetime=60m
+	keylife=20m
+	rekeymargin=3m
+	keyingtries=1
+	keyexchange=ikev1
+	left=200.200.200.10
+	leftcert=moonCert.pem
+	leftid="C=CH, O=Linux strongSwan, CN=moon.strongswan.org"
+	leftfirewall=yes
+
+conn net-net
+	left=%defaultroute
+	leftsubnet=192.168.1.0/24
+	leftcert=moonCert.pem
+	right=200.200.200.20
+	rightsubnet=192.168.2.0/24
+	rightid="C=CH, O=Linux strongSwan, CN=sun.strongswan.org"
+	auto=add
+        
+conn host-host
+	left=%defaultroute
+	leftcert=moonCert.pem
+	right=200.200.200.20
+	rightid="C=CH, O=Linux strongSwan, CN=sun.strongswan.org"
+	auto=add
+
+conn rw
+	leftsubnet=192.168.1.0/24
+	right=%any
+	auto=add

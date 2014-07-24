@@ -1,0 +1,42 @@
+#!/usr/sbin/setkey -f
+#
+#
+# Example ESP Tunnel for VPN.
+# 
+# 			          ========= ESP =========
+# 			          |                     |
+# 	   Network-A          Gateway-A             Gateway-B           Network-B
+# 	  192.168.1.0/24 ---- 200.200.200.10 ------ 200.200.200.20 ---- 192.168.2.0/24
+# 
+# 	  ====== 83xx board A ======                  ===== 83xx board B =====
+#	  |                        |                  |                      |
+#	  eth0                  eth1                  eth1                eth0
+#	192.168.1.130         200.200.200.10          200.200.200.20      192.168.2.130         
+# 
+# 
+# Board A setup
+#
+# Flush the SAD and SPD
+flush;
+spdflush;
+
+# I am gateway A (eth0:192.168.1.130, eth1:200.200.200.10)
+#
+# Security policies
+spdadd 192.168.1.0/24 192.168.2.0/24 any -P out ipsec
+       esp/tunnel/200.200.200.10-200.200.200.20/require;
+
+spdadd 192.168.2.0/24 192.168.1.0/24 any -P in ipsec
+       esp/tunnel/200.200.200.20-200.200.200.10/require;
+
+
+# ESP SAs doing null encryption
+# and null authentication
+add 200.200.200.10 200.200.200.20 esp 0x201 -m tunnel
+    -E null
+    -A null;
+
+add 200.200.200.20 200.200.200.10 esp 0x301 -m tunnel
+    -E null
+    -A null;
+

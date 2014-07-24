@@ -1,0 +1,10 @@
+#strongswan on left board
+set -v
+cp -rf ipsec.conf.right /etc/ipsec.conf
+cp -rf ipsec.secrets.right /etc/ipsec.secrets
+cp -rf strongswan.conf /etc/
+cp -rf strongswanCert.pem /etc/ipsec.d/cacerts/
+cp -rf sunCert.pem /etc/ipsec.d/certs/
+mkdir /etc/ipsec.d/private
+cp -rf sunKey.pem /etc/ipsec.d/private/
+cp -rf moonKey.pem /etc/ipsec.d/private/

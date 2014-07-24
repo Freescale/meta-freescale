@@ -1,0 +1,77 @@
+test_setkey script usage
+
+The scripts in this directory may be used for testing
+native Linux IPsec with the talitos driver as a loadable module.
+
+It's assumed that these scripts have been placed in the directory
+named /test_setkey.
+
+The scripts setup_left and setup_right configure the ip addresses
+for two boards named 'left' and 'right', which are two gateways for
+an IPsec tunnel.  Connect the eth1 interfaces of left and right boards together.
+For smartbits testing, connect eth0 on each board to a smartbits port.
+For other testing (ping, netperf, iperf), connect eth0 on each board to another system.
+
+The scripts named left.conf-* and right.conf-* are setkey scripts
+which configure the IPsec SA and SPD entries.
+The scripts ending in -tunnel use tunnel mode IPsec, and the scripts
+ending in -transport used transport mode IPsec.
+Transport mode is useful for quickly testing security functionality
+using ping or netperf between two boards.
+Tunnel mode can be used for testing throughput using smartbits or other
+performance test equipment.
+
+There is a top level script called 'setup' which
+is used for a one-step setup on the left and right boards.
+'setup' uses two or three parameters. The first parameter is the side, left or right.
+The second parameter is the setkey suffix for the left.conf- and right.conf- files.
+If the third parameter is supplied, the setup will modprobe that name, so
+typically you should provide talitos as the third parameter if you want to load the driver.
+If you have built the talitos driver into the kernel, omit the third parameter to setup.
+You may test software encryption if talitos is built as a module and you omit the third parameter.
+
+Below are example uses of the 'setup' script.
+
+1) One-step setup for smartbits
+   Use a tunnel mode setup on each side.
+   AES-HMAC-SHA1: 
+   Left side:
+      /test_setkey/setup left aes-sha1-tunnel talitos
+   Right side:
+      /test_setkey/setup right aes-sha1-tunnel talitos
+
+   3DES-HMAC-SHA1:
+   Left side:
+      /test_setkey/setup left 3des-sha1-tunnel talitos
+   Right side:
+      /test_setkey/setup right 3des-sha1-tunnel talitos
+
+2) One-step setup for testing ping, netperf, or iperf between two boards. 
+   Use a transport mode setup on each side.
+   AES-HMAC-SHA1: 
+   Left side:
+      /test_setkey/setup left aes-sha1-transport talitos
+   Right side:
+      /test_setkey/setup right aes-sha1-transport talitos
+
+   3DES-HMAC-SHA1:
+   Left side:
+      /test_setkey/setup left 3des-sha1-transport talitos
+   Right side:
+      /test_setkey/setup right 3des-sha1-transport talitos
+
+3) Testing ipv4
+   To test ipv4 (with no security) over the two gateways, use steps below.
+   Testing ipv4 is helpful to get your smartbits configuration verified
+   and also establish a baseline performance for throughput.
+
+   On the left board:
+   cd /test_setkey
+   ./setup_left
+   ./left.ipv4
+
+   On the right board:
+   cd /test_setkey
+   ./setup_right
+   ./right.ipv4
+

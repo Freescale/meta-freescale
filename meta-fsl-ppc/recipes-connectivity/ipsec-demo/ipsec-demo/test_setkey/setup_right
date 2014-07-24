@@ -1,0 +1,13 @@
+# board on right setup
+set -v
+ifconfig eth0 down
+ifconfig eth0 hw ether 00:E0:0C:00:01:FD
+ifconfig eth0 192.168.2.130 netmask 255.255.255.0
+ifconfig eth0 up
+ifconfig eth1 down
+ifconfig eth1 hw ether 00:E0:0C:00:00:FD
+ifconfig eth1 200.200.200.20 netmask 255.255.255.0
+ifconfig eth1 up
+arp -s 192.168.2.21 00:00:00:00:00:02
+route add default dev eth1
+echo 1 > /proc/sys/net/ipv4/ip_forward
