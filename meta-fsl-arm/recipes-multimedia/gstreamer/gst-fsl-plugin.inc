@@ -19,7 +19,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
 S = "${WORKDIR}/gst-fsl-plugins-${PV}"
 
 SRC_URI = "${FSL_MIRROR}/gst-fsl-plugins-${PV}.tar.gz \
-           file://build-Fix-out-of-tree-build.patch"
+           file://build-Fix-out-of-tree-build.patch \
+           file://Remove-use-of-obsolete-VIDIOC_DBG_G_CHIP_IDENT.patch"
 
 inherit autotools pkgconfig
 
