@@ -9,5 +9,7 @@ do_install_append_qoriq-ppc () {
 
     # skip mmc rpmb partitions
     echo "/dev/mmcblk.*rpmb" >>${D}${sysconfdir}/udev/mount.blacklist
+    # skip nbd (network block device)
+    echo "/dev/nbd*" >>${D}${sysconfdir}/udev/mount.blacklist
 }
 
