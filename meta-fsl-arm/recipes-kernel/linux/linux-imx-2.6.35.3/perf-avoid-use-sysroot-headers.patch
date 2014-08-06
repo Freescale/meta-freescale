@@ -5,7 +5,7 @@ Subject: [PATCH] perf: Avoid use of sysroot's Linux headers
 
 As Yocto now use a newer Linux headers package we end having a build
 failure in perf as 'stddef.h' has changed and does not provide NULL
-definiton anymore. To workaround it we add the srcdir onto search path
+definition anymore. To workaround it we add the srcdir onto search path
 for include files, before sysroot one.
 
 Upstream-Status: Inappropriate [build system specific change]

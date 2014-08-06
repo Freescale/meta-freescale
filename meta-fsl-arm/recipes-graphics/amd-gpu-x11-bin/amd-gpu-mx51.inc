@@ -43,7 +43,7 @@ do_install () {
     ln -sf lib2dz160.so.0 ${D}${libdir}/lib2dz160.so
     ln -sf lib2dz430.so.0 ${D}${libdir}/lib2dz430.so
 
-    # FIXME: Remove unkown files
+    # FIXME: Remove unknown files
     rm -r ${D}${libdir}/libcsi.a \
           ${D}${libdir}/libres.a
 
