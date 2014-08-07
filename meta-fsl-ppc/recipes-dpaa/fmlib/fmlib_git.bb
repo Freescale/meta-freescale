@@ -22,21 +22,17 @@ COMPATIBLE_HOST ?= "(none)"
 EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
         CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
-COMPILE_TARGET = "libfm-${TARGET_ARCH_FMLIB}.a"
-COMPILE_TARGET_t1 = "libfm-${TARGET_ARCH_FMLIB}-fmv3.a"
+FMLIB_TARGET = "libfm-${TARGET_ARCH_FMLIB}"
+FMLIB_TARGET_t1 = "libfm-${TARGET_ARCH_FMLIB}-fmv3"
 do_compile () {
-    oe_runmake ${COMPILE_TARGET}
+    oe_runmake ${FMLIB_TARGET}.a
 }
 
 do_compile_virtclass-native () {
 }
 
 do_install () {
-    if [ "t1040" = "${SOC_FAMILY}" -o "t1042" = "${SOC_FAMILY}" ];then
-        oe_runmake install-libfm-${TARGET_ARCH_FMLIB}-fmv3
-    else
-        oe_runmake install-libfm-${TARGET_ARCH_FMLIB}
-    fi
+    oe_runmake install-${FMLIB_TARGET}
 }
 
 do_install_virtclass-native () {
