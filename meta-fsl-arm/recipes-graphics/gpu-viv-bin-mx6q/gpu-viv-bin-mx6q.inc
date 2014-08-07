@@ -246,6 +246,7 @@ FILES_libvivante-mx6-dev = "${libdir}/libVIVANTE${SOLIBSDEV}"
 FILES_libvivante-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
 
 FILES_libvivante-dri-mx6 = "${libdir}/dri/vivante_dri.so"
+RDEPENDS_libvivante-dri-mx6 = "libdrm"
 
 FILES_libvivante-dfb-mx6 = "${libdir}/directfb-1.6-0/gfxdrivers/libdirectfb_gal.so"
 
