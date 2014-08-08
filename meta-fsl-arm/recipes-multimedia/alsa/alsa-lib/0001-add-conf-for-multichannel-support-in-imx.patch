@@ -1,0 +1,221 @@
+From e99c36dfdce3e0f393eeaca6c2790b566f72d6a8 Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <b02247@freescale.com>
+Date: Thu, 5 Jun 2014 17:37:47 +0800
+Subject: [PATCH] add conf for multichannel support in imx
+
+Upstream Status: Inappropriate [platform specific]
+
+Signed-off-by: Shengjiu Wang <b02247@freescale.com>
+---
+ src/conf/cards/CS42888.conf  | 94 ++++++++++++++++++++++++++++++++++++++++++++
+ src/conf/cards/IMX-HDMI.conf | 67 +++++++++++++++++++++++++++++++
+ src/conf/cards/Makefile.am   |  4 +-
+ src/conf/cards/aliases.conf  |  2 +
+ 4 files changed, 166 insertions(+), 1 deletion(-)
+ create mode 100644 src/conf/cards/CS42888.conf
+ create mode 100644 src/conf/cards/IMX-HDMI.conf
+
+diff --git a/src/conf/cards/CS42888.conf b/src/conf/cards/CS42888.conf
+new file mode 100644
+index 0000000..671a284
+--- /dev/null
++++ b/src/conf/cards/CS42888.conf
+@@ -0,0 +1,94 @@
++#
++# Configuration for the CS42888 chip
++#
++
++# default with dmix & dsnoop
++CS42888.pcm.default {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type asym
++	playback.pcm {
++		type plug
++		slave.pcm {
++			@func concat
++			strings [ "dmix:" $CARD ",FORMAT=S32_LE" ]
++		}
++	}
++	capture.pcm {
++		type plug
++		slave.pcm {
++			@func concat
++			strings [ "dsnoop:" $CARD ",FORMAT=S32_LE" ]
++		}
++	}
++}
++
++<confdir:pcm/surround40.conf>
++
++CS42888.pcm.surround40.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type plug
++	slave.pcm {
++		type hw
++		card $CARD
++	}
++	slave.channels 4
++	ttable.0.0 1
++	ttable.1.2 1
++	ttable.2.1 1
++	ttable.3.3 1
++}
++
++
++<confdir:pcm/surround41.conf>
++<confdir:pcm/surround50.conf>
++<confdir:pcm/surround51.conf>
++
++CS42888.pcm.surround51.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type plug
++	slave.pcm {
++		type hw
++		card $CARD
++	}
++	slave.channels 6
++	ttable.0.0 1
++	ttable.1.3 1
++	ttable.2.1 1
++	ttable.3.4 1
++	ttable.4.2 1
++	ttable.5.5 1
++}
++
++<confdir:pcm/surround71.conf>
++
++CS42888.pcm.surround71.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type plug
++	slave.pcm {
++		type hw
++		card $CARD
++	}
++	slave.channels 8
++	ttable.0.0 1
++	ttable.1.4 1
++	ttable.2.1 1
++	ttable.3.5 1
++	ttable.4.2 1
++	ttable.5.6 1
++	ttable.6.3 1
++	ttable.7.7 1
++}
++
++# vim: ft=alsaconf
+diff --git a/src/conf/cards/IMX-HDMI.conf b/src/conf/cards/IMX-HDMI.conf
+new file mode 100644
+index 0000000..a51509e
+--- /dev/null
++++ b/src/conf/cards/IMX-HDMI.conf
+@@ -0,0 +1,67 @@
++#
++# Configuration for the CS42888 chip
++#
++
++# default with dmix & dsnoop
++IMX-HDMI.pcm.default {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type asym
++	playback.pcm {
++		type plug
++		slave.pcm {
++			@func concat
++			strings [ "dmix:" $CARD ",FORMAT=S32_LE" ]
++		}
++	}
++	capture.pcm {
++		type plug
++		slave.pcm {
++			@func concat
++			strings [ "dsnoop:" $CARD ",FORMAT=S32_LE" ]
++		}
++	}
++}
++
++<confdir:pcm/surround40.conf>
++
++IMX-HDMI.pcm.surround40.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type hw
++	card $CARD
++	channels 4
++}
++
++
++<confdir:pcm/surround41.conf>
++<confdir:pcm/surround50.conf>
++<confdir:pcm/surround51.conf>
++
++IMX-HDMI.pcm.surround51.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type hw
++	card $CARD
++	channels 6
++}
++
++<confdir:pcm/surround71.conf>
++
++IMX-HDMI.pcm.surround71.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type hw
++	card $CARD
++	channels 8
++}
++
++# vim: ft=alsaconf
+diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
+index ee7991b..b08acae 100644
+--- a/src/conf/cards/Makefile.am
++++ b/src/conf/cards/Makefile.am
+@@ -54,7 +54,9 @@ cfg_files = aliases.conf \
+ 	VIA8237.conf \
+ 	VX222.conf \
+ 	VXPocket.conf \
+-	VXPocket440.conf
++	VXPocket440.conf \
++	CS42888.conf \
++	IMX-HDMI.conf
+ 
+ if BUILD_ALISP
+ cfg_files += aliases.alisp
+diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
+index 4a92fb2..46430c2 100644
+--- a/src/conf/cards/aliases.conf
++++ b/src/conf/cards/aliases.conf
+@@ -55,6 +55,8 @@ AV100 cards.CMI8788
+ AV200 cards.CMI8788
+ CMI8786 cards.CMI8788
+ CMI8787 cards.CMI8788
++cs42888-audio cards.CS42888
++imx-hdmi-soc cards.IMX-HDMI
+ 
+ <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>
+-- 
+1.8.0
+
