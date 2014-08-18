@@ -7,11 +7,10 @@ DEPENDS = "kernel-module-mcc"
 
 inherit autotools
 
-SRC_URI = "http://repository.timesys.com/buildsources/l/libmcc/libmcc-${PV}/libmcc-${PV}.tar.bz2 \
-           file://remove_bashisms.patch "
+SRC_URI = "http://repository.timesys.com/buildsources/l/libmcc/libmcc-${PV}/libmcc-${PV}.tar.bz2"
 
-SRC_URI[md5sum] = "e93ce76b4419f0902a848e1769bf22ea"
-SRC_URI[sha256sum] = "3de76c5b1a096021afebfc79ca4e85d05646beb3101edcecf73b82886e7a00c0"
+SRC_URI[md5sum] = "cc3965f162dd20b8e6b9babf5dd963ee"
+SRC_URI[sha256sum] = "b98c1f857bf851e41c35c4fcdb823e83e0e058c746dffb50038c8759c8c1e104"
 
 S = "${WORKDIR}/libmcc-${PV}"
 
