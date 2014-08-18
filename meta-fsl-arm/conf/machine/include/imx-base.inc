@@ -47,9 +47,11 @@ MACHINE_SOCARCH_vf60 = "${TUNE_PKGARCH}-vf60"
 PACKAGE_EXTRA_ARCHS_append = " ${MACHINE_SOCARCH}"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
+MACHINE_ARCH_FILTER_append_mx6sl = " virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
 MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser gst-fsl-plugins"
 MACHINE_SOCARCH_FILTER_append_mx5 = " virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
-MACHINE_SOCARCH_FILTER_append_mx6 = " virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
+MACHINE_SOCARCH_FILTER_append_mx6q = " virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
+MACHINE_SOCARCH_FILTER_append_mx6dl = " virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
 
 INHERIT += "fsl-dynamic-packagearch"
 
@@ -92,9 +94,15 @@ PREFERRED_PROVIDER_virtual/libgles2_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
 
 # mx6 GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx6 ?= "gpu-viv-bin-mx6q"
-PREFERRED_PROVIDER_virtual/libgl_mx6 ?= "gpu-viv-bin-mx6q"
-PREFERRED_PROVIDER_virtual/libgles1_mx6 ?= "gpu-viv-bin-mx6q"
-PREFERRED_PROVIDER_virtual/libgles2_mx6 ?= "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgles1_mx6q = "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgles1_mx6dl = "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgles1_mx6sl = "mesa"
+PREFERRED_PROVIDER_virtual/libgles2_mx6q = "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgles2_mx6dl = "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgles2_mx6sl = "mesa"
+PREFERRED_PROVIDER_virtual/libgl_mx6q = "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgl_mx6dl = "gpu-viv-bin-mx6q"
+PREFERRED_PROVIDER_virtual/libgl_mx6sl = "mesa"
 
 PREFERRED_PROVIDER_virtual/kernel_mx3 ?= "linux-fslc"
 
