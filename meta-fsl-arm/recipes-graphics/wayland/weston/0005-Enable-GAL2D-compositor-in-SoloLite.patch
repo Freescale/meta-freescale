@@ -1,0 +1,36 @@
+From 1eea925312fb7e1bc1cf42e001069cbac887b128 Mon Sep 17 00:00:00 2001
+From: Yong Gan <b45748@freescale.com>
+Date: Wed, 2 Jul 2014 11:27:26 +0800
+Subject: [PATCH] ENGR00320243 Enable GAL2D compositor in SoloLite
+
+Build gal2d-renderer.so when EGL was not enabled.
+
+Date: Jul 02, 2014
+Signed-off-by Yong Gan <yong.gan@freescale.com>
+---
+ Makefile.am |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 2bccfe9..42148b1 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -162,6 +162,7 @@ gl_renderer_la_SOURCES =			\
+ 	src/gl-renderer.c			\
+ 	src/vertex-clipping.c			\
+ 	src/vertex-clipping.h
++endif
+ 
+ module_LTLIBRARIES += gal2d-renderer.la
+ gal2d_renderer_la_LDFLAGS = -module -avoid-version
+@@ -175,7 +176,6 @@ gal2d_renderer_la_SOURCES =			\
+ 	src/gal2d-renderer.c			\
+ 	src/vertex-clipping.c			\
+ 	src/vertex-clipping.h
+-endif
+ 
+ if ENABLE_X11_COMPOSITOR
+ module_LTLIBRARIES += x11-backend.la
+-- 
+1.7.9.5
+

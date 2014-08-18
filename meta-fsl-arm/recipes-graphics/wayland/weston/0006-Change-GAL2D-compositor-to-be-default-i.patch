@@ -1,0 +1,35 @@
+From 916e1fe5ca320f3115e904ae5543da3c5603d70e Mon Sep 17 00:00:00 2001
+From: Yong Gan <b45748@freescale.com>
+Date: Fri, 4 Jul 2014 09:57:11 +0800
+Subject: [PATCH] ENGR00321030 Change GAL2D compositor to be default in
+ SoloLite.
+
+Change GAL2D compositor to be default When EGL is not enabled.
+
+Date: Jul 03, 2014
+Signed-off-by Yong Gan <yong.gan@freescale.com>
+---
+ src/compositor-fbdev.c |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
+index b27d199..bdc6ec9 100644
+--- a/src/compositor-fbdev.c
++++ b/src/compositor-fbdev.c
+@@ -1060,8 +1060,13 @@ backend_init(struct wl_display *display, int *argc, char *argv[],
+ 	struct fbdev_parameters param = {
+ 		.tty = 0, /* default to current tty */
+ 		.device = "/dev/fb0", /* default frame buffer */
++#ifdef ENABLE_EGL
+ 		.use_gl = 1,
+ 		.use_gal2d = 0,
++#else
++		.use_gl = 0,
++		.use_gal2d = 1,
++#endif
+ 	};
+ 
+ 	const struct weston_option fbdev_options[] = {
+-- 
+1.7.9.5
+

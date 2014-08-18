@@ -1,0 +1,36 @@
+From 1194ccebc0db14ba681bd8272e01715b3e7008cc Mon Sep 17 00:00:00 2001
+From: Yong Gan <b45748@freescale.com>
+Date: Fri, 27 Jun 2014 11:33:53 +0800
+Subject: [PATCH] ENGR00320189 desktop-shell: Don't assume there is a pointer
+ when resizing
+
+Fixes a crash on touch devices without a pointer, when touching
+the window frame of a client.
+cherry-pick from 5872b6821be7c9c0a17a0de962e3f4a04f5d0c6f
+
+Date: Jun 27, 2014
+
+Upstream Status: N/A
+
+Signed-off-by Yong Gan <B45748@freescale.com>
+---
+ desktop-shell/shell.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/desktop-shell/shell.c b/desktop-shell/shell.c
+index 84f5c83..d965618 100644
+--- a/desktop-shell/shell.c
++++ b/desktop-shell/shell.c
+@@ -1784,7 +1784,8 @@ common_surface_resize(struct wl_resource *resource,
+ 	struct shell_surface *shsurf = wl_resource_get_user_data(resource);
+ 	struct weston_surface *surface;
+ 
+-	if (seat->pointer->button_count == 0 ||
++	if (seat->pointer == NULL ||
++	    seat->pointer->button_count == 0 ||
+ 	    seat->pointer->grab_serial != serial ||
+ 	    seat->pointer->focus == NULL)
+ 		return;
+-- 
+1.7.9.5
+
