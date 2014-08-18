@@ -11,7 +11,9 @@ DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamag
                              base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
                                            '', d), d)}"
 
-PROVIDES += "virtual/wayland-egl virtual/libgl virtual/libgal-x11 virtual/egl virtual/libgles1 virtual/libgles2 virtual/libopenvg"
+PROVIDES += "virtual/wayland-egl virtual/libgal-x11 virtual/egl virtual/libopenvg"
+PROVIDES_append_mx6q  = " virtual/libgl virtual/libgles1 virtual/libgles2"
+PROVIDES_append_mx6dl  = " virtual/libgl virtual/libgles1 virtual/libgles2"
 
 PE = "1"
 
@@ -104,6 +106,9 @@ python __anonymous() {
         d.appendVar("RCONFLICTS_" + fullp, pkgs)
 }
 
+IS_MX6SL = "0"
+IS_MX6SL_mx6sl = "1"
+
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
@@ -185,6 +190,24 @@ do_install () {
         find ${D}${libdir} -name "*-$backend.so" -exec rm '{}' ';'
     done
 
+    # FIXME: MX6SL does not have 3D support; hack it for now
+    if [ "${IS_MX6SL}" = "1" ]; then
+        rm -rf ${D}${libdir}/libCLC* ${D}${includedir}/CL \
+               \
+               ${D}${libdir}/libGL* ${D}${includedir}/GL* \ 
+               \
+               ${D}${libdir}/libGLES* \
+               \
+               ${D}${libdir}/libOpenCL* \
+               \
+               ${D}${libdir}/libOpenVG.so ${D}${libdir}/libOpenVG_3D.so \
+               \
+               ${D}/opt/viv_samples/vdk \
+               ${D}/opt/viv_samples/es20 ${D}/opt/viv_samples/cl11
+
+        ln -sf ${D}${libdir}/libOpenVG_355.so ${D}${libdir}/libOpenVG.so
+    fi
+
     find ${D}${libdir} -type f -exec chmod 644 {} \;
     find ${D}${includedir} -type f -exec chmod 644 {} \;
 }
@@ -233,6 +256,7 @@ FILES_libopencl-mx6-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 FILES_libopencl-mx6-dbg = "${libdir}/.debug/libOpenCL${SOLIBS}"
 RDEPENDS_libopencl-mx6 = "libclc-mx6"
 
+INSANE_SKIP_libopenvg-mx6 += "dev-so"
 FILES_libopenvg-mx6 = "${libdir}/libOpenVG*${SOLIBS}"
 FILES_libopenvg-mx6-dev = "${includedir}/VG ${libdir}/libOpenVG*${SOLIBSDEV} ${libdir}/pkgconfig/vg.pc"
 FILES_libopenvg-mx6-dbg = "${libdir}/.debug/libOpenVG*${SOLIBS}"
