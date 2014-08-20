@@ -7,5 +7,7 @@ CFLAGS_append_mx6 = " -DLINUX \
 
 
 PACKAGECONFIG_class-target_mx6 = " \
-    egl glesv2 \
     ${@base_contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)}"
+
+PACKAGECONFIG_append_class-target_mx6q = " egl glesv2"
+PACKAGECONFIG_append_class-target_mx6dl = " egl glesv2"
