@@ -23,12 +23,12 @@ EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 # Ensure machine defines the IMXBOOTLETS_MACHINE
 python () {
-	if not d.getVar("IMXBOOTLETS_MACHINE", True):
-		PN = d.getVar("PN", True)
-		FILE = os.path.basename(d.getVar("FILE", True))
-		bb.debug(1, "To build %s, see %s for instructions on \
-			     setting up your machine config" % (PN, FILE))
-		raise bb.parse.SkipPackage("because IMXBOOTLETS_MACHINE is not set")
+    if not d.getVar("IMXBOOTLETS_MACHINE", True):
+        PN = d.getVar("PN", True)
+        FILE = os.path.basename(d.getVar("FILE", True))
+        bb.debug(1, "To build %s, see %s for instructions on \
+                     setting up your machine config" % (PN, FILE))
+        raise bb.parse.SkipPackage("because IMXBOOTLETS_MACHINE is not set")
 }
 
 do_configure () {
@@ -60,11 +60,11 @@ FILES_${PN} = "/boot"
 do_deploy () {
     install -d ${DEPLOYDIR}
 
-	for f in boot_prep/boot_prep \
-             power_prep/power_prep \
-             linux_prep/output-target/linux_prep \
-             barebox_ivt.bd \
-             linux.bd linux.bd-dtb; do
+    for f in boot_prep/boot_prep \
+         power_prep/power_prep \
+         linux_prep/output-target/linux_prep \
+         barebox_ivt.bd \
+         linux.bd linux.bd-dtb; do
         full_name="imx-bootlets-`basename $f`-${MACHINE}-${PV}-${PR}"
         symlink_name="imx-bootlets-`basename $f`-${MACHINE}"
 
