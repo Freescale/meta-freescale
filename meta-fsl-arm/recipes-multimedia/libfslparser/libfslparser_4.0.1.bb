@@ -3,7 +3,7 @@
 
 require libfslparser.inc
 
-SRC_URI[md5sum] = "d141c9e0b8221a306db4b1e161fd8e04"
-SRC_URI[sha256sum] = "921a5f6dab239eadd08dc7ac1f36d666cf76cf61c6cd32ab9d68069986ea7c96"
+SRC_URI[md5sum] = "5306fbcd174fb18328a6ccf87bf55953"
+SRC_URI[sha256sum] = "7d63e4a73c90021e7d12860749d78679e1932bdce8c988f0183018366b6afd06"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6)"
