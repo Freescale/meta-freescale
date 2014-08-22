@@ -93,5 +93,7 @@ FILES_${PN}-test-source += "${datadir}/imx-mm/*"
 
 # FIXME: The wrap and lib names does not match
 FILES_${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm*_elinux.so.*"
+FILES_${PN}-nb += "${libdir}/imx-mm/audio-codec/wrap/lib_nbamrd_wrap_arm*_elinux.so.*"
+FILES_${PN}-wb += "${libdir}/imx-mm/audio-codec/wrap/lib_wbamrd_wrap_arm*_elinux.so.*"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
