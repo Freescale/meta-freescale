@@ -1,0 +1,17 @@
+mesa-demos:  Add extension header to fix build break now that gl1 is removed
+
+Upstream Status: Pending
+
+diff --git a/src/egl/opengles1/clear.c b/src/egl/opengles1/clear.c
+index 9fe1b5291e1905fd6fe572063ed707d59ce45a81..ca9954a21b5f475709dbdef07f90b900962fcbc7 100644
+--- a/src/egl/opengles1/clear.c
++++ b/src/egl/opengles1/clear.c
+@@ -34,7 +34,7 @@
+ #include <stdio.h>
+ #include <EGL/egl.h>
+ #include <GLES/gl.h>
+-
++#include <GLES/glext.h>
+ #include "eglut.h"
+ 
+ typedef void (GL_APIENTRY *type_ClearColor)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
