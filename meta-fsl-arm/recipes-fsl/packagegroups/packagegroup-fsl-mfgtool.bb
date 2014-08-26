@@ -3,6 +3,8 @@
 SUMMARY = "Freescale Manufacturing Tool requirements"
 LICENSE = "MIT"
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 inherit packagegroup
 
 PACKAGES = " \
@@ -43,5 +45,3 @@ RDEPENDS_${PN}-extfs = " \
     ${PN}-base \
     e2fsprogs-mke2fs \
 "
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
