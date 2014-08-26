@@ -27,9 +27,6 @@ XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
 
-# FIXME: Use older versions until Vivante GPU is made compatible
-PREFERRED_VERSION_xserver-xorg_mx6 = "2:1.14.4"
-
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
