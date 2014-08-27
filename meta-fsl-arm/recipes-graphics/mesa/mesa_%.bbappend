@@ -19,3 +19,4 @@ do_install_append_mx6 () {
         rm -f ${D}${libdir}/libGL.*
     fi
 }
+EXTRA_OECONF_mx6 := "${@'${EXTRA_OECONF}'.replace('--enable-glx-tls','--enable-glx')}"
