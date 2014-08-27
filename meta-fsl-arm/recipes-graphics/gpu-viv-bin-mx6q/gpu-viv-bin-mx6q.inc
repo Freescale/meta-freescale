@@ -5,7 +5,7 @@
 DESCRIPTION = "GPU driver and apps for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=19f5925343fa3da65596eeaa4ddb5fd3"
+LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=c4713c78d7f52bf2f92688a6f8f0cc93"
 
 DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
                              base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -14,12 +14,13 @@ DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamag
 PROVIDES += "virtual/wayland-egl virtual/libgal-x11 virtual/egl virtual/libopenvg"
 PROVIDES_append_mx6q  = " virtual/libgl virtual/libgles1 virtual/libgles2"
 PROVIDES_append_mx6dl  = " virtual/libgl virtual/libgles1 virtual/libgles2"
+PROVIDES_append_mx6sx  = " virtual/libgl virtual/libgles1 virtual/libgles2"
 
 PE = "1"
 
 inherit fsl-eula-unpack
-
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
+# FIXME: Drop 'beta' suffix for GA release
+SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.1.0', '1.1.0-beta')}.bin;fsl-eula=true \
            file://egl.pc \
            file://egl_x11.pc \
            file://glesv1_cm.pc \
@@ -33,6 +34,7 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://wayland-viv.pc \
            file://directfbrc \
           "
+S = "${WORKDIR}/${PN}-${@'${PV}'.replace('1.1.0', '1.1.0-beta')}"
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
@@ -128,6 +130,7 @@ do_install () {
         install -m 0644 ${WORKDIR}/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${WORKDIR}/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${WORKDIR}/vg_x11.pc ${D}${libdir}/pkgconfig/vg.pc
+        mv ${D}${libdir}/libGAL_egl.dri.so ${D}${libdir}/libGAL_egl.so
         #FIXME: WL & X11 is not currently functional
         #if [ "${USE_WL}" = "yes" ]; then
         #    install -m 0644 ${WORKDIR}/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
@@ -144,6 +147,7 @@ do_install () {
         install -m 0644 ${WORKDIR}/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
         install -m 0644 ${WORKDIR}/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
         install -m 0644 ${WORKDIR}/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
+        mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
     else
         install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
         install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
@@ -154,12 +158,13 @@ do_install () {
             install -d ${D}/${sysconfdir}
             install -m 644 ${WORKDIR}/directfbrc ${D}/${sysconfdir}/directfbrc
 
-            cp -r ${S}/usr/lib/directfb-1.6-0 ${D}${libdir}
+            cp -r ${S}/usr/lib/directfb-* ${D}${libdir}
             backend=dfb
         else
             # Regular framebuffer
             backend=fb
         fi
+        mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
     fi
 
     # We'll only have one backend here so we rename it to generic name
@@ -186,8 +191,9 @@ do_install () {
         rm ${D}${libdir}/libwayland-viv.*
     fi
 
-    for backend in wl x11 fb dfb; do
+    for backend in wl x11 fb dfb dri; do
         find ${D}${libdir} -name "*-$backend.so" -exec rm '{}' ';'
+        find ${D}${libdir} -name "*.$backend.so" -exec rm '{}' ';'
     done
 
     # FIXME: MX6SL does not have 3D support; hack it for now
@@ -200,12 +206,14 @@ do_install () {
                \
                ${D}${libdir}/libOpenCL* \
                \
-               ${D}${libdir}/libOpenVG.so ${D}${libdir}/libOpenVG_3D.so \
+               ${D}${libdir}/libOpenVG.so ${D}${libdir}/libOpenVG.3d.so \
+               \
+               ${D}${libdir}/libVivanteOpenCL.so \
                \
                ${D}/opt/viv_samples/vdk \
                ${D}/opt/viv_samples/es20 ${D}/opt/viv_samples/cl11
 
-        ln -sf libOpenVG_355.so ${D}${libdir}/libOpenVG.so
+        ln -sf libOpenVG.2d.so ${D}${libdir}/libOpenVG.so
     fi
 
     find ${D}${libdir} -type f -exec chmod 644 {} \;
@@ -215,6 +223,7 @@ do_install () {
 FILES_${PN} += "/opt"
 FILES_${PN}-dev = "${includedir}"
 FILES_${PN}-dbg = "${libdir}/.debug /opt/viv_samples/*/*/.debug"
+INSANE_SKIP_${PN} += "rpaths"
 
 FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
@@ -225,6 +234,9 @@ INSANE_SKIP_libegl-mx6 += "dev-so"
 FILES_libegl-mx6 = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
 FILES_libegl-mx6-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
+RDEPENDS_libgl-mx6 = "libglapi"
+# Includes GL headers from mesa
+RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
 FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV}"
@@ -236,7 +248,7 @@ FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
 
 # libEGL needs to open libGLESv1.so
 INSANE_SKIP_libgles-mx6 += "dev-so"
-FILES_libgles-mx6 = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBS}"
+FILES_libgles-mx6 = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS}"
 FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
 FILES_libgles-mx6-dbg = "${libdir}/.debug/libGLESv1*${SOLIBS} ${libdir}/.debug/libGLES_*${SOLIBS}"
 
@@ -272,7 +284,7 @@ FILES_libvivante-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
 FILES_libvivante-dri-mx6 = "${libdir}/dri/vivante_dri.so"
 RDEPENDS_libvivante-dri-mx6 = "libdrm"
 
-FILES_libvivante-dfb-mx6 = "${libdir}/directfb-1.6-0/gfxdrivers/libdirectfb_gal.so"
+FILES_libvivante-dfb-mx6 = "${libdir}/directfb-*/gfxdrivers/libdirectfb_gal.so"
 
 INSANE_SKIP_libwayland-viv-mx6 += "dev-so"
 FILES_libwayland-viv-mx6 =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"

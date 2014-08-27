@@ -7,6 +7,6 @@ Name: glesv1_cm
 Description: Vivante OpenGL ES 1.1 CM library
 Requires.private: libdrm x11 xext xdamage xfixes xcb
 Version: 8.0
-Libs: -L${libdir} -lGLESv1_CM -lEGL -lGAL
+Libs: -L${libdir} -lGLESv1_CM -lEGL -lGAL -lGAL_egl
 Libs.private: -lm -lpthread -ldl
 Cflags: -I${includedir}
