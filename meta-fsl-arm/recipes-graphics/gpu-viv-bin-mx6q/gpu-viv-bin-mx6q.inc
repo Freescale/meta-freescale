@@ -33,6 +33,7 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.1.0', '1.1.0-beta')}.bin;fs
            file://wayland-egl.pc \
            file://wayland-viv.pc \
            file://directfbrc \
+           file://Vivante.icd \
           "
 S = "${WORKDIR}/${PN}-${@'${PV}'.replace('1.1.0', '1.1.0-beta')}"
 
@@ -166,6 +167,10 @@ do_install () {
         fi
         mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
     fi
+
+    # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
+    install -d ${D}${sysconfdir}/OpenCL/vendors/
+    install -m 0644 ${WORKDIR}/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
     # We'll only have one backend here so we rename it to generic name
     # and avoid rework in other packages, when possible
