@@ -14,6 +14,7 @@ SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-${PV}.tar.gz \
            file://ext-Update-to-newer-swap-macros.patch \
            file://Fix-error-unknown-type-name-uint.patch \
            file://xserver-1.14-compat.patch \
+           file://glibc-2.20.patch \
 "
 SRC_URI[md5sum] = "d19148399b5d1c4dab90d0cc6f2c4789"
 SRC_URI[sha256sum] = "d7d85e9f13c6dd58addab89847f3a8a67f6382a54135c7978c9a95368af024d4"
