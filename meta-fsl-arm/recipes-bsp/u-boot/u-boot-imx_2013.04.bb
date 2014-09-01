@@ -14,5 +14,9 @@ SRCREV = "ce0ea2507c492d43bbf88f8609482a171b2d2003"
 
 S = "${WORKDIR}/git"
 
+inherit fsl-u-boot-localversion
+
+LOCALVERSION = "+imx"
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"

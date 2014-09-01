@@ -54,7 +54,9 @@ UBOOT_MAKE_TARGET = "u-boot.bin"
 S = "${WORKDIR}/git"
 EXTRA_OEMAKE += 'HOSTSTRIP=true'
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+inherit fsl-u-boot-localversion
+
+LOCALVERSION = "+imx"
 
 do_compile_prepend() {
 	if [ "${@base_contains('DISTRO_FEATURES', 'ld-is-gold', 'ld-is-gold', '', d)}" = "ld-is-gold" ] ; then
@@ -63,3 +65,4 @@ do_compile_prepend() {
 }
 
 COMPATIBLE_MACHINE = "(imx28evk|mx5|mx6)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
