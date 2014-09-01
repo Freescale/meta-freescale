@@ -13,6 +13,8 @@ SRC_URI = "git://github.com/Freescale/u-boot-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
 
+inherit fsl-u-boot-localversion
+
 EXTRA_OEMAKE = 'HOSTCC="${CC} ${CPPFLAGS}" HOSTLDFLAGS="-L${libdir} -L${base_libdir}" HOSTSTRIP=true CONFIG_MX28=y'
 
 do_compile () {

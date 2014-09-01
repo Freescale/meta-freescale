@@ -3,6 +3,8 @@
 
 require recipes-bsp/u-boot/u-boot.inc
 
+inherit fsl-u-boot-localversion
+
 DESCRIPTION = "U-boot bootloader for Freescale ARM platforms"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=025bf9f768cbcb1a165dbe1a110babfb"
@@ -26,4 +28,3 @@ EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
                  HOSTSTRIP=true'
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-
