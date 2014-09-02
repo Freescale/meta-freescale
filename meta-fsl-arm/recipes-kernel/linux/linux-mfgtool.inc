@@ -59,6 +59,7 @@ python () {
     clsextend.rename_package_variables((d.getVar("PACKAGEVARS", True) or "").split())
 
     clsextend.map_packagevars()
+    clsextend.map_regexp_variable("PACKAGES_DYNAMIC")
 }
 
 addhandler mfgtool_recipe_handler
