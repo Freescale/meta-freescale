@@ -7,10 +7,10 @@ SECTION = "multimedia"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=93b784b1c11b3fffb1638498a8dde3f6"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "1f50110cb6de8ebf767fb9c5f8baf20d"
-SRC_URI[sha256sum] = "7fc1258de338339d19a1a35167393fdc4d773682dfd9b951b197403a075f85fd"
+S = "${WORKDIR}/${PN}-${PV}"
 
-SRC_URI_append = " file://0001-vpu_wrapper-fix-tests-of-return-value-from-IOGetVirt.patch"
+SRC_URI[md5sum] = "b07a2d4e7bf44225353106ed209f6dac"
+SRC_URI[sha256sum] = "eef2cc0c65d96d3a0f75d7134eef8ef0099ece2502d093fc13739edcb343e1dd"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
