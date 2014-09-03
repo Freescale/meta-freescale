@@ -6,14 +6,13 @@ require gst-fsl-plugin.inc
 EXTRA_OECONF += " CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR}"
 
 SRC_URI = "${FSL_MIRROR}/gst-fsl-plugins-${PV}.tar.gz \
-           file://build-Fix-out-of-tree-build.patch \
            file://Remove-use-of-obsolete-VIDIOC_DBG_G_CHIP_IDENT.patch \
 "
 
 S = "${WORKDIR}/gst-fsl-plugins-${PV}"
 
-SRC_URI[md5sum] = "0ed858681a74857034c006036023e6ce"
-SRC_URI[sha256sum] = "fbc6000b401ac2c8d67d1414372f4a929cf0a5808f6ed1640f1d2bfcce2f2a4f"
+SRC_URI[md5sum] = "6db4bec9c1cd75758c3c529896307810"
+SRC_URI[sha256sum] = "629bbb904879571c058647acfa07ac7a11ea32350be14f4cb2b72dbac80ae42c"
 
 DEPENDS_append = " gstreamer gst-plugins-base"
 
