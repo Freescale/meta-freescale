@@ -1,0 +1,209 @@
+Obey CFLAGS, LDFLAGS
+
+Signed-off-by: Christopher Larson <chris_larson@mentor.com>
+Upstream-status: Pending
+
+--- imx-lib-11.09.02.orig/hdmi-cec/Makefile	2014-09-02 13:04:37.114250749 -0700
++++ imx-lib-11.09.02/hdmi-cec/Makefile	2014-09-02 13:04:37.086250568 -0700
+@@ -1,5 +1,6 @@
+ CC ?=$(CROSS_COMPILE)gcc
+ AR ?=$(CROSS_COMPILE)ar
++CFLAGS ?=-O2
+ 
+ # list of platforms which want this test case
+ INCLUDE_LIST:= IMX6Q
+@@ -32,10 +33,10 @@
+ endif
+ 
+ %.o: %.c
+-	$(CC) -D$(PLATFORM) -Wall -O2 -fPIC -c $^ -o $@
++	$(CC) -D$(PLATFORM) -Wall -fPIC $(CFLAGS) -c $^ -o $@
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJ)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@ $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
+--- imx-lib-11.09.02.orig/ipu/Makefile	2014-09-02 13:04:37.114250749 -0700
++++ imx-lib-11.09.02/ipu/Makefile	2014-09-02 13:05:11.062458117 -0700
+@@ -1,5 +1,6 @@
+ CC ?=$(CROSS_COMPILE)gcc
+ AR ?=$(CROSS_COMPILE)ar
++CFLAGS ?=-O2
+ 
+ ifeq ($(PLATFORM), IMX6Q)
+ OBJS = mxc_ipu_hl_lib_dummy.o
+@@ -28,7 +29,7 @@
+ endif
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -lpthread
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -lpthread $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
+@@ -37,7 +38,7 @@
+ ifeq "$(PLATFORM)" ""
+ 	$(error "Unspecified PLATFORM variable")
+ endif
+-	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -O2 -fPIC -c $^ -o $@
++	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -fPIC $(CFLAGS) -c $^ -o $@
+ 
+ .PHONY: clean
+ clean:
+--- imx-lib-11.09.02.orig/pxp/Makefile	2014-09-02 13:04:37.114250749 -0700
++++ imx-lib-11.09.02/pxp/Makefile	2014-09-02 13:05:53.354716651 -0700
+@@ -1,5 +1,6 @@
+ CC ?=$(CROSS_COMPILE)gcc
+ AR ?=$(CROSS_COMPILE)ar
++CFLAGS ?=-O2
+ 
+ # list of platforms which want this test case
+ INCLUDE_LIST:=IMX50 IMX51 IMX5 IMX6Q IMX6S
+@@ -25,10 +26,10 @@
+ endif
+ 
+ %.o: %.c
+-	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -O2 -fPIC -c $^ -o $@
++	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -fPIC $(CFLAGS) -c $^ -o $@
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJ)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@ $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
+--- imx-lib-11.09.02.orig/rng/Makefile	2014-09-02 13:04:37.114250749 -0700
++++ imx-lib-11.09.02/rng/Makefile	2014-09-02 13:04:37.086250568 -0700
+@@ -4,16 +4,17 @@
+ AR = ar -crv
+ RM = rm -f
+ CC ?=$(CROSS_COMPILE)gcc
+-LD=$(CROSS_COMPILE)ld
++LD ?=$(CROSS_COMPILE)ld
++CFLAGS ?=-g
+ 
+ INC := $(INCLUDE)
+ 
+ # Add compilation checks
+-CFLAGS += -g -Wall -W -Wmissing-prototypes -Wstrict-prototypes -Wdeclaration-after-statement -fPIC
++override CFLAGS += -Wall -W -Wmissing-prototypes -Wstrict-prototypes -Wdeclaration-after-statement -fPIC
+ 
+ # In absence of kernel CONFIG flags, set API library to build on
+ # 'unknown' platform.
+-CFLAGS += -DFSL_PLATFORM_OTHER -DFSL_HAVE_RNGC $(INC)
++override CFLAGS += -DFSL_PLATFORM_OTHER -DFSL_HAVE_RNGC $(INC)
+ 
+ OBJS= fsl_shw_rand.o  fsl_shw_hash.o  fsl_shw_sym.o  fsl_shw_user.o         \
+ 		fsl_shw_keystore.o fsl_shw_auth.o  fsl_shw_hmac.o  fsl_shw_wrap.o
+@@ -34,7 +35,7 @@
+ 	$(AR) $@ $^
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
+--- imx-lib-11.09.02.orig/sahara2/Makefile	2014-09-02 13:04:37.114250749 -0700
++++ imx-lib-11.09.02/sahara2/Makefile	2014-09-02 13:04:37.086250568 -0700
+@@ -4,7 +4,8 @@
+ AR = ar -crv
+ RM = rm -f
+ CC ?=$(CROSS_COMPILE)gcc
+-LD=$(CROSS_COMPILE)ld
++LD ?=$(CROSS_COMPILE)ld
++CFLAGS ?=-g
+ 
+ INC := $(INCLUDE)
+ 
+@@ -18,19 +19,19 @@
+ endif
+ 
+ # Add compilation checks
+-CFLAGS += -g -Wall -W -Wmissing-prototypes -Wstrict-prototypes -Wdeclaration-after-statement -fPIC
++override CFLAGS += -Wall -W -Wmissing-prototypes -Wstrict-prototypes -Wdeclaration-after-statement -fPIC
+ 
+ OBJS= fsl_shw_rand.o  fsl_shw_hash.o  fsl_shw_sym.o  fsl_shw_user.o         \
+       fsl_shw_auth.o  fsl_shw_hmac.o  fsl_shw_wrap.o  fsl_shw_keystore.o um_adaptor.o  sf_util.o
+ 
+ 
+ #CFLAGS += -DSAHARA -DLINUX -I$(APIINCDIR)
+-CFLAGS += -DSAHARA -DLINUX $(INC)
+-CFLAGS += $(TARGET_ARCH)
++override CFLAGS += -DSAHARA -DLINUX $(INC)
++override CFLAGS += $(TARGET_ARCH)
+ # Uncomment to debug Library's creation of structures for driver
+-#CFLAGS +=  -DDIAG_SECURITY_FUNC
++#override CFLAGS +=  -DDIAG_SECURITY_FUNC
+ # Uncomment to simulate memory allocation errors
+-#CFLAGS += -DDIAG_MEM_ERRORS -DDIAG_MEM_CONST=5
++#override CFLAGS += -DDIAG_MEM_ERRORS -DDIAG_MEM_CONST=5
+ 
+ LIBNAME=libsahara
+ SONAMEVERSION=0
+@@ -53,7 +54,7 @@
+ 	$(AR) $@ $^
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
+--- imx-lib-11.09.02.orig/screenlayer/Makefile	2014-09-02 13:04:37.114250749 -0700
++++ imx-lib-11.09.02/screenlayer/Makefile	2014-09-02 13:04:37.086250568 -0700
+@@ -1,5 +1,6 @@
+ CC ?=$(CROSS_COMPILE)gcc
+ AR ?=$(CROSS_COMPILE)ar
++CFLAGS ?=-O2
+ INC = $(INCLUDE) -I../ipu
+ 
+ OBJS = ScreenLayer.o
+@@ -24,13 +25,13 @@
+ endif
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -L../ipu -lipu
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -L../ipu -lipu $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
+ 
+ %.o: %.c
+-	$(CC) $(INC) -Wall -O2 -fPIC -c $^ -o $@
++	$(CC) $(INC) -Wall -fPIC $(CFLAGS) -c $^ -o $@
+ 
+ .PHONY: clean
+ clean:
+--- imx-lib-11.09.02.orig/sim/Makefile	2014-09-02 13:04:37.114250749 -0700
++++ imx-lib-11.09.02/sim/Makefile	2014-09-02 13:04:37.086250568 -0700
+@@ -1,9 +1,10 @@
+ CC ?=$(CROSS_COMPILE)gcc
+ AR ?=$(CROSS_COMPILE)ar
++CFLAGS ?=-O2
+ 
+ OBJS = iso7816-3.o
+ 
+-CFLAGS += $(INCLUDE)
++override CFLAGS += $(INCLUDE)
+ 
+ LIBNAME=libsim
+ SONAMEVERSION=0
+@@ -21,13 +22,13 @@
+ 	cp iso7816-3.h $(DEST_DIR)/usr/include
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJS)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -lpthread
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ -o $@ $^ -lpthread $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
+ 
+ %.o: %.c
+-	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -O2 -fPIC -c $^ -o $@
++	$(CC) -D$(PLATFORM) $(INCLUDE) -Wall -fPIC $(CFLAGS) -c $^ -o $@
+ 
+ else
+ all install :

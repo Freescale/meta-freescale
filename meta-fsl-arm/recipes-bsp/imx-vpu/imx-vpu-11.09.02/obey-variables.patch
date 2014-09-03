@@ -1,0 +1,27 @@
+Obey CFLAGS, LDFLAGS
+
+Signed-off-by: Christopher Larson <chris_larson@mentor.com>
+Upstream-status: Pending
+
+--- imx-vpu-11.09.02.orig/vpu/Makefile	2014-09-02 13:14:50.862005896 -0700
++++ imx-vpu-11.09.02/vpu/Makefile	2014-09-02 13:15:15.018153222 -0700
+@@ -1,5 +1,6 @@
+ CC ?=$(CROSS_COMPILE)gcc
+ AR ?=$(CROSS_COMPILE)ar
++CFLAGS ?= -O2
+ 
+ # list of platforms which want this test case
+ INCLUDE_LIST:= IMX27ADS IMX51 IMX53 IMX6Q
+@@ -33,10 +34,10 @@
+ endif
+ 
+ %.o: %.c
+-	$(CC) -D$(PLATFORM) -Wall -O2 -fPIC -c $^ -o $@
++	$(CC) -D$(PLATFORM) -Wall -fPIC $(CFLAGS) -c $^ -o $@
+ 
+ $(LIBNAME).so.$(SONAMEVERSION): $(OBJ)
+-	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@
++	$(CC) -shared -nostartfiles -Wl,-soname,$@ $^ -o $@ $(LDFLAGS)
+ 
+ $(LIBNAME).so: $(LIBNAME).so.$(SONAMEVERSION)
+ 	ln -s $< $@
