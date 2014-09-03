@@ -11,6 +11,8 @@ SRCREV = "021f7206cd80eb2e85dde1fc1bc79e8fea272de4"
 DEPENDS = "libxml2 fmlib tclap"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_HOST_qoriq-ppc = ".*"
+COMPATIBLE_HOST ?= "(none)"
 
 S = "${WORKDIR}/git"
 

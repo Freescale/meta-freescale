@@ -3,6 +3,9 @@ LICENSE = "BSD GPLv2"
 
 DEPENDS += "flib usdpaa"
 
+COMPATIBLE_HOST_qoriq-ppc = ".*"
+COMPATIBLE_HOST ?= "(none)"
+
 # no COPYING file in current git tree, need to be fixed
 LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=83b6209ab517640a7390536a08d33609"
 
