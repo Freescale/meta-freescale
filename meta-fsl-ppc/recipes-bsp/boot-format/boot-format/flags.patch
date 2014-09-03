@@ -1,0 +1,21 @@
+Index: git/Makefile
+===================================================================
+--- git.orig/Makefile
++++ git/Makefile
+@@ -3,14 +3,14 @@
+ INSTALL=install
+ PREFIX=/usr
+ 
+-CFLAGS=-Wall
++override CFLAGS+=-Wall
+ 
+ all: boot_format
+ 
+ boot_format.o: boot_format.c boot_format.h
+ 
+ boot_format: boot_format.o
+-	$(CC) $< -o $@
++	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+ 
+ install: boot_format
+ 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin
