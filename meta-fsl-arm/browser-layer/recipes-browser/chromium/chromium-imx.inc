@@ -5,7 +5,7 @@ DEPENDS_append = " libfslvpuwrap"
 # chromium source directory, and applies the patches.
 
 CHROMIUM_IMX_BRANCH = "master"
-CHROMIUM_IMX_SRCREV = "0aacc892d0977f691d683db1c1f1f6f9e33da911"
+CHROMIUM_IMX_SRCREV = "5c5cadd40ad04e66ec9b14a7a29370b76ed5c4f4"
 CHROMIUM_IMX_DESTSUFFIX = "chromium-imx-git"
 
 PATCH_BASE_DIR = "${WORKDIR}/${CHROMIUM_IMX_DESTSUFFIX}/patches"
