@@ -9,6 +9,8 @@ LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b18
 
 PLATFORM_mx6 = "IMX6Q"
 PLATFORM_mx5 = "IMX51"
+PLATFORM_mx6sl = "IMX6S"
+PLATFORM_mx6sx = "IMX6S"
 
 PARALLEL_MAKE="-j 1"
 EXTRA_OEMAKE = ""
