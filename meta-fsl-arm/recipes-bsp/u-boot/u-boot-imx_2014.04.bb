@@ -6,11 +6,11 @@ require recipes-bsp/u-boot/u-boot.inc
 PROVIDES += "u-boot"
 
 LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://COPYING;md5=1707d6db1d42237583f50183a5651ecb"
+LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCBRANCH = "imx_v2013.04_3.10.17_1.0.0_ga"
+SRCBRANCH = "imx_v2014.04_3.10.31_1.1.0_beta"
 SRC_URI = "git://git.freescale.com/imx/uboot-imx.git;protocol=git;branch=${SRCBRANCH}"
-SRCREV = "06dd4f798b2014ed9642f8d6f526aa9630dd8ca5"
+SRCREV = "91cbd4d530f240042d112fc4166a143fa659524b"
 
 S = "${WORKDIR}/git"
 
