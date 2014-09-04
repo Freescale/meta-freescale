@@ -1,0 +1,57 @@
+From f2e796c903b2a3f81dbd38da3dc087cb7539d307 Mon Sep 17 00:00:00 2001
+From: Zhenhua Luo <zhenhua.luo@freescale.com>
+Date: Wed, 3 Sep 2014 03:03:42 -0500
+Subject: [PATCH] Makefile: make BOARDS/DESTDIR overidable and add endian
+ switch
+
+1. For one specific board, no need to build the rcw for all supported
+   targets, make BOARDS and DESTDIR overridable to achieve this.
+2. Add the endian swap for qspiboot rcw
+
+Upstream-Status: Pending
+
+Signed-off-by: Zhenhua Luo <zhenhua.luo@freescale.com>
+---
+ Makefile     |    4 ++--
+ Makefile.inc |    9 +++++++--
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 6ec1697..0f94293 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+-DESTDIR = .
+-BOARDS = b4420qds b4860qds \
++DESTDIR ?= .
++BOARDS ?= b4420qds b4860qds \
+ 	 ls1021aqds ls1021atwr \
+ 	 p2041rdb p3041ds p4080ds p5020ds p5040ds \
+ 	 t1040rdb t1042rdb t1042rdb_pi t1040qds t2080rdb t2080qds t2081qds t4240qds t4240rdb
+diff --git a/Makefile.inc b/Makefile.inc
+index 4cadb2e..6e8b78f 100644
+--- a/Makefile.inc
++++ b/Makefile.inc
+@@ -1,4 +1,4 @@
+-DESTDIR = .
++DESTDIR ?= .
+ INSTALL = install
+ PYTHON ?= python2
+ RCW = $(PYTHON) ../rcw.py
+@@ -18,7 +18,12 @@ all: $(targets)
+ install: $(targets)
+ 	$(INSTALL) -d $(DESTDIR)
+ 	@for file in $^; do \
+-		$(INSTALL) -m 644 -D $$file $(DESTDIR)/$$file; \
++		case $$file in \
++			*qspiboot*) file_swap="`echo $$file | sed -e 's/qspiboot/qspiboot_swap/'`"; \
++						tclsh byte_swap.tcl $$file $$file_swap 8 ; \
++						$(INSTALL) -m 644 -D $$file_swap $(DESTDIR)/$$file_swap ;; \
++			*) $(INSTALL) -m 644 -D $$file $(DESTDIR)/$$file; \
++        esac \
+ 	done
+ 	$(INSTALL) -m 644 -D README $(DESTDIR)
+ 
+-- 
+1.7.9.7
+
