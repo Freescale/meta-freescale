@@ -11,17 +11,12 @@ SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true"
 inherit fsl-eula-unpack
 
 do_install() {
-	install -d ${D}/lib/firmware
+    install -d ${D}/lib/firmware
     cp -rfv firmware/* ${D}/lib/firmware/
     find ${D}/lib/firmware -type f -exec chmod 644 '{}' ';'
 
     # Remove files not going to be installed
     find ${D}/lib/firmware/ -name Android.mk -exec rm '{}' ';'
-    rm ${D}/lib/firmware/LICENCE.atheros_firmware \
-       ${D}/lib/firmware/README
-
-    # FIXME: Remove firmware packaged in linux-firmware
-    rm -r ${D}/lib/firmware/ath6k ${D}/lib/firmware/ar3k
 }
 
 python populate_packages_prepend() {
