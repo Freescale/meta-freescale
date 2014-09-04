@@ -10,9 +10,8 @@ require recipes-kernel/linux/linux-dtb.inc
 
 DEPENDS += "lzop-native bc-native"
 
-# back to -1.0.0_ga branch for all patch release
-SRCBRANCH = "imx_3.10.17_1.0.0_ga"
-SRCREV = "33597e348b2d60dd5c71890ef7b7d3d3fd6e4e97"
-LOCALVERSION = "-1.0.2_ga"
+SRCBRANCH = "imx_3.10.31_1.1.0_beta"
+SRCREV = "94a7e472c47b800c001c0a5d17bb2f14a13e1980"
+LOCALVERSION = "-1.1.0_beta"
 
 COMPATIBLE_MACHINE = "(mx6)"
