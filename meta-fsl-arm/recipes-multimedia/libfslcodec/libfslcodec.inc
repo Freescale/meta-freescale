@@ -16,6 +16,7 @@ EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--
 VPU_SUPPORT = "--disable-vpu"
 VPU_SUPPORT_mx6 = "--enable-vpu"
 VPU_SUPPORT_mx6sl = "--disable-vpu"
+VPU_SUPPORT_mx6sx = "--disable-vpu"
 VPU_SUPPORT_mx5 = "--enable-vpu"
 EXTRA_OECONF += "${VPU_SUPPORT}"
 
