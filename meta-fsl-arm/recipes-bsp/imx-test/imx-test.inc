@@ -5,6 +5,7 @@ DEPENDS_mx5   = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6q  = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6dl = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6sl = "virtual/kernel imx-lib"
+DEPENDS_mx6sx = "virtual/kernel imx-lib"
 DEPENDS_mxs   = "virtual/kernel"
 
 LICENSE = "GPLv2"
@@ -13,7 +14,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=80
 PE = "1"
 
 PLATFORM_mx6 = "IMX6Q"
-PLATFORM_mx6sl = "IMX6S"
+PLATFORM_mx6sl = "IMX6SL"
+PLATFORM_mx6sx = "IMX6SX"
 PLATFORM_mx53 = "IMX53"
 PLATFORM_mx51 = "IMX51"
 
