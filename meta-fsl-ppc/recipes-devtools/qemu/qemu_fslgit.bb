@@ -6,6 +6,13 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
 # This means QEMU v1.7 with FSL specific patches applied
 PV = "1.7+fsl"
 
+# NOTE: these options are note available in qemu 1.7, but qemu.inc assumes
+# version 2.0+ where they are available. For now we unset them, but we should
+# remove the following lines when upgrading to qemu 2.0+:
+PACKAGECONFIG[quorum] = ""
+PACKAGECONFIG[lzo]    = ""
+PACKAGECONFIG[numa]   = ""
+
 SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;nobranch=1"
 SRCREV = "9e38e640275beabf6468a04cec5c403b2ac566ad"
 
