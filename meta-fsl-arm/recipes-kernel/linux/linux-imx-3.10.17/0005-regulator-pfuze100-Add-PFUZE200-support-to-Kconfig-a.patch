@@ -1,0 +1,56 @@
+From 2610dd3d4f0f167b77c4ce24e1756f7434a17cde Mon Sep 17 00:00:00 2001
+From: Axel Lin <axel.lin@ingics.com>
+Date: Wed, 5 Mar 2014 18:02:43 +0800
+Subject: [PATCH 05/10] regulator: pfuze100: Add PFUZE200 support to Kconfig
+ and module description
+Organization: O.S. Systems Software LTDA.
+
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Acked-by: Robin Gong <b38343@freescale.com>
+Signed-off-by: Mark Brown <broonie@linaro.org>
+(cherry picked from commit 2cee2121db44cfeee206d0854bedd52344eea444)
+
+Signed-off-by: Robin Gong <b38343@freescale.com>
+(cherry picked from commit 88236aaba4ed9b89a7873b30fc1ca9cdcb6b407d)
+
+Upstream-Status: Pending
+---
+ drivers/regulator/Kconfig              | 6 +++---
+ drivers/regulator/pfuze100-regulator.c | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+index 1339404..5b64f2c 100644
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -305,12 +305,12 @@ config REGULATOR_PCF50633
+ 	 on PCF50633
+ 
+ config REGULATOR_PFUZE100
+-	tristate "Support regulators on Freescale PFUZE100 PMIC"
++	tristate "Freescale PFUZE100/PFUZE200 regulator driver"
+ 	depends on I2C
+ 	select REGMAP_I2C
+ 	help
+-	  Say y here to support the regulators found on the Freescale PFUZE100
+-	  PMIC.
++	  Say y here to support the regulators found on the Freescale
++	  PFUZE100/PFUZE200 PMIC.
+ 
+ config REGULATOR_RC5T583
+ 	tristate "RICOH RC5T583 Power regulators"
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index 0f4924e0..21114f7 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -535,6 +535,6 @@ static struct i2c_driver pfuze_driver = {
+ module_i2c_driver(pfuze_driver);
+ 
+ MODULE_AUTHOR("Robin Gong <b38343@freescale.com>");
+-MODULE_DESCRIPTION("Regulator Driver for Freescale PFUZE100 PMIC");
++MODULE_DESCRIPTION("Regulator Driver for Freescale PFUZE100/PFUZE200 PMIC");
+ MODULE_LICENSE("GPL v2");
+ MODULE_ALIAS("i2c:pfuze100-regulator");
+-- 
+2.1.0
+

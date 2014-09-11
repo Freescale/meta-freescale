@@ -1,0 +1,133 @@
+From 4a46352d23f1f7b4f513487cb1701a8592ba980f Mon Sep 17 00:00:00 2001
+From: Ranjani Vaidyanathan <Ranjani.Vaidyanathan@freescale.com>
+Date: Fri, 13 Jun 2014 15:43:14 -0500
+Subject: [PATCH 10/10] ENGR00318392 ARM:imx6x: Save/restore SCU and some CP15
+ registers across suspend/resume
+Organization: O.S. Systems Software LTDA.
+
+This patch ensures that the SCU and certain A9 CP15 registers state are maintained across
+a suspend/resume cycle:
+1. Need to ensure that SCU standby bit is set again after suspend/resume cycle, else
+the system will never WAIT mode after a suspend/resume cycle. This bit should be enabled
+on all SMP systems immaterial of whether CPUIDLE is enabled or not.
+2. Several A9 errata workarounds involve setting bits in the ARM diagnostic register.
+Save/restore this register across a suspend/resume cycle.
+3. Save and restore the A9 power control register also.
+
+Signed-off-by: Ranjani Vaidyanathan <Ranjani.Vaidyanathan@freescale.com>
+(cherry picked from commit 7b5b4ef5b3cdc65c0576f87cfa52bcca1bda8b33)
+
+Upstream-Status: Pending
+---
+ arch/arm/mach-imx/cpuidle-imx6q.c |  5 +----
+ arch/arm/mach-imx/platsmp.c       |  4 +++-
+ arch/arm/mach-imx/pm-imx6.c       | 36 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 40 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/mach-imx/cpuidle-imx6q.c b/arch/arm/mach-imx/cpuidle-imx6q.c
+index d74d0ce..9ffbd34 100644
+--- a/arch/arm/mach-imx/cpuidle-imx6q.c
++++ b/arch/arm/mach-imx/cpuidle-imx6q.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (C) 2012-2013 Freescale Semiconductor, Inc.
++ * Copyright (C) 2012-2014 Freescale Semiconductor, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -65,9 +65,6 @@ static struct cpuidle_driver imx6q_cpuidle_driver = {
+ 
+ int __init imx6q_cpuidle_init(void)
+ {
+-	/* Need to enable SCU standby for entering WAIT modes */
+-	imx_scu_standby_enable();
+-
+ 	/* Set cache lpm bit for reliable WAIT mode support */
+ 	imx6_set_cache_lpm_in_wait(true);
+ 
+diff --git a/arch/arm/mach-imx/platsmp.c b/arch/arm/mach-imx/platsmp.c
+index c6e1ab5..d2fa7ec 100644
+--- a/arch/arm/mach-imx/platsmp.c
++++ b/arch/arm/mach-imx/platsmp.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright 2011 Freescale Semiconductor, Inc.
++ * Copyright 2011-2014 Freescale Semiconductor, Inc.
+  * Copyright 2011 Linaro Ltd.
+  *
+  * The code contained herein is licensed under the GNU General Public
+@@ -77,6 +77,8 @@ static void __init imx_smp_init_cpus(void)
+ void imx_smp_prepare(void)
+ {
+ 	scu_enable(scu_base);
++	/* Need to enable SCU standby for entering WAIT mode */
++	imx_scu_standby_enable();
+ }
+ 
+ static void __init imx_smp_prepare_cpus(unsigned int max_cpus)
+diff --git a/arch/arm/mach-imx/pm-imx6.c b/arch/arm/mach-imx/pm-imx6.c
+index de46b87..587cc7e 100644
+--- a/arch/arm/mach-imx/pm-imx6.c
++++ b/arch/arm/mach-imx/pm-imx6.c
+@@ -73,6 +73,8 @@ static int (*suspend_in_iram_fn)(void *iram_vbase,
+ 	unsigned long iram_pbase, unsigned int cpu_type);
+ static unsigned int cpu_type;
+ static void __iomem *ccm_base;
++static unsigned long dcr;
++static unsigned long pcr;
+ 
+ unsigned long save_ttbr1(void)
+ {
+@@ -111,6 +113,34 @@ void imx6_set_cache_lpm_in_wait(bool enable)
+ 	}
+ }
+ 
++static void imx6_save_cpu_arch_regs(void)
++{
++	/* Save the Diagnostic Control Register. */
++	asm volatile(
++		"mrc p15, 0, %0, c15, c0, 1\n"
++	: "=r" (dcr)
++	);
++	/* Save the Power Control Register. */
++	asm volatile(
++		"mrc p15, 0, %0, c15, c0, 0\n"
++	: "=r" (pcr)
++	);
++}
++
++static void imx6_restore_cpu_arch_regs(void)
++{
++	/* Restore the diagnostic Control Register. */
++	asm volatile(
++		"mcr p15, 0, %0, c15, c0, 1\n"
++	: : "r" (dcr)
++	);
++	/* Restore the Power Control Register. */
++	asm volatile(
++		"mcr p15, 0, %0, c15, c0, 0\n"
++	: : "r" (pcr)
++	);
++}
++
+ static void imx6_enable_rbc(bool enable)
+ {
+ 	u32 val;
+@@ -290,8 +320,14 @@ static int imx6_pm_enter(suspend_state_t state)
+ 		imx_gpc_pre_suspend(true);
+ 		imx_anatop_pre_suspend();
+ 		imx_set_cpu_jump(0, v7_cpu_resume);
++
++		imx6_save_cpu_arch_regs();
++
+ 		/* Zzz ... */
+ 		cpu_suspend(0, imx6_suspend_finish);
++
++		imx6_restore_cpu_arch_regs();
++
+ 		if (!cpu_is_imx6sl())
+ 			imx_smp_prepare();
+ 		imx_anatop_post_resume();
+-- 
+2.1.0
+

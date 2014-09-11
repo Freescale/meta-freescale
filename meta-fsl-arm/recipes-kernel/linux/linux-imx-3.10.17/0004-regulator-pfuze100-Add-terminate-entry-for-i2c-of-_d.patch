@@ -1,0 +1,61 @@
+From fdbdb66994db6b896a5a6464b9c1efd7abfbfdb9 Mon Sep 17 00:00:00 2001
+From: Axel Lin <axel.lin@ingics.com>
+Date: Tue, 4 Mar 2014 18:20:14 +0800
+Subject: [PATCH 04/10] regulator: pfuze100: Add terminate entry for
+ [i2c|of]_device_id tables
+Organization: O.S. Systems Software LTDA.
+
+Also remove PFUZE_NUM to avoid below build warnings:
+
+  CC [M]  drivers/regulator/pfuze100-regulator.o
+drivers/regulator/pfuze100-regulator.c:86:2: warning: excess elements in array initializer [enabled by default]
+drivers/regulator/pfuze100-regulator.c:86:2: warning: (near initialization for 'pfuze_device_id') [enabled by default]
+drivers/regulator/pfuze100-regulator.c:93:2: warning: excess elements in array initializer [enabled by default]
+drivers/regulator/pfuze100-regulator.c:93:2: warning: (near initialization for 'pfuze_dt_ids') [enabled by default]
+
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Signed-off-by: Mark Brown <broonie@linaro.org>
+(cherry picked from commit e6c4c3378d82c5eeb136ed06b1a23651bcdaf739)
+(cherry picked from commit 12c7dd7c396378fd6dc907903a4ae540a75b31f5)
+
+Upstream-Status: Pending
+---
+ drivers/regulator/pfuze100-regulator.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index 35b1de1..0f4924e0 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -56,7 +56,7 @@
+ #define PFUZE100_VGEN5VOL	0x70
+ #define PFUZE100_VGEN6VOL	0x71
+ 
+-enum chips {PFUZE100, PFUZE200, PFUZE_NUM};
++enum chips { PFUZE100, PFUZE200 };
+ 
+ struct pfuze_regulator {
+ 	struct regulator_desc desc;
+@@ -80,15 +80,17 @@ static const int pfuze100_vsnvs[] = {
+ 	1000000, 1100000, 1200000, 1300000, 1500000, 1800000, 3000000,
+ };
+ 
+-static const struct i2c_device_id pfuze_device_id[PFUZE_NUM] = {
++static const struct i2c_device_id pfuze_device_id[] = {
+ 	{.name = "pfuze100", .driver_data = PFUZE100},
+ 	{.name = "pfuze200", .driver_data = PFUZE200},
++	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, pfuze_device_id);
+ 
+-static const struct of_device_id pfuze_dt_ids[PFUZE_NUM] = {
++static const struct of_device_id pfuze_dt_ids[] = {
+ 	{ .compatible = "fsl,pfuze100", .data = (void *)PFUZE100},
+ 	{ .compatible = "fsl,pfuze200", .data = (void *)PFUZE200},
++	{ }
+ };
+ MODULE_DEVICE_TABLE(of, pfuze_dt_ids);
+ 
+-- 
+2.1.0
+

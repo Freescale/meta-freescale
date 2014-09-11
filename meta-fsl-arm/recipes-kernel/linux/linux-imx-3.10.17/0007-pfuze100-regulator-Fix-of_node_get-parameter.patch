@@ -1,0 +1,44 @@
+From cc1f086131aa802abc38428a5a690eb5f35c8225 Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <fabio.estevam@freescale.com>
+Date: Tue, 18 Feb 2014 23:46:14 -0300
+Subject: [PATCH 07/10] pfuze100-regulator: Fix of_node_get() parameter
+Organization: O.S. Systems Software LTDA.
+
+Since commit d7857c42 (regulator: pfuze100: Use of_get_child_by_name) we get
+the following probe failure:
+
+pfuze100-regulator 1-0008: Full layer: 1, Metal layer: 0
+pfuze100-regulator 1-0008: FAB: 0, FIN: 0
+pfuze100-regulator 1-0008: regulators node not found
+pfuze100-regulator: probe of 1-0008 failed with error -22
+
+Now that of_get_child_by_name() is used we should adjust the device_node pointer
+'np' to not get the parent node anymore.
+
+Suggested-by: Shawn Guo <shawn.guo@linaro.org>
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Acked-by: Sachin Kamat <sachin.kamat@linaro.org>
+Signed-off-by: Mark Brown <broonie@linaro.org>
+(cherry picked from commit 0780208ff201feb45e12ebecb39ecac4740b1244)
+
+Upstream-Status: Pending
+---
+ drivers/regulator/pfuze100-regulator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index 15059c74..b9c1b9a 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -295,7 +295,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 	struct device_node *np, *parent;
+ 	int ret;
+ 
+-	np = of_node_get(dev->parent->of_node);
++	np = of_node_get(dev->of_node);
+ 	if (!np)
+ 		return 0;
+ 
+-- 
+2.1.0
+

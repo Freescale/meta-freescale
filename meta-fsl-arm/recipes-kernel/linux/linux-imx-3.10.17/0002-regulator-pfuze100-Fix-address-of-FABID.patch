@@ -1,0 +1,36 @@
+From a38734076be8b4fbb1a9db757e1a69dddef61f63 Mon Sep 17 00:00:00 2001
+From: Axel Lin <axel.lin@ingics.com>
+Date: Mon, 9 Dec 2013 15:24:19 +0800
+Subject: [PATCH 02/10] regulator: pfuze100: Fix address of FABID
+Organization: O.S. Systems Software LTDA.
+
+According to the datasheet, the address of FABID is 0x4. Fix it.
+
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Acked-by: Robin Gong <b38343@freescale.com>
+Signed-off-by: Mark Brown <broonie@linaro.org>
+Cc: stable@vger.kernel.org
+(cherry picked from commit c07a24939f36fb6de522a9726369ea64eee5d98d)
+(cherry picked from commit cfec286ff9f375c2c289072d63cedbb0c7917a48)
+
+Upstream-Status: Pending
+---
+ drivers/regulator/pfuze100-regulator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index ba67b2c..565a631 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -38,7 +38,7 @@
+ 
+ #define PFUZE100_DEVICEID	0x0
+ #define PFUZE100_REVID		0x3
+-#define PFUZE100_FABID		0x3
++#define PFUZE100_FABID		0x4
+ 
+ #define PFUZE100_SW1ABVOL	0x20
+ #define PFUZE100_SW1CVOL	0x2e
+-- 
+2.1.0
+

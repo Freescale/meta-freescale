@@ -1,0 +1,52 @@
+From 5dad39098c3c8686f23db638505bf00ae2cc092f Mon Sep 17 00:00:00 2001
+From: Robby Cai <r63905@freescale.com>
+Date: Fri, 23 May 2014 16:02:13 +0800
+Subject: [PATCH 01/10] ENGR00309838 ARM: imx6sl: gpc: add chip revision check
+ for dispmix
+Organization: O.S. Systems Software LTDA.
+
+The dispmix feature works without problem since TO1.2.
+This patch adds the back-compatibility for older chip.
+
+Signed-off-by: Robby Cai <r63905@freescale.com>
+(cherry picked from commit a187b916d55052fed10de1797009250095b598fb)
+
+Upstream-Status: Pending
+---
+ arch/arm/mach-imx/gpc.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/mach-imx/gpc.c b/arch/arm/mach-imx/gpc.c
+index 9734327..25e987c 100644
+--- a/arch/arm/mach-imx/gpc.c
++++ b/arch/arm/mach-imx/gpc.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright 2011-2013 Freescale Semiconductor, Inc.
++ * Copyright 2011-2014 Freescale Semiconductor, Inc.
+  * Copyright 2011 Linaro Ltd.
+  *
+  * The code contained herein is licensed under the GNU General Public
+@@ -90,7 +90,8 @@ static void imx_disp_clk(bool enable)
+ 
+ static void imx_gpc_dispmix_on(void)
+ {
+-	if (cpu_is_imx6sl()) {
++	if (cpu_is_imx6sl() &&
++		imx_get_soc_revision() >= IMX_CHIP_REVISION_1_2) {
+ 		imx_disp_clk(true);
+ 
+ 		writel_relaxed(0x0, gpc_base + GPC_PGC_DISP_PGCR_OFFSET);
+@@ -105,7 +106,8 @@ static void imx_gpc_dispmix_on(void)
+ 
+ static void imx_gpc_dispmix_off(void)
+ {
+-	if (cpu_is_imx6sl()) {
++	if (cpu_is_imx6sl() &&
++		imx_get_soc_revision() >= IMX_CHIP_REVISION_1_2) {
+ 		imx_disp_clk(true);
+ 
+ 		writel_relaxed(0xFFFFFFFF,
+-- 
+2.1.0
+
