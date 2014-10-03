@@ -12,7 +12,8 @@ DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q p
 
 LIC_FILES_CHKSUM = "file://EXA/src/vivante_fbdev/vivante.h;endline=19;md5=95cf961a2ceacdf7cf43caef25766779"
 
-SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}-beta.tar.gz"
+SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}-beta.tar.gz \
+           file://ENGR00333447-Fix-EXA-driver-for-Xserver-1.16.patch"
 SRC_URI[md5sum] = "5695e9a3ddc37da0e783862e4108fbae"
 SRC_URI[sha256sum] = "c08def7fb98c11cba08bc21522bfb2785576b77db4b36954b15926401ac31c0e"
 

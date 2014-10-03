@@ -1,0 +1,82 @@
+From 1bfebbaf840d987aa0e5d4143b6658bad5a21a0b Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Tue, 30 Sep 2014 12:09:54 -0500
+Subject: [PATCH] ENGR00333447 : Fix EXA driver for Xserver 1.16
+
+Fix const char error occurs with Xserver 1.16 and loadextension change
+
+Upstream-Status: Pending
+
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ EXA/src/vivante_fbdev/imx_display.c          |  2 +-
+ EXA/src/vivante_fbdev/vivante_fbdev_driver.c | 18 +++++++++++++++---
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/EXA/src/vivante_fbdev/imx_display.c b/EXA/src/vivante_fbdev/imx_display.c
+index 94f561a..d5303f9 100644
+--- a/EXA/src/vivante_fbdev/imx_display.c
++++ b/EXA/src/vivante_fbdev/imx_display.c
+@@ -956,7 +956,7 @@ imxDisplayDeleteModes(DisplayModePtr modesList)
+ 		}
+ 
+ 		if (NULL != mode->name) {
+-			free(mode->name);
++			free((char*)mode->name);
+ 		}
+ 		free(mode);
+ 	}
+diff --git a/EXA/src/vivante_fbdev/vivante_fbdev_driver.c b/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+index 63996b1..3e289ce 100644
+--- a/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
++++ b/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+@@ -120,8 +120,9 @@ static Bool tearingWrapSurfaces(ScrnInfoPtr pScrn);
+ 
+ static Bool noVIVExtension;
+ 
+-static ExtensionModule VIVExt =
++static ExtensionModule VIVExt[] =
+ {
++	{
+ 	VIVExtensionInit,
+ 	VIVEXTNAME,
+ 	&noVIVExtension
+@@ -130,6 +131,7 @@ static ExtensionModule VIVExt =
+ 	NULL,
+ 	NULL
+ #endif
++	}
+ };
+ 
+ Bool vivEnableCacheMemory = TRUE;
+@@ -266,7 +268,17 @@ FBDevSetup(pointer module, pointer opts, int *errmaj, int *errmin)
+         setupDone = TRUE;
+         xf86AddDriver(&FBDEV, module, HaveDriverFuncs);
+         if(gVivFb)
+-            LoadExtension(&VIVExt, FALSE);
++	{
++#if XORG_VERSION_CURRENT < (((1) * 10000000) + ((16) * 100000) + ((0) * 1000) + 0)
++	     int i;
++             for(i=0; i<ARRAY_SIZE(VIVExt); i++)
++                 LoadExtension(&VIVExt[i], FALSE);
++
++#else
++            LoadExtensionList(VIVExt, 1, FALSE);
++#endif
++	}
++
+ 		return (pointer)1;
+     } else {
+         if (errmaj) *errmaj = LDR_ONCEONLY;
+@@ -1638,7 +1650,7 @@ RestoreSyncFlags(ScrnInfoPtr pScrn)
+         char *modeName = "current";
+         unsigned int fbSync = 0;
+         if(pScrn->currentMode)
+-            modeName = pScrn->currentMode->name;
++            modeName = (char*)pScrn->currentMode->name;
+ 
+         if(!imxLoadSyncFlags(pScrn, modeName, &fbSync)) {
+             xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+-- 
+2.1.1
+
