@@ -7,7 +7,7 @@ inherit fsl-u-boot-localversion
 
 DESCRIPTION = "U-boot bootloader for Freescale ARM platforms"
 LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://Licenses/README;md5=025bf9f768cbcb1a165dbe1a110babfb"
+LIC_FILES_CHKSUM = "file://Licenses/README;md5=c7383a594871c03da76b3707929d2919"
 COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6|vf60)"
 
 DEPENDS_mxs += "elftosb-native openssl-native"

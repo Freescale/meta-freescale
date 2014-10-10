@@ -1,14 +1,14 @@
 DESCRIPTION = "U-boot bootloader mxsboot tool"
 LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://Licenses/README;md5=025bf9f768cbcb1a165dbe1a110babfb"
+LIC_FILES_CHKSUM = "file://Licenses/README;md5=c7383a594871c03da76b3707929d2919"
 SECTION = "bootloader"
 DEPENDS = "openssl"
 PROVIDES = "u-boot-mxsboot"
 
-PV = "v2014.07"
+PV = "v2014.10+git${SRCPV}"
 
-SRCREV = "e36968af0a033e9d66535928886103370620cb4d"
-SRCBRANCH = "patches-2014.07"
+SRCREV = "75ce95e627609c9b9e537e935e69c4ecef26c8f7"
+SRCBRANCH = "patches-2014.10"
 SRC_URI = "git://github.com/Freescale/u-boot-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
@@ -16,6 +16,10 @@ S = "${WORKDIR}/git"
 inherit fsl-u-boot-localversion
 
 EXTRA_OEMAKE = 'HOSTCC="${CC} ${CPPFLAGS}" HOSTLDFLAGS="-L${libdir} -L${base_libdir}" HOSTSTRIP=true CONFIG_MX28=y'
+
+do_configure () {
+    oe_runmake sandbox_defconfig
+}
 
 do_compile () {
     oe_runmake tools-only
