@@ -145,7 +145,7 @@ generate_imx_sdcard () {
 		"")
 		;;
 		*)
-		bberror "Unkown IMAGE_BOOTLOADER value"
+		bberror "Unknown IMAGE_BOOTLOADER value"
 		exit 1
 		;;
 	esac
@@ -283,7 +283,7 @@ generate_mxs_sdcard () {
 		dd if=${DEPLOY_DIR_IMAGE}/bareboxenv-${MACHINE}.bin of=${SDCARD} conv=notrunc seek=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} - ${BAREBOX_ENV_SPACE}) bs=1024
 		;;
 		*)
-		bberror "Unkown IMAGE_BOOTLOADER value"
+		bberror "Unknown IMAGE_BOOTLOADER value"
 		exit 1
 		;;
 	esac
