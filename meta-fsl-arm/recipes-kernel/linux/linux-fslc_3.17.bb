@@ -9,9 +9,9 @@ upstreaming."
 
 include linux-fslc.inc
 
-PV = "3.16+git${SRCPV}"
+PV = "3.17+git${SRCPV}"
 
-SRCBRANCH = "patches-3.16"
-SRCREV = "bf3b99e657c8dd2ab198c4dc936c630074bfa114"
+SRCBRANCH = "patches-3.17"
+SRCREV = "bfe01a5ba2490f299e1d2d5508cbbbadd897bbe9"
 
 COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6)"
