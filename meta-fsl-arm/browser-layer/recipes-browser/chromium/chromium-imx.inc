@@ -4,9 +4,9 @@ DEPENDS_append = " libfslvpuwrap"
 # The code below fetches this repository, copies the extra source over to the main
 # chromium source directory, and applies the patches.
 
-CHROMIUM_IMX_BRANCH = "master"
-CHROMIUM_IMX_SRCREV = "5c5cadd40ad04e66ec9b14a7a29370b76ed5c4f4"
-CHROMIUM_IMX_DESTSUFFIX = "chromium-imx-git"
+CHROMIUM_IMX_BRANCH ?= "master"
+CHROMIUM_IMX_SRCREV ?= "HEAD"
+CHROMIUM_IMX_DESTSUFFIX ?= "chromium-imx-git"
 
 PATCH_BASE_DIR = "${WORKDIR}/${CHROMIUM_IMX_DESTSUFFIX}/patches"
 
@@ -22,12 +22,10 @@ do_unpack[postfuncs] += "copy_chromium_imx_files"
 # patches to the OZONE_WAYLAND_EXTRA_PATCHES variable
 do_patch[prefuncs] =+ "add_chromium_imx_patches"
 
-# * component build is on by default to reduce memory usage while compiling and to
-#   make it easier to patch binaries on the targets if necessary
 # * Lost context problems are not known to happen with Vivante GPUs,
 #   so it is safe to use ignore-lost-context
 # * EGL is on by default due to the GPU on the i.MX6
-PACKAGECONFIG_append = " component-build use-egl ignore-lost-context"
+PACKAGECONFIG_append = " use-egl ignore-lost-context"
 
 copy_chromium_imx_files() {
 	# sources in src/ are already organized in a manner
