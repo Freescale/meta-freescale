@@ -7,9 +7,9 @@ SRC_URI_append_mx6 = " file://0001-ENGR00314805-1-Add-Vivante-EGL-support.patch 
              file://0005-Enable-GAL2D-compositor-in-SoloLite.patch \
              file://0006-Change-GAL2D-compositor-to-be-default-i.patch \
              "
-PACKAGECONFIG_mx6 = "fbdev"
-PACKAGECONFIG_append_mx6q = " egl cairo-glesv2"
-PACKAGECONFIG_append_mx6dl = " egl cairo-glesv2"
+PACKAGECONFIG_append_mx6q = " cairo-glesv2"
+PACKAGECONFIG_append_mx6dl = " cairo-glesv2"
+PACKAGECONFIG_remove_mx6sl = "egl"
 
 EXTRA_OECONF_append_mx6 = " \
     --disable-libunwind \
