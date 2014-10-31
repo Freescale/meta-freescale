@@ -1,3 +1,4 @@
+DESCRIPTION = "U-Boot which includes the support for QorIQ Layerscape1 series boards"
 LICENSE = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
 LIC_FILES_CHKSUM = " \
     file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \

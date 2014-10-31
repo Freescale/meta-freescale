@@ -1,7 +1,7 @@
 # Copyright (C) 2011-2014 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "bootloader for imx platforms"
+DESCRIPTION = "U-Boot provided by Freescale with focus on i.MX reference boards."
 require recipes-bsp/u-boot/u-boot.inc
 
 PROVIDES += "u-boot"
