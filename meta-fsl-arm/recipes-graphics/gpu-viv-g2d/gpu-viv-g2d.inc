@@ -26,8 +26,8 @@ do_install () {
     install -d ${D}${includedir}
 
     cp ${S}/usr/lib/*.so ${D}${libdir}
-    cp -axr ${S}/usr/include/* ${D}${includedir}
-    cp -axr ${S}/opt ${D}
+    cp -Pr ${S}/usr/include/* ${D}${includedir}
+    cp -Pr ${S}/opt ${D}
 
     find ${D}${libdir} -type f -exec chmod 644 {} \;
     find ${D}${includedir} -type f -exec chmod 644 {} \;
