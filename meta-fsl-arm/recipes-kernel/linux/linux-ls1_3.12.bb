@@ -6,6 +6,6 @@ require recipes-kernel/linux/linux-ls1.inc
 require recipes-kernel/linux/linux-dtb.inc
 
 SRCBRANCH = "ls1-dev"
-SRCREV = "de1cb4b3c16be38cf3981fd0afa143ad24283d07"
+SRCREV = "3ced9e82f9f3f7b232bea0bd18c9a62572c06b44"
 
 COMPATIBLE_MACHINE = "(ls102xa)"
