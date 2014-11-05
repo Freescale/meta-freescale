@@ -10,6 +10,6 @@ LIC_FILES_CHKSUM = " \
 
 SRCBRANCH = "LS1-dev"
 SRC_URI = "git://git.freescale.com/layerscape/ls1021a/u-boot.git;branch=${SRCBRANCH}"
-SRCREV = "48bfc6985a0524bc5c388bb9a9a6a6bc4a121ec5"
+SRCREV = "50d684801cd05ed6b77d52d1ca9ed00fefeac469"
 
 S = "${WORKDIR}/git"
