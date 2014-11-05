@@ -8,7 +8,7 @@ DEPENDS += "u-boot-ls1-tools-native"
 inherit deploy
 
 SRCBRANCH = "LS1-SDK"
-SRCREV = "7b358441dfd35afbf01491649cc3f4396154a546"
+SRCREV = "38ec2c9111b483203797f7228db5f92549e9fe73"
 SRC_URI = "git://git.freescale.com/layerscape/ls1021a/rcw.git;branch=${SRCBRANCH} \
     file://rcw-make-BOARDS-DESTDIR-overidable-in-Makefile.patch \
 "
