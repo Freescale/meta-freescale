@@ -1,0 +1,27 @@
+From e018761d719e41e3bf108cafafcb5138527752e2 Mon Sep 17 00:00:00 2001
+From: Bob Cochran <yocto@mindchasers.com>
+Date: Fri, 31 Oct 2014 16:49:57 -0400
+Subject: [meta-fsl-ppc][PATCH] linux-qoriq: Remove Altivec from T1040 64-bit defconfig
+
+T1040 uses an E5500 processor, and E5500 doesn't have an Altivec unit
+
+Signed-off-by: Bob Cochran <yocto@mindchasers.com>
+---
+ arch/powerpc/configs/t1040_64bit_smp_defconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/powerpc/configs/t1040_64bit_smp_defconfig b/arch/powerpc/configs/t1040_64bit_smp_defconfig
+index 1b987d9..c2005f2 100644
+--- a/arch/powerpc/configs/t1040_64bit_smp_defconfig
++++ b/arch/powerpc/configs/t1040_64bit_smp_defconfig
+@@ -1,6 +1,6 @@
+ CONFIG_PPC64=y
+ CONFIG_PPC_BOOK3E_64=y
+-CONFIG_ALTIVEC=y
++# CONFIG_ALTIVEC is not set
+ CONFIG_SMP=y
+ CONFIG_NR_CPUS=24
+ CONFIG_SYSVIPC=y
+-- 
+1.7.9.5
+
