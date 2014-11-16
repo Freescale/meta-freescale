@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 inherit kernel fsl-kernel-localversion
 
 # Put a local version until we have a true SRCREV to point to
-LOCALVERSION ?= "+yocto"
+LOCALVERSION ?= ""
 SCMVERSION ?= "y"
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;branch=${SRCBRANCH} \

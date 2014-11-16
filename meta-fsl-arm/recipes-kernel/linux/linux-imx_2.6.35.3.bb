@@ -13,7 +13,7 @@ COMPATIBLE_MACHINE = "(mx28|mx5)"
 
 # Revision of imx_2.6.35_maintain branch
 SRCREV = "b3912bb8a4caf3ec50909135e88af959982c43ca"
-LOCALVERSION = "-maintain+yocto"
+LOCALVERSION = "-maintain"
 SRCBRANCH = "imx_2.6.35_maintain"
 
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
