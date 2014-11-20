@@ -15,6 +15,6 @@ SRC_URI_append_twr-vf65gs10 = "file://0001-mvf_fec.c-Fix-mac-address-read-to-mat
 
 SRCBRANCH = "3.0.15_vybrid-twr"
 SRCREV = "50c4c848d6b8743894cfcec166db475ef6140504"
-LOCALVERSION = "-3.0-mvf+yocto"
+LOCALVERSION ?= "-${SRCBRANCH}"
 
 COMPATIBLE_MACHINE = "(vf60)"
