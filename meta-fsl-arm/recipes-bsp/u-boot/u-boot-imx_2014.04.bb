@@ -16,7 +16,7 @@ S = "${WORKDIR}/git"
 
 inherit fsl-u-boot-localversion
 
-LOCALVERSION = "+imx"
+LOCALVERSION ?= "-${SRCBRANCH}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6)"

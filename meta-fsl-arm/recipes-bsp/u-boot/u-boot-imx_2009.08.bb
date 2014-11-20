@@ -56,7 +56,7 @@ EXTRA_OEMAKE += 'HOSTSTRIP=true'
 
 inherit fsl-u-boot-localversion
 
-LOCALVERSION = "+imx"
+LOCALVERSION ?= "-${SRCBRANCH}"
 
 do_compile_prepend() {
 	if [ "${@base_contains('DISTRO_FEATURES', 'ld-is-gold', 'ld-is-gold', '', d)}" = "ld-is-gold" ] ; then
