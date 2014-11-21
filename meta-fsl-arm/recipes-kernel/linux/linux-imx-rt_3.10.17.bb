@@ -1,17 +1,17 @@
 # Adapted from linux-imx_3.10.17.bb
 
-require recipes-kernel/linux/linux-imx.inc
-require recipes-kernel/linux/linux-dtb.inc
-
 SUMMARY = "Linux real-time kernel based on linux-imx"
 DESCRIPTION = "Linux kernel that is based on Freescale's linux-imx, \
 with added real-time capabilities."
 
+require recipes-kernel/linux/linux-imx.inc
+require recipes-kernel/linux/linux-dtb.inc
+
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_3.10.17_1.0.1_ga"
-SRCREV = "dac46dcf913585956a0e7a838e6f4b7465f00f57"
-LOCALVERSION = "-1.0.1_ga"
+SRCBRANCH = "imx_3.10.17_1.0.0_ga"
+SRCREV = "33597e348b2d60dd5c71890ef7b7d3d3fd6e4e97"
+LOCALVERSION = "-1.0.2_ga"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
