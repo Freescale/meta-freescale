@@ -81,7 +81,8 @@ MACHINE_GSTREAMER_PLUGIN_vf60 ?= ""
 
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
-MACHINE_GSTREAMER_1_0_PLUGIN_mx6 ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6q ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6dl ?= "gstreamer1.0-plugins-imx-meta"
 
 # mx5 GPU libraries
 GPU_FLAVOUR = "${@base_contains('DISTRO_FEATURES', 'x11', 'x11-', '', d)}"
