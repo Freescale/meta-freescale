@@ -1,4 +1,5 @@
-DEPENDS_append = " libfslvpuwrap"
+DEPENDS_append_mx6q = " libfslvpuwrap"
+DEPENDS_append_mx6dl = " libfslvpuwrap"
 
 # Additional imx code and patches are included in the chromium-imx git repository.
 # The code below fetches this repository, copies the extra source over to the main
@@ -11,6 +12,7 @@ CHROMIUM_IMX_DESTSUFFIX ?= "chromium-imx-git"
 PATCH_BASE_DIR = "${WORKDIR}/${CHROMIUM_IMX_DESTSUFFIX}/patches"
 
 CHROMIUM_IMX_COMMON_PATCHES ?= " "
+CHROMIUM_IMX_VPU_PATCHES ?= " "
 CHROMIUM_IMX_WAYLAND_PATCHES ?= " "
 
 SRC_URI += "git://github.com/Freescale/chromium-imx.git;destsuffix=${CHROMIUM_IMX_DESTSUFFIX};branch=${CHROMIUM_IMX_BRANCH};rev=${CHROMIUM_IMX_SRCREV}"
@@ -36,6 +38,7 @@ copy_chromium_imx_files() {
 
 python add_chromium_imx_patches() {
     d.appendVar('SRC_URI', ' ' + d.getVar('CHROMIUM_IMX_COMMON_PATCHES', 1))
+    d.appendVar('SRC_URI', ' ' + d.getVar('CHROMIUM_IMX_VPU_PATCHES', 1))
     d.appendVar('OZONE_WAYLAND_EXTRA_PATCHES', ' ' + d.getVar('CHROMIUM_IMX_WAYLAND_PATCHES', 1))
 }
 
