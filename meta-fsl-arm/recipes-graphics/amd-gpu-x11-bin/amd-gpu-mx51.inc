@@ -29,9 +29,9 @@ do_install () {
     install -d ${D}${bindir}
     install -d ${D}${includedir}
 
-    cp -axr ${S}/usr/bin/* ${D}${bindir}
-    cp -axf ${S}/usr/lib/* ${D}${libdir}
-    cp -axr ${S}/usr/include/* ${D}${includedir}
+    cp -Pr ${S}/usr/bin/* ${D}${bindir}
+    cp -Pr ${S}/usr/lib/* ${D}${libdir}
+    cp -Pr ${S}/usr/include/* ${D}${includedir}
 
     find ${D}${bindir} -type f -exec chmod 755 {} \;
     find ${D}${libdir} -type f -exec chmod 644 {} \;
