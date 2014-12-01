@@ -244,7 +244,7 @@ RDEPENDS_libgl-mx6 = "libglapi"
 RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
-FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV}"
+FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
 FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
 
 FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
