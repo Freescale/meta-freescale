@@ -77,7 +77,7 @@ MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " fsl-alsa-plugins"
 
 # Extra udev rules
-MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf"
+MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
 
 # GStreamer 0.10 plugins
 MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
