@@ -14,4 +14,6 @@ SRCBRANCH = "imx_3.10.31_1.1.0_beta"
 SRCREV = "94a7e472c47b800c001c0a5d17bb2f14a13e1980"
 LOCALVERSION = "-1.1.0_beta"
 
+SRC_URI += "file://0001-ARM-clk-imx6q-fix-video-divider-for-revision-1.0-of-.patch"
+
 COMPATIBLE_MACHINE = "(mx6)"

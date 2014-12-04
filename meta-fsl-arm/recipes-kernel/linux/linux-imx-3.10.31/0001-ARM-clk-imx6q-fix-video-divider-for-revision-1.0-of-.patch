@@ -1,0 +1,35 @@
+From 0e981452d7130513e796c1c3d7348905c0d00dce Mon Sep 17 00:00:00 2001
+From: Gary Bisson <bisson.gary@gmail.com>
+Date: Tue, 2 Dec 2014 22:11:14 -0800
+Subject: [PATCH] ARM: clk-imx6q: fix video divider for revision 1.0 of i.MX6q
+
+As post dividers do not work on i.MX6Q revision 1.0 they must be fixed
+to 1. As the table index was wrong, a divider a of 4 could still be
+requested which implied the clock not to be set properly. This is the
+root cause of the HDMI not working at high resolution on T1.0 version of
+the SoC, giving the following error:
+mxc_sdc_fb fb.27: timeout when waiting for flip irq
+
+Upstream-Status: Pending
+
+Signed-off-by: Gary Bisson <bisson.gary@gmail.com>
+---
+ arch/arm/mach-imx/clk-imx6q.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-imx/clk-imx6q.c b/arch/arm/mach-imx/clk-imx6q.c
+index 25734ed..34e1616f 100644
+--- a/arch/arm/mach-imx/clk-imx6q.c
++++ b/arch/arm/mach-imx/clk-imx6q.c
+@@ -312,7 +312,7 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
+ 		post_div_table[1].div = 1;
+ 		post_div_table[2].div = 1;
+ 		video_div_table[1].div = 1;
+-		video_div_table[2].div = 1;
++		video_div_table[3].div = 1;
+ 	};
+ 
+ 	/*                   type                               name         parent_name  base     div_mask */
+-- 
+2.1.3
+
