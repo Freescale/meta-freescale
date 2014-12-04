@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
 SRC_URI = "${FSL_MIRROR}/imx-kobs-${PV}.tar.gz"
 
-SRC_URI[md5sum] = "df477a6ce9abfa3077fa1a7bb97942e1"
-SRC_URI[sha256sum] = "9458bac13a8e58e3d13cb2861d2b3d2cffd990e675c919c65548b71b6dda2776"
+SRC_URI[md5sum] = "7d83d73afc1fcd4767442ca35dd9fa35"
+SRC_URI[sha256sum] = "f7c0f7b5b876e4dd5c74c93f17ff2a5c8ab154aa89c32590a389e9602f0445e6"
 
 inherit  autotools pkgconfig
