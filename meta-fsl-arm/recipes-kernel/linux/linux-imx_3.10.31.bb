@@ -10,9 +10,9 @@ require recipes-kernel/linux/linux-dtb.inc
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_3.10.31_1.1.0_beta"
-SRCREV = "94a7e472c47b800c001c0a5d17bb2f14a13e1980"
-LOCALVERSION = "-1.1.0_beta"
+SRCBRANCH = "imx_3.10.31_1.1.0_beta2"
+SRCREV = "30ad12bdf93050a5bae1345bd40dba5f2d63f70f"
+LOCALVERSION = "-1.1.0_beta2"
 
 SRC_URI += "file://0001-ARM-clk-imx6q-fix-video-divider-for-revision-1.0-of-.patch"
 
