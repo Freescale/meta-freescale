@@ -19,7 +19,7 @@ PROVIDES += "u-boot"
 
 SRCBRANCH ??= "master"
 
-SRC_URI = "git://github.com/Freescale/u-boot-imx.git;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
 
