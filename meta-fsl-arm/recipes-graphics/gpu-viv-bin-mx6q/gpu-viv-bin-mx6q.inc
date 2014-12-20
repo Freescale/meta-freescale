@@ -50,6 +50,7 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libvivante-mx6 libvivante-mx6-dev libvivante-mx6-dbg \
 	libvivante-dri-mx6 \
 	libvivante-dfb-mx6 \
+	libvsc-mx6 \
 	libwayland-viv-mx6 libwayland-viv-mx6-dev libwayland-viv-mx6-dbg \
 	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev libgc-wayland-protocol-mx6-dbg \
 	libwayland-egl-mx6-dev \
@@ -243,9 +244,11 @@ RDEPENDS_libgl-mx6 = "libglapi"
 # Includes GL headers from mesa
 RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 
-FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS}"
+FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
 FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
+
+FILES_libvsc-mx6 = "${libdir}/libVSC${SOLIBS}"
 
 FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-mx6-dev = "${libdir}/libGL${SOLIBSDEV}"
@@ -268,7 +271,9 @@ FILES_libglslc-mx6 = "${libdir}/libGLSLC${SOLIBS}"
 FILES_libglslc-mx6-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
 FILES_libglslc-mx6-dbg = "${libdir}/.debug/libGLSLC${SOLIBS}"
 
-FILES_libopencl-mx6 = "${libdir}/libOpenCL${SOLIBS}"
+FILES_libopencl-mx6 = "${libdir}/libOpenCL${SOLIBS} \
+                       ${libdir}/libVivanteOpenCL${SOLIBS} \
+                       ${sysconfdir}/OpenCL/vendors/Vivante.icd"
 FILES_libopencl-mx6-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 FILES_libopencl-mx6-dbg = "${libdir}/.debug/libOpenCL${SOLIBS}"
 RDEPENDS_libopencl-mx6 = "libclc-mx6"
