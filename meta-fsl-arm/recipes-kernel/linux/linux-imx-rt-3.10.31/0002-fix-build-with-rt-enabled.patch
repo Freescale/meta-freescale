@@ -1,0 +1,19 @@
+Fix build error when PREEMPT_RT_FULL is enabled
+
+Upstream-Status: Pending
+
+Signed-off-by: Jacob Kroon <jacob.kroon@mikrodidakt.se>
+
+Index: git/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+===================================================================
+--- git.orig/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ git/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -3266,7 +3266,7 @@ gckOS_CreateMutex(
+     gcmkONERROR(gckOS_Allocate(Os, gcmSIZEOF(struct mutex), Mutex));
+ 
+     /* Initialize the mutex. */
+-    mutex_init(*Mutex);
++    mutex_init((struct mutex*)*Mutex);
+ 
+     /* Return status. */
+     gcmkFOOTER_ARG("*Mutex=0x%X", *Mutex);
