@@ -1,0 +1,51 @@
+From: Jan Beulich <JBeulich@novell.com>
+Date: Mon, 16 Aug 2010 11:58:58 +0100
+Subject: fixes for using make 3.82
+
+It doesn't like pattern and explicit rules to be on the same line,
+and it seems to be more picky when matching file (or really directory)
+names with different numbers of trailing slashes.
+
+Upstream-Status: Backport [2.6.36]
+
+Signed-off-by: Jan Beulich <jbeulich@novell.com>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Andrew Benton <b3nton@gmail.com>
+Cc: <stable@kernel.org>
+Signed-off-by: Michal Marek <mmarek@suse.cz>
+---
+ firmware/Makefile  | 2 +-
+ scripts/mkmakefile | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/firmware/Makefile b/firmware/Makefile
+index 2f1c370..bed7d05 100644
+--- a/firmware/Makefile
++++ b/firmware/Makefile
+@@ -145,7 +145,7 @@ fw-shipped-$(CONFIG_FB_MXC_EINK_PANEL) += imx/epdc_E60_V110.fw \
+ fw-shipped-all := $(fw-shipped-y) $(fw-shipped-m) $(fw-shipped-)
+ 
+ # Directories which we _might_ need to create, so we have a rule for them.
+-firmware-dirs := $(sort $(patsubst %,$(objtree)/$(obj)/%/,$(dir $(fw-external-y) $(fw-shipped-all))))
++firmware-dirs := $(sort $(addprefix $(objtree)/$(obj)/,$(dir $(fw-external-y) $(fw-shipped-all))))
+ 
+ quiet_cmd_mkdir = MKDIR   $(patsubst $(objtree)/%,%,$@)
+       cmd_mkdir = mkdir -p $@
+diff --git a/scripts/mkmakefile b/scripts/mkmakefile
+index 67d59c7..5325423 100644
+--- a/scripts/mkmakefile
++++ b/scripts/mkmakefile
+@@ -44,7 +44,9 @@ all:
+ 
+ Makefile:;
+ 
+-\$(all) %/: all
++\$(all): all
+ 	@:
+ 
++%/: all
++	@:
+ EOF
+-- 
+2.1.4
+

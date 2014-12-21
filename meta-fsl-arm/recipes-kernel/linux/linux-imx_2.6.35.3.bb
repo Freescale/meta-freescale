@@ -19,6 +19,7 @@ SRCBRANCH = "imx_2.6.35_maintain"
 SRC_URI += "file://NFS-Fix-nfsroot-support.patch \
             file://NFS-allow-nfs-root-mount-to-use-alternate-rpc-ports.patch \
             file://perf-avoid-use-sysroot-headers.patch \
+            file://fixes-for-using-make-3.82.patch \
 "
 
 SRC_URI_append_mx28 = " \
