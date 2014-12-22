@@ -23,6 +23,9 @@ inherit fsl-eula-unpack
 SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.1.0', '1.1.0-beta')}.bin;fsl-eula=true \
            file://egl.pc \
            file://egl_x11.pc \
+           file://egl_linuxfb.pc \
+           file://egl_directfb.pc \
+           file://egl_wayland.pc \
            file://glesv1_cm.pc \
            file://glesv1_cm_x11.pc \
            file://glesv2.pc \
@@ -142,7 +145,7 @@ do_install () {
     elif [ "${USE_WL}" = "yes" ]; then
         backend=wl
 
-        install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
+        install -m 0644 ${WORKDIR}/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
         install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${WORKDIR}/vg.pc ${D}${libdir}/pkgconfig/vg.pc
@@ -151,7 +154,6 @@ do_install () {
         install -m 0644 ${WORKDIR}/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
         mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
     else
-        install -m 0644 ${WORKDIR}/egl.pc ${D}${libdir}/pkgconfig/egl.pc
         install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${WORKDIR}/vg.pc ${D}${libdir}/pkgconfig/vg.pc
@@ -159,11 +161,13 @@ do_install () {
         if [ "${USE_DFB}" = "yes" ]; then
             install -d ${D}/${sysconfdir}
             install -m 644 ${WORKDIR}/directfbrc ${D}/${sysconfdir}/directfbrc
+            install -m 0644 ${WORKDIR}/egl_directfb.pc ${D}${libdir}/pkgconfig/egl.pc
 
             cp -r ${S}/usr/lib/directfb-* ${D}${libdir}
             backend=dfb
         else
             # Regular framebuffer
+            install -m 0644 ${WORKDIR}/egl_linuxfb.pc ${D}${libdir}/pkgconfig/egl.pc
             backend=fb
         fi
         mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
