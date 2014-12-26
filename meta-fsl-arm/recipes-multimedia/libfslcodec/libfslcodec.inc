@@ -4,6 +4,7 @@ DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=93b784b1c11b3fffb1638498a8dde3f6"
+DEPENDS = "imx-vpu"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
