@@ -2,11 +2,11 @@ DESCRIPTION = "GStreamer 1.0 plugins for i.MX platforms"
 LICENSE = "LGPLv2+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
 SECTION = "multimedia"
-DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base libfslvpuwrap virtual/kernel virtual/egl \
+DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base gpu-viv-g2d libfslcodec libfslvpuwrap virtual/kernel virtual/egl \
            virtual/libgles2 ${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', '', d)}"
 
 SRCBRANCH ?= "master"
-SRCREV = "4e25dc2db07e1b28796218de4d123ea26d57dbe9"
+SRCREV = "50dff52a2e2ab8992236e59bd40fd2c35e8b9bd9"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
