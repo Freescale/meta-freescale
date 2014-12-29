@@ -5,7 +5,7 @@ Layerscape1 Family Boards. "
 require recipes-kernel/linux/linux-ls1.inc
 require recipes-kernel/linux/linux-dtb.inc
 
-SRCBRANCH = "ls1-dev"
-SRCREV = "3ced9e82f9f3f7b232bea0bd18c9a62572c06b44"
+SRCBRANCH = "sdk-v1.7.x"
+SRCREV = "6619b8b55796cdf0cec04b66a71288edd3057229"
 
 COMPATIBLE_MACHINE = "(ls102xa)"
