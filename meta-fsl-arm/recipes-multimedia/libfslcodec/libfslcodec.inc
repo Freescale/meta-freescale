@@ -4,7 +4,6 @@ DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=93b784b1c11b3fffb1638498a8dde3f6"
-DEPENDS = "imx-vpu"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
@@ -13,13 +12,12 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 # Choose between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d)}"
 
-# VPU Hardware acceleration
-VPU_SUPPORT = "--disable-vpu"
-VPU_SUPPORT_mx6 = "--enable-vpu"
-VPU_SUPPORT_mx6sl = "--disable-vpu"
-VPU_SUPPORT_mx6sx = "--disable-vpu"
-VPU_SUPPORT_mx5 = "--enable-vpu"
-EXTRA_OECONF += "${VPU_SUPPORT}"
+PACKAGECONFIG ?= ""
+PACKAGECONFIG_mx6q = "vpu"
+PACKAGECONFIG_mx6dl = "vpu"
+PACKAGECONFIG_mx5 = "vpu"
+
+PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,imx-vpu"
 
 do_install_append() {
 	# FIXME: This link points to nowhere
