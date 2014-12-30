@@ -5,8 +5,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c49712341497d0b5f2e40c30dff2af9d"
 
 DEPENDS = "kernel-module-mcc"
 
-inherit autotools
-
 SRC_URI = "http://repository.timesys.com/buildsources/m/mqxboot/mqxboot-${PV}/mqxboot-${PV}.tar.bz2"
 
 SRC_URI[md5sum] = "3de3c8b5f8cd6664870587d29c04c421"
@@ -19,3 +17,7 @@ CFLAGS += "-I${STAGING_KERNEL_DIR}/include"
 RDEPENDS_${PN} = "kernel-module-mcc"
 
 COMPATIBLE_MACHINE = "(vf60)"
+
+do_install() {
+    oe_runmake 'DESTDIR=${D}' install
+}
