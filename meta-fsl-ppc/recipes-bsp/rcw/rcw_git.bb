@@ -12,7 +12,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;nobranch=1"
-SRCREV = "261b2355e9936ecb37b61e6f58dfc48dcfb805b3"
+SRCREV = "3e89f378ed70e9b856756de8c3dbdfccb045fa0c"
 
 S = "${WORKDIR}/git"
 
@@ -22,8 +22,8 @@ do_install () {
     make install
 
     M=`echo ${MACHINE} | sed s/-64b//g`
-    if [ "t1042rdb" = "${M}" ];then
-        M=${M}_pi
+    if [ "t1042rdb" = "${M}" ] || [ "t1042rdb-pi" = "${M}" ];then
+        M=t1042rdb_pi
     fi
     install -d ${D}/boot/rcw
     cp -r ${S}/${M}/${M}/* ${D}/boot/rcw
@@ -31,8 +31,8 @@ do_install () {
 
 do_deploy () {
     M=`echo ${MACHINE} | sed s/-64b//g`
-    if [ "t1042rdb" = "${M}" ];then
-        M=${M}_pi
+    if [ "t1042rdb" = "${M}" ] || [ "t1042rdb-pi" = "${M}" ];then
+        M=t1042rdb_pi
     fi
     install -d ${DEPLOYDIR}/rcw
     cp -r ${S}/${M}/${M}/* ${DEPLOYDIR}/rcw
