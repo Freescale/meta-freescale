@@ -27,12 +27,18 @@ do_install () {
 	make install
 
 	M=`echo ${MACHINE} | sed s/-64b//g`
+	if [ "t1042rdb" = "${M}" ];then
+		M=t1040rdb
+	fi
 	install -d ${D}/boot/hv-cfg
 	cp -r ${S}/${M}/${M}/* ${D}/boot/hv-cfg
 }
 
 do_deploy () {
 	M=`echo ${MACHINE} | sed s/-64b//g`
+	if [ "t1042rdb" = "${M}" ];then
+		M=t1040rdb
+	fi
 	install -d ${DEPLOYDIR}/hv-cfg
 	cp -r ${S}/${M}/${M}/* ${DEPLOYDIR}/hv-cfg
 }
