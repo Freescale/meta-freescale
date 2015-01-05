@@ -36,8 +36,8 @@ do_configure_prepend() {
             if [ -n "${SDK_VERSION}" ]; then
                 sdkversion="-${SDK_VERSION}"
             fi
-            head=`git rev-parse --verify --short HEAD 2> /dev/null`
-            printf "%s%s%s" $sdkversion +g $head > ${S}/.scmversion
+            head=`git --git-dir=${S}/.git rev-parse --verify --short HEAD 2> /dev/null`
+            printf "%s%s%s" $sdkversion +g $head > ${B}/.scmversion
     fi
 }
 
