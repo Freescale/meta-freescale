@@ -1,0 +1,47 @@
+From 9acab46fe307ec71d4a4dbe447e356f90b6a4a09 Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <shengjiu.wang@freescale.com>
+Date: Fri, 12 Dec 2014 14:58:06 +0800
+Subject: [PATCH] [asrc_pair] update output buffer size
+
+When input size larger than DMA_MAX_BYTES the output size should be updated.
+Otherwise the asrc have will not have enough data, then it will be timeout.
+
+Upstream Status: Inappropriate [platform specific]
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@freescale.com>
+---
+ asrc/asrc_pair.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/asrc/asrc_pair.c b/asrc/asrc_pair.c
+index e3df027..e74e8b1 100644
+--- a/asrc/asrc_pair.c
++++ b/asrc/asrc_pair.c
+@@ -139,7 +139,7 @@ asrc_pair *asrc_pair_create(unsigned int channels, ssize_t in_period_frames,
+     config.dma_buffer_size = dma_buffer_size;
+     config.input_sample_rate = in_rate;
+     config.output_sample_rate = out_rate;
+-    config.buffer_num = 1;
++    config.buffer_num = buf_num;
+     config.input_word_width = ASRC_WIDTH_16_BIT;
+     config.output_word_width = ASRC_WIDTH_16_BIT;
+     config.inclk = INCLK_NONE;
+@@ -303,8 +303,13 @@ void asrc_pair_convert_s16(asrc_pair *pair, const int16_t *src, unsigned int src
+
+     while (src_left > 0)
+     {
+-        in_len = src_left > pair->buf_size ? pair->buf_size : src_left;
+-        out_len = dst_left;
++	if (src_left > pair->buf_size) {
++		in_len = pair->buf_size;
++		out_len = dst_left * in_len/src_left;
++	} else {
++		in_len = src_left;
++		out_len = dst_left;
++	}
+
+         buf_info.input_buffer_vaddr = s;
+         buf_info.input_buffer_length = in_len;
+--
+1.9.1
+
