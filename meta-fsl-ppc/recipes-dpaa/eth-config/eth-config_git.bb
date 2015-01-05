@@ -1,19 +1,17 @@
 DESCRIPTION = "Ethernet Configuration Files"
 SECTION = "eth-config"
-LICENSE = "Freescale-EULA"
-LIC_FILES_CHKSUM = "file://COPYING;md5=cf02dc8eb5ac4a76f3812826520dea87"
+LICENSE = "BSD & GPLv2+"
+LIC_FILES_CHKSUM = "file://COPYING;md5=8ed5eddbfbb84af5089ea94c382d423c"
 
 PR = "r2"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/eth-config.git"
-SRCREV = "96ac356dbe77948318c3806764f4a68862e30ac4"
+SRC_URI = "git://git.freescale.com/ppc/sdk/eth-config.git;branch=sdk-v1.7.x"
+SRCREV = "8040e0b1a7cb18cecfe0c7657d42f59f222b7930"
 
 S = "${WORKDIR}/git"
 
+EXTRA_OEMAKE = "D=${D}"
+
 do_install() {
-	install -d ${D}/etc/fmc/config
-	install -m 644 ${S}/*.xml ${D}/etc/fmc/config
-	install -d ${D}/etc/fmc/config/shared_mac
-	install -m 644 ${S}/shared_mac/*.xml ${D}/etc/fmc/config/shared_mac
-	install -m 644 ${S}/shared_mac/README ${D}/etc/fmc/config/shared_mac
+    oe_runmake install
 }
