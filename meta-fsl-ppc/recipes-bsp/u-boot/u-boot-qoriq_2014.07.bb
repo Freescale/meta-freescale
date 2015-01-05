@@ -11,14 +11,14 @@ LIC_FILES_CHKSUM = " \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-PV = "2014.01+fslgit"
+PV = "2014.07+fslgit"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native libgcc ${@base_contains('TCMODE', 'external-fsl', '', 'virtual/${TARGET_PREFIX}gcc', d)}"
 
 inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1"
-SRCREV = "fe1d4f5739e752ad45ada6227a9fb19590af7194"
+SRCREV = "659b6a23a8b1f3026200bc6352dbacef53f4dcb1"
 
 python () {
     if d.getVar("TCMODE", True) == "external-fsl":
@@ -77,7 +77,7 @@ do_compile () {
         fi
 
         oe_runmake O=${board} distclean
-        oe_runmake O=${board} ${board}
+        oe_runmake O=${board} ${board}_config
         oe_runmake O=${board} all
 
         case "${board}" in
@@ -89,29 +89,43 @@ do_compile () {
         esac
 
         # deal with sd/spi/nand/srio image
-        UBOOT_SOURCE=u-boot
-        if [ "x${UBOOT_TARGET}" != "x" ]; then
-            # some boards' nand image was named as u-boot-with-spl
+        UBOOT_SOURCE=u-boot.bin
+        if [ "x${UBOOT_TARGET}" != "x" ] && echo $board |egrep -qi "SECBOOT|SECURE"; then
+            cp ${S}/${board}/${UBOOT_SOURCE}  ${S}/${board}/${UBOOT_TARGET}.bin
+        elif [ "x${UBOOT_TARGET}" != "x" ]; then
+            # some boards' final binary was not named as u-boot.bin
             if [ "${UBOOT_TARGET}" = "u-boot-nand" ];then
-                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS|BSC913|C293)";then
-                    UBOOT_SOURCE=u-boot-with-spl
+                if echo $board |egrep -q "^(BSC|C29|P10|P2020RDB)";then
+                    UBOOT_SOURCE=u-boot-with-spl.bin
+                elif echo $board |egrep -q "^(B4|T1|T2|T4)";then
+                    UBOOT_SOURCE=u-boot-with-spl-pbl.bin
+                elif echo $board |egrep -q "^(P2041|P3|P4|P5)";then
+                    UBOOT_SOURCE=u-boot.pbl
                 fi
             elif [ "${UBOOT_TARGET}" = "u-boot-spi" ];then
-                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS)";then
-                    UBOOT_SOURCE=u-boot-with-spl
+                if echo $board |egrep -q "^(P10|P2020RDB)";then
+                    UBOOT_SOURCE=u-boot-with-spl.bin
+                elif echo $board |egrep -q "^(T1|T2)";then
+                    UBOOT_SOURCE=u-boot-with-spl-pbl.bin
+                elif echo $board |egrep -q "^(B4|P2041|P3|P4|P5|T4)";then
+                    UBOOT_SOURCE=u-boot.pbl
                 fi
             elif [ "${UBOOT_TARGET}" = "u-boot-sd" ];then
-                if echo $board |egrep -q "(P1010RDB|P1020RDB|P1021RDB|P2020RDB|P1022DS)";then
-                    UBOOT_SOURCE=u-boot-with-spl
+                if echo $board |egrep -q "^(P10|P2020RDB)";then
+                    UBOOT_SOURCE=u-boot-with-spl.bin
+                elif echo $board |egrep -q "^(B4|T1|T2|T4)";then
+                    UBOOT_SOURCE=u-boot-with-spl-pbl.bin
+                elif echo $board |egrep -q "^(P2041|P3|P4|P5)";then
+                    UBOOT_SOURCE=u-boot.pbl
                 fi
             fi
-            cp ${S}/${board}/${UBOOT_SOURCE}.bin  ${S}/${board}/${UBOOT_TARGET}.bin
+            cp ${S}/${board}/${UBOOT_SOURCE}  ${S}/${board}/${UBOOT_TARGET}.bin
 
             # use boot-format to regenerate spi image if BOOTFORMAT_CONFIG is not empty
             if [ "${UBOOT_TARGET}" = "u-boot-spi" ] && [ -n "${BOOTFORMAT_CONFIG}" ];then
                 ${STAGING_BINDIR_NATIVE}/boot_format \
                 ${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
-                ${S}/${board}/${UBOOT_SOURCE}.bin -spi ${S}/${board}/${UBOOT_TARGET}.bin
+                ${S}/${board}/${UBOOT_SOURCE} -spi ${S}/${board}/${UBOOT_TARGET}.bin
             fi
         fi
     done
