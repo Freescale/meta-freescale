@@ -1,10 +1,10 @@
 DESCRIPTION = "Foundation Library"
 SECTION = "flib"
 LICENSE = "BSD & GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
+LIC_FILES_CHKSUM = "file://COPYING;md5=75d2f6a74299640c05ae6c69ed7a4ad6"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/flib.git;nobranch=1"
-SRCREV = "6918b5d4ff24a5e7ab4803c849570d45f359a8d7"
+SRCREV = "4bd48d4d6dbb1bd57c3c608fe66e97f4eb8e05b9"
 
 S = "${WORKDIR}/git"
 
