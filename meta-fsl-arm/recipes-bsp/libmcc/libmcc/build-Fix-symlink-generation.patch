@@ -1,0 +1,32 @@
+From adef7a71a3bd40650685183c8a023000423ec880 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Tue, 6 Jan 2015 12:03:27 -0200
+Subject: [PATCH] build: Fix symlink generation
+Organization: O.S. Systems Software LTDA.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ Makefile | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index ac46f5c..248b2eb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -14,9 +14,8 @@ install:
+ 	mkdir -p $(DESTDIR)/usr/include $(DESTDIR)/usr/lib
+ 	cp -f build/libmcc.so.* build/libmcc.a $(DESTDIR)/usr/lib
+ 	cp -f include/*.h $(DESTDIR)/usr/include
+-	cd $(DESTDIR)/usr/lib/
+-	ln -sf libmcc.so.1.0 libmcc.so.1
+-	ln -sf libmcc.so.1 libmcc.so
++	ln -sf libmcc.so.1.0 $(DESTDIR)/usr/lib/libmcc.so.1
++	ln -sf libmcc.so.1 $(DESTDIR)/usr/lib/libmcc.so
+ 
+ clean:
+ 	rm -rf build
+-- 
+2.1.4
+
