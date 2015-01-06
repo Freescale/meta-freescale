@@ -22,3 +22,5 @@ COMPATIBLE_MACHINE = "(vf60)"
 do_install() {
     oe_runmake 'DESTDIR=${D}' install
 }
+
+RDEPENDS_${PN}-dev += "kernel-module-mcc-dev"
