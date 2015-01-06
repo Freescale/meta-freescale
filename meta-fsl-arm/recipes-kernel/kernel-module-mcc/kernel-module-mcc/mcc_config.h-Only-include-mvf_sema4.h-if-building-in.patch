@@ -1,0 +1,51 @@
+From 17e04c68557c4c9cb1a0112717019329a0cc3f96 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Tue, 6 Jan 2015 13:39:50 -0200
+Subject: [PATCH] mcc_config.h: Only include mvf_sema4.h if building in kernel
+Organization: O.S. Systems Software LTDA.
+
+When mcc_config.h is used to make application we shouldn't include
+mvf_sema4.h as it is an internal symbol of kernel and shouldn't be
+directly referenced by user space applications using the MCC
+interface.
+
+This patch puts a guard using __KERNEL__ define, avoiding the include
+and the definition of MCC_SHMEM_SEMAPHORE_NUMBER as
+MVF_SHMEM_SEMAPHORE_NUMBER would be undefined.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ mcc_config.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/mcc_config.h b/mcc_config.h
+index 6a12c6d..3887aad 100644
+--- a/mcc_config.h
++++ b/mcc_config.h
+@@ -18,8 +18,13 @@
+ #ifndef __MCC_CONFIG__
+ #define __MCC_CONFIG__
+ 
++#ifdef __KERNEL__
+ #include <linux/mvf_sema4.h>
+ 
++/* semaphore number */
++#define MCC_SHMEM_SEMAPHORE_NUMBER      (MVF_SHMEM_SEMAPHORE_NUMBER)
++#endif
++
+ /* used OS */
+ #define MCC_OS_USED                    (MCC_LINUX)
+ 
+@@ -47,7 +52,4 @@
+ /* other cores, besides this participating in mcc */
+ #define MCC_OTHER_CORES			{1}
+ 
+-/* semaphore number */
+-#define MCC_SHMEM_SEMAPHORE_NUMBER      (MVF_SHMEM_SEMAPHORE_NUMBER)
+-
+ #endif /* __MCC_CONFIG__ */
+-- 
+2.1.4
+
