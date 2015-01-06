@@ -8,9 +8,9 @@ LIC_FILES_CHKSUM = " \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-SRCBRANCH = "LS1-dev"
-SRC_URI = "git://git.freescale.com/layerscape/ls1021a/u-boot.git;branch=${SRCBRANCH}"
-SRCREV = "50d684801cd05ed6b77d52d1ca9ed00fefeac469"
+SRCBRANCH = "sdk-v1.7.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH}"
+SRCREV = "659b6a23a8b1f3026200bc6352dbacef53f4dcb1"
 
 LOCALVERSION ?= "-${SRCBRANCH}"
 

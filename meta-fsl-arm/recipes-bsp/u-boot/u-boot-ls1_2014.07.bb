@@ -2,7 +2,7 @@ require recipes-bsp/u-boot/u-boot.inc
 require u-boot-ls1.inc
 inherit fsl-u-boot-localversion
 
-LOCALVERSION ?= "-SDK-V1.3"
+LOCALVERSION ?= "-${SRCBRANCH}"
 
 DEPENDS += "u-boot-ls1-tools-native"
 PROVIDES += "u-boot"
