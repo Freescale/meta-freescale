@@ -1,21 +1,21 @@
-From 211a494a4f8ee6d5d31a1db938b771958ea32c6b Mon Sep 17 00:00:00 2001
+From d60b9dbf53d63092fd292c00bb03c250c26703cf Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 08:49:15 +0545
-Subject: [[Patch][fsl 13/16] RCU stall fixed in PKC asynchronous interface
+Subject: [PATCH 7/9] RCU stall fixed in PKC asynchronous interface
 
 Upstream-status: Pending
 
 Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
 ---
- ioctl.c |   23 +++++++++++------------
- main.c  |   43 +++++++++++++++++++++++++++----------------
+ ioctl.c | 23 +++++++++++------------
+ main.c  | 43 +++++++++++++++++++++++++++----------------
  2 files changed, 38 insertions(+), 28 deletions(-)
 
 diff --git a/ioctl.c b/ioctl.c
-index cc1a2a9..1752880 100644
+index c813c8c..7e4c671 100644
 --- a/ioctl.c
 +++ b/ioctl.c
-@@ -106,10 +106,9 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
+@@ -108,10 +108,9 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
  		complete(&res->completion);
  	} else {
  		struct crypt_priv *pcr = pkc->priv;
@@ -28,7 +28,7 @@ index cc1a2a9..1752880 100644
  		/* wake for POLLIN */
  		wake_up_interruptible(&pcr->user_waiter);
  	}
-@@ -953,7 +952,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -958,7 +957,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  	case CIOCASYMFEAT:
  		return put_user(CRF_MOD_EXP_CRT |  CRF_MOD_EXP | CRF_DSA_SIGN |
  			CRF_DSA_VERIFY | CRF_DH_COMPUTE_KEY |
@@ -37,7 +37,7 @@ index cc1a2a9..1752880 100644
  	case CRIOGET:
  		fd = clonefd(filp);
  		ret = put_user(fd, p);
-@@ -992,7 +991,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -997,7 +996,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  	case CIOCKEY:
  	{
  		struct cryptodev_pkc *pkc =
@@ -46,7 +46,7 @@ index cc1a2a9..1752880 100644
  
  		if (!pkc)
  			return -ENOMEM;
-@@ -1048,7 +1047,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -1053,7 +1052,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  	case CIOCASYMASYNCRYPT:
  	{
  		struct cryptodev_pkc *pkc =
@@ -55,7 +55,7 @@ index cc1a2a9..1752880 100644
  		ret = kop_from_user(&pkc->kop, arg);
  
  		if (unlikely(ret))
-@@ -1065,13 +1064,12 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -1070,13 +1069,12 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  	case CIOCASYMFETCHCOOKIE:
  	{
  		struct cryptodev_pkc *pkc;
@@ -70,7 +70,7 @@ index cc1a2a9..1752880 100644
  			if (!list_empty(&pcr->asym_completed_list)) {
  				/* Run a loop in the list for upto  elements
  				 and copy their response back */
-@@ -1079,6 +1077,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -1084,6 +1082,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  				 list_first_entry(&pcr->asym_completed_list,
  						struct cryptodev_pkc, list);
  				list_del(&pkc->list);
@@ -78,7 +78,7 @@ index cc1a2a9..1752880 100644
  				ret = crypto_async_fetch_asym(pkc);
  				if (!ret) {
  					cookie_list.cookie_available++;
-@@ -1088,10 +1087,10 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -1093,10 +1092,10 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  				}
  				kfree(pkc);
  			} else {
@@ -90,7 +90,7 @@ index cc1a2a9..1752880 100644
  
  		/* Reflect the updated request to user-space */
  		if (cookie_list.cookie_available)
-@@ -1381,14 +1380,13 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+@@ -1386,14 +1385,13 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
  	case COMPAT_CIOCASYMFETCHCOOKIE:
  	{
  		struct cryptodev_pkc *pkc;
@@ -106,7 +106,7 @@ index cc1a2a9..1752880 100644
  			if (!list_empty(&pcr->asym_completed_list)) {
  				/* Run a loop in the list for upto  elements
  				 and copy their response back */
-@@ -1396,6 +1394,7 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+@@ -1401,6 +1399,7 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
  				 list_first_entry(&pcr->asym_completed_list,
  						struct cryptodev_pkc, list);
  				list_del(&pkc->list);
@@ -114,7 +114,7 @@ index cc1a2a9..1752880 100644
  				ret = crypto_async_fetch_asym(pkc);
  				if (!ret) {
  					cookie_list.cookie_available++;
-@@ -1404,10 +1403,10 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+@@ -1409,10 +1408,10 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
  				}
  				kfree(pkc);
  			} else {
@@ -234,5 +234,5 @@ index c901bc7..2747706 100644
  	if (!buf)
  		return -ENOMEM;
 -- 
-1.7.9.7
+1.8.3.1
 

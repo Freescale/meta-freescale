@@ -1,24 +1,23 @@
-From bda8dd5839da7a8e731b60b64b9fcb531c334b99 Mon Sep 17 00:00:00 2001
+From 30fc86a09109f169815befc2cd8bbfcae79fe7e0 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 07:53:53 +0545
-Subject: [[Patch][fsl 12/16] ECC_KEYGEN and DLC_KEYGEN supported in cryptodev
- module
+Subject: [PATCH 6/9] ECC_KEYGEN and DLC_KEYGEN supported in cryptodev module
 
 Upstream-status: Pending
 
 Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
 ---
- cryptlib.c         |    2 ++
- crypto/cryptodev.h |    5 +++-
- ioctl.c            |   29 ++++++++++++++++--
- main.c             |   85 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ cryptlib.c         |  2 ++
+ crypto/cryptodev.h |  5 +++-
+ ioctl.c            | 29 +++++++++++++++++--
+ main.c             | 85 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
  4 files changed, 118 insertions(+), 3 deletions(-)
 
 diff --git a/cryptlib.c b/cryptlib.c
-index fa0b63f..41acb2c 100644
+index 6900028..47cd568 100644
 --- a/cryptlib.c
 +++ b/cryptlib.c
-@@ -437,6 +437,8 @@ int cryptodev_pkc_offload(struct cryptodev_pkc  *pkc)
+@@ -452,6 +452,8 @@ int cryptodev_pkc_offload(struct cryptodev_pkc  *pkc)
  	case DSA_VERIFY:
  	case ECDSA_SIGN:
  	case ECDSA_VERIFY:
@@ -28,10 +27,10 @@ index fa0b63f..41acb2c 100644
  			 CRYPTO_ALG_TYPE_PKC_DSA, 0);
  		break;
 diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
-index 0d65899..33cca2e 100644
+index 4436fbf..275a55c 100644
 --- a/crypto/cryptodev.h
 +++ b/crypto/cryptodev.h
-@@ -269,6 +269,8 @@ enum cryptodev_crk_op_t {
+@@ -268,6 +268,8 @@ enum cryptodev_crk_op_t {
  	CRK_DSA_SIGN = 2,
  	CRK_DSA_VERIFY = 3,
  	CRK_DH_COMPUTE_KEY = 4,
@@ -40,7 +39,7 @@ index 0d65899..33cca2e 100644
  	CRK_ALGORITHM_ALL
  };
  
-@@ -281,7 +283,8 @@ enum cryptodev_crk_op_t {
+@@ -280,7 +282,8 @@ enum cryptodev_crk_op_t {
  #define CRF_DSA_SIGN		(1 << CRK_DSA_SIGN)
  #define CRF_DSA_VERIFY		(1 << CRK_DSA_VERIFY)
  #define CRF_DH_COMPUTE_KEY	(1 << CRK_DH_COMPUTE_KEY)
@@ -51,10 +50,10 @@ index 0d65899..33cca2e 100644
  /* ioctl's. Compatible with old linux cryptodev.h
   */
 diff --git a/ioctl.c b/ioctl.c
-index 9f57d46..cc1a2a9 100644
+index 2eb7f03..c813c8c 100644
 --- a/ioctl.c
 +++ b/ioctl.c
-@@ -721,6 +721,23 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+@@ -726,6 +726,23 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
  				     dh_req->z, dh_req->z_len);
  	}
  	break;
@@ -78,7 +77,7 @@ index 9f57d46..cc1a2a9 100644
  	default:
  		ret = -EINVAL;
  	}
-@@ -934,8 +951,9 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -939,8 +956,9 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  
  	switch (cmd) {
  	case CIOCASYMFEAT:
@@ -90,7 +89,7 @@ index 9f57d46..cc1a2a9 100644
  	case CRIOGET:
  		fd = clonefd(filp);
  		ret = put_user(fd, p);
-@@ -1079,7 +1097,14 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -1084,7 +1102,14 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  		if (cookie_list.cookie_available)
  			copy_to_user(arg, &cookie_list,
  				     sizeof(struct pkc_cookie_list_s));
@@ -209,5 +208,5 @@ index 0b7951e..c901bc7 100644
  err:
  	return ret;
 -- 
-1.7.9.7
+1.8.3.1
 

@@ -1,20 +1,20 @@
-From ffa8fd090afaf3631e6abd0ab8daa6780be7c31c Mon Sep 17 00:00:00 2001
+From ddc4179a454cea79c8385fd6756d20cbf3c6dcb5 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 07:24:00 +0545
-Subject: [[Patch][fsl 11/16] Asynchronous interface changes in cryptodev
+Subject: [PATCH 5/9] Asynchronous interface changes in cryptodev
 
 Upstream-status: Pending
 
 Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
 ---
- cryptlib.h         |    7 ++++-
- crypto/cryptodev.h |   10 ++++++-
- cryptodev_int.h    |   10 ++++++-
- ioctl.c            |   76 +++++++++++++++++++++++++++++++++++-----------------
+ cryptlib.h         |  7 ++++-
+ crypto/cryptodev.h | 10 ++++++-
+ cryptodev_int.h    | 10 ++++++-
+ ioctl.c            | 76 +++++++++++++++++++++++++++++++++++++-----------------
  4 files changed, 76 insertions(+), 27 deletions(-)
 
 diff --git a/cryptlib.h b/cryptlib.h
-index e77edc5..947d845 100644
+index 56d325a..7ffa54c 100644
 --- a/cryptlib.h
 +++ b/cryptlib.h
 @@ -113,7 +113,12 @@ struct cryptodev_pkc {
@@ -32,10 +32,10 @@ index e77edc5..947d845 100644
  };
  
 diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
-index 575ce63..0d65899 100644
+index 96675fe..4436fbf 100644
 --- a/crypto/cryptodev.h
 +++ b/crypto/cryptodev.h
-@@ -255,6 +255,14 @@ struct crypt_kop {
+@@ -254,6 +254,14 @@ struct crypt_kop {
  	void *cookie;
  };
  
@@ -50,7 +50,7 @@ index 575ce63..0d65899 100644
  enum cryptodev_crk_op_t {
  	CRK_MOD_EXP = 0,
  	CRK_MOD_EXP_CRT = 1,
-@@ -299,5 +307,5 @@ enum cryptodev_crk_op_t {
+@@ -298,5 +306,5 @@ enum cryptodev_crk_op_t {
  #define CIOCASYNCFETCH    _IOR('c', 111, struct crypt_op)
  /* additional ioctls for asynchronous  operation for asymmetric ciphers*/
  #define CIOCASYMASYNCRYPT    _IOW('c', 112, struct crypt_kop)
@@ -58,7 +58,7 @@ index 575ce63..0d65899 100644
 +#define CIOCASYMFETCHCOOKIE    _IOR('c', 113, struct pkc_cookie_list_s)
  #endif /* L_CRYPTODEV_H */
 diff --git a/cryptodev_int.h b/cryptodev_int.h
-index 229fcd0..8beeef0 100644
+index cf54dac..5347cae 100644
 --- a/cryptodev_int.h
 +++ b/cryptodev_int.h
 @@ -93,6 +93,12 @@ struct compat_crypt_kop {
@@ -74,7 +74,7 @@ index 229fcd0..8beeef0 100644
   /* input of CIOCAUTHCRYPT */
  struct compat_crypt_auth_op {
  	uint32_t	ses;		/* session identifier */
-@@ -127,11 +133,13 @@ struct compat_crypt_auth_op {
+@@ -126,11 +132,13 @@ struct compat_crypt_auth_op {
  /* compat ioctls, defined for the above structs */
  #define COMPAT_CIOCGSESSION    _IOWR('c', 102, struct compat_session_op)
  #define COMPAT_CIOCCRYPT       _IOWR('c', 104, struct compat_crypt_op)
@@ -90,10 +90,10 @@ index 229fcd0..8beeef0 100644
  #endif /* CONFIG_COMPAT */
  
 diff --git a/ioctl.c b/ioctl.c
-index ec82c69..9f57d46 100644
+index 3baf3e6..2eb7f03 100644
 --- a/ioctl.c
 +++ b/ioctl.c
-@@ -103,8 +103,6 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
+@@ -105,8 +105,6 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
  	crypto_free_pkc(pkc->s);
  	res->err = err;
  	if (pkc->type == SYNCHRONOUS) {
@@ -102,7 +102,7 @@ index ec82c69..9f57d46 100644
  		complete(&res->completion);
  	} else {
  		struct crypt_priv *pcr = pkc->priv;
-@@ -1046,26 +1044,41 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -1051,26 +1049,41 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  			ret = 0;
  	}
  	return ret;
@@ -155,7 +155,7 @@ index ec82c69..9f57d46 100644
  	}
  	return ret;
  	default:
-@@ -1340,26 +1353,41 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+@@ -1345,26 +1358,41 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
  			ret = 0;
  	}
  	return ret;
@@ -209,5 +209,5 @@ index ec82c69..9f57d46 100644
  	return ret;
  	default:
 -- 
-1.7.9.7
+1.8.3.1
 

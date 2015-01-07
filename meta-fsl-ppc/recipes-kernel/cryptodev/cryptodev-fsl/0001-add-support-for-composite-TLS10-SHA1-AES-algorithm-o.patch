@@ -1,23 +1,22 @@
-From 434790a1bbafa371c0c6647238234573db98d017 Mon Sep 17 00:00:00 2001
+From 715ade8236f40cf811c39f9538dfd60803967fcd Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@freescale.com>
 Date: Thu, 29 Aug 2013 16:52:30 +0300
-Subject: [[Patch][fsl 01/16] add support for composite TLS(SHA1,AES)
- algorithm offload
+Subject: [PATCH 1/9] add support for composite TLS10(SHA1,AES) algorithm
+ offload
 
-Upstream-status: Pending
+This adds support for composite algorithm offload as a primitive
+crypto (cipher + hmac) operation.
 
-This adds support for composite algorithm offload in a single crypto
-(cipher + hmac) operation.
+It requires kernel support for tls10(hmac(sha1),cbc(aes)) algorithm
+provided either in software or accelerated by hardware such as
+Freescale B*, P* and T* platforms.
 
-It requires either software or hardware TLS support in the Linux kernel
-and can be used with Freescale B*, P* and T* platforms that have support
-for hardware TLS acceleration.
-
+Change-Id: Ia1c605da3860e91e681295dfc8df7c09eb4006cf
 Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
-Tested-by: Horia Ioan Geanta Neag <horia.geanta@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/17218
 ---
- crypto/cryptodev.h |    1 +
- ioctl.c            |    5 +++++
+ crypto/cryptodev.h | 1 +
+ ioctl.c            | 5 +++++
  2 files changed, 6 insertions(+)
 
 diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
@@ -33,10 +32,10 @@ index 7fb9c7d..c0e8cd4 100644
  };
  
 diff --git a/ioctl.c b/ioctl.c
-index d4e83f4..a0f1db1 100644
+index 5a55a76..f9b9b2e 100644
 --- a/ioctl.c
 +++ b/ioctl.c
-@@ -146,6 +146,11 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+@@ -159,6 +159,11 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
  		stream = 1;
  		aead = 1;
  		break;
@@ -49,5 +48,5 @@ index d4e83f4..a0f1db1 100644
  		alg_name = "ecb(cipher_null)";
  		stream = 1;
 -- 
-1.7.9.7
+1.8.3.1
 

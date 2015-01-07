@@ -1,18 +1,18 @@
-From f6550035fe2c0e66798ace17d31d1d880beacc14 Mon Sep 17 00:00:00 2001
+From 5435dfd329cd90837ce36c6dadc26166c7906cab Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 06:52:13 +0545
-Subject: [[Patch][fsl 10/16] Compat versions of PKC IOCTLs
+Subject: [PATCH 4/9] Compat versions of PKC IOCTLs
 
 Upstream-status: Pending
 
 Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
 ---
- cryptodev_int.h |   20 ++++++++++
- ioctl.c         |  120 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ cryptodev_int.h |  20 ++++++++++
+ ioctl.c         | 120 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  2 files changed, 140 insertions(+)
 
 diff --git a/cryptodev_int.h b/cryptodev_int.h
-index b08c253..229fcd0 100644
+index fdbcc61..cf54dac 100644
 --- a/cryptodev_int.h
 +++ b/cryptodev_int.h
 @@ -75,6 +75,24 @@ struct compat_crypt_op {
@@ -40,7 +40,7 @@ index b08c253..229fcd0 100644
   /* input of CIOCAUTHCRYPT */
  struct compat_crypt_auth_op {
  	uint32_t	ses;		/* session identifier */
-@@ -112,6 +130,8 @@ struct compat_crypt_auth_op {
+@@ -111,6 +129,8 @@ struct compat_crypt_auth_op {
  #define COMPAT_CIOCASYNCCRYPT  _IOW('c', 107, struct compat_crypt_op)
  #define COMPAT_CIOCASYNCFETCH  _IOR('c', 108, struct compat_crypt_op)
  #define COMPAT_CIOCAUTHCRYPT   _IOWR('c', 109, struct compat_crypt_auth_op)
@@ -50,10 +50,10 @@ index b08c253..229fcd0 100644
  #endif /* CONFIG_COMPAT */
  
 diff --git a/ioctl.c b/ioctl.c
-index 44070e1..ec82c69 100644
+index 782d7fe..3baf3e6 100644
 --- a/ioctl.c
 +++ b/ioctl.c
-@@ -1076,6 +1076,68 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+@@ -1081,6 +1081,68 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
  /* compatibility code for 32bit userlands */
  #ifdef CONFIG_COMPAT
  
@@ -122,7 +122,7 @@ index 44070e1..ec82c69 100644
  static inline void
  compat_to_session_op(struct compat_session_op *compat, struct session_op *sop)
  {
-@@ -1203,7 +1265,26 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+@@ -1208,7 +1270,26 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
  			return -EFAULT;
  		}
  		return ret;
@@ -149,7 +149,7 @@ index 44070e1..ec82c69 100644
  	case COMPAT_CIOCCRYPT:
  		ret = compat_kcop_from_user(&kcop, fcr, arg);
  		if (unlikely(ret))
-@@ -1242,6 +1323,45 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+@@ -1247,6 +1328,45 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
  
  		return compat_kcop_to_user(&kcop, fcr, arg);
  #endif
@@ -196,5 +196,5 @@ index 44070e1..ec82c69 100644
  		return -EINVAL;
  	}
 -- 
-1.7.9.7
+1.8.3.1
 

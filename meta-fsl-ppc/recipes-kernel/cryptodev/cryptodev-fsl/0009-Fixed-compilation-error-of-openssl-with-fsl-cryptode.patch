@@ -1,25 +1,48 @@
-From 2215332bff6034d0e22e92e8fda0993f2579a740 Mon Sep 17 00:00:00 2001
+From e791b55b03d295ee11476382a7bd93ab131e2e52 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Thu, 17 Apr 2014 07:08:47 +0545
-Subject: [[Patch][fsl 16/16] Fixed compilation error of openssl with fsl
- cryptodev
+Subject: [PATCH 9/9] Fixed compilation error of openssl with fsl cryptodev
 
 Upstream-status: Pending
 
 Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
 Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
 ---
- cryptlib.c         |    6 +++---
- crypto/cryptodev.h |    9 ++++++++-
- cryptodev_int.h    |    2 +-
- ioctl.c            |    6 +++++-
- 4 files changed, 17 insertions(+), 6 deletions(-)
+ authenc.c          | 1 +
+ cryptlib.c         | 9 ++++-----
+ crypto/cryptodev.h | 9 ++++++++-
+ cryptodev_int.h    | 2 +-
+ ioctl.c            | 8 ++++++--
+ main.c             | 1 +
+ 6 files changed, 21 insertions(+), 9 deletions(-)
 
+diff --git a/authenc.c b/authenc.c
+index ef0d3db..2aa4d38 100644
+--- a/authenc.c
++++ b/authenc.c
+@@ -2,6 +2,7 @@
+  * Driver for /dev/crypto device (aka CryptoDev)
+  *
+  * Copyright (c) 2011, 2012 OpenSSL Software Foundation, Inc.
++ * Copyright (c) 2014 Freescale Semiconductor, Inc.
+  *
+  * Author: Nikos Mavrogiannopoulos
+  *
 diff --git a/cryptlib.c b/cryptlib.c
-index 89af77a..1fc03e5 100644
+index 4dd1847..ec6693e 100644
 --- a/cryptlib.c
 +++ b/cryptlib.c
-@@ -129,7 +129,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+@@ -4,8 +4,7 @@
+  * Copyright (c) 2010,2011 Nikos Mavrogiannopoulos <nmav@gnutls.org>
+  * Portions Copyright (c) 2010 Michael Weiser
+  * Portions Copyright (c) 2010 Phil Sutter
+- *
+- * Copyright 2012 Freescale Semiconductor, Inc.
++ * Copyright 2012-2014 Freescale Semiconductor, Inc.
+  *
+  * This file is part of linux cryptodev.
+  *
+@@ -144,7 +143,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
  			if (alg->max_keysize > 0 &&
  					unlikely((keylen < alg->min_keysize) ||
  					(keylen > alg->max_keysize))) {
@@ -28,7 +51,7 @@ index 89af77a..1fc03e5 100644
  						keylen, alg_name, alg->min_keysize, alg->max_keysize);
  				ret = -EINVAL;
  				goto error;
-@@ -156,7 +156,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+@@ -171,7 +170,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
  	}
  
  	if (unlikely(ret)) {
@@ -37,7 +60,7 @@ index 89af77a..1fc03e5 100644
  		ret = -EINVAL;
  		goto error;
  	}
-@@ -323,7 +323,7 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+@@ -338,7 +337,7 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
  	if (hmac_mode != 0) {
  		ret = crypto_ahash_setkey(hdata->async.s, mackey, mackeylen);
  		if (unlikely(ret)) {
@@ -47,10 +70,10 @@ index 89af77a..1fc03e5 100644
  			ret = -EINVAL;
  			goto error;
 diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
-index 7990f27..77bffc9 100644
+index d0cc542..e7edd97 100644
 --- a/crypto/cryptodev.h
 +++ b/crypto/cryptodev.h
-@@ -235,6 +235,13 @@ struct crypt_auth_op {
+@@ -234,6 +234,13 @@ struct crypt_auth_op {
  #define	CRYPTO_ALG_FLAG_RNG_ENABLE	2
  #define	CRYPTO_ALG_FLAG_DSA_SHA		4
  
@@ -64,7 +87,7 @@ index 7990f27..77bffc9 100644
  struct crparam {
  	__u8	*crp_p;
  	__u32	crp_nbits;
-@@ -250,7 +257,7 @@ struct crypt_kop {
+@@ -249,7 +256,7 @@ struct crypt_kop {
  	__u16	crk_oparams;
  	__u32	crk_pad1;
  	struct crparam	crk_param[CRK_MAXPARAM];
@@ -74,7 +97,7 @@ index 7990f27..77bffc9 100644
  	void *cookie;
  };
 diff --git a/cryptodev_int.h b/cryptodev_int.h
-index 7ea6976..e379eaf 100644
+index 5347cae..c83c885 100644
 --- a/cryptodev_int.h
 +++ b/cryptodev_int.h
 @@ -88,7 +88,7 @@ struct compat_crypt_kop {
@@ -87,10 +110,19 @@ index 7ea6976..e379eaf 100644
  	compat_uptr_t cookie;
  };
 diff --git a/ioctl.c b/ioctl.c
-index 0344c0c..66cb05a 100644
+index 14888d6..20ab4ca 100644
 --- a/ioctl.c
 +++ b/ioctl.c
-@@ -498,6 +498,7 @@ cryptodev_open(struct inode *inode, struct file *filp)
+@@ -4,7 +4,7 @@
+  * Copyright (c) 2004 Michal Ludvig <mludvig@logix.net.nz>, SuSE Labs
+  * Copyright (c) 2009,2010,2011 Nikos Mavrogiannopoulos <nmav@gnutls.org>
+  * Copyright (c) 2010 Phil Sutter
+- * Copyright 2012 Freescale Semiconductor, Inc.
++ * Copyright 2012-2014 Freescale Semiconductor, Inc.
+  *
+  * This file is part of linux cryptodev.
+  *
+@@ -501,6 +501,7 @@ cryptodev_open(struct inode *inode, struct file *filp)
  	INIT_LIST_HEAD(&pcr->done.list);
  	INIT_LIST_HEAD(&pcr->asym_completed_list);
  	spin_lock_init(&pcr->completion_lock);
@@ -98,7 +130,7 @@ index 0344c0c..66cb05a 100644
  	INIT_WORK(&pcr->cryptask, cryptask_routine);
  
  	init_waitqueue_head(&pcr->user_waiter);
-@@ -777,8 +778,11 @@ static int fill_kcop_from_cop(struct kernel_crypt_op *kcop, struct fcrypt *fcr)
+@@ -780,8 +781,11 @@ static int fill_kcop_from_cop(struct kernel_crypt_op *kcop, struct fcrypt *fcr)
  
  	if (cop->iv) {
  		rc = copy_from_user(kcop->iv, cop->iv, kcop->ivlen);
@@ -111,6 +143,18 @@ index 0344c0c..66cb05a 100644
  	}
  
  	return 0;
+diff --git a/main.c b/main.c
+index 14dcf40..6365911 100644
+--- a/main.c
++++ b/main.c
+@@ -3,6 +3,7 @@
+  *
+  * Copyright (c) 2004 Michal Ludvig <mludvig@logix.net.nz>, SuSE Labs
+  * Copyright (c) 2009-2013 Nikos Mavrogiannopoulos <nmav@gnutls.org>
++ * Copyright (c) 2014 Freescale Semiconductor, Inc.
+  *
+  * This file is part of linux cryptodev.
+  *
 -- 
-1.7.9.7
+2.2.0
 
