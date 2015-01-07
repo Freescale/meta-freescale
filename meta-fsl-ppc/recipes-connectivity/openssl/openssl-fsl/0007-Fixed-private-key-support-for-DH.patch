@@ -1,7 +1,7 @@
-From 408bdb2a3971edd6a949f5a93bd44d0a6f3eb823 Mon Sep 17 00:00:00 2001
+From 8322e4157bf49d992b5b9e460f2c0785865dd1c1 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Thu, 20 Mar 2014 19:55:51 -0500
-Subject: [PATCH][fsl 05/15] Fixed private key support for DH
+Subject: [PATCH 07/17] Fixed private key support for DH
 
 Upstream-status: Pending
 
@@ -9,7 +9,7 @@ Required Length of the DH result is not returned in dh method in openssl
 
 Tested-by: Yashpal Dutta <yashpal.dutta@freescale.com>
 ---
- crypto/dh/dh_ameth.c |    7 -------
+ crypto/dh/dh_ameth.c | 7 -------
  1 file changed, 7 deletions(-)
 
 diff --git a/crypto/dh/dh_ameth.c b/crypto/dh/dh_ameth.c
@@ -31,5 +31,5 @@ index ed32004..02ec2d4 100644
  	return 1;
  	}
 -- 
-1.7.9.7
+1.8.3.1
 

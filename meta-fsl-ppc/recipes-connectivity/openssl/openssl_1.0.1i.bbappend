@@ -5,23 +5,25 @@ RDEPENDS_${PN}_class-target += "cryptodev-module"
 # base package is taken from Freescale repository
 SRCBRANCH = "OpenSSL_1_0_1-stable"
 SRC_URI = "git://git.openssl.org/openssl.git;branch=${SRCBRANCH} \
-    file://0001-remove-double-initialization-of-cryptodev-engine.patch \
-    file://0002-ECC-Support-header-for-Cryptodev-Engine.patch \
-    file://0003-add-support-for-TLS-algorithms-offload.patch \
-    file://0004-Fixed-private-key-support-for-DH.patch \
-    file://0005-Fixed-private-key-support-for-DH.patch \
-    file://0006-Initial-support-for-PKC-in-cryptodev-engine.patch \
-    file://0007-Added-hwrng-dev-file-as-source-of-RNG.patch \
-    file://0008-Asynchronous-interface-added-for-PKC-cryptodev-inter.patch \
-    file://0009-eng_cryptodev-extend-TLS-offload-with-new-algorithms.patch \
-    file://0010-Add-RSA-keygen-operation-and-support-gendsa-command-.patch \
-    file://0011-RSA-Keygen-Fix.patch \
-    file://0012-Removed-local-copy-of-curve_t-type.patch \
-    file://0013-Modulus-parameter-is-not-populated-by-dhparams.patch \
-    file://0014-SW-Backoff-mechanism-for-dsa-keygen.patch \
-    file://0015-Fixed-DH-keygen-pair-generator.patch \
+	file://0001-remove-double-initialization-of-cryptodev-engine.patch \
+	file://0002-eng_cryptodev-add-support-for-TLS-algorithms-offload.patch \
+	file://0003-cryptodev-fix-algorithm-registration.patch \
+	file://0004-linux-pcc-make-it-more-robust-and-recognize-KERNEL_B.patch \
+	file://0005-ECC-Support-header-for-Cryptodev-Engine.patch \
+	file://0006-Fixed-private-key-support-for-DH.patch \
+	file://0007-Fixed-private-key-support-for-DH.patch \
+	file://0008-Initial-support-for-PKC-in-cryptodev-engine.patch \
+	file://0009-Added-hwrng-dev-file-as-source-of-RNG.patch \
+	file://0010-Asynchronous-interface-added-for-PKC-cryptodev-inter.patch \
+	file://0011-Add-RSA-keygen-operation-and-support-gendsa-command-.patch \
+	file://0012-RSA-Keygen-Fix.patch \
+	file://0013-Removed-local-copy-of-curve_t-type.patch \
+	file://0014-Modulus-parameter-is-not-populated-by-dhparams.patch \
+	file://0015-SW-Backoff-mechanism-for-dsa-keygen.patch \
+	file://0016-Fixed-DH-keygen-pair-generator.patch \
+	file://0017-cryptodev-add-support-for-aes-gcm-algorithm-offloadi.patch \
 "
-SRCREV = "b2d951e4232d2f90168f9a3dd0b7df9ecf2d81a8"
+SRCREV = "2b456034457b58454aae3998a2765b6a5b9bc837"
 
 SRC_URI += "file://configure-targets.patch \
             file://shared-libs.patch \
@@ -39,7 +41,6 @@ SRC_URI += "file://configure-targets.patch \
             file://debian/no-symbolic.patch \
             file://debian/debian-targets.patch \
             file://openssl_fix_for_x32.patch \
-            file://openssl-fix-doc.patch \
             file://fix-cipher-des-ede3-cfb1.patch \
             file://openssl-avoid-NULL-pointer-dereference-in-EVP_DigestInit_ex.patch \
             file://openssl-avoid-NULL-pointer-dereference-in-dh_pub_encode.patch \
