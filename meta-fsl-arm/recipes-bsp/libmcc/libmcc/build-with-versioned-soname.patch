@@ -1,0 +1,18 @@
+libmcc: build with versioned soname
+
+This adds a versioned soname to the shared library during linking.
+Otherwise an application linked with '-lmcc' needs libmcc.so for execution,
+having libmcc.so.1 would not be enough.
+
+Signed-off-by: Max Krummenacher <max.oss.09@gmail.com>
+--- a/Makefile	2015-01-07 17:09:13.657675270 +0100
++++ b/Makefile	2015-01-07 17:21:19.457545709 +0100
+@@ -8,7 +8,7 @@
+ 	$(AR) rcs $@ $<
+ 
+ build/libmcc.so.1.0: build/libmcc.o
+-	$(CC) -shared -o $@  $<
++	$(CC) -shared -Wl,-soname,libmcc.so.1 -o $@ $< -lc
+ 
+ install:
+ 	mkdir -p $(DESTDIR)/usr/include $(DESTDIR)/usr/lib
