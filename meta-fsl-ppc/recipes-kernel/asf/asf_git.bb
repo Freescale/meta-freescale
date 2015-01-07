@@ -4,10 +4,8 @@ LICENSE = "GPLv2 & GPLv2+ & BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;nobranch=1"
-SRCREV = "f107bc7dac7fe74d765dc09f66dca84951921d2c"
+SRCREV = "16eb472d6b2b34c8b605a86c469611bc8ddec1c9"
 
-DEPENDS="virtual/kernel"
-RDEPENDS_${PN} += "ipsec-tools"
 
 inherit module qoriq_build_64bit_kernel
 
@@ -16,12 +14,16 @@ S = "${WORKDIR}/git/asfmodule"
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 export KERNEL_PATH = "${STAGING_KERNEL_DIR}"
 
+INHIBIT_PACKAGE_STRIP = "1"
+
 do_install(){
-	mkdir -p ${D}/usr/driver/asf
-	cp -rf ${S}/bin/full ${D}/usr/driver/asf
-	cp -rf ${S}/bin/min  ${D}/usr/driver/asf
-	cp -rf ${S}/../scripts ${D}/usr/driver/asf/.
+    install -d ${D}/${libexecdir} 
+    install -d ${D}/lib/modules/${KERNEL_VERSION}/asf
+    cp -rf ${S}/bin/full ${D}/lib/modules/${KERNEL_VERSION}/asf 
+    cp -rf ${S}/bin/min  ${D}/lib/modules/${KERNEL_VERSION}/asf
+    cp -rf ${S}/../scripts ${D}/${libexecdir}/
 }
 
-FILES_${PN} += "/usr/driver/asf"
-INHIBIT_PACKAGE_STRIP = "1"
+FILES_${PN} += "${libexecdir} /lib/modules/${KERNEL_VERSION}/asf"
+RDEPENDS_${PN} += "ipsec-tools"
+
