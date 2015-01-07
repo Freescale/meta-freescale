@@ -4,6 +4,11 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=6a26ed8e76a8ea2e019c525369ed0f03"
 
 inherit  module qoriq_build_64bit_kernel
+RDEPENDS_${PN} += "cryptodev-module"
+
+# Currently pkc-host does not support RSA_KEYGEN, remove this
+# if it is fixed.
+REQUIRED_DISTRO_FEATURES = "c29x_pkc"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/pkc-host.git;nobranch=1"
 SRCREV = "cae512c94e2a26cc6b0d6393d307cdea2d7282c9"
