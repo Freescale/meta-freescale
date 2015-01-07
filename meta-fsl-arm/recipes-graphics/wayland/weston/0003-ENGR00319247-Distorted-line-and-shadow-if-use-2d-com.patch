@@ -1,14 +1,16 @@
-From 1fd17db2ab978322803683a4d2d847a0b31a4c1c Mon Sep 17 00:00:00 2001
+From 663f2a362ff384098f4c32f5cc9e7b7b73f2a553 Mon Sep 17 00:00:00 2001
 From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
 Date: Tue, 24 Jun 2014 15:44:13 -0500
-Subject: [PATCH 3/3] ENGR00319247 : Distorted line and shadow if use 2d
- compositor to run wayland apps.
+Subject: [PATCH] ENGR00319247 : Distorted line and shadow if use 2d compositor
+ to run wayland apps.
+Organization: O.S. Systems Software LTDA.
 
 Fixed blending for shadown and maintained separate surface for damage composite.
 
 Upstream Status: N/A
 
 Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
 ---
  src/compositor-fbdev.c |   8 ++--
  src/gal2d-renderer.c   | 102 +++++++++++++++++++++++++++++++++++--------------
@@ -252,5 +254,5 @@ index 3b89f73..1322a7d 100644
  
  struct gal2d_renderer_interface {
 -- 
-2.0.0
+2.1.4
 

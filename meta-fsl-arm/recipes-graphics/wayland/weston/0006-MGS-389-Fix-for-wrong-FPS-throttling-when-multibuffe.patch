@@ -1,0 +1,247 @@
+From db720086b85046bd0806484bfe63915870bb4323 Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Tue, 30 Dec 2014 16:09:29 -0600
+Subject: [PATCH] MGS-389 - Fix for wrong FPS throttling when multibuffer is
+ set
+Organization: O.S. Systems Software LTDA.
+
+When the FB_MULTI_BUFFER=2 is set, throtling to 30FPS for a 60Hz display
+which is suppose to have 60FPS.
+Adding worker thread to output the frame in async mode for better
+performance.
+
+Upstream-Status: Pending
+
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ src/gal2d-renderer.c | 109 +++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 83 insertions(+), 26 deletions(-)
+
+diff --git a/src/gal2d-renderer.c b/src/gal2d-renderer.c
+index fbe39f6..4cccaf1 100644
+--- a/src/gal2d-renderer.c
++++ b/src/gal2d-renderer.c
+@@ -28,6 +28,8 @@
+ #include <ctype.h>
+ #include <float.h>
+ #include <assert.h>
++#include <pthread.h>
++
+ #include "compositor.h"
+ #include "gal2d-renderer.h"
+ #include "vertex-clipping.h"
+@@ -37,7 +39,6 @@
+ 
+ #define galONERROR(x)  if(status < 0) printf("Error in function %s\n", __func__);
+ 
+-
+ struct gal2d_output_state {
+ 	
+ 	int current_buffer;
+@@ -48,7 +49,12 @@ struct gal2d_output_state {
+ 	int activebuffer;
+ 	gcoSURF offscreenSurface;
+ 	gceSURF_FORMAT format;
+-	gcoSURF tempSurf;
++    pthread_mutex_t workerMutex;
++    pthread_t workerId;
++    gctUINT32 exitWorker;
++    gctSIGNAL signal;
++    gctSIGNAL busySignal;
++    gcsHAL_INTERFACE iface;
+ };
+ 
+ struct gal2d_surface_state {
+@@ -373,8 +379,7 @@ gal2d_clear(struct weston_output *base)
+ 	gcmONERROR(gco2D_SetSource(gr->gcoEngine2d, &dstRect));
+ 	gcmONERROR(gco2D_SetClipping(gr->gcoEngine2d, &dstRect));
+ 	gcmONERROR(gco2D_Clear(gr->gcoEngine2d, 1, &dstRect, 0xff0000ff, 0xCC, 0xCC, go->format));
+-
+-	gcmONERROR(gcoHAL_Commit(gr->gcoHal, gcvFALSE));
++    gcmONERROR(gcoHAL_Commit(gr->gcoHal, gcvTRUE));
+ 
+ OnError:
+ 	galONERROR(status);
+@@ -465,7 +470,6 @@ gal2dBindBuffer(struct weston_surface* es)
+ static void
+ gal2d_flip_surface(struct weston_output *output)
+ {
+-	struct gal2d_renderer *gr = get_renderer(output->compositor);
+ 	struct gal2d_output_state *go = get_output_state(output);
+ 
+ 	if(go->nNumBuffers > 1)
+@@ -473,17 +477,36 @@ gal2d_flip_surface(struct weston_output *output)
+ 		gctUINT Offset;
+ 		gctINT X;
+ 		gctINT Y;
+-		gcmVERIFY_OK(gcoHAL_Commit(gr->gcoHal, gcvTRUE));
+-
++        
+ 		gcmVERIFY_OK(gcoOS_GetDisplayBackbuffer(go->display, gcvNULL,
+ 									gcvNULL, gcvNULL, &Offset, &X, &Y));
+ 
+ 		gcmVERIFY_OK(gcoOS_SetDisplayVirtual(go->display, gcvNULL,
+-									Offset, X, Y));
+-
+-		go->activebuffer = (go->activebuffer+1) % go->nNumBuffers;
++									Offset, X, Y));		
+ 	}
+ }
++static void *gal2d_output_worker(void *arg) 
++{  
++    struct weston_output *output = (struct weston_output *)arg;
++    struct gal2d_output_state *go = get_output_state(output);
++    
++    while(1)
++    {
++        if(gcoOS_WaitSignal(gcvNULL, go->signal, gcvINFINITE) == gcvSTATUS_OK )
++        {
++            gal2d_flip_surface(output);
++            gcoOS_Signal(gcvNULL,go->busySignal, gcvTRUE);
++        }
++        pthread_mutex_lock(&go->workerMutex);
++        if(go->exitWorker == 1)
++        {
++            pthread_mutex_unlock(&go->workerMutex);
++            break;
++        }
++        pthread_mutex_unlock(&go->workerMutex);
++    }    
++    return 0;
++}
+ 
+ static int
+ update_surface(struct weston_output *output)
+@@ -520,11 +543,13 @@ update_surface(struct weston_output *output)
+ 		gcmONERROR(gco2D_SetClipping(gr->gcoEngine2d, &dstRect));
+ 		gcmONERROR(gco2D_Blit(gr->gcoEngine2d, 1, &dstRect, 0xCC, 0xCC, go->format));
+ 		gcmONERROR(gcoSURF_Unlock(srcSurface, (gctPOINTER *)&va));
+-		gcmONERROR(gcoHAL_Commit(gr->gcoHal, gcvFALSE));
++		gcmONERROR(gcoHAL_Commit(gr->gcoHal, gcvFALSE));		
+ 	}
+-
+-    gal2d_flip_surface(output);
+-    
++    else if(go->nNumBuffers > 1)
++    {
++        gcoHAL_ScheduleEvent(gr->gcoHal, &go->iface);
++        gcmVERIFY_OK(gcoHAL_Commit(gr->gcoHal, gcvFALSE));        
++    }    
+ OnError:
+ 	galONERROR(status);
+ 	return status;
+@@ -746,6 +771,7 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 							0xCC, 0xCC, go->format));
+ 				}
+ 			}
++
+ 			if(status < 0)
+ 			{
+ 				printf("cr l=%d r=%d t=%d b=%d w=%d h=%d\n",
+@@ -759,12 +785,6 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 				goto OnError;
+ 			}
+ 		}
+-		status = (gcoHAL_Commit(gr->gcoHal, gcvFALSE));
+-		if(status < 0)
+-		{
+-			printf("Error in gcoHAL_Commit %s\n", __func__);
+-			goto OnError;
+-		}
+ 	}
+ 
+ OnError:
+@@ -831,7 +851,15 @@ repaint_views(struct weston_output *output, pixman_region32_t *damage)
+ {
+ 	struct weston_compositor *compositor = output->compositor;
+ 	struct weston_view *view;
+-
++	struct gal2d_output_state *go = get_output_state(output);
++ 	
++    if(go->nNumBuffers > 1)
++    {
++        /*500ms is more than enough to process a frame */
++        gcoOS_WaitSignal(gcvNULL, go->busySignal, 500);
++    }
++    go->activebuffer = (go->activebuffer+1) % go->nNumBuffers;
++    
+ 	wl_list_for_each_reverse(view, &compositor->view_list, link)
+ 		if (view->plane == &compositor->primary_plane)
+ 			draw_view(view, output, damage);
+@@ -1090,12 +1118,19 @@ gal2d_renderer_output_destroy(struct weston_output *output)
+ 		if(go->offscreenSurface)
+ 			gcmVERIFY_OK(gcoSURF_Destroy(go->offscreenSurface));
+ 	}
+-
++    else
++    {
++        gcoOS_Signal(gcvNULL,go->signal, gcvTRUE);
++        pthread_mutex_lock(&go->workerMutex);
++        go->exitWorker = 1;
++        pthread_mutex_unlock(&go->workerMutex);
++        pthread_join(go->workerId, NULL);
++    }
++    
+ 	for(i=0; i < go->nNumBuffers; i++)
+ 	{
+ 		gcmVERIFY_OK(gcoSURF_Destroy(go->renderSurf[i]));
+ 	}
+-
+ 	free(go->renderSurf);
+ 	go->renderSurf = gcvNULL;
+ 
+@@ -1182,9 +1217,28 @@ gal2d_renderer_output_create(struct weston_output *output, NativeDisplayType dis
+ 
+ 	go->renderSurf = malloc(sizeof(gcoSURF) * go->nNumBuffers);
+ 	gcoOS_GetDisplayVirtual(go->display, &width, &height);
++    gcoOS_SetSwapInterval(go->display, 1);
++   
++    /*Needed only for multi Buffer  */
++    if(go->nNumBuffers > 1)
++    {
++        gcmVERIFY_OK(gcoOS_CreateSignal(gcvNULL, gcvFALSE,
++                &go->signal));
++        gcmVERIFY_OK(gcoOS_CreateSignal(gcvNULL, gcvFALSE,
++                &go->busySignal));
++                
++        go->iface.command            = gcvHAL_SIGNAL;
++        go->iface.u.Signal.signal    = gcmPTR_TO_UINT64(go->signal);
++        go->iface.u.Signal.auxSignal = 0;
++        go->iface.u.Signal.process = gcmPTR_TO_UINT64(gcoOS_GetCurrentProcessID());
++        go->iface.u.Signal.fromWhere = gcvKERNEL_PIXEL;
++       
++        go->exitWorker = 0;        
++        pthread_create(&go->workerId, NULL, gal2d_output_worker, output);    
++        pthread_mutex_init(&go->workerMutex, gcvNULL);
++    }
+ 	for(i=0; i < go->nNumBuffers; i++)
+ 	{
+-		
+         gcmONERROR(gcoSURF_Construct(gr->gcoHal, info.width, info.height, 1, 
+             gcvSURF_BITMAP, go->format, gcvPOOL_USER, &go->renderSurf[i]));
+         
+@@ -1200,7 +1254,7 @@ gal2d_renderer_output_create(struct weston_output *output, NativeDisplayType dis
+ 		go->activebuffer = 0;
+ 	else
+ 		go->activebuffer = 1;
+-
++    
+ 	if(go->nNumBuffers <= 1 )
+ 	{
+ 		gcmVERIFY_OK(gcoSURF_Construct(gr->gcoHal,
+@@ -1213,8 +1267,11 @@ gal2d_renderer_output_create(struct weston_output *output, NativeDisplayType dis
+ 							  &go->offscreenSurface));
+ 		make_current(gr, go->offscreenSurface);
+ 		gal2d_clear(output);
+-		gal2d_flip_surface(output);
+ 	}
++    else
++    {
++        gcoOS_Signal(gcvNULL,go->busySignal, gcvTRUE);
++    }
+ 
+ 	for (i = 0; i < 2; i++)
+ 		pixman_region32_init(&go->buffer_damage[i]);
+-- 
+2.1.4
+

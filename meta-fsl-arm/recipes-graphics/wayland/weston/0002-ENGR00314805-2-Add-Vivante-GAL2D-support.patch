@@ -1,7 +1,8 @@
-From 2a24c62ef00d1b08974bd8f07e277695ac2911fa Mon Sep 17 00:00:00 2001
+From 8a887ec821a53f18a7530b77f08ec823ce757937 Mon Sep 17 00:00:00 2001
 From: Yong Gan <b45748@freescale.com>
 Date: Thu, 22 May 2014 15:26:31 +0800
-Subject: [PATCH 2/3] ENGR00314805-2 Add Vivante GAL2D support
+Subject: [PATCH] ENGR00314805-2 Add Vivante GAL2D support
+Organization: O.S. Systems Software LTDA.
 
 Add Vivante GAL2D compositor support.
 
@@ -9,6 +10,8 @@ Upstream-Status: Pending
 
 [DATE]05-22-2014
 Signed-off-by Yong Gan <B45748@freescale.com>
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
 ---
  Makefile.am            |   13 +
  src/compositor-fbdev.c |  110 ++++-
@@ -19,10 +22,10 @@ Signed-off-by Yong Gan <B45748@freescale.com>
  create mode 100644 src/gal2d-renderer.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 343adc6..2bccfe9 100644
+index 0c08acb..29834c3 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -162,6 +162,19 @@ gl_renderer_la_SOURCES =			\
+@@ -165,6 +165,19 @@ gl_renderer_la_SOURCES =			\
  	src/gl-renderer.c			\
  	src/vertex-clipping.c			\
  	src/vertex-clipping.h
@@ -1496,5 +1499,5 @@ index 0000000..3b89f73
 +
 +#endif
 -- 
-1.7.9.5
+2.1.4
 
