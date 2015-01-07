@@ -12,6 +12,7 @@ PV = "1.7+fsl"
 PACKAGECONFIG[quorum] = ""
 PACKAGECONFIG[lzo]    = ""
 PACKAGECONFIG[numa]   = ""
+PACKAGECONFIG[gtk+] = ""
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;nobranch=1"
 SRCREV = "6ac4597c059d35e2737b234747243e56d340f4db"
