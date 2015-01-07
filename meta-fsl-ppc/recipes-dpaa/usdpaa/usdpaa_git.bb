@@ -21,33 +21,27 @@ S = "${WORKDIR}/git"
 EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}"'
 export ARCH="${TARGET_ARCH}"
 
+SOC ?= "P4080"
+SOC_b4 = "B4860"
+SOC_t1 = "T1040"
+SOC_t2 = "T2080"
+SOC_t4 = "T4240"
+SOC_p1023rdb = "P1023"
+
+FMAN_VARIANT ?= "P4080"
+FMAN_VARIANT_b4 = "B4860"
+FMAN_VARIANT_t1 = "B4860"
+FMAN_VARIANT_t2 = "B4860"
+FMAN_VARIANT_t4 = "B4860"
+FMAN_VARIANT_p1023rdb = "P1023"
+
 do_compile_prepend () {
-    case ${MACHINE} in
-        b4420qds|b4420qds-64b|b4860qds|b4860qds-64b)
-            SOC=B4860;
-            FMAN_VARIANT=B4860;;
-        t1040qds|t1040qds-64b|t1040rdb|t1040rdb-64b)
-            SOC=T1040;
-            FMAN_VARIANT=B4860;;
-        t2080qds|t2080qds-64b|t2080rdb|t2080rdb-64b)
-            SOC=T2080;
-            FMAN_VARIANT=B4860;;
-        t4240qds|t4240qds-64b|t4240rdb|t4240rdb-64b)
-            SOC=T4240;
-            FMAN_VARIANT=B4860;;
-        p1023rdb)
-            SOC=P1023;
-            FMAN_VARIANT=P1023;;
-        *)
-            SOC=P4080;
-            FMAN_VARIANT=P4080;;
-    esac
-    export SOC=$SOC
+    export SOC=${SOC}
     export FMC_EXTRA_CFLAGS="-I ${STAGING_INCDIR}/fmc"
     export FMLIB_EXTRA_CFLAGS="-I ${STAGING_INCDIR}/fmd \
         -I ${STAGING_INCDIR}/fmd/Peripherals \
         -I ${STAGING_INCDIR}/fmd/integrations \
-        -D$FMAN_VARIANT"
+        -D${FMAN_VARIANT}"
 
     export LIBXML2_CFLAGS="$(pkg-config --cflags libxml-2.0)"
     export LIBXML2_LDFLAGS="$(pkg-config --libs --static libxml-2.0)"
@@ -56,15 +50,7 @@ do_compile_prepend () {
 }
 
 do_install () {
-    case ${MACHINE} in
-        b4420qds|b4420qds-64b|b4860qds|b4860qds-64b) SOC=B4860;;
-        t1040qds|t1040qds-64b|t1040rdb|t1040rdb-64b) SOC=T1040;;
-        t2080qds|t2080qds-64b|t2080rdb|t2080rdb-64b) SOC=T2080;;
-        t4240qds|t4240qds-64b|t4240rdb|t4240rdb-64b) SOC=T4240;;
-        p1023rdb) SOC=P1023;;
-        *) SOC=P4080;;
-    esac
-    export SOC=$SOC
+    export SOC=${SOC}
     oe_runmake install DESTDIR=${D}
 }
 
