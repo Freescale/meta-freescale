@@ -1,0 +1,20 @@
+Disable stripping of binaries
+
+We don't want to strip these as this is handled separately at package
+time.
+
+Upstream-Status: Inappropriate [configuration]
+
+Signed-off-by: Chunrong Guo <B40290@freescale.com>
+
+--- a/Makefileold	2015-01-07 03:45:32.786477574 -0600
++++ b/Makefile	2015-01-07 03:46:28.426475588 -0600
+@@ -62,7 +62,7 @@
+ # CFLAGS += -DENABLE_64BIT_SUPPORT
+ 
+ 
+-LDFLAGS += -s
++
+ 
+ # Add inputs and outputs from these tool invocations to the build variables 
+ 

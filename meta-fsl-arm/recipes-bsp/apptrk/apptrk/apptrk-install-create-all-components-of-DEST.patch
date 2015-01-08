@@ -1,0 +1,24 @@
+Upstream-Status: Pending 
+
+Signed-off-by: Chunrong Guo <B40290@freescale.com>
+
+
+  for  fix the following error:
+  |install: cannot create regular file /usr/bin/apptrk
+  |No such file or directory
+
+
+--- a/Makefileold	2014-12-21 23:46:26.872329032 -0600
++++ b/Makefile	2014-12-21 23:47:33.724326646 -0600
+@@ -89,9 +89,9 @@
+ # Other Targets
+ install: all
+ 	if [ -f $(DESTDIR)/usr/bin/apptrk ]; then rm -f $(DESTDIR)/usr/bin/apptrk ; fi
+-	install $(OUTPUT) $(DESTDIR)/usr/bin/apptrk
++	install -D $(OUTPUT) $(DESTDIR)/usr/bin/apptrk
+ 	if [ -f $(DESTDIR)/usr/bin/apptrk_debug ]; then rm -f $(DESTDIR)/usr/bin/apptrk_debug ; fi
+-	install $(OUTPUT_DBG) $(DESTDIR)/usr/bin/apptrk_debug
++	install -D $(OUTPUT_DBG) $(DESTDIR)/usr/bin/apptrk_debug
+ 
+ clean:
+ 	-$(RM) $(OBJS)$(OBJS_DBG)$(EXECUTABLES)$(C_DEPS)$(C_DEPS_DBG) $(OUTPUT) $(OUTPUT_DBG)
