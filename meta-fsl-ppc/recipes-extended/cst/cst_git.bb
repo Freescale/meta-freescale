@@ -1,4 +1,4 @@
-DESCRIPTION = "CST Tool"
+SUMMARY = "utility for security boot"
 SECTION = "cst"
 LICENSE = "BSD"
 
@@ -7,23 +7,20 @@ LIC_FILES_CHKSUM = "file://RELEASENOTES;beginline=8;endline=43;md5=5a7b22a2c96b5
 
 DEPENDS += "openssl"
 
+inherit kernel-arch
+
 SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;nobranch=1"
-SRCREV = "321b798b84cb5fe6564dfb233dea046e779d6f74"
+SRCREV = "2d35e98539c0daa2bc8049e3bd44994d3d93bbe7"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = 'OPENSSL_LIB_PATH=${STAGING_LIBDIR} OPENSSL_INC_PATH=${STAGING_INCDIR} CC="${CC}" LD="${CC}" LDFLAGS="${LDFLAGS}"'
+EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}"'
 
-do_install () {
-	install -d ${D}/${bindir}/cst
-	install -m 755 ${S}/gen_keys ${D}/${bindir}/cst/
-	install -m 755 ${S}/gen_otpmk ${D}/${bindir}/cst/
-	install -m 755 ${S}/uni_cfsign ${D}/${bindir}/cst/
-	install -m 755 ${S}/uni_sign ${D}/${bindir}/cst/
-	cp -rf ${S}/input_files ${D}/${bindir}/cst
-}
-
-BBCLASSEXTEND = "native nativesdk"
 PARALLEL_MAKE = ""
 
+do_install () {
+    oe_runmake install DESTDIR=${D} BIN_DEST_DIR=${bindir}
+}
+
 FILES_${PN}-dbg += "${bindir}/cst/.debug"
+BBCLASSEXTEND = "native nativesdk"
