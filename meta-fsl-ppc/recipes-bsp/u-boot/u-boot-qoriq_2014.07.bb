@@ -27,22 +27,17 @@ python () {
     ml = d.getVar("MULTILIB_VARIANTS", True)
     arch = d.getVar("OVERRIDES", True)
 
-    if ("e5500-64b:" in arch or "e6500-64b:" in arch) and not "lib32" in ml:
-        raise bb.parse.SkipPackage("Building the u-boot for this arch requires multilib to be enabled")
+    if "e5500-64b:" in arch or "e6500-64b:" in arch:
+        if not "lib32" in ml:
+            raise bb.parse.SkipPackage("Building the u-boot for this arch requires multilib to be enabled")
+        sys_multilib = 'powerpc-' + d.getVar('DISTRO') + 'mllib32-' + d.getVar('HOST_OS')
+        d.setVar('DEPENDS_append', ' lib32-gcc-cross-powerpc lib32-libgcc')
+        d.setVar('PATH_append', ':' + d.getVar('STAGING_BINDIR_NATIVE') + '/' + sys_multilib)
+        d.setVar('TOOLCHAIN_OPTIONS_append', '/../lib32-' + d.getVar("MACHINE"))
+        d.setVar("WRAP_TARGET_PREFIX", sys_multilib + '-')
 }
 
-DEPENDS_append_e5500-64b = "${@base_contains('TCMODE', 'external-fsl', '', ' lib32-gcc-cross-powerpc lib32-libgcc', d)}"
-PATH_append_e5500-64b = ":${STAGING_BINDIR_NATIVE}/powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}/"
-TOOLCHAIN_OPTIONS_append_e5500-64b = "${@base_contains('TCMODE', 'external-fsl', '', '/../lib32-${MACHINE}', d)}"
-TARGET_VENDOR_virtclass-multilib-lib32 ?= "${@base_contains('TCMODE', 'external-fsl', '', '-${DISTRO}mllib32', d)}"
-WRAP_TARGET_PREFIX_e5500-64b := "powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}-"
-
-DEPENDS_append_e6500-64b = "${@base_contains('TCMODE', 'external-fsl', '', ' lib32-gcc-cross-powerpc lib32-libgcc', d)}"
-PATH_append_e6500-64b = ":${STAGING_BINDIR_NATIVE}/powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}/"
-TOOLCHAIN_OPTIONS_append_e6500-64b = "${@base_contains('TCMODE', 'external-fsl', '', '/../lib32-${MACHINE}', d)}"
-TARGET_VENDOR_virtclass-multilib-lib32 ?= "${@base_contains('TCMODE', 'external-fsl', '', '-${DISTRO}mllib32', d)}"
-WRAP_TARGET_PREFIX_e6500-64b := "powerpc${TARGET_VENDOR_virtclass-multilib-lib32}-${HOST_OS}-"
-WRAP_TARGET_PREFIX = "${TARGET_PREFIX}"
+WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -51,8 +46,7 @@ UBOOT_LOCALVERSION = "${@d.getVar('SDK_VERSION', True).partition(' ')[0]}"
 USRC ?= ""
 S = '${@base_conditional("USRC", "", "${WORKDIR}/git", "${USRC}", d)}'
 
-CROSS_COMPILE = '${@base_conditional("TCMODE", "external-fsl", "${TARGET_PREFIX}", "${WRAP_TARGET_PREFIX}", d)}'
-EXTRA_OEMAKE = 'CROSS_COMPILE=${CROSS_COMPILE} CC="${CROSS_COMPILE}gcc ${TOOLCHAIN_OPTIONS}"'
+EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
 
 do_compile () {
     unset LDFLAGS
