@@ -1,3 +1,0 @@
-PREFERRED_VERSION_qemu = "1.7+fsl"
-PREFERRED_VERSION_openssl = "1.0.1i"
-
