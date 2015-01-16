@@ -30,7 +30,7 @@ python () {
     if "e5500-64b:" in arch or "e6500-64b:" in arch:
         if not "lib32" in ml:
             raise bb.parse.SkipPackage("Building the u-boot for this arch requires multilib to be enabled")
-        sys_multilib = 'powerpc-' + d.getVar('DISTRO') + 'mllib32-' + d.getVar('HOST_OS')
+        sys_multilib = 'powerpc' + d.getVar('TARGET_VENDOR') + 'mllib32-' + d.getVar('HOST_OS')
         d.setVar('DEPENDS_append', ' lib32-gcc-cross-powerpc lib32-libgcc')
         d.setVar('PATH_append', ':' + d.getVar('STAGING_BINDIR_NATIVE') + '/' + sys_multilib)
         d.setVar('TOOLCHAIN_OPTIONS_append', '/../lib32-' + d.getVar("MACHINE"))
