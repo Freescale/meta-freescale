@@ -35,7 +35,8 @@ do_make_scripts[deptask] = "do_populate_sysroot"
 do_make_scripts[depends] += "virtual/kernel:do_install"
 
 do_compile() {
-    unset LDFLAGS
+    CFLAGS="${TOOLCHAIN_OPTIONS}"
+    LDFLAGS="${TOOLCHAIN_OPTIONS} -L${STAGING_LIBDIR}"
     oe_runmake V=1 VERBOSE='' \
                CROSS_COMPILE=${TARGET_PREFIX} \
                INC="-I${STAGING_INCDIR} \

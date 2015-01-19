@@ -3,8 +3,9 @@
 include imx-test.inc
 
 # FIXME: Drop 'beta' suffix for GA release
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}-beta.tar.gz"
-S="${WORKDIR}/${PN}-${PV}-beta"
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}-beta.tar.gz \
+           file://Fix-build-in-OpenEmbedded-Core-environment.patch"
+S = "${WORKDIR}/${PN}-${PV}-beta"
 
 SRC_URI_append_mx5 = " file://revert_epdc_hdr_change.patch \
                        file://clocks.sh"
