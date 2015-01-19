@@ -20,7 +20,7 @@ do_install(){
 	mkdir -p ${D}/lib/modules/${KERNEL_VERSION}/asf
 	cp -rf ${S}/bin/full ${D}/lib/modules/${KERNEL_VERSION}/asf 
 	cp -rf ${S}/bin/min  ${D}/lib/modules/${KERNEL_VERSION}/asf
-	cp -rf ${S}/scripts ${D}/${libexecdir}/
+	cp -rf ${S}/../scripts ${D}/${libexecdir}/
 }
 
 FILES_${PN} += "${libexecdir} /lib/modules/${KERNEL_VERSION}/asf"
