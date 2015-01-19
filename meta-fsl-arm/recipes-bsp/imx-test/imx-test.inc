@@ -41,13 +41,15 @@ do_compile() {
                CROSS_COMPILE=${TARGET_PREFIX} \
                INC="-I${STAGING_INCDIR} \
                     -I${S}/include \
+                    -I${STAGING_KERNEL_BUILDDIR}/include/uapi \
+                    -I${STAGING_KERNEL_BUILDDIR}/include \
                     -I${STAGING_KERNEL_DIR}/include/uapi \
                     -I${STAGING_KERNEL_DIR}/include \
                     -I${STAGING_KERNEL_DIR}/arch/arm/include \
                     -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
                     -I${STAGING_KERNEL_DIR}/drivers/mxc/security/sahara2/include" \
                LINUXPATH=${STAGING_KERNEL_DIR} \
-               KBUILD_OUTPUT=${STAGING_KERNEL_DIR} \
+               KBUILD_OUTPUT=${STAGING_KERNEL_BUILDDIR} \
                PLATFORM=${PLATFORM}
 }
 
