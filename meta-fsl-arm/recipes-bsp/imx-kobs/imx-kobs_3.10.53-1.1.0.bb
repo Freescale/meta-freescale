@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2014 Freescale Semiconductor
+# Copyright (C) 2013-2015 Freescale Semiconductor
 
 SUMMARY = "Nand boot write source"
 SECTION = "base"
@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
 SRC_URI = "${FSL_MIRROR}/imx-kobs-${PV}.tar.gz"
 
-SRC_URI[md5sum] = "7d83d73afc1fcd4767442ca35dd9fa35"
-SRC_URI[sha256sum] = "f7c0f7b5b876e4dd5c74c93f17ff2a5c8ab154aa89c32590a389e9602f0445e6"
+SRC_URI[md5sum] = "762063004e56e7160157e7c13ed6f684"
+SRC_URI[sha256sum] = "12970c94446998decacc3ed0c3f1e4edb4b5192982ba7facb1f8be0fd7775bb1"
 
 inherit  autotools pkgconfig
