@@ -11,8 +11,8 @@ SRC_URI = "${FSL_MIRROR}/gst-fsl-plugins-${PV}.tar.gz \
 
 S = "${WORKDIR}/gst-fsl-plugins-${PV}"
 
-SRC_URI[md5sum] = "6db4bec9c1cd75758c3c529896307810"
-SRC_URI[sha256sum] = "629bbb904879571c058647acfa07ac7a11ea32350be14f4cb2b72dbac80ae42c"
+SRC_URI[md5sum] = "8121695592dd8e2cd9407993ba1f1965"
+SRC_URI[sha256sum] = "e75b768fb37bb232521bc27f45258aff17318208e8f229490dcd2df0ab44b80a"
 
 DEPENDS_append = " gstreamer gst-plugins-base"
 
