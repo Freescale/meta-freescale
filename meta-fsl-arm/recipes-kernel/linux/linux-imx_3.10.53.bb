@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2014 Freescale Semiconductor
+# Copyright (C) 2013-2015 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "Linux Kernel provided and supported by Freescale"
@@ -10,9 +10,9 @@ require recipes-kernel/linux/linux-dtb.inc
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_3.10.31_1.1.0_beta2"
-SRCREV = "30ad12bdf93050a5bae1345bd40dba5f2d63f70f"
-LOCALVERSION = "-1.1.0_beta2"
+SRCBRANCH = "imx_3.10.53_1.1.0_ga"
+LOCALVERSION = "-1.1.0_ga"
+SRCREV = "496fbe0b831b77d0ea0a2c7bbd1d58820b3a01f7"
 
 SRC_URI += "file://0001-ARM-clk-imx6q-fix-video-divider-for-revision-1.0-of-.patch"
 
