@@ -25,45 +25,6 @@ index 92e2901..75d3e78 100755
  
  clean:
  	rm -f *.o hciattach-ar3k.bin
-diff --git a/test/make.rules b/test/make.rules
-index 8982f36..7ff8b38 100755
---- a/test/make.rules
-+++ b/test/make.rules
-@@ -33,7 +33,7 @@ $(OBJDIR)/%.out : $(SRCDIR)/%.c
- $(OBJDIR)/%.out : $(SRCDIR)/%.s
- 	@mkdir -p `dirname $@`
- 	@echo "     Building $@"
--	$(VERBOSE)$(CC) -g $(INC) $(CFLAGS) -DASSEMBLER $< -o $@
-+	$(VERBOSE)$(CC) -g $(INC) $(CFLAGS)-DASSEMBLER $< -o $@
- 
- $(OBJDIR)/%.out : $(SRCDIR)/%.S
- 	@mkdir -p `dirname $@`
-diff --git a/test/memtool/Makefile b/test/memtool/Makefile
-index 7a72803..c3083a0 100644
---- a/test/memtool/Makefile
-+++ b/test/memtool/Makefile
-@@ -20,7 +20,7 @@ CFLAGS+= -Os
- all : $(TARGET)
- 
- $(TARGET):$(OBJ)
--	$(LINK) -o $(TARGET) $(OBJ) -Os
-+	$(LINK) -o $(TARGET) $(OBJ) $(LDFLAGS) -Os
- 	$(STRIP) $(TARGET)
- 
- .PHONY: clean
-diff --git a/test/mxc_vpu_test/Makefile b/test/mxc_vpu_test/Makefile
-index 6ab989c..985b311 100644
---- a/test/mxc_vpu_test/Makefile
-+++ b/test/mxc_vpu_test/Makefile
-@@ -23,7 +23,7 @@ endif
- all: $(TARGET)
- 
- $(TARGET): $(OBJ)
--	$(LINK) -o $(TARGET) $(OBJ) ${LIBS} -lvpu -lipu -lrt -lpthread
-+	$(LINK) -o $(TARGET) $(OBJ) ${LIBS} $(LDFLAGS) -lvpu -lipu -lrt -lpthread
- 	mkdir -p $(OBJDIR)
- 	mv $(TARGET) $(OBJDIR)
- 	cp autorun-vpu.sh $(OBJDIR)
 -- 
 2.1.4
 
