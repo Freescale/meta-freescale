@@ -1,0 +1,42 @@
+From 0c1e3d1d54b7f2e637b0984ea10aef1de278ff87 Mon Sep 17 00:00:00 2001
+From: "yong.gan" <yong.gan@freescale.com>
+Date: Fri, 23 May 2014 14:15:09 +0800
+Subject: [PATCH] Check input NULL pointer
+
+Fix the segmentation fault in multi-instance test.
+
+Upstream Status: Pending
+---
+ inputdrivers/linux_input/linux_input.c | 2 +-
+ src/core/input.c                       | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/inputdrivers/linux_input/linux_input.c b/inputdrivers/linux_input/linux_input.c
+index e275762..35cfbdd 100644
+--- a/inputdrivers/linux_input/linux_input.c
++++ b/inputdrivers/linux_input/linux_input.c
+@@ -1979,7 +1979,7 @@ driver_get_keymap_entry( CoreInputDevice           *device,
+      unsigned short              value;
+      DFBInputDeviceKeyIdentifier identifier;
+ 
+-     if (data->vt_fd < 0)
++     if (data == NULL || data->vt_fd < 0)
+           return DFB_UNSUPPORTED;
+ 
+      /* fetch the base level */
+diff --git a/src/core/input.c b/src/core/input.c
+index d77bc9f..ee23909 100644
+--- a/src/core/input.c
++++ b/src/core/input.c
+@@ -723,6 +723,8 @@ dfb_input_core_suspend( DFBInputCore *data )
+                          driver->info.name );
+           }
+      }
++     if(data == NULL)
++        return DFB_FAILURE;
+ 
+      direct_list_foreach (device, data->devices) {
+           InputDeviceShared *devshared;
+-- 
+1.9.1
+
