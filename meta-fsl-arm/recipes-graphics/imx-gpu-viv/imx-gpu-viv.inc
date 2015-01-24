@@ -1,17 +1,17 @@
-# Copyright (C) 2012-2013 Freescale Semiconductor
+# Copyright (C) 2012-2015 Freescale Semiconductor
 # Copyright (C) 2012-2014 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://usr/include/gc_vdk.h;endline=11;md5=c4713c78d7f52bf2f92688a6f8f0cc93"
+LIC_FILES_CHKSUM = "file://gpu-core/usr/include/gc_vdk.h;endline=11;md5=c4713c78d7f52bf2f92688a6f8f0cc93"
 
 DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
                              base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
                                            '', d), d)}"
 
-PROVIDES += "virtual/wayland-egl virtual/libgal-x11 virtual/egl virtual/libopenvg"
+PROVIDES += "virtual/wayland-egl virtual/libgal-x11 virtual/egl virtual/libopenvg virtual/libg2d"
 PROVIDES_append_mx6q  = " virtual/libgl virtual/libgles1 virtual/libgles2"
 PROVIDES_append_mx6dl  = " virtual/libgl virtual/libgles1 virtual/libgles2"
 PROVIDES_append_mx6sx  = " virtual/libgl virtual/libgles1 virtual/libgles2"
@@ -19,31 +19,17 @@ PROVIDES_append_mx6sx  = " virtual/libgl virtual/libgles1 virtual/libgles2"
 PE = "1"
 
 inherit fsl-eula-unpack
-# FIXME: Drop 'beta' suffix for GA release
-SRC_URI = "${FSL_MIRROR}/${PN}-${@'${PV}'.replace('1.1.0', '1.1.0-beta')}.bin;fsl-eula=true \
-           file://egl.pc \
-           file://egl_x11.pc \
+
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://egl_linuxfb.pc \
            file://egl_directfb.pc \
            file://egl_wayland.pc \
-           file://glesv1_cm.pc \
-           file://glesv1_cm_x11.pc \
-           file://glesv2.pc \
-           file://glesv2_x11.pc \
-           file://vg.pc \
-           file://vg_x11.pc \
-           file://gc_wayland_protocol.pc \
-           file://wayland-egl.pc \
-           file://wayland-viv.pc \
-           file://directfbrc \
-           file://Vivante.icd \
           "
-S = "${WORKDIR}/${PN}-${@'${PV}'.replace('1.1.0', '1.1.0-beta')}"
-
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
 	libgles-mx6 libgles-mx6-dev libgles-mx6-dbg \
 	libgles2-mx6 libgles2-mx6-dev libgles2-mx6-dbg \
+	libgles3-mx6-dev \
 	libglslc-mx6 libglslc-mx6-dev libglslc-mx6-dbg \
 	libopencl-mx6 libopencl-mx6-dev libopencl-mx6-dbg \
 	libopenvg-mx6 libopenvg-mx6-dev libopenvg-mx6-dbg \
@@ -57,6 +43,10 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libwayland-viv-mx6 libwayland-viv-mx6-dev libwayland-viv-mx6-dbg \
 	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev libgc-wayland-protocol-mx6-dbg \
 	libwayland-egl-mx6-dev \
+	imx-gpu-viv-g2d imx-gpu-viv-g2d-dev imx-gpu-viv-g2d-dbg \
+	imx-gpu-viv-tools imx-gpu-viv-tools-dbg\
+	imx-gpu-viv-tools-apitrace imx-gpu-viv-tools-apitrace-dbg\
+	imx-gpu-viv-demos imx-gpu-viv-demos-dbg \
 "
 
 # Skip package if it does not match the machine float-point type in use
@@ -119,51 +109,58 @@ IS_MX6SL_mx6sl = "1"
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
+    install -d ${D}${bindir}
 
-    cp -P ${S}/usr/lib/*.so* ${D}${libdir}
-    cp -r ${S}/usr/include/* ${D}${includedir}
-    cp -r ${S}/opt ${D}
+    cp -P ${S}/gpu-core/usr/lib/*.so* ${D}${libdir}
+    cp  ${S}/g2d/usr/lib/*.so* ${D}${libdir}
+    cp -r ${S}/gpu-core/usr/include/* ${D}${includedir}
+    cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
+    cp -r ${S}/gpu-demos/opt ${D}
+    cp -axr ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
+    cp -axr ${S}/apitrace/usr/lib/* ${D}${libdir}
+    cp -axr ${S}/apitrace/usr/bin/* ${D}${bindir}
 
     install -d ${D}${libdir}/pkgconfig
 
     # The preference order, based in DISTRO_FEATURES, is x11, wayland, directfb and fb
     if [ "${USE_X11}" = "yes" ]; then
-        cp -r ${S}/usr/lib/dri ${D}${libdir}
+        cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
+
         backend=x11
 
-        install -m 0644 ${WORKDIR}/egl_x11.pc ${D}${libdir}/pkgconfig/egl.pc
-        install -m 0644 ${WORKDIR}/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
-        install -m 0644 ${WORKDIR}/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
-        install -m 0644 ${WORKDIR}/vg_x11.pc ${D}${libdir}/pkgconfig/vg.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_x11.pc ${D}${libdir}/pkgconfig/egl.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg_x11.pc ${D}${libdir}/pkgconfig/vg.pc
         mv ${D}${libdir}/libGAL_egl.dri.so ${D}${libdir}/libGAL_egl.so
         #FIXME: WL & X11 is not currently functional
         #if [ "${USE_WL}" = "yes" ]; then
-        #    install -m 0644 ${WORKDIR}/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
-        #    install -m 0644 ${WORKDIR}/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
-        #    install -m 0644 ${WORKDIR}/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
+        #    install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
+        #    install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
+        #    install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
         #fi
     elif [ "${USE_WL}" = "yes" ]; then
         backend=wl
 
         install -m 0644 ${WORKDIR}/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
-        install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
-        install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
-        install -m 0644 ${WORKDIR}/vg.pc ${D}${libdir}/pkgconfig/vg.pc
-        install -m 0644 ${WORKDIR}/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
-        install -m 0644 ${WORKDIR}/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
-        install -m 0644 ${WORKDIR}/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg.pc ${D}${libdir}/pkgconfig/vg.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
         mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
     else
-        install -m 0644 ${WORKDIR}/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
-        install -m 0644 ${WORKDIR}/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
-        install -m 0644 ${WORKDIR}/vg.pc ${D}${libdir}/pkgconfig/vg.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg.pc ${D}${libdir}/pkgconfig/vg.pc
 
         if [ "${USE_DFB}" = "yes" ]; then
             install -d ${D}/${sysconfdir}
-            install -m 644 ${WORKDIR}/directfbrc ${D}/${sysconfdir}/directfbrc
+            install -m 644 ${S}/gpu-core/etc/directfbrc ${D}/${sysconfdir}/directfbrc
             install -m 0644 ${WORKDIR}/egl_directfb.pc ${D}${libdir}/pkgconfig/egl.pc
 
-            cp -r ${S}/usr/lib/directfb-* ${D}${libdir}
+            cp -r ${S}/gpu-core/usr/lib/directfb-* ${D}${libdir}
             backend=dfb
         else
             # Regular framebuffer
@@ -175,7 +172,7 @@ do_install () {
 
     # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
     install -d ${D}${sysconfdir}/OpenCL/vendors/
-    install -m 0644 ${WORKDIR}/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
+    install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
     # We'll only have one backend here so we rename it to generic name
     # and avoid rework in other packages, when possible
@@ -191,7 +188,7 @@ do_install () {
 
     # update libglesv2 as backend dependent
     rm -rf ${D}${libdir}/libGLESv2*
-    cp ${S}/usr/lib/libGLESv2-${backend}.so ${D}${libdir}/libGLESv2.so.2.0.0
+    cp ${S}/gpu-core/usr/lib/libGLESv2-${backend}.so ${D}${libdir}/libGLESv2.so.2.0.0
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so.2
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
@@ -224,7 +221,7 @@ do_install () {
                \
                ${D}${libdir}/libGLES* \
                \
-               ${D}${libdir}/libOpenCL* \
+               ${D}${libdir}/libOpenCL* ${D}${includedir}/CL \
                \
                ${D}${libdir}/libOpenVG.so ${D}${libdir}/libOpenVG.3d.so \
                \
@@ -240,11 +237,6 @@ do_install () {
     find ${D}${includedir} -type f -exec chmod 644 {} \;
 }
 
-FILES_${PN} += "/opt"
-FILES_${PN}-dev = "${includedir}"
-FILES_${PN}-dbg = "${libdir}/.debug /opt/viv_samples/*/*/.debug"
-INSANE_SKIP_${PN} += "rpaths"
-
 FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
@@ -254,8 +246,6 @@ INSANE_SKIP_libegl-mx6 += "dev-so"
 FILES_libegl-mx6 = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
 FILES_libegl-mx6-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
-# Includes GL headers from mesa
-RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
@@ -266,10 +256,13 @@ FILES_libvsc-mx6 = "${libdir}/libVSC${SOLIBS}"
 FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-mx6-dev = "${libdir}/libGL${SOLIBSDEV}"
 FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
+RDEPENDS_libgl-mx6 = "libglapi"
+# Includes GL headers from mesa
+RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 
 # libEGL needs to open libGLESv1.so
 INSANE_SKIP_libgles-mx6 += "dev-so"
-FILES_libgles-mx6 = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS}"
+FILES_libgles-mx6 = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
 FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
 FILES_libgles-mx6-dbg = "${libdir}/.debug/libGLESv1*${SOLIBS} ${libdir}/.debug/libGLES_*${SOLIBS}"
 
@@ -279,6 +272,8 @@ FILES_libgles2-mx6 = "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLI
 FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV} ${libdir}/pkgconfig/glesv2.pc"
 FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
 RDEPENDS_libgles2-mx6 = "libglslc-mx6"
+
+FILES_libgles3-mx6-dev = "${includedir}/GLES3"
 
 FILES_libglslc-mx6 = "${libdir}/libGLSLC${SOLIBS}"
 FILES_libglslc-mx6-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
@@ -297,7 +292,7 @@ FILES_libopenvg-mx6-dev = "${includedir}/VG ${libdir}/libOpenVG*${SOLIBSDEV} ${l
 FILES_libopenvg-mx6-dbg = "${libdir}/.debug/libOpenVG*${SOLIBS}"
 
 FILES_libvdk-mx6 = "${libdir}/libVDK${SOLIBS}"
-FILES_libvdk-mx6-dev = "${includedir}/*vdk.h ${libdir}/libVDK${SOLIBSDEV}"
+FILES_libvdk-mx6-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
 FILES_libvdk-mx6-dbg = "${libdir}/.debug/libVDK${SOLIBS}"
 
 FILES_libvivante-mx6 = "${libdir}/libVIVANTE${SOLIBS}"
@@ -311,7 +306,7 @@ FILES_libvivante-dfb-mx6 = "${libdir}/directfb-*/gfxdrivers/libdirectfb_gal.so"
 
 INSANE_SKIP_libwayland-viv-mx6 += "dev-so"
 FILES_libwayland-viv-mx6 =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"
-FILES_libwayland-viv-mx6-dev = "${libdir})/libwayland-viv${SOLIBSDEV} ${libdir}/pkgconfig/wayland-viv.pc"
+FILES_libwayland-viv-mx6-dev = "${includedir}/wayland-viv ${libdir})/libwayland-viv${SOLIBSDEV} ${libdir}/pkgconfig/wayland-viv.pc"
 FILES_libwayland-viv-mx6-dbg = "${libdir}/.debug/libwayland-viv${SOLIBS}"
 
 INSANE_SKIP_libgc-wayland-protocol-mx6 += "dev-so"
@@ -322,5 +317,20 @@ FILES_libgc-wayland-protocol-mx6-dbg = "${libdir}/libgc_wayland_protocol${SOLIBS
 FILES_libwayland-egl-mx6-dev = "${libdir}/pkgconfig/wayland-egl.pc"
 
 FILES_libvivante-dfb-mx6 += "${sysconfdir}/directfbrc"
+
+INSANE_SKIP_imx-gpu-viv-g2d += "dev-so"
+FILES_imx-gpu-viv-g2d = "${libdir}/libg2d* "
+FILES_imx-gpu-viv-g2d-dev = "${includedir}/g2d.h"
+FILES_imx-gpu-viv-g2d-dbg = "${libdir}/.debug/libg2d${SOLIBS}"
+
+FILES_imx-gpu-viv-tools = "${bindir}/gmem_info"
+FILES_imx-gpu-viv-tools-dbg = "${bindir}/gmem_info"
+
+FILES_imx-gpu-viv-tools-apitrace = "${bindir} ${libdir}"
+FILES_imx-gpu-viv-tools-apitrace-dbg = "${libdir}/*/*/.debug"
+
+FILES_imx-gpu-viv-demos = "/opt"
+FILES_imx-gpu-viv-demos-dbg = "/opt/viv_samples/*/*/.debug"
+INSANE_SKIP_imx-gpu-viv-demos += "rpaths"
 
 COMPATIBLE_MACHINE = "(mx6)"

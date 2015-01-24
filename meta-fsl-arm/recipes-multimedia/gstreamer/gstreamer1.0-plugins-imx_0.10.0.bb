@@ -2,7 +2,7 @@ DESCRIPTION = "GStreamer 1.0 plugins for i.MX platforms"
 LICENSE = "LGPLv2+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
 SECTION = "multimedia"
-DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base gpu-viv-g2d libfslcodec libfslvpuwrap virtual/kernel virtual/egl \
+DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base imx-gpu-viv libfslcodec libfslvpuwrap virtual/kernel virtual/egl \
            virtual/libgles2 ${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', '', d)}"
 
 SRCBRANCH ?= "master"

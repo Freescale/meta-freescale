@@ -2,7 +2,7 @@
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-DEPENDS_append_mx6 = " gst-fsl-plugin gpu-viv-bin-mx6q"
+DEPENDS_append_mx6 = " gst-fsl-plugin imx-gpu-viv"
 
 SRC_URI_append_mx6 = " file://IMX_MMCODEC_3.0.35_4.0.0.patch"
 

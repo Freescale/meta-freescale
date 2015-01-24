@@ -22,7 +22,7 @@ PACKAGECONFIG[aacp] += ",,libfslaacpcodec,libfslaacpcodec"
 MSDEPENDS = "libfslmsparser libfslmscodec"
 PACKAGECONFIG[wma10dec] += ",,${MSDEPENDS},${MSDEPENDS}"
 PACKAGECONFIG[wma8enc] += "--enable-wma8enc,--disable-wma8enc,${MSDEPENDS},${MSDEPENDS}"
-PACKAGECONFIG[overlaysink] += "--enable-overlaysink,--disable-overlaysink,gpu-viv-g2d"
+PACKAGECONFIG[overlaysink] += "--enable-overlaysink,--disable-overlaysink,imx-gpu-viv"
 
 FILES_${PN} = "${libdir}/gstreamer-1.0/*.so ${datadir}"
 FILES_${PN}-dbg += "${libdir}/gstreamer-1.0/.debug"
