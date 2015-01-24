@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2014 Freescale Semiconductor
+# Copyright (C) 2012-2015 Freescale Semiconductor
 # Copyright (C) 2012-2014 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -8,14 +8,13 @@ PE = "3"
 
 inherit autotools-brokensep
 
-DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 gpu-viv-bin-mx6q pixman"
+DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv pixman"
 
 LIC_FILES_CHKSUM = "file://EXA/src/vivante_fbdev/vivante.h;endline=19;md5=95cf961a2ceacdf7cf43caef25766779"
 
-SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}-beta.tar.gz \
-           file://ENGR00333447-Fix-EXA-driver-for-Xserver-1.16.patch"
-SRC_URI[md5sum] = "5695e9a3ddc37da0e783862e4108fbae"
-SRC_URI[sha256sum] = "c08def7fb98c11cba08bc21522bfb2785576b77db4b36954b15926401ac31c0e"
+SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz"
+SRC_URI[md5sum] = "3ffa0f66bc0935a50cda9ebd5240ee2d"
+SRC_URI[sha256sum] = "f5836d86944a667f9fd1789911cdb7d8c54f6158a7776d28124942c4a94ddff6"
 
 EXTRA_OEMAKE += "-C EXA/src -f makefile.linux prefix=${D}/usr \
                  sysroot=${STAGING_DIR_TARGET} \
@@ -27,7 +26,7 @@ CFLAGS += "-I${STAGING_INCDIR}/xorg \
            -I${STAGING_INCDIR}/drm \
            -I../../DRI_1.10.4/src"
 
-S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}-beta/"
+S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}/"
 
 # FIXME: The Freescale provided Makefile has hardcodec include paths
 #        and this does not work in case prefix is different than /usr,
