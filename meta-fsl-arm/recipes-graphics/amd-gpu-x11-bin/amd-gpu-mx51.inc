@@ -1,5 +1,5 @@
 # Copyright (C) 2011, 2012, 2013 Freescale
-# Copyright (C) 2011-2014 O.S. Systems Software LTDA.
+# Copyright (C) 2011-2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 LICENSE = "Proprietary"
@@ -17,11 +17,31 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
 
 inherit fsl-eula-unpack
 
+# For the packages that make up the OpenGL interfaces, inject variables so that
+# they don't get Debian-renamed (which would remove the -mx51 suffix).
+#
 # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
 # the source we cannot fix it. Disable the insane check for now.
-python () {
+python __anonymous() {
     for p in d.getVar('PACKAGES', True).split():
         d.setVar("INSANE_SKIP_%s" % p, "ldflags")
+
+    for p in (("libegl", "libegl1"), ("libgl", "libgl1"),
+              ("libgles2", "libglesv2-2")):
+        fullp = p[0] + "-mx51"
+        pkgs = " ".join(p)
+        d.setVar("DEBIAN_NOAUTONAME_" + fullp, "1")
+        d.appendVar("RREPLACES_" + fullp, pkgs)
+        d.appendVar("RPROVIDES_" + fullp, pkgs)
+        d.appendVar("RCONFLICTS_" + fullp, pkgs)
+
+        # For -dev, the first element is both the Debian and original name
+        fullp += "-dev"
+        pkgs = p[0] + "-dev"
+        d.setVar("DEBIAN_NOAUTONAME_" + fullp, "1")
+        d.appendVar("RREPLACES_" + fullp, pkgs)
+        d.appendVar("RPROVIDES_" + fullp, pkgs)
+        d.appendVar("RCONFLICTS_" + fullp, pkgs)
 }
 
 do_install () {
