@@ -3,7 +3,7 @@ DESCRIPTION = "Reset Configuration Word - hardware boot-time parameters for the 
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://rcw.py;beginline=8;endline=28;md5=9ba0b28922dd187b06b6c8ebcfdd208e"
 
-DEPENDS += "u-boot-ls1-tools-native"
+DEPENDS += "change-file-endianess-native"
 
 inherit deploy
 
