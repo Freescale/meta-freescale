@@ -4,7 +4,7 @@ inherit fsl-u-boot-localversion
 
 LOCALVERSION ?= "-${SRCBRANCH}"
 
-DEPENDS += "u-boot-ls1-tools-native"
+DEPENDS += "change-file-endianess-native"
 PROVIDES += "u-boot"
 
 do_compile_append () {
