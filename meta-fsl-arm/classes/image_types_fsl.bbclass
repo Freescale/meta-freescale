@@ -216,11 +216,11 @@ generate_mxs_sdcard () {
 		parted -s ${SDCARD} unit KiB mkpart primary 1024 $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
 		parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
 
-		# Empty 4 bytes from boot partition
+		# Empty 4 blocks from boot partition
 		dd if=/dev/zero of=${SDCARD} conv=notrunc seek=2048 count=4
 
-		# Write the bootstream in (2048 + 4) bytes
-		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.linux.sb of=${SDCARD} conv=notrunc seek=1 seek=2052
+		# Write the bootstream in (2048 + 4) blocks
+		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.linux.sb of=${SDCARD} conv=notrunc seek=2052
 		;;
 		u-boot)
 		# The disk layout used is:
