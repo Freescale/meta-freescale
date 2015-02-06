@@ -1,4 +1,4 @@
-# Copyright (C) 2012, 2014 O.S. Systems Software LTDA.
+# Copyright (C) 2012, 2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 LICENSE = "GPLv2"
@@ -9,6 +9,7 @@ inherit kernel fsl-kernel-localversion
 # Put a local version until we have a true SRCREV to point to
 LOCALVERSION ?= ""
 SCMVERSION ?= "y"
+SRCBRANCH ?= ""
 
 SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;branch=${SRCBRANCH} \
            file://defconfig \
