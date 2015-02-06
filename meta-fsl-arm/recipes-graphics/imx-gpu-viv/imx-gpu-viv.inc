@@ -202,6 +202,12 @@ do_install () {
         rm ${D}${libdir}/libGL.*
     fi
 
+    # skip packaging X11 specific tools if no X11 support is requested
+    if [ "${USE_X11}" = "no" ]; then
+        rm ${D}${bindir}/glretrace
+        rm ${D}${bindir}/eglretrace
+    fi
+
     # skip packaging wayland libraries if no support is requested
     if [ "${USE_WL}" = "no" ]; then
         rm ${D}${libdir}/libgc_wayland_protocol.*
