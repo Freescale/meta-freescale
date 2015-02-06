@@ -6,6 +6,6 @@ require recipes-kernel/linux/linux-dtb.inc
 
 DEPENDS += "lzop-native bc-native"
 
-SRC_URI = "git://github.com/Freescale/linux-mainline.git;branch=${SRCBRANCH} \
+SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${SRCBRANCH} \
            file://defconfig"
 LOCALVERSION = "-fslc"
