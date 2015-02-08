@@ -14,6 +14,8 @@ SRCBRANCH = "imx_3.10.53_1.1.0_ga"
 LOCALVERSION = "-1.1.0_ga"
 SRCREV = "496fbe0b831b77d0ea0a2c7bbd1d58820b3a01f7"
 
-SRC_URI += "file://0001-ARM-clk-imx6q-fix-video-divider-for-revision-1.0-of-.patch"
+SRC_URI += "file://0001-ARM-clk-imx6q-fix-video-divider-for-revision-1.0-of-.patch \
+            file://0002-ARM-imx6sl-Disable-imx6sl-specific-code-when-imx6sl-.patch \
+"
 
 COMPATIBLE_MACHINE = "(mx6)"
