@@ -27,6 +27,8 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://0002-ALSA-CVE-2014-4653.patch \
     file://sctp-CVE-2014-4667.patch \
     file://sctp-CVE-2014-7841.patch \
+    file://0001-ALSA-CVE-2014-4656.patch \
+    file://0002-ALSA-CVE-2014-4656.patch \
 "
 SRCREV = "6619b8b55796cdf0cec04b66a71288edd3057229"
 
