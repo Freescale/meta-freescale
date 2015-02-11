@@ -13,6 +13,9 @@ DEPENDS_append_mx6dl = " imx-lib imx-vpu libfslvpuwrap"
 DEPENDS_append_mx6sl = " imx-lib"
 DEPENDS_append_mx6sx = " imx-lib"
 
+# Make sure kernel sources are available
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
