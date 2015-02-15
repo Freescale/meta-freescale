@@ -1,3 +1,4 @@
+# Copyright (C) 2011-2015 O.S. Systems Software LTDA.
 # Copyright (C) 2011, 2012 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -20,6 +21,9 @@ SRC_URI[md5sum] = "d19148399b5d1c4dab90d0cc6f2c4789"
 SRC_URI[sha256sum] = "d7d85e9f13c6dd58addab89847f3a8a67f6382a54135c7978c9a95368af024d4"
 
 inherit autotools pkgconfig
+
+# Make sure kernel sources are available
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 FILES_${PN} += " ${libdir}/xorg/modules/drivers/*.so"
 FILES_${PN}-dbg += " ${libdir}/xorg/modules/drivers/.debug"
