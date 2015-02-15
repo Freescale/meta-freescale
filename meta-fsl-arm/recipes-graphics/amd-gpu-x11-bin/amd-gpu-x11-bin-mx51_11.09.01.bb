@@ -1,3 +1,4 @@
+# Copyright (C) 2011-2015 O.S. Systems Software LTDA.
 # Copyright (C) 2011, 2012 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -6,7 +7,7 @@ PR = "r12"
 
 # FIXME: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
-DEPENDS = "virtual/libx11 libxrender"
+DEPENDS = "virtual/libx11 libxrender libxext"
 
 include amd-gpu-mx51.inc
 
