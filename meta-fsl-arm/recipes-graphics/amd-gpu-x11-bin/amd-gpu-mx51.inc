@@ -8,7 +8,7 @@ SECTION = "libs"
 # FIXME: Replace for correct AMD license
 LIC_FILES_CHKSUM = "file://usr/include/VG/openvg.h;endline=30;md5=b0109611dd76961057d4c45ae6519802"
 
-PROVIDES = "virtual/egl virtual/libgles1 virtual/libgles2"
+PROVIDES = "amd-gpu-mx51 virtual/egl virtual/libgles1 virtual/libgles2"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
            file://egl.pc \
