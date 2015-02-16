@@ -2,10 +2,11 @@
 # Copyright (C) 2011, 2012 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
+require recipes-graphics/xorg-driver/xorg-driver-video.inc
+
 DESCRIPTION = "X.Org X server -- Freescale iMx framebuffer driver"
-LICENSE = "MIT-X"
-DEPENDS = "virtual/kernel virtual/xserver virtual/libx11 xproto randrproto util-macros amd-gpu-x11-bin-mx51 libz160"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f7bdc0c63080175d1667091b864cb12c"
+DEPENDS = "virtual/kernel virtual/xserver virtual/libx11 xproto randrproto util-macros amd-gpu-x11-bin-mx51 libz160"
 
 PR = "r12"
 
