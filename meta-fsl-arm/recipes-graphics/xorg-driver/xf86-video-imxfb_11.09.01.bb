@@ -26,6 +26,9 @@ inherit autotools pkgconfig
 # Make sure kernel sources are available
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
+# Skip warning
+UNKNOWN_CONFIGURE_WHITELIST += "--enable-neon"
+
 FILES_${PN} += " ${libdir}/xorg/modules/drivers/*.so"
 FILES_${PN}-dbg += " ${libdir}/xorg/modules/drivers/.debug"
 EXTRA_OECONF_armv7a = " --enable-neon "
