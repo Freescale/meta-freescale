@@ -10,17 +10,15 @@ IS_MX6SL = "0"
 IS_MX6SL_mx6sl = "1"
 
 PACKAGECONFIG_GL_mx5 = "gles2"
-PACKAGECONFIG_append_mx5 = " tslib icu examples"
 
 PACKAGECONFIG_GL_mx6q = "gles2"
 PACKAGECONFIG_GL_mx6dl = "gles2"
 PACKAGECONFIG_GL_mx6sl = "${@base_contains('DISTRO_FEATURES', 'x11', \
                             ' gl', '', d)}"
-PACKAGECONFIG_append_mx6 = " tslib icu examples"
 QT_CONFIG_FLAGS_append_mx6q = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
 QT_CONFIG_FLAGS_append_mx6dl = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
 QT_CONFIG_FLAGS_append_mx6sl = "${@base_contains('DISTRO_FEATURES', 'x11', \
-                            ' -no-eglfs', ' -no-opengl -linuxfb -no-icu -no-eglfs', d)}"
+                            ' -no-eglfs', ' -no-opengl -linuxfb -no-eglfs', d)}"
 
 do_configure_prepend_mx5() {
     sed -i 's!load(qt_config)!!' ${S}/mkspecs/linux-oe-g++/qmake.conf
