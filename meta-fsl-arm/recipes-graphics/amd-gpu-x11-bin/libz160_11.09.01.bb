@@ -1,9 +1,12 @@
+# Copyright (C) 2011-2015 O.S. Systems Software LTDA.
 # Copyright (C) 2011, 2012 Freescale
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "AMD libz160 gpu driver"
 LICENSE = "Proprietary"
 SECTION = "libs"
+DEPENDS = "amd-gpu-mx51"
+
 PR = "r2"
 
 #todo: Replace for correct AMD license
