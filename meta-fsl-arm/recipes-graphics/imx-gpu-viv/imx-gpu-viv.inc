@@ -280,6 +280,9 @@ FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
 RDEPENDS_libgles2-mx6 = "libglslc-mx6"
 
 FILES_libgles3-mx6-dev = "${includedir}/GLES3"
+# as long as there is no libgles3-mx6: ship libgles3-mx6-dev along with
+# libgles2-mx6-dev - otherwise GLES3 headers have to be added manually
+RDEPENDS_libgles2-mx6-dev += "libgles3-mx6-dev"
 
 FILES_libglslc-mx6 = "${libdir}/libGLSLC${SOLIBS}"
 FILES_libglslc-mx6-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
