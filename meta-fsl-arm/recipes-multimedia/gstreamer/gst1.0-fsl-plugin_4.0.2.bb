@@ -12,6 +12,7 @@ SRC_URI[md5sum] = "5ea09ead59df2f2230074f1173f41729"
 SRC_URI[sha256sum] = "02acd2608c98d464e41b1f6eba482c5c33437624c78140d26cc0e3213dc71304"
 
 DEPENDS_append = " gstreamer1.0 gstreamer1.0-plugins-base"
+RDEPENDS_${PN} += "gstreamer1.0-plugins-good-id3demux"
 
 PACKAGECONFIG ?= "overlaysink"
 # FIXME: Add all features

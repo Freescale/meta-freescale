@@ -15,6 +15,7 @@ SRC_URI[md5sum] = "8121695592dd8e2cd9407993ba1f1965"
 SRC_URI[sha256sum] = "e75b768fb37bb232521bc27f45258aff17318208e8f229490dcd2df0ab44b80a"
 
 DEPENDS_append = " gstreamer gst-plugins-base"
+RDEPENDS_${PN} += "gst-plugins-good-id3demux"
 
 # FIXME: Add all features
 # feature from excluded mm packages

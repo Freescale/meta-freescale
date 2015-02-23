@@ -38,7 +38,7 @@ PACKAGES =+ "${PN}-libmfwsconf ${PN}-libgplaycore ${PN}-libgstfsl \
 
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "libfslcodec-aac libfslcodec-mp3 libfslcodec-oggvorbis"
-RDEPENDS_${PN} += "gst-plugins-good-id3demux libfslparser ${BEEP_RDEPENDS}"
+RDEPENDS_${PN} += "libfslparser ${BEEP_RDEPENDS}"
 
 FILES_${PN}-libmfwsconf = "${libdir}/libmfwsconf${SOLIBS}"
 FILES_${PN}-libme = "${libdir}/libme${SOLIBS}"
