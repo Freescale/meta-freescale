@@ -36,6 +36,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://0003-shmem-CVE-2014-4171.patch \
     file://fs-CVE-2014-4014.patch \
     file://tracing-CVE-2014-7825_CVE-2014-7826.patch \
+    file://security-keys-CVE-2014-9529.patch \
 "
 SRCREV = "6619b8b55796cdf0cec04b66a71288edd3057229"
 
