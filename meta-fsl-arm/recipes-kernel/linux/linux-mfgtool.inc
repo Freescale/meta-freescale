@@ -20,7 +20,7 @@ MODULE_IMAGE_BASE_NAME = "modules-mfgtool-${PKGE}-${PKGV}-${PKGR}-${MACHINE}-${D
 MODULE_TARBALL_SYMLINK_NAME = "modules-mfgtool-${MACHINE}.tgz"
 
 # Ensures we prefer our mfgtool specific files
-FILESEXTRAPATHS_prepend = "${THISDIR}/${ORIG_PN}-${PV}:${THISDIR}/${ORIG_PN}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${ORIG_PN}-${PV}:${THISDIR}/${ORIG_PN}:"
 
 python mfgtool_recipe_handler () {
     pn = e.data.getVar("PN", True)
