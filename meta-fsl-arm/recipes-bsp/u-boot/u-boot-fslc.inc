@@ -11,7 +11,7 @@ was submitted for revision and it takes some time to become part of a stable \
 version, or because it is not applicable for upstreaming."
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=c7383a594871c03da76b3707929d2919"
-COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6|vf60)"
+COMPATIBLE_MACHINE = "(mxs|mx3|mx5|mx6|vf)"
 
 DEPENDS_mxs += "elftosb-native openssl-native"
 
