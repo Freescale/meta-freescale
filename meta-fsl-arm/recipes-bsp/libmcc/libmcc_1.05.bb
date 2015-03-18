@@ -3,7 +3,7 @@ SUMMARY = "Multicore communication Library"
 LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c49712341497d0b5f2e40c30dff2af9d"
 
-DEPENDS = "kernel-module-mcc"
+DEPENDS = "virtual/kernel-module-mcc"
 
 SRC_URI = "http://repository.timesys.com/buildsources/l/libmcc/libmcc-${PV}/libmcc-${PV}.tar.bz2 \
            file://build-Fix-symlink-generation.patch \
@@ -16,7 +16,7 @@ S = "${WORKDIR}/libmcc-${PV}"
 
 CFLAGS += "-I${STAGING_KERNEL_DIR}/include"
 
-RDEPENDS_${PN} = "kernel-module-mcc"
+RDEPENDS_${PN} = "virtual/kernel-module-mcc"
 
 COMPATIBLE_MACHINE = "(vf60)"
 
@@ -24,4 +24,4 @@ do_install() {
     oe_runmake 'DESTDIR=${D}' install
 }
 
-RDEPENDS_${PN}-dev += "kernel-module-mcc-dev"
+RDEPENDS_${PN}-dev += "virtual/kernel-module-mcc-dev"

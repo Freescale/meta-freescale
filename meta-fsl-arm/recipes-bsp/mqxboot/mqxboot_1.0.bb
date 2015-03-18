@@ -3,7 +3,7 @@ SUMMARY = "MQX Image loader - starts an MQX image on the M4"
 LICENSE = "GPL-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c49712341497d0b5f2e40c30dff2af9d"
 
-DEPENDS = "kernel-module-mcc"
+DEPENDS = "virtual/kernel-module-mcc"
 
 SRC_URI = "http://repository.timesys.com/buildsources/m/mqxboot/mqxboot-${PV}/mqxboot-${PV}.tar.bz2"
 
@@ -14,7 +14,7 @@ S = "${WORKDIR}/mqxboot-${PV}"
 
 CFLAGS += "-I${STAGING_KERNEL_DIR}/include"
 
-RDEPENDS_${PN} = "kernel-module-mcc"
+RDEPENDS_${PN} = "virtual/kernel-module-mcc"
 
 COMPATIBLE_MACHINE = "(vf60)"
 
