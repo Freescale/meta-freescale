@@ -6,7 +6,7 @@
 # This file must be included after the original linux-imx.inc file
 # as it overrides the needed values.
 #
-# Copyright (C) 2014 O.S. Systems Software LTDA.
+# Copyright (C) 2014, 2015 O.S. Systems Software LTDA.
 
 # Adjust provides
 PROVIDES = "linux-mfgtool"
@@ -18,6 +18,8 @@ KERNEL_IMAGE_BASE_NAME = "${KERNEL_IMAGETYPE}-mfgtool-${PKGE}-${PKGV}-${PKGR}-${
 KERNEL_IMAGE_SYMLINK_NAME = "${KERNEL_IMAGETYPE}-mfgtool-${MACHINE}"
 MODULE_IMAGE_BASE_NAME = "modules-mfgtool-${PKGE}-${PKGV}-${PKGR}-${MACHINE}-${DATETIME}"
 MODULE_TARBALL_SYMLINK_NAME = "modules-mfgtool-${MACHINE}.tgz"
+STAGING_KERNEL_DIR = "${TMPDIR}/work-shared/${MACHINE}/kernel-mfgtool-source"
+STAGING_KERNEL_BUILDDIR = "${TMPDIR}/work-shared/${MACHINE}/kernel-mfgtool-build-artifacts"
 
 # Ensures we prefer our mfgtool specific files
 FILESEXTRAPATHS_prepend := "${THISDIR}/${ORIG_PN}-${PV}:${THISDIR}/${ORIG_PN}:"
@@ -65,17 +67,16 @@ python () {
 addhandler mfgtool_recipe_handler
 mfgtool_recipe_handler[eventmask] = "bb.event.RecipePreFinalise"
 
-# FIXME: We need to remove the KERNEL_SRC_PATH contents as
+# FIXME: Avoid depmod data emiting as kernel-abiversion path is
+#        hardcoded.
+emit_depmod_pkgdata() {
+    :
+}
+
+# FIXME: We need to remove the STAGING_KERNEL_BUILDDIR contents as
 #        kernel.bbclass has no way to skip its installation.
 # FIXME: It is not possible to have external modules against
 #        this kernel variant.
 do_install_append() {
-	rm -r ${D}${KERNEL_SRC_PATH}
-	rmdir ${D}/usr/src ${D}/usr
-}
-
-# FIXME: We must to avoid the staging of KERNEL_SRC_PATH as
-#        it is being removed (see above FIXME items).
-sysroot_stage_all() {
-    :
+    rm -r ${STAGING_KERNEL_BUILDDIR}
 }
