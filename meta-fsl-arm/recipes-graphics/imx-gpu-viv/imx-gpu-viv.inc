@@ -243,6 +243,8 @@ do_install () {
     find ${D}${includedir} -type f -exec chmod 644 {} \;
 }
 
+ALLOW_EMPTY_${PN} = "1"
+
 FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
