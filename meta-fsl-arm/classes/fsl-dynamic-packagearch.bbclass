@@ -16,7 +16,7 @@
 #
 # To use the class, specify, for example:
 #
-# MACHINE_SOCARCH_soc = "${TUNE_PKGARCH}-soc"
+# MACHINE_SOCARCH_SUFFIX_soc = "-soc"
 #
 # and the need filters, as:
 #
@@ -45,3 +45,11 @@ python __anonymous () {
             bb.debug(1, "Use '%s' as package archictecture for '%s'" % (package_arch, PN))
             d.setVar("PACKAGE_ARCH", package_arch)
 }
+
+ARM_EXTRA_SOCARCH = "${ARMPKGARCH}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
+THUMB_EXTRA_SOCARCH = "${ARMPKGARCH}${ARM_THUMB_SUFFIX}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
+
+PACKAGE_EXTRA_ARCHS_append = " ${@bb.utils.contains('TUNE_FEATURES', 'arm', '${ARM_EXTRA_SOCARCH}', '', d) } \
+                               ${@bb.utils.contains('TUNE_FEATURES', 'thumb', '${THUMB_EXTRA_SOCARCH}', '', d) }"
+
+MACHINE_SOCARCH = "${@bb.utils.contains('ARM_INSTRUCTION_SET', 'thumb', '${THUMB_EXTRA_SOCARCH}', '${ARM_EXTRA_SOCARCH}', d)}"

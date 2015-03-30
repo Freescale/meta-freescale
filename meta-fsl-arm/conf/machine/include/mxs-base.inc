@@ -24,10 +24,9 @@ MACHINE_GSTREAMER_PLUGIN ?= ""
 MACHINE_GSTREAMER_PLUGIN_mx28 ?= "gst-fsl-plugin"
 
 # Sub-architecture support
-MACHINE_SOCARCH ?= ""
-MACHINE_SOCARCH_mx23 = "${TUNE_PKGARCH}-mx23"
-MACHINE_SOCARCH_mx28 = "${TUNE_PKGARCH}-mx28"
-PACKAGE_EXTRA_ARCHS_append = " ${MACHINE_SOCARCH}"
+MACHINE_SOCARCH_SUFFIX ?= ""
+MACHINE_SOCARCH_SUFFIX_mx23 = "-mx23"
+MACHINE_SOCARCH_SUFFIX_mx28 = "-mx28"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser gst-fsl-plugins"
