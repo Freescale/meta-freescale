@@ -7,7 +7,7 @@
 #  SCMVERSION        Puts the Git hash in kernel local version
 #  LOCALVERSION      Value used in LOCALVERSION (default to '+fslc')
 #
-# Copyright 2014 (C) O.S. Systems Software LTDA.
+# Copyright 2014, 2015 (C) O.S. Systems Software LTDA.
 
 SCMVERSION ??= "y"
 LOCALVERSION ??= "+fslc"
@@ -34,6 +34,6 @@ do_configure_prepend() {
 	if [ "${SCMVERSION}" = "y" ]; then
 		# Add GIT revision to the local version
 		head=`git --git-dir=${S}/.git rev-parse --verify --short HEAD 2> /dev/null`
-		printf "%s%s" +g $head > ${B}/.scmversion
+		printf "%s%s" +g $head > ${S}/.scmversion
 	fi
 }
