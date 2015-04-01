@@ -14,4 +14,4 @@ UBOOT_ENTRYPOINT_ls102xa = "0x80008000"
 MACHINE_FEATURES = "pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS = "udev-extraconf"
 
-DEFAULTTUNE_ls102xa = "cortexa7hf-neon"
+DEFAULTTUNE_ls102xa ?= "cortexa7hf-neon"
