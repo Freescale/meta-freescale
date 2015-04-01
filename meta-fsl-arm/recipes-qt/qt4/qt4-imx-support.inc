@@ -1,5 +1,13 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/qt4:"
 
+python __anonymous () {
+    families = ['mx5', 'mx6']
+    cur_families = (d.getVar('SOC_FAMILY', True) or '').split(':')
+    if any(map(lambda x: x in cur_families,
+               families)):
+        d.appendVarFlag('do_configure', 'depends', ' virtual/kernel:do_shared_workdir')
+}
+
 SRC_URI_append_mx5 += "file://0001-Add-support-for-i.MX-codecs-to-phonon.patch"
 SRC_URI_append_mx6 += " \
 	file://0001-Add-support-for-i.MX-codecs-to-phonon.patch \
