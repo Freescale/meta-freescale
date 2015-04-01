@@ -1,0 +1,20 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/qt4:"
+
+SRC_URI_append_mx5 += "file://0001-Add-support-for-i.MX-codecs-to-phonon.patch"
+SRC_URI_append_mx6 += " \
+	file://0001-Add-support-for-i.MX-codecs-to-phonon.patch \
+	file://0002-i.MX-video-renderer-Allow-v4l-device-from-environmen.patch \
+	file://0003-i.MX6-force-egl-visual-ID-33.patch \
+"
+
+DEPENDS_append_mx5 = " virtual/kernel virtual/libgles2"
+QT_GLFLAGS_mx5 = "-opengl es2 -openvg"
+QT_CONFIG_FLAGS_append_mx5 = " -I${STAGING_KERNEL_DIR}/include/"
+
+DEPENDS_append_mx6 = " virtual/kernel virtual/libgles2"
+QT_GLFLAGS_mx6 = "-opengl es2 -openvg"
+QT_CONFIG_FLAGS_append_mx6 = " -I${STAGING_KERNEL_DIR}/include/uapi \
+                               -I${STAGING_KERNEL_DIR}/include/ \
+                               -DLINUX=1 -DEGL_API_FB=1 \
+                               -DQT_QPA_EXPERIMENTAL_TOUCHEVENT=1"
+
