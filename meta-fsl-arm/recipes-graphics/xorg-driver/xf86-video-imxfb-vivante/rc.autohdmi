@@ -9,21 +9,31 @@
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
-do_start() {
-	export DISPLAY=:0
-	autohdmi &
-	exit 0
-}
+# Source function library.
+. /etc/init.d/functions
 
 case "$1" in
     start)
-	do_start
+	echo -n "Starting autohdmi: "
+	export DISPLAY=:0
+	autohdmi &
+	echo
+	exit 0
         ;;
-    restart|reload|force-reload)
+    reload|force-reload)
         echo "Error: argument '$1' not supported" >&2
         exit 3
         ;;
     stop)
+        echo -n "Shutting down autohdmi: "
+        killproc autohdmi
+        echo
+        ;;
+    restart)
+        echo -n "Restarting autohdmi: "
+        $0 stop
+        $0 start
+	echo
         ;;
     *)
         echo "Usage: $0 start|stop" >&2
