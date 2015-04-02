@@ -5,7 +5,7 @@
 DESCRIPTION = "GPU driver and apps for imx6"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://gpu-core/usr/include/gc_vdk.h;endline=11;md5=c4713c78d7f52bf2f92688a6f8f0cc93"
+LIC_FILES_CHKSUM = "file://gpu-core/usr/include/gc_vdk.h;beginline=5;endline=11;md5=12c028cbbbedb4b8770267131500592c"
 
 DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
                              base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -20,11 +20,8 @@ PE = "1"
 
 inherit fsl-eula-unpack
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
-           file://egl_linuxfb.pc \
-           file://egl_directfb.pc \
-           file://egl_wayland.pc \
-          "
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
 	libgles-mx6 libgles-mx6-dev libgles-mx6-dbg \
@@ -44,8 +41,8 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev libgc-wayland-protocol-mx6-dbg \
 	libwayland-egl-mx6-dev \
 	imx-gpu-viv-g2d imx-gpu-viv-g2d-dev imx-gpu-viv-g2d-dbg \
-	imx-gpu-viv-tools imx-gpu-viv-tools-dbg\
-	imx-gpu-viv-tools-apitrace imx-gpu-viv-tools-apitrace-dbg\
+	imx-gpu-viv-tools imx-gpu-viv-tools-dbg \
+	imx-gpu-viv-tools-apitrace imx-gpu-viv-tools-apitrace-dbg \
 	imx-gpu-viv-demos imx-gpu-viv-demos-dbg \
 "
 
@@ -117,14 +114,14 @@ do_install () {
     cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
     cp -r ${S}/gpu-demos/opt ${D}
     cp -axr ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
-    cp -axr ${S}/apitrace/usr/lib/* ${D}${libdir}
-    cp -axr ${S}/apitrace/usr/bin/* ${D}${bindir}
 
     install -d ${D}${libdir}/pkgconfig
 
     # The preference order, based in DISTRO_FEATURES, is x11, wayland, directfb and fb
     if [ "${USE_X11}" = "yes" ]; then
         cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
+        cp -axr ${S}/apitrace/x11/usr/lib/* ${D}${libdir}
+        cp -axr ${S}/apitrace/x11/usr/bin/* ${D}${bindir}
 
         backend=x11
 
@@ -140,9 +137,12 @@ do_install () {
         #    install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
         #fi
     elif [ "${USE_WL}" = "yes" ]; then
+        cp -axr ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
+        cp -axr ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
+
         backend=wl
 
-        install -m 0644 ${WORKDIR}/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg.pc ${D}${libdir}/pkgconfig/vg.pc
@@ -158,13 +158,17 @@ do_install () {
         if [ "${USE_DFB}" = "yes" ]; then
             install -d ${D}/${sysconfdir}
             install -m 644 ${S}/gpu-core/etc/directfbrc ${D}/${sysconfdir}/directfbrc
-            install -m 0644 ${WORKDIR}/egl_directfb.pc ${D}${libdir}/pkgconfig/egl.pc
+            install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_directfb.pc ${D}${libdir}/pkgconfig/egl.pc
 
             cp -r ${S}/gpu-core/usr/lib/directfb-* ${D}${libdir}
+            cp -axr ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
+            cp -axr ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
             backend=dfb
         else
             # Regular framebuffer
-            install -m 0644 ${WORKDIR}/egl_linuxfb.pc ${D}${libdir}/pkgconfig/egl.pc
+            install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_linuxfb.pc ${D}${libdir}/pkgconfig/egl.pc
+            cp -axr ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
+            cp -axr ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
             backend=fb
         fi
         mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
@@ -200,12 +204,6 @@ do_install () {
     # packaging them.
     if [ "${USE_X11}" = "no" ]; then
         rm ${D}${libdir}/libGL.*
-    fi
-
-    # skip packaging X11 specific tools if no X11 support is requested
-    if [ "${USE_X11}" = "no" ]; then
-        rm ${D}${bindir}/glretrace
-        rm ${D}${bindir}/eglretrace
     fi
 
     # skip packaging wayland libraries if no support is requested
