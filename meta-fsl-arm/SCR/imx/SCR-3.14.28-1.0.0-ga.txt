@@ -1,0 +1,355 @@
+Freescale Software Content Register
+
+Release - Linux 3.14.28-1.0.0_GA
+
+Date Created:              2015-Feb-12
+
+--------------------------------------------
+BSP PACKAGES
+--------------------------------------------
+
+Package:                   linux-2.6-imx
+
+Outgoing License:          GPLv2+
+
+License Files:             COPYING: GPLv2
+
+Package Category:          BSP
+
+Type of content:           Source code
+
+Description and comments:  The Linux kernel with Freescale-specific drivers
+
+Release Location:          git.freescale.com branch imx_3.14.28_1.0.0_ga
+
+Origin:                    Freescale and kernel.org - https://www.kernel.org/
+
+--------------------------------------------
+
+Package:                   u-boot-imx
+
+Outgoing License:          GPLv2+
+
+License Files:             COPYING: GPLv2
+
+Package Category:          Bootloader
+
+Type of content:           Source code
+
+Description and comments:  Bootloader with Freescale-specific capabilities
+
+Release Location:          git.freescale.com branch imx_v2014.04_3.14.28_1.0.0_ga
+
+Origin:                    Freescale
+                           Das U-Boot - Universal Bootloader (LGPLv2+) - http://www.denx.de/wiki/U-Boot/WebHome
+                           Android Open Source Project (BSD-2-Clause) - https://source.android.com/
+                           zlib (zlib license) - http://www.zlib.net/
+
+--------------------------------------------
+
+Package:                   firmware-imx-3.14.28-1.0.0.bin
+
+Outgoing License:          LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+License Files:             COPYING: LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+Package Category:          BSP
+
+Type of content:           Binaries
+
+Description and comments:  BSP firmware - SDMA, VPU
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale and Chips and Media
+
+--------------------------------------------
+
+Package:                   imx-kobs-3.14.28-1.0.0.tar.gz
+
+Outgoing License:          GPLv2+
+
+License Files:             COPYING: GPLv2
+
+Package Category:          BSP
+
+Type of content:           Source code
+
+Description and comments:  NAND boot writer
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+                           AES (BSD-3-Clause) - http://brgladman.org/oldsite/AES/
+                           Secure Hash Algorithm Implementation (Public Domain) - http://www.nic.funet.fi/pub/crypt/hash/sha/
+                           IGEP Linux Kernel (GPLv2+) - http://www.igep.es/
+
+--------------------------------------------
+
+Package:                   imx-lib-3.14.28-1.0.0.tar.gz
+
+Outgoing License:          LGPLv2.1+
+
+License Files:             See source code.
+
+Package Category:          BSP
+
+Type of content:           Source code
+
+Description and comments:  BSP libraries
+ls
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+
+--------------------------------------------
+
+Package:                   imx-test-3.14.28-1.0.0.tar.gz
+
+Outgoing License:          Each test has its own license
+
+License Files:             See source code.
+
+Package Category:          BSP
+
+Type of content:           Source code
+
+Description and comments:  Linux unit test applications
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+                           Linux Test Project (GPLv2+) - https://github.com/linux-test-project/ltp
+                           Chips and Media Resource (GPL2+)
+                           RTC Test in Linux Kernel (GPLv2+)
+                           BlueZ (GPLv2+) - http://www.bluez.org/
+                           Embedded Alley v4l2 test (GPLv2+)
+                           Android Open Source Project (BSD-2-Clause) - https://source.android.com/
+                           Hantro Memalloc in Linux (GPLv2+)
+                           Linux driver for Atheros AR5210 802.11a (GPLv2+) - http://sourceforge.net/projects/ar5k/
+                           Hannu Savolainen's soundcard.h (BSD 2-clause)
+
+--------------------------------------------
+
+Package:                   imx-vpu-5.4.28.bin
+
+Outgoing License:          LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+License Files:             COPYING: LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+Package Category:          BSP
+
+Type of content:           Source code
+
+Description and comments:  VPU library
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale and Chips and Media
+
+--------------------------------------------
+GRAPHICS PACKAGES
+--------------------------------------------
+
+Package:                   imx-gpu-viv-5.0.11.p4.4.bin
+
+Outgoing License:          LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+License Files:             COPYING: LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+Package Category:          Graphics
+
+Type of content:           Binaries, scripts and header files
+
+Description and comments:  GPU Core IP in binary and test application source
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale and Vivante
+                           Khronos Group (MIT) - http://www.khronos.org/opencl/
+                           Mesa3D - Mesa Lib (GL3ext header) (SGI Free Software License B v2.0) - http://mesa3d.sourceforge.net/
+
+--------------------------------------------
+
+Package:                   imx-gpu-viv-kernel-5.0.11.p4.4.tar.gz
+
+Outgoing License:          GPLv2+
+
+License Files:             See source code.
+
+Package Category:          Graphics
+
+Type of content:           Source code
+
+Description and comments:  GPU kernel source provided for kernel loadable modules
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale and Vivante Corp.
+
+--------------------------------------------
+
+Package:                   xserver-xorg-video-imx-viv-5.0.11.p4.4.tar.gz
+
+Outgoing License:          GPLv2+
+
+License Files:             See source code.
+
+Package Category:          Graphics
+
+Type of content:           Source code
+
+Description and comments:  Xserver Library extensions
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale and Vivante Corp.
+                           xorg-server (MIT) - http://xorg.freedesktop.org/
+                           XFree86 Project (XFree86 License v1.0) - http://sourceforge.net/projects/xfree86/
+                           xf86-video-freedreno (MIT) - http://github.com/freedreno/xf86-video-freedreno/
+
+--------------------------------------------
+
+Package:                   fsl-gpu-sdk-2.0.1.bin
+
+Outgoing License:          Apache 2.0
+
+License Files:             COPYING: Apache license
+
+Package Category:          Graphics
+
+Type of content:           Source code
+
+Description and comments:  Graphics sample applications
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+                           Templatized C++ Command Line Parser (tclap) (MIT) - http://sourceforge.net/projects/tclap/
+                           Opengles book samples (MIT) - http://github.com/zemanel/opengles-book-samples/
+                           XFree86 (XFree86 License v 1.0) - http://www.xfree86.org/
+                           Wayland (Seetex License) - http://cgit.freedesktop.org/~krh/wayland/
+
+--------------------------------------------
+MULTIMEDIA PACKAGES
+--------------------------------------------
+
+Package:                   gst1.0-fsl-plugins-4.0.3.tar.gz
+
+Outgoing License:          LGPLv2.1+
+
+License Files:             COPYING (GPLv2)
+                           COPYING-LGPL-2
+                           COPYING-LGPL-2.1
+
+Package Category:          Multimedia
+
+Type of content:           Source code
+
+Description and comments:  Freescale Gstreamer 1.0 plugins
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+                           Gstreamer plugins-Base (LGPLv2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-base/
+                           Gstreamer plugins-Good (LGPLv2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-good/
+                           Gstreamer plugins-Bad (LGPLv2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-bad/
+
+--------------------------------------------
+
+Package:                   gst-fsl-plugins-4.0.3.tar.gz
+
+Outgoing License:          LGPLv2.1+
+
+License Files:             COPYING (GPLv2)
+                           COPYING-LGPL-2
+                           COPYING-LGPL-2.1
+
+Package Category:          Multimedia
+
+Type of content:           Source code
+
+Description and comments:  Freescale Gstreamer 0.1 plugins
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+                           Gstreamer plugins-Base (LGPLv2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-base/
+                           Gstreamer plugins-Good (LGPLv2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-good/
+                           Gstreamer plugins-Bad (LGPLv2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-bad/
+                           mingw-runtime tchar.h (public domain) - http://www.mingw.org/
+
+--------------------------------------------
+
+Package:                   libfslcodec-4.0.3.bin
+
+Outgoing License:          LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+License Files:             COPYING: LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+Package Category:          Multimedia
+
+Type of content:           Binaries and header files
+
+Description and comments:  Freescale multimedia codec libraries
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+
+--------------------------------------------
+
+Package:                   libfslparser-4.0.3.bin
+
+Outgoing License:          LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+License Files:             COPYING: LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+Package Category:          Multimedia
+
+Type of content:           Binaries and header files
+
+Description and comments:  Freescale multimedia parser libraries
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+
+--------------------------------------------
+
+Package:                   libfslvpuwrap-1.0.58.bin
+
+Outgoing License:          LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+License Files:             COPYING: LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+Package Category:          Multimedia
+
+Type of content:           Source code
+
+Description and comments:  Freescale VPU wrapper library
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+                           sqlite (Public Domain) - http://www.hwaci.com/sw/sqlite/index.html
+
+--------------------------------------------
+
+Package:                   fslqtapplications-1.0.1.bin
+
+Outgoing License:          LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+License Files:             COPYING: LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+
+Package Category:          Multimedia
+
+Type of content:           Binaries
+
+Description and comments:  i.MX QT multimedia player application
+
+Release Location:          Freescale mirror
+
+Origin:                    Freescale
+
+--------------------------------------------
