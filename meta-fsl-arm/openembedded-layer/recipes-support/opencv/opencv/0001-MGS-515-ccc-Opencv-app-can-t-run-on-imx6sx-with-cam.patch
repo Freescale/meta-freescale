@@ -1,0 +1,46 @@
+From 90f869763026e8ff18aeecde217d778f00e4f294 Mon Sep 17 00:00:00 2001
+From: Shawn Xiao <b49994@freescale.com>
+Date: Tue, 10 Feb 2015 16:11:59 +0800
+Subject: [PATCH] MGS-515 [#ccc] Opencv app can't run on imx6sx with cam
+
+This issue is caused by the no support of VIDIOC_QUERYCTRL ioctl
+item in latest cam driver.
+
+Modified the errno in check logic to compatible with new driver.
+
+Feb 10, 2015
+
+Upstream-Status: Pending
+
+Signed-off-by: Shawn Xiao <b49994@freescale.com>
+---
+ modules/highgui/src/cap_v4l.cpp | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/modules/highgui/src/cap_v4l.cpp b/modules/highgui/src/cap_v4l.cpp
+index c9fca05..8c46b6c 100644
+--- a/modules/highgui/src/cap_v4l.cpp
++++ b/modules/highgui/src/cap_v4l.cpp
+@@ -707,7 +707,8 @@ static void v4l2_scan_controls(CvCaptureCAM_V4L* capture)
+ 
+     } else {
+ 
+-      if (errno == EINVAL)
++      if (errno == ENOTTY ||
++          errno == EINVAL)
+         continue;
+ 
+       perror ("VIDIOC_QUERYCTRL");
+@@ -774,7 +775,8 @@ static void v4l2_scan_controls(CvCaptureCAM_V4L* capture)
+ 
+     } else {
+ 
+-      if (errno == EINVAL)
++      if (errno == ENOTTY ||
++          errno == EINVAL)
+         break;
+ 
+       perror ("VIDIOC_QUERYCTRL");
+-- 
+2.3.0
+
