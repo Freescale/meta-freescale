@@ -39,7 +39,7 @@ python __anonymous () {
         elif list(machine_socarch_filter & (provides | depends)):
             package_arch = d.getVar("MACHINE_SOCARCH", True)
             if not package_arch:
-                bb.parse.SkipPackage("You must set MACHINE_SOCARCH as MACHINE_SOCARCH_FILTER is set for this SoC.")
+                raise bb.parse.SkipPackage("You must set MACHINE_SOCARCH as MACHINE_SOCARCH_FILTER is set for this SoC.")
 
         if package_arch:
             bb.debug(1, "Use '%s' as package archictecture for '%s'" % (package_arch, PN))
