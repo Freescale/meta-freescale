@@ -8,11 +8,17 @@ DEPENDS += "change-file-endianess-native"
 PROVIDES += "u-boot"
 
 do_compile_append () {
-    case "${UBOOT_MACHINE}" in
-        *spi*) tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${S}/u-boot.bin ${S}/u-boot.swap.bin 8 
-        mv ${S}/u-boot.swap.bin ${S}/u-boot.bin;;
-        *sdcard*)  mv ${S}/u-boot-with-spl-pbl.bin  ${S}/u-boot.bin;;
-    esac
+    if [ "x${UBOOT_CONFIG}" != "x" ]
+    then
+        for config in ${UBOOT_MACHINE}; do
+            case "${config}" in
+                *spi*) tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${S}/${config}/u-boot.bin ${S}/${config}/u-boot.swap.bin 8
+                mv ${S}/${config}/u-boot.swap.bin ${S}/u-boot-${type}.${UBOOT_SUFFIX};;
+                *sdcard*)  mv ${S}/${config}/u-boot-with-spl-pbl.bin  ${S}/${config}/u-boot.bin;;
+            esac
+        done
+    fi
+
 }
 
 PACKAGES += "${PN}-images"
