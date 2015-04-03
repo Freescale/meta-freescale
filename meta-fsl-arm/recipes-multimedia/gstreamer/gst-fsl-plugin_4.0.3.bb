@@ -1,4 +1,4 @@
-# Copyright (C) 2013-14 Freescale Semiconductor
+# Copyright (C) 2013-2015 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require gst-fsl-plugin.inc
@@ -11,8 +11,8 @@ SRC_URI = "${FSL_MIRROR}/gst-fsl-plugins-${PV}.tar.gz \
 
 S = "${WORKDIR}/gst-fsl-plugins-${PV}"
 
-SRC_URI[md5sum] = "8121695592dd8e2cd9407993ba1f1965"
-SRC_URI[sha256sum] = "e75b768fb37bb232521bc27f45258aff17318208e8f229490dcd2df0ab44b80a"
+SRC_URI[md5sum] = "0d69606242ecda0b1c8e397084bb2277"
+SRC_URI[sha256sum] = "568883b2a1d8d32e4004cb3f123790d0b4286c91c1fac38c9dc8e20bd1250764"
 
 DEPENDS_append = " gstreamer gst-plugins-base"
 RDEPENDS_${PN} += "gst-plugins-good-id3demux"
