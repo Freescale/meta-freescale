@@ -13,10 +13,12 @@ PACKAGECONFIG_GL_mx5 = "gles2"
 
 PACKAGECONFIG_GL_mx6q = "gles2"
 PACKAGECONFIG_GL_mx6dl = "gles2"
+PACKAGECONFIG_GL_mx6sx = "gles2"
 PACKAGECONFIG_GL_mx6sl = "${@base_contains('DISTRO_FEATURES', 'x11', \
                             ' gl', '', d)}"
 QT_CONFIG_FLAGS_append_mx6q = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
 QT_CONFIG_FLAGS_append_mx6dl = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
+QT_CONFIG_FLAGS_append_mx6sx = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
 QT_CONFIG_FLAGS_append_mx6sl = "${@base_contains('DISTRO_FEATURES', 'x11', \
                             ' -no-eglfs', ' -no-opengl -linuxfb -no-eglfs', d)}"
 
