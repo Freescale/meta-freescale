@@ -13,7 +13,8 @@ RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparser
 
 SRCBRANCH ?= "master"
 SRCREV = "898e51dbdb01926d6423d0d31a9530ec6deb5192"
-SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH} \
+           file://0001-pxp-Check-for-new-format-specifier-from-the-new-FSL-.patch"
 
 S = "${WORKDIR}/git"
 
