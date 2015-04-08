@@ -19,6 +19,8 @@ S = "${WORKDIR}/git"
 
 inherit waf
 
+do_compile[depends] += "virtual/kernel:do_shared_workdir"
+
 # configure the eglvivsink element to use the appropriate EGL platform code
 # X11 if x11 is present in DISTRO_FEATURES
 # Wayland if x11 is not present in DISTRO_FEATURES, but wayland is
