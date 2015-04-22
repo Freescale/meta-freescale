@@ -1,3 +1,2 @@
 # Set i.MX specific dependencies and device type
-DEPENDS += "virtual/libgles2"
-EGLINFO_DEVICE = "imx6"
+EGLINFO_DEVICE_mx6 = "imx6"
