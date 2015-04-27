@@ -7,6 +7,7 @@ EXTRA_OECONF += " CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR}"
 
 SRC_URI = "${FSL_MIRROR}/gst-fsl-plugins-${PV}.tar.gz \
            file://Remove-use-of-obsolete-VIDIOC_DBG_G_CHIP_IDENT.patch \
+           file://configure.ac-Fix-query-of-CFLAGS-to-pkgconfig.patch \
 "
 
 S = "${WORKDIR}/gst-fsl-plugins-${PV}"

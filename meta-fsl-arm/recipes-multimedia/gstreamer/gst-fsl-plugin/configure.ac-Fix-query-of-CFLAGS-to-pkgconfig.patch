@@ -1,0 +1,46 @@
+From 3312c9fbc80b7b7fe3e28b24c4b8955aa3d5bf18 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Mon, 27 Apr 2015 15:36:06 -0300
+Subject: [PATCH] configure.ac: Fix query of CFLAGS to pkgconfig
+Organization: O.S. Systems Software LTDA.
+
+The pkgconfig queries cannot be appended without explicit spaces as
+pkgconfig does not print trailing spaces by itself.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ configure.ac | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 86da399..276728f 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -175,15 +175,15 @@ AC_CHECK_LIB(rt, clock_gettime)
+ AC_SUBST(RT_CFLAGS)
+ AC_SUBST(RT_LIBS)
+ 
+-FSL_MM_CORE_CFLAGS=`$PKG_CONFIG --cflags libfslaudiocodec 2>/dev/null`
+-FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslvideocodec 2>/dev/null`
+-FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslparser 2>/dev/null`
+-FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslvpuwrap 2>/dev/null`
++FSL_MM_CORE_CFLAGS="`$PKG_CONFIG --cflags libfslaudiocodec 2>/dev/null` \
++                    `$PKG_CONFIG --cflags libfslvideocodec 2>/dev/null` \
++                    `$PKG_CONFIG --cflags libfslparser 2>/dev/null` \
++                    `$PKG_CONFIG --cflags libfslvpuwrap 2>/dev/null`"
+ AC_SUBST(FSL_MM_CORE_CFLAGS)
+ 
+-FSL_MM_CORE_LIBS=`$PKG_CONFIG --libs libfslaudiocodec 2>/dev/null`
+-FSL_MM_CORE_LIBS+=`$PKG_CONFIG --libs libfslvideocodec 2>/dev/null`
+-FSL_MM_CORE_LIBS+=`$PKG_CONFIG --libs libfslparser 2>/dev/null`
++FSL_MM_CORE_LIBS="`$PKG_CONFIG --libs libfslaudiocodec 2>/dev/null` \
++                  `$PKG_CONFIG --libs libfslvideocodec 2>/dev/null` \
++                  `$PKG_CONFIG --libs libfslparser 2>/dev/null`"
+ AC_SUBST(FSL_MM_CORE_LIBS)
+ 
+ EXTRAPLATFORMCFLAGS="-DARM -D_GNUC_"
+-- 
+2.1.4
+
