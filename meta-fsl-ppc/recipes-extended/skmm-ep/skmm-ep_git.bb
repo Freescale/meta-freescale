@@ -18,8 +18,8 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = 'MACHINE=${MACHINE}'
 
-export LIBEDIT_CFLAGS="$(pkg-config --cflags libedit)"
-export LIBEDIT_LDFLAGS="$(pkg-config --libs --static libedit)"
+export LIBEDIT_CFLAGS = "`pkg-config --cflags libedit`"
+export LIBEDIT_LDFLAGS = "`pkg-config --libs --static libedit`"
 
 do_compile () {
 	export ARCH=${TARGET_ARCH}
