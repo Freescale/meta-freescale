@@ -12,4 +12,4 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE='KERNEL_DIR="${STAGING_KERNEL_DIR}" PREFIX="${D}"'
 
-FILES_${PN} += "/etc/skmm/"
+FILES_${PN} += "/etc/skmm/ /usr/bin/"
