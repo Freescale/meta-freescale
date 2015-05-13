@@ -9,6 +9,11 @@ inherit  module qoriq_build_64bit_kernel
 
 S = "${WORKDIR}/git"
 
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+do_configure_prepend() {
+    sed -i 's,$(KERNEL_DIR)/.config,$(KBUILD_OUTPUT)/.config,' ${S}/kernel/Makefile
+}
+
 do_compile_prepend () {
     cd ${S}/kernel
     case ${MACHINE} in
