@@ -14,6 +14,10 @@ export KERNEL_PATH
 
 INHIBIT_PACKAGE_STRIP = "1"
 
+do_compile_prepend() {
+    sed -i -e 's,EXTRA_CFLAGS += -I$(PWD),EXTRA_CFLAGS += -I${S},' ${S}/armodule/source/Makefile
+}
+
 do_install(){
 	install -d ${D}/lib/modules/${KERNEL_VERSION}
 	install -d ${D}${bindir}
