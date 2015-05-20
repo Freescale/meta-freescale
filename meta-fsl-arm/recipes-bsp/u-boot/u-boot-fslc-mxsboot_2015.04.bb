@@ -7,7 +7,7 @@ PROVIDES = "u-boot-mxsboot"
 
 PV = "v2015.04+git${SRCPV}"
 
-SRCREV = "b16ec2de8ddd3ce3bca7566e045dc085755550f6"
+SRCREV = "10aced37cecf117e54e71bd700228f57dc34e579"
 SRCBRANCH = "patches-2015.04"
 
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
