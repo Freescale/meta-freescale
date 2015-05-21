@@ -30,11 +30,14 @@ PREFERRED_VERSION_directfb_mx6 = "1.7.4"
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
-# Float-Point setting
+# Tunes for hard/soft float-point selection. Note that we allow building for
+# thumb support giving distros the chance to enable thumb by setting
+# ARM_INSTRUCTION_SET = "thumb"
+#
 # handled by software
-# DEFAULTTUNE_mx6 ?= "cortexa9-neon"
+# DEFAULTTUNE_mx6 ?= "cortexa9t-neon"
 # handled by hardware
-DEFAULTTUNE_mx6 ?= "cortexa9hf-neon"
+DEFAULTTUNE_mx6 ?= "cortexa9thf-neon"
 
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
