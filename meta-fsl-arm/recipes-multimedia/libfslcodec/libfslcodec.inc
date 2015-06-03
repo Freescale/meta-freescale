@@ -31,6 +31,11 @@ do_install_append() {
 
 }
 
+do_install_append_mx5() {
+    # FIXME: The binary files depends on libvpu.so.4 which is i.MX6 only
+	rm -r ${D}${datadir}/imx-mm/*/examples/*/bin
+}
+
 python __set_insane_skip() {
     # Ensure we have PACKAGES expanded
     bb.build.exec_func("read_subpackage_metadata", d)
