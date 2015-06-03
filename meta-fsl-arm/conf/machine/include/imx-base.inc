@@ -94,6 +94,7 @@ GPU_FLAVOUR = "${@base_contains('DISTRO_FEATURES', 'x11', 'x11-', '', d)}"
 PREFERRED_PROVIDER_virtual/egl_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
 PREFERRED_PROVIDER_virtual/libgles1_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
 PREFERRED_PROVIDER_virtual/libgles2_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
+PREFERRED_PROVIDER_amd-gpu-mx51 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
 
 # mx6 GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx6 ?= "imx-gpu-viv"
