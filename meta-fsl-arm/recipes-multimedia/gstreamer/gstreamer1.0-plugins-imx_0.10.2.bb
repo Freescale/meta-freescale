@@ -12,9 +12,8 @@ RDEPENDS_gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audiopar
 RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 SRCBRANCH ?= "master"
-SRCREV = "898e51dbdb01926d6423d0d31a9530ec6deb5192"
-SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH} \
-           file://0001-pxp-Check-for-new-format-specifier-from-the-new-FSL-.patch"
+SRCREV = "cd04f047e17cbdff5d8e075be7dccaf4522ad713"
+SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
 
