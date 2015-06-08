@@ -19,6 +19,7 @@ SRC_URI += " \
     file://0002-ARM-clk-imx6q-fix-video-divider-for-rev-T0-1.0.patch \
     file://0003-ARM-imx6sl-Disable-imx6sl-specific-code-when-imx6sl-.patch \
     file://0004-mmc-sdhci-esdhc-imx-Fixup-runtime-PM-conditions-duri.patch \
+    file://0005-Revert-net-fec-fix-the-warning-found-by-dma-debug.patch \
 "
 
 COMPATIBLE_MACHINE = "(mx6)"
