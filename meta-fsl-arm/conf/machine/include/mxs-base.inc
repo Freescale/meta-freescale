@@ -19,17 +19,10 @@ XSERVER = "xserver-xorg \
            xf86-input-evdev \
            xf86-video-fbdev"
 
-# Gstreamer plugin
-MACHINE_GSTREAMER_PLUGIN ?= ""
-MACHINE_GSTREAMER_PLUGIN_mx28 ?= "gst-fsl-plugin"
-
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
-MACHINE_SOCARCH_SUFFIX_mx23 = "-mx23"
-MACHINE_SOCARCH_SUFFIX_mx28 = "-mx28"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser gst-fsl-plugins"
 
 INHERIT += "fsl-dynamic-packagearch"
 

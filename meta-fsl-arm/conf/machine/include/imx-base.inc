@@ -51,7 +51,7 @@ MACHINE_SOCARCH_SUFFIX_vf60 = "-vf60"
 MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser gst-fsl-plugins"
+MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser"
 MACHINE_SOCARCH_FILTER_append_mx5 = " virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
 MACHINE_SOCARCH_FILTER_append_mx6 = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d"
 
@@ -78,11 +78,6 @@ MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " ${@base_contains('DISTRO_FEATURES', 'al
 
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
-
-# GStreamer 0.10 plugins
-MACHINE_GSTREAMER_PLUGIN ?= "gst-fsl-plugin"
-MACHINE_GSTREAMER_PLUGIN_mx3 ?= ""
-MACHINE_GSTREAMER_PLUGIN_vf ?= ""
 
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
