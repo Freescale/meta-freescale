@@ -2,11 +2,12 @@
 
 include conf/machine/include/fsl-default-settings.inc
 include conf/machine/include/fsl-default-versions.inc
-include conf/machine/include/fsl-default-providers.inc
 
 include conf/machine/include/soc-family.inc
 
 # Set specific make target and binary suffix
+PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
+PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
 UBOOT_MAKE_TARGET = "u-boot.imx"
 UBOOT_SUFFIX ?= "imx"
 
@@ -18,6 +19,7 @@ UBOOT_ENTRYPOINT_mx6sl = "0x80008000"
 UBOOT_ENTRYPOINT_mx6sx = "0x80008000"
 UBOOT_ENTRYPOINT_vf = "0x80008000"
 
+PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
 XSERVER_DRIVER = "xf86-video-fbdev"
 XSERVER_DRIVER_mx5 = "xf86-video-imxfb"
 XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
@@ -107,6 +109,7 @@ PREFERRED_PROVIDER_virtual/libgl_mx6sx ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl_mx6sl ?= "mesa"
 PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "imx-gpu-viv"
 
+PREFERRED_PROVIDER_virtual/kernel ??= "linux-imx"
 PREFERRED_PROVIDER_virtual/kernel_mx3 ?= "linux-fslc"
 
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
