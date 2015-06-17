@@ -109,8 +109,11 @@ PREFERRED_PROVIDER_virtual/libgl_mx6sx ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl_mx6sl ?= "mesa"
 PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "imx-gpu-viv"
 
-PREFERRED_PROVIDER_virtual/kernel ??= "linux-imx"
-PREFERRED_PROVIDER_virtual/kernel_mx3 ?= "linux-fslc"
+# Handle default kernel
+IMX_DEFAULT_KERNEL = "linux-imx"
+IMX_DEFAULT_KERNEL_mx3 = "linux-fslc"
+IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-mx6"
+PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
 IMAGE_FSTYPES ?= "tar.bz2 ext3 sdcard"
