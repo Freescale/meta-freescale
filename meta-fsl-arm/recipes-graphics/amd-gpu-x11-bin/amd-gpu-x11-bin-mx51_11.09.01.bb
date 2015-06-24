@@ -17,3 +17,9 @@ SRC_URI[sha256sum] = "c7a6fa03b7aa2a375556c59908876554ba720c1e744baba2debb84a408
 RCONFLICTS_${PN} = "amd-gpu-bin-mx51"
 
 COMPATIBLE_MACHINE = "${@base_contains('DISTRO_FEATURES', 'x11', '(mx5)', 'Invalid!', d)}"
+
+do_install_append() {
+    # eglplatform_1.4.h contains X11 compatible headers
+    rm ${D}${includedir}/EGL/eglplatform.h
+    mv ${D}${includedir}/EGL/eglplatform_1.4.h ${D}${includedir}/EGL/eglplatform.h
+}
