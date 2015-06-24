@@ -10,6 +10,7 @@ IS_MX6SL = "0"
 IS_MX6SL_mx6sl = "1"
 
 PACKAGECONFIG_GL_mx5 = "gles2"
+QT_CONFIG_FLAGS_append_mx5 = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
 
 PACKAGECONFIG_GL_mx6q = "gles2"
 PACKAGECONFIG_GL_mx6dl = "gles2"
