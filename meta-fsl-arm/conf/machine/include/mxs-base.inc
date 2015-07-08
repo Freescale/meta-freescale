@@ -35,3 +35,6 @@ MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 SERIAL_CONSOLE = "115200 ttyAMA0"
 
 KERNEL_IMAGETYPE = "zImage"
+
+# Add the ability to specify _imx machines
+MACHINEOVERRIDES =. "imx:"
