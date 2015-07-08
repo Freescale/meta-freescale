@@ -1,14 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI_append_mx6 = " \
-    file://0001-ENGR00314805-1-Add-Vivante-EGL-support.patch \
-    file://0002-ENGR00314805-2-Add-Vivante-GAL2D-support.patch \
-    file://0003-ENGR00319247-Distorted-line-and-shadow-if-use-2d-com.patch \
-    file://0004-ENGR00320243-Enable-GAL2D-compositor-in-SoloLite.patch \
-    file://0005-ENGR00321030-Change-GAL2D-compositor-to-be-default-i.patch \
-    file://0006-MGS-389-Fix-for-wrong-FPS-throttling-when-multibuffe.patch \
-    file://0007-MGS-391-Weston-Performance-Optimisation-for-single-b.patch \
-"
+SRC_URI_append_mx6 = " file://0001-MGS-840-Add-i.MX6-support-for-weston.patch"
 
 PACKAGECONFIG_append_mx6q = " cairo-glesv2"
 PACKAGECONFIG_append_mx6dl = " cairo-glesv2"
