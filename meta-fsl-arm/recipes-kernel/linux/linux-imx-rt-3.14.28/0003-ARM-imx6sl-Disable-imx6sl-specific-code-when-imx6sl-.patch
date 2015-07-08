@@ -1,0 +1,56 @@
+From 8340ad4ab71b568e65dfd1b92cc0967152887f97 Mon Sep 17 00:00:00 2001
+From: Nikolay Dimitrov <picmaster@mail.bg>
+Date: Sun, 8 Feb 2015 22:18:09 +0200
+Subject: [PATCH 3/3] ARM: imx6sl: Disable imx6sl-specific code when imx6sl SOC
+ support is disabled
+
+Currently the build fails when CONFIG_SOC_IMX6SL is disabled, due to some
+hard-coded stuff. The patch purpose is to handle enabling/disabling this
+config option.
+
+Signed-off-by: Nikolay Dimitrov <picmaster@mail.bg>
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+
+Upstream-Status: Pending
+
+---
+ arch/arm/mach-imx/Makefile | 3 ++-
+ arch/arm/mach-imx/mxc.h    | 4 ++++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-imx/Makefile b/arch/arm/mach-imx/Makefile
+index b76a214..27f1976 100644
+--- a/arch/arm/mach-imx/Makefile
++++ b/arch/arm/mach-imx/Makefile
+@@ -122,7 +122,8 @@ obj-$(CONFIG_SOC_IMX6SL) += busfreq_lpddr2.o lpddr2_freq_imx6.o imx6sl_lpm_wfi.o
+ AFLAGS_lpddr2_freq_imx6sx.o :=-Wa,-march=armv7-a
+ AFLAGS_ddr3_freq_imx6sx.o :=-Wa,-march=armv7-a
+ AFLAGS_imx6sx_low_power_idle.o :=-Wa,-march=armv7-a
+-obj-$(CONFIG_SOC_IMX6SX) += ddr3_freq_imx6sx.o lpddr2_freq_imx6sx.o imx6sx_low_power_idle.o
++obj-$(CONFIG_SOC_IMX6SX) += ddr3_freq_imx6sx.o lpddr2_freq_imx6sx.o imx6sx_low_power_idle.o \
++	busfreq_lpddr2.o lpddr2_freq_imx6.o
+ endif
+ 
+ 
+diff --git a/arch/arm/mach-imx/mxc.h b/arch/arm/mach-imx/mxc.h
+index 1510769..e6af4dd 100644
+--- a/arch/arm/mach-imx/mxc.h
++++ b/arch/arm/mach-imx/mxc.h
+@@ -158,10 +158,14 @@ extern unsigned int __mxc_cpu_type;
+ #endif
+ 
+ #ifndef __ASSEMBLY__
++#ifdef CONFIG_SOC_IMX6SL
+ static inline bool cpu_is_imx6sl(void)
+ {
+ 	return __mxc_cpu_type == MXC_CPU_IMX6SL;
+ }
++#else
++# define cpu_is_imx6sl() (0)
++#endif
+ 
+ static inline bool cpu_is_imx6dl(void)
+ {
+-- 
+2.1.4
+
