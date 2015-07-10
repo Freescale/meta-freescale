@@ -7,8 +7,8 @@ DEPENDS += "change-file-endianess-native"
 
 inherit deploy
 
-SRCBRANCH = "sdk-v1.7.x"
-SRCREV = "3e89f378ed70e9b856756de8c3dbdfccb045fa0c"
+SRCBRANCH = "master"
+SRCREV = "426f7a6535d93dac76f5125035e0938a85e778d2"
 SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;branch=${SRCBRANCH} \
     file://rcw-make-BOARDS-DESTDIR-overidable-in-Makefile.patch \
 "
@@ -18,7 +18,7 @@ S = "${WORKDIR}/git"
 EXTRA_OEMAKE = "BOARDS=${@d.getVar('MACHINE', True).replace('-64b','')} DESTDIR=${D}/boot/rcw/"
 
 do_install () {
-    oe_runmake install 
+    oe_runmake install
 }
 
 do_deploy () {
