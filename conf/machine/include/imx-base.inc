@@ -11,7 +11,6 @@ PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
 UBOOT_MAKE_TARGET = "u-boot.imx"
 UBOOT_SUFFIX ?= "imx"
 
-UBOOT_ENTRYPOINT_mx3 = "0x80008000"
 UBOOT_ENTRYPOINT_mx51  = "0x90008000"
 UBOOT_ENTRYPOINT_mx53  = "0x70008000"
 UBOOT_ENTRYPOINT_mx6  = "0x10008000"
@@ -43,7 +42,6 @@ DEFAULTTUNE_mx6 ?= "cortexa9thf-neon"
 
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
-MACHINE_SOCARCH_SUFFIX_mx3 = "-mx3"
 MACHINE_SOCARCH_SUFFIX_mx5 = "-mx5"
 MACHINE_SOCARCH_SUFFIX_mx6q = "-mx6qdl"
 MACHINE_SOCARCH_SUFFIX_mx6dl = "-mx6qdl"
@@ -67,8 +65,6 @@ MACHINE_FIRMWARE_append_mx53 = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_append_mx51 = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
 
 # FIXME: Needs addition of firmware-imx of official BSPs
-#MACHINE_FIRMWARE_append_mx35 = " firmware-imx-sdma-imx35"
-#MACHINE_FIRMWARE_append_mx31 = " firmware-imx-sdma-imx31"
 #MACHINE_FIRMWARE_append_mx27 = " firmware-imx-vpu-imx27"
 #MACHINE_FIRMWARE_append_mx25 = " firmware-imx-sdma-imx25"
 
@@ -111,7 +107,6 @@ PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "imx-gpu-viv"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
-IMX_DEFAULT_KERNEL_mx3 = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-mx6"
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
