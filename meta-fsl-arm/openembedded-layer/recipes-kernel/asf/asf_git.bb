@@ -15,6 +15,12 @@ export KERNEL_PATH = "${STAGING_KERNEL_DIR}"
 
 INHIBIT_PACKAGE_STRIP = "1"
 
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+do_configure_prepend () {
+    find ${S} -name Makefile -exec \
+        sed -i 's,$(KERNEL_PATH)/.config,$(KBUILD_OUTPUT)/.config,' {} \;
+}
+
 do_install(){
 	mkdir -p ${D}/${libexecdir} 
 	mkdir -p ${D}/lib/modules/${KERNEL_VERSION}/asf
