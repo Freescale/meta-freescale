@@ -1,4 +1,4 @@
-DESCRIPTION = "CST Tool"
+DESCRIPTION = "utility for security boot"
 SECTION = "cst"
 LICENSE = "BSD"
 
@@ -9,8 +9,8 @@ DEPENDS += "openssl"
 
 inherit kernel-arch
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;branch=sdk-v1.7.x"
-SRCREV = "2d35e98539c0daa2bc8049e3bd44994d3d93bbe7"
+SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;branch=master"
+SRCREV = "6f57c86c93cab0f4d0a40d83b685afa6932a6301"
 
 S = "${WORKDIR}/git"
 
