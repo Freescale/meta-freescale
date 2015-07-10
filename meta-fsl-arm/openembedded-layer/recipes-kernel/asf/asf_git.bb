@@ -3,8 +3,8 @@ SECTION = "asf"
 LICENSE = "GPLv2 & GPLv2+ & BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;branch=sdk-v1.7.x"
-SRCREV = "16eb472d6b2b34c8b605a86c469611bc8ddec1c9"
+SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;branch=master"
+SRCREV = "62ba10ab6bab8f8f53934e4bb55b5a552bf3fd6b"
 
 inherit module
 
