@@ -1,6 +1,6 @@
 require recipes-bsp/u-boot/u-boot.inc
 
-DESCRIPTION = "U-Boot which includes the support for QorIQ Layerscape1 series boards"
+DESCRIPTION = "U-Boot provided by Freescale with focus on QorIQ Layerscape1 boards"
 LICENSE = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
 LIC_FILES_CHKSUM = " \
     file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
@@ -10,17 +10,17 @@ LIC_FILES_CHKSUM = " \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-SRCBRANCH = "sdk-v1.7.x"
+SRCBRANCH = "master"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH}"
-SRCREV = "659b6a23a8b1f3026200bc6352dbacef53f4dcb1"
+SRCREV = "6ba8eedbcdc4b063f59a63e6288b938af739e8ad"
 
-LOCALVERSION ?= "-${SRCBRANCH}"
+LOCALVERSION ?= "+ls1"
 
 S = "${WORKDIR}/git"
 
 inherit fsl-u-boot-localversion
 
-DEPENDS += "change-file-endianess-native"
+DEPENDS += "change-file-endianess-native dtc-native"
 PROVIDES += "u-boot"
 
 do_compile_append () {
@@ -28,9 +28,10 @@ do_compile_append () {
     then
         for config in ${UBOOT_MACHINE}; do
             case "${config}" in
-                *spi*) tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${S}/${config}/u-boot.bin ${S}/${config}/u-boot.swap.bin 8
+                *spi*) tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${S}/${config}/u-boot-dtb.bin ${S}/${config}/u-boot.swap.bin 8
                 mv ${S}/${config}/u-boot.swap.bin ${S}/u-boot-${type}.${UBOOT_SUFFIX};;
                 *sdcard*)  mv ${S}/${config}/u-boot-with-spl-pbl.bin  ${S}/${config}/u-boot.bin;;
+                *nand*)  mv ${S}/u-boot-with-spl-pbl.bin  ${S}/u-boot.bin;;
             esac
         done
     fi
