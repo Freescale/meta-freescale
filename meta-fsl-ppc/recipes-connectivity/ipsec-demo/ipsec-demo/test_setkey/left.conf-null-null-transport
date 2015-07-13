@@ -1,0 +1,23 @@
+#!/usr/sbin/setkey -f
+#I am 200.200.200.10
+
+flush;
+spdflush;
+
+# ESP SAs doing null encryption
+# and null authentication
+add 200.200.200.10 200.200.200.20 esp 0x10513 
+    -E null
+    -A null;
+
+add 200.200.200.20 200.200.200.10 esp 0x10514 
+    -E null
+    -A null;
+
+
+spdadd 200.200.200.20 200.200.200.10 any -P in ipsec
+        esp/transport//require;
+
+spdadd 200.200.200.10 200.200.200.20 any -P out ipsec
+        esp/transport//require;
+

@@ -1,0 +1,41 @@
+From 68a780f4cbba18c01d8409faafb1f7904afa86a9 Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@freescale.com>
+Date: Thu, 31 Jul 2014 16:12:32 +0800
+Subject: [PATCH] skip rules for mmc rpmb partition
+
+Upstream-status: Pending
+
+In FSL SDK 1.6 Kernel, mmc driver has created a new partition 
+with "mmcblkXrpmb" if device expresses it support of RPMB.
+
+RPMB (Replay Protected Memory Block), A signed access to a Replay 
+Protected Memory Block is provided. This function provides means 
+for the system to store data to the specific memory area in an 
+authenticated and replay protected manner.
+
+In that case, any read/write access to this partition device will 
+report errors which will not impact any fuction.
+
+add rules to skip it.
+
+Signed-off-by: Ting Liu <ting.liu@freescale.com>
+---
+ rules/60-persistent-storage.rules | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rules/60-persistent-storage.rules b/rules/60-persistent-storage.rules
+index fa687f2..bb3f8f9 100644
+--- a/rules/60-persistent-storage.rules
++++ b/rules/60-persistent-storage.rules
+@@ -14,7 +14,7 @@ ACTION=="add", SUBSYSTEM=="module", KERNEL=="block", ATTR{parameters/events_dfl_
+ SUBSYSTEM!="block", GOTO="persistent_storage_end"
+ 
+ # skip rules for inappropriate block devices
+-KERNEL=="fd*|mtd*|nbd*|gnbd*|btibm*|dm-*|md*", GOTO="persistent_storage_end"
++KERNEL=="fd*|mtd*|nbd*|gnbd*|btibm*|dm-*|md*|mmcblk*rpmb", GOTO="persistent_storage_end"
+ 
+ # ignore partitions that span the entire disk
+ TEST=="whole_disk", GOTO="persistent_storage_end"
+-- 
+1.8.3.2
+

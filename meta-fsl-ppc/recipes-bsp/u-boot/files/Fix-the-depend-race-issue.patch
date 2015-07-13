@@ -1,0 +1,38 @@
+Upstream-Status: Pending
+
+From 301832414369b749918e0d5db850eed19b81c0fc Mon Sep 17 00:00:00 2001
+From: Zhenhua Luo <zhenhua.luo@freescale.com>
+Date: Tue, 24 Sep 2013 00:54:40 -0500
+Subject: [PATCH] Fix the depend race issue
+
+| make[3]: Entering directory `/srv/home/pokybuild/yocto-autobuilder-new/yocto-slave/nightly-fsl-ppc/build/build/tmp/work/p1022ds-poky-linux-gnuspe/u-boot/git-r30/git/arch/powerpc/cpu/mpc85xx'
+| /srv/home/pokybuild/yocto-autobuilder-new/yocto-slave/nightly-fsl-ppc/build/build/tmp/work/p1022ds-poky-linux-gnuspe/u-boot/git-r30/git/P1022DS_NAND/spl/arch/powerpc/cpu/mpc85xx/.depend:125: *** missing separator.  Stop.
+| make[3]: Leaving directory `/srv/home/pokybuild/yocto-autobuilder-new/yocto-slave/nightly-fsl-ppc/build/build/tmp/work/p1022ds-poky-linux-gnuspe/u-boot/git-r30/git/arch/powerpc/cpu/mpc85xx'
+| make[2]: *** [/srv/home/pokybuild/yocto-autobuilder-new/yocto-slave/nightly-fsl-ppc/build/build/tmp/work/p1022ds-poky-linux-gnuspe/u-boot/git-r30/git/P1022DS_NAND/spl/arch/powerpc/cpu/mpc85xx/start.o] Error 2
+| make[2]: *** Waiting for unfinished jobs....
+
+Signed-off-by: Zhenhua Luo <zhenhua.luo@freescale.com>
+---
+ spl/Makefile | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/spl/Makefile b/spl/Makefile
+index 6dbb105..3156d87 100644
+--- a/spl/Makefile
++++ b/spl/Makefile
+@@ -185,7 +185,11 @@ $(eval $(call make_u_boot_list, $(obj)u-boot.lst, $(LIBS)))
+ $(obj)u-boot-spl.lds: $(LDSCRIPT) $(obj)u-boot.lst depend
+ 	$(CPP) $(CPPFLAGS) $(LDPPFLAGS) -I$(obj). -ansi -D__ASSEMBLY__ -P - < $< > $@
+ 
+-depend:	$(obj).depend
++# Explicitly make _depend in subdirs containing multiple targets to prevent
++# parallel sub-makes creating .depend files simultaneously.
++depend dep:	$(obj).depend
++		for dir in $(SUBDIRS) $(CPUDIR) $(LDSCRIPT_MAKEFILE_DIR) ; do \
++			$(MAKE) -C $(SRCTREE)/$$dir _depend ; done
+ .PHONY: depend
+ 
+ # defines $(obj).depend target
+-- 
+1.8.2.1
+

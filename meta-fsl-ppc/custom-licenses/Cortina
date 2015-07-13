@@ -1,0 +1,51 @@
+DEFINITIONS:“Device” is the product described in this document or document set. “Cortina” is Cortina Systems, Inc. 
+“Software” is the software used with the Device, including the Application Programmable Interface (“API”). “You” are a 
+customer, or potential customer, of Devices with whom Cortina has an NDA.
+LICENSE:Subject to the restrictions below, Cortina grants to You a non-exclusive, non-assignable, non-transferable, 
+royalty-free copyright license to (1) copy and modify the source code of the API; (2) incorporate the API in object code 
+form or as a library into Your software which is solely used with Your products (that incorporate the Devices); and (3) 
+distribute to Your customer, inobject code form only, the API.
+RESTRICTIONS:The Software must be used solely in conjunction with the Devices and solely for Your internal 
+evaluation, demonstration, software application development anddistribution for production purposes, either with an 
+Cortina platform that contains the Device or with Your own product that incorporates the Device. Notwithstanding 
+anything to the contrary, the API can be incorporated into Your software as described above and distributed to Your 
+customers in object code form only. You may not distribute the Software as a stand-alone product. You shall not cause 
+the incorporation, modification or distribution of the Software to become subject to any open source licenses. You will 
+make reasonable efforts to discontinue the distribution of any portions of the Software that You are licensed hereunder 
+to distribute upon Cortina’s release of an update, upgrade or new version of the Software. You agree that You are 
+solely responsible for supporting any code which You modify, incorporate or distribute. You may not reverse-assemble, 
+reverse-compile, or otherwise reverse-engineer any Software provided in binary or machine readable form. 
+Distribution of the Software is also subject to the following limitations: You (i) are solely responsible to Your customers 
+for any update or support obligation or other liability which may arise from the modification, incorporation, and 
+distribution of the Software, (ii) do notmake any statement that Your product is“certified,” or that its performance is 
+guaranteed, by Cortina, (iii) do not use Cortina's name or trademarks to market Your product without prior written 
+permission, (iv) shall prohibit disassembly and reverse engineering, and (v) shall indemnify, hold harmless, and defend 
+Cortina and its suppliers from and against any claims or lawsuits, including attorney's fees, that arise or result from 
+Your distribution of any product. 
+OWNERSHIP OF SOFTWARE AND COPYRIGHTS.The title to all copies of the Software remains with Cortina or its 
+suppliers. The Software is copyrighted and protected by the laws of the United States and other countries, and 
+international treaty provisions. You may not remove any copyright notices from the Software. Cortina may make 
+changes to the Software, or to items referenced therein, at any timewithout notice, but is not obligated to support or 
+update the Software. Except as otherwise expressly provided,Cortina grants no express or implied right under Cortina 
+patents, copyrights, trademarks, or other intellectual property rights. 
+DISCLAIMER OF WARRANTIES.THE SOFTWARE IS PROVIDED “AS IS” WITHOUT ANY EXPRESS OR IMPLIED 
+WARRANTY OF ANY KIND. CORTINA AND ITS SUPPLIERSHEREBY DISCLAIM ALL WARRANTIES, INCLUDING 
+ANY IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT, OR FITNESS FOR A PARTICULAR 
+PURPOSE. 
+LIMITATION OF LIABILITY.IN NO EVENT SHALL CORTINA OR ITS SUPPLIERS BE LIABLE FOR ANY DAMAGES 
+WHATSOEVER (INCLUDING, WITHOUT LIMITATION, LOST PROFITS, BUSINESS INTERRUPTION, OR LOST 
+INFORMATION) ARISING OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF CORTINA HAS 
+BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
+TERMINATION OF THIS LICENSE.Cortina may terminate this license at any time if You violate its terms. Upon 
+termination, You will immediately destroy the Software or return all copies of the Software to Cortina.
+APPLICABLE LAWS.Claims arising under this license shall be governed by the laws of the State of Delaware, 
+excluding its principles of conflict of laws. The provisions of the United Nations Convention on Contracts for the 
+International Sale of Goods shall not apply to this license.You shall not export, either directly or indirectly, any 
+Software or derived object code without first obtaining any required license or other approval from the applicable 
+governmental entity, including the U.S. Department of Commerce or any other agency or department of the United 
+States Government if required. This isthe entire agreement and understanding between You and Cortina relating to 
+this subject matter, and no amendments will be effective unless in a writing signed by both parties.
+GOVERNMENT RESTRICTED RIGHTS.The Software is provided with “RESTRICTED RIGHTS.” Use, duplication, or 
+disclosure by the Government issubject to restrictions as set forth in FAR52.227-14 and DFAR252.227-7013 et seq. or 
+its successor. Use of the Software by the Government constitutes acknowledgment of Cortina's proprietary rights 
+therein. Contractor or Manufacturer is Cortina.

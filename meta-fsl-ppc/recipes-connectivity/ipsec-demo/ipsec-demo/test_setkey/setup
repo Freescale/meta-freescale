@@ -1,0 +1,47 @@
+# setup - quick setup for left or right side of ipsec test
+# see README for example use.
+
+SCRIPT_HOME=/test_setkey/
+cd $SCRIPT_HOME
+
+export PATH=$SCRIPT_HOME:$PATH
+
+if [ "$1" != "left" -a "$1" != "right" ] ; then
+	echo "Usage:	$0 side [config] [driver]"
+	echo "		where side is either left or right."
+	echo "		where config is either"
+	echo "			aes-sha1-tunnel (default)"
+	echo "		     or 3des-sha1-tunnel"
+	echo "		if driver is supplied, script does 'modprobe driver'"
+	exit 1
+fi
+
+SIDE=$1
+POLICY_CFG=$SIDE.conf
+DEFAULT_POLICY=aes-sha1-tunnel
+
+if [ -n "$2" ] ; then
+	POLICY=$2
+else
+	POLICY=$DEFAULT_POLICY
+fi
+
+SETKEY_FILE=$POLICY_CFG-$POLICY
+
+if [ ! -f $SETKEY_FILE ] ; then
+	echo "Missing setkey command file: $SETKEY_FILE"
+	exit 1
+fi
+
+# modprobe any driver name given as last parameter
+if [ -n "$3" ] ; then
+	modprobe $3
+fi
+
+SETUP_CMD_FILE=./setup_$SIDE
+. $SETUP_CMD_FILE
+
+$SETKEY_FILE
+
+setkey -D
+setkey -D -P

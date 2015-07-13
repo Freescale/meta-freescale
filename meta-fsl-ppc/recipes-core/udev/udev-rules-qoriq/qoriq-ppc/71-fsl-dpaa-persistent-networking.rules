@@ -1,0 +1,20 @@
+# Rules for handling naming the DPAA FMan ethernet ports in a consistent way
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4e0000", NAME="fm1-gb0"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4e2000", NAME="fm1-gb1"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4e4000", NAME="fm1-gb2"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4e6000", NAME="fm1-gb3"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4e8000", NAME="fm1-gb4"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4f0000", NAME="fm1-10g"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe5e0000", NAME="fm2-gb0"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe5e2000", NAME="fm2-gb1"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe5e4000", NAME="fm2-gb2"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe5e6000", NAME="fm2-gb3"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe5e8000", NAME="fm2-gb4"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe5f0000", NAME="fm2-10g"
+
+# P1023 has its Fman @ different offsets
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ff7e0000", NAME="fm1-gb0"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ff7e2000", NAME="fm1-gb1"
+
+# Rename macless0 port to "macless0"
+SUBSYSTEM=="net", ATTR{device_type}=="macless0", NAME="macless0"

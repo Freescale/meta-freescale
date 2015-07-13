@@ -1,0 +1,64 @@
+From 084fa469a8fef530d71a0870364df1c7997f6465 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Thu, 31 Jul 2014 14:06:19 +0300
+Subject: [PATCH 03/17] cryptodev: fix algorithm registration
+
+Cryptodev specific algorithms must register only if available in kernel.
+
+Change-Id: Iec5af8f4f3138357e4b96f2ec1627278134e4808
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/15326
+Reviewed-by: Horia Ioan Geanta Neag <horia.geanta@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/17224
+---
+ crypto/engine/eng_cryptodev.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 7588a28..e3eb98b 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -133,6 +133,8 @@ static int cryptodev_dh_compute_key(unsigned char *key,
+ static int cryptodev_ctrl(ENGINE *e, int cmd, long i, void *p,
+     void (*f)(void));
+ void ENGINE_load_cryptodev(void);
++const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1;
++const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
+ 
+ static const ENGINE_CMD_DEFN cryptodev_defns[] = {
+ 	{ 0, NULL, NULL, 0 }
+@@ -342,7 +344,21 @@ get_cryptodev_digests(const int **cnids)
+ static int
+ cryptodev_usable_ciphers(const int **nids)
+ {
+-	return (get_cryptodev_ciphers(nids));
++	int i, count;
++
++	count = get_cryptodev_ciphers(nids);
++	/* add ciphers specific to cryptodev if found in kernel */
++	for(i = 0; i < count; i++) {
++		switch (*(*nids + i)) {
++		case NID_aes_128_cbc_hmac_sha1:
++			EVP_add_cipher(&cryptodev_aes_128_cbc_hmac_sha1);
++			break;
++		case NID_aes_256_cbc_hmac_sha1:
++			EVP_add_cipher(&cryptodev_aes_256_cbc_hmac_sha1);
++			break;
++		}
++	}
++	return count;
+ }
+ 
+ static int
+@@ -1582,8 +1598,6 @@ ENGINE_load_cryptodev(void)
+ 	}
+ 	put_dev_crypto(fd);
+ 
+-	EVP_add_cipher(&cryptodev_aes_128_cbc_hmac_sha1);
+-	EVP_add_cipher(&cryptodev_aes_256_cbc_hmac_sha1);
+ 	if (!ENGINE_set_id(engine, "cryptodev") ||
+ 	    !ENGINE_set_name(engine, "BSD cryptodev engine") ||
+ 	    !ENGINE_set_ciphers(engine, cryptodev_engine_ciphers) ||
+-- 
+1.8.3.1
+

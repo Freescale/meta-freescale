@@ -1,0 +1,42 @@
+#!/usr/sbin/setkey -f
+#
+#
+# Example ESP Tunnel for VPN.
+# 
+# 			          ========= ESP =========
+# 			          |                     |
+# 	   Network-A          Gateway-A             Gateway-B           Network-B
+# 	  192.168.1.0/24 ---- 200.200.200.10 ------ 200.200.200.20 ---- 192.168.2.0/24
+# 
+# 	  ====== 83xx board A ======                  ===== 83xx board B =====
+#	  |                        |                  |                      |
+#	  eth0                  eth1                  eth1                eth0
+#	192.168.1.130         200.200.200.10          200.200.200.20      192.168.2.130         
+# 
+# 
+# Board B setup
+#
+# Flush the SAD and SPD
+flush;
+spdflush;
+
+# I am gateway B (eth0:192.168.2.130, eth1:200.200.200.20)
+#
+# Security policies
+spdadd 192.168.2.0/24 192.168.1.0/24 any -P out ipsec
+       esp/tunnel/200.200.200.20-200.200.200.10/require;
+
+spdadd 192.168.1.0/24 192.168.2.0/24 any -P in ipsec
+       esp/tunnel/200.200.200.10-200.200.200.20/require;
+
+
+# ESP SAs doing encryption using 192 bit long keys (168 + 24 parity)
+# and hmac-md5 authentication using 128 bit long keys
+add 200.200.200.10 200.200.200.20 esp 0x201 -m tunnel
+    -E 3des-cbc  0x7aeaca3f87d060a12f4a4487d5a5c3355920fae69a96c831 
+    -A hmac-md5   0xd5f603abc8cd9d19319ca32fb955b10f;
+
+add 200.200.200.20 200.200.200.10 esp 0x301 -m tunnel
+    -E 3des-cbc  0xf6ddb555acfd9d77b03ea3843f2653255afe8eb5573965df 
+    -A hmac-md5   0x1dd90b4c32dcbe9d37b555a23df5170e;
+
