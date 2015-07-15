@@ -1,14 +1,14 @@
 DESCRIPTION = "U-boot bootloader mxsboot tool"
 LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://Licenses/README;md5=c7383a594871c03da76b3707929d2919"
+LIC_FILES_CHKSUM = "file://Licenses/README;md5=0507cd7da8e7ad6d6701926ec9b84c95"
 SECTION = "bootloader"
 DEPENDS = "openssl"
 PROVIDES = "u-boot-mxsboot"
 
-PV = "v2015.04+git${SRCPV}"
+PV = "v2015.07+git${SRCPV}"
 
-SRCREV = "10aced37cecf117e54e71bd700228f57dc34e579"
-SRCBRANCH = "patches-2015.04"
+SRCREV = "31851bd6bd527b1c9275ea9597594f382779c679"
+SRCBRANCH = "2015.07+fslc"
 
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
 
