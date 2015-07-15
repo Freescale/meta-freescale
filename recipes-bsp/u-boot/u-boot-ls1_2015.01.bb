@@ -30,8 +30,7 @@ do_compile_append () {
             case "${config}" in
                 *spi*) tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${S}/${config}/u-boot-dtb.bin ${S}/${config}/u-boot.swap.bin 8
                 mv ${S}/${config}/u-boot.swap.bin ${S}/u-boot-${type}.${UBOOT_SUFFIX};;
-                *sdcard*)  mv ${S}/${config}/u-boot-with-spl-pbl.bin  ${S}/${config}/u-boot.bin;;
-                *nand*)  mv ${S}/u-boot-with-spl-pbl.bin  ${S}/u-boot.bin;;
+                *nand* | *sdcard*)  mv ${S}/${config}/u-boot-with-spl-pbl.bin  ${S}/${config}/u-boot.bin;;
             esac
         done
     fi
