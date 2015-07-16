@@ -89,6 +89,7 @@ SDCARD_GENERATION_COMMAND_mxs = "generate_mxs_sdcard"
 SDCARD_GENERATION_COMMAND_mx25 = "generate_imx_sdcard"
 SDCARD_GENERATION_COMMAND_mx5 = "generate_imx_sdcard"
 SDCARD_GENERATION_COMMAND_mx6 = "generate_imx_sdcard"
+SDCARD_GENERATION_COMMAND_mx7 = "generate_imx_sdcard"
 SDCARD_GENERATION_COMMAND_vf = "generate_imx_sdcard"
 
 #
