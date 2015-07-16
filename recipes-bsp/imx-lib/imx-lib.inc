@@ -5,12 +5,13 @@ LICENSE = "LGPLv2.1"
 SECTION = "multimedia"
 DEPENDS = "virtual/kernel"
 
-LIC_FILES_CHKSUM = "file://ipu/mxc_ipu_hl_lib.h;endline=13;md5=6c7486b21a8524b1879fa159578da31e"
+LIC_FILES_CHKSUM = "file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 PLATFORM_mx6 = "IMX6Q"
 PLATFORM_mx5 = "IMX51"
 PLATFORM_mx6sl = "IMX6S"
 PLATFORM_mx6sx = "IMX6S"
+PLATFORM_mx7   = "IMX7"
 
 PARALLEL_MAKE="-j 1"
 EXTRA_OEMAKE = ""
