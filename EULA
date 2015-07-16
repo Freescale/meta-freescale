@@ -1,4 +1,4 @@
-LA_OPT_FSL_OPEN_3RD_PARTY_IP v6 February 2015
+LA_OPT_FSL_OPEN_3RD_PARTY_IP v8 June 2015
 
 IMPORTANT.  Read the following Freescale Semiconductor Software License
 Agreement ("Agreement") completely.    By selecting the "I Accept" button at
@@ -64,9 +64,9 @@ Appendix A.
 
 2.2.             Exclusively in connection with your development and
 distribution of product containing a programmable processing unit (e.g. a
-microprocessor, microcontroller, or digital signal processor) supplied directly
-or indirectly from Freescale ("Authorized System") Freescale grants you a
-world-wide, personal, non-transferable, non-exclusive, non-sublicensable,
+microprocessor, microcontroller, sensor or digital signal processor) supplied
+directly or indirectly from Freescale ("Authorized System") Freescale grants
+you a world-wide, personal, non-transferable, non-exclusive, non-sublicensable,
 license, under Freescale's Intellectual Property Rights:
 
 (a)    to use and reproduce  the Licensed Software only as part of, or
@@ -308,10 +308,11 @@ is a "Commercial Item" as defined in 48 C.F.R. Section 2.101, consisting of
 "Commercial Computer Software", and/or "Commercial Computer Software
 Documentation," as such terms are used in 48 C.F.R. Section 12.212 (or
 48 C.F.R. Section 227.7202, as applicable) and may only be licensed to or
-shared with U.S.Government end users in object code form as part of, or
+shared with U.S. Government end users in object code form as part of, or
 embedded within, Authorized Systems.  Any agreement pursuant to which you share
 the Licensed Software will include a provision that reiterates the limitations
-of this document and requires all sub-agreements to similarly contain such limitations.
+of this document and requires all sub-agreements to similarly contain such
+limitations.
 
 15.               SAFETY CRITICAL APPLICATIONS
 
@@ -345,22 +346,23 @@ litigation will be subject to the exclusive jurisdiction of the state or
 federal courts Texas, USA.  The United Nations Convention on Contracts for the
 International Sale of Goods will not apply to this document.
 
-17.               CONFIDENTIAL INFORMATION.  You must treat the Licensed
-Software as confidential information and you agree to retain the Licensed
-Software in confidence perpetually, with respect to Licensed Software in source
-code form (human readable), or for a period of five (5) years from the date of
-termination of this Agreement, with respect to all other parts of the Licensed
-Software.  During this period you may not disclose any part of the Licensed
-Software to anyone other than employees who have a need to know of the
-Licensed Software and who have executed written agreements obligating them to
-protect such Licensed Software to at least the same degree of care as in this
-Agreement.  You agree to use the same degree of care, but no less than a
-reasonable degree of care, with the Licensed Software as you do with your own
-confidential information. You may disclose Licensed Software to the extent
-required by a court or under operation of law or order provided that you
-notify Freescale of such requirement prior to disclosure, which you only
-disclose information required, and that you allow Freescale the opportunity
-to object to such court or other legal body requiring such disclosure.
+17.               CONFIDENTIAL INFORMATION.  Subject to the license grants and
+restrictions contained herein, you must treat the Licensed Software as
+confidential information and you agree to retain the Licensed Software in
+confidence perpetually, with respect to Licensed Software in source code form
+(human readable), or for a period of five (5) years from the date of termination
+of this Agreement, with respect to all other parts of the Licensed Software.
+During this period you may not disclose any part of the Licensed Software to
+ anyone other than employees who have a need to know of the Licensed Software
+and who have executed written agreements obligating them to protect such
+Licensed Software to at least the same degree of care as in this Agreement.
+You agree to use the same degree of care, but no less than a reasonable degree
+of care, with the Licensed Software as you do with your own confidential
+information. You may disclose Licensed Software to the extent required by a
+court or under operation of law or order provided that you notify Freescale of
+such requirement prior to disclosure, which you only disclose information
+required, and that you allow Freescale the opportunity to object to such court
+or other legal body requiring such disclosure.
 
 18.               TRADEMARKS.  You are not authorized to use any Freescale
 trademarks, brand names, or logos.
@@ -404,8 +406,7 @@ Freescale:                   Freescale Semiconductor, Inc.
                                     Austin, Texas 78735
                                     ATTN: General Counsel
 
-                You:
-			The address provided at registration will be used.
+                You:   The address provided at registration will be used.
 
 24.               RELATIONSHIP OF THE PARTIES.     The parties are
 independent contractors.  Nothing in this Agreement will be construed to create
@@ -419,7 +420,6 @@ Agreement, without the prior written approval of the other party, which
 approval will not be unreasonably withheld or delayed.
 
 
- 
 
 
 
@@ -449,6 +449,12 @@ ATI (AMD)
 
 Distribution of ATI software must be a part of, or embedded within, Authorized
 Systems that include a ATI graphics processor core.
+
+Broadcom Corporation
+
+Your use of Broadcom Corporation software is restricted to Authorized Systems
+that incorporate a compatible integrated circuit device manufactured or sold by
+Broadcom.
 
 Coding Technologies (Dolby Labs)
 
