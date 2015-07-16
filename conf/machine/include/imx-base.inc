@@ -16,6 +16,7 @@ UBOOT_ENTRYPOINT_mx53  = "0x70008000"
 UBOOT_ENTRYPOINT_mx6  = "0x10008000"
 UBOOT_ENTRYPOINT_mx6sl = "0x80008000"
 UBOOT_ENTRYPOINT_mx6sx = "0x80008000"
+UBOOT_ENTRYPOINT_mx7 = "0x80008000"
 UBOOT_ENTRYPOINT_vf = "0x80008000"
 
 PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
@@ -39,6 +40,7 @@ MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 # DEFAULTTUNE_mx6 ?= "cortexa9t-neon"
 # handled by hardware
 DEFAULTTUNE_mx6 ?= "cortexa9thf-neon"
+DEFAULTTUNE_mx7 ?= "cortexa7thf-neon"
 
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
@@ -47,6 +49,7 @@ MACHINE_SOCARCH_SUFFIX_mx6q = "-mx6qdl"
 MACHINE_SOCARCH_SUFFIX_mx6dl = "-mx6qdl"
 MACHINE_SOCARCH_SUFFIX_mx6sx = "-mx6sx"
 MACHINE_SOCARCH_SUFFIX_mx6sl = "-mx6sl"
+MACHINE_SOCARCH_SUFFIX_mx7 = "-mx7d"
 MACHINE_SOCARCH_SUFFIX_vf60 = "-vf60"
 MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
 
