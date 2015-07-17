@@ -1,7 +1,7 @@
-From 5b57fc2124cef0acc3c7e8de376ebd9aa4f1fdd3 Mon Sep 17 00:00:00 2001
+From fc9ee6ed33c76372de6e3748d2e951fa10f7c47e Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 06:16:09 +0545
-Subject: [PATCH 3/9] PKC support added in cryptodev module
+Subject: [PATCH 03/15] PKC support added in cryptodev module
 
 Upstream-status: Pending
 
@@ -231,7 +231,7 @@ index 8e687e7..fdbcc61 100644
  struct csession {
  	struct list_head entry;
 diff --git a/ioctl.c b/ioctl.c
-index 1563c75..782d7fe 100644
+index 5a44807..69980e3 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -4,6 +4,7 @@
@@ -894,5 +894,5 @@ index 57e5c38..0b7951e 100644
  {
  	struct csession *ses_ptr;
 -- 
-1.8.3.1
+2.3.5
 

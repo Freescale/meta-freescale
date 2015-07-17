@@ -1,0 +1,28 @@
+From da730106c2558c8e0c8e1b1b1812d32ef9574ab7 Mon Sep 17 00:00:00 2001
+From: Phil Sutter <phil@nwl.cc>
+Date: Sat, 11 Apr 2015 12:45:05 +0200
+Subject: [PATCH 2/4] tests/Makefile: fix arg passing to CC in implicit rule
+
+GCC docs suggest passing -lfoo after object files referring to functions
+in libfoo. Therefore use LDLIBS to specify libraries, which puts them at
+the right place when make calls CC implicitly.
+
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+---
+ tests/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index c9f04e8..20c52ba 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -31,5 +31,5 @@ check: $(hostprogs)
+ clean:
+ 	rm -f *.o *~ $(hostprogs)
+ 
+-${comp_progs}: LDFLAGS += -lssl -lcrypto
++${comp_progs}: LDLIBS += -lssl -lcrypto
+ ${comp_progs}: %: %.o openssl_wrapper.o
+-- 
+2.3.5
+

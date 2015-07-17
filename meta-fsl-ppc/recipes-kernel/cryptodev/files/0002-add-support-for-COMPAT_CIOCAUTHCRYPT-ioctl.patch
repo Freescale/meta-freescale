@@ -1,7 +1,7 @@
-From 4b766c93e4ee19248dd66bbebb61fb5cc9c8a012 Mon Sep 17 00:00:00 2001
+From 71b317347179225693c6d41b740d387ae2c25061 Mon Sep 17 00:00:00 2001
 From: Horia Geanta <horia.geanta@freescale.com>
 Date: Wed, 4 Dec 2013 15:43:41 +0200
-Subject: [PATCH 2/9] add support for COMPAT_CIOCAUTHCRYPT ioctl()
+Subject: [PATCH 02/15] add support for COMPAT_CIOCAUTHCRYPT ioctl()
 
 Upstream-status: Pending
 
@@ -169,7 +169,7 @@ index d7660fa..8e687e7 100644
  			struct fcrypt *fcr, void __user *arg);
  int kcaop_to_user(struct kernel_crypt_auth_op *kcaop,
 diff --git a/ioctl.c b/ioctl.c
-index f9b9b2e..1563c75 100644
+index a3f8379..5a44807 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -998,6 +998,7 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
@@ -203,5 +203,5 @@ index f9b9b2e..1563c75 100644
  	case COMPAT_CIOCASYNCCRYPT:
  		if (unlikely(ret = compat_kcop_from_user(&kcop, fcr, arg)))
 -- 
-1.8.3.1
+2.3.5
 

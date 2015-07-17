@@ -1,7 +1,7 @@
-From ddc4179a454cea79c8385fd6756d20cbf3c6dcb5 Mon Sep 17 00:00:00 2001
+From 7594d5375d998eb25241750b623661ff021697d3 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 07:24:00 +0545
-Subject: [PATCH 5/9] Asynchronous interface changes in cryptodev
+Subject: [PATCH 05/15] Asynchronous interface changes in cryptodev
 
 Upstream-status: Pending
 
@@ -90,7 +90,7 @@ index cf54dac..5347cae 100644
  #endif /* CONFIG_COMPAT */
  
 diff --git a/ioctl.c b/ioctl.c
-index 3baf3e6..2eb7f03 100644
+index 9431025..e2f407f 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -105,8 +105,6 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
@@ -209,5 +209,5 @@ index 3baf3e6..2eb7f03 100644
  	return ret;
  	default:
 -- 
-1.8.3.1
+2.3.5
 

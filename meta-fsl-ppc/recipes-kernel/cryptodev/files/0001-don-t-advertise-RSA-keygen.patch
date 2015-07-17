@@ -1,0 +1,33 @@
+From d30c9c64aca4a7905e1b7eb3e28e1c616191bd34 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Tue, 9 Dec 2014 16:41:25 +0200
+Subject: [PATCH] don't advertise RSA keygen
+
+Disable RSA keygen operations when they are not available.
+
+Currently no testing can be done and this patch should be applied
+selectively on platforms that have incomplete support for RSA operations
+(for example pkc driver on C293)
+
+Change-Id: Ic8df014623410c3cf4b0b217a246efcea8f2eeef
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index 53dbf64..27dc66e 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -979,7 +979,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 	case CIOCASYMFEAT:
+ 		ses = 0;
+ 		if (crypto_has_alg("pkc(rsa)", 0, 0))
+-			ses = CRF_MOD_EXP_CRT |	CRF_MOD_EXP | CRF_RSA_GENERATE_KEY;
++			ses = CRF_MOD_EXP_CRT |	CRF_MOD_EXP ;
+ 		if (crypto_has_alg("pkc(dsa)", 0, 0))
+ 			ses |= CRF_DSA_SIGN | CRF_DSA_VERIFY | CRF_DSA_GENERATE_KEY;
+ 		if (crypto_has_alg("pkc(dh)", 0, 0))
+-- 
+2.3.5
+

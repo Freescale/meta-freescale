@@ -1,7 +1,7 @@
-From af5e4289f60c38ab17adab14c82d6204d155f25f Mon Sep 17 00:00:00 2001
+From 5127db3483a2e4f6dc13330bea7237931c5f15a0 Mon Sep 17 00:00:00 2001
 From: Hou Zhiqiang <B48286@freescale.com>
 Date: Wed, 19 Mar 2014 14:02:46 +0800
-Subject: [PATCH 8/9] Add RSA Key generation offloading
+Subject: [PATCH 08/15] Add RSA Key generation offloading
 
 Upstream-status: Pending
 
@@ -47,7 +47,7 @@ index 275a55c..d0cc542 100644
  #define CRF_DSA_VERIFY		(1 << CRK_DSA_VERIFY)
  #define CRF_DH_COMPUTE_KEY	(1 << CRK_DH_COMPUTE_KEY)
 diff --git a/ioctl.c b/ioctl.c
-index 7e4c671..14888d6 100644
+index e4e16a8..3762a47 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -957,7 +957,8 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
@@ -166,5 +166,5 @@ index 2747706..14dcf40 100644
  err:
  	return ret;
 -- 
-1.8.3.1
+2.3.5
 

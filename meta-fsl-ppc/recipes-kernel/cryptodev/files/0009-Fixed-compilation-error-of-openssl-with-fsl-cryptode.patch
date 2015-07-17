@@ -1,7 +1,7 @@
-From e791b55b03d295ee11476382a7bd93ab131e2e52 Mon Sep 17 00:00:00 2001
+From 800af48d0c26830943ca2308dd426b5b09811750 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Thu, 17 Apr 2014 07:08:47 +0545
-Subject: [PATCH 9/9] Fixed compilation error of openssl with fsl cryptodev
+Subject: [PATCH 09/15] Fixed compilation error of openssl with fsl cryptodev
 
 Upstream-status: Pending
 
@@ -110,7 +110,7 @@ index 5347cae..c83c885 100644
  	compat_uptr_t cookie;
  };
 diff --git a/ioctl.c b/ioctl.c
-index 14888d6..20ab4ca 100644
+index 3762a47..c97320b 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -4,7 +4,7 @@
@@ -156,5 +156,5 @@ index 14dcf40..6365911 100644
   * This file is part of linux cryptodev.
   *
 -- 
-2.2.0
+2.3.5
 

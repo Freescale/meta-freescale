@@ -1,7 +1,7 @@
-From 30fc86a09109f169815befc2cd8bbfcae79fe7e0 Mon Sep 17 00:00:00 2001
+From eccd6277b067cd85094eb057225cc0a983300b9f Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 07:53:53 +0545
-Subject: [PATCH 6/9] ECC_KEYGEN and DLC_KEYGEN supported in cryptodev module
+Subject: [PATCH 06/15] ECC_KEYGEN and DLC_KEYGEN supported in cryptodev module
 
 Upstream-status: Pending
 
@@ -50,7 +50,7 @@ index 4436fbf..275a55c 100644
  /* ioctl's. Compatible with old linux cryptodev.h
   */
 diff --git a/ioctl.c b/ioctl.c
-index 2eb7f03..c813c8c 100644
+index e2f407f..1f0741a 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -726,6 +726,23 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
@@ -208,5 +208,5 @@ index 0b7951e..c901bc7 100644
  err:
  	return ret;
 -- 
-1.8.3.1
+2.3.5
 

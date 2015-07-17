@@ -1,7 +1,7 @@
-From 5435dfd329cd90837ce36c6dadc26166c7906cab Mon Sep 17 00:00:00 2001
+From b109fbdb64de6be0dc2f0d2ef108cead34652495 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 06:52:13 +0545
-Subject: [PATCH 4/9] Compat versions of PKC IOCTLs
+Subject: [PATCH 04/15] Compat versions of PKC IOCTLs
 
 Upstream-status: Pending
 
@@ -50,7 +50,7 @@ index fdbcc61..cf54dac 100644
  #endif /* CONFIG_COMPAT */
  
 diff --git a/ioctl.c b/ioctl.c
-index 782d7fe..3baf3e6 100644
+index 69980e3..9431025 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -1081,6 +1081,68 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
@@ -196,5 +196,5 @@ index 782d7fe..3baf3e6 100644
  		return -EINVAL;
  	}
 -- 
-1.8.3.1
+2.3.5
 

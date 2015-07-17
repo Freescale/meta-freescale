@@ -1,0 +1,29 @@
+From c618f882c283511dd4f7547113a1117c4785f56f Mon Sep 17 00:00:00 2001
+From: Denys Dmytriyenko <denys@ti.com>
+Date: Sun, 6 Apr 2014 19:51:39 -0400
+Subject: [PATCH 3/4] Disable installing header file provided by another
+ package
+
+Signed-off-by: Denys Dmytriyenko <denys@ti.com>
+
+Upstream-Status: Inappropriate [ OE specific ]
+---
+ Makefile | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 31c4b3f..855bb54 100644
+--- a/Makefile
++++ b/Makefile
+@@ -31,8 +31,6 @@ install: modules_install
+ 
+ modules_install:
+ 	make -C $(KERNEL_DIR) SUBDIRS=`pwd` modules_install
+-	@echo "Installing cryptodev.h in $(PREFIX)/usr/include/crypto ..."
+-	@install -D crypto/cryptodev.h $(PREFIX)/usr/include/crypto/cryptodev.h
+ 
+ clean:
+ 	make -C $(KERNEL_DIR) SUBDIRS=`pwd` clean
+-- 
+2.3.5
+

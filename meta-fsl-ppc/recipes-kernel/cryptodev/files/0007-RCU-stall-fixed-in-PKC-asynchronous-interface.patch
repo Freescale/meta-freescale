@@ -1,7 +1,7 @@
-From d60b9dbf53d63092fd292c00bb03c250c26703cf Mon Sep 17 00:00:00 2001
+From 78c01e1882def52c72966c0e86913950ec201af9 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Fri, 7 Mar 2014 08:49:15 +0545
-Subject: [PATCH 7/9] RCU stall fixed in PKC asynchronous interface
+Subject: [PATCH 07/15] RCU stall fixed in PKC asynchronous interface
 
 Upstream-status: Pending
 
@@ -12,7 +12,7 @@ Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
  2 files changed, 38 insertions(+), 28 deletions(-)
 
 diff --git a/ioctl.c b/ioctl.c
-index c813c8c..7e4c671 100644
+index 1f0741a..e4e16a8 100644
 --- a/ioctl.c
 +++ b/ioctl.c
 @@ -108,10 +108,9 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
@@ -234,5 +234,5 @@ index c901bc7..2747706 100644
  	if (!buf)
  		return -ENOMEM;
 -- 
-1.8.3.1
+2.3.5
 
