@@ -1,47 +1,36 @@
-DESCRIPTION = "Reset Control Words (RCW)"
-SECTION = "rcw"
+SUMMARY = "Reset Configuration Word"
+DESCRIPTION = "Reset Configuration Word - hardware boot-time parameters for the QorIQ targets"
 LICENSE = "BSD"
 PR = "r8"
 
 LIC_FILES_CHKSUM = "file://rcw.py;beginline=8;endline=28;md5=9ba0b28922dd187b06b6c8ebcfdd208e"
 
-# this package is specific to the machine itself
-INHIBIT_DEFAULT_DEPS = "1"
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;nobranch=1"
-SRCREV = "3e89f378ed70e9b856756de8c3dbdfccb045fa0c"
+SRCBRANCH = "master"
+SRCREV = "426f7a6535d93dac76f5125035e0938a85e778d2"
+SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;branch=${SRCBRANCH} \
+    file://rcw-make-BOARDS-DESTDIR-overidable-in-Makefile.patch \
+"
 
 S = "${WORKDIR}/git"
 
-export PYTHON
+EXTRA_OEMAKE = "BOARDS=${@d.getVar('MACHINE', True).replace('-64b','')} DESTDIR=${D}/boot/rcw/"
 
 do_install () {
-    make install
-
-    M=`echo ${MACHINE} | sed s/-64b//g`
-    if [ "t1042rdb" = "${M}" ] || [ "t1042rdb-pi" = "${M}" ];then
-        M=t1042rdb_pi
-    fi
-    install -d ${D}/boot/rcw
-    cp -r ${S}/${M}/${M}/* ${D}/boot/rcw
+    oe_runmake install
 }
 
 do_deploy () {
-    M=`echo ${MACHINE} | sed s/-64b//g`
-    if [ "t1042rdb" = "${M}" ] || [ "t1042rdb-pi" = "${M}" ];then
-        M=t1042rdb_pi
-    fi
     install -d ${DEPLOYDIR}/rcw
-    cp -r ${S}/${M}/${M}/* ${DEPLOYDIR}/rcw
+    cp -r ${D}/boot/rcw/* ${DEPLOYDIR}/rcw/
 }
 addtask deploy after do_install
 
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 
-COMPATIBLE_HOST_qoriq-ppc = ".*"
-COMPATIBLE_HOST ?= "(none)"
 ALLOW_EMPTY_${PN} = "1"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_MACHINE = "(qoriq-ppc)"
