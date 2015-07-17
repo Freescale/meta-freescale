@@ -10,9 +10,18 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE='HOSTCC="${CC}"'
 
+inherit deploy
+
 do_install () {
     install -d ${D}${bindir}
     install -m 755 mux_server ${D}${bindir}
 }
+
+do_deploy() {
+    install -d ${DEPLOYDIR}/hv
+    install -m 755 mux_server ${DEPLOYDIR}/hv/mux_server-${PKGV}-${PKGR}
+    ln -sf mux_server-${PKGV}-${PKGR} ${DEPLOYDIR}/hv/mux_server
+}
+addtask deploy after do_install
 
 BBCLASSEXTEND = "native nativesdk"
