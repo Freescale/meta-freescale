@@ -1,7 +1,7 @@
 From e4fc051f8ae1c093b25ca346c2ec351ff3b700d1 Mon Sep 17 00:00:00 2001
 From: Hou Zhiqiang <B48286@freescale.com>
 Date: Wed, 2 Apr 2014 16:10:43 +0800
-Subject: [PATCH 11/17] Add RSA keygen operation and support gendsa command
+Subject: [PATCH 11/26] Add RSA keygen operation and support gendsa command
  with hardware engine
 
 Upstream-status: Pending
@@ -149,5 +149,5 @@ index 9f2416e..b2919a8 100644
  	}
  
 -- 
-1.8.3.1
+2.3.5
 

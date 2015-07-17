@@ -1,7 +1,7 @@
 From 107a10d45db0f2e58482f698add04ed9183f7268 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 11 Mar 2014 06:29:52 +0545
-Subject: [PATCH 08/17] Initial support for PKC in cryptodev engine
+Subject: [PATCH 08/26] Initial support for PKC in cryptodev engine
 
 Upstream-status: Pending
 
@@ -1560,5 +1560,5 @@ index e3eb98b..7ee314b 100644
  	}
  
 -- 
-1.8.3.1
+2.3.5
 

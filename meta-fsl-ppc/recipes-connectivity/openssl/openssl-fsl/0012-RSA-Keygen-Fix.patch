@@ -1,7 +1,7 @@
 From ac777f046da7151386d667391362ecb553ceee90 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Wed, 16 Apr 2014 22:53:04 +0545
-Subject: [PATCH 12/17] RSA Keygen Fix
+Subject: [PATCH 12/26] RSA Keygen Fix
 
 Upstream-status: Pending
 
@@ -60,5 +60,5 @@ index b2919a8..ed5f20f 100644
  	return ret;
  
 -- 
-1.8.3.1
+2.3.5
 

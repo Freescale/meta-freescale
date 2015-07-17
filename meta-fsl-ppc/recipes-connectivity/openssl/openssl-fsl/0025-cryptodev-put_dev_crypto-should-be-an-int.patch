@@ -1,0 +1,35 @@
+From 84a8007b6e92fe4c2696cc9e330207ee03303a20 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Thu, 19 Feb 2015 13:09:32 +0200
+Subject: [PATCH 25/26] cryptodev: put_dev_crypto should be an int
+
+Change-Id: Ie0a83bc07a37132286c098b17ef35d98de74b043
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/34220
+---
+ crypto/engine/eng_cryptodev.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index b74fc7c..c9db27d 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -347,10 +347,12 @@ static int get_dev_crypto(void)
+ #endif
+ }
+ 
+-static void put_dev_crypto(int fd)
++static int put_dev_crypto(int fd)
+ {
+-#ifndef CRIOGET_NOT_NEEDED
+-	close(fd);
++#ifdef CRIOGET_NOT_NEEDED
++	return 0;
++#else
++	return close(fd);
+ #endif
+ }
+ 
+-- 
+2.3.5
+

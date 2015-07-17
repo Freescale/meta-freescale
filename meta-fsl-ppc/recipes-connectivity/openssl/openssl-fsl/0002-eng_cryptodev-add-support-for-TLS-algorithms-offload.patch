@@ -1,7 +1,7 @@
 From dfd6ba263dc25ea2a4bbc32448b24ca2b1fc40e8 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@freescale.com>
 Date: Thu, 29 Aug 2013 16:51:18 +0300
-Subject: [PATCH 02/17] eng_cryptodev: add support for TLS algorithms offload
+Subject: [PATCH 02/26] eng_cryptodev: add support for TLS algorithms offload
 
 - aes-128-cbc-hmac-sha1
 - aes-256-cbc-hmac-sha1
@@ -313,5 +313,5 @@ index 5a715ac..7588a28 100644
  	    !ENGINE_set_name(engine, "BSD cryptodev engine") ||
  	    !ENGINE_set_ciphers(engine, cryptodev_engine_ciphers) ||
 -- 
-1.8.3.1
+2.3.5
 

@@ -1,7 +1,7 @@
 From 15abbcd740eafbf2a46b5da24be76acf4982743d Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 11 Mar 2014 05:56:54 +0545
-Subject: [PATCH 05/17] ECC Support header for Cryptodev Engine
+Subject: [PATCH 05/26] ECC Support header for Cryptodev Engine
 
 Upstream-status: Pending
 
@@ -314,5 +314,5 @@ index 0000000..77aee71
 +};
 +#endif
 -- 
-1.8.3.1
+2.3.5
 

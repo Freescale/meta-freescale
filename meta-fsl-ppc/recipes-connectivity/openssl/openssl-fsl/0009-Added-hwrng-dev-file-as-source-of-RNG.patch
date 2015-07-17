@@ -1,7 +1,7 @@
 From 81c4c62a4f5f5542843381bfb34e39a6171d5cdd Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 11 Mar 2014 06:42:59 +0545
-Subject: [PATCH 09/17] Added hwrng dev file as source of RNG
+Subject: [PATCH 09/26] Added hwrng dev file as source of RNG
 
 Upstream-status: Pending
 
@@ -24,5 +24,5 @@ index 6a0aad1..57c0563 100644
  #ifndef DEVRANDOM_EGD
  /* set this to a comma-seperated list of 'egd' sockets to try out. These
 -- 
-1.8.3.1
+2.3.5
 

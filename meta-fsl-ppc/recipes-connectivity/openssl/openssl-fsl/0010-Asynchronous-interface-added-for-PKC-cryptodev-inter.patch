@@ -1,7 +1,7 @@
 From a933e6341fd8989bdd82f8a5446b6f04aa00eef9 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 11 Mar 2014 07:14:30 +0545
-Subject: [PATCH 10/17] Asynchronous interface added for PKC cryptodev
+Subject: [PATCH 10/26] Asynchronous interface added for PKC cryptodev
  interface
 
 Upstream-status: Pending
@@ -2035,5 +2035,5 @@ index 5f269e5..6ef1b15 100644
  	int (*finish)(RSA *rsa);	/* called at free */
  	int flags;			/* RSA_METHOD_FLAG_* things */
 -- 
-1.8.3.1
+2.3.5
 

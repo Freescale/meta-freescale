@@ -1,0 +1,193 @@
+From 21e3ca4ec77f9258aa4001f07faac1c4942b48b4 Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Fri, 9 May 2014 17:54:06 +0300
+Subject: [PATCH 18/26] eng_cryptodev: extend TLS offload with
+ 3des_cbc_hmac_sha1
+
+Both obj_mac.h and obj_dat.h were generated using the scripts
+from crypto/objects:
+
+$ cd crypto/objects
+$ perl objects.pl objects.txt obj_mac.num obj_mac.h
+$ perl obj_dat.pl obj_mac.h obj_dat.h
+
+Change-Id: I94f13cdd09df67e33e6acd3c00aab47cb358ac46
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/34001
+---
+ crypto/engine/eng_cryptodev.c | 24 ++++++++++++++++++++++++
+ crypto/objects/obj_dat.h      | 10 +++++++---
+ crypto/objects/obj_mac.h      |  4 ++++
+ crypto/objects/obj_mac.num    |  1 +
+ crypto/objects/objects.txt    |  1 +
+ ssl/ssl_ciph.c                |  4 ++++
+ 6 files changed, 41 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 79b2678..299e84b 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -135,6 +135,7 @@ static int cryptodev_ctrl(ENGINE *e, int cmd, long i, void *p,
+ void ENGINE_load_cryptodev(void);
+ const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1;
+ const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
++const EVP_CIPHER cryptodev_3des_cbc_hmac_sha1;
+ 
+ inline int spcf_bn2bin(BIGNUM *bn, unsigned char **bin,  int *bin_len)
+ {
+@@ -252,6 +253,7 @@ static struct {
+ 	{ CRYPTO_BLF_CBC,       NID_bf_cbc,       8,  16, 0},
+ 	{ CRYPTO_CAST_CBC,      NID_cast5_cbc,    8,  16, 0},
+ 	{ CRYPTO_SKIPJACK_CBC,  NID_undef,        0,  0,  0},
++	{ CRYPTO_TLS10_3DES_CBC_HMAC_SHA1, NID_des_ede3_cbc_hmac_sha1, 8, 24, 20},
+ 	{ CRYPTO_TLS10_AES_CBC_HMAC_SHA1, NID_aes_128_cbc_hmac_sha1, 16, 16, 20},
+ 	{ CRYPTO_TLS10_AES_CBC_HMAC_SHA1, NID_aes_256_cbc_hmac_sha1, 16, 32, 20},
+ 	{ CRYPTO_AES_GCM,       NID_aes_128_gcm,  16, 16, 0},
+@@ -466,6 +468,9 @@ cryptodev_usable_ciphers(const int **nids)
+ 		case NID_aes_256_cbc_hmac_sha1:
+ 			EVP_add_cipher(&cryptodev_aes_256_cbc_hmac_sha1);
+ 			break;
++		case NID_des_ede3_cbc_hmac_sha1:
++			EVP_add_cipher(&cryptodev_3des_cbc_hmac_sha1);
++			break;
+ 		}
+ 	}
+ 	return count;
+@@ -571,6 +576,7 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+ 	switch (ctx->cipher->nid) {
+ 	case NID_aes_128_cbc_hmac_sha1:
+ 	case NID_aes_256_cbc_hmac_sha1:
++	case NID_des_ede3_cbc_hmac_sha1:
+ 		cryp.flags = COP_FLAG_AEAD_TLS_TYPE;
+ 	}
+ 	cryp.ses = sess->ses;
+@@ -763,6 +769,7 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg,
+ 		switch (ctx->cipher->nid) {
+ 		case NID_aes_128_cbc_hmac_sha1:
+ 		case NID_aes_256_cbc_hmac_sha1:
++		case NID_des_ede3_cbc_hmac_sha1:
+ 			maclen = SHA_DIGEST_LENGTH;
+ 		}
+ 
+@@ -1082,6 +1089,20 @@ const EVP_CIPHER cryptodev_aes_256_cbc = {
+ 	NULL
+ };
+ 
++const EVP_CIPHER cryptodev_3des_cbc_hmac_sha1 = {
++	NID_des_ede3_cbc_hmac_sha1,
++	8, 24, 8,
++	EVP_CIPH_CBC_MODE | EVP_CIPH_FLAG_AEAD_CIPHER,
++	cryptodev_init_aead_key,
++	cryptodev_aead_cipher,
++	cryptodev_cleanup,
++	sizeof(struct dev_crypto_state),
++	EVP_CIPHER_set_asn1_iv,
++	EVP_CIPHER_get_asn1_iv,
++	cryptodev_cbc_hmac_sha1_ctrl,
++	NULL
++};
++
+ const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1 = {
+ 	NID_aes_128_cbc_hmac_sha1,
+ 	16, 16, 16,
+@@ -1163,6 +1184,9 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
+ 	case NID_aes_256_cbc:
+ 		*cipher = &cryptodev_aes_256_cbc;
+ 		break;
++	case NID_des_ede3_cbc_hmac_sha1:
++		*cipher = &cryptodev_3des_cbc_hmac_sha1;
++		break;
+ 	case NID_aes_128_cbc_hmac_sha1:
+ 		*cipher = &cryptodev_aes_128_cbc_hmac_sha1;
+ 		break;
+diff --git a/crypto/objects/obj_dat.h b/crypto/objects/obj_dat.h
+index bc69665..9f2267a 100644
+--- a/crypto/objects/obj_dat.h
++++ b/crypto/objects/obj_dat.h
+@@ -62,9 +62,9 @@
+  * [including the GNU Public Licence.]
+  */
+ 
+-#define NUM_NID 920
+-#define NUM_SN 913
+-#define NUM_LN 913
++#define NUM_NID 921
++#define NUM_SN 914
++#define NUM_LN 914
+ #define NUM_OBJ 857
+ 
+ static const unsigned char lvalues[5974]={
+@@ -2399,6 +2399,8 @@ static const ASN1_OBJECT nid_objs[NUM_NID]={
+ {"AES-256-CBC-HMAC-SHA1","aes-256-cbc-hmac-sha1",
+ 	NID_aes_256_cbc_hmac_sha1,0,NULL,0},
+ {"RSAES-OAEP","rsaesOaep",NID_rsaesOaep,9,&(lvalues[5964]),0},
++{"DES-EDE3-CBC-HMAC-SHA1","des-ede3-cbc-hmac-sha1",
++	NID_des_ede3_cbc_hmac_sha1,0,NULL,0},
+ };
+ 
+ static const unsigned int sn_objs[NUM_SN]={
+@@ -2474,6 +2476,7 @@ static const unsigned int sn_objs[NUM_SN]={
+ 62,	/* "DES-EDE-OFB" */
+ 33,	/* "DES-EDE3" */
+ 44,	/* "DES-EDE3-CBC" */
++920,	/* "DES-EDE3-CBC-HMAC-SHA1" */
+ 61,	/* "DES-EDE3-CFB" */
+ 658,	/* "DES-EDE3-CFB1" */
+ 659,	/* "DES-EDE3-CFB8" */
+@@ -3585,6 +3588,7 @@ static const unsigned int ln_objs[NUM_LN]={
+ 62,	/* "des-ede-ofb" */
+ 33,	/* "des-ede3" */
+ 44,	/* "des-ede3-cbc" */
++920,	/* "des-ede3-cbc-hmac-sha1" */
+ 61,	/* "des-ede3-cfb" */
+ 658,	/* "des-ede3-cfb1" */
+ 659,	/* "des-ede3-cfb8" */
+diff --git a/crypto/objects/obj_mac.h b/crypto/objects/obj_mac.h
+index b5ea7cd..8751902 100644
+--- a/crypto/objects/obj_mac.h
++++ b/crypto/objects/obj_mac.h
+@@ -4030,3 +4030,7 @@
+ #define LN_aes_256_cbc_hmac_sha1		"aes-256-cbc-hmac-sha1"
+ #define NID_aes_256_cbc_hmac_sha1		918
+ 
++#define SN_des_ede3_cbc_hmac_sha1		"DES-EDE3-CBC-HMAC-SHA1"
++#define LN_des_ede3_cbc_hmac_sha1		"des-ede3-cbc-hmac-sha1"
++#define NID_des_ede3_cbc_hmac_sha1		920
++
+diff --git a/crypto/objects/obj_mac.num b/crypto/objects/obj_mac.num
+index 1d0a7c8..9d44bb5 100644
+--- a/crypto/objects/obj_mac.num
++++ b/crypto/objects/obj_mac.num
+@@ -917,3 +917,4 @@ aes_128_cbc_hmac_sha1		916
+ aes_192_cbc_hmac_sha1		917
+ aes_256_cbc_hmac_sha1		918
+ rsaesOaep		919
++des_ede3_cbc_hmac_sha1		920
+diff --git a/crypto/objects/objects.txt b/crypto/objects/objects.txt
+index d3bfad7..90d2fc5 100644
+--- a/crypto/objects/objects.txt
++++ b/crypto/objects/objects.txt
+@@ -1290,3 +1290,4 @@ kisa 1 6                : SEED-OFB      : seed-ofb
+ 			: AES-128-CBC-HMAC-SHA1		: aes-128-cbc-hmac-sha1
+ 			: AES-192-CBC-HMAC-SHA1		: aes-192-cbc-hmac-sha1
+ 			: AES-256-CBC-HMAC-SHA1		: aes-256-cbc-hmac-sha1
++			: DES-EDE3-CBC-HMAC-SHA1	: des-ede3-cbc-hmac-sha1
+diff --git a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
+index 8188ff5..310fe76 100644
+--- a/ssl/ssl_ciph.c
++++ b/ssl/ssl_ciph.c
+@@ -639,6 +639,10 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
+ 			 c->algorithm_mac == SSL_SHA1 &&
+ 			 (evp=EVP_get_cipherbyname("AES-256-CBC-HMAC-SHA1")))
+ 			*enc = evp, *md = NULL;
++		else if (c->algorithm_enc == SSL_3DES &&
++			 c->algorithm_mac == SSL_SHA1 &&
++			 (evp = EVP_get_cipherbyname("DES-EDE3-CBC-HMAC-SHA1")))
++			*enc = evp, *md = NULL;
+ 		return(1);
+ 		}
+ 	else
+-- 
+2.3.5
+

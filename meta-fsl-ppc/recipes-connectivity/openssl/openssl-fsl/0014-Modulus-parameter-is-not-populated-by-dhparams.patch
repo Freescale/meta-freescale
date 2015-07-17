@@ -1,7 +1,7 @@
 From 14623ca9e417ccef1ad3f4138acfac0ebe682f1f Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 22 Apr 2014 22:58:33 +0545
-Subject: [PATCH 14/17] Modulus parameter is not populated by dhparams
+Subject: [PATCH 14/26] Modulus parameter is not populated by dhparams
 
 Upstream-status: Pending
 
@@ -39,5 +39,5 @@ index 5d883fa..6d69336 100644
  	kop.crk_param[2].crp_p = g;
  	kop.crk_param[2].crp_nbits = g_len * 8;
 -- 
-1.8.3.1
+2.3.5
 

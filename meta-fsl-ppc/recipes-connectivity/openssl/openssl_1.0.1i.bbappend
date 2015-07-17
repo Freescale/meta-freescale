@@ -19,7 +19,17 @@ SRC_URI_append_class-target = " file://0001-remove-double-initialization-of-cryp
 	file://0015-SW-Backoff-mechanism-for-dsa-keygen.patch \
 	file://0016-Fixed-DH-keygen-pair-generator.patch \
 	file://0017-cryptodev-add-support-for-aes-gcm-algorithm-offloadi.patch \
+	file://0018-eng_cryptodev-extend-TLS-offload-with-3des_cbc_hmac_.patch \
+	file://0019-eng_cryptodev-add-support-for-TLSv1.1-record-offload.patch \
+	file://0020-eng_cryptodev-add-support-for-TLSv1.2-record-offload.patch \
+	file://0021-cryptodev-drop-redundant-function.patch \
+	file://0022-cryptodev-do-not-zero-the-buffer-before-use.patch \
+	file://0023-cryptodev-clean-up-code-layout.patch \
+	file://0024-cryptodev-do-not-cache-file-descriptor-in-open.patch \
+	file://0025-cryptodev-put_dev_crypto-should-be-an-int.patch \
+	file://0026-cryptodev-simplify-cryptodev-pkc-support-code.patch \
 "
+
 # Digest offloading through cryptodev is not recommended because of the
 # performance penalty of the Openssl engine interface. Openssl generates a huge
 # number of calls to digest functions for even a small amount of work data.

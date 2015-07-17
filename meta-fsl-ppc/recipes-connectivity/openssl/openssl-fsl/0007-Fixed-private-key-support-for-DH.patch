@@ -1,7 +1,7 @@
 From 8322e4157bf49d992b5b9e460f2c0785865dd1c1 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Thu, 20 Mar 2014 19:55:51 -0500
-Subject: [PATCH 07/17] Fixed private key support for DH
+Subject: [PATCH 07/26] Fixed private key support for DH
 
 Upstream-status: Pending
 
@@ -31,5 +31,5 @@ index ed32004..02ec2d4 100644
  	return 1;
  	}
 -- 
-1.8.3.1
+2.3.5
 

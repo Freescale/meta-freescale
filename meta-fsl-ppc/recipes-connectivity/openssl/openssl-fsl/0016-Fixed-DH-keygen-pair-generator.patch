@@ -1,7 +1,7 @@
 From d2c868c6370bcc0d0a254e641907da2cdf992d62 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Thu, 1 May 2014 06:35:45 +0545
-Subject: [PATCH 16/17] Fixed DH keygen pair generator
+Subject: [PATCH 16/26] Fixed DH keygen pair generator
 
 Upstream-status: Pending
 
@@ -96,5 +96,5 @@ index dab8fea..13d924f 100644
  sw_try:
  	{
 -- 
-1.8.3.1
+2.3.5
 

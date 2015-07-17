@@ -1,7 +1,7 @@
 From 7d770f0324498d1fa78300cc5cecc8c1dcd3b788 Mon Sep 17 00:00:00 2001
 From: Andy Polyakov <appro@openssl.org>
 Date: Sun, 21 Oct 2012 18:19:41 +0000
-Subject: [PATCH 04/17] linux-pcc: make it more robust and recognize
+Subject: [PATCH 04/26] linux-pcc: make it more robust and recognize
  KERNEL_BITS variable.
 
 (cherry picked from commit 78c3e20579d3baa159c8b51b59d415b6e521614b)
@@ -70,5 +70,5 @@ index f71ba66..531f1b3 100644
  			{
  			OPENSSL_ppc64_probe();
 -- 
-1.8.3.1
+2.3.5
 
