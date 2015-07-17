@@ -19,7 +19,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/hv-cfg.git;nobranch=1"
-SRCREV = "f79080739851b3a3dfcd435f2ef1572459a4313c"
+SRCREV = "b9287b07390d17bfba936a806a72b91b89507c22"
 
 S = "${WORKDIR}/git"
 
@@ -27,7 +27,7 @@ do_install () {
 	make install
 
 	M=`echo ${MACHINE} | sed s/-64b//g`
-	if [ "t1042rdb" = "${M}" ];then
+	if [ "t1042d4rdb" = "${M}" ] || [ "t1040d4rdb" = "${M}" ];then
 		M=t1040rdb
 	fi
 	install -d ${D}/boot/hv-cfg
@@ -36,7 +36,7 @@ do_install () {
 
 do_deploy () {
 	M=`echo ${MACHINE} | sed s/-64b//g`
-	if [ "t1042rdb" = "${M}" ];then
+	if [ "t1042d4rdb" = "${M}" ] || [ "t1040d4rdb" = "${M}" ];then
 		M=t1040rdb
 	fi
 	install -d ${DEPLOYDIR}/hv-cfg
