@@ -19,7 +19,7 @@ inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1 \
 	file://0001-u-boot-mpc85xx-u-boot-.lds-remove-_GLOBAL_OFFSET_TAB.patch"
-SRCREV = "659b6a23a8b1f3026200bc6352dbacef53f4dcb1"
+SRCREV = "6ba8eedbcdc4b063f59a63e6288b938af739e8ad"
 
 python () {
     if d.getVar("TCMODE", True) == "external-fsl":
@@ -65,6 +65,7 @@ do_compile () {
         UBOOT_MACHINES=${UBOOT_MACHINE}
     fi
 
+    python ./tools/genboardscfg.py
     for board in ${UBOOT_MACHINES}; do
         if ! grep -wq $board ${S}/boards.cfg;then
             echo "WARNING: $board not supported in boards.cfg"
