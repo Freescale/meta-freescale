@@ -1,7 +1,7 @@
 DESCRIPTION = "skmm host driver offload data to PCIe EP and push the data en-decrypted back to application"
 SECTION = "c293-skmm-host"
-LICENSE = "Freescale-EULA"
-LIC_FILES_CHKSUM = "file://Makefile;endline=7;md5=edffaac1da9e809ade0d2fcfcc18d8df"
+LICENSE = "BSD & GPLv2+"
+LIC_FILES_CHKSUM = "file://COPYING;md5=99803d8e9a595c0bdb45ca710f353813"
 
 inherit  module qoriq_build_64bit_kernel
 
