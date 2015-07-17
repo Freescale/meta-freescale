@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a504ab5a8ff235e67c7301214749346c"
 PR = "r2"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;nobranch=1"
-SRCREV = "4f4a3ebe447c3c982d453596a82af7b40ac3a28a"
+SRCREV = "b9e52be1f62a5fcc912d44875bf155ad55650d68"
 
 DEPENDS = "libxml2 fmlib tclap"
 
@@ -25,14 +25,13 @@ EXTRA_OEMAKE_virtclass-native = 'FMCHOSTMODE=1 FMD_USPACE_HEADER_PATH="${STAGING
 
 PARALLEL_MAKE = ""
 
+EXTRA_OEMAKE_PLATFORM ?= ""
+EXTRA_OEMAKE_PLATFORM_b4 = "b4860qds"
+EXTRA_OEMAKE_PLATFORM_t2 = "b4860qds"
+EXTRA_OEMAKE_PLATFORM_t4 = "b4860qds"
+EXTRA_OEMAKE_PLATFORM_t1 = "t1040qds"
+
 do_compile () {
-    if echo ${MACHINE} | egrep -q "^(b4|t1|t2|t4)"; then
-        EXTRA_OEMAKE_PLATFORM="b4860qds"
-    elif [ "p1023rds" = "${MACHINE}" ];then
-        EXTRA_OEMAKE_PLATFORM="p1023rds"
-    else
-        EXTRA_OEMAKE_PLATFORM=""
-    fi
     oe_runmake MACHINE=${EXTRA_OEMAKE_PLATFORM} -C source
 }
 
