@@ -1,10 +1,9 @@
 require openssl.inc
 
-# For target side versions of openssl enable support for OCF Linux driver
+# For target side versions of openssl enable support for cryptodev Linux driver
 # if they are available.
-DEPENDS += "cryptodev-linux"
-
-CFLAG += "-DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS"
+DEPENDS_class-target += "cryptodev-linux"
+CFLAG_class-target += "-DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f9a8f968107345e0b75aa8c2ecaa7ec8"
 
