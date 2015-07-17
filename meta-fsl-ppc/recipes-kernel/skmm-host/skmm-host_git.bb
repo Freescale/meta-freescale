@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://Makefile;endline=7;md5=edffaac1da9e809ade0d2fcfcc18d8
 inherit  module qoriq_build_64bit_kernel
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-host.git;nobranch=1"
-SRCREV = "97c9241a359edccdf8913cb9accbfe4ceb511523"
+SRCREV = "a655c571a92f4a5d6ced09869c2f17609ee47361"
 
 S = "${WORKDIR}/git"
 
