@@ -17,7 +17,8 @@ INHIBIT_PACKAGE_STRIP = "1"
 
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 do_configure_prepend () {
-    sed -i 's,$(KERNEL_PATH)/.config,$(KBUILD_OUTPUT)/.config,' ${S}/Makefile
+    find ${S} -name Makefile -exec \
+        sed -i 's,$(KERNEL_PATH)/.config,$(KBUILD_OUTPUT)/.config,' {} \;
 }
 
 do_install(){
