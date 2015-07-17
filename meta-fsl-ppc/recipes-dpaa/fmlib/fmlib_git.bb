@@ -9,7 +9,7 @@ DEPENDS += "virtual/kernel"
 DEPENDS_virtclass-native = ""
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;nobranch=1"
-SRCREV = "661d7822aa182f720029134008d7e1db07b0d504"
+SRCREV = "4938e099561d441c947d4ccdf2e601ab2966d8cc"
 
 S = "${WORKDIR}/git"
 
@@ -23,7 +23,7 @@ EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
         CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
 FMLIB_TARGET = "libfm-${TARGET_ARCH_FMLIB}"
-FMLIB_TARGET_t1 = "libfm-${TARGET_ARCH_FMLIB}-fmv3"
+FMLIB_TARGET_t1 = "libfm-${TARGET_ARCH_FMLIB}-fmv3l"
 do_compile () {
     oe_runmake ${FMLIB_TARGET}.a
 }
