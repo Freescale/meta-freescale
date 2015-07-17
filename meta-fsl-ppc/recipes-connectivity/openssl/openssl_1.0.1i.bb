@@ -40,12 +40,12 @@ SRC_URI[md5sum] = "de62b43dfcd858e66a74bee1c834e959"
 SRC_URI[sha256sum] = "53cb818c3b90e507a8348f4f5eaedb05d8bfe5358aabb508b7263cc670c3e028"
 
 PACKAGES =+ " \
-	${PN}-engines \
-	${PN}-engines-dbg \
-	"
+        ${PN}-engines-dbg \
+        ${PN}-engines \
+"
 
 FILES_${PN}-engines = "${libdir}/ssl/engines/*.so ${libdir}/engines"
-FILES_${PN}-engines-dbg = "${libdir}/ssl/engines/.debug"
+FILES_${PN}-engines-dbg = "${libdir}/engines/.debug ${libdir}/ssl/engines/.debug"
 
 PARALLEL_MAKE = ""
 PARALLEL_MAKEINST = ""
