@@ -8,8 +8,7 @@ include conf/machine/include/tune-arm926ejs.inc
 
 SOC_FAMILY = "mxs"
 
-PREFERRED_PROVIDER_virtual/kernel ??= "linux-imx"
-PREFERRED_PROVIDER_virtual/kernel_mx23 ?= "linux-fslc"
+PREFERRED_PROVIDER_virtual/kernel ??= "linux-fslc"
 
 PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
 PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
