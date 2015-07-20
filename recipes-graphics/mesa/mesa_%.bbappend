@@ -21,7 +21,9 @@ USE_VIV_LIBGL_mx6sx = "yes"
 # FIXME: Dirty hack to allow use of Vivante GPU libGL binary
 do_install_append_mx6 () {
     if [ "${USE_VIV_LIBGL}" = "yes" ]; then
-        rm -f ${D}${libdir}/libGL.*
+        rm -f ${D}${libdir}/libGL.* \
+              ${D}${includedir}/GL/gl.h \
+              ${D}${includedir}/GL/glext.h
     fi
 }
 EXTRA_OECONF_mx6 := "${@'${EXTRA_OECONF}'.replace('--enable-glx-tls','--enable-glx')}"
