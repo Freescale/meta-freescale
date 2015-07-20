@@ -23,6 +23,7 @@ SRC_URI += "\
     file://0001-fix-build.patch \
     file://0002-fix-build-with-rt-enabled.patch \
     file://0003-no-split-ptlocks.patch \
+    file://0004-imx-sdma-channel-use-raw-spinlock.patch \
 "
 
 SRC_URI[rt-patch1.md5sum] = "28bfd1e14ccab1ea1fb48f56f982d80c"
