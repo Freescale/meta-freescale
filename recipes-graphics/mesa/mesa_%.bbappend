@@ -18,6 +18,17 @@ USE_VIV_LIBGL_mx6q = "yes"
 USE_VIV_LIBGL_mx6dl = "yes"
 USE_VIV_LIBGL_mx6sx = "yes"
 
+# FIXME: mesa should support 'x11-no-tls' option
+python () {
+    overrides = d.getVar("OVERRIDES", True).split(":")
+    if "mx6" not in overrides:
+        return
+
+    extra_oeconf = d.getVar("EXTRA_OECONF", True)
+    extra_oeconf = extra_oeconf.replace("--enable-glx-tls", "--enable-glx")
+    d.setVar("EXTRA_OECONF", extra_oeconf)
+}
+
 # FIXME: Dirty hack to allow use of Vivante GPU libGL binary
 do_install_append_mx6 () {
     if [ "${USE_VIV_LIBGL}" = "yes" ]; then
@@ -26,4 +37,3 @@ do_install_append_mx6 () {
               ${D}${includedir}/GL/glext.h
     fi
 }
-EXTRA_OECONF_mx6 := "${@'${EXTRA_OECONF}'.replace('--enable-glx-tls','--enable-glx')}"
