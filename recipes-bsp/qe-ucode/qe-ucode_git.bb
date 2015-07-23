@@ -33,4 +33,4 @@ addtask deploy before do_build after do_install
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot/*"
 ALLOW_EMPTY_${PN} = "1"
-COMPATIBLE_MACHINE = "(ls102xa)"
+COMPATIBLE_MACHINE = "(ls102xa|p1021rdb|p1025twr|t1)"

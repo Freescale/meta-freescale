@@ -33,4 +33,4 @@ FILES_${PN}-image += "/boot"
 ALLOW_EMPTY_${PN} = "1"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(ls102xa)"
+COMPATIBLE_MACHINE = "(ls102xa|qoriq-ppc)"

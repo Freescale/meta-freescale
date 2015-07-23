@@ -18,6 +18,7 @@ S = "${WORKDIR}/git"
 EXTRA_OEMAKE = ""
 
 CFLAGS += " -I${STAGING_INCDIR}"
+CFLAGS_append_powerpc64 = " -DENABLE_64BIT_SUPPORT"
 
 do_install() {
         oe_runmake install DESTDIR=${D}
