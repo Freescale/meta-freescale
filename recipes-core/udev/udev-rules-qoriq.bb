@@ -22,3 +22,4 @@ do_install () {
     echo "/dev/nbd*" >>${D}${sysconfdir}/udev/mount.blacklist
 }
 
+COMPATIBLE_MACHINE = "(qoriq-arm|qoriq-ppc)"
