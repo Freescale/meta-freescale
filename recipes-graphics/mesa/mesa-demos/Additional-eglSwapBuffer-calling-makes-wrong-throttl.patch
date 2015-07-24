@@ -1,0 +1,28 @@
+From 010af1952d935352764389636b7165283e6c9e3f Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Tue, 7 Apr 2015 17:58:45 -0500
+Subject: [PATCH] Additional eglSwapBuffer calling makes wrong throttling
+
+Upstream Status: Pending
+
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ src/egl/eglut/eglut_wayland.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/egl/eglut/eglut_wayland.c b/src/egl/eglut/eglut_wayland.c
+index 968b33f..5664d35 100644
+--- a/src/egl/eglut/eglut_wayland.c
++++ b/src/egl/eglut/eglut_wayland.c
+@@ -155,7 +155,7 @@ draw(void *data, struct wl_callback *callback, uint32_t time)
+ 
+    if (win->display_cb)
+       win->display_cb();
+-   eglSwapBuffers(_eglut->dpy, win->surface);
++   /*eglSwapBuffers(_eglut->dpy, win->surface);*/
+ 
+    if (callback)
+       wl_callback_destroy(callback);
+-- 
+2.3.5
+
