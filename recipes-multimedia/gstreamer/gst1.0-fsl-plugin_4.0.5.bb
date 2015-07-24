@@ -38,11 +38,11 @@ EXTRA_OECONF = "PLATFORM=${PLATFORM} \
                 CPPFLAGS="-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include" \
                 CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR}"
 
-PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl"
+PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN}-librecorder-engine"
 
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "libfslcodec-aac libfslcodec-mp3 libfslcodec-oggvorbis"
-RDEPENDS_${PN} += "libfslparser ${BEEP_RDEPENDS}"
+RDEPENDS_${PN} += "libfslparser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
 PACKAGECONFIG ?= ""
 PACKAGECONFIG_mx6 = "overlaysink"
@@ -59,7 +59,6 @@ OVDEPENDS = "virtual/libg2d"
 PACKAGECONFIG[overlaysink] += "--enable-overlaysink,--disable-overlaysink, ${OVDEPENDS}"
 
 FILES_${PN} = "${libdir}/gstreamer-1.0/*.so ${datadir}"
-RDEPENDS_${PN} += "gstreamer1.0-plugins-good-id3demux"
 
 FILES_${PN}-dbg += "${libdir}/gstreamer-1.0/.debug"
 FILES_${PN}-dev += "${libdir}/gstreamer-1.0/*.la ${libdir}/pkgconfig/*.pc"
@@ -67,5 +66,7 @@ FILES_${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
 FILES_${PN}-gplay = "${bindir}/gplay-1.0"
 FILES_${PN}-libgplaycore = "${libdir}/libgplaycore-1.0${SOLIBS}"
 FILES_${PN}-libgstfsl = "${libdir}/libgstfsl-1.0${SOLIBS}"
+FILES_${PN}-grecorder = "${bindir}/grecorder-1.0"
+FILES_${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
