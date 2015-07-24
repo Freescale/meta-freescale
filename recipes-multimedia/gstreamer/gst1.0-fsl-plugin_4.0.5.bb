@@ -11,14 +11,15 @@ DEPENDS_append_mx6q = " imx-lib imx-vpu libfslvpuwrap"
 DEPENDS_append_mx6dl = " imx-lib imx-vpu libfslvpuwrap"
 DEPENDS_append_mx6sl = " imx-lib"
 DEPENDS_append_mx6sx = " imx-lib"
+DEPENDS_append_mx7 = " imx-lib"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "${FSL_MIRROR}/gst1.0-fsl-plugins-${PV}.tar.gz"
-SRC_URI[md5sum] = "b5c1072536479c174bda1349ade5d10c"
-SRC_URI[sha256sum] = "9d5c051cbde023014e67fde07bc314b6b9a5e7030e24eb0d8afdf33e7e458125"
+SRC_URI[md5sum] = "2ff9d2ddca37a9e119ea137188ef12a3"
+SRC_URI[sha256sum] = "481aaa11ba443cf33fea5a958fe9f2b278a6815ee92c13407016f9a2407df4d6"
 
 S = "${WORKDIR}/gst1.0-fsl-plugins-${PV}"
 
@@ -30,6 +31,7 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 PLATFORM_mx6 = "MX6"
 PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx6sx = "MX6SX"
+PLATFORM_mx7= "MX7D"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
@@ -66,4 +68,4 @@ FILES_${PN}-gplay = "${bindir}/gplay-1.0"
 FILES_${PN}-libgplaycore = "${libdir}/libgplaycore-1.0${SOLIBS}"
 FILES_${PN}-libgstfsl = "${libdir}/libgstfsl-1.0${SOLIBS}"
 
-COMPATIBLE_MACHINE = "(mx6)"
+COMPATIBLE_MACHINE = "(mx6|mx7)"
