@@ -1,4 +1,4 @@
-# Copyright (C) 2014 O.S. Systems Software LTDA.
+# Copyright (C) 2014, 2015 O.S. Systems Software LTDA.
 
 SUMMARY = "Freescale Manufacturing Tool requirements"
 LICENSE = "MIT"
@@ -44,4 +44,5 @@ RDEPENDS_${PN}-mtd = " \
 RDEPENDS_${PN}-extfs = " \
     ${PN}-base \
     e2fsprogs-mke2fs \
+    e2fsprogs-e2fsck \
 "
