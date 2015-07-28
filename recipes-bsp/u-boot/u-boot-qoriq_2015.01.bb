@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = " \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-PV = "2014.07+fslgit"
+PV_append = "+fslgit"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "boot-format-native libgcc ${@base_contains('TCMODE', 'external-fsl', '', 'virtual/${TARGET_PREFIX}gcc', d)}"
 
