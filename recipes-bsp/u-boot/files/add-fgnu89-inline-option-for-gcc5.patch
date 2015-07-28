@@ -1,0 +1,39 @@
+Upstream-Status: Pending
+
+From 4d4fcfc41288134b48b72ac69702f68741d7631f Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@freescale.com>
+Date: Tue, 28 Jul 2015 16:29:26 +0800
+Subject: [PATCH] add -fgnu89-inline option for gcc5
+
+Fix the below build issues:
+  CC      drivers/crypto/fsl/sec.o
+  LD      arch/powerpc/cpu/mpc8xxx/built-in.o
+arch/powerpc/cpu/mpc8xxx/fdt.o: In function `ld_le16':
+../arch/powerpc/include/asm/byteorder.h:12: multiple definition of `ld_le16'
+
+The problem is the change of the default C standard from gnu89 to gnu11
+which changes the semantics of 'inline'. The issue is described in the
+Porting guide at https://gcc.gnu.org/gcc-5/porting_to.html. Adding the
+'-fgnu89-inline' option fixes the issue.
+
+Signed-off-by: Ting Liu <ting.liu@freescale.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 9995e00..00497cc 100644
+--- a/Makefile
++++ b/Makefile
+@@ -349,7 +349,7 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
+ 
+ KBUILD_CPPFLAGS := -D__KERNEL__ -D__UBOOT__
+ 
+-KBUILD_CFLAGS   := -Wall -Wstrict-prototypes \
++KBUILD_CFLAGS   := -fgnu89-inline -Wall -Wstrict-prototypes \
+ 		   -Wno-format-security \
+ 		   -fno-builtin -ffreestanding
+ KBUILD_AFLAGS   := -D__ASSEMBLY__
+-- 
+1.9.2
+
