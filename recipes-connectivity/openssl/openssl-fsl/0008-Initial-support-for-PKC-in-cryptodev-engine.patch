@@ -62,7 +62,7 @@ index e3eb98b..7ee314b 100644
  const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
  
-+inline int spcf_bn2bin(BIGNUM *bn, unsigned char **bin,  int *bin_len)
++static int spcf_bn2bin(BIGNUM *bn, unsigned char **bin,  int *bin_len)
 +{
 +	int len;
 +	unsigned char *p;
@@ -84,7 +84,7 @@ index e3eb98b..7ee314b 100644
 +	return 0;
 +}
 +
-+inline int spcf_bn2bin_ex(BIGNUM *bn, unsigned char **bin,  int *bin_len)
++static int spcf_bn2bin_ex(BIGNUM *bn, unsigned char **bin,  int *bin_len)
 +{
 +	int len;
 +	unsigned char *p;
