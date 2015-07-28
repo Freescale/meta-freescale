@@ -18,7 +18,9 @@ DEPENDS = "boot-format-native libgcc ${@base_contains('TCMODE', 'external-fsl', 
 inherit deploy
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1 \
-	file://0001-u-boot-mpc85xx-u-boot-.lds-remove-_GLOBAL_OFFSET_TAB.patch"
+    file://0001-u-boot-mpc85xx-u-boot-.lds-remove-_GLOBAL_OFFSET_TAB.patch \
+    file://gcc5.patch \
+"
 SRCREV = "6ba8eedbcdc4b063f59a63e6288b938af739e8ad"
 
 python () {
