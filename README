@@ -1,7 +1,7 @@
-OpenEmbedded/Yocto BSP layer for Freescale's ARM platforms
-==========================================================
+OpenEmbedded/Yocto BSP layer for Freescale's platforms
+======================================================
 
-This layer provides support for Freescale's ARM platforms for use with
+This layer provides support for Freescale's platforms for use with
 OpenEmbedded and/or Yocto.
 
 This layer depends on:
@@ -9,17 +9,6 @@ This layer depends on:
 URI: git://git.openembedded.org/openembedded-core
 branch: master
 revision: HEAD
-
-EULA
-----
-
-Some SoC depends on libraries and packages that are covered by
-Freescale EULA. To have the right to use those binaries in your images
-you need to read and accept the EULA at EULA.txt file.
-
-In order to accept it, you should add, in your local.conf file:
-
-ACCEPT_FSL_EULA = "1"
 
 Contributing
 ------------
@@ -38,13 +27,11 @@ Mailing list:
 
 Source code:
 
-    git://git.yoctoproject.org/meta-fsl-arm
-    http://git.yoctoproject.org/git/meta-fsl-arm
-    https://github.com/Freescale/meta-fsl-arm
+    https://github.com/Freescale/meta-freescale
 
 When creating patches, please use something like:
 
-    git format-patch -s --subject-prefix='meta-fsl-arm][PATCH' origin
+    git format-patch -s --subject-prefix='meta-freescale][PATCH' origin
 
 When sending patches, please use something like:
 
