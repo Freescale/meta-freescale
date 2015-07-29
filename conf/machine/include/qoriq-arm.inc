@@ -4,6 +4,9 @@ require conf/machine/include/soc-family.inc
 PREFERRED_PROVIDER_u-boot_ls102xa ?= "u-boot-ls1"
 PREFERRED_PROVIDER_virtual/bootloader_ls102xa ?= "u-boot-ls1"
 PREFERRED_PROVIDER_virtual/kernel_ls102xa ?= "linux-ls1"
+PREFERRED_PROVIDER_cryptodev_ls102xa = "cryptodev-qoriq"
+PREFERRED_PROVIDER_cryptodev-module_ls102xa = "cryptodev-qoriq-module"
+PREFERRED_PROVIDER_cryptodev-tests_ls102xa = "cryptodev-qoriq-tests"
 
 # Define the default image type
 IMAGE_CLASSES ?= "image_types_uboot"
