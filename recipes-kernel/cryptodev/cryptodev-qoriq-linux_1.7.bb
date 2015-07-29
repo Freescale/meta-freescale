@@ -1,6 +1,8 @@
-require cryptodev_${PV}.inc
+require cryptodev-qoriq_${PV}.inc
 
 SUMMARY = "A /dev/crypto device driver header file"
+
+PROVIDES = "cryptodev-linux"
 
 do_compile[noexec] = "1"
 
@@ -10,3 +12,5 @@ do_install() {
 }
 
 ALLOW_EMPTY_${PN} = "1"
+
+COMPATIBLE_MACHINE = "(qoriq-arm|qoriq-ppc)"
