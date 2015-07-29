@@ -7,10 +7,10 @@ PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_cryptodev = "cryptodev-qoriq"
 PREFERRED_PROVIDER_cryptodev-module = "cryptodev-qoriq-module"
 PREFERRED_PROVIDER_cryptodev-tests = "cryptodev-qoriq-tests"
+PREFERRED_PROVIDER_openssl = "openssl-qoriq"
 
 # versions
 PREFERRED_VERSION_qemu = "2.2.0+fsl"
-PREFERRED_VERSION_openssl = "1.0.1i"
 
 # settings
 MACHINE_FEATURES = "keyboard pci ext2 ext3 serial"
