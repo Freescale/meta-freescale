@@ -7,6 +7,7 @@ PREFERRED_PROVIDER_virtual/kernel_ls102xa ?= "linux-ls1"
 PREFERRED_PROVIDER_cryptodev_ls102xa = "cryptodev-qoriq"
 PREFERRED_PROVIDER_cryptodev-module_ls102xa = "cryptodev-qoriq-module"
 PREFERRED_PROVIDER_cryptodev-tests_ls102xa = "cryptodev-qoriq-tests"
+PREFERRED_PROVIDER_openssl_ls102xa = "openssl-qoriq"
 
 # Define the default image type
 IMAGE_CLASSES ?= "image_types_uboot"
