@@ -1,0 +1,114 @@
+From 2d076ce73e849eae5c47941b6950efb65db498d2 Mon Sep 17 00:00:00 2001
+From: Prabhu <prabhu.sundararaj@freescale.com>
+Date: Wed, 29 Jul 2015 15:32:01 -0500
+Subject: [PATCH] MGS-907: X11 EXA: Warnings causes GCC5.2 build to fail
+
+VIV2DGPUSurfaceReAllocNonCached and imxRefreshModes were not
+declared causing compiler warning.
+
+Upstream Status: Pending
+
+Date: July 29, 2015
+Signed-off-by: Prabhu <prabhu.sundararaj@freescale.com>
+---
+ EXA/src/vivante_extension/vivante_ext.c      | 4 ++--
+ EXA/src/vivante_fbdev/imx_display.c          | 4 +++-
+ EXA/src/vivante_fbdev/vivante_fbdev_driver.c | 2 ++
+ EXA/src/vivante_gal/vivante_gal.h            | 1 +
+ EXA/src/vivante_gal/vivante_gal_surface.c    | 3 ++-
+ 5 files changed, 10 insertions(+), 4 deletions(-)
+ mode change 100755 => 100644 EXA/src/vivante_extension/vivante_ext.c
+ mode change 100755 => 100644 EXA/src/vivante_gal/vivante_gal_surface.c
+
+diff --git a/EXA/src/vivante_extension/vivante_ext.c b/EXA/src/vivante_extension/vivante_ext.c
+old mode 100755
+new mode 100644
+index 3015d57..df6fb61
+--- a/EXA/src/vivante_extension/vivante_ext.c
++++ b/EXA/src/vivante_extension/vivante_ext.c
+@@ -54,6 +54,7 @@
+ #include "vivante.h"
+ #include "vivante_priv.h"
+ #include "vivante_common.h"
++#include "imx_display.h"
+ 
+ static unsigned char VIVEXTReqCode = 0;
+ static int VIVEXTErrorBase;
+@@ -162,8 +163,7 @@ static int ProcVIVEXTDrawableSetFlag(register ClientPtr client)
+             VivPtr pViv = VIVPTR_FROM_SCREEN(pScreen);
+             if(pViv)
+             {
+-                VIVGPUPtr gpuctx = (VIVGPUPtr) pViv->mGrCtx.mGpu;
+-                VIV2DGPUSurfaceReAllocNonCached(gpuctx, ppriv);
++                VIV2DGPUSurfaceReAllocNonCached(&pViv->mGrCtx, ppriv);
+             }
+         }
+         return  0;
+diff --git a/EXA/src/vivante_fbdev/imx_display.c b/EXA/src/vivante_fbdev/imx_display.c
+index d5303f9..43e9432 100644
+--- a/EXA/src/vivante_fbdev/imx_display.c
++++ b/EXA/src/vivante_fbdev/imx_display.c
+@@ -27,6 +27,8 @@
+ 
+ #include <fcntl.h>
+ #include <errno.h>
++#include <unistd.h>
++#include <sys/ioctl.h>
+  
+ #include <linux/fb.h>
+ #include "xf86DDC.h"
+@@ -83,7 +85,7 @@ GCD(int a, int b)
+ }
+ 
+ static int
+-LCM(a, b)
++LCM(int a, int b)
+ {
+ 	return (a * b) / GCD(a, b);
+ }
+diff --git a/EXA/src/vivante_fbdev/vivante_fbdev_driver.c b/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+index 3e289ce..88de4e0 100644
+--- a/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
++++ b/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+@@ -29,8 +29,10 @@
+ #include "vivante.h"
+ #include "vivante_exa.h"
+ #include "vivante_ext.h"
++#include "vivante_dri.h"
+ #include "imx_display.h"
+ #include <errno.h>
++#include <sys/ioctl.h>
+ #include <linux/fb.h>
+ #include <xorg/shmint.h>
+ 
+diff --git a/EXA/src/vivante_gal/vivante_gal.h b/EXA/src/vivante_gal/vivante_gal.h
+index 1fccbfd..46f0479 100644
+--- a/EXA/src/vivante_gal/vivante_gal.h
++++ b/EXA/src/vivante_gal/vivante_gal.h
+@@ -258,6 +258,7 @@ extern "C" {
+     Bool VIV2DCacheOperation(GALINFOPTR galInfo, Viv2DPixmapPtr ppix, VIVFLUSHTYPE flush_type);
+     Bool VIV2DGPUUserMemMap(char* logical, unsigned int physical, unsigned int size, void ** mappingInfo, unsigned int * gpuAddress);
+     Bool VIV2DGPUUserMemUnMap(char* logical, unsigned int size, void * mappingInfo, unsigned int gpuAddress);
++    Bool VIV2DGPUSurfaceReAllocNonCached(GALINFOPTR galInfo, Viv2DPixmapPtr ppriv);
+     Bool MapUserMemToGPU(GALINFOPTR galInfo, MemMapInfoPtr mmInfo);
+     void UnmapUserMem(GALINFOPTR galInfo, MemMapInfoPtr mmInfo);
+     /************************************************************************
+diff --git a/EXA/src/vivante_gal/vivante_gal_surface.c b/EXA/src/vivante_gal/vivante_gal_surface.c
+old mode 100755
+new mode 100644
+index 0ea67f6..f3b998d
+--- a/EXA/src/vivante_gal/vivante_gal_surface.c
++++ b/EXA/src/vivante_gal/vivante_gal_surface.c
+@@ -584,7 +584,8 @@ static gctBOOL VIV2DGPUSurfaceAlloc(VIVGPUPtr gpuctx, gctUINT alignedWidth, gctU
+     return VIV2DGPUSurfaceAllocEx(gpuctx, alignedWidth, alignedHeight, bytesPerPixel, surface, getPixmapCachePolicy());
+ }
+ 
+-gctBOOL VIV2DGPUSurfaceReAllocNonCached(VIVGPUPtr gpuctx, Viv2DPixmapPtr ppriv) {
++Bool VIV2DGPUSurfaceReAllocNonCached(GALINFOPTR galInfo, Viv2DPixmapPtr ppriv) {
++    VIVGPUPtr gpuctx = (VIVGPUPtr)galInfo->mGpu;
+     GenericSurfacePtr oldSurf = gcvNULL;
+     GenericSurfacePtr newSurf = gcvNULL;
+     gctUINT32 alignedWidth;
+-- 
+2.4.5
+
