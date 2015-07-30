@@ -13,7 +13,8 @@ DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv pixman
 LIC_FILES_CHKSUM = "file://EXA/src/vivante_fbdev/vivante.h;endline=19;md5=95cf961a2ceacdf7cf43caef25766779"
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
-            file://rc.autohdmi"
+            file://rc.autohdmi \
+            file://0001-MGS-907-X11-EXA-Warnings-causes-GCC5.2-build-to-fail.patch"
 
 INITSCRIPT_PACKAGES = "xserver-xorg-extension-viv-autohdmi"
 INITSCRIPT_NAME = "rc.autohdmi"
