@@ -23,6 +23,7 @@ PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
 XSERVER_DRIVER = "xf86-video-fbdev"
 XSERVER_DRIVER_mx5 = "xf86-video-imxfb"
 XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
+XSERVER_DRIVER_mx6ul = "xf86-video-fbdev"
 XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
@@ -43,6 +44,7 @@ MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 # DEFAULTTUNE_mx6 ?= "cortexa9t-neon"
 # handled by hardware
 DEFAULTTUNE_mx6 ?= "cortexa9thf-neon"
+DEFAULTTUNE_mx6ul ?= "cortexa7thf-neon"
 DEFAULTTUNE_mx7 ?= "cortexa7thf-neon"
 
 # Sub-architecture support
@@ -55,6 +57,7 @@ MACHINE_SOCARCH_SUFFIX_mx6sl = "-mx6sl"
 MACHINE_SOCARCH_SUFFIX_mx7 = "-mx7d"
 MACHINE_SOCARCH_SUFFIX_vf60 = "-vf60"
 MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
+MACHINE_SOCARCH_SUFFIX_mx6ul = "-mx6ul"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser"
@@ -96,24 +99,38 @@ PREFERRED_PROVIDER_virtual/libgles2_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
 PREFERRED_PROVIDER_amd-gpu-mx51 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
 
 # mx6 GPU libraries
-PREFERRED_PROVIDER_virtual/egl_mx6 ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/egl_mx6q ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/egl_mx6dl ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/egl_mx6sx ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/egl_mx6sl ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/egl_mx6ul ?= "mesa"
+
 PREFERRED_PROVIDER_virtual/libgles1_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles1_mx6dl ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles1_mx6sx ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles1_mx6sl ?= "mesa"
+PREFERRED_PROVIDER_virtual/libgles1_mx6ul ?= "mesa"
+
 PREFERRED_PROVIDER_virtual/libgles2_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles2_mx6dl ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles2_mx6sx ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles2_mx6sl ?= "mesa"
+PREFERRED_PROVIDER_virtual/libgles2_mx6ul ?= "mesa"
+
 PREFERRED_PROVIDER_virtual/libgl_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl_mx6dl ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl_mx6sx ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl_mx6sl ?= "mesa"
+PREFERRED_PROVIDER_virtual/libgl_mx6ul ?= "mesa"
+
 PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libg2d_mx6ul = ""
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
 IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-mx6"
+IMX_DEFAULT_KERNEL_mx6ul = "linux-imx"
+
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
