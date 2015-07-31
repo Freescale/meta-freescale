@@ -346,4 +346,4 @@ FILES_imx-gpu-viv-demos = "/opt"
 FILES_imx-gpu-viv-demos-dbg = "/opt/viv_samples/*/*/.debug"
 INSANE_SKIP_imx-gpu-viv-demos += "rpaths"
 
-COMPATIBLE_MACHINE = "(mx6)"
+COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl)"
