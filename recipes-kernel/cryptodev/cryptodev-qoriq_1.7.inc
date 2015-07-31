@@ -45,3 +45,5 @@ file://0020-fix-uninitialized-variable-compiler-warning.patch \
 SRC_URI_append = "${@base_contains('DISTRO_FEATURES', 'c29x_pkc', ' file://0001-don-t-advertise-RSA-keygen.patch', '', d)}"
 
 S = "${WORKDIR}/cryptodev-linux-${PV}"
+
+CLEANBROKEN = "1"
