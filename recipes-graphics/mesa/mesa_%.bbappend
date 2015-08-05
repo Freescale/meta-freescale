@@ -1,6 +1,3 @@
-PACKAGECONFIG_remove_mx5 = "egl gles"
-PROVIDES_remove_mx5 = "virtual/libgles1 virtual/libgles2 virtual/libopenvg virtual/egl"
-
 PACKAGECONFIG_remove_mx6q  = "egl gles"
 PACKAGECONFIG_remove_mx6dl = "egl gles"
 PACKAGECONFIG_remove_mx6sx = "egl gles"

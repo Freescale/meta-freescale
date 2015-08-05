@@ -1,23 +1,18 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/qt4:"
 
 python __anonymous () {
-    families = ['mx5', 'mx6']
+    families = ['mx6']
     cur_families = (d.getVar('SOC_FAMILY', True) or '').split(':')
     if any(map(lambda x: x in cur_families,
                families)):
         d.appendVarFlag('do_configure', 'depends', ' virtual/kernel:do_shared_workdir')
 }
 
-SRC_URI_append_mx5 += "file://0001-Add-support-for-i.MX-codecs-to-phonon.patch"
 SRC_URI_append_mx6 += " \
 	file://0001-Add-support-for-i.MX-codecs-to-phonon.patch \
 	file://0002-i.MX-video-renderer-Allow-v4l-device-from-environmen.patch \
 	file://0003-i.MX6-force-egl-visual-ID-33.patch \
 "
-
-DEPENDS_append_mx5 = " virtual/kernel virtual/libgles2"
-QT_GLFLAGS_mx5 = "-opengl es2 -openvg"
-QT_CONFIG_FLAGS_append_mx5 = " -I${STAGING_KERNEL_DIR}/include/"
 
 DEPENDS_append_mx6 = " virtual/kernel virtual/libgles2"
 QT_GLFLAGS_mx6 = "-opengl es2 -openvg"

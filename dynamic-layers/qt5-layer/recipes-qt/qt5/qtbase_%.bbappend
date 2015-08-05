@@ -9,9 +9,6 @@ HAS_X11 = "${@base_contains('DISTRO_FEATURES', 'x11', 1, 0, d)}"
 IS_MX6SL = "0"
 IS_MX6SL_mx6sl = "1"
 
-PACKAGECONFIG_GL_mx5 = "gles2"
-QT_CONFIG_FLAGS_append_mx5 = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
-
 PACKAGECONFIG_GL_mx6q = "gles2"
 PACKAGECONFIG_GL_mx6dl = "gles2"
 PACKAGECONFIG_GL_mx6sx = "gles2"
@@ -21,25 +18,6 @@ QT_CONFIG_FLAGS_append_mx6dl = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no
 QT_CONFIG_FLAGS_append_mx6sx = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
 QT_CONFIG_FLAGS_append_mx6sl = "${@base_contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', \
                                                  ' -no-opengl -linuxfb -no-eglfs', d)}"
-
-do_configure_prepend_mx5() {
-    sed -i 's!load(qt_config)!!' ${S}/mkspecs/linux-oe-g++/qmake.conf
-
-    cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
-IMX5_CFLAGS             = -D_LINUX=1
-QMAKE_LIBS_EGL         += -lEGL
-QMAKE_LIBS_OPENGL_ES2  += -lGLESv2 -lEGL
-QMAKE_LIBS_OPENVG      += -lOpenVG -lEGL
-
-QMAKE_CFLAGS_RELEASE   += \$\$IMX5_CFLAGS
-QMAKE_CXXFLAGS_RELEASE += \$\$IMX5_CFLAGS
-QMAKE_CFLAGS_DEBUG   += \$\$IMX5_CFLAGS
-QMAKE_CXXFLAGS_DEBUG += \$\$IMX5_CFLAGS
-
-load(qt_config)
-
-EOF
-}
 
 do_configure_prepend_mx6() {
     # adapt qmake.conf to our needs

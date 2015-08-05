@@ -15,7 +15,6 @@ EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--
 PACKAGECONFIG ?= ""
 PACKAGECONFIG_mx6q = "vpu"
 PACKAGECONFIG_mx6dl = "vpu"
-PACKAGECONFIG_mx5 = "vpu"
 
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,imx-vpu"
 
@@ -29,11 +28,6 @@ do_install_append() {
     done
     rmdir ${D}${libdir}/imx-mm/video-codec
 
-}
-
-do_install_append_mx5() {
-    # FIXME: The binary files depends on libvpu.so.4 which is i.MX6 only
-	rm -r ${D}${datadir}/imx-mm/*/examples/*/bin
 }
 
 python __set_insane_skip() {
