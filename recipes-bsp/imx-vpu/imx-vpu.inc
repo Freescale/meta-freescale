@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM = "file://vpu/EULA.txt;md5=b063366b066c9f10037c59756a9ced54"
 DEPENDS = "virtual/kernel"
 inherit fsl-eula-unpack
 
-PLATFORM_mx5 = "IMX51"
 PLATFORM_mx6 = "IMX6Q"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"

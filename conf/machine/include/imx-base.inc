@@ -21,7 +21,6 @@ UBOOT_ENTRYPOINT_vf = "0x80008000"
 
 PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
 XSERVER_DRIVER = "xf86-video-fbdev"
-XSERVER_DRIVER_mx5 = "xf86-video-imxfb"
 XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
 XSERVER_DRIVER_mx6ul = "xf86-video-fbdev"
 XSERVER = "xserver-xorg \
@@ -49,7 +48,6 @@ DEFAULTTUNE_mx7 ?= "cortexa7thf-neon"
 
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
-MACHINE_SOCARCH_SUFFIX_mx5 = "-mx5"
 MACHINE_SOCARCH_SUFFIX_mx6q = "-mx6qdl"
 MACHINE_SOCARCH_SUFFIX_mx6dl = "-mx6qdl"
 MACHINE_SOCARCH_SUFFIX_mx6sx = "-mx6sx"
@@ -60,8 +58,7 @@ MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
 MACHINE_SOCARCH_SUFFIX_mx6ul = "-mx6ul"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER = "libfslcodec libfslvpuwrap libfslparser"
-MACHINE_SOCARCH_FILTER_append_mx5 = " virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl"
+MACHINE_SOCARCH_FILTER_append_mx6 = " libfslcodec libfslvpuwrap libfslparser"
 MACHINE_SOCARCH_FILTER_append_mx6 = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d"
 
 INHERIT += "fsl-dynamic-packagearch"
@@ -90,13 +87,6 @@ MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
 MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6q ?= "gstreamer1.0-plugins-imx-meta"
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6dl ?= "gstreamer1.0-plugins-imx-meta"
-
-# mx5 GPU libraries
-GPU_FLAVOUR = "${@base_contains('DISTRO_FEATURES', 'x11', 'x11-', '', d)}"
-PREFERRED_PROVIDER_virtual/egl_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
-PREFERRED_PROVIDER_virtual/libgles1_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
-PREFERRED_PROVIDER_virtual/libgles2_mx5 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
-PREFERRED_PROVIDER_amd-gpu-mx51 ?= "amd-gpu-${GPU_FLAVOUR}bin-mx51"
 
 # mx6 GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx6q ?= "imx-gpu-viv"
@@ -128,6 +118,7 @@ PREFERRED_PROVIDER_virtual/libg2d_mx6ul = ""
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
+IMX_DEFAULT_KERNEL_mx5 = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-mx6"
 IMX_DEFAULT_KERNEL_mx6ul = "linux-imx"
 
