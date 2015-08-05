@@ -3,7 +3,7 @@
 
 require libfslcodec.inc
 
-SRC_URI[md5sum] = "8c3f82b24ed52d0039f8e7d6d8b93cad"
-SRC_URI[sha256sum] = "495f2ce954144436b500156859b1cf4381a27e04f7c7a1d035480f8a738d4c84"
+SRC_URI[md5sum] = "03cf5f5ad650bcebbf5efaf03442b9cc"
+SRC_URI[sha256sum] = "cdf6b0885d361f1db3c872f1c273a0ed348a50a729cb3114605b19654397d7ad"
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
