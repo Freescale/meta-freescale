@@ -23,5 +23,4 @@ do_install () {
 
 PARALLEL_MAKE_pn-${PN} = ""
 
-COMPATIBLE_HOST_qoriq-ppc = ".*"
-COMPATIBLE_HOST ?= "(none)"
+COMPATIBLE_MACHINE = "(qoriq-ppc)"
