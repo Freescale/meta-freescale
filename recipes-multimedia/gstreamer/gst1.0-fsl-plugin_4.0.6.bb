@@ -11,6 +11,7 @@ DEPENDS_append_mx6q = " imx-lib imx-vpu libfslvpuwrap"
 DEPENDS_append_mx6dl = " imx-lib imx-vpu libfslvpuwrap"
 DEPENDS_append_mx6sl = " imx-lib"
 DEPENDS_append_mx6sx = " imx-lib"
+DEPENDS_append_mx6ul = " imx-lib"
 DEPENDS_append_mx7 = " imx-lib"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
@@ -18,8 +19,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "${FSL_MIRROR}/gst1.0-fsl-plugins-${PV}.tar.gz"
-SRC_URI[md5sum] = "2ff9d2ddca37a9e119ea137188ef12a3"
-SRC_URI[sha256sum] = "481aaa11ba443cf33fea5a958fe9f2b278a6815ee92c13407016f9a2407df4d6"
+SRC_URI[md5sum] = "098dfa5e2c0cc7314f526d4aacc4613d"
+SRC_URI[sha256sum] = "cb5e066546221120ef06bab6ec3052459d92b997190077dc50545e49d5e3b151"
 
 S = "${WORKDIR}/gst1.0-fsl-plugins-${PV}"
 
@@ -31,6 +32,7 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 PLATFORM_mx6 = "MX6"
 PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx6sx = "MX6SX"
+PLATFORM_mx6ul = "MX6UL"
 PLATFORM_mx7= "MX7D"
 
 # Todo add a mechanism to map possible build targets
@@ -45,7 +47,10 @@ BEEP_RDEPENDS = "libfslcodec-aac libfslcodec-mp3 libfslcodec-oggvorbis"
 RDEPENDS_${PN} += "libfslparser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_mx6 = "overlaysink"
+PACKAGECONFIG_mx6q = "overlaysink"
+PACKAGECONFIG_mx6dl = "overlaysink"
+PACKAGECONFIG_mx6sx = "overlaysink"
+PACKAGECONFIG_mx6sl = "overlaysink"
 
 # FIXME: Add all features
 # feature from excluded mm packages
