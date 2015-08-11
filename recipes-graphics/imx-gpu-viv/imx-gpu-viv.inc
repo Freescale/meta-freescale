@@ -47,8 +47,12 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	imx-gpu-viv-demos imx-gpu-viv-demos-dbg \
 "
 
-# Skip package if it does not match the machine float-point type in use
 python __anonymous () {
+        has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT', True) or '0')
+        if has_vivante_kernel_driver_support != '1':
+                raise bb.parse.SkipPackage('The kernel of machine needs to have Vivante kernel driver support for this recipe to be used.')
+
+        # Skip package if it does not match the machine float-point type in use
         is_machine_hardfp = base_contains("TUNE_FEATURES", "callconvention-hard", True, False, d)
         is_package_hardfp = d.getVar("PACKAGE_FP_TYPE", True) == "hardfp"
 
@@ -254,6 +258,8 @@ FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
 FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
+RDEPENDS_libgal-mx6 += "kernel-module-imx-gpu-viv"
+INSANE_SKIP_libgal-mx6 += "build-deps"
 
 FILES_libvsc-mx6 = "${libdir}/libVSC${SOLIBS}"
 
