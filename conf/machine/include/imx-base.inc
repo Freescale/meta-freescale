@@ -90,6 +90,18 @@ MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6q ?= "gstreamer1.0-plugins-imx-meta"
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6dl ?= "gstreamer1.0-plugins-imx-meta"
 
+# Determines if the SoC has support for Vivante kernel driver
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT       = "0"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6q  = "1"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6dl = "1"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6sx = "1"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6sl = "1"
+
+# Handle Vivante kernel driver setting:
+#   0 - machine does not have Vivante GPU driver support
+#   1 - machine has Vivante GPU driver support
+MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ??= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
+
 # mx6 GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/egl_mx6dl ?= "imx-gpu-viv"
