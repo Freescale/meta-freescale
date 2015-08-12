@@ -3,9 +3,9 @@ DESCRIPTION = "DSP boot application and ipc test application"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fa38cd73d71527dc6efb546474f64d10"
 
-require recipes-bsp/ipc/ipc.inc
+require recipes-extended/ipc-ust/ipc.inc
 
-inherit  module qoriq_build_64bit_kernel
+inherit module qoriq_build_64bit_kernel
 
 S = "${WORKDIR}/git"
 
@@ -23,4 +23,3 @@ do_compile_prepend () {
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
-
