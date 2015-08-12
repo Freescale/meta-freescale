@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=4d92cd373abda3937c2bc47fbc49d
 inherit allarch
 
 SRC_URI = "file://merge"
+S = "${WORKDIR}"
 
 MERGED_DST ?= "${ROOT_HOME}"
 do_install () {
@@ -22,4 +23,3 @@ do_compile[noexec] = "1"
 FILES_${PN} = "/*"
 ALLOW_EMPTY_${PN} = "1"
 INSANE_SKIP_${PN} = "debug-files dev-so"
-
