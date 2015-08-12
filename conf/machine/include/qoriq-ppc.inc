@@ -1,8 +1,5 @@
 require conf/machine/include/qoriq-base.inc
 
-# providers of QorIQ PPC targets
-PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
-
 UBOOT_ENTRYPOINT = "0x80008000"
 
 MKUBIFS_ARGS ??= "-m 512 -e 15360 -c 3600"
