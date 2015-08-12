@@ -6,11 +6,13 @@ SRC_URI = "\
     file://71-fsl-dpaa-persistent-networking.rules \
     file://72-fsl-dpaa-persistent-networking.rules \
 "
-RULE ?= "71-fsl-dpaa-persistent-networking.rules"
+RULE_qoriq-ppc = "71-fsl-dpaa-persistent-networking.rules"
 RULE_e6500 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1024 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1023 = "72-fsl-dpaa-persistent-networking.rules"
+
+S = "${WORKDIR}"
 
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d/
@@ -22,4 +24,4 @@ do_install () {
     echo "/dev/nbd*" >>${D}${sysconfdir}/udev/mount.blacklist
 }
 
-COMPATIBLE_MACHINE = "(qoriq-arm|qoriq-ppc)"
+COMPATIBLE_MACHINE = "(qoriq-ppc)"
