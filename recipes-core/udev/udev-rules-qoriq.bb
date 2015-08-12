@@ -17,11 +17,6 @@ S = "${WORKDIR}"
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d/
     install -m 0644 ${WORKDIR}/${RULE} ${D}${sysconfdir}/udev/rules.d/
-
-    # skip mmc rpmb partitions
-    echo "/dev/mmcblk.*rpmb" >>${D}${sysconfdir}/udev/mount.blacklist
-    # skip nbd (network block device)
-    echo "/dev/nbd*" >>${D}${sysconfdir}/udev/mount.blacklist
 }
 
 COMPATIBLE_MACHINE = "(qoriq-ppc)"
