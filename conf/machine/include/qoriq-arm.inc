@@ -2,9 +2,6 @@ require conf/machine/include/qoriq-base.inc
 
 DEFAULTTUNE ?= "cortexa7hf-neon"
 
-# providers of QorIQ ARM targets
-PREFERRED_PROVIDER_virtual/kernel ?= "linux-ls1"
-
 UBOOT_ENTRYPOINT = "0x80008000"
 
 MKUBIFS_ARGS ??= "-m 512 -e 15360 -c 3600"
