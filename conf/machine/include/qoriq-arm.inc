@@ -1,21 +1,18 @@
-require conf/machine/include/soc-family.inc
+require conf/machine/include/qoriq-base.inc
 
-# Freescale BSP default providers
-PREFERRED_PROVIDER_u-boot_ls102xa ?= "u-boot-ls1"
-PREFERRED_PROVIDER_virtual/bootloader_ls102xa ?= "u-boot-ls1"
-PREFERRED_PROVIDER_virtual/kernel_ls102xa ?= "linux-ls1"
-PREFERRED_PROVIDER_cryptodev_ls102xa = "cryptodev-qoriq"
-PREFERRED_PROVIDER_cryptodev-module_ls102xa = "cryptodev-qoriq-module"
-PREFERRED_PROVIDER_cryptodev-tests_ls102xa = "cryptodev-qoriq-tests"
-PREFERRED_PROVIDER_openssl_ls102xa = "openssl-qoriq"
+DEFAULTTUNE ?= "cortexa7hf-neon"
 
-# Define the default image type
-IMAGE_CLASSES ?= "image_types_uboot"
-KERNEL_IMAGETYPE ?= "uImage"
+# providers of QorIQ ARM targets
+PREFERRED_PROVIDER_u-boot ?= "u-boot-ls1"
+PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot-ls1"
+PREFERRED_PROVIDER_virtual/kernel ?= "linux-ls1"
 
-UBOOT_ENTRYPOINT_ls102xa = "0x80008000"
+UBOOT_ENTRYPOINT = "0x80008000"
 
-MACHINE_FEATURES = "pci ext2 ext3 serial"
-MACHINE_EXTRA_RRECOMMENDS = "udev-extraconf"
+MKUBIFS_ARGS ??= "-m 512 -e 15360 -c 3600"
+UBINIZE_ARGS ??= "-m 512 -p 16KiB -s 512"
 
-DEFAULTTUNE_ls102xa ?= "cortexa7hf-neon"
+SERIAL_CONSOLES ?= "115200;ttyS0 115200;ttyS1 115200;ttyEHV0 115200;ttyLP0 115200;ttyAMA0"
+SERIAL_CONSOLES_CHECK ?= "${SERIAL_CONSOLES}"
+
+MACHINEOVERRIDES .= ":qoriq-arm"
