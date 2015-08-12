@@ -4,7 +4,7 @@ DEFAULTTUNE ?= "ppc64e5500"
 require conf/machine/include/tune-ppce5500.inc
 require conf/machine/include/qoriq-ppc.inc
 
-MACHINEOVERRIDES .= ":e5500-64b"
+MACHINEOVERRIDES =. "e5500-64b:"
 
 require conf/multilib.conf
 MULTILIBS ?= "multilib:lib32"
