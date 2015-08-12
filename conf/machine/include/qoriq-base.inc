@@ -6,6 +6,8 @@ PREFERRED_PROVIDER_cryptodev = "cryptodev-qoriq"
 PREFERRED_PROVIDER_cryptodev-module = "cryptodev-qoriq-module"
 PREFERRED_PROVIDER_cryptodev-tests = "cryptodev-qoriq-tests"
 PREFERRED_PROVIDER_openssl = "openssl-qoriq"
+PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
+PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot-qoriq"
 
 # Define the default image type
 IMAGE_CLASSES ?= "image_types_uboot"

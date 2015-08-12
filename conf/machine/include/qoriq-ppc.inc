@@ -1,8 +1,6 @@
 require conf/machine/include/qoriq-base.inc
 
 # providers of QorIQ PPC targets
-PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
-PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
 
 UBOOT_ENTRYPOINT = "0x80008000"
