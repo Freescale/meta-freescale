@@ -27,3 +27,4 @@ do_install(){
 
 FILES_${PN} += "${bindir}/"
 
+COMPATIBLE_MACHINE = "(t1040rdb|t1040rdb-64b|t1042rdb|t1042rdb-64b|t1042rdb-pi|t1042rdb-pi-64b)"
