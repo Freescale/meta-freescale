@@ -6,6 +6,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 SRC_URI = "git://git.freescale.com/ppc/sdk/asf.git;branch=master"
 SRCREV = "62ba10ab6bab8f8f53934e4bb55b5a552bf3fd6b"
 
+RDEPENDS_${PN} += "ipsec-tools"
+
 inherit module qoriq_build_64bit_kernel
 
 S = "${WORKDIR}/git/asfmodule"
@@ -30,4 +32,5 @@ do_install(){
 }
 
 FILES_${PN} += "${libexecdir} /lib/modules/${KERNEL_VERSION}/asf"
-RDEPENDS_${PN} += "ipsec-tools"
+
+COMPATIBLE_MACHINE = "(qoriq)"
