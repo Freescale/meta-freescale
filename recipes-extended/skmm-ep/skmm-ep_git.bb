@@ -12,8 +12,6 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;nobranch=1 \
 "
 SRCREV = "27156a6621c8f6d7f98210b1ca5cd97bde926875"
 
-COMPATIBLE_MACHINE = "(p4080ds|t4240qds|c293pcie)"
-
 S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = 'MACHINE=${MACHINE}'
@@ -29,3 +27,5 @@ do_compile () {
 do_install () {
 	oe_runmake ARCH=${TARGET_ARCH} install DESTDIR=${D}
 }
+
+COMPATIBLE_MACHINE = "(p4080ds|t4240qds|c293pcie)"
