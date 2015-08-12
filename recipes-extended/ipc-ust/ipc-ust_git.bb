@@ -45,6 +45,6 @@ do_install () {
     install ${S}/fsl_shm/lib/*.h ${D}${includedir}/ipc/fsl_shm/lib
 }
 
-FILES_${PN} += "/ipc/*"
+FILES_${PN} += "${base_libdir}/*.so /ipc/*"
+FILES_${PN}-dev = "${includedir}"
 FILES_${PN}-dbg += "/ipc/.debug"
-
