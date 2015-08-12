@@ -9,6 +9,4 @@ inherit module
 
 S = "${WORKDIR}/git/uio-driver"
 
-COMPATIBLE_MACHINE ?= "(none)"
-COMPATIBLE_MACHINE_t1040 = ".*"
-COMPATIBLE_MACHINE_t1042 = ".*"
+COMPATIBLE_MACHINE = "(t1040|t1042)"
