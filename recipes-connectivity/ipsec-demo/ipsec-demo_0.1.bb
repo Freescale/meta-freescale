@@ -2,19 +2,16 @@ SUMMARY = "Scripts and configuration files for ipsec demo"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
-RDEPENDS_${PN} = "ipsec-tools"
+RDEPENDS_${PN} = "ipsec-tools bash"
 
 inherit allarch
 
 SRC_URI = "file://test_setkey"
 
-do_configure() {
-    :
-}
+S = "${WORKDIR}"
 
-do_compile() {
-    :
-}
+do_configure[noexec] = "1"
+do_compile[noexec] = "1"
 
 do_install(){
     install -d  ${D}${datadir}
@@ -23,3 +20,4 @@ do_install(){
 
 FILES_${PN} = "${datadir}/*"
 
+COMPATIBLE_MACHINE = "(qoriq-ppc)"
