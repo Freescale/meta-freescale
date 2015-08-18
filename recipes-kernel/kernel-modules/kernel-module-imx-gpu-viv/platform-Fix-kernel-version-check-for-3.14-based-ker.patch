@@ -1,0 +1,35 @@
+From 617bdbec386a1237e2a148989318cc4a1360788a Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Tue, 18 Aug 2015 23:08:48 +0000
+Subject: [PATCH] platform: Fix kernel version check for 3.14-based kernels
+Organization: O.S. Systems Software LTDA.
+
+The build fail about the bus frequency header (linux/busfreq-imx6.h)
+not being found is caused by the mistaken check for the wrong kernel
+version.
+
+This patch fixes it by adding the right kernel version to be checked.
+
+Upstream-Status: Pending
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ .../os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/imx-gpu-viv-kernel-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c b/imx-gpu-viv-kernel-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+index a2e72ff..241614a 100644
+--- a/imx-gpu-viv-kernel-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
++++ b/imx-gpu-viv-kernel-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+@@ -40,7 +40,7 @@
+ #include <linux/pm_runtime.h>
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
+ #include <mach/busfreq.h>
+-#elif LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0)
++#elif LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0)
+ #include <linux/busfreq-imx6.h>
+ #include <linux/reset.h>
+ #else
+-- 
+2.1.4
+
