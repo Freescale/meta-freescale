@@ -18,4 +18,4 @@ do_install() {
 FILES_${PN}-dbg += "${bindir}/tests_cryptodev/.debug"
 FILES_${PN} = "${bindir}/tests_cryptodev/*"
 
-COMPATIBLE_MACHINE = "(qoriq-arm|qoriq-ppc)"
+COMPATIBLE_MACHINE = "(qoriq)"

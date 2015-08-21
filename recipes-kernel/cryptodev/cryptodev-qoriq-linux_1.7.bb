@@ -13,4 +13,4 @@ do_install() {
 
 ALLOW_EMPTY_${PN} = "1"
 
-COMPATIBLE_MACHINE = "(qoriq-arm|qoriq-ppc)"
+COMPATIBLE_MACHINE = "(qoriq)"
