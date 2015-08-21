@@ -11,4 +11,4 @@ DEPENDS += "cryptodev-linux"
 
 EXTRA_OEMAKE='KERNEL_DIR="${STAGING_KERNEL_DIR}" PREFIX="${D}"'
 
-COMPATIBLE_MACHINE = "(qoriq-arm|qoriq-ppc)"
+COMPATIBLE_MACHINE = "(qoriq)"
