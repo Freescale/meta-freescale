@@ -2,7 +2,7 @@
 require conf/machine/include/soc-family.inc
 
 # common providers of QorIQ targets
-PREFERRED_PROVIDER_cryptodev = "cryptodev-qoriq"
+PREFERRED_PROVIDER_cryptodev-linux = "cryptodev-qoriq-linux"
 PREFERRED_PROVIDER_cryptodev-module = "cryptodev-qoriq-module"
 PREFERRED_PROVIDER_cryptodev-tests = "cryptodev-qoriq-tests"
 PREFERRED_PROVIDER_openssl = "openssl-qoriq"
