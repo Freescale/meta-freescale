@@ -95,4 +95,4 @@ do_configure_prepend() {
 
 RDEPENDS_${PN}_class-target += "cryptodev-module"
 
-COMPATIBLE_MACHINE = "(qoriq-arm|qoriq-ppc)"
+COMPATIBLE_MACHINE = "(qoriq)"
