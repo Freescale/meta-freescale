@@ -154,7 +154,7 @@ do_install_append_qoriq-ppc() {
 
 do_deploy_append_qoriq-ppc() {
     if [ "x${UBOOT_MACHINES}" = "x" ]; then
-        UBOOT_MACHINES=${UBOOT_MACHINE}
+        UBOOT_MACHINES="${UBOOT_MACHINE}"
     fi
 
     for board in ${UBOOT_MACHINES}; do
