@@ -17,10 +17,10 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE_qoriq-arm = "ARCH=arm"
 
-CFLAGS += "-I${STAGING_INCDIR} -ISource/Linux -ISource/Portable"
-CFLAGS_qoriq-arm += "-ISource/Linux_ARM -ISource/ARM"
-CFLAGS_qoriq-ppc += "-ISource/Linux_PA -ISource/PA -DPPC"
-CFLAGS_powerpc64 += "-DENABLE_64BIT_SUPPORT"
+CFLAGS_append = " -I${STAGING_INCDIR} -ISource/Linux -ISource/Portable"
+CFLAGS_append_qoriq-arm = "-ISource/Linux_ARM -ISource/ARM"
+CFLAGS_append_qoriq-ppc += "-ISource/Linux_PA -ISource/PA -DPPC"
+CFLAGS_append_powerpc64 += "-DENABLE_64BIT_SUPPORT"
 
 do_install() {
         oe_runmake install DESTDIR=${D}
