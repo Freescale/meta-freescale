@@ -80,30 +80,12 @@ do_compile_append_qoriq-ppc() {
             cp ${S}/${board}/${UBOOT_SOURCE}  ${S}/${board}/${UBOOT_TARGET}.bin
         elif [ "x${UBOOT_TARGET}" != "x" ]; then
             # some boards' final binary was not named as u-boot.bin
-            if [ "${UBOOT_TARGET}" = "u-boot-nand" ];then
-                if echo $board |egrep -q "^(BSC|C29|P10|P2020RDB)";then
-                    UBOOT_SOURCE=u-boot-with-spl.bin
-                elif echo $board |egrep -q "^(B4|T1|T2|T4)";then
-                    UBOOT_SOURCE=u-boot-with-spl-pbl.bin
-                elif echo $board |egrep -q "^(P2041|P3|P4|P5)";then
-                    UBOOT_SOURCE=u-boot.pbl
-                fi
-            elif [ "${UBOOT_TARGET}" = "u-boot-spi" ];then
-                if echo $board |egrep -q "^(P10|P2020RDB)";then
-                    UBOOT_SOURCE=u-boot-with-spl.bin
-                elif echo $board |egrep -q "^(T1|T2)";then
-                    UBOOT_SOURCE=u-boot-with-spl-pbl.bin
-                elif echo $board |egrep -q "^(B4|P2041|P3|P4|P5|T4)";then
-                    UBOOT_SOURCE=u-boot.pbl
-                fi
-            elif [ "${UBOOT_TARGET}" = "u-boot-sd" ];then
-                if echo $board |egrep -q "^(P10|P2020RDB)";then
-                    UBOOT_SOURCE=u-boot-with-spl.bin
-                elif echo $board |egrep -q "^(B4|T1|T2|T4)";then
-                    UBOOT_SOURCE=u-boot-with-spl-pbl.bin
-                elif echo $board |egrep -q "^(P2041|P3|P4|P5)";then
-                    UBOOT_SOURCE=u-boot.pbl
-                fi
+            if [ "${UBOOT_TARGET}" = "u-boot-nand" ] && [ "${UBOOT_SOURCE_NAND}" != "" ]; then
+                UBOOT_SOURCE="${UBOOT_SOURCE_NAND}"
+            elif [ "${UBOOT_TARGET}" = "u-boot-spi" ] && [ "${UBOOT_SOURCE_SPI}" != "" ]; then
+                UBOOT_SOURCE="${UBOOT_SOURCE_SPI}"
+            elif [ "${UBOOT_TARGET}" = "u-boot-sd" ] && [ "${UBOOT_SOURCE_SD}" != "" ]; then
+                UBOOT_SOURCE="${UBOOT_SOURCE_SD}"
             fi
             cp ${S}/${board}/${UBOOT_SOURCE}  ${S}/${board}/${UBOOT_TARGET}.bin
 
