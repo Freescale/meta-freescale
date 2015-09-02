@@ -1,11 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-# only install patch for mx6 with a GPU
-GPU_PATCH = "file://0001-MGS-840-Add-i.MX6-support-for-weston.patch"
-SRC_URI_append_mx6q  = " ${GPU_PATCH}"
-SRC_URI_append_mx6dl = " ${GPU_PATCH}"
-SRC_URI_append_mx6sx = " ${GPU_PATCH}"
-SRC_URI_append_mx6sl = " ${GPU_PATCH}"
+SRC_URI_append_mx6 = " file://0001-MGS-840-Add-i.MX6-support-for-weston.patch"
 
 PACKAGECONFIG_append_mx6q = " cairo-glesv2"
 PACKAGECONFIG_append_mx6dl = " cairo-glesv2"
