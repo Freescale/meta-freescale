@@ -23,24 +23,22 @@ SRCREV = "b9287b07390d17bfba936a806a72b91b89507c22"
 
 S = "${WORKDIR}/git"
 
+python () {
+    if not d.getVar("HV_CFG_M", True):
+        raise bb.parse.SkipPackage("HV_CFG_M is not defined, please \
+check ${MACHINE}.conf file.")
+}
+
 do_install () {
 	make install
 
-	M=`echo ${MACHINE} | sed s/-64b//g`
-	if [ "t1042d4rdb" = "${M}" ] || [ "t1040d4rdb" = "${M}" ];then
-		M=t1040rdb
-	fi
 	install -d ${D}/boot/hv-cfg
-	cp -r ${S}/${M}/${M}/* ${D}/boot/hv-cfg
+	cp -r ${S}/${HV_CFG_M}/${HV_CFG_M}/* ${D}/boot/hv-cfg
 }
 
 do_deploy () {
-	M=`echo ${MACHINE} | sed s/-64b//g`
-	if [ "t1042d4rdb" = "${M}" ] || [ "t1040d4rdb" = "${M}" ];then
-		M=t1040rdb
-	fi
 	install -d ${DEPLOYDIR}/hv-cfg
-	cp -r ${S}/${M}/${M}/* ${DEPLOYDIR}/hv-cfg
+	cp -r ${S}/${HV_CFG_M}/${HV_CFG_M}/* ${DEPLOYDIR}/hv-cfg
 }
 addtask deploy after do_install
 
