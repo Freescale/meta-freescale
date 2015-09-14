@@ -117,15 +117,15 @@ do_install () {
     cp -r ${S}/gpu-core/usr/include/* ${D}${includedir}
     cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
     cp -r ${S}/gpu-demos/opt ${D}
-    cp -axr ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
+    cp -r ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
 
     install -d ${D}${libdir}/pkgconfig
 
     # The preference order, based in DISTRO_FEATURES, is x11, wayland, directfb and fb
     if [ "${USE_X11}" = "yes" ]; then
         cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
-        cp -axr ${S}/apitrace/x11/usr/lib/* ${D}${libdir}
-        cp -axr ${S}/apitrace/x11/usr/bin/* ${D}${bindir}
+        cp -r ${S}/apitrace/x11/usr/lib/* ${D}${libdir}
+        cp -r ${S}/apitrace/x11/usr/bin/* ${D}${bindir}
 
         backend=x11
 
@@ -141,8 +141,8 @@ do_install () {
         #    install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
         #fi
     elif [ "${USE_WL}" = "yes" ]; then
-        cp -axr ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
-        cp -axr ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
+        cp -r ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
+        cp -r ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
 
         backend=wl
 
@@ -165,14 +165,14 @@ do_install () {
             install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_directfb.pc ${D}${libdir}/pkgconfig/egl.pc
 
             cp -r ${S}/gpu-core/usr/lib/directfb-* ${D}${libdir}
-            cp -axr ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
-            cp -axr ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
+            cp -r ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
+            cp -r ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
             backend=dfb
         else
             # Regular framebuffer
             install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_linuxfb.pc ${D}${libdir}/pkgconfig/egl.pc
-            cp -axr ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
-            cp -axr ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
+            cp -r ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
+            cp -r ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
             backend=fb
         fi
         mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
