@@ -1,4 +1,4 @@
-From 2d076ce73e849eae5c47941b6950efb65db498d2 Mon Sep 17 00:00:00 2001
+From 194e357faf3d7433ad4f1f2cf46f79d314ea5b38 Mon Sep 17 00:00:00 2001
 From: Prabhu <prabhu.sundararaj@freescale.com>
 Date: Wed, 29 Jul 2015 15:32:01 -0500
 Subject: [PATCH] MGS-907: X11 EXA: Warnings causes GCC5.2 build to fail
@@ -16,14 +16,15 @@ Signed-off-by: Prabhu <prabhu.sundararaj@freescale.com>
  EXA/src/vivante_fbdev/vivante_fbdev_driver.c | 2 ++
  EXA/src/vivante_gal/vivante_gal.h            | 1 +
  EXA/src/vivante_gal/vivante_gal_surface.c    | 3 ++-
- 5 files changed, 10 insertions(+), 4 deletions(-)
+ EXA/src/vivante_gal/vivante_priv.h           | 4 ++++
+ 6 files changed, 14 insertions(+), 4 deletions(-)
  mode change 100755 => 100644 EXA/src/vivante_extension/vivante_ext.c
  mode change 100755 => 100644 EXA/src/vivante_gal/vivante_gal_surface.c
 
 diff --git a/EXA/src/vivante_extension/vivante_ext.c b/EXA/src/vivante_extension/vivante_ext.c
 old mode 100755
 new mode 100644
-index 3015d57..df6fb61
+index 4bcc5ba..0d1085b
 --- a/EXA/src/vivante_extension/vivante_ext.c
 +++ b/EXA/src/vivante_extension/vivante_ext.c
 @@ -54,6 +54,7 @@
@@ -41,11 +42,11 @@ index 3015d57..df6fb61
 -                VIVGPUPtr gpuctx = (VIVGPUPtr) pViv->mGrCtx.mGpu;
 -                VIV2DGPUSurfaceReAllocNonCached(gpuctx, ppriv);
 +                VIV2DGPUSurfaceReAllocNonCached(&pViv->mGrCtx, ppriv);
-             }
-         }
-         return  0;
+                 // set tiled if asked
+                 if(stuff->flag & VIVPIXMAP_FLAG_SHARED_TILED)
+                 {
 diff --git a/EXA/src/vivante_fbdev/imx_display.c b/EXA/src/vivante_fbdev/imx_display.c
-index d5303f9..43e9432 100644
+index 876d37e..8d4eaa0 100644
 --- a/EXA/src/vivante_fbdev/imx_display.c
 +++ b/EXA/src/vivante_fbdev/imx_display.c
 @@ -27,6 +27,8 @@
@@ -67,7 +68,7 @@ index d5303f9..43e9432 100644
  	return (a * b) / GCD(a, b);
  }
 diff --git a/EXA/src/vivante_fbdev/vivante_fbdev_driver.c b/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
-index 3e289ce..88de4e0 100644
+index ec407df..d35912a 100644
 --- a/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
 +++ b/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
 @@ -29,8 +29,10 @@
@@ -82,11 +83,11 @@ index 3e289ce..88de4e0 100644
  #include <xorg/shmint.h>
  
 diff --git a/EXA/src/vivante_gal/vivante_gal.h b/EXA/src/vivante_gal/vivante_gal.h
-index 1fccbfd..46f0479 100644
+index e186eda..332c773 100644
 --- a/EXA/src/vivante_gal/vivante_gal.h
 +++ b/EXA/src/vivante_gal/vivante_gal.h
-@@ -258,6 +258,7 @@ extern "C" {
-     Bool VIV2DCacheOperation(GALINFOPTR galInfo, Viv2DPixmapPtr ppix, VIVFLUSHTYPE flush_type);
+@@ -260,6 +260,7 @@ extern "C" {
+     Bool VIV2DCacheOperation(GALINFOPTR galInfo, Viv2DPixmapPtr ppix, VIVFLUSHTYPE flush_type, int onLinearBuffer);
      Bool VIV2DGPUUserMemMap(char* logical, unsigned int physical, unsigned int size, void ** mappingInfo, unsigned int * gpuAddress);
      Bool VIV2DGPUUserMemUnMap(char* logical, unsigned int size, void * mappingInfo, unsigned int gpuAddress);
 +    Bool VIV2DGPUSurfaceReAllocNonCached(GALINFOPTR galInfo, Viv2DPixmapPtr ppriv);
@@ -96,10 +97,10 @@ index 1fccbfd..46f0479 100644
 diff --git a/EXA/src/vivante_gal/vivante_gal_surface.c b/EXA/src/vivante_gal/vivante_gal_surface.c
 old mode 100755
 new mode 100644
-index 0ea67f6..f3b998d
+index 036b61b..0234814
 --- a/EXA/src/vivante_gal/vivante_gal_surface.c
 +++ b/EXA/src/vivante_gal/vivante_gal_surface.c
-@@ -584,7 +584,8 @@ static gctBOOL VIV2DGPUSurfaceAlloc(VIVGPUPtr gpuctx, gctUINT alignedWidth, gctU
+@@ -673,7 +673,8 @@ static gctBOOL VIV2DGPUSurfaceAlloc(VIVGPUPtr gpuctx, gctUINT alignedWidth, gctU
      return VIV2DGPUSurfaceAllocEx(gpuctx, alignedWidth, alignedHeight, bytesPerPixel, surface, getPixmapCachePolicy());
  }
  
@@ -109,6 +110,28 @@ index 0ea67f6..f3b998d
      GenericSurfacePtr oldSurf = gcvNULL;
      GenericSurfacePtr newSurf = gcvNULL;
      gctUINT32 alignedWidth;
+diff --git a/EXA/src/vivante_gal/vivante_priv.h b/EXA/src/vivante_gal/vivante_priv.h
+index e8ee3d2..05f5748 100644
+--- a/EXA/src/vivante_gal/vivante_priv.h
++++ b/EXA/src/vivante_gal/vivante_priv.h
+@@ -29,6 +29,7 @@ extern "C" {
+ #include "HAL/gc_hal.h"
+ #include "HAL/gc_hal_raster.h"
+ #include "HAL/gc_hal_base.h"
++#include "vivante_debug.h"
+ 
+     /************************************************************************
+      * PIXMAP_HANDLING_STUFF(START)
+@@ -97,6 +98,9 @@ extern "C" {
+      * DRIVER & DEVICE  Structs (END)
+      *************************************************************************/
+ 
++    gctBOOL VIV2DGPUSurfaceAllocEx(VIVGPUPtr gpuctx, gctUINT alignedWidth, gctUINT alignedHeight,
++        gctUINT bytesPerPixel, GenericSurfacePtr * surface, enum PixmapCachePolicy cachePolicy);
++
+ #ifdef __cplusplus
+ }
+ #endif
 -- 
-2.4.5
+1.8.4.5
 
