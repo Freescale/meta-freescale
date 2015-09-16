@@ -8,6 +8,17 @@ SECTION = "libs/network"
 LICENSE = "openssl"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f9a8f968107345e0b75aa8c2ecaa7ec8"
 
+PROVIDES = "openssl"
+
+python() {
+    pkgs = d.getVar('PACKAGES', True).split()
+    for p in pkgs:
+        if 'openssl-qoriq' in p:
+            d.appendVar("RPROVIDES_%s" % p, p.replace('openssl-qoriq', 'openssl'))
+            d.appendVar("RCONFLICTS_%s" % p, p.replace('openssl-qoriq', 'openssl'))
+            d.appendVar("RREPLACES_%s" % p, p.replace('openssl-qoriq', 'openssl'))
+}
+
 DEPENDS = "perl-native-runtime"
 
 SRC_URI = "http://www.openssl.org/source/openssl-${PV}.tar.gz \
@@ -170,4 +181,3 @@ do_install () {
 }
 
 BBCLASSEXTEND = "native nativesdk"
-
