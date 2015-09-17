@@ -36,6 +36,8 @@ SRCREV_mx7 = "e4944a51c4bb950a8f13e421eefc000a87350e23"
 
 SRC_URI += " \
     file://0004-mmc-sdhci-esdhc-imx-Fixup-runtime-PM-conditions-duri.patch \
+    file://0001-ARM-LLVMLinux-Change-extern-inline-to-static-inline.patch \
+    file://0001-ARM-8158-LLVMLinux-use-static-inline-in-ARM-ftrace.patch \
 "
 
 COMPATIBLE_MACHINE = "(mx6|mx6ul|mx7)"
