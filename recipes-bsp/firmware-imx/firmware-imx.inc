@@ -11,12 +11,17 @@ SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true"
 inherit fsl-eula-unpack
 
 do_install() {
-    install -d ${D}/lib/firmware
+    install -d ${D}/lib/firmware/imx
     cp -rfv firmware/* ${D}/lib/firmware/
+
+    mv ${D}/lib/firmware/epdc/ ${D}/lib/firmware/imx/epdc/
+    mv ${D}/lib/firmware/imx/epdc/epdc_ED060XH2C1.fw.nonrestricted ${D}/lib/firmware/imx/epdc/epdc_ED060XH2C1.fw
+
     find ${D}/lib/firmware -type f -exec chmod 644 '{}' ';'
+    find ${D}/lib/firmware -type f -exec chown root:root '{}' ';'
 
     # Remove files not going to be installed
-    find ${D}/lib/firmware/ -name Android.mk -exec rm '{}' ';'
+    find ${D}/lib/firmware/ -name '*.mk' -exec rm '{}' ';'
 }
 
 python populate_packages_prepend() {
@@ -38,5 +43,9 @@ python populate_packages_prepend() {
 ALLOW_EMPTY_${PN} = "1"
 
 PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
+
+PACKAGES =+ "${PN}-epdc"
+
+FILES_${PN}-epdc = "/lib/firmware/imx/epdc/"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
