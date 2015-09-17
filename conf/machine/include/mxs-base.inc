@@ -36,7 +36,7 @@ SERIAL_CONSOLE = "115200 ttyAMA0"
 KERNEL_IMAGETYPE = "zImage"
 
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
-IMAGE_FSTYPES ?= "ext3 uboot.mxsboot-sdcard sdcard"
+IMAGE_FSTYPES ?= "ext3 uboot.mxsboot-sdcard sdcard.gz"
 
 # Add the ability to specify _imx machines
 MACHINEOVERRIDES =. "imx:"
