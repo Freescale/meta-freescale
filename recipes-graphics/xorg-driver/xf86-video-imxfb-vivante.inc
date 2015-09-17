@@ -10,7 +10,7 @@ inherit autotools-brokensep update-rc.d pkgconfig
 
 DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv pixman"
 
-LIC_FILES_CHKSUM = "file://EXA/src/vivante_fbdev/vivante.h;endline=19;md5=95cf961a2ceacdf7cf43caef25766779"
+LIC_FILES_CHKSUM = "file://COPYING-GPL-2;md5=59530bdf33659b29e73d4adb9f9f6552"
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
             file://rc.autohdmi \
