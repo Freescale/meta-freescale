@@ -23,9 +23,6 @@ inherit fsl-eula-unpack
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-# FIXME: Drop for GA release
-S = "${WORKDIR}/${PN}-${@'${PV}'.replace('5.0.11.p6.3', '5.0.11.p6.3-beta')}"
-
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
 	libgles-mx6 libgles-mx6-dev libgles-mx6-dbg \
@@ -133,7 +130,6 @@ do_install () {
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg_x11.pc ${D}${libdir}/pkgconfig/vg.pc
-        mv ${D}${libdir}/libGAL_egl.dri.so ${D}${libdir}/libGAL_egl.so
         #FIXME: WL & X11 is not currently functional
         #if [ "${USE_WL}" = "yes" ]; then
         #    install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
@@ -153,7 +149,6 @@ do_install () {
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
-        mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
     else
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
@@ -175,7 +170,6 @@ do_install () {
             cp -r ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
             backend=fb
         fi
-        mv ${D}${libdir}/libGAL_egl.${backend}.so ${D}${libdir}/libGAL_egl.so
     fi
 
     # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
