@@ -1,4 +1,4 @@
-require recipes-graphics/directfb/directfb.inc
+require directfb.inc
 
 RV = "1.7-4"
 
