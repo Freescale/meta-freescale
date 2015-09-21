@@ -8,9 +8,14 @@ include conf/machine/include/soc-family.inc
 # Set specific make target and binary suffix
 PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
 PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
-UBOOT_MAKE_TARGET = "u-boot.imx"
-UBOOT_SUFFIX ?= "imx"
 
+UBOOT_MAKE_TARGET ?= "u-boot.imx"
+UBOOT_MAKE_TARGET_mxs ?= "u-boot.sb"
+
+UBOOT_SUFFIX ?= "imx"
+UBOOT_SUFFIX_mxs ?= "sb"
+
+UBOOT_ENTRYPOINT_mxs = "0x40008000"
 UBOOT_ENTRYPOINT_mx51  = "0x90008000"
 UBOOT_ENTRYPOINT_mx53  = "0x70008000"
 UBOOT_ENTRYPOINT_mx6  = "0x10008000"
@@ -132,6 +137,7 @@ PREFERRED_PROVIDER_virtual/libg2d_mx6ul = ""
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
+IMX_DEFAULT_KERNEL_mxs = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx5 = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-mx6"
 IMX_DEFAULT_KERNEL_mx6ul = "linux-imx"
@@ -140,8 +146,10 @@ PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext4"
 IMAGE_FSTYPES ?= "ext4 sdcard.gz"
+IMAGE_FSTYPES_mxs ?= "ext4 uboot.mxsboot-sdcard sdcard.gz"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
+SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
 
 KERNEL_IMAGETYPE = "zImage"
 
