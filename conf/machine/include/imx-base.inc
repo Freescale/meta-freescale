@@ -138,8 +138,8 @@ IMX_DEFAULT_KERNEL_mx6ul = "linux-imx"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
-SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext3"
-IMAGE_FSTYPES ?= "ext3 sdcard.gz"
+SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext4"
+IMAGE_FSTYPES ?= "ext4 sdcard.gz"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 
