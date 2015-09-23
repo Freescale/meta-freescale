@@ -6,7 +6,7 @@ DESCRIPTION = "Gstreamer freescale plugins"
 LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 
-DEPENDS = "libfslcodec libfslparser virtual/kernel gstreamer1.0 gstreamer1.0-plugins-base"
+DEPENDS = "libfslcodec libfslparser virtual/kernel gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
 DEPENDS_append_mx6q = " imx-lib imx-vpu libfslvpuwrap"
 DEPENDS_append_mx6dl = " imx-lib imx-vpu libfslvpuwrap"
 DEPENDS_append_mx6sl = " imx-lib"
@@ -19,8 +19,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "${FSL_MIRROR}/gst1.0-fsl-plugins-${PV}.tar.gz"
-SRC_URI[md5sum] = "098dfa5e2c0cc7314f526d4aacc4613d"
-SRC_URI[sha256sum] = "cb5e066546221120ef06bab6ec3052459d92b997190077dc50545e49d5e3b151"
+SRC_URI[md5sum] = "81e2dbd702ea2cd7904fc54981ea3d19"
+SRC_URI[sha256sum] = "fc287a672e2f040c2697af618b2f6ed319202a6dfbb731cbfb7987b41de2d62b"
 
 S = "${WORKDIR}/gst1.0-fsl-plugins-${PV}"
 
