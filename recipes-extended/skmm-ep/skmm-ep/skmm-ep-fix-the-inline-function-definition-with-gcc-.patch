@@ -1,0 +1,67 @@
+From 3293321112174ff3247c0ba5c8b9ba9349e0e623 Mon Sep 17 00:00:00 2001
+From: Zhenhua Luo <zhenhua.luo@freescale.com>
+Date: Mon, 21 Sep 2015 20:38:52 +0800
+Subject: [PATCH] skmm-ep: fix the inline function definition with gcc 5.x
+
+There are different semantics for inline functions for gcc-5.x compared to
+previous gcc. Fix the following build error.
+| skmm.c:(.text.startup+0xfc): undefined reference to `va_to_pa'
+| skmm.c:(.text.startup+0x10c): undefined reference to `va_to_pa'
+
+Upstream-Status: Pending
+
+Signed-off-by: Zhenhua Luo <zhenhua.luo@freescale.com>
+---
+ apps/skmm/include/skmm_sram.h | 13 +++++++++++--
+ apps/skmm/lib/skmm_ddr.c      | 10 ----------
+ 2 files changed, 11 insertions(+), 12 deletions(-)
+
+diff --git a/apps/skmm/include/skmm_sram.h b/apps/skmm/include/skmm_sram.h
+index 4c96874..6208761 100644
+--- a/apps/skmm/include/skmm_sram.h
++++ b/apps/skmm/include/skmm_sram.h
+@@ -33,9 +33,18 @@
+ #define	__SKMM_SRAM_H__
+ 
+ #include "common.h"
++#include <usdpaa/dma_mem.h>
++
++static inline va_addr_t pa_to_va(phys_addr_t addr)
++{
++        return (va_addr_t)__dma_mem_ptov(addr);
++}
++
++static inline phys_addr_t va_to_pa(va_addr_t addr)
++{
++        return (phys_addr_t)__dma_mem_vtop((void *)addr);
++}
+ 
+-inline phys_addr_t va_to_pa(va_addr_t addr);
+-inline va_addr_t pa_to_va(phys_addr_t addr);
+ va_addr_t *fsl_mem_init(phys_addr_t l2_sram_addr);
+ 
+ #endif /* __SKMM_SRAM_H__ */
+diff --git a/apps/skmm/lib/skmm_ddr.c b/apps/skmm/lib/skmm_ddr.c
+index d5a66ce..f1cef89 100644
+--- a/apps/skmm/lib/skmm_ddr.c
++++ b/apps/skmm/lib/skmm_ddr.c
+@@ -35,16 +35,6 @@
+ #define SKMM_TOTAL_DMA_SIZE	(64 * 1024 * 1024)
+ #define SKMM_DMA_MAP_SIZE	(1*1024*1024)
+ 
+-inline va_addr_t pa_to_va(phys_addr_t addr)
+-{
+-	return (va_addr_t)__dma_mem_ptov(addr);
+-}
+-
+-inline phys_addr_t va_to_pa(va_addr_t addr)
+-{
+-	return (phys_addr_t)__dma_mem_vtop((void *)addr);
+-}
+-
+ va_addr_t *fsl_mem_init(phys_addr_t l2_sram_addr)
+ {
+ 	/* - map DMA mem */
+-- 
+1.9.2
+

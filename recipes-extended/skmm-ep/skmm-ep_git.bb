@@ -9,6 +9,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;nobranch=1 \
     file://add-two-missing-header-files.patch \
+    file://skmm-ep-fix-the-inline-function-definition-with-gcc-.patch \
 "
 SRCREV = "27156a6621c8f6d7f98210b1ca5cd97bde926875"
 
