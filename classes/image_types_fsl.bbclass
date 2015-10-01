@@ -153,8 +153,9 @@ generate_imx_sdcard () {
 	# Create boot partition image
 	BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
 	                  | awk '/ 1 / { print substr($4, 1, length($4 -1)) / 1024 }')
-        rm -f ${WORKDIR}/boot.img
-	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
+	rm -f ${WORKDIR}/boot.img
+	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -F 32 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
+
 	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
 
 	# Copy boot scripts
@@ -258,7 +259,7 @@ generate_mxs_sdcard () {
 	        | awk '/ 2 / { print substr($4, 1, length($4 -1)) / 1024 }')
 
 		rm -f ${WORKDIR}/boot.img
-		mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
+		mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -F 32 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
 		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
 		if test -n "${KERNEL_DEVICETREE}"; then
 			for DTS_FILE in ${KERNEL_DEVICETREE}; do
