@@ -256,7 +256,6 @@ FILES_libvsc-mx6 = "${libdir}/libVSC${SOLIBS}"
 FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-mx6-dev = "${libdir}/libGL${SOLIBSDEV}"
 FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
-RDEPENDS_libgl-mx6 = "libglapi"
 # Includes GL headers from mesa
 RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 
