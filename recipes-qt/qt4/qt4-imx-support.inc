@@ -21,3 +21,8 @@ QT_CONFIG_FLAGS_append_mx6 = " -I${STAGING_KERNEL_DIR}/include/uapi \
                                -DLINUX=1 -DEGL_API_FB=1 \
                                -DQT_QPA_EXPERIMENTAL_TOUCHEVENT=1"
 
+# The QT_CONFIG_FLAGS can pollute *.la files with -Dxxx
+do_compile_append_mx6 () {
+    find lib -name "*.la" | xargs -n1 sed -i 's/-D.*=1//g'
+}
+
