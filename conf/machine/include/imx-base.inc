@@ -105,7 +105,7 @@ SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6sl = "1"
 # Handle Vivante kernel driver setting:
 #   0 - machine does not have Vivante GPU driver support
 #   1 - machine has Vivante GPU driver support
-MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ??= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
+MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ?= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
 
 # mx6 GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx6q ?= "imx-gpu-viv"
