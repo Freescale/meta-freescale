@@ -9,6 +9,8 @@ include conf/machine/include/soc-family.inc
 PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
 PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
 
+PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
+
 UBOOT_MAKE_TARGET ?= "u-boot.imx"
 UBOOT_MAKE_TARGET_mxs ?= "u-boot.sb"
 
