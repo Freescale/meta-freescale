@@ -1,0 +1,4 @@
+COMPATIBLE_MACHINE_mx6q  = "(-)"
+COMPATIBLE_MACHINE_mx6dl = "(-)"
+COMPATIBLE_MACHINE_mx6sx = "(-)"
+COMPATIBLE_MACHINE_mx6sl = "(-)"
