@@ -126,6 +126,8 @@ _generate_boot_image() {
 				if [ $kernel_bin = $kernel_bin_for_dtb ]; then
 					mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb ::/${DTS_BASE_NAME}.dtb
 				fi
+			else
+				bbfatal "${DTS_FILE} does not exist."
 			fi
 		done
 	fi
