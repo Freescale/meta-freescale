@@ -14,4 +14,4 @@ PV = "4.1+git${SRCPV}"
 SRCBRANCH = "patches-4.1"
 SRCREV = "ac8eed12f8a074f4911c20f4216a250a41d04423"
 
-COMPATIBLE_MACHINE = "(mxs|mx5|mx6)"
+COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf)"
