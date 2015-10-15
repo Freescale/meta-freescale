@@ -92,6 +92,45 @@ SDCARD_GENERATION_COMMAND_mx6 = "generate_imx_sdcard"
 SDCARD_GENERATION_COMMAND_mx7 = "generate_imx_sdcard"
 SDCARD_GENERATION_COMMAND_vf = "generate_imx_sdcard"
 
+
+#
+# Generate the boot image with the boot scripts and required Device Tree
+# files
+_generate_boot_image() {
+	local boot_part=$1
+
+	# Create boot partition image
+	BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
+	                  | awk "/ $boot_part / { print substr(\$4, 1, length(\$4 -1)) / 1024 }")
+
+	rm -f ${WORKDIR}/boot.img
+	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -F 32 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
+
+	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
+
+	# Copy boot scripts
+	for item in ${BOOT_SCRIPTS}; do
+		src=`echo $item | awk -F':' '{ print $1 }'`
+		dst=`echo $item | awk -F':' '{ print $2 }'`
+
+		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/$src ::/$dst
+	done
+
+	# Copy device tree file
+	if test -n "${KERNEL_DEVICETREE}"; then
+		for DTS_FILE in ${KERNEL_DEVICETREE}; do
+			DTS_BASE_NAME=`basename ${DTS_FILE} | awk -F "." '{print $1}'`
+			if [ -e "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb" ]; then
+				kernel_bin="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
+				kernel_bin_for_dtb="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb | sed "s,$DTS_BASE_NAME,${MACHINE},g;s,\.dtb$,.bin,g"`"
+				if [ $kernel_bin = $kernel_bin_for_dtb ]; then
+					mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb ::/${DTS_BASE_NAME}.dtb
+				fi
+			fi
+		done
+	fi
+}
+
 #
 # Create an image that can by written onto a SD card using dd for use
 # with i.MX SoC family
@@ -150,35 +189,7 @@ generate_imx_sdcard () {
 		;;
 	esac
 
-	# Create boot partition image
-	BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
-	                  | awk '/ 1 / { print substr($4, 1, length($4 -1)) / 1024 }')
-	rm -f ${WORKDIR}/boot.img
-	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -F 32 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
-
-	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
-
-	# Copy boot scripts
-	for item in ${BOOT_SCRIPTS}; do
-		src=`echo $item | awk -F':' '{ print $1 }'`
-		dst=`echo $item | awk -F':' '{ print $2 }'`
-
-		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/$src ::/$dst
-	done
-
-	# Copy device tree file
-	if test -n "${KERNEL_DEVICETREE}"; then
-		for DTS_FILE in ${KERNEL_DEVICETREE}; do
-			DTS_BASE_NAME=`basename ${DTS_FILE} | awk -F "." '{print $1}'`
-			if [ -e "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb" ]; then
-				kernel_bin="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
-				kernel_bin_for_dtb="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb | sed "s,$DTS_BASE_NAME,${MACHINE},g;s,\.dtb$,.bin,g"`"
-				if [ $kernel_bin = $kernel_bin_for_dtb ]; then
-					mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb ::/${DTS_BASE_NAME}.dtb
-				fi
-			fi
-		done
-	fi
+	_generate_boot_image 1
 
 	# Burn Partition
 	dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc,fsync seek=1 bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
@@ -255,24 +266,8 @@ generate_mxs_sdcard () {
 		parted -s ${SDCARD} unit KiB mkpart primary $(expr  ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
 
 		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot.mxsboot-sdcard of=${SDCARD} conv=notrunc seek=1 bs=$(expr 1024 \* 1024)
-		BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
-	        | awk '/ 2 / { print substr($4, 1, length($4 -1)) / 1024 }')
 
-		rm -f ${WORKDIR}/boot.img
-		mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -F 32 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
-		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
-		if test -n "${KERNEL_DEVICETREE}"; then
-			for DTS_FILE in ${KERNEL_DEVICETREE}; do
-				DTS_BASE_NAME=`basename ${DTS_FILE} | awk -F "." '{print $1}'`
-				if [ -e "${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb" ]; then
-					kernel_bin="`readlink ${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
-					kernel_bin_for_dtb="`readlink ${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb | sed "s,$DTS_BASE_NAME,${MACHINE},g;s,\.dtb$,.bin,g"`"
-					if [ $kernel_bin = $kernel_bin_for_dtb ]; then
-						mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DTS_BASE_NAME}.dtb ::/${DTS_BASE_NAME}.dtb
-					fi
-				fi
-			done
-		fi
+		_generate_boot_image 2
 
 		dd if=${WORKDIR}/boot.img of=${SDCARD} conv=notrunc seek=2 bs=$(expr 1024 \* 1024)
 		;;
