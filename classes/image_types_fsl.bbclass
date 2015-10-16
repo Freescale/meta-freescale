@@ -103,8 +103,15 @@ _generate_boot_image() {
 	BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD} unit b print \
 	                  | awk "/ $boot_part / { print substr(\$4, 1, length(\$4 -1)) / 1024 }")
 
+	# mkdosfs will sometimes use FAT16 when it is not appropriate,
+	# resulting in a boot failure from SYSLINUX. Use FAT32 for
+	# images larger than 512MB, otherwise let mkdosfs decide.
+	if [ $(expr $BOOT_BLOCKS / 1024) -gt 512 ]; then
+		FATSIZE="-F 32"
+	fi
+
 	rm -f ${WORKDIR}/boot.img
-	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -F 32 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
+	mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 ${FATSIZE} -C ${WORKDIR}/boot.img $BOOT_BLOCKS
 
 	mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
 
