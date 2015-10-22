@@ -11,8 +11,8 @@ Upstream-Status: Pending
 Signed-off-by: Carlos Rafael Giani <dv@pseudoterminal.org>
 ---
  m4/evas_check_engine.m4 | 4 ++--
- src/Makefile_Evas.am    | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ src/Makefile_Evas.am    | 3 ++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/m4/evas_check_engine.m4 b/m4/evas_check_engine.m4
 index 3fd4890..35d1c5f 100644
@@ -34,7 +34,7 @@ diff --git a/src/Makefile_Evas.am b/src/Makefile_Evas.am
 index 644391b..6232f78 100644
 --- a/src/Makefile_Evas.am
 +++ b/src/Makefile_Evas.am
-@@ -632,6 +632,7 @@ lib_evas_libevas_la_LIBADD += @evas_engine_gl_common_libs@
+@@ -745,6 +745,7 @@ lib_evas_libevas_la_LIBADD += @evas_engine_gl_common_libs@
  else
  noinst_LTLIBRARIES += modules/evas/engines/gl_common/libevas_engine_gl_common.la
  modules_evas_engines_gl_common_libevas_engine_gl_common_la_SOURCES = $(GL_COMMON_SOURCES)
@@ -42,9 +42,17 @@ index 644391b..6232f78 100644
  modules_evas_engines_gl_common_libevas_engine_gl_common_la_CPPFLAGS = -I$(top_builddir)/src/lib/efl \
  -I$(top_srcdir)/src/lib/evas/include \
  -I$(top_srcdir)/src/lib/evas/cserve2 \
-@@ -736,6 +737,7 @@ else
- engineglx11pkgdir = $(libdir)/evas/modules/engines/gl_x11/$(MODULE_ARCH)
- engineglx11pkg_LTLIBRARIES = modules/evas/engines/gl_x11/module.la
+@@ -766,6 +767,7 @@ modules_evas_engines_gl_generic_module_la_CFLAGS = \
+ -I$(top_srcdir)/src/lib/evas/cserve2 \
+ -I$(top_srcdir)/src/modules/evas/engines/gl_common \
+ -I$(top_builddir)/src/modules/evas/engines/gl_generic \
++-DLINUX \
+ @evas_engine_gl_common_cflags@ \
+ @EVAS_CFLAGS@
+ modules_evas_engines_gl_generic_module_la_LIBADD = \
+@@ -897,6 +899,7 @@ install_engineglx11pkgLTLIBRARIES = install-engineglx11pkgLTLIBRARIES
+ $(install_engineglx11pkgLTLIBRARIES): install-libLTLIBRARIES
+ 
  modules_evas_engines_gl_x11_module_la_SOURCES = $(GL_X11_SOURCES)
 +modules_evas_engines_gl_x11_module_la_CFLAGS = -DLINUX
  modules_evas_engines_gl_x11_module_la_CPPFLAGS = -I$(top_builddir)/src/lib/efl \
