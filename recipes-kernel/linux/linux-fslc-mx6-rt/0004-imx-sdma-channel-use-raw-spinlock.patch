@@ -1,0 +1,95 @@
+Work around CPU stalls in the imx-sdma driver by replacing spinlocks
+with raw spinlocks. This prevents preemption during the spinlock's
+critical section, as is the case on non PREEMPT_RT kernels.
+
+Without this patch, the following error can occur, for example when
+using the audio codec on an iMX6Q Sabre SD board:
+
+INFO: rcu_preempt self-detected stall on CPU { 0}  (t=2100 jiffies g=106 c=105 q=93)
+CPU: 0 PID: 120 Comm: irq/34-sdma Not tainted 3.14.28-rt25-1.0.0_ga+g91cf351 #1
+[<80014a8c>] (unwind_backtrace) from [<8001173c>] (show_stack+0x10/0x14)
+[<8001173c>] (show_stack) from [<806ee750>] (dump_stack+0x7c/0xc8)
+[<806ee750>] (dump_stack) from [<800771c8>] (rcu_check_callbacks+0x454/0x888)
+[<800771c8>] (rcu_check_callbacks) from [<80037f28>] (update_process_times+0x40/0x5c)
+[<80037f28>] (update_process_times) from [<80082230>] (tick_sched_timer+0x4c/0x78)
+[<80082230>] (tick_sched_timer) from [<8004bf30>] (__run_hrtimer.isra.34+0x74/0x124)
+[<8004bf30>] (__run_hrtimer.isra.34) from [<8004cbb0>] (hrtimer_interrupt+0x154/0x3ac)
+[<8004cbb0>] (hrtimer_interrupt) from [<80014464>] (twd_handler+0x30/0x38)
+[<80014464>] (twd_handler) from [<8006fa2c>] (handle_percpu_devid_irq+0x6c/0x84)
+[<8006fa2c>] (handle_percpu_devid_irq) from [<8006bc64>] (generic_handle_irq+0x2c/0x3c)
+[<8006bc64>] (generic_handle_irq) from [<8000ed8c>] (handle_IRQ+0x40/0x90)
+[<8000ed8c>] (handle_IRQ) from [<8000856c>] (gic_handle_irq+0x2c/0x5c)
+[<8000856c>] (gic_handle_irq) from [<80012240>] (__irq_svc+0x40/0x84)
+Exception stack(0xa840feb8 to 0xa840ff00)
+fea0:                                                       a8007a28 00000002
+fec0: 00000001 0000a6a6 a80079c0 a8007a28 a83ea080 00000000 a80079c0 a83ea080
+fee0: 285190f0 00000000 00000000 a840ff00 8006d04c 806f3070 20030113 ffffffff
+[<80012240>] (__irq_svc) from [<806f3070>] (_raw_spin_unlock_irq+0x20/0x60)
+[<806f3070>] (_raw_spin_unlock_irq) from [<8006d04c>] (irq_finalize_oneshot.part.37+0x70/0xcc)
+[<8006d04c>] (irq_finalize_oneshot.part.37) from [<8006d148>] (irq_forced_thread_fn+0x60/0x64)
+[<8006d148>] (irq_forced_thread_fn) from [<8006d3dc>] (irq_thread+0x138/0x1a4)
+[<8006d3dc>] (irq_thread) from [<8004913c>] (kthread+0xbc/0xd4)
+[<8004913c>] (kthread) from [<8000e538>] (ret_from_fork+0x14/0x3c)
+
+Upstream-Status: Pending
+
+Signed-off-by: Dominic Sacré <dominic.sacre@gmx.de>
+
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index bae2ea8..74ff5a0 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -343,7 +343,7 @@ struct sdma_engine {
+ 	struct dma_device		dma_device;
+ 	struct clk			*clk_ipg;
+ 	struct clk			*clk_ahb;
+-	spinlock_t			channel_0_lock;
++	raw_spinlock_t			channel_0_lock;
+ 	u32				script_number;
+ 	struct sdma_script_start_addrs	*script_addrs;
+ 	const struct sdma_driver_data	*drvdata;
+@@ -593,7 +593,7 @@ static int sdma_load_script(struct sdma_engine *sdma, void *buf, int size,
+ 			return -ENOMEM;
+ 	}
+ 
+-	spin_lock_irqsave(&sdma->channel_0_lock, flags);
++	raw_spin_lock_irqsave(&sdma->channel_0_lock, flags);
+ 
+ 	bd0->mode.command = C0_SETPM;
+ 	bd0->mode.status = BD_DONE | BD_INTR | BD_WRAP | BD_EXTD;
+@@ -605,7 +605,7 @@ static int sdma_load_script(struct sdma_engine *sdma, void *buf, int size,
+ 
+ 	ret = sdma_run_channel0(sdma);
+ 
+-	spin_unlock_irqrestore(&sdma->channel_0_lock, flags);
++	raw_spin_unlock_irqrestore(&sdma->channel_0_lock, flags);
+ 
+ 	if (use_iram)
+ 		gen_pool_free(sdma->iram_pool, (unsigned long)buf_virt, size);
+@@ -880,7 +880,7 @@ static int sdma_load_context(struct sdma_channel *sdmac)
+ 	dev_dbg(sdma->dev, "event_mask0 = 0x%08x\n", (u32)sdmac->event_mask[0]);
+ 	dev_dbg(sdma->dev, "event_mask1 = 0x%08x\n", (u32)sdmac->event_mask[1]);
+ 
+-	spin_lock_irqsave(&sdma->channel_0_lock, flags);
++	raw_spin_lock_irqsave(&sdma->channel_0_lock, flags);
+ 
+ 	memset(context, 0, sizeof(*context));
+ 	context->channel_state.pc = load_address;
+@@ -906,7 +906,7 @@ static int sdma_load_context(struct sdma_channel *sdmac)
+ 	bd0->ext_buffer_addr = 2048 + (sizeof(*context) / 4) * channel;
+ 	ret = sdma_run_channel0(sdma);
+ 
+-	spin_unlock_irqrestore(&sdma->channel_0_lock, flags);
++	raw_spin_unlock_irqrestore(&sdma->channel_0_lock, flags);
+ 
+ 	return ret;
+ }
+@@ -1881,7 +1881,7 @@ static int __init sdma_probe(struct platform_device *pdev)
+ 	if (!sdma)
+ 		return -ENOMEM;
+ 
+-	spin_lock_init(&sdma->channel_0_lock);
++	raw_spin_lock_init(&sdma->channel_0_lock);
+ 
+ 	sdma->dev = &pdev->dev;
+ 	sdma->drvdata = drvdata;
