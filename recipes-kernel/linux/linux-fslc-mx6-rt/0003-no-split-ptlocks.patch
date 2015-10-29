@@ -1,0 +1,85 @@
+Work around the oops below by disabling split ptlocks
+
+Upstream-Status: Inappropriate [disable feature]
+
+Signed-off-by: Jacob Kroon <jacob.kroon@mikrodidakt.se>
+Signed-off-by: Dominic Sacré <dominic.sacre@gmx.de> [updated for 3.14.28]
+
+Unable to handle kernel NULL pointer dereference at virtual address 00000000
+pgd = ac5a8000
+[00000000] *pgd=3c8db831, *pte=00000000, *ppte=00000000
+Internal error: Oops: 17 [#1] PREEMPT SMP ARM
+Modules linked in:
+CPU: 1 PID: 277 Comm: test-qt5 Not tainted 3.10.17-rt12-monkey+gec1af9f #2
+task: ac65df80 ti: ac968000 task.ti: ac968000
+PC is at _raw_spin_lock+0x10/0x4c
+LR is at get_parent_ip+0x10/0x2c
+pc : [<80623fd4>]    lr : [<8004ef18>]    psr: 60010013
+sp : ac969c38  ip : 80c44404  fp : 00000000
+r10: ac65df80  r9 : ac969cd8  r8 : 00000000
+r7 : 00000054  r6 : afffe000  r5 : 00000000  r4 : 00000000
+r3 : ac65df80  r2 : 00000001  r1 : 00000000  r0 : 00000000
+Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+Control: 10c53c7d  Table: 3c5a804a  DAC: 00000015
+Process test-qt5 (pid: 277, stack limit = 0xac968238)
+Stack: (0xac969c38 to 0xac96a000)
+9c20:                                                       b00549a8 806235e0
+9c40: 00000000 ac968000 812f9a00 80017cec ac969c74 fffffffe 00000000 00005000
+9c60: 00000000 80017e6c ac968000 ac65df80 00000000 00000000 00000001 ac968001
+9c80: ac65df80 b00549a8 00000000 afffe000 00000054 00000000 ac969cd8 afffe150
+9ca0: b0054bf8 8044e540 ac969cd8 b00549a8 ac0b8180 00000230 ac8fd000 00000230
+9cc0: 00000000 8044f6f4 ac155700 ac969cf4 ac155700 804605b8 ac155700 ac969d8c
+9ce0: 00000002 ac969d24 b0054bf8 804607f4 7ef1fcd0 80450078 ac0b8180 ac155700
+9d00: ac969d8c 00000002 ac8fd000 8045f1a0 ac969d24 00000000 ac8fd01c b00549a8
+9d20: b0050000 00000008 ac969d98 ac0b8300 ac969d8c 00000115 ac969d98 ac969e00
+9d40: ac155600 ac3985f0 7ef1fcd0 8045661c 00000115 00000000 00000001 00000000
+9d60: 00007530 80454144 80c32e18 00000001 81518e18 806237dc 00000001 ac968038
+9d80: 00000000 00000000 00000000 00000000 00000115 806237dc ac6f5688 ac968018
+9da0: 812e1640 00000000 00000001 ac968000 ac969dc4 8004efe4 ac968008 ac39a000
+9dc0: ac744400 ac968020 00007530 ac968000 ac968000 ac3985f0 7ef1fcd0 8044d374
+9de0: 7ef1fd20 00000000 000000f8 00000000 7ef1fd20 00000000 000000f8 00000000
+9e00: 00000028 00000002 00000000 6437d1dd 7ef1fddc 76f9c030 7ef1fd88 76fb9abc
+9e20: 00000320 00005007 e02c7eca c1399eff 020fb2db 00000000 00000000 00000000
+9e40: 00000001 00000040 00000400 00000004 00000010 00000400 00000002 00000100
+9e60: 00000100 00000008 00000008 00000000 ffffffff 00000000 7588e180 76fb1000
+9e80: 08000000 00000000 00000000 76fb11b8 000000af 760b6cd8 ffffffff 7431d4c0
+9ea0: 000cb1ac 75889000 00000000 00000001 000000b0 00000000 00000000 76fa0da0
+9ec0: 00000000 00000001 00000001 00000000 00000000 7588cb40 00000001 75957ecc
+9ee0: 00000001 7ef1fe7c 75953e94 7ef1fedc 00000002 76fa789c 00007530 ac6813c0
+9f00: 00000000 7ef1fcd0 ac6813c0 ac968000 ac3985f0 800d68fc 00000001 ac968000
+9f20: ac969f34 8004efe4 ac4f71d4 6c31d000 00000000 80623fd4 00000000 80623578
+9f40: ac4f71d4 800a3d40 00000001 00000000 ac969f5c 00000003 ac6813c8 00000000
+9f60: 00000001 00007530 00000003 00000000 7ef1fcd0 ac6813c0 ac968000 00000000
+9f80: 00000000 800d6afc ac4f7180 00000000 00002710 00007530 75957e40 00000036
+9fa0: 8000e2c4 8000e140 00002710 00007530 00000003 00007530 7ef1fcd0 01bc3008
+9fc0: 00002710 00007530 75957e40 00000036 01bd2e70 00000001 7ef1fd20 00000000
+9fe0: 759540c4 7ef1fcbc 7593f698 760a0ccc 20010010 00000003 00000000 00000000
+[<80623fd4>] (_raw_spin_lock+0x10/0x4c) from [<806235e0>] (rt_spin_lock_slowlock+0x34/0x29c)
+[<806235e0>] (rt_spin_lock_slowlock+0x34/0x29c) from [<8044e540>] (_QueryProcessPageTable+0x8c/0xdc)
+[<8044e540>] (_QueryProcessPageTable+0x8c/0xdc) from [<8044f6f4>] (gckOS_GetPhysicalAddress+0x20/0x58)
+[<8044f6f4>] (gckOS_GetPhysicalAddress+0x20/0x58) from [<804605b8>] (gckHARDWARE_ConvertLogical+0x2c/0x90)
+[<804605b8>] (gckHARDWARE_ConvertLogical+0x2c/0x90) from [<804607f4>] (gckHARDWARE_Link+0x60/0x104)
+[<804607f4>] (gckHARDWARE_Link+0x60/0x104) from [<8045f1a0>] (gckCONTEXT_Construct+0x264/0x2bc)
+[<8045f1a0>] (gckCONTEXT_Construct+0x264/0x2bc) from [<8045661c>] (gckCOMMAND_Attach+0x44/0x88)
+[<8045661c>] (gckCOMMAND_Attach+0x44/0x88) from [<80454144>] (gckKERNEL_Dispatch+0x358/0x12c8)
+[<80454144>] (gckKERNEL_Dispatch+0x358/0x12c8) from [<8044d374>] (drv_ioctl+0x120/0x284)
+[<8044d374>] (drv_ioctl+0x120/0x284) from [<800d68fc>] (do_vfs_ioctl+0x408/0x5d0)
+[<800d68fc>] (do_vfs_ioctl+0x408/0x5d0) from [<800d6afc>] (SyS_ioctl+0x38/0x64)
+[<800d6afc>] (SyS_ioctl+0x38/0x64) from [<8000e140>] (ret_fast_syscall+0x0/0x30)
+Code: e92d4010 e1a04000 e3a00001 ebe8abd7 (e1943f9f) 
+---[ end trace 0000000000000002 ]---
+note: test-qt5[277] exited with preempt_count 1
+
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 6c1dc6c..8c00faf 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -24,7 +24,7 @@
+ 
+ struct address_space;
+ 
+-#define USE_SPLIT_PTE_PTLOCKS	(NR_CPUS >= CONFIG_SPLIT_PTLOCK_CPUS)
++#define USE_SPLIT_PTE_PTLOCKS	(0)
+ #define USE_SPLIT_PMD_PTLOCKS	(USE_SPLIT_PTE_PTLOCKS && \
+ 		IS_ENABLED(CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK))
+ #define ALLOC_SPLIT_PTLOCKS	(SPINLOCK_SIZE > BITS_PER_LONG/8)

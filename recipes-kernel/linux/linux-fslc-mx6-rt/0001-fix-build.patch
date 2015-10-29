@@ -1,0 +1,71 @@
+Fix build errors when RT patch is applied
+
+Upstream-Status: Inappropriate [other]
+Freescale does not support the RT patch
+
+Signed-off-by: Jacob Kroon <jacob.kroon@mikrodidakt.se>
+Signed-off-by: Dominic Sacré <dominic.sacre@gmx.de> [updated for 3.14.28]
+
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+index 2ec98dc..5d0b7df 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c
+@@ -7344,7 +7344,7 @@ gckOS_WaitSignal(
+ 
+     might_sleep();
+ 
+-    spin_lock_irq(&signal->obj.wait.lock);
++    raw_spin_lock_irq(&signal->obj.wait.lock);
+ 
+     if (signal->obj.done)
+     {
+@@ -7366,9 +7366,8 @@ gckOS_WaitSignal(
+             ? MAX_SCHEDULE_TIMEOUT
+             : Wait * HZ / 1000;
+ 
+-        DECLARE_WAITQUEUE(wait, current);
+-        wait.flags |= WQ_FLAG_EXCLUSIVE;
+-        __add_wait_queue_tail(&signal->obj.wait, &wait);
++        DEFINE_SWAITER(wait);
++        swait_prepare_locked(&signal->obj.wait, &wait);
+ 
+         while (gcvTRUE)
+         {
+@@ -7380,9 +7379,9 @@ gckOS_WaitSignal(
+             }
+ 
+             __set_current_state(TASK_INTERRUPTIBLE);
+-            spin_unlock_irq(&signal->obj.wait.lock);
++            raw_spin_unlock_irq(&signal->obj.wait.lock);
+             timeout = schedule_timeout(timeout);
+-            spin_lock_irq(&signal->obj.wait.lock);
++            raw_spin_lock_irq(&signal->obj.wait.lock);
+ 
+             if (signal->obj.done)
+             {
+@@ -7403,10 +7402,10 @@ gckOS_WaitSignal(
+             }
+         }
+ 
+-        __remove_wait_queue(&signal->obj.wait, &wait);
++        swait_finish_locked(&signal->obj.wait, &wait);
+     }
+ 
+-    spin_unlock_irq(&signal->obj.wait.lock);
++    raw_spin_unlock_irq(&signal->obj.wait.lock);
+ 
+ OnError:
+     /* Return status. */
+diff --git a/include/linux/imx_sema4.h b/include/linux/imx_sema4.h
+index 9787980..3586199 100644
+--- a/include/linux/imx_sema4.h
++++ b/include/linux/imx_sema4.h
+@@ -9,6 +9,8 @@
+ #ifndef __LINUX_IMX_SEMA4_H__
+ #define __LINUX_IMX_SEMA4_H__
+ 
++#include <linux/wait.h>
++
+ #define SEMA4_NUM_DEVICES	1
+ #define SEMA4_NUM_GATES		16
+ 
