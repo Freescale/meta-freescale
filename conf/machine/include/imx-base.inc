@@ -34,11 +34,6 @@ XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
 
-PREFERRED_VERSION_directfb_mx6q  = "1.7.4"
-PREFERRED_VERSION_directfb_mx6dl = "1.7.4"
-PREFERRED_VERSION_directfb_mx6sx = "1.7.4"
-PREFERRED_VERSION_directfb_mx6sl = "1.7.4"
-
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
 
