@@ -1,0 +1,46 @@
+From: Javier Viguera <javier.viguera@digi.com>
+Date: Mon, 2 Nov 2015 17:52:48 +0100
+Subject: [PATCH] gst1.0-fsl-plugins: fix appending data to variable
+
+FSL_MM_CORE_CFLAGS and FSL_MM_CORE_LIBS where concatenating data at the
+end without adding a blank space between additions.
+
+As the appended data was a result of `pkg-config` expansion, this was
+working correctly until pkg-config v0.28 because it was pkg-config who
+was adding the trailing space.
+
+But after pkg-config v0.28, specifically in this commit:
+
+http://cgit.freedesktop.org/pkg-config/commit/?id=f26a505826acec6b1e1af8d1efdf959913421c3a
+
+this is no longer true, so the configure script needs to add that space.
+
+Signed-off-by: Javier Viguera <javier.viguera@digi.com>
+---
+ configure.ac | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 4da48867fafd..01bff6ca5348 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -203,14 +203,14 @@ AC_SUBST(RT_CFLAGS)
+ AC_SUBST(RT_LIBS)
+ 
+ FSL_MM_CORE_CFLAGS=`$PKG_CONFIG --cflags libfslaudiocodec 2>/dev/null`
+-FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslvideocodec 2>/dev/null`
+-FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslparser 2>/dev/null`
+-FSL_MM_CORE_CFLAGS+=`$PKG_CONFIG --cflags libfslvpuwrap 2>/dev/null`
++FSL_MM_CORE_CFLAGS+=" `$PKG_CONFIG --cflags libfslvideocodec 2>/dev/null`"
++FSL_MM_CORE_CFLAGS+=" `$PKG_CONFIG --cflags libfslparser 2>/dev/null`"
++FSL_MM_CORE_CFLAGS+=" `$PKG_CONFIG --cflags libfslvpuwrap 2>/dev/null`"
+ AC_SUBST(FSL_MM_CORE_CFLAGS)
+ 
+ FSL_MM_CORE_LIBS=`$PKG_CONFIG --libs libfslaudiocodec 2>/dev/null`
+-FSL_MM_CORE_LIBS+=`$PKG_CONFIG --libs libfslvideocodec 2>/dev/null`
+-FSL_MM_CORE_LIBS+=`$PKG_CONFIG --libs libfslparser 2>/dev/null`
++FSL_MM_CORE_LIBS+=" `$PKG_CONFIG --libs libfslvideocodec 2>/dev/null`"
++FSL_MM_CORE_LIBS+=" `$PKG_CONFIG --libs libfslparser 2>/dev/null`"
+ AC_SUBST(FSL_MM_CORE_LIBS)
+ 
+ EXTRAPLATFORMCFLAGS="-DARM -D_GNUC_"
