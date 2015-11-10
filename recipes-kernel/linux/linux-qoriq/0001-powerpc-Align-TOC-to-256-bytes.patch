@@ -1,0 +1,37 @@
+From 7d4d16a6ccdd6d965b84284262a67d5b63426d50 Mon Sep 17 00:00:00 2001
+From: Zhenhua Luo <zhenhua.luo@freescale.com>
+Date: Mon, 9 Nov 2015 04:36:29 -0600
+Subject: [PATCH] powerpc: Align TOC to 256 bytes
+
+Recent toolchains(gcc-5.2) force the TOC to be 256 byte aligned. We need
+to enforce this alignment in our linker script, otherwise pointers
+to our TOC variables (__toc_start, __prom_init_toc_start) could
+be incorrect.
+
+If they are bad, we die a few hundred instructions into boot.
+
+Upstream-Status: Backport
+
+Backport from https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5e95235
+
+Signed-off-by: Zhenhua Luo <zhenhua.luo@freescale.com>
+---
+ arch/powerpc/kernel/vmlinux.lds.S | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/powerpc/kernel/vmlinux.lds.S b/arch/powerpc/kernel/vmlinux.lds.S
+index f096e72..3266864 100644
+--- a/arch/powerpc/kernel/vmlinux.lds.S
++++ b/arch/powerpc/kernel/vmlinux.lds.S
+@@ -213,6 +213,8 @@ SECTIONS
+ 		*(.opd)
+ 	}
+ 
++	. = ALIGN(256);
++
+ 	.got : AT(ADDR(.got) - LOAD_OFFSET) {
+ 		__toc_start = .;
+ #ifndef CONFIG_RELOCATABLE
+-- 
+2.3.3
+
