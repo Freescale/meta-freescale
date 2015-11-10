@@ -6,6 +6,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://0001-ARM-8158-LLVMLinux-use-static-inline-in-ARM-ftrace.patch \
     file://0001-ARM-LLVMLinux-Change-extern-inline-to-static-inline.patch \
     file://0003-use-static-inline-in-ARM-lifeboot.h.patch \
+    file://0001-powerpc-Align-TOC-to-256-bytes.patch \
 "
 
 SRCREV = "f488de6741d5ba805b9fe813d2ddf32368d3a888"
