@@ -39,7 +39,7 @@ new mode 100755
 index 4f0f09f..3c5da6b
 --- a/gst-libs/gst/video/Makefile.am
 +++ b/gst-libs/gst/video/Makefile.am
-@@ -19,8 +19,13 @@ libgstbadvideo_@GST_API_VERSION@_la_CFLAGS = \
+@@ -16,11 +16,14 @@ libgstbadvideo_@GST_API_VERSION@_la_CFLAGS = \
  	$(GST_PLUGINS_BASE_CFLAGS) \
  	$(GST_BASE_CFLAGS)
  
@@ -48,12 +48,14 @@ index 4f0f09f..3c5da6b
 +        gstvideoaggregatorpad.h \
 +        gstvideoaggregator.h
 +
- libgstbadvideo_@GST_API_VERSION@_la_LIBADD = $(GST_BASE_LIBS) $(GST_LIBS) $(ORC_LIBS) -lgstvideo-$(GST_API_VERSION)\
- 	$(top_builddir)/gst-libs/gst/base/libgstbadbase-$(GST_API_VERSION).la $(LIBM)
- libgstbadvideo_@GST_API_VERSION@_la_LDFLAGS = $(GST_LIB_LDFLAGS) $(GST_ALL_LDFLAGS) $(GST_LT_LDFLAGS)
+ libgstbadvideo_@GST_API_VERSION@_la_LIBADD = \
+ 	$(top_builddir)/gst-libs/gst/base/libgstbadbase-$(GST_API_VERSION).la \
+ 	$(GST_PLUGINS_BASE_LIBS) -lgstvideo-$(GST_API_VERSION) \
+ 	$(GST_BASE_LIBS) $(GST_LIBS) $(ORC_LIBS) $(LIBM)
  
--noinst_HEADERS = gstcms.h videoconvert.h gstvideoaggregatorpad.h gstvideoaggregator.h
-+noinst_HEADERS = gstcms.h videoconvert.h 
+ libgstbadvideo_@GST_API_VERSION@_la_LDFLAGS = $(GST_LIB_LDFLAGS) $(GST_ALL_LDFLAGS) $(GST_LT_LDFLAGS)
+-
+-noinst_HEADERS = gstvideoaggregatorpad.h gstvideoaggregator.h
 -- 
 1.7.9.5
 
