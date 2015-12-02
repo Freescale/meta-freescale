@@ -20,7 +20,7 @@ INITSCRIPT_PACKAGES = "xserver-xorg-extension-viv-autohdmi"
 INITSCRIPT_NAME = "rc.autohdmi"
 INITSCRIPT_PARAMS = "start 99 2 3 4 5 ."
 
-EXTRA_OEMAKE += "-C ${S} -d -f Makefile prefix=${D}/usr \
+EXTRA_OEMAKE += "-C ${S} -f Makefile prefix=${D}/usr \
                  sysroot=${STAGING_DIR_TARGET} \
                  BUSID_HAS_NUMBER=1 \
                  BUILD_IN_YOCTO=1 \
