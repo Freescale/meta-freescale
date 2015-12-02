@@ -13,8 +13,7 @@ DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv pixman
 LIC_FILES_CHKSUM = "file://COPYING-GPL-2;md5=59530bdf33659b29e73d4adb9f9f6552"
 
 SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
-            file://rc.autohdmi \
-            file://0001-MGS-907-X11-EXA-Warnings-causes-GCC5.2-build-to-fail.patch"
+            file://rc.autohdmi"
 
 INITSCRIPT_PACKAGES = "xserver-xorg-extension-viv-autohdmi"
 INITSCRIPT_NAME = "rc.autohdmi"
