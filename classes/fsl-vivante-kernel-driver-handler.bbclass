@@ -49,17 +49,15 @@ python fsl_vivante_kernel_driver_handler () {
 addhandler fsl_vivante_kernel_driver_handler
 fsl_vivante_kernel_driver_handler[eventmask] = "bb.event.RecipePreFinalise"
 
-do_configure_prepend () {
+do_configure_append () {
     if [ "${MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}" = "1" ]; then
-        fsl_viv_handler_defconfig="${WORKDIR}/defconfig"
-        if [ -e ${B}/.config ]; then
-            fsl_viv_handler_defconfig="${B}/.config"
-        fi
-        sed -i "/CONFIG_MXC_GPU_VIV[ =]/d" $fsl_viv_handler_defconfig
+        config="${B}/.config"
+
+        sed -i "/CONFIG_MXC_GPU_VIV[ =]/d" $config
         if [ "${MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE}" = "1" ]; then
-            echo "# CONFIG_MXC_GPU_VIV is not set" >> $fsl_viv_handler_defconfig
+            echo "# CONFIG_MXC_GPU_VIV is not set" >> $config
         else
-            echo "CONFIG_MXC_GPU_VIV=y" >> $fsl_viv_handler_defconfig
+            echo "CONFIG_MXC_GPU_VIV=y" >> $config
         fi
     fi
 }
