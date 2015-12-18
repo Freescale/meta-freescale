@@ -23,27 +23,27 @@ inherit fsl-eula-unpack
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
-	libgl-mx6 libgl-mx6-dev libgl-mx6-dbg \
-	libgles-mx6 libgles-mx6-dev libgles-mx6-dbg \
-	libgles2-mx6 libgles2-mx6-dev libgles2-mx6-dbg \
+PACKAGES =+ "libclc-mx6 libclc-mx6-dev \
+	libgl-mx6 libgl-mx6-dev \
+	libgles-mx6 libgles-mx6-dev \
+	libgles2-mx6 libgles2-mx6-dev \
 	libgles3-mx6-dev \
-	libglslc-mx6 libglslc-mx6-dev libglslc-mx6-dbg \
-	libopencl-mx6 libopencl-mx6-dev libopencl-mx6-dbg \
-	libopenvg-mx6 libopenvg-mx6-dev libopenvg-mx6-dbg \
-	libvdk-mx6 libvdk-mx6-dev libvdk-mx6-dbg \
-	libegl-mx6 libegl-mx6-dev libegl-mx6-dbg \
-	libgal-mx6 libgal-mx6-dev libgal-mx6-dbg \
-	libvivante-mx6 libvivante-mx6-dev libvivante-mx6-dbg \
+	libglslc-mx6 libglslc-mx6-dev \
+	libopencl-mx6 libopencl-mx6-dev \
+	libopenvg-mx6 libopenvg-mx6-dev \
+	libvdk-mx6 libvdk-mx6-dev \
+	libegl-mx6 libegl-mx6-dev \
+	libgal-mx6 libgal-mx6-dev \
+	libvivante-mx6 libvivante-mx6-dev \
 	libvivante-dri-mx6 \
 	libvsc-mx6 \
-	libwayland-viv-mx6 libwayland-viv-mx6-dev libwayland-viv-mx6-dbg \
-	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev libgc-wayland-protocol-mx6-dbg \
+	libwayland-viv-mx6 libwayland-viv-mx6-dev \
+	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev \
 	libwayland-egl-mx6-dev \
-	imx-gpu-viv-g2d imx-gpu-viv-g2d-dev imx-gpu-viv-g2d-dbg \
+	imx-gpu-viv-g2d imx-gpu-viv-g2d-dev \
 	imx-gpu-viv-tools \
-	imx-gpu-viv-tools-apitrace imx-gpu-viv-tools-apitrace-dbg \
-	imx-gpu-viv-demos imx-gpu-viv-demos-dbg \
+	imx-gpu-viv-tools-apitrace \
+	imx-gpu-viv-demos \
 "
 
 python __anonymous () {
@@ -224,17 +224,14 @@ ALLOW_EMPTY_${PN} = "1"
 
 FILES_libclc-mx6 = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-mx6-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
-FILES_libclc-mx6-dbg = "${libdir}/.debug/libCLC${SOLIBS}"
 
 # libEGL.so is used by some demo apps from Freescale
 INSANE_SKIP_libegl-mx6 += "dev-so"
 FILES_libegl-mx6 = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
 FILES_libegl-mx6-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
-FILES_libegl-mx6-dbg = "${libdir}/.debug/libEGL${SOLIBS}"
 
 FILES_libgal-mx6 = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES_libgal-mx6-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
-FILES_libgal-mx6-dbg = "${libdir}/.debug/libGAL${SOLIBS}"
 RDEPENDS_libgal-mx6 += "kernel-module-imx-gpu-viv"
 INSANE_SKIP_libgal-mx6 += "build-deps"
 
@@ -242,7 +239,6 @@ FILES_libvsc-mx6 = "${libdir}/libVSC${SOLIBS}"
 
 FILES_libgl-mx6 = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-mx6-dev = "${libdir}/libGL${SOLIBSDEV}"
-FILES_libgl-mx6-dbg = "${libdir}/.debug/libGL.${SOLIBS}"
 # Includes GL headers from mesa
 RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 
@@ -250,13 +246,11 @@ RDEPENDS_libgl-mx6-dev += "libgl-mesa-dev"
 INSANE_SKIP_libgles-mx6 += "dev-so"
 FILES_libgles-mx6 = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
 FILES_libgles-mx6-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
-FILES_libgles-mx6-dbg = "${libdir}/.debug/libGLESv1*${SOLIBS} ${libdir}/.debug/libGLES_*${SOLIBS}"
 
 # libEGL needs to open libGLESv2.so
 INSANE_SKIP_libgles2-mx6 += "dev-so"
 FILES_libgles2-mx6 = "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
 FILES_libgles2-mx6-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV} ${libdir}/pkgconfig/glesv2.pc"
-FILES_libgles2-mx6-dbg = "${libdir}/.debug/libGLESv2${SOLIBS}"
 RDEPENDS_libgles2-mx6 = "libglslc-mx6"
 
 FILES_libgles3-mx6-dev = "${includedir}/GLES3"
@@ -266,27 +260,22 @@ RDEPENDS_libgles2-mx6-dev += "libgles3-mx6-dev"
 
 FILES_libglslc-mx6 = "${libdir}/libGLSLC${SOLIBS}"
 FILES_libglslc-mx6-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
-FILES_libglslc-mx6-dbg = "${libdir}/.debug/libGLSLC${SOLIBS}"
 
 FILES_libopencl-mx6 = "${libdir}/libOpenCL${SOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
 FILES_libopencl-mx6-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
-FILES_libopencl-mx6-dbg = "${libdir}/.debug/libOpenCL${SOLIBS}"
 RDEPENDS_libopencl-mx6 = "libclc-mx6"
 
 INSANE_SKIP_libopenvg-mx6 += "dev-so"
 FILES_libopenvg-mx6 = "${libdir}/libOpenVG*${SOLIBS}"
 FILES_libopenvg-mx6-dev = "${includedir}/VG ${libdir}/libOpenVG*${SOLIBSDEV} ${libdir}/pkgconfig/vg.pc"
-FILES_libopenvg-mx6-dbg = "${libdir}/.debug/libOpenVG*${SOLIBS}"
 
 FILES_libvdk-mx6 = "${libdir}/libVDK${SOLIBS}"
 FILES_libvdk-mx6-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
-FILES_libvdk-mx6-dbg = "${libdir}/.debug/libVDK${SOLIBS}"
 
 FILES_libvivante-mx6 = "${libdir}/libVIVANTE${SOLIBS}"
 FILES_libvivante-mx6-dev = "${libdir}/libVIVANTE${SOLIBSDEV}"
-FILES_libvivante-mx6-dbg = "${libdir}/.debug/libVIVANTE${SOLIBS}"
 
 FILES_libvivante-dri-mx6 = "${libdir}/dri/vivante_dri.so"
 RDEPENDS_libvivante-dri-mx6 = "libdrm"
@@ -294,27 +283,22 @@ RDEPENDS_libvivante-dri-mx6 = "libdrm"
 INSANE_SKIP_libwayland-viv-mx6 += "dev-so"
 FILES_libwayland-viv-mx6 =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"
 FILES_libwayland-viv-mx6-dev = "${includedir}/wayland-viv ${libdir})/libwayland-viv${SOLIBSDEV} ${libdir}/pkgconfig/wayland-viv.pc"
-FILES_libwayland-viv-mx6-dbg = "${libdir}/.debug/libwayland-viv${SOLIBS}"
 
 INSANE_SKIP_libgc-wayland-protocol-mx6 += "dev-so"
 FILES_libgc-wayland-protocol-mx6 = "${libdir}/libgc_wayland_protocol${REALSOLIBS} ${libdir}/libgc_wayland_protocol${SOLIBS}"
 FILES_libgc-wayland-protocol-mx6-dev = "${libdir}/libgc_wayland_protocol${SOLIBSDEV} ${libdir}/pkgconfig/gc_wayland_protocol.pc"
-FILES_libgc-wayland-protocol-mx6-dbg = "${libdir}/libgc_wayland_protocol${SOLIBS}"
 
 FILES_libwayland-egl-mx6-dev = "${libdir}/pkgconfig/wayland-egl.pc"
 
 INSANE_SKIP_imx-gpu-viv-g2d += "dev-so"
 FILES_imx-gpu-viv-g2d = "${libdir}/libg2d* "
 FILES_imx-gpu-viv-g2d-dev = "${includedir}/g2d.h"
-FILES_imx-gpu-viv-g2d-dbg = "${libdir}/.debug/libg2d${SOLIBS}"
 
 FILES_imx-gpu-viv-tools = "${bindir}/gmem_info"
 
 FILES_imx-gpu-viv-tools-apitrace = "${bindir} ${libdir}"
-FILES_imx-gpu-viv-tools-apitrace-dbg = "${libdir}/*/*/.debug"
 
 FILES_imx-gpu-viv-demos = "/opt"
-FILES_imx-gpu-viv-demos-dbg = "/opt/viv_samples/*/*/.debug"
 INSANE_SKIP_imx-gpu-viv-demos += "rpaths"
 
 COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl)"
