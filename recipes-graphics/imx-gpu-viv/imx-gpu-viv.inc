@@ -41,7 +41,7 @@ PACKAGES =+ "libclc-mx6 libclc-mx6-dev libclc-mx6-dbg \
 	libgc-wayland-protocol-mx6 libgc-wayland-protocol-mx6-dev libgc-wayland-protocol-mx6-dbg \
 	libwayland-egl-mx6-dev \
 	imx-gpu-viv-g2d imx-gpu-viv-g2d-dev imx-gpu-viv-g2d-dbg \
-	imx-gpu-viv-tools imx-gpu-viv-tools-dbg \
+	imx-gpu-viv-tools \
 	imx-gpu-viv-tools-apitrace imx-gpu-viv-tools-apitrace-dbg \
 	imx-gpu-viv-demos imx-gpu-viv-demos-dbg \
 "
@@ -309,7 +309,6 @@ FILES_imx-gpu-viv-g2d-dev = "${includedir}/g2d.h"
 FILES_imx-gpu-viv-g2d-dbg = "${libdir}/.debug/libg2d${SOLIBS}"
 
 FILES_imx-gpu-viv-tools = "${bindir}/gmem_info"
-FILES_imx-gpu-viv-tools-dbg = "${bindir}/gmem_info"
 
 FILES_imx-gpu-viv-tools-apitrace = "${bindir} ${libdir}"
 FILES_imx-gpu-viv-tools-apitrace-dbg = "${libdir}/*/*/.debug"
