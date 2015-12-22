@@ -1,0 +1,49 @@
+From 1e1e8d74db98faed57a5a62788e1226801661e0e Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@freescale.com>
+Date: Tue, 22 Dec 2015 23:37:49 +0800
+Subject: [PATCH] xfrm_km.c: use in6_* macros from glibc instead of kernel
+
+Both glibc and the kernel have in6_* macros definition. Use the one from glibc.
+Kernel headers will check for previous libc definitions by including
+include/linux/libc-compat.h.
+
+Fix the below build error:
+|  [CC] xfrm_km.c                           (bin:srio_ipsec_offload)
+| In file included from .../tmp/sysroots/b4860qds-64b/usr/include/linux/xfrm.h:4:0,
+|                  from src/srio_ipsec_offload/xfrm_km.c:46:
+| .../usr/include/netinet/in.h:99:5: error: expected identifier before numeric constant
+|      IPPROTO_HOPOPTS = 0,   /* IPv6 Hop-by-Hop options.  */
+|      ^
+| In file included from .../tmp/sysroots/b4860qds-64b/usr/include/netinet/ip.h:24:0,
+|                  from src/srio_ipsec_offload/xfrm_km.c:52:
+| .../tmp/sysroots/b4860qds-64b/usr/include/netinet/in.h:209:8: error: redefinition of 'struct in6_addr'
+|  struct in6_addr
+|         ^
+| In file included from .../tmp/sysroots/b4860qds-64b/usr/include/linux/xfrm.h:4:0,
+|                  from src/srio_ipsec_offload/xfrm_km.c:46:
+| .../tmp/sysroots/b4860qds-64b/usr/include/linux/in6.h:32:8: note: originally defined here
+|  struct in6_addr {
+|         ^
+
+Upstream-Status: Pending
+
+Signed-off-by: Ting Liu <ting.liu@freescale.com>
+---
+ src/srio_ipsec_offload/xfrm_km.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/srio_ipsec_offload/xfrm_km.c b/src/srio_ipsec_offload/xfrm_km.c
+index df23fd1..d69aafa 100644
+--- a/src/srio_ipsec_offload/xfrm_km.c
++++ b/src/srio_ipsec_offload/xfrm_km.c
+@@ -42,6 +42,7 @@
+ #include <linux/types.h>
+ #include <sys/socket.h>
+ #include <sys/ioctl.h>
++#include <netinet/in.h>
+ #include <linux/netlink.h>
+ #include <linux/xfrm.h>
+ #include <sched.h>
+-- 
+1.9.2
+
