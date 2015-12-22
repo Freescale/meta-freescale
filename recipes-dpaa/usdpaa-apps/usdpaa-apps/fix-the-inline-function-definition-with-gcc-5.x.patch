@@ -1,0 +1,80 @@
+From 2b308217d2811e5d1420d7ce6e18f77a992f52e9 Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@freescale.com>
+Date: Tue, 22 Dec 2015 13:16:33 +0800
+Subject: [PATCH] fix the inline function definition with gcc 5.x
+
+There are different semantics for inline functions for gcc-5.x compared to
+previous gcc. Fix the following build error:
+| dpa_classif_demo.c:(.text+0xeae): undefined reference to `crc64_hash_function'
+| simple_crypto.c:(.text+0x5b8e): undefined reference to `get_num_of_buffers'
+| simple_crypto.c:(.text+0x5b9a): undefined reference to `get_test_mode'
+| simple_crypto.c:(.text+0x5baa): undefined reference to `get_num_of_cpus'
+| simple_crypto.c:(.text+0x5bb2): undefined reference to `requires_authentication'
+| simple_crypto.c:(.text+0x5bbe): undefined reference to `get_thread_barrier'
+
+Upstream-Status: Pending
+
+Signed-off-by: Ting Liu <ting.liu@freescale.com>
+---
+ lib/hash_table/fman_crc64_hash_func.h     |  2 +-
+ src/simple_crypto/include/simple_crypto.h | 10 +++++-----
+ src/simple_proto/include/simple_proto.h   | 10 +++++-----
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/lib/hash_table/fman_crc64_hash_func.h b/lib/hash_table/fman_crc64_hash_func.h
+index 5095203..bdcf12b 100644
+--- a/lib/hash_table/fman_crc64_hash_func.h
++++ b/lib/hash_table/fman_crc64_hash_func.h
+@@ -36,7 +36,7 @@
+ #include <fsl_fman.h>
+ 
+ /* Hash function used by the hash table based on FMan CRC64 */
+-inline uint32_t crc64_hash_function(uint8_t *key, uint32_t size)
++static inline uint32_t crc64_hash_function(uint8_t *key, uint32_t size)
+ {
+ 	uint64_t hashval = 0;
+ 	hashval = fman_crc64_init();
+diff --git a/src/simple_crypto/include/simple_crypto.h b/src/simple_crypto/include/simple_crypto.h
+index bae3460..46ea176 100644
+--- a/src/simple_crypto/include/simple_crypto.h
++++ b/src/simple_crypto/include/simple_crypto.h
+@@ -123,10 +123,10 @@ static int validate_test_set(struct test_param crypto_info);
+ void set_crypto_cbs(struct test_cb *crypto_cb, struct test_param crypto_info);
+ inline int get_num_of_iterations(void *stuff);
+ void set_num_of_iterations(void *stuff, unsigned int itr_num);
+-inline int get_num_of_buffers(void *stuff);
+-inline enum test_mode get_test_mode(void *stuff);
+-inline uint8_t requires_authentication(void *);
+-inline long get_num_of_cpus(void);
+-inline pthread_barrier_t *get_thread_barrier(void);
++static inline int get_num_of_buffers(void *stuff);
++static inline enum test_mode get_test_mode(void *stuff);
++static inline uint8_t requires_authentication(void *);
++static inline long get_num_of_cpus(void);
++static inline pthread_barrier_t *get_thread_barrier(void);
+ 
+ #endif /* __SIMPLE_CRYPTO_H */
+diff --git a/src/simple_proto/include/simple_proto.h b/src/simple_proto/include/simple_proto.h
+index d413e70..ce0e842 100644
+--- a/src/simple_proto/include/simple_proto.h
++++ b/src/simple_proto/include/simple_proto.h
+@@ -83,11 +83,11 @@ struct protocol_info *(*register_protocol[])(void) = {
+ static void set_crypto_cbs(struct test_cb *crypto_cb);
+ int get_num_of_iterations(void *params);
+ void set_num_of_iterations(void *params, unsigned int itr_num);
+-inline int get_num_of_buffers(void *params);
+-inline enum test_mode get_test_mode(void *params);
+-inline uint8_t requires_authentication(void *);
+-inline long get_num_of_cpus(void);
+-inline pthread_barrier_t *get_thread_barrier(void);
++static inline int get_num_of_buffers(void *params);
++static inline enum test_mode get_test_mode(void *params);
++static inline uint8_t requires_authentication(void *);
++static inline long get_num_of_cpus(void);
++static inline pthread_barrier_t *get_thread_barrier(void);
+ int register_modules(void);
+ void unregister_modules(void);
+ 
+-- 
+1.9.2
+
