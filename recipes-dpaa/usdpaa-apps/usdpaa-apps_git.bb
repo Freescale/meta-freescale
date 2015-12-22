@@ -16,6 +16,7 @@ RDEPENDS_${PN}_append_b4420qds = " ipc-ust"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa/usdpaa-apps;nobranch=1 \
     file://fix-the-inline-function-definition-with-gcc-5.x.patch \
+    file://xfrm_km.c-use-in6_-macros-from-glibc-instead-of-kern.patch \
 "
 SRCREV = "95744440cf214d73884c44c0dbc296e1e4b4c8f4"
 
