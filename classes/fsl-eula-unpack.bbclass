@@ -6,7 +6,7 @@
 #
 #  SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV};fsl-eula=true"
 
-LIC_FILES_CHKSUM_append = " file://${FSL_EULA_FILE};md5=01ba08a2b77c3a0a9d0ab5d4d83fed64"
+LIC_FILES_CHKSUM_append = " file://${FSL_EULA_FILE};md5=3880bb9c943b135a30fad5e8aabd3ee9"
 LIC_FILES_CHKSUM[vardepsexclude] += "FSL_EULA_FILE"
 
 python fsl_bin_do_unpack() {
