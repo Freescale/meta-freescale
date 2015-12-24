@@ -22,8 +22,9 @@ SRC_URI = " \
     ${FSL_MIRROR}/gst1.0-fsl-plugins-${PV}.tar.gz \
     file://0001-gst1.0-fsl-plugins-fix-appending-data-to-variable.patch \
 "
-SRC_URI[md5sum] = "81e2dbd702ea2cd7904fc54981ea3d19"
-SRC_URI[sha256sum] = "fc287a672e2f040c2697af618b2f6ed319202a6dfbb731cbfb7987b41de2d62b"
+
+SRC_URI[md5sum] = "0669eeea4e37203e2e654a00ded35ba2"
+SRC_URI[sha256sum] = "43c86f88d3c7b1da8d38815eaec297a9b8652e1fb770ff89c26d617f63ea068b"
 
 S = "${WORKDIR}/gst1.0-fsl-plugins-${PV}"
 
@@ -41,19 +42,18 @@ PLATFORM_mx7= "MX7D"
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
                 CPPFLAGS="-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include" \
-                CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR}"
+                CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR} \
+                ${@base_contains('DISTRO_FEATURES', 'wayland', base_contains('DISTRO_FEATURES', 'x11', '--disable-x11', '', d), '', d)}"
 
-PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN}-librecorder-engine"
+PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN}-librecorder-engine ${PN}-libplayengine"
 
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "libfslcodec-aac libfslcodec-mp3 libfslcodec-oggvorbis"
 RDEPENDS_${PN} += "libfslparser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_mx6q = "overlaysink"
-PACKAGECONFIG_mx6dl = "overlaysink"
-PACKAGECONFIG_mx6sx = "overlaysink"
-PACKAGECONFIG_mx6sl = "overlaysink"
+PACKAGECONFIG_mx6 = "overlaysink"
+
 
 # FIXME: Add all features
 # feature from excluded mm packages
@@ -76,5 +76,6 @@ FILES_${PN}-libgplaycore = "${libdir}/libgplaycore-1.0${SOLIBS}"
 FILES_${PN}-libgstfsl = "${libdir}/libgstfsl-1.0${SOLIBS}"
 FILES_${PN}-grecorder = "${bindir}/grecorder-1.0"
 FILES_${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
+FILES_${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
 
 COMPATIBLE_MACHINE = "(mx6|mx6ul|mx7)"
