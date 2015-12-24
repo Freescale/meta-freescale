@@ -1,4 +1,5 @@
-# Copyright (C) 2012-2015 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2016 O.S. Systems Software LTDA.
+# Copyright (C) 2015 Freescale Semiconductor
 
 SUMMARY = "Test programs for IMX BSP"
 DESCRIPTION = "Unit tests for the IMX BSP"
@@ -10,6 +11,9 @@ DEPENDS_mx6sx = "virtual/kernel imx-lib"
 DEPENDS_mx6ul = "virtual/kernel imx-lib"
 DEPENDS_mx7   = "virtual/kernel imx-lib"
 
+DEPENDS_append = " \
+    ${@base_contains('DISTRO_FEATURES', 'x11', 'libx11 libxdamage libxrender libxrandr', '', d)} \
+"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
