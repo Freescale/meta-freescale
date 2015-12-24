@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=01ba08a2b77c3a0a9d0ab5d4d83fed64"
 
 PE = "1"
 
-SRC_URI[md5sum] = "2587d0d011b65021aef469d17ca5c658"
-SRC_URI[sha256sum] = "a266ab317fbd866541eae506d68983bcd361f49d1162a66bb34cb8088ceec88c"
+SRC_URI[md5sum] = "d7bfe9f96169f4637327436a4e848dae"
+SRC_URI[sha256sum] = "f11b91dcdb84bfefd3c88f10a9c1c1bc3420e4bbaadc38b9280fb52f7769eca8"
 
 COMPATIBLE_MACHINE = "(mx6)"
