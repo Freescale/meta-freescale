@@ -1,4 +1,4 @@
-LA_OPT_FSL_OPEN_3RD_PARTY_IP v8 June 2015
+LA_OPT_BASE_LICENSE v10 November 2015
 
 IMPORTANT.  Read the following Freescale Semiconductor Software License
 Agreement ("Agreement") completely.    By selecting the "I Accept" button at
@@ -69,7 +69,7 @@ directly or indirectly from Freescale ("Authorized System") Freescale grants
 you a world-wide, personal, non-transferable, non-exclusive, non-sublicensable,
 license, under Freescale's Intellectual Property Rights:
 
-(a)    to use and reproduce  the Licensed Software only as part of, or
+(a)    to use and reproduce the Licensed Software only as part of, or
 integrated within, Authorized Systems and not on a standalone basis;
 
 (b)   to directly or indirectly manufacture, demonstrate, copy, distribute,
@@ -91,7 +91,7 @@ non-transferable, non-exclusive, non-sublicensable, license, under Freescale's
 Intellectual Property Rights:
 
 (a)    to prepare derivative works of the Licensed Software, only as part of,
-or integrated within, Authorized Systems and not on a standalone basis,;
+or integrated within, Authorized Systems and not on a standalone basis;
 
 (b)     to use, demonstrate, copy, distribute, market and sell the derivative
 works of the Licensed Software in object code (machine readable) only as part
@@ -153,7 +153,7 @@ derivative works; or (iii) redistributable at no charge.
 
 3.8.             You may not publish or distribute information, results or data
 associated with the use of the Licensed Software to anyone other than
-Freescale; however you must advise Freescale of any results obtained including
+Freescale; however, you must advise Freescale of any results obtained including
 any problems or suggested improvements thereof.  Freescale retains the right to
 use such results and related information in any manner it deems appropriate.
 
@@ -353,7 +353,7 @@ confidence perpetually, with respect to Licensed Software in source code form
 (human readable), or for a period of five (5) years from the date of termination
 of this Agreement, with respect to all other parts of the Licensed Software.
 During this period you may not disclose any part of the Licensed Software to
- anyone other than employees who have a need to know of the Licensed Software
+anyone other than employees who have a need to know of the Licensed Software
 and who have executed written agreements obligating them to protect such
 Licensed Software to at least the same degree of care as in this Agreement.
 You agree to use the same degree of care, but no less than a reasonable degree
@@ -455,6 +455,13 @@ Broadcom Corporation
 Your use of Broadcom Corporation software is restricted to Authorized Systems
 that incorporate a compatible integrated circuit device manufactured or sold by
 Broadcom.
+
+Cirque Corporation
+
+Use of Cirque Corporation technology is limited to evaluation, demonstration,
+or certification testing only. Permitted distributions must be similarly
+limited. Further rights, including but not limited to ANY commercial distribution
+rights, must be obtained directly from Cirque Corporation.
 
 Coding Technologies (Dolby Labs)
 
