@@ -1,16 +1,16 @@
-DESCRIPTION = "utility for security boot"
+SUMMARY = "utility for security boot"
 SECTION = "cst"
 LICENSE = "BSD"
 
 # TODO: fix license - this file is not a license
-LIC_FILES_CHKSUM = "file://include/common.h;beginline=8;endline=30;md5=573e4049ebb103e1cb3f63bc8aaf00b2"
+LIC_FILES_CHKSUM = "file://common/include/global.h;endline=26;md5=e31e31c35cc53f6fba7e3c4e9baf4339"
 
 DEPENDS += "openssl"
 
 inherit kernel-arch
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;branch=sdk-v1.9.x"
-SRCREV = "65f79eb1443211826a58ff225e86b251af5f0e12"
+SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;branch=sdk-v2.0.x"
+SRCREV = "d1c6c28ee78f8ed2aa92dbd6c0c00e6defe1242b"
 
 S = "${WORKDIR}/git"
 
