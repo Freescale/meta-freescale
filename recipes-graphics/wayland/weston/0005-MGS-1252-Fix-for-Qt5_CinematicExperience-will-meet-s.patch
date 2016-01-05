@@ -1,0 +1,93 @@
+From 515b1f1c1902ae22914a93982935e2328d2240d2 Mon Sep 17 00:00:00 2001
+From: Yong Gan <b45748@freescale.com>
+Date: Thu, 19 Nov 2015 15:30:24 +0800
+Subject: [PATCH 2/2] MGS-1252: Fix for Qt5_CinematicExperience will meet
+ screen blur
+
+When the Qt5_CinematicExperience is created, window creates with 1920x1080
+and the starting coordiantes more than screen coordinate.
+Ths cause access beyond the surface and system hang on lcd display
+
+Date: Nov 18, 2015
+Signed-off-by: Prabhu <prabhu.sundararaj@freescale.com>
+---
+ src/gal2d-renderer.c | 30 ++++++++++++++++++------------
+ 1 file changed, 18 insertions(+), 12 deletions(-)
+
+diff --git a/src/gal2d-renderer.c b/src/gal2d-renderer.c
+index c68f02c..6e7d640 100644
+--- a/src/gal2d-renderer.c
++++ b/src/gal2d-renderer.c
+@@ -661,12 +661,11 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 	gcsRECT srcRect = {0};
+ 	gcsRECT dstrect = {0};
+ 	gctUINT32 horFactor, verFactor;
+-	int useStretch =1;
+ 	int useFilterBlit = 0;
+ 	gctUINT srcWidth = 0;
+ 	gctUINT srcHeight = 0;
+ 	gctUINT32 srcStride[3];
+-	gceSURF_FORMAT srcFormat;;
++	gceSURF_FORMAT srcFormat;
+ 	gctUINT32 srcPhyAddr[3];
+ 	gctUINT32 dstPhyAddr[3];
+ 	gctUINT dstWidth = 0;
+@@ -702,14 +701,16 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 	srcRect.right = ev->surface->width;
+ 	srcRect.bottom = ev->surface->height;
+ 
+-	if(useFilterBlit)
++	dstsurface = go->nNumBuffers > 1 ?
++					go->renderSurf[go->activebuffer] :
++					go->offscreenSurface;
++	gcmVERIFY_OK(gcoSURF_GetAlignedSize(dstsurface, &dstWidth, &dstHeight, (gctINT *)&dstStrides));
++	gcmVERIFY_OK(gcoSURF_Lock(dstsurface, &dstPhyAddr[0], gcvNULL));
++	gcmVERIFY_OK(gcoSURF_Unlock(dstsurface, gcvNULL));
++
++	if(galIsYUVFormat(srcFormat) == gcvSTATUS_TRUE)
+ 	{
+-		dstsurface = go->nNumBuffers > 1 ?
+-						go->renderSurf[go->activebuffer] :
+-						go->offscreenSurface;
+-		gcmVERIFY_OK(gcoSURF_GetAlignedSize(dstsurface, &dstWidth, &dstHeight, (gctINT *)&dstStrides));
+-		gcmVERIFY_OK(gcoSURF_Lock(dstsurface, &dstPhyAddr[0], gcvNULL));
+-		gcmVERIFY_OK(gcoSURF_Unlock(dstsurface, gcvNULL));
++		useFilterBlit = 1;
+ 	}
+ 	else
+ 	{
+@@ -739,7 +740,7 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 		dstrect.right = bb_rects[0].x2;
+ 		dstrect.bottom = bb_rects[0].y2;
+ 
+-		if(dstrect.right < 0 || dstrect.bottom < 0)
++		if(dstrect.right < 0 || dstrect.bottom < 0 || dstrect.left > dstWidth || dstrect.top > dstHeight)
+ 		{
+ 			break;
+ 		}
+@@ -829,8 +830,7 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 			}
+ 			else
+ 			{
+-				if(useStretch)
+-					gcmVERIFY_OK(galGetStretchFactors(&srcRect, &dstrect, &horFactor, &verFactor));
++				gcmVERIFY_OK(galGetStretchFactors(&srcRect, &dstrect, &horFactor, &verFactor));
+ 
+ 				if(verFactor == 65536 && horFactor == 65536)
+ 				{
+@@ -839,6 +839,12 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 				}
+ 				else
+ 				{
++					dstrect.right = dstrect.right < dstWidth ? dstrect.right : dstWidth;
++					dstrect.bottom = dstrect.bottom < dstHeight ? dstrect.bottom : dstHeight;
++					srcRect.right = srcRect.right < dstWidth ? srcRect.right : dstWidth;
++					srcRect.bottom = srcRect.bottom < dstHeight ? srcRect.bottom : dstHeight;
++
++					gcmVERIFY_OK(galGetStretchFactors(&srcRect, &dstrect, &horFactor, &verFactor));
+ 					/* Program the stretch factors. */
+ 					gcmVERIFY_OK(gco2D_SetStretchFactors(gr->gcoEngine2d, horFactor, verFactor));
+ 
+-- 
+1.9.1
+
