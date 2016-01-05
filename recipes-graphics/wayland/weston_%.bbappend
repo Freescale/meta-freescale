@@ -1,6 +1,9 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI_append_mx6 = " file://0001-MGS-840-Add-i.MX6-support-for-weston.patch"
+SRC_URI_append_mx6 = " \
+    file://0001-MGS-840-Add-i.MX6-support-for-weston.patch \
+    file://0004-MGS-1235-Fix-setenv-and-clear-environments.patch \
+    file://0005-MGS-1252-Fix-for-Qt5_CinematicExperience-will-meet-s.patch"
 
 PACKAGECONFIG_append_mx6q = " cairo-glesv2"
 PACKAGECONFIG_append_mx6dl = " cairo-glesv2"

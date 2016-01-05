@@ -1,0 +1,41 @@
+From d09d0595b472d6bae35e78272fc670d494f6e408 Mon Sep 17 00:00:00 2001
+From: Prabhu <prabhu.sundararaj@freescale.com>
+Date: Tue, 17 Nov 2015 22:00:42 -0600
+Subject: [PATCH] MGS-1235 : Fix setenv and clear environments
+
+When setenv is set with parameter null causing crash.
+Fixed with unsetenv to restore to previous state
+
+Date: Nov 17, 2015
+Signed-off-by: Prabhu <prabhu.sundararaj@freescale.com>
+
+-1235
+---
+ src/compositor-fbdev.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
+index ed25576..c6b8e5a 100644
+--- a/src/compositor-fbdev.c
++++ b/src/compositor-fbdev.c
+@@ -598,7 +598,16 @@ fbdev_output_create(struct fbdev_backend *backend,
+ 			fprintf(stderr, "failed to create window\n");
+ 			 return 0;
+ 		}
+-		setenv("FB_FRAMEBUFFER_0", fbenv, 1);
++		/* restore the previous value*/
++		if(fbenv != NULL)
++		{
++			setenv("FB_FRAMEBUFFER_0", fbenv, 1);
++		}
++		else
++		{
++			unsetenv("FB_FRAMEBUFFER_0");
++		}
++
+ 
+ 		if (gal2d_renderer->output_create(&output->base,
+ 					output->display,
+-- 
+2.5.1
+
