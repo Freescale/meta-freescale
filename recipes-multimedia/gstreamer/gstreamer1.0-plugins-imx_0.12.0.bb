@@ -2,17 +2,21 @@ DESCRIPTION = "GStreamer 1.0 plugins for i.MX platforms"
 LICENSE = "LGPLv2+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
 SECTION = "multimedia"
-DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base imx-gpu-viv libfslcodec libfslvpuwrap virtual/kernel virtual/egl \
-           virtual/libgles2 ${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', '', d)}"
+# gstreamer1.0-plugins-bad is in DEPENDS because imxv4l2videosrc requires
+# the GstPhotography headers and libraries
+DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad imx-gpu-viv \
+           libfslcodec libimxvpuapi virtual/kernel virtual/egl virtual/libgles2 \
+           ${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', '', d)}"
 # add the audioparsers and the videoparsersbad plugins as RDEPENDS ; audioparsers
 # for the uniaudio decoder, videoparsersbad for the VPU video decoder
-# the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good and -bad recipes are built
-RDEPENDS_gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
+# the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
+# build (it is not a compile-time dependency however, hence RDEPENDS and not DEPENDS)
+RDEPENDS_gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-good"
 RDEPENDS_gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
 RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 SRCBRANCH ?= "master"
-SRCREV = "6cbb90f51b12588bb4cb146cb229bf3bad39afc4"
+SRCREV = "f8ad953c458be6a89f474a948b6401664a6a1745"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
