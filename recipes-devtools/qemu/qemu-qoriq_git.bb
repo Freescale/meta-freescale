@@ -17,8 +17,8 @@ PV = "2.2.0+${SRCPV}"
 # to qemu 2.3:
 PACKAGECONFIG[glx] = "--enable-glx,--disable-glx,mesa"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;branch=master"
-SRCREV = "00ac004143e9fe46944a1885b04268fcd3a95a3a"
+SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;branch=sdk-v1.9.x"
+SRCREV = "8362a298c4feef33c84d7db2d111af18bd29ef86"
 
 S = "${WORKDIR}/git"
 
