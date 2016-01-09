@@ -29,6 +29,8 @@ do_configure_prepend() {
     for deltacfg in ${DELTA_KERNEL_DEFCONFIG}; do
         if [ -f "${deltacfg}" ]; then
             ${S}/scripts/kconfig/merge_config.sh -m .config ${deltacfg}
+        elif [ -f "${WORKDIR}/${deltacfg}" ]; then
+            ${S}/scripts/kconfig/merge_config.sh -m .config ${WORKDIR}/${deltacfg}
         elif [ -f "${S}/arch/${ARCH}/configs/${deltacfg}" ]; then
             ${S}/scripts/kconfig/merge_config.sh -m .config \
                 ${S}/arch/powerpc/configs/${deltacfg}
