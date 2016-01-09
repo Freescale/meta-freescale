@@ -92,26 +92,26 @@ do_compile_append_qoriq-ppc() {
 }
 
 do_compile_append_qoriq-arm () {
-unset i j                                                                                                                       
+    unset i j
     if [ "x${UBOOT_CONFIG}" != "x" ]; then
-         for config in ${UBOOT_MACHINE}; do
-             i=`expr $i + 1`;
-             for type in ${UBOOT_CONFIG}; do
-                 j=`expr $j + 1`;
-                 if [ $j -eq $i ]; then
-                     case "${config}" in
-                         *nand* | *sdcard*)
-                             cp ${config}/u-boot-with-spl-pbl.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX};;
-                         *spi*) 
-                             tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${config}/u-boot-dtb.bin ${config}/u-boot.swap.bin 8
-                             cp ${config}/u-boot.swap.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX};;
-                     esac
-                 fi
-             done
-             unset j
-         done
-         unset i
-     fi
+        for config in ${UBOOT_MACHINE}; do
+            i=`expr $i + 1`;
+            for type in ${UBOOT_CONFIG}; do
+                j=`expr $j + 1`;
+                if [ $j -eq $i ]; then
+                    case "${config}" in
+                        *nand* | *sdcard*)
+                            cp ${config}/u-boot-with-spl-pbl.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX};;
+                        *spi*) 
+                            tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${config}/u-boot-dtb.bin ${config}/u-boot.swap.bin 8
+                            cp ${config}/u-boot.swap.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX};;
+                    esac
+                fi
+            done
+            unset j
+        done
+        unset i
+    fi
 }
 
 
