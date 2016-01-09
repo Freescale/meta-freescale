@@ -24,9 +24,9 @@ do_configure_prepend () {
 }
 
 do_install(){
-    install -d ${D}/${libexecdir} 
+    install -d ${D}/${libexecdir}
     install -d ${D}/lib/modules/${KERNEL_VERSION}/asf
-    cp -rf ${S}/bin/full ${D}/lib/modules/${KERNEL_VERSION}/asf 
+    cp -rf ${S}/bin/full ${D}/lib/modules/${KERNEL_VERSION}/asf
     cp -rf ${S}/bin/min  ${D}/lib/modules/${KERNEL_VERSION}/asf
     cp -rf ${S}/../scripts ${D}/${libexecdir}/
     find ${D}/lib -depth -type d -exec rmdir --ignore-fail-on-non-empty {} \;
