@@ -150,10 +150,8 @@ do_deploy_append_qoriq-ppc() {
         if [ -f ${S}/${board}/${UBOOT_TARGET}.bin ]; then
             mkdir -p ${DEPLOYDIR}
             install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${board}-${PV}-${PR}.bin
-
-            cd ${DEPLOYDIR}
-            rm -f ${UBOOT_TARGET}-${board}.bin
-            ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${UBOOT_TARGET}-${board}.bin
+            rm -f ${DEPLOYDIR}/${UBOOT_TARGET}-${board}.bin
+            ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${board}.bin
         fi
     done
 }
