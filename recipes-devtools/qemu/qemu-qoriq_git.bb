@@ -2,6 +2,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 require recipes-devtools/qemu/qemu.inc
 
+PROVIDES += "qemu"
+
 DESCRIPTION = "This recipe requires poky's qemu.inc which includes the FSL \
 fixes of QorIQ ARM and QorIQ PPC targets, the recipe assumes that glx enable \
 config option is changed to --enable-opengl. The recipe only works for FSL \
