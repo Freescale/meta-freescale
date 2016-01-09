@@ -27,4 +27,4 @@ do_install(){
 FILES_${PN} += "/usr/driver/ceetm ${libdir}/tc"
 INHIBIT_PACKAGE_STRIP = "1"
 
-COMPATIBLE_MACHINE = "(e6500-64b|t1040rdb|t1040rdb-64b|t1042rdb|t1042rdb-64b)"
+COMPATIBLE_MACHINE = "(e6500-64b|t1040|t1042)"
