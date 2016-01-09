@@ -9,6 +9,11 @@ inherit module qoriq_build_64bit_kernel
 
 S = "${WORKDIR}/git"
 
+SOC ?= ""
+SOC_b4 = "B4860"
+SOC_bsc9131 = "B913x"
+SOC_bsc9132 = "B913x"
+
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 do_configure_prepend() {
     sed -i 's,$(KERNEL_DIR)/.config,$(KBUILD_OUTPUT)/.config,' ${S}/kernel/Makefile
@@ -16,10 +21,6 @@ do_configure_prepend() {
 
 do_compile_prepend () {
     cd ${S}/kernel
-    case ${MACHINE} in
-        bsc9132qds|bsc9131rdb) SOC=B913x;;
-        b4860qds|b4420qds) SOC=B4860;;
-    esac
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
