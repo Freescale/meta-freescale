@@ -22,13 +22,12 @@ DEPENDS_append_qoriq-ppc = " boot-format-native"
 
 inherit deploy
 
-SRCBRANCH = "sdk-v1.8.x"
+SRCBRANCH = "sdk-v1.9.x"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
-    file://0001-u-boot-mpc85xx-u-boot-.lds-remove-_GLOBAL_OFFSET_TAB.patch \
     file://gcc5.patch \
     file://add-fgnu89-inline-option-for-gcc5.patch \
 "
-SRCREV = "6ba8eedbcdc4b063f59a63e6288b938af739e8ad"
+SRCREV = "eb3d4fc5759729d7af71ac31ebf6a7e8d0e79da3"
 
 python () {
     if d.getVar("TCMODE", True) == "external-fsl":
