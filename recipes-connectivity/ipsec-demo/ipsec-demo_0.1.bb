@@ -19,5 +19,4 @@ do_install(){
 }
 
 FILES_${PN} = "${datadir}/*"
-
-COMPATIBLE_MACHINE = "(qoriq-ppc)"
+COMPATIBLE_MACHINE = "(qoriq)"
