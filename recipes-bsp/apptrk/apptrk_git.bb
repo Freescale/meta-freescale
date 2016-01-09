@@ -7,11 +7,11 @@ DEPENDS = "elfutils"
 
 inherit kernel-arch
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/apptrk.git;nobranch=1 \
+SRC_URI = "git://git.freescale.com/ppc/sdk/apptrk.git;branch=sdk-v1.9.x \
     file://apptrk-install-create-all-components-of-DEST.patch \
     file://no-strip.patch \
 "
-SRCREV = "cbed10997c5e2a4aaa004fb0e1efec858bf1bbe1"
+SRCREV = "4216af328452ed25a557759715a2087986a5a4bd"
 
 S = "${WORKDIR}/git"
 
