@@ -5,8 +5,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a504ab5a8ff235e67c7301214749346c"
 
 PR = "r2"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;nobranch=1"
-SRCREV = "b9e52be1f62a5fcc912d44875bf155ad55650d68"
+SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;branch=sdk-v1.9.x"
+SRCREV = "a079d2c844edd85dff85a317a63198e7988bcd09"
 
 DEPENDS = "libxml2 fmlib tclap"
 
