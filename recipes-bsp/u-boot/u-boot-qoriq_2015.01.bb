@@ -57,14 +57,7 @@ S = "${WORKDIR}/git"
 EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
 
 do_compile_append_qoriq-ppc() {
-    python ./tools/genboardscfg.py
-
     for board in ${UBOOT_MACHINE}; do
-        if ! grep -wq $board ${S}/boards.cfg;then
-            echo "WARNING: $board not supported in boards.cfg"
-            continue
-        fi
-
         case "${board}" in
             *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
             *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
@@ -124,10 +117,6 @@ unset i j
 
 do_install_append_qoriq-ppc() {
     for board in ${UBOOT_MACHINE}; do
-        if ! grep -wq $board ${S}/boards.cfg;then
-            continue
-        fi
-
         case "${board}" in
             *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
             *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
@@ -150,10 +139,6 @@ do_deploy_append_qoriq-ppc() {
     fi
 
     for board in ${UBOOT_MACHINES}; do
-        if ! grep -wq $board ${S}/boards.cfg;then
-            continue
-        fi
-
         case "${board}" in
             *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
             *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
