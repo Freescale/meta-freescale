@@ -47,6 +47,10 @@ file://0017-remove-dead-code.patch \
 file://0018-fix-compat-warnings.patch \
 file://0019-fix-size_t-print-format.patch \
 file://0020-fix-uninitialized-variable-compiler-warning.patch \
+file://0021-check-return-codes-for-copy-to-from-user-functions.patch \
+file://0022-fix-double-free-pkc-req-on-error.patch \
+file://0023-remove-MAY_BACKLOG-flag-from-requests.patch \
+file://0024-fix-COMPAT_CIOCKEY-ioctl-command-number.patch \
 "
 
 # NOTE: remove this patch and all traces of DISTRO_FEATURE c29x_pkc
