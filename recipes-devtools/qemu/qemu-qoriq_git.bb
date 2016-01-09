@@ -16,6 +16,12 @@ PV = "2.2.0+${SRCPV}"
 # restore it, but we should remove the following lines when upgrading
 # to qemu 2.3:
 PACKAGECONFIG[glx] = "--enable-glx,--disable-glx,mesa"
+# remove not supported PACKAGECONFIG by this v2.2.0 based recipe
+PACKAGECONFIG[gnutls] = ""
+PACKAGECONFIG[gcrypt] = ""
+PACKAGECONFIG[nettle] = ""
+PACKAGECONFIG[nss] = ""
+RDEPENDS_${PN}_append = " gnutls"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;branch=sdk-v1.9.x"
 SRCREV = "8362a298c4feef33c84d7db2d111af18bd29ef86"
