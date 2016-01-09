@@ -15,10 +15,6 @@ SOC_bsc9131 = "B913x"
 SOC_bsc9132 = "B913x"
 
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
-do_configure_prepend() {
-    sed -i 's,$(KERNEL_DIR)/.config,$(KBUILD_OUTPUT)/.config,' ${S}/kernel/Makefile
-}
-
 do_compile_prepend () {
     cd ${S}/kernel
 }
