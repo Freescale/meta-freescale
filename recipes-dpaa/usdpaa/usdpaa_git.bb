@@ -9,8 +9,8 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 DEPENDS += "flib"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git;nobranch=1"
-SRCREV = "3b0717952400577608a548fc4c4858a9efd1bd96"
+SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git;branch=sdk-v1.9.x"
+SRCREV = "b73546dc923d9f3df92af08c2ebaf36d83ab96ea"
 
 S = "${WORKDIR}/git"
 
