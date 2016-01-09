@@ -10,8 +10,8 @@ RDEPENDS_${PN} += "cryptodev-module bc"
 # if it is fixed.
 REQUIRED_DISTRO_FEATURES = "c29x_pkc"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/pkc-host.git;nobranch=1"
-SRCREV = "564f535d596f43eb2901a7ff77bbe529a118c16e"
+SRC_URI = "git://git.freescale.com/ppc/sdk/pkc-host.git;branch=sdk-v1.9.x"
+SRCREV = "26df0a3641abd77a3fd43c29b71115f8cc31d514"
 
 S = "${WORKDIR}/git"
 
