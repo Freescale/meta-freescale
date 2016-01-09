@@ -10,8 +10,8 @@ inherit deploy
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/pkc-firmware.git;nobranch=1"
-SRCREV = "b891873c1eea7a7d53f9472ea601712897cb17b7"
+SRC_URI = "git://git.freescale.com/ppc/sdk/pkc-firmware.git;branch=sdk-v1.9.x"
+SRCREV = "32804a0d5d763b4ccc72dcd97969dc5adc14c2f9"
 
 S = "${WORKDIR}/git"
 
@@ -38,4 +38,4 @@ addtask deploy after do_install
 
 FILES_{PN} += "/etc/crypto/pkc-firmware.bin"
 COMPATIBLE_MACHINE = "(c293pcie)"
-
+CLEANBROKEN = "1"
