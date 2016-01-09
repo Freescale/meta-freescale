@@ -71,7 +71,7 @@ do_install_append() {
     if [ -d ${D}${localstatedir}/run ]; then rmdir ${D}${localstatedir}/run; fi
 }
 
-FILES_${PN} += "/usr/share/qemu/"
+FILES_${PN} += "${datadir}/qemu/"
 INSANE_SKIP_${PN} += "dev-deps"
 
 # FIXME: Avoid WARNING due missing patch for native/nativesdk
