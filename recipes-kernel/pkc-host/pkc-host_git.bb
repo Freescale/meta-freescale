@@ -18,13 +18,12 @@ S = "${WORKDIR}/git"
 EXTRA_OEMAKE='KERNEL_DIR="${STAGING_KERNEL_DIR}" PREFIX="${D}"'
 
 do_install() {
-        oe_runmake INSTALL_MOD_PATH="${D}" modules_install
-        install -d ${D}/etc/crypto
-        install -d ${D}/${bindir}
-        cp ${S}/crypto.cfg ${D}/etc/crypto
-        cp ${S}/images/pkc-firmware.bin ${D}/etc/crypto
-        cp ${S}/apps/cli/cli ${D}/${bindir}
-        cp ${S}/perf/c29x_driver_perf_profile.sh ${D}/${bindir}
+    oe_runmake INSTALL_MOD_PATH="${D}" modules_install
+    install -d ${D}/etc/crypto
+    install -d ${D}/${bindir}
+    cp ${S}/crypto.cfg ${D}/etc/crypto
+    cp ${S}/images/pkc-firmware.bin ${D}/etc/crypto
+    cp ${S}/perf/c29x_driver_perf_profile.sh ${D}/${bindir}
 }
 
 
