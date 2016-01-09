@@ -14,13 +14,13 @@ export KERNEL_PATH = "${STAGING_KERNEL_DIR}"
 
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 do_install(){
-	mkdir -p ${D}/usr/driver/ceetm
-	mkdir -p ${D}/${libdir}/tc
-	cp ${S}/bin/ceetm.ko ${D}/usr/driver/ceetm
-	cp ${S}/bin/q_ceetm.so ${D}/${libdir}/tc/.
+    install -d ${D}/lib/modules/${KERNEL_VERSION}/extra
+    mkdir -p ${D}/${libdir}/tc
+    install -m 644 ${S}/bin/ceetm.ko ${D}/lib/modules/${KERNEL_VERSION}/extra/
+    cp ${S}/bin/q_ceetm.so ${D}/${libdir}/tc/
 }
 
-FILES_${PN} += "/usr/driver/ceetm ${libdir}/tc"
+FILES_${PN} += "${libdir}/tc"
 INHIBIT_PACKAGE_STRIP = "1"
 
 COMPATIBLE_MACHINE = "(e6500-64b|t1040|t1042)"
