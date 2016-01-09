@@ -23,8 +23,7 @@ DELTA_KERNEL_DEFCONFIG ?= ""
 
 do_configure_prepend() {
     # copy desired defconfig so we pick it up for the real kernel_do_configure
-    cp ${KERNEL_DEFCONFIG} ${B}/.config
-    cp ${KERNEL_DEFCONFIG} ${WORKDIR}/defconfig
+    cp ${KERNEL_DEFCONFIG} .config
     # add config fragments
     for deltacfg in ${DELTA_KERNEL_DEFCONFIG}; do
         if [ -f "${deltacfg}" ]; then
@@ -34,7 +33,7 @@ do_configure_prepend() {
                 ${S}/arch/powerpc/configs/${deltacfg}
         fi
     done
-
+    cp .config ${WORKDIR}/defconfig
 }
 
 do_install_append_qoriq-arm() {
