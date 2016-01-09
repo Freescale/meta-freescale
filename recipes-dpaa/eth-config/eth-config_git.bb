@@ -15,3 +15,5 @@ EXTRA_OEMAKE = "D=${D}"
 do_install() {
     oe_runmake install
 }
+
+CLEANBROKEN = "1"
