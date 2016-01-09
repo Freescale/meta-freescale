@@ -15,18 +15,17 @@ SRCREV = "27156a6621c8f6d7f98210b1ca5cd97bde926875"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = 'MACHINE=${MACHINE}'
+EXTRA_OEMAKE = 'ARCH=${TARGET_ARCH} MACHINE=${MACHINE}'
 
 export LIBEDIT_CFLAGS = "`pkg-config --cflags libedit`"
 export LIBEDIT_LDFLAGS = "`pkg-config --libs --static libedit`"
 
 do_compile () {
-	export ARCH=${TARGET_ARCH}
 	oe_runmake
 }
 
 do_install () {
-	oe_runmake ARCH=${TARGET_ARCH} install DESTDIR=${D}
+	oe_runmake install DESTDIR=${D}
 }
 
 COMPATIBLE_MACHINE = "(p4080ds|t4240qds|c293pcie)"
