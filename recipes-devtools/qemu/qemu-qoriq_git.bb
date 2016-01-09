@@ -1,3 +1,5 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
 require recipes-devtools/qemu/qemu.inc
 
 DESCRIPTION = "This recipe requires poky's qemu.inc which includes the FSL \
@@ -25,6 +27,12 @@ RDEPENDS_${PN}_append = " gnutls"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;branch=sdk-v1.9.x"
 SRCREV = "8362a298c4feef33c84d7db2d111af18bd29ef86"
+
+# add ptest patches
+SRC_URI_append = "\
+    file://add-ptest-in-makefile.patch \
+    file://run-ptest \
+"
 
 S = "${WORKDIR}/git"
 
