@@ -8,16 +8,15 @@ PR = "r1"
 DEPENDS += "virtual/kernel"
 DEPENDS_virtclass-native = ""
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;branch=sdk-v1.9.x"
-SRCREV = "d697de9b0c867edcdb8851dc7320809cd7add67b"
+SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;branch=sdk-v2.0.x"
+SRCREV = "43fa98fdbf0c697167e415c3f060896d5b482791"
 
 S = "${WORKDIR}/git"
 
 TARGET_ARCH_FMLIB = "${DEFAULTTUNE}"
 TARGET_ARCH_FMLIB_e5500 = "ppc32e5500"
 TARGET_ARCH_FMLIB_e6500 = "ppc32e6500"
-COMPATIBLE_HOST_qoriq-ppc = ".*"
-COMPATIBLE_HOST ?= "(none)"
+TARGET_ARCH_FMLIB_ls1043ardb = "arm64a53"
 
 EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
         CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
@@ -43,3 +42,5 @@ do_install_virtclass-native () {
 ALLOW_EMPTY_${PN} = "1"
 
 BBCLASSEXTEND = "native"
+COMPATIBLE_HOST_qoriq = ".*"
+COMPATIBLE_HOST ?= "(none)"
