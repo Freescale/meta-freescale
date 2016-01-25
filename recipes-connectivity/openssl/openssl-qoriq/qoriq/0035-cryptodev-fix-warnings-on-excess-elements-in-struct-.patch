@@ -1,0 +1,110 @@
+From 82612e3c4161ed6e10379841b953a0f56e557be4 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 16:21:46 +0200
+Subject: [PATCH 35/48] cryptodev: fix warnings on excess elements in struct
+ initializer
+
+The initialization data for these structures had either missing or excess
+values and did not match the structure definitions.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/dh/dh.h                |  6 +++---
+ crypto/dsa/dsa.h              | 11 ++++++-----
+ crypto/engine/eng_cryptodev.c | 11 ++++++-----
+ 3 files changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/crypto/dh/dh.h b/crypto/dh/dh.h
+index 31dd762..11c6c7d 100644
+--- a/crypto/dh/dh.h
++++ b/crypto/dh/dh.h
+@@ -123,9 +123,9 @@ struct dh_method {
+     int (*bn_mod_exp) (const DH *dh, BIGNUM *r, const BIGNUM *a,
+                        const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx,
+                        BN_MONT_CTX *m_ctx);
+-	int (*compute_key_async)(unsigned char *key,const BIGNUM *pub_key,DH *dh,
+-				struct pkc_cookie_s *cookie);
+-	int (*generate_key_async)(DH *dh, struct pkc_cookie_s *cookie);
++    int (*compute_key_async) (unsigned char *key, const BIGNUM *pub_key,
++                              DH *dh, struct pkc_cookie_s * cookie);
++    int (*generate_key_async) (DH *dh, struct pkc_cookie_s * cookie);
+     int (*init) (DH *dh);
+     int (*finish) (DH *dh);
+     int flags;
+diff --git a/crypto/dsa/dsa.h b/crypto/dsa/dsa.h
+index 8584731..ab52add 100644
+--- a/crypto/dsa/dsa.h
++++ b/crypto/dsa/dsa.h
+@@ -139,10 +139,11 @@ struct dsa_method {
+     /* Can be null */
+     int (*bn_mod_exp) (DSA *dsa, BIGNUM *r, BIGNUM *a, const BIGNUM *p,
+                        const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
+-	int (*dsa_do_sign_async)(const unsigned char *dgst, int dlen, DSA *dsa,
+-				DSA_SIG *sig, struct pkc_cookie_s *cookie);
+-	int (*dsa_do_verify_async)(const unsigned char *dgst, int dgst_len,
+-			     DSA_SIG *sig, DSA *dsa, struct pkc_cookie_s *cookie);
++    int (*dsa_do_sign_async) (const unsigned char *dgst, int dlen, DSA *dsa,
++                              DSA_SIG *sig, struct pkc_cookie_s * cookie);
++    int (*dsa_do_verify_async) (const unsigned char *dgst, int dgst_len,
++                                DSA_SIG *sig, DSA *dsa,
++                                struct pkc_cookie_s * cookie);
+     int (*init) (DSA *dsa);
+     int (*finish) (DSA *dsa);
+     int flags;
+@@ -154,7 +155,7 @@ struct dsa_method {
+                          BN_GENCB *cb);
+     /* If this is non-NULL, it is used to generate DSA keys */
+     int (*dsa_keygen) (DSA *dsa);
+-	int (*dsa_keygen_async)(DSA *dsa, struct pkc_cookie_s *cookie);
++    int (*dsa_keygen_async) (DSA *dsa, struct pkc_cookie_s * cookie);
+ };
+ 
+ struct dsa_st {
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index cec6938..407ea62 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -2892,11 +2892,13 @@ static DSA_METHOD cryptodev_dsa = {
+     NULL,
+     NULL,
+     NULL,
+-    NULL,
+     NULL,                       /* init */
+     NULL,                       /* finish */
+     0,                          /* flags */
+-    NULL                        /* app_data */
++    NULL,                       /* app_data */
++    NULL,
++    NULL,
++    NULL
+ };
+ 
+ static ECDSA_METHOD cryptodev_ecdsa = {
+@@ -2906,7 +2908,6 @@ static ECDSA_METHOD cryptodev_ecdsa = {
+     NULL,
+     NULL,
+     NULL,
+-    NULL,
+     0,                          /* flags */
+     NULL                        /* app_data */
+ };
+@@ -4483,14 +4484,14 @@ static DH_METHOD cryptodev_dh = {
+     NULL,
+     NULL,
+     0,                          /* flags */
+-    NULL                        /* app_data */
++    NULL,                       /* app_data */
++    NULL,                       /* generate_params */
+ };
+ 
+ static ECDH_METHOD cryptodev_ecdh = {
+     "cryptodev ECDH method",
+     NULL,                       /* cryptodev_ecdh_compute_key */
+     NULL,
+-    NULL,
+     0,                          /* flags */
+     NULL                        /* app_data */
+ };
+-- 
+2.7.0
+

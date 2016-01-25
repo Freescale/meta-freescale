@@ -1,0 +1,26 @@
+From 7012cf33a00618749319b1903f48ee3a35f5887b Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 16:12:54 +0200
+Subject: [PATCH 34/48] cryptodev: fix incorrect function signature
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 5a68c76..cec6938 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -3148,7 +3148,7 @@ static ECDSA_SIG *cryptodev_ecdsa_do_sign(const unsigned char *dgst,
+ }
+ 
+ static int cryptodev_ecdsa_verify(const unsigned char *dgst, int dgst_len,
+-                                  ECDSA_SIG *sig, EC_KEY *eckey)
++                                  const ECDSA_SIG *sig, EC_KEY *eckey)
+ {
+     BIGNUM *m = NULL, *p = NULL, *a = NULL, *b = NULL;
+     BIGNUM *x = NULL, *y = NULL, *w_x = NULL, *w_y = NULL;
+-- 
+2.7.0
+

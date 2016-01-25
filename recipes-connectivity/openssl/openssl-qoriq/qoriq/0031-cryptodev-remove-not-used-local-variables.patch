@@ -1,0 +1,46 @@
+From 8cd09ffdfd7d9c25605401f1c0947b1b4acc6e57 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 16:00:22 +0200
+Subject: [PATCH 31/48] cryptodev: remove not used local variables
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 30713e5..2734500 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -1634,7 +1634,6 @@ static int cryptodev_digest_final(EVP_MD_CTX *ctx, unsigned char *md)
+ static int cryptodev_digest_cleanup(EVP_MD_CTX *ctx)
+ {
+     struct dev_crypto_state *state = ctx->md_data;
+-    struct session_op *sess = &state->d_sess;
+ 
+     if (state == NULL) {
+         return 0;
+@@ -3939,7 +3938,6 @@ static int cryptodev_dh_keygen(DH *dh)
+     int ret = 1, q_len = 0;
+     unsigned char *q = NULL, *g = NULL, *s = NULL, *w = NULL;
+     BIGNUM *pub_key = NULL, *priv_key = NULL;
+-    int generate_new_key = 1;
+ 
+     if (dh->priv_key)
+         priv_key = dh->priv_key;
+@@ -4061,11 +4059,9 @@ cryptodev_dh_compute_key_async(unsigned char *key, const BIGNUM *pub_key,
+ {
+     struct crypt_kop *kop = malloc(sizeof(struct crypt_kop));
+     int ret = 1;
+-    int fd, p_len;
++    int p_len;
+     unsigned char *padded_pub_key = NULL, *p = NULL;
+ 
+-    fd = *(int *)cookie->eng_handle;
+-
+     memset(kop, 0, sizeof(struct crypt_kop));
+     kop->crk_op = CRK_DH_COMPUTE_KEY;
+     /* inputs: dh->priv_key pub_key dh->p key */
+-- 
+2.7.0
+

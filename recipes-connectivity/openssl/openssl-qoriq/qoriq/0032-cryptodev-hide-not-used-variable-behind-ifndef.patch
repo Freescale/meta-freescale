@@ -1,0 +1,27 @@
+From 335c80f847eacc573e10ba925b6a645963b16197 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 17:22:49 +0200
+Subject: [PATCH 32/48] cryptodev: hide not used variable behind #ifndef
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 2734500..5a68c76 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -412,7 +412,9 @@ static int open_dev_crypto(void)
+ static int get_dev_crypto(void)
+ {
+     static int fd = -1;
++# ifndef CRIOGET_NOT_NEEDED
+     int retfd;
++# endif
+ 
+     if (fd == -1)
+         fd = open_dev_crypto();
+-- 
+2.7.0
+

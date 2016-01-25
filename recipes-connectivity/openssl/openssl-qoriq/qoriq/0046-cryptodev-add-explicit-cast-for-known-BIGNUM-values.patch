@@ -1,0 +1,26 @@
+From b27823ac9f460c96a72d9003e2e134c1288ac85f Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 9 Feb 2016 12:13:59 +0200
+Subject: [PATCH 46/48] cryptodev: add explicit cast for known BIGNUM values
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 3024a68..539be62 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -4014,7 +4014,7 @@ static int cryptodev_dh_keygen(DH *dh)
+     }
+ 
+     /* pub_key is or prime length while priv key is of length of order */
+-    if (cryptodev_asym(&kop, q_len, w, q_len, s))
++    if (cryptodev_asym(&kop, q_len, (BIGNUM *)w, q_len, (BIGNUM *)s))
+         goto sw_try;
+ 
+     dh->pub_key = BN_bin2bn(w, q_len, pub_key);
+-- 
+2.7.0
+

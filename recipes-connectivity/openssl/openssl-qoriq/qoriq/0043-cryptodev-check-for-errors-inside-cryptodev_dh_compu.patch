@@ -1,0 +1,52 @@
+From c8a5f714d35c3bd63d2511ad69e0661a7d1d5dcd Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 9 Feb 2016 11:53:22 +0200
+Subject: [PATCH 43/48] cryptodev: check for errors inside
+ cryptodev_dh_compute_key
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 8e84972..55b2047 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -4043,11 +4043,15 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+     memset(&kop, 0, sizeof kop);
+     kop.crk_op = CRK_DH_COMPUTE_KEY;
+     /* inputs: dh->priv_key pub_key dh->p key */
+-    spcf_bn2bin(dh->p, &p, &p_len);
+-    spcf_bn2bin_ex(pub_key, &padded_pub_key, &p_len);
+-    if (bn2crparam(dh->priv_key, &kop.crk_param[0]))
++    if (spcf_bn2bin(dh->p, &p, &p_len) != 0) {
+         goto sw_try;
+-
++    }
++    if (spcf_bn2bin_ex(pub_key, &padded_pub_key, &p_len) != 0) {
++        goto sw_try;
++    }
++    if (bn2crparam(dh->priv_key, &kop.crk_param[0]) != 0) {
++        goto sw_try;
++    }
+     kop.crk_param[1].crp_p = padded_pub_key;
+     kop.crk_param[1].crp_nbits = p_len * 8;
+     kop.crk_param[2].crp_p = p;
+@@ -4074,10 +4078,13 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+     kop.crk_param[3].crp_p = NULL;
+     zapparams(&kop);
+     return (dhret);
++
+  sw_try:
+     {
+         const DH_METHOD *meth = DH_OpenSSL();
+ 
++        free(p);
++        free(padded_pub_key);
+         dhret = (meth->compute_key) (key, pub_key, dh);
+     }
+     return (dhret);
+-- 
+2.7.0
+

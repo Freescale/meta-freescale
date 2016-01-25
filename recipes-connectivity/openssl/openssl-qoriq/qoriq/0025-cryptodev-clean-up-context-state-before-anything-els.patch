@@ -1,0 +1,34 @@
+From 087ae4ecbaf9cd49a2fcae9cb09c491beabc4c88 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 15 Dec 2015 12:10:37 +0200
+Subject: [PATCH 25/48] cryptodev: clean-up context state before anything else
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index fcfd232..16e6fd9 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -1559,14 +1559,14 @@ static int cryptodev_digest_init(EVP_MD_CTX *ctx)
+     struct session_op *sess = &state->d_sess;
+     int digest;
+ 
++    memset(state, 0, sizeof(struct dev_crypto_state));
++
+     digest = digest_nid_to_cryptodev(ctx->digest->type);
+     if (digest == NID_undef) {
+         printf("cryptodev_digest_init: Can't get digest \n");
+         return (0);
+     }
+ 
+-    memset(state, 0, sizeof(struct dev_crypto_state));
+-
+     state->d_fd = get_dev_crypto();
+     if (state->d_fd < 0) {
+         printf("cryptodev_digest_init: Can't get Dev \n");
+-- 
+2.7.0
+

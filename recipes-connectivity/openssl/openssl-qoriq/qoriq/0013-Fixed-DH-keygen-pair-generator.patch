@@ -1,0 +1,100 @@
+From 4d5ffd41f423309fc9aaf3621598ca51c5838e31 Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Thu, 1 May 2014 06:35:45 +0545
+Subject: [PATCH 13/48] Fixed DH keygen pair generator
+
+Upstream-status: Pending
+
+Wrong Padding results into keygen length error
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/engine/eng_cryptodev.c | 50 ++++++++++++++++++++++++++++---------------
+ 1 file changed, 33 insertions(+), 17 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index db8e02d..4929ae6 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -3534,44 +3534,60 @@ static int cryptodev_dh_keygen_async(DH *dh, struct pkc_cookie_s *cookie)
+ static int cryptodev_dh_keygen(DH *dh)
+ {
+     struct crypt_kop kop;
+-    int ret = 1, g_len;
+-    unsigned char *g = NULL;
++    int ret = 1, q_len = 0;
++    unsigned char *q = NULL, *g = NULL, *s = NULL, *w = NULL;
++    BIGNUM *pub_key = NULL, *priv_key = NULL;
++    int generate_new_key = 1;
+ 
+-    if (dh->priv_key == NULL) {
+-        if ((dh->priv_key = BN_new()) == NULL)
+-            goto sw_try;
+-    }
++    if (dh->priv_key)
++        priv_key = dh->priv_key;
+ 
+-    if (dh->pub_key == NULL) {
+-        if ((dh->pub_key = BN_new()) == NULL)
+-            goto sw_try;
+-    }
++    if (dh->pub_key)
++        pub_key = dh->pub_key;
+ 
+-    g_len = BN_num_bytes(dh->p);
++    q_len = BN_num_bytes(dh->p);
+         /**
+          * Get generator into a plain buffer. If length is less than
+          * q_len then add leading padding bytes.
+          */
+-    if (spcf_bn2bin_ex(dh->g, &g, &g_len)) {
++    if (spcf_bn2bin_ex(dh->g, &g, &q_len)) {
++        DSAerr(DH_F_DH_GENERATE_KEY, ERR_R_MALLOC_FAILURE);
++        goto sw_try;
++    }
++
++    if (spcf_bn2bin_ex(dh->p, &q, &q_len)) {
+         DSAerr(DH_F_DH_GENERATE_KEY, ERR_R_MALLOC_FAILURE);
+         goto sw_try;
+     }
+ 
+     memset(&kop, 0, sizeof kop);
+     kop.crk_op = CRK_DH_GENERATE_KEY;
+-    if (bn2crparam(dh->p, &kop.crk_param[0]))
+-        goto sw_try;
++    kop.crk_param[0].crp_p = q;
++    kop.crk_param[0].crp_nbits = q_len * 8;
+     if (!dh->q || bn2crparam(dh->q, &kop.crk_param[1]))
+         goto sw_try;
+     kop.crk_param[2].crp_p = g;
+-    kop.crk_param[2].crp_nbits = g_len * 8;
++    kop.crk_param[2].crp_nbits = q_len * 8;
+     kop.crk_iparams = 3;
+ 
++    s = OPENSSL_malloc(q_len);
++    if (!s) {
++        DSAerr(DH_F_DH_GENERATE_KEY, ERR_R_MALLOC_FAILURE);
++        goto sw_try;
++    }
++
++    w = OPENSSL_malloc(q_len);
++    if (!w) {
++        DSAerr(DH_F_DH_GENERATE_KEY, ERR_R_MALLOC_FAILURE);
++        goto sw_try;
++    }
++
+     /* pub_key is or prime length while priv key is of length of order */
+-    if (cryptodev_asym(&kop, BN_num_bytes(dh->p), dh->pub_key,
+-                       BN_num_bytes(dh->q), dh->priv_key))
++    if (cryptodev_asym(&kop, q_len, w, q_len, s))
+         goto sw_try;
+ 
++    dh->pub_key = BN_bin2bn(w, q_len, pub_key);
++    dh->pub_key = BN_bin2bn(s, q_len, priv_key);
+     return ret;
+  sw_try:
+     {
+-- 
+2.7.0
+

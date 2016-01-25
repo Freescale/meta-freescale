@@ -1,0 +1,72 @@
+From 07d8dad75fb1e4c3487ae560ac51e2141aa0e0c1 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Thu, 19 Feb 2015 16:11:53 +0200
+Subject: [PATCH 18/48] cryptodev: drop redundant function
+
+get_dev_crypto already caches the result. Another cache in-between is
+useless.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/engine/eng_cryptodev.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index e6f9f16..4cffaf1 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -93,7 +93,6 @@ struct dev_crypto_state {
+ 
+ static u_int32_t cryptodev_asymfeat = 0;
+ 
+-static int get_asym_dev_crypto(void);
+ static int open_dev_crypto(void);
+ static int get_dev_crypto(void);
+ static int get_cryptodev_ciphers(const int **cnids);
+@@ -440,16 +439,6 @@ static void put_dev_crypto(int fd)
+ # endif
+ }
+ 
+-/* Caching version for asym operations */
+-static int get_asym_dev_crypto(void)
+-{
+-    static int fd = -1;
+-
+-    if (fd == -1)
+-        fd = get_dev_crypto();
+-    return fd;
+-}
+-
+ /*
+  * Find out what ciphers /dev/crypto will let us have a session for.
+  * XXX note, that some of these openssl doesn't deal with yet!
+@@ -1919,7 +1908,7 @@ cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+ {
+     int fd, ret = -1;
+ 
+-    if ((fd = get_asym_dev_crypto()) < 0)
++    if ((fd = get_dev_crypto()) < 0)
+         return (ret);
+ 
+     if (r) {
+@@ -2509,7 +2498,7 @@ static int cryptodev_rsa_keygen(RSA *rsa, int bits, BIGNUM *e, BN_GENCB *cb)
+     int p_len, q_len;
+     int i;
+ 
+-    if ((fd = get_asym_dev_crypto()) < 0)
++    if ((fd = get_dev_crypto()) < 0)
+         goto sw_try;
+ 
+     if (!rsa->n && ((rsa->n = BN_new()) == NULL))
+@@ -4098,7 +4087,7 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+     BIGNUM *temp = NULL;
+     unsigned char *padded_pub_key = NULL, *p = NULL;
+ 
+-    if ((fd = get_asym_dev_crypto()) < 0)
++    if ((fd = get_dev_crypto()) < 0)
+         goto sw_try;
+ 
+     memset(&kop, 0, sizeof kop);
+-- 
+2.7.0
+

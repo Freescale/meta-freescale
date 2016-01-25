@@ -1,0 +1,28 @@
+From c3b1f595607fe4e431dab12b7d8ceda6742547d5 Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Tue, 11 Mar 2014 06:42:59 +0545
+Subject: [PATCH 06/48] Added hwrng dev file as source of RNG
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+---
+ e_os.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/e_os.h b/e_os.h
+index 1fa36c1..6c0917b 100644
+--- a/e_os.h
++++ b/e_os.h
+@@ -82,7 +82,7 @@ extern "C" {
+  * set this to a comma-separated list of 'random' device files to try out. My
+  * default, we will try to read at least one of these files
+  */
+-#  define DEVRANDOM "/dev/urandom","/dev/random","/dev/srandom"
++#  define DEVRANDOM "/dev/hwrng","/dev/urandom","/dev/random","/dev/srandom"
+ # endif
+ # ifndef DEVRANDOM_EGD
+ /*
+-- 
+2.7.0
+

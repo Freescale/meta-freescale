@@ -1,0 +1,38 @@
+From 528e4965e536d31cdccb11abe5e04db28a1008a8 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 9 Feb 2016 12:11:32 +0200
+Subject: [PATCH 45/48] cryptodev: change signature for conversion functions
+
+These functions are called with const BIGNUMs, so we change the
+signatures to avoid compilation warnings
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index e0f9d4b..3024a68 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -145,7 +145,7 @@ const EVP_CIPHER cryptodev_tls12_aes_256_cbc_hmac_sha1;
+ const EVP_CIPHER cryptodev_tls12_aes_128_cbc_hmac_sha256;
+ const EVP_CIPHER cryptodev_tls12_aes_256_cbc_hmac_sha256;
+ 
+-inline int spcf_bn2bin(BIGNUM *bn, unsigned char **bin, int *bin_len)
++inline int spcf_bn2bin(const BIGNUM *bn, unsigned char **bin, int *bin_len)
+ {
+     int len;
+     unsigned char *p;
+@@ -167,7 +167,7 @@ inline int spcf_bn2bin(BIGNUM *bn, unsigned char **bin, int *bin_len)
+     return 0;
+ }
+ 
+-inline int spcf_bn2bin_ex(BIGNUM *bn, unsigned char **bin, int *bin_len)
++inline int spcf_bn2bin_ex(const BIGNUM *bn, unsigned char **bin, int *bin_len)
+ {
+     int len;
+     unsigned char *p;
+-- 
+2.7.0
+

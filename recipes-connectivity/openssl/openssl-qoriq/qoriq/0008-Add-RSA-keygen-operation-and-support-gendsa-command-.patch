@@ -1,0 +1,155 @@
+From 94a3fc9f437c20726209cea19256c419837055a2 Mon Sep 17 00:00:00 2001
+From: Hou Zhiqiang <B48286@freescale.com>
+Date: Wed, 2 Apr 2014 16:10:43 +0800
+Subject: [PATCH 08/48] Add RSA keygen operation and support gendsa command
+ with hardware engine
+
+Upstream-status: Pending
+
+Signed-off-by: Hou Zhiqiang <B48286@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/engine/eng_cryptodev.c | 120 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 120 insertions(+)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 8303630..44017a3 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -2009,6 +2009,124 @@ cryptodev_dsa_verify(const unsigned char *dgst, int dlen,
+     }
+ }
+ 
++/* Cryptodev RSA Key Gen routine */
++static int cryptodev_rsa_keygen(RSA *rsa, int bits, BIGNUM *e, BN_GENCB *cb)
++{
++    struct crypt_kop kop;
++    int ret, fd;
++    int p_len, q_len;
++    int i;
++
++    if ((fd = get_asym_dev_crypto()) < 0)
++        return fd;
++
++    if (!rsa->n && ((rsa->n = BN_new()) == NULL))
++        goto err;
++    if (!rsa->d && ((rsa->d = BN_new()) == NULL))
++        goto err;
++    if (!rsa->e && ((rsa->e = BN_new()) == NULL))
++        goto err;
++    if (!rsa->p && ((rsa->p = BN_new()) == NULL))
++        goto err;
++    if (!rsa->q && ((rsa->q = BN_new()) == NULL))
++        goto err;
++    if (!rsa->dmp1 && ((rsa->dmp1 = BN_new()) == NULL))
++        goto err;
++    if (!rsa->dmq1 && ((rsa->dmq1 = BN_new()) == NULL))
++        goto err;
++    if (!rsa->iqmp && ((rsa->iqmp = BN_new()) == NULL))
++        goto err;
++
++    BN_copy(rsa->e, e);
++
++    p_len = (bits + 1) / (2 * 8);
++    q_len = (bits - p_len * 8) / 8;
++    memset(&kop, 0, sizeof kop);
++    kop.crk_op = CRK_RSA_GENERATE_KEY;
++
++    /* p length */
++    kop.crk_param[kop.crk_iparams].crp_p = calloc(p_len + 1, sizeof(char));
++    if (!kop.crk_param[kop.crk_iparams].crp_p)
++        goto err;
++    kop.crk_param[kop.crk_iparams].crp_nbits = p_len * 8;
++    memset(kop.crk_param[kop.crk_iparams].crp_p, 0xff, p_len + 1);
++    kop.crk_iparams++;
++    kop.crk_oparams++;
++    /* q length */
++    kop.crk_param[kop.crk_iparams].crp_p = calloc(q_len + 1, sizeof(char));
++    if (!kop.crk_param[kop.crk_iparams].crp_p)
++        goto err;
++    kop.crk_param[kop.crk_iparams].crp_nbits = q_len * 8;
++    memset(kop.crk_param[kop.crk_iparams].crp_p, 0xff, q_len + 1);
++    kop.crk_iparams++;
++    kop.crk_oparams++;
++    /* n length */
++    kop.crk_param[kop.crk_iparams].crp_p =
++        calloc(p_len + q_len + 1, sizeof(char));
++    if (!kop.crk_param[kop.crk_iparams].crp_p)
++        goto err;
++    kop.crk_param[kop.crk_iparams].crp_nbits = bits;
++    memset(kop.crk_param[kop.crk_iparams].crp_p, 0x00, p_len + q_len + 1);
++    kop.crk_iparams++;
++    kop.crk_oparams++;
++    /* d length */
++    kop.crk_param[kop.crk_iparams].crp_p =
++        calloc(p_len + q_len + 1, sizeof(char));
++    if (!kop.crk_param[kop.crk_iparams].crp_p)
++        goto err;
++    kop.crk_param[kop.crk_iparams].crp_nbits = bits;
++    memset(kop.crk_param[kop.crk_iparams].crp_p, 0xff, p_len + q_len + 1);
++    kop.crk_iparams++;
++    kop.crk_oparams++;
++    /* dp1 length */
++    kop.crk_param[kop.crk_iparams].crp_p = calloc(p_len + 1, sizeof(char));
++    if (!kop.crk_param[kop.crk_iparams].crp_p)
++        goto err;
++    kop.crk_param[kop.crk_iparams].crp_nbits = p_len * 8;
++    memset(kop.crk_param[kop.crk_iparams].crp_p, 0xff, p_len + 1);
++    kop.crk_iparams++;
++    kop.crk_oparams++;
++    /* dq1 length */
++    kop.crk_param[kop.crk_iparams].crp_p = calloc(q_len + 1, sizeof(char));
++    if (!kop.crk_param[kop.crk_iparams].crp_p)
++        goto err;
++    kop.crk_param[kop.crk_iparams].crp_nbits = q_len * 8;
++    memset(kop.crk_param[kop.crk_iparams].crp_p, 0xff, q_len + 1);
++    kop.crk_iparams++;
++    kop.crk_oparams++;
++    /* i length */
++    kop.crk_param[kop.crk_iparams].crp_p = calloc(p_len + 1, sizeof(char));
++    if (!kop.crk_param[kop.crk_iparams].crp_p)
++        goto err;
++    kop.crk_param[kop.crk_iparams].crp_nbits = p_len * 8;
++    memset(kop.crk_param[kop.crk_iparams].crp_p, 0xff, p_len + 1);
++    kop.crk_iparams++;
++    kop.crk_oparams++;
++
++    if (ioctl(fd, CIOCKEY, &kop) == 0) {
++        BN_bin2bn(kop.crk_param[0].crp_p, p_len, rsa->p);
++        BN_bin2bn(kop.crk_param[1].crp_p, q_len, rsa->q);
++        BN_bin2bn(kop.crk_param[2].crp_p, bits / 8, rsa->n);
++        BN_bin2bn(kop.crk_param[3].crp_p, bits / 8, rsa->d);
++        BN_bin2bn(kop.crk_param[4].crp_p, p_len, rsa->dmp1);
++        BN_bin2bn(kop.crk_param[5].crp_p, q_len, rsa->dmq1);
++        BN_bin2bn(kop.crk_param[6].crp_p, p_len, rsa->iqmp);
++        return 1;
++    }
++ sw_try:
++    {
++        const RSA_METHOD *meth = RSA_PKCS1_SSLeay();
++        ret = (meth->rsa_keygen) (rsa, bits, e, cb);
++    }
++    return ret;
++
++ err:
++    for (i = 0; i < CRK_MAXPARAM; i++)
++        free(kop.crk_param[i].crp_p);
++    return 0;
++
++}
++
+ /* Cryptodev DSA Key Gen routine */
+ static int cryptodev_dsa_keygen(DSA *dsa)
+ {
+@@ -4035,6 +4153,8 @@ void ENGINE_load_cryptodev(void)
+                 cryptodev_rsa.rsa_mod_exp_async =
+                     cryptodev_rsa_nocrt_mod_exp_async;
+             }
++            if (cryptodev_asymfeat & CRF_RSA_GENERATE_KEY)
++                cryptodev_rsa.rsa_keygen = cryptodev_rsa_keygen;
+         }
+     }
+ 
+-- 
+2.7.0
+

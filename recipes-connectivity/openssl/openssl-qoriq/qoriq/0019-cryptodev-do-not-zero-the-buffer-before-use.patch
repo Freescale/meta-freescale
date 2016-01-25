@@ -1,0 +1,48 @@
+From 1f7ef531a010a3a86c9c16f801044b5f01652eb2 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Tue, 17 Feb 2015 13:12:53 +0200
+Subject: [PATCH 19/48] cryptodev: do not zero the buffer before use
+
+- The buffer is just about to be overwritten. Zeroing it before that has
+  no purpose
+
+Change-Id: I478c31bd2e254561474a7edf5e37980ca04217ce
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/34217
+---
+ crypto/engine/eng_cryptodev.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 4cffaf1..bbc903b 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -1801,21 +1801,15 @@ cryptodev_engine_digests(ENGINE *e, const EVP_MD **digest,
+ static int bn2crparam(const BIGNUM *a, struct crparam *crp)
+ {
+     ssize_t bytes, bits;
+-    u_char *b;
+-
+-    crp->crp_p = NULL;
+-    crp->crp_nbits = 0;
+ 
+     bits = BN_num_bits(a);
+     bytes = (bits + 7) / 8;
+ 
+-    b = malloc(bytes);
+-    if (b == NULL)
+-        return (1);
+-    memset(b, 0, bytes);
+-
+-    crp->crp_p = (caddr_t) b;
+     crp->crp_nbits = bits;
++    crp->crp_p = malloc(bytes);
++
++    if (crp->crp_p == NULL)
++        return (1);
+ 
+     BN_bn2bin(a, crp->crp_p);
+     return (0);
+-- 
+2.7.0
+

@@ -1,0 +1,46 @@
+From 8ccc9b12954b7eb299020a1b15d9d1e5735779df Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 16:36:33 +0200
+Subject: [PATCH 36/48] cryptodev: fix free on error path
+
+This was most likely a typo that escaped code review
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/ecdsa/ecs_locl.h       | 4 ++--
+ crypto/engine/eng_cryptodev.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/ecdsa/ecs_locl.h b/crypto/ecdsa/ecs_locl.h
+index 9b28c04..c3843c6 100644
+--- a/crypto/ecdsa/ecs_locl.h
++++ b/crypto/ecdsa/ecs_locl.h
+@@ -74,10 +74,10 @@ struct ecdsa_method {
+                              BIGNUM **r);
+     int (*ecdsa_do_verify) (const unsigned char *dgst, int dgst_len,
+                             const ECDSA_SIG *sig, EC_KEY *eckey);
+-	 int (*ecdsa_do_sign_async)(const unsigned char *dgst, int dgst_len,
++    int (*ecdsa_do_sign_async)(const unsigned char *dgst, int dgst_len,
+ 			const BIGNUM *inv, const BIGNUM *rp, EC_KEY *eckey,
+ 			ECDSA_SIG *sig, struct pkc_cookie_s *cookie);
+-	int (*ecdsa_do_verify_async)(const unsigned char *dgst, int dgst_len,
++    int (*ecdsa_do_verify_async)(const unsigned char *dgst, int dgst_len,
+ 			const ECDSA_SIG *sig, EC_KEY *eckey, struct pkc_cookie_s *cookie);
+ # if 0
+     int (*init) (EC_KEY *eckey);
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 407ea62..1b1fdc7 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -3424,7 +3424,7 @@ static int cryptodev_ecdsa_do_sign_async(const unsigned char *dgst,
+     if (!(sig->r = BN_new()) || !kop)
+         goto err;
+     if ((sig->s = BN_new()) == NULL) {
+-        BN_free(r);
++        BN_free(sig->r);
+         goto err;
+     }
+ 
+-- 
+2.7.0
+

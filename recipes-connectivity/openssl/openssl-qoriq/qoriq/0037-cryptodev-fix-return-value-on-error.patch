@@ -1,0 +1,28 @@
+From b3d3b86063e65b84ce53f4653295e3f6a83d5794 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 16:55:32 +0200
+Subject: [PATCH 37/48] cryptodev: fix return value on error
+
+Even though we're on error path, the operation is taken care of on
+software; return success (ret is 1)
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 1b1fdc7..8cd3aa3 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -2755,7 +2755,6 @@ cryptodev_dsa_do_sign_async(const unsigned char *dgst, int dlen, DSA *dsa,
+         sig->s = dsaret->s;
+         /* Call user callback immediately */
+         cookie->pkc_callback(cookie, 0);
+-        ret = dsaret;
+     }
+     return ret;
+ }
+-- 
+2.7.0
+

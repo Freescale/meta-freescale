@@ -1,0 +1,26 @@
+From 03bdddf1495707119e4fa0eda385ecdccf66cbd8 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 16:08:25 +0200
+Subject: [PATCH 33/48] cryptodev: fix function declaration typo
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/engine.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/engine/engine.h b/crypto/engine/engine.h
+index f83ee73..c8efbe1 100644
+--- a/crypto/engine/engine.h
++++ b/crypto/engine/engine.h
+@@ -569,7 +569,7 @@ void ENGINE_set_async_map(ENGINE *e, int async_map);
+ int ENGINE_get_async_map(ENGINE *e);
+ int ENGINE_open_instance(ENGINE *e);
+ int ENGINE_close_instance(ENGINE *e, int fd);
+-void ENGINE_set_init_instance(ENGINE *e, int(*engine_init_instance)(void));
++void ENGINE_set_open_instance(ENGINE *e, int(*engine_open_instance)(void));
+ void ENGINE_set_close_instance(ENGINE *e, int(*engine_close_instance)(int));
+ void ENGINE_set_check_pkc_availability(ENGINE *e,
+ 	int (*check_pkc_availability)(int fd));
+-- 
+2.7.0
+

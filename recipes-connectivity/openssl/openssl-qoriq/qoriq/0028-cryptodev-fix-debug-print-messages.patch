@@ -1,0 +1,90 @@
+From 3dd41691dc8162ec26d188269934689ad834894c Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 15 Dec 2015 12:51:36 +0200
+Subject: [PATCH 28/48] cryptodev: fix debug print messages
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 76faa35..1585009 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -1563,13 +1563,13 @@ static int cryptodev_digest_init(EVP_MD_CTX *ctx)
+ 
+     digest = digest_nid_to_cryptodev(ctx->digest->type);
+     if (digest == NID_undef) {
+-        printf("cryptodev_digest_init: Can't get digest \n");
++        printf("%s: Can't get digest\n", __func__);
+         return (0);
+     }
+ 
+     state->d_fd = get_dev_crypto();
+     if (state->d_fd < 0) {
+-        printf("cryptodev_digest_init: Can't get Dev \n");
++        printf("%s: Can't get Dev\n", __func__);
+         return (0);
+     }
+ 
+@@ -1586,7 +1586,7 @@ static int cryptodev_digest_update(EVP_MD_CTX *ctx, const void *data,
+     struct dev_crypto_state *state = ctx->md_data;
+ 
+     if (!data || !count) {
+-        printf("cryptodev_digest_update: illegal inputs \n");
++        printf("%s: illegal inputs\n", __func__);
+         return 0;
+     }
+ 
+@@ -1603,7 +1603,7 @@ static int cryptodev_digest_update(EVP_MD_CTX *ctx, const void *data,
+         state->mac_data =
+             OPENSSL_realloc(state->mac_data, state->mac_len + count);
+         if (!state->mac_data) {
+-            printf("cryptodev_digest_update: realloc failed\n");
++            printf("%s: realloc failed\n", __func__);
+             return (0);
+         }
+ 
+@@ -1622,12 +1622,12 @@ static int cryptodev_digest_final(EVP_MD_CTX *ctx, unsigned char *md)
+     struct session_op *sess = &state->d_sess;
+ 
+     if (!md || state->d_fd < 0) {
+-        printf("cryptodev_digest_final: illegal input\n");
++        printf("%s: illegal input\n", __func__);
+         return (0);
+     }
+ 
+     if (ioctl(state->d_fd, CIOCGSESSION, sess) < 0) {
+-        printf("cryptodev_digest_init: Open session failed\n");
++        printf("%s: Open session failed\n", __func__);
+         return (0);
+     }
+ 
+@@ -1640,12 +1640,12 @@ static int cryptodev_digest_final(EVP_MD_CTX *ctx, unsigned char *md)
+     cryp.mac = md;
+ 
+     if (ioctl(state->d_fd, CIOCCRYPT, &cryp) < 0) {
+-        printf("cryptodev_digest_final: digest failed\n");
++        printf("%s: digest failed\n", __func__);
+         ret = 0;
+     }
+ 
+     if (ioctl(state->d_fd, CIOCFSESSION, &sess->ses) < 0) {
+-        printf("cryptodev_digest_cleanup: failed to close session\n");
++        printf("%s: failed to close session\n", __func__);
+     }
+ 
+     return ret;
+@@ -1700,7 +1700,7 @@ static int cryptodev_digest_copy(EVP_MD_CTX *to, const EVP_MD_CTX *from)
+     if (ioctl(dstate->d_fd, CIOCGSESSION, sess) < 0) {
+         put_dev_crypto(dstate->d_fd);
+         dstate->d_fd = -1;
+-        printf("cryptodev_digest_init: Open session failed\n");
++        printf("%s: Open session failed\n", __func__);
+         return (0);
+     }
+ 
+-- 
+2.7.0
+

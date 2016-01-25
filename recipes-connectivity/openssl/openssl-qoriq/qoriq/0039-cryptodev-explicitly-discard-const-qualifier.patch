@@ -1,0 +1,30 @@
+From 605210c8ae9241cad6c4ec071f5193bf3e83b2d4 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 17:15:25 +0200
+Subject: [PATCH 39/48] cryptodev: explicitly discard const qualifier
+
+The const qualifier is discarded by the assignment as a result of how
+the variables are defined. This patch drops the const qualifier
+explicitly to avoid build errors.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/eng_cryptodev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 4613d2d..2791ca3 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -1592,7 +1592,7 @@ static int cryptodev_digest_update(EVP_MD_CTX *ctx, const void *data,
+      * cryptodev calls and accumulating small amounts of data
+      */
+     if (ctx->flags & EVP_MD_CTX_FLAG_ONESHOT) {
+-        state->mac_data = data;
++        state->mac_data = (void *)data;
+         state->mac_len = count;
+     } else {
+         state->mac_data =
+-- 
+2.7.0
+

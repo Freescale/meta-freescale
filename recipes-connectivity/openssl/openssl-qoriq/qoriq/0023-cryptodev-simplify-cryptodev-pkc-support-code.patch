@@ -1,0 +1,260 @@
+From f99682e0ccaeadb7446d211dfad6dbf8fcd5675f Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Thu, 19 Feb 2015 13:39:52 +0200
+Subject: [PATCH 23/48] cryptodev: simplify cryptodev pkc support code
+
+- Engine init returns directly a file descriptor instead of a pointer to one
+- Similarly, the Engine close will now just close the file
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/crypto.h               |  2 +-
+ crypto/engine/eng_cryptodev.c | 43 +++++++----------------------------
+ crypto/engine/eng_int.h       | 14 +++---------
+ crypto/engine/eng_lib.c       | 53 +++++++++++++++++++++----------------------
+ crypto/engine/engine.h        | 13 +++++------
+ 5 files changed, 44 insertions(+), 81 deletions(-)
+
+diff --git a/crypto/crypto.h b/crypto/crypto.h
+index 2b4ec59..ddb9b69 100644
+--- a/crypto/crypto.h
++++ b/crypto/crypto.h
+@@ -668,7 +668,7 @@ struct pkc_cookie_s {
+ 	   *		-EINVAL: Parameters Invalid
+ 	   */
+ 	void (*pkc_callback)(struct pkc_cookie_s *cookie, int status);
+-	void *eng_handle;
++	int eng_handle;
+ };
+ 
+ #ifdef  __cplusplus
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index b162646..1910c89 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -433,10 +433,10 @@ static int get_dev_crypto(void)
+ 
+ static int put_dev_crypto(int fd)
+ {
+-#ifdef CRIOGET_NOT_NEEDED
+-	return 0;
+-#else
+-	return close(fd);
++# ifdef CRIOGET_NOT_NEEDED
++    return 0;
++# else
++    return close(fd);
+ # endif
+ }
+ 
+@@ -1863,7 +1863,7 @@ cryptodev_asym_async(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+     struct pkc_cookie_s *cookie = kop->cookie;
+     struct cryptodev_cookie_s *eng_cookie;
+ 
+-    fd = *(int *)cookie->eng_handle;
++    fd = cookie->eng_handle;
+ 
+     eng_cookie = malloc(sizeof(struct cryptodev_cookie_s));
+     if (!eng_cookie)
+@@ -1926,38 +1926,11 @@ cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+     return (ret);
+ }
+ 
+-/* Close an opened instance of cryptodev engine */
+-void cryptodev_close_instance(void *handle)
+-{
+-    int fd;
+-
+-    if (handle) {
+-        fd = *(int *)handle;
+-        close(fd);
+-        free(handle);
+-    }
+-}
+-
+-/* Create an instance of cryptodev for asynchronous interface */
+-void *cryptodev_init_instance(void)
+-{
+-    int *fd = malloc(sizeof(int));
+-
+-    if (fd) {
+-        if ((*fd = open("/dev/crypto", O_RDWR, 0)) == -1) {
+-            free(fd);
+-            return NULL;
+-        }
+-    }
+-    return fd;
+-}
+-
+ # include <poll.h>
+ 
+ /* Return 0 on success and 1 on failure */
+-int cryptodev_check_availability(void *eng_handle)
++int cryptodev_check_availability(int fd)
+ {
+-    int fd = *(int *)eng_handle;
+     struct pkc_cookie_list_s cookie_list;
+     struct pkc_cookie_s *cookie;
+     int i;
+@@ -4706,8 +4679,8 @@ void ENGINE_load_cryptodev(void)
+     }
+ 
+     ENGINE_set_check_pkc_availability(engine, cryptodev_check_availability);
+-    ENGINE_set_close_instance(engine, cryptodev_close_instance);
+-    ENGINE_set_init_instance(engine, cryptodev_init_instance);
++    ENGINE_set_close_instance(engine, put_dev_crypto);
++    ENGINE_set_open_instance(engine, open_dev_crypto);
+     ENGINE_set_async_map(engine, ENGINE_ALLPKC_ASYNC);
+ 
+     ENGINE_add(engine);
+diff --git a/crypto/engine/eng_int.h b/crypto/engine/eng_int.h
+index b698a0c..7541beb 100644
+--- a/crypto/engine/eng_int.h
++++ b/crypto/engine/eng_int.h
+@@ -198,23 +198,15 @@ struct engine_st {
+     ENGINE_LOAD_KEY_PTR load_privkey;
+     ENGINE_LOAD_KEY_PTR load_pubkey;
+     ENGINE_SSL_CLIENT_CERT_PTR load_ssl_client_cert;
+-	/*
+-	 * Instantiate Engine handle to be passed in check_pkc_availability
+-	 * Ensure that Engine is instantiated before any pkc asynchronous call.
+-	 */
+-	void *(*engine_init_instance)(void);
+-	/*
+-	 * Instantiated Engine handle will be closed with this call.
+-	 * Ensure that no pkc asynchronous call is made after this call
+-	 */
+-	void (*engine_close_instance)(void *handle);
++	int (*engine_open_instance)(void);
++	int (*engine_close_instance)(int fd);
+ 	/*
+ 	 * Check availability will extract the data from kernel.
+ 	 * eng_handle: This is the Engine handle corresponds to which
+ 	 * the cookies needs to be polled.
+ 	 * return 0 if cookie available else 1
+ 	 */
+-	int (*check_pkc_availability)(void *eng_handle);
++	int (*check_pkc_availability)(int fd);
+ 	/*
+ 	 * The following map is used to check if the engine supports asynchronous implementation
+ 	 * ENGINE_ASYNC_FLAG* for available bitmap. Any application checking for asynchronous
+diff --git a/crypto/engine/eng_lib.c b/crypto/engine/eng_lib.c
+index 0c57e12..4fdcfd6 100644
+--- a/crypto/engine/eng_lib.c
++++ b/crypto/engine/eng_lib.c
+@@ -101,7 +101,7 @@ void engine_set_all_null(ENGINE *e)
+     e->load_privkey = NULL;
+     e->load_pubkey = NULL;
+ 	e->check_pkc_availability = NULL;
+-	e->engine_init_instance = NULL;
++	e->engine_open_instance = NULL;
+ 	e->engine_close_instance = NULL;
+     e->cmd_defns = NULL;
+ 	e->async_map = 0;
+@@ -252,46 +252,45 @@ int ENGINE_set_id(ENGINE *e, const char *id)
+     return 1;
+ 	}
+ 
+-void ENGINE_set_init_instance(ENGINE *e, void *(*engine_init_instance)(void))
+-	{
+-		e->engine_init_instance = engine_init_instance;
+-	}
++void ENGINE_set_open_instance(ENGINE *e, int (*engine_open_instance)(void))
++{
++	e->engine_open_instance = engine_open_instance;
++}
+ 
+-void ENGINE_set_close_instance(ENGINE *e,
+-	void (*engine_close_instance)(void *))
+-	{
+-		e->engine_close_instance = engine_close_instance;
+-	}
++void ENGINE_set_close_instance(ENGINE *e, int (*engine_close_instance)(int))
++{
++	e->engine_close_instance = engine_close_instance;
++}
+ 
+ void ENGINE_set_async_map(ENGINE *e, int async_map)
+ 	{
+ 		e->async_map = async_map;
+ 	}
+ 
+-void *ENGINE_init_instance(ENGINE *e)
+-	{
+-		return e->engine_init_instance();
+-	}
+-
+-void ENGINE_close_instance(ENGINE *e, void *eng_handle)
+-	{
+-		e->engine_close_instance(eng_handle);
+-	}
+-
+ int ENGINE_get_async_map(ENGINE *e)
+ 	{
+ 		return e->async_map;
+ 	}
+ 
++int ENGINE_open_instance(ENGINE *e)
++{
++	return e->engine_open_instance();
++}
++
++int ENGINE_close_instance(ENGINE *e, int fd)
++{
++	return e->engine_close_instance(fd);
++}
++
+ void ENGINE_set_check_pkc_availability(ENGINE *e,
+-	int (*check_pkc_availability)(void *eng_handle))
+-	{
+-		e->check_pkc_availability = check_pkc_availability;
+-	}
++	int (*check_pkc_availability)(int fd))
++{
++	e->check_pkc_availability = check_pkc_availability;
++}
+ 
+-int ENGINE_check_pkc_availability(ENGINE *e, void *eng_handle)
+-	{
+-		return e->check_pkc_availability(eng_handle);
++int ENGINE_check_pkc_availability(ENGINE *e, int fd)
++{
++	return e->check_pkc_availability(fd);
+ }
+ 
+ int ENGINE_set_name(ENGINE *e, const char *name)
+diff --git a/crypto/engine/engine.h b/crypto/engine/engine.h
+index 4527aa1..f83ee73 100644
+--- a/crypto/engine/engine.h
++++ b/crypto/engine/engine.h
+@@ -551,9 +551,6 @@ ENGINE *ENGINE_new(void);
+ int ENGINE_free(ENGINE *e);
+ int ENGINE_up_ref(ENGINE *e);
+ int ENGINE_set_id(ENGINE *e, const char *id);
+-void ENGINE_set_init_instance(ENGINE *e, void *(*engine_init_instance)(void));
+-void ENGINE_set_close_instance(ENGINE *e,
+-	void (*engine_free_instance)(void *));
+ /*
+  * Following FLAGS are bitmap store in async_map to set asynchronous interface capability
+  *of the engine
+@@ -570,11 +567,13 @@ void ENGINE_set_async_map(ENGINE *e, int async_map);
+   * to confirm asynchronous methods supported
+   */
+ int ENGINE_get_async_map(ENGINE *e);
+-void *ENGINE_init_instance(ENGINE *e);
+-void ENGINE_close_instance(ENGINE *e, void *eng_handle);
++int ENGINE_open_instance(ENGINE *e);
++int ENGINE_close_instance(ENGINE *e, int fd);
++void ENGINE_set_init_instance(ENGINE *e, int(*engine_init_instance)(void));
++void ENGINE_set_close_instance(ENGINE *e, int(*engine_close_instance)(int));
+ void ENGINE_set_check_pkc_availability(ENGINE *e,
+-	int (*check_pkc_availability)(void *eng_handle));
+-int ENGINE_check_pkc_availability(ENGINE *e, void *eng_handle);
++	int (*check_pkc_availability)(int fd));
++int ENGINE_check_pkc_availability(ENGINE *e, int fd);
+ int ENGINE_set_name(ENGINE *e, const char *name);
+ int ENGINE_set_RSA(ENGINE *e, const RSA_METHOD *rsa_meth);
+ int ENGINE_set_DSA(ENGINE *e, const DSA_METHOD *dsa_meth);
+-- 
+2.7.0
+

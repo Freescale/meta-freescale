@@ -1,0 +1,1578 @@
+From e28df2a5c63dc6195a6065bfd7de9fc860129f56 Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Tue, 11 Mar 2014 06:29:52 +0545
+Subject: [PATCH 05/48] Initial support for PKC in cryptodev engine
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+---
+ crypto/engine/eng_cryptodev.c | 1365 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 1202 insertions(+), 163 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 3b6515e..0b41bb2 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -58,6 +58,10 @@ void ENGINE_load_cryptodev(void)
+ # include <openssl/dsa.h>
+ # include <openssl/err.h>
+ # include <openssl/rsa.h>
++# include <crypto/ecdsa/ecs_locl.h>
++# include <crypto/ecdh/ech_locl.h>
++# include <crypto/ec/ec_lcl.h>
++# include <crypto/ec/ec.h>
+ # include <sys/ioctl.h>
+ # include <errno.h>
+ # include <stdio.h>
+@@ -67,6 +71,7 @@ void ENGINE_load_cryptodev(void)
+ # include <syslog.h>
+ # include <errno.h>
+ # include <string.h>
++# include "eng_cryptodev_ec.h"
+ 
+ struct dev_crypto_state {
+     struct session_op d_sess;
+@@ -115,20 +120,10 @@ static int cryptodev_rsa_nocrt_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa,
+                                        BN_CTX *ctx);
+ static int cryptodev_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa,
+                                  BN_CTX *ctx);
+-static int cryptodev_dsa_bn_mod_exp(DSA *dsa, BIGNUM *r, BIGNUM *a,
+-                                    const BIGNUM *p, const BIGNUM *m,
+-                                    BN_CTX *ctx, BN_MONT_CTX *m_ctx);
+-static int cryptodev_dsa_dsa_mod_exp(DSA *dsa, BIGNUM *t1, BIGNUM *g,
+-                                     BIGNUM *u1, BIGNUM *pub_key, BIGNUM *u2,
+-                                     BIGNUM *p, BN_CTX *ctx,
+-                                     BN_MONT_CTX *mont);
+ static DSA_SIG *cryptodev_dsa_do_sign(const unsigned char *dgst, int dlen,
+                                       DSA *dsa);
+ static int cryptodev_dsa_verify(const unsigned char *dgst, int dgst_len,
+                                 DSA_SIG *sig, DSA *dsa);
+-static int cryptodev_mod_exp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,
+-                                const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx,
+-                                BN_MONT_CTX *m_ctx);
+ static int cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key,
+                                     DH *dh);
+ static int cryptodev_ctrl(ENGINE *e, int cmd, long i, void *p,
+@@ -137,6 +132,105 @@ void ENGINE_load_cryptodev(void);
+ const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1;
+ const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
+ 
++inline int spcf_bn2bin(BIGNUM *bn, unsigned char **bin, int *bin_len)
++{
++    int len;
++    unsigned char *p;
++
++    len = BN_num_bytes(bn);
++
++    if (!len)
++        return -1;
++
++    p = malloc(len);
++    if (!p)
++        return -1;
++
++    BN_bn2bin(bn, p);
++
++    *bin = p;
++    *bin_len = len;
++
++    return 0;
++}
++
++inline int spcf_bn2bin_ex(BIGNUM *bn, unsigned char **bin, int *bin_len)
++{
++    int len;
++    unsigned char *p;
++
++    len = BN_num_bytes(bn);
++
++    if (!len)
++        return -1;
++
++    if (len < *bin_len)
++        p = malloc(*bin_len);
++    else
++        p = malloc(len);
++
++    if (!p)
++        return -ENOMEM;
++
++    if (len < *bin_len) {
++        /* place padding */
++        memset(p, 0, (*bin_len - len));
++        BN_bn2bin(bn, p + (*bin_len - len));
++    } else {
++        BN_bn2bin(bn, p);
++    }
++
++    *bin = p;
++    if (len >= *bin_len)
++        *bin_len = len;
++
++    return 0;
++}
++
++/**
++ * Convert an ECC F2m 'b' parameter into the 'c' parameter.
++ *Inputs:
++ * q, the curve's modulus
++ * b, the curve's b parameter
++ * (a bignum for b, a buffer for c)
++ * Output:
++ * c, written into bin, right-adjusted to fill q_len bytes.
++ */
++static int
++eng_ec_compute_cparam(const BIGNUM *b, const BIGNUM *q,
++                      unsigned char **bin, int *bin_len)
++{
++    BIGNUM *c = BN_new();
++    BIGNUM *exp = BN_new();
++    BN_CTX *ctx = BN_CTX_new();
++    int m = BN_num_bits(q) - 1;
++    int ok = 0;
++
++    if (!c || !exp || !ctx || *bin)
++        goto err;
++
++    /*
++     * We have to compute c, where b = c^4, i.e., the fourth root of b.
++     * The equation for c is c = b^(2^(m-2))
++     * Compute exp = 2^(m-2)
++     * (1 << x) == 2^x
++     * and then compute c = b^exp
++     */
++    BN_lshift(exp, BN_value_one(), m - 2);
++    BN_GF2m_mod_exp(c, b, exp, q, ctx);
++    /* Store c */
++    spcf_bn2bin_ex(c, bin, bin_len);
++    ok = 1;
++ err:
++    if (ctx)
++        BN_CTX_free(ctx);
++    if (c)
++        BN_free(c);
++    if (exp)
++        BN_free(exp);
++    return ok;
++}
++
+ static const ENGINE_CMD_DEFN cryptodev_defns[] = {
+     {0, NULL, NULL, 0}
+ };
+@@ -1225,7 +1319,6 @@ cryptodev_engine_digests(ENGINE *e, const EVP_MD **digest,
+  */
+ static int bn2crparam(const BIGNUM *a, struct crparam *crp)
+ {
+-    int i, j, k;
+     ssize_t bytes, bits;
+     u_char *b;
+ 
+@@ -1243,36 +1336,21 @@ static int bn2crparam(const BIGNUM *a, struct crparam *crp)
+     crp->crp_p = (caddr_t) b;
+     crp->crp_nbits = bits;
+ 
+-    for (i = 0, j = 0; i < a->top; i++) {
+-        for (k = 0; k < BN_BITS2 / 8; k++) {
+-            if ((j + k) >= bytes)
+-                return (0);
+-            b[j + k] = a->d[i] >> (k * 8);
+-        }
+-        j += BN_BITS2 / 8;
+-    }
++    BN_bn2bin(a, crp->crp_p);
+     return (0);
+ }
+ 
+ /* Convert a /dev/crypto parameter to a BIGNUM */
+ static int crparam2bn(struct crparam *crp, BIGNUM *a)
+ {
+-    u_int8_t *pd;
+-    int i, bytes;
++    int bytes;
+ 
+     bytes = (crp->crp_nbits + 7) / 8;
+ 
+     if (bytes == 0)
+         return (-1);
+ 
+-    if ((pd = (u_int8_t *) malloc(bytes)) == NULL)
+-        return (-1);
+-
+-    for (i = 0; i < bytes; i++)
+-        pd[i] = crp->crp_p[bytes - i - 1];
+-
+-    BN_bin2bn(pd, bytes, a);
+-    free(pd);
++    BN_bin2bn(crp->crp_p, bytes, a);
+ 
+     return (0);
+ }
+@@ -1321,6 +1399,32 @@ cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+     return (ret);
+ }
+ 
++/* Close an opened instance of cryptodev engine */
++void cryptodev_close_instance(void *handle)
++{
++    int fd;
++
++    if (handle) {
++        fd = *(int *)handle;
++        close(fd);
++        free(handle);
++    }
++}
++
++/* Create an instance of cryptodev for asynchronous interface */
++void *cryptodev_init_instance(void)
++{
++    int *fd = malloc(sizeof(int));
++
++    if (fd) {
++        if ((*fd = open("/dev/crypto", O_RDWR, 0)) == -1) {
++            free(fd);
++            return NULL;
++        }
++    }
++    return fd;
++}
++
+ static int
+ cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
+                      const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
+@@ -1337,8 +1441,9 @@ cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
+         return (ret);
+     }
+ 
+-    memset(&kop, 0, sizeof kop);
+     kop.crk_op = CRK_MOD_EXP;
++    kop.crk_oparams = 0;
++    kop.crk_status = 0;
+ 
+     /* inputs: a^p % m */
+     if (bn2crparam(a, &kop.crk_param[0]))
+@@ -1381,28 +1486,39 @@ static int
+ cryptodev_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
+ {
+     struct crypt_kop kop;
+-    int ret = 1;
++    int ret = 1, f_len, p_len, q_len;
++    unsigned char *f = NULL, *p = NULL, *q = NULL, *dp = NULL, *dq =
++        NULL, *c = NULL;
+ 
+     if (!rsa->p || !rsa->q || !rsa->dmp1 || !rsa->dmq1 || !rsa->iqmp) {
+         /* XXX 0 means failure?? */
+         return (0);
+     }
+ 
+-    memset(&kop, 0, sizeof kop);
++    kop.crk_oparams = 0;
++    kop.crk_status = 0;
+     kop.crk_op = CRK_MOD_EXP_CRT;
++    f_len = BN_num_bytes(rsa->n);
++    spcf_bn2bin_ex(I, &f, &f_len);
++    spcf_bn2bin(rsa->p, &p, &p_len);
++    spcf_bn2bin(rsa->q, &q, &q_len);
++    spcf_bn2bin_ex(rsa->dmp1, &dp, &p_len);
++    spcf_bn2bin_ex(rsa->iqmp, &c, &p_len);
++    spcf_bn2bin_ex(rsa->dmq1, &dq, &q_len);
+     /* inputs: rsa->p rsa->q I rsa->dmp1 rsa->dmq1 rsa->iqmp */
+-    if (bn2crparam(rsa->p, &kop.crk_param[0]))
+-        goto err;
+-    if (bn2crparam(rsa->q, &kop.crk_param[1]))
+-        goto err;
+-    if (bn2crparam(I, &kop.crk_param[2]))
+-        goto err;
+-    if (bn2crparam(rsa->dmp1, &kop.crk_param[3]))
+-        goto err;
+-    if (bn2crparam(rsa->dmq1, &kop.crk_param[4]))
+-        goto err;
+-    if (bn2crparam(rsa->iqmp, &kop.crk_param[5]))
+-        goto err;
++    kop.crk_param[0].crp_p = p;
++    kop.crk_param[0].crp_nbits = p_len * 8;
++    kop.crk_param[1].crp_p = q;
++    kop.crk_param[1].crp_nbits = q_len * 8;
++    kop.crk_param[2].crp_p = f;
++    kop.crk_param[2].crp_nbits = f_len * 8;
++    kop.crk_param[3].crp_p = dp;
++    kop.crk_param[3].crp_nbits = p_len * 8;
++    /* dq must of length q, rest all of length p */
++    kop.crk_param[4].crp_p = dq;
++    kop.crk_param[4].crp_nbits = q_len * 8;
++    kop.crk_param[5].crp_p = c;
++    kop.crk_param[5].crp_nbits = p_len * 8;
+     kop.crk_iparams = 6;
+ 
+     if (cryptodev_asym(&kop, BN_num_bytes(rsa->n), r0, 0, NULL)) {
+@@ -1438,93 +1554,120 @@ static RSA_METHOD cryptodev_rsa = {
+     NULL                        /* rsa_verify */
+ };
+ 
+-static int
+-cryptodev_dsa_bn_mod_exp(DSA *dsa, BIGNUM *r, BIGNUM *a, const BIGNUM *p,
+-                         const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx)
+-{
+-    return (cryptodev_bn_mod_exp(r, a, p, m, ctx, m_ctx));
+-}
+-
+-static int
+-cryptodev_dsa_dsa_mod_exp(DSA *dsa, BIGNUM *t1, BIGNUM *g,
+-                          BIGNUM *u1, BIGNUM *pub_key, BIGNUM *u2, BIGNUM *p,
+-                          BN_CTX *ctx, BN_MONT_CTX *mont)
++static DSA_SIG *cryptodev_dsa_do_sign(const unsigned char *dgst, int dlen,
++                                      DSA *dsa)
+ {
+-    BIGNUM t2;
+-    int ret = 0;
+-
+-    BN_init(&t2);
+-
+-    /* v = ( g^u1 * y^u2 mod p ) mod q */
+-    /* let t1 = g ^ u1 mod p */
+-    ret = 0;
++    struct crypt_kop kop;
++    BIGNUM *c = NULL, *d = NULL;
++    DSA_SIG *dsaret = NULL;
++    int q_len = 0, r_len = 0, g_len = 0;
++    int priv_key_len = 0, ret;
++    unsigned char *q = NULL, *r = NULL, *g = NULL, *priv_key = NULL, *f =
++        NULL;
+ 
+-    if (!dsa->meth->bn_mod_exp(dsa, t1, dsa->g, u1, dsa->p, ctx, mont))
++    memset(&kop, 0, sizeof kop);
++    if ((c = BN_new()) == NULL) {
++        DSAerr(DSA_F_DSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
+         goto err;
++    }
+ 
+-    /* let t2 = y ^ u2 mod p */
+-    if (!dsa->meth->bn_mod_exp(dsa, &t2, dsa->pub_key, u2, dsa->p, ctx, mont))
++    if ((d = BN_new()) == NULL) {
++        BN_free(c);
++        DSAerr(DSA_F_DSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    /* let u1 = t1 * t2 mod p */
+-    if (!BN_mod_mul(u1, t1, &t2, dsa->p, ctx))
++    }
++
++    if (spcf_bn2bin(dsa->p, &q, &q_len)) {
++        DSAerr(DSA_F_DSA_DO_SIGN, DSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
+         goto err;
++    }
+ 
+-    BN_copy(t1, u1);
++    /* Get order of the field of private keys into plain buffer */
++    if (spcf_bn2bin(dsa->q, &r, &r_len)) {
++        DSAerr(DSA_F_DSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
+ 
+-    ret = 1;
+- err:
+-    BN_free(&t2);
+-    return (ret);
+-}
++    /* sanity test */
++    if (dlen > r_len) {
++        DSAerr(DSA_F_DSA_DO_SIGN, DSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
++        goto err;
++    }
+ 
+-static DSA_SIG *cryptodev_dsa_do_sign(const unsigned char *dgst, int dlen,
+-                                      DSA *dsa)
+-{
+-    struct crypt_kop kop;
+-    BIGNUM *r = NULL, *s = NULL;
+-    DSA_SIG *dsaret = NULL;
++    g_len = q_len;
++    /**
++     * Get generator into a plain buffer. If length is less than
++     * q_len then add leading padding bytes.
++     */
++    if (spcf_bn2bin_ex(dsa->g, &g, &g_len)) {
++        DSAerr(DSA_F_DSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
+ 
+-    if ((r = BN_new()) == NULL)
++    priv_key_len = r_len;
++    /**
++     * Get private key into a plain buffer. If length is less than
++     * r_len then add leading padding bytes.
++     */
++    if (spcf_bn2bin_ex(dsa->priv_key, &priv_key, &priv_key_len)) {
++        DSAerr(DSA_F_DSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    if ((s = BN_new()) == NULL) {
+-        BN_free(r);
++    }
++
++    /* Allocate memory to store hash. */
++    f = OPENSSL_malloc(r_len);
++    if (!f) {
++        DSAerr(DSA_F_DSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
+         goto err;
+     }
+ 
+-    memset(&kop, 0, sizeof kop);
++    /* Add padding, since SEC expects hash to of size r_len */
++    if (dlen < r_len)
++        memset(f, 0, r_len - dlen);
++
++    /* Skip leading bytes if dgst_len < r_len */
++    memcpy(f + r_len - dlen, dgst, dlen);
++
+     kop.crk_op = CRK_DSA_SIGN;
+ 
+     /* inputs: dgst dsa->p dsa->q dsa->g dsa->priv_key */
+-    kop.crk_param[0].crp_p = (caddr_t) dgst;
+-    kop.crk_param[0].crp_nbits = dlen * 8;
+-    if (bn2crparam(dsa->p, &kop.crk_param[1]))
+-        goto err;
+-    if (bn2crparam(dsa->q, &kop.crk_param[2]))
+-        goto err;
+-    if (bn2crparam(dsa->g, &kop.crk_param[3]))
++    kop.crk_param[0].crp_p = (void *)f;
++    kop.crk_param[0].crp_nbits = r_len * 8;
++    kop.crk_param[1].crp_p = (void *)q;
++    kop.crk_param[1].crp_nbits = q_len * 8;
++    kop.crk_param[2].crp_p = (void *)r;
++    kop.crk_param[2].crp_nbits = r_len * 8;
++    kop.crk_param[3].crp_p = (void *)g;
++    kop.crk_param[3].crp_nbits = g_len * 8;
++    kop.crk_param[4].crp_p = (void *)priv_key;
++    kop.crk_param[4].crp_nbits = priv_key_len * 8;
++    kop.crk_iparams = 5;
++
++    ret = cryptodev_asym(&kop, r_len, c, r_len, d);
++
++    if (ret) {
++        DSAerr(DSA_F_DSA_DO_SIGN, DSA_R_DECODE_ERROR);
+         goto err;
+-    if (bn2crparam(dsa->priv_key, &kop.crk_param[4]))
++    }
++
++    dsaret = DSA_SIG_new();
++    if (dsaret == NULL)
+         goto err;
+-    kop.crk_iparams = 5;
++    dsaret->r = c;
++    dsaret->s = d;
+ 
+-    if (cryptodev_asym(&kop, BN_num_bytes(dsa->q), r,
+-                       BN_num_bytes(dsa->q), s) == 0) {
+-        dsaret = DSA_SIG_new();
+-        if (dsaret == NULL)
+-            goto err;
+-        dsaret->r = r;
+-        dsaret->s = s;
+-        r = s = NULL;
+-    } else {
++    zapparams(&kop);
++    return (dsaret);
++ err:
++    {
+         const DSA_METHOD *meth = DSA_OpenSSL();
++        if (c)
++            BN_free(c);
++        if (d)
++            BN_free(d);
+         dsaret = (meth->dsa_do_sign) (dgst, dlen, dsa);
++        return (dsaret);
+     }
+- err:
+-    BN_free(r);
+-    BN_free(s);
+-    kop.crk_param[0].crp_p = NULL;
+-    zapparams(&kop);
+-    return (dsaret);
+ }
+ 
+ static int
+@@ -1532,43 +1675,175 @@ cryptodev_dsa_verify(const unsigned char *dgst, int dlen,
+                      DSA_SIG *sig, DSA *dsa)
+ {
+     struct crypt_kop kop;
+-    int dsaret = 1;
++    int dsaret = 1, q_len = 0, r_len = 0, g_len = 0;
++    int w_len = 0, c_len = 0, d_len = 0, ret = -1;
++    unsigned char *q = NULL, *r = NULL, *w = NULL, *g = NULL;
++    unsigned char *c = NULL, *d = NULL, *f = NULL;
+ 
+     memset(&kop, 0, sizeof kop);
+     kop.crk_op = CRK_DSA_VERIFY;
+ 
+-    /* inputs: dgst dsa->p dsa->q dsa->g dsa->pub_key sig->r sig->s */
+-    kop.crk_param[0].crp_p = (caddr_t) dgst;
+-    kop.crk_param[0].crp_nbits = dlen * 8;
+-    if (bn2crparam(dsa->p, &kop.crk_param[1]))
++    if (spcf_bn2bin(dsa->p, &q, &q_len)) {
++        DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        return ret;
++    }
++
++    /* Get Order of field of private keys */
++    if (spcf_bn2bin(dsa->q, &r, &r_len)) {
++        DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    g_len = q_len;
++        /**
++         * Get generator into a plain buffer. If length is less than
++         * q_len then add leading padding bytes.
++         */
++    if (spcf_bn2bin_ex(dsa->g, &g, &g_len)) {
++        DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    if (bn2crparam(dsa->q, &kop.crk_param[2]))
++    }
++    w_len = q_len;
++        /**
++         * Get public key into a plain buffer. If length is less than
++         * q_len then add leading padding bytes.
++         */
++    if (spcf_bn2bin_ex(dsa->pub_key, &w, &w_len)) {
++        DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    if (bn2crparam(dsa->g, &kop.crk_param[3]))
++    }
++        /**
++         * Get the 1st part of signature into a flat buffer with
++         * appropriate padding
++         */
++    c_len = r_len;
++
++    if (spcf_bn2bin_ex(sig->r, &c, &c_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    if (bn2crparam(dsa->pub_key, &kop.crk_param[4]))
++    }
++
++        /**
++         * Get the 2nd part of signature into a flat buffer with
++         * appropriate padding
++         */
++    d_len = r_len;
++
++    if (spcf_bn2bin_ex(sig->s, &d, &d_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    if (bn2crparam(sig->r, &kop.crk_param[5]))
++    }
++
++    /* Sanity test */
++    if (dlen > r_len) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    if (bn2crparam(sig->s, &kop.crk_param[6]))
++    }
++
++    /* Allocate memory to store hash. */
++    f = OPENSSL_malloc(r_len);
++    if (!f) {
++        DSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
+         goto err;
++    }
++
++    /* Add padding, since SEC expects hash to of size r_len */
++    if (dlen < r_len)
++        memset(f, 0, r_len - dlen);
++
++    /* Skip leading bytes if dgst_len < r_len */
++    memcpy(f + r_len - dlen, dgst, dlen);
++
++    /* inputs: dgst dsa->p dsa->q dsa->g dsa->pub_key sig->r sig->s */
++    kop.crk_param[0].crp_p = (void *)f;
++    kop.crk_param[0].crp_nbits = r_len * 8;
++    kop.crk_param[1].crp_p = q;
++    kop.crk_param[1].crp_nbits = q_len * 8;
++    kop.crk_param[2].crp_p = r;
++    kop.crk_param[2].crp_nbits = r_len * 8;
++    kop.crk_param[3].crp_p = g;
++    kop.crk_param[3].crp_nbits = g_len * 8;
++    kop.crk_param[4].crp_p = w;
++    kop.crk_param[4].crp_nbits = w_len * 8;
++    kop.crk_param[5].crp_p = c;
++    kop.crk_param[5].crp_nbits = c_len * 8;
++    kop.crk_param[6].crp_p = d;
++    kop.crk_param[6].crp_nbits = d_len * 8;
+     kop.crk_iparams = 7;
+ 
+-    if (cryptodev_asym(&kop, 0, NULL, 0, NULL) == 0) {
+-        /*
+-         * OCF success value is 0, if not zero, change dsaret to fail
+-         */
+-        if (0 != kop.crk_status)
+-            dsaret = 0;
+-    } else {
+-        const DSA_METHOD *meth = DSA_OpenSSL();
++    if ((cryptodev_asym(&kop, 0, NULL, 0, NULL))) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, DSA_R_DECODE_ERROR);
++        goto err;
++    }
+ 
+-        dsaret = (meth->dsa_do_verify) (dgst, dlen, sig, dsa);
++    /*
++     * OCF success value is 0, if not zero, change dsaret to fail
++     */
++    if (0 != kop.crk_status) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, DSA_R_DECODE_ERROR);
++        goto err;
+     }
+- err:
+-    kop.crk_param[0].crp_p = NULL;
++
+     zapparams(&kop);
+     return (dsaret);
++ err:
++    {
++        const DSA_METHOD *meth = DSA_OpenSSL();
++        dsaret = (meth->dsa_do_verify) (dgst, dlen, sig, dsa);
++        return dsaret;
++    }
++}
++
++/* Cryptodev DSA Key Gen routine */
++static int cryptodev_dsa_keygen(DSA *dsa)
++{
++    struct crypt_kop kop;
++    int ret = 1, g_len;
++    unsigned char *g = NULL;
++
++    if (dsa->priv_key == NULL) {
++        if ((dsa->priv_key = BN_new()) == NULL)
++            goto sw_try;
++    }
++
++    if (dsa->pub_key == NULL) {
++        if ((dsa->pub_key = BN_new()) == NULL)
++            goto sw_try;
++    }
++
++    g_len = BN_num_bytes(dsa->p);
++        /**
++         * Get generator into a plain buffer. If length is less than
++         * p_len then add leading padding bytes.
++         */
++    if (spcf_bn2bin_ex(dsa->g, &g, &g_len)) {
++        DSAerr(DSA_F_DSA_GENERATE_KEY, ERR_R_MALLOC_FAILURE);
++        goto sw_try;
++    }
++
++    memset(&kop, 0, sizeof kop);
++
++    kop.crk_op = CRK_DSA_GENERATE_KEY;
++    if (bn2crparam(dsa->p, &kop.crk_param[0]))
++        goto sw_try;
++    if (bn2crparam(dsa->q, &kop.crk_param[1]))
++        goto sw_try;
++    kop.crk_param[2].crp_p = g;
++    kop.crk_param[2].crp_nbits = g_len * 8;
++    kop.crk_iparams = 3;
++
++    /* pub_key is or prime length while priv key is of length of order */
++    if (cryptodev_asym(&kop, BN_num_bytes(dsa->p), dsa->pub_key,
++                       BN_num_bytes(dsa->q), dsa->priv_key))
++        goto sw_try;
++
++    return ret;
++ sw_try:
++    {
++        const DSA_METHOD *meth = DSA_OpenSSL();
++        ret = (meth->dsa_keygen) (dsa);
++    }
++    return ret;
+ }
+ 
+ static DSA_METHOD cryptodev_dsa = {
+@@ -1584,12 +1859,558 @@ static DSA_METHOD cryptodev_dsa = {
+     NULL                        /* app_data */
+ };
+ 
+-static int
+-cryptodev_mod_exp_dh(const DH *dh, BIGNUM *r, const BIGNUM *a,
+-                     const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx,
+-                     BN_MONT_CTX *m_ctx)
++static ECDSA_METHOD cryptodev_ecdsa = {
++    "cryptodev ECDSA method",
++    NULL,
++    NULL,                       /* ecdsa_sign_setup */
++    NULL,
++    NULL,
++    0,                          /* flags */
++    NULL                        /* app_data */
++};
++
++typedef enum ec_curve_s {
++    EC_PRIME,
++    EC_BINARY
++} ec_curve_t;
++
++/* ENGINE handler for ECDSA Sign */
++static ECDSA_SIG *cryptodev_ecdsa_do_sign(const unsigned char *dgst,
++                                          int dgst_len, const BIGNUM *in_kinv,
++                                          const BIGNUM *in_r, EC_KEY *eckey)
+ {
+-    return (cryptodev_bn_mod_exp(r, a, p, m, ctx, m_ctx));
++    BIGNUM *m = NULL, *p = NULL, *a = NULL;
++    BIGNUM *b = NULL, *x = NULL, *y = NULL;
++    BN_CTX *ctx = NULL;
++    ECDSA_SIG *ret = NULL;
++    ECDSA_DATA *ecdsa = NULL;
++    unsigned char *q = NULL, *r = NULL, *ab = NULL, *g_xy = NULL;
++    unsigned char *s = NULL, *c = NULL, *d = NULL, *f = NULL, *tmp_dgst =
++        NULL;
++    int i = 0, q_len = 0, priv_key_len = 0, r_len = 0;
++    int g_len = 0, d_len = 0, ab_len = 0;
++    const BIGNUM *order = NULL, *priv_key = NULL;
++    const EC_GROUP *group = NULL;
++    struct crypt_kop kop;
++    ec_curve_t ec_crv = EC_PRIME;
++
++    memset(&kop, 0, sizeof(kop));
++    ecdsa = ecdsa_check(eckey);
++    if (!ecdsa) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_PASSED_NULL_PARAMETER);
++        return NULL;
++    }
++
++    group = EC_KEY_get0_group(eckey);
++    priv_key = EC_KEY_get0_private_key(eckey);
++
++    if (!group || !priv_key) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_PASSED_NULL_PARAMETER);
++        return NULL;
++    }
++
++    if ((ctx = BN_CTX_new()) == NULL || (m = BN_new()) == NULL ||
++        (a = BN_new()) == NULL || (b = BN_new()) == NULL ||
++        (p = BN_new()) == NULL || (x = BN_new()) == NULL ||
++        (y = BN_new()) == NULL) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    order = &group->order;
++    if (!order || BN_is_zero(order)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ECDSA_R_MISSING_PARAMETERS);
++        goto err;
++    }
++
++    i = BN_num_bits(order);
++    /*
++     * Need to truncate digest if it is too long: first truncate whole bytes
++     */
++    if (8 * dgst_len > i)
++        dgst_len = (i + 7) / 8;
++
++    if (!BN_bin2bn(dgst, dgst_len, m)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_BN_LIB);
++        goto err;
++    }
++
++    /* If still too long truncate remaining bits with a shift */
++    if ((8 * dgst_len > i) && !BN_rshift(m, m, 8 - (i & 0x7))) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_BN_LIB);
++        goto err;
++    }
++
++    /* copy the truncated bits into plain buffer */
++    if (spcf_bn2bin(m, &tmp_dgst, &dgst_len)) {
++        fprintf(stderr, "%s:%d: OPENSSL_malloc failec\n", __FUNCTION__,
++                __LINE__);
++        goto err;
++    }
++
++    ret = ECDSA_SIG_new();
++    if (!ret) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_BN_LIB);
++        goto err;
++    }
++
++    /* check if this is prime or binary EC request */
++    if (EC_METHOD_get_field_type(EC_GROUP_method_of(group)) ==
++        NID_X9_62_prime_field) {
++        ec_crv = EC_PRIME;
++        /* get the generator point pair */
++        if (!EC_POINT_get_affine_coordinates_GFp
++            (group, EC_GROUP_get0_generator(group), x, y, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_EC_LIB);
++            goto err;
++        }
++
++        /* get the ECC curve parameters */
++        if (!EC_GROUP_get_curve_GFp(group, p, a, b, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_EC_LIB);
++            goto err;
++        }
++    } else if (EC_METHOD_get_field_type(EC_GROUP_method_of(group)) ==
++               NID_X9_62_characteristic_two_field) {
++        ec_crv = EC_BINARY;
++        /* get the ECC curve parameters */
++        if (!EC_GROUP_get_curve_GF2m(group, p, a, b, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_EC_LIB);
++            goto err;
++        }
++
++        /* get the generator point pair */
++        if (!EC_POINT_get_affine_coordinates_GF2m(group,
++                                                  EC_GROUP_get0_generator
++                                                  (group), x, y, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_EC_LIB);
++            goto err;
++        }
++    } else {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_EC_LIB);
++        goto err;
++    }
++
++    if (spcf_bn2bin(order, &r, &r_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    if (spcf_bn2bin(p, &q, &q_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    priv_key_len = r_len;
++
++        /**
++         * If BN_num_bytes of priv_key returns less then r_len then
++         * add padding bytes before the key
++         */
++    if (spcf_bn2bin_ex(priv_key, &s, &priv_key_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Generation of ECC curve parameters */
++    ab_len = 2 * q_len;
++    ab = eng_copy_curve_points(a, b, ab_len, q_len);
++    if (!ab) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    if (ec_crv == EC_BINARY) {
++        if (eng_ec_get_cparam
++            (EC_GROUP_get_curve_name(group), ab + q_len, q_len)) {
++            unsigned char *c_temp = NULL;
++            int c_temp_len = q_len;
++            if (eng_ec_compute_cparam(b, p, &c_temp, &c_temp_len))
++                memcpy(ab + q_len, c_temp, q_len);
++            else
++                goto err;
++        }
++        kop.curve_type = ECC_BINARY;
++    }
++
++    /* Calculation of Generator point */
++    g_len = 2 * q_len;
++    g_xy = eng_copy_curve_points(x, y, g_len, q_len);
++    if (!g_xy) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Memory allocation for first part of digital signature */
++    c = malloc(r_len);
++    if (!c) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    d_len = r_len;
++
++    /* Memory allocation for second part of digital signature */
++    d = malloc(d_len);
++    if (!d) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* memory for message representative */
++    f = malloc(r_len);
++    if (!f) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Add padding, since SEC expects hash to of size r_len */
++    memset(f, 0, r_len - dgst_len);
++
++    /* Skip leading bytes if dgst_len < r_len */
++    memcpy(f + r_len - dgst_len, tmp_dgst, dgst_len);
++
++    dgst_len += r_len - dgst_len;
++    kop.crk_op = CRK_DSA_SIGN;
++    /* inputs: dgst dsa->p dsa->q dsa->g dsa->priv_key */
++    kop.crk_param[0].crp_p = f;
++    kop.crk_param[0].crp_nbits = dgst_len * 8;
++    kop.crk_param[1].crp_p = q;
++    kop.crk_param[1].crp_nbits = q_len * 8;
++    kop.crk_param[2].crp_p = r;
++    kop.crk_param[2].crp_nbits = r_len * 8;
++    kop.crk_param[3].crp_p = g_xy;
++    kop.crk_param[3].crp_nbits = g_len * 8;
++    kop.crk_param[4].crp_p = s;
++    kop.crk_param[4].crp_nbits = priv_key_len * 8;
++    kop.crk_param[5].crp_p = ab;
++    kop.crk_param[5].crp_nbits = ab_len * 8;
++    kop.crk_iparams = 6;
++    kop.crk_param[6].crp_p = c;
++    kop.crk_param[6].crp_nbits = d_len * 8;
++    kop.crk_param[7].crp_p = d;
++    kop.crk_param[7].crp_nbits = d_len * 8;
++    kop.crk_oparams = 2;
++
++    if (cryptodev_asym(&kop, 0, NULL, 0, NULL) == 0) {
++        /* Check if ret->r and s needs to allocated */
++        crparam2bn(&kop.crk_param[6], ret->r);
++        crparam2bn(&kop.crk_param[7], ret->s);
++    } else {
++        const ECDSA_METHOD *meth = ECDSA_OpenSSL();
++        ret = (meth->ecdsa_do_sign) (dgst, dgst_len, in_kinv, in_r, eckey);
++    }
++    kop.crk_param[0].crp_p = NULL;
++    zapparams(&kop);
++ err:
++    if (!ret) {
++        ECDSA_SIG_free(ret);
++        ret = NULL;
++    }
++    return ret;
++}
++
++static int cryptodev_ecdsa_verify(const unsigned char *dgst, int dgst_len,
++                                  ECDSA_SIG *sig, EC_KEY *eckey)
++{
++    BIGNUM *m = NULL, *p = NULL, *a = NULL, *b = NULL;
++    BIGNUM *x = NULL, *y = NULL, *w_x = NULL, *w_y = NULL;
++    BN_CTX *ctx = NULL;
++    ECDSA_DATA *ecdsa = NULL;
++    unsigned char *q = NULL, *r = NULL, *ab = NULL, *g_xy = NULL, *w_xy =
++        NULL;
++    unsigned char *c = NULL, *d = NULL, *f = NULL, *tmp_dgst = NULL;
++    int i = 0, q_len = 0, pub_key_len = 0, r_len = 0, c_len = 0, g_len = 0;
++    int d_len = 0, ab_len = 0, ret = -1;
++    const EC_POINT *pub_key = NULL;
++    const BIGNUM *order = NULL;
++    const EC_GROUP *group = NULL;
++    ec_curve_t ec_crv = EC_PRIME;
++    struct crypt_kop kop;
++
++    memset(&kop, 0, sizeof kop);
++    ecdsa = ecdsa_check(eckey);
++    if (!ecdsa) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_PASSED_NULL_PARAMETER);
++        return ret;
++    }
++
++    group = EC_KEY_get0_group(eckey);
++    pub_key = EC_KEY_get0_public_key(eckey);
++
++    if (!group || !pub_key) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_PASSED_NULL_PARAMETER);
++        return ret;
++    }
++
++    if ((ctx = BN_CTX_new()) == NULL || (m = BN_new()) == NULL ||
++        (a = BN_new()) == NULL || (b = BN_new()) == NULL ||
++        (p = BN_new()) == NULL || (x = BN_new()) == NULL ||
++        (y = BN_new()) == NULL || (w_x = BN_new()) == NULL ||
++        (w_y = BN_new()) == NULL) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    order = &group->order;
++    if (!order || BN_is_zero(order)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ECDSA_R_MISSING_PARAMETERS);
++        goto err;
++    }
++
++    i = BN_num_bits(order);
++    /*
++     * Need to truncate digest if it is too long: first truncate whole *
++     * bytes
++     */
++    if (8 * dgst_len > i)
++        dgst_len = (i + 7) / 8;
++
++    if (!BN_bin2bn(dgst, dgst_len, m)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_BN_LIB);
++        goto err;
++    }
++
++    /* If still too long truncate remaining bits with a shift */
++    if ((8 * dgst_len > i) && !BN_rshift(m, m, 8 - (i & 0x7))) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_BN_LIB);
++        goto err;
++    }
++    /* copy the truncated bits into plain buffer */
++    if (spcf_bn2bin(m, &tmp_dgst, &dgst_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* check if this is prime or binary EC request */
++    if (EC_METHOD_get_field_type(EC_GROUP_method_of(group)) ==
++        NID_X9_62_prime_field) {
++        ec_crv = EC_PRIME;
++
++        /* get the generator point pair */
++        if (!EC_POINT_get_affine_coordinates_GFp(group,
++                                                 EC_GROUP_get0_generator
++                                                 (group), x, y, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_EC_LIB);
++            goto err;
++        }
++
++        /* get the public key pair for prime curve */
++        if (!EC_POINT_get_affine_coordinates_GFp(group,
++                                                 pub_key, w_x, w_y, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_EC_LIB);
++            goto err;
++        }
++
++        /* get the ECC curve parameters */
++        if (!EC_GROUP_get_curve_GFp(group, p, a, b, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_EC_LIB);
++            goto err;
++        }
++    } else if (EC_METHOD_get_field_type(EC_GROUP_method_of(group)) ==
++               NID_X9_62_characteristic_two_field) {
++        ec_crv = EC_BINARY;
++        /* get the ECC curve parameters */
++        if (!EC_GROUP_get_curve_GF2m(group, p, a, b, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_EC_LIB);
++            goto err;
++        }
++
++        /* get the generator point pair */
++        if (!EC_POINT_get_affine_coordinates_GF2m(group,
++                                                  EC_GROUP_get0_generator
++                                                  (group), x, y, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_EC_LIB);
++            goto err;
++        }
++
++        /* get the public key pair for binary curve */
++        if (!EC_POINT_get_affine_coordinates_GF2m(group,
++                                                  pub_key, w_x, w_y, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_EC_LIB);
++            goto err;
++        }
++    } else {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_EC_LIB);
++        goto err;
++    }
++
++    /* Get the order of the subgroup of private keys */
++    if (spcf_bn2bin((BIGNUM *)order, &r, &r_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Get the irreducible polynomial that creates the field */
++    if (spcf_bn2bin(p, &q, &q_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Get the public key into a flat buffer with appropriate padding */
++    pub_key_len = 2 * q_len;
++
++    w_xy = eng_copy_curve_points(w_x, w_y, pub_key_len, q_len);
++    if (!w_xy) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Generation of ECC curve parameters */
++    ab_len = 2 * q_len;
++
++    ab = eng_copy_curve_points(a, b, ab_len, q_len);
++    if (!ab) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    if (ec_crv == EC_BINARY) {
++        /* copy b' i.e c(b), instead of only b */
++        if (eng_ec_get_cparam
++            (EC_GROUP_get_curve_name(group), ab + q_len, q_len)) {
++            unsigned char *c_temp = NULL;
++            int c_temp_len = q_len;
++            if (eng_ec_compute_cparam(b, p, &c_temp, &c_temp_len))
++                memcpy(ab + q_len, c_temp, q_len);
++            else
++                goto err;
++        }
++        kop.curve_type = ECC_BINARY;
++    }
++
++    /* Calculation of Generator point */
++    g_len = 2 * q_len;
++
++    g_xy = eng_copy_curve_points(x, y, g_len, q_len);
++    if (!g_xy) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++        /**
++         * Get the 1st part of signature into a flat buffer with
++         * appropriate padding
++         */
++    if (BN_num_bytes(sig->r) < r_len)
++        c_len = r_len;
++
++    if (spcf_bn2bin_ex(sig->r, &c, &c_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++        /**
++         * Get the 2nd part of signature into a flat buffer with
++         * appropriate padding
++         */
++    if (BN_num_bytes(sig->s) < r_len)
++        d_len = r_len;
++
++    if (spcf_bn2bin_ex(sig->s, &d, &d_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* memory for message representative */
++    f = malloc(r_len);
++    if (!f) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Add padding, since SEC expects hash to of size r_len */
++    memset(f, 0, r_len - dgst_len);
++
++    /* Skip leading bytes if dgst_len < r_len */
++    memcpy(f + r_len - dgst_len, tmp_dgst, dgst_len);
++    dgst_len += r_len - dgst_len;
++    kop.crk_op = CRK_DSA_VERIFY;
++    /* inputs: dgst dsa->p dsa->q dsa->g dsa->priv_key */
++    kop.crk_param[0].crp_p = f;
++    kop.crk_param[0].crp_nbits = dgst_len * 8;
++    kop.crk_param[1].crp_p = q;
++    kop.crk_param[1].crp_nbits = q_len * 8;
++    kop.crk_param[2].crp_p = r;
++    kop.crk_param[2].crp_nbits = r_len * 8;
++    kop.crk_param[3].crp_p = g_xy;
++    kop.crk_param[3].crp_nbits = g_len * 8;
++    kop.crk_param[4].crp_p = w_xy;
++    kop.crk_param[4].crp_nbits = pub_key_len * 8;
++    kop.crk_param[5].crp_p = ab;
++    kop.crk_param[5].crp_nbits = ab_len * 8;
++    kop.crk_param[6].crp_p = c;
++    kop.crk_param[6].crp_nbits = d_len * 8;
++    kop.crk_param[7].crp_p = d;
++    kop.crk_param[7].crp_nbits = d_len * 8;
++    kop.crk_iparams = 8;
++
++    if (cryptodev_asym(&kop, 0, NULL, 0, NULL) == 0) {
++        /*
++         * OCF success value is 0, if not zero, change ret to fail
++         */
++        if (0 == kop.crk_status)
++            ret = 1;
++    } else {
++        const ECDSA_METHOD *meth = ECDSA_OpenSSL();
++
++        ret = (meth->ecdsa_do_verify) (dgst, dgst_len, sig, eckey);
++    }
++    kop.crk_param[0].crp_p = NULL;
++    zapparams(&kop);
++
++ err:
++    return ret;
++}
++
++static int cryptodev_dh_keygen(DH *dh)
++{
++    struct crypt_kop kop;
++    int ret = 1, g_len;
++    unsigned char *g = NULL;
++
++    if (dh->priv_key == NULL) {
++        if ((dh->priv_key = BN_new()) == NULL)
++            goto sw_try;
++    }
++
++    if (dh->pub_key == NULL) {
++        if ((dh->pub_key = BN_new()) == NULL)
++            goto sw_try;
++    }
++
++    g_len = BN_num_bytes(dh->p);
++        /**
++         * Get generator into a plain buffer. If length is less than
++         * q_len then add leading padding bytes.
++         */
++    if (spcf_bn2bin_ex(dh->g, &g, &g_len)) {
++        DSAerr(DH_F_DH_GENERATE_KEY, ERR_R_MALLOC_FAILURE);
++        goto sw_try;
++    }
++
++    memset(&kop, 0, sizeof kop);
++    kop.crk_op = CRK_DH_GENERATE_KEY;
++    if (bn2crparam(dh->p, &kop.crk_param[0]))
++        goto sw_try;
++    if (bn2crparam(dh->q, &kop.crk_param[1]))
++        goto sw_try;
++    kop.crk_param[2].crp_p = g;
++    kop.crk_param[2].crp_nbits = g_len * 8;
++    kop.crk_iparams = 3;
++
++    /* pub_key is or prime length while priv key is of length of order */
++    if (cryptodev_asym(&kop, BN_num_bytes(dh->p), dh->pub_key,
++                       BN_num_bytes(dh->q), dh->priv_key))
++        goto sw_try;
++
++    return ret;
++ sw_try:
++    {
++        const DH_METHOD *meth = DH_OpenSSL();
++        ret = (meth->generate_key) (dh);
++    }
++    return ret;
+ }
+ 
+ static int
+@@ -1597,41 +2418,236 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+ {
+     struct crypt_kop kop;
+     int dhret = 1;
+-    int fd, keylen;
++    int fd, p_len;
++    BIGNUM *temp = NULL;
++    unsigned char *padded_pub_key = NULL, *p = NULL;
++
++    if ((fd = get_asym_dev_crypto()) < 0)
++        goto sw_try;
++
++    memset(&kop, 0, sizeof kop);
++    kop.crk_op = CRK_DH_COMPUTE_KEY;
++    /* inputs: dh->priv_key pub_key dh->p key */
++    spcf_bn2bin(dh->p, &p, &p_len);
++    spcf_bn2bin_ex(pub_key, &padded_pub_key, &p_len);
++    if (bn2crparam(dh->priv_key, &kop.crk_param[0]))
++        goto sw_try;
++
++    kop.crk_param[1].crp_p = padded_pub_key;
++    kop.crk_param[1].crp_nbits = p_len * 8;
++    kop.crk_param[2].crp_p = p;
++    kop.crk_param[2].crp_nbits = p_len * 8;
++    kop.crk_iparams = 3;
++    kop.crk_param[3].crp_p = (void *)key;
++    kop.crk_param[3].crp_nbits = p_len * 8;
++    kop.crk_oparams = 1;
++    dhret = p_len;
++
++    if (ioctl(fd, CIOCKEY, &kop))
++        goto sw_try;
++
++    if ((temp = BN_new())) {
++        if (!BN_bin2bn(key, p_len, temp)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_BN_LIB);
++            goto sw_try;
++        }
++        if (dhret > BN_num_bytes(temp))
++            dhret = BN_bn2bin(temp, key);
++        BN_free(temp);
++    }
+ 
+-    if ((fd = get_asym_dev_crypto()) < 0) {
++    kop.crk_param[3].crp_p = NULL;
++    zapparams(&kop);
++    return (dhret);
++ sw_try:
++    {
+         const DH_METHOD *meth = DH_OpenSSL();
+ 
+-        return ((meth->compute_key) (key, pub_key, dh));
++        dhret = (meth->compute_key) (key, pub_key, dh);
+     }
++    return (dhret);
++}
+ 
+-    keylen = BN_num_bits(dh->p);
++int cryptodev_ecdh_compute_key(void *out, size_t outlen,
++                               const EC_POINT *pub_key, EC_KEY *ecdh,
++                               void *(*KDF) (const void *in, size_t inlen,
++                                             void *out, size_t *outlen))
++{
++    ec_curve_t ec_crv = EC_PRIME;
++    unsigned char *q = NULL, *w_xy = NULL, *ab = NULL, *s = NULL, *r = NULL;
++    BIGNUM *w_x = NULL, *w_y = NULL;
++    int q_len = 0, ab_len = 0, pub_key_len = 0, r_len = 0, priv_key_len = 0;
++    BIGNUM *p = NULL, *a = NULL, *b = NULL;
++    BN_CTX *ctx;
++    EC_POINT *tmp = NULL;
++    BIGNUM *x = NULL, *y = NULL;
++    const BIGNUM *priv_key;
++    const EC_GROUP *group = NULL;
++    int ret = -1;
++    size_t buflen, len;
++    struct crypt_kop kop;
+ 
+     memset(&kop, 0, sizeof kop);
+-    kop.crk_op = CRK_DH_COMPUTE_KEY;
+ 
+-    /* inputs: dh->priv_key pub_key dh->p key */
+-    if (bn2crparam(dh->priv_key, &kop.crk_param[0]))
++    if ((ctx = BN_CTX_new()) == NULL)
+         goto err;
+-    if (bn2crparam(pub_key, &kop.crk_param[1]))
++    BN_CTX_start(ctx);
++    x = BN_CTX_get(ctx);
++    y = BN_CTX_get(ctx);
++    p = BN_CTX_get(ctx);
++    a = BN_CTX_get(ctx);
++    b = BN_CTX_get(ctx);
++    w_x = BN_CTX_get(ctx);
++    w_y = BN_CTX_get(ctx);
++
++    if (!x || !y || !p || !a || !b || !w_x || !w_y) {
++        ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_MALLOC_FAILURE);
+         goto err;
+-    if (bn2crparam(dh->p, &kop.crk_param[2]))
++    }
++
++    priv_key = EC_KEY_get0_private_key(ecdh);
++    if (priv_key == NULL) {
++        ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ECDH_R_NO_PRIVATE_VALUE);
+         goto err;
+-    kop.crk_iparams = 3;
++    }
+ 
+-    kop.crk_param[3].crp_p = (caddr_t) key;
+-    kop.crk_param[3].crp_nbits = keylen * 8;
+-    kop.crk_oparams = 1;
++    group = EC_KEY_get0_group(ecdh);
++    if ((tmp = EC_POINT_new(group)) == NULL) {
++        ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
+ 
+-    if (ioctl(fd, CIOCKEY, &kop) == -1) {
+-        const DH_METHOD *meth = DH_OpenSSL();
++    if (EC_METHOD_get_field_type(EC_GROUP_method_of(group)) ==
++        NID_X9_62_prime_field) {
++        ec_crv = EC_PRIME;
+ 
+-        dhret = (meth->compute_key) (key, pub_key, dh);
++        if (!EC_POINT_get_affine_coordinates_GFp(group,
++                                                 EC_GROUP_get0_generator
++                                                 (group), x, y, ctx)) {
++            ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ECDH_R_POINT_ARITHMETIC_FAILURE);
++            goto err;
++        }
++
++        /* get the ECC curve parameters */
++        if (!EC_GROUP_get_curve_GFp(group, p, a, b, ctx)) {
++            ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_BN_LIB);
++            goto err;
++        }
++
++        /* get the public key pair for prime curve */
++        if (!EC_POINT_get_affine_coordinates_GFp
++            (group, pub_key, w_x, w_y, ctx)) {
++            ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_BN_LIB);
++            goto err;
++        }
++    } else {
++        ec_crv = EC_BINARY;
++
++        if (!EC_POINT_get_affine_coordinates_GF2m(group,
++                                                  EC_GROUP_get0_generator
++                                                  (group), x, y, ctx)) {
++            ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ECDH_R_POINT_ARITHMETIC_FAILURE);
++            goto err;
++        }
++
++        /* get the ECC curve parameters */
++        if (!EC_GROUP_get_curve_GF2m(group, p, a, b, ctx)) {
++            ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_BN_LIB);
++            goto err;
++        }
++
++        /* get the public key pair for binary curve */
++        if (!EC_POINT_get_affine_coordinates_GF2m(group,
++                                                  pub_key, w_x, w_y, ctx)) {
++            ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_EC_LIB);
++            goto err;
++        }
++    }
++
++    /* irreducible polynomial that creates the field */
++    if (spcf_bn2bin((BIGNUM *)&group->order, &r, &r_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Get the irreducible polynomial that creates the field */
++    if (spcf_bn2bin(p, &q, &q_len)) {
++        ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_BN_LIB);
++        goto err;
++    }
++
++    /* Get the public key into a flat buffer with appropriate padding */
++    pub_key_len = 2 * q_len;
++    w_xy = eng_copy_curve_points(w_x, w_y, pub_key_len, q_len);
++    if (!w_xy) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    /* Generation of ECC curve parameters */
++    ab_len = 2 * q_len;
++    ab = eng_copy_curve_points(a, b, ab_len, q_len);
++    if (!ab) {
++        ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_BN_LIB);
++        goto err;
++    }
++
++    if (ec_crv == EC_BINARY) {
++        /* copy b' i.e c(b), instead of only b */
++        if (eng_ec_get_cparam
++            (EC_GROUP_get_curve_name(group), ab + q_len, q_len)) {
++            unsigned char *c_temp = NULL;
++            int c_temp_len = q_len;
++            if (eng_ec_compute_cparam(b, p, &c_temp, &c_temp_len))
++                memcpy(ab + q_len, c_temp, q_len);
++            else
++                goto err;
++        }
++        kop.curve_type = ECC_BINARY;
++    } else
++        kop.curve_type = ECC_PRIME;
++
++    priv_key_len = r_len;
++
++    /*
++     * If BN_num_bytes of priv_key returns less then r_len then
++     * add padding bytes before the key
++     */
++    if (spcf_bn2bin_ex((BIGNUM *)priv_key, &s, &priv_key_len)) {
++        ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_MALLOC_FAILURE);
++        goto err;
++    }
++
++    buflen = (EC_GROUP_get_degree(group) + 7) / 8;
++    len = BN_num_bytes(x);
++    if (len > buflen || q_len < buflen) {
++        ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_INTERNAL_ERROR);
++        goto err;
+     }
++
++    kop.crk_op = CRK_DH_COMPUTE_KEY;
++    kop.crk_param[0].crp_p = (void *)s;
++    kop.crk_param[0].crp_nbits = priv_key_len * 8;
++    kop.crk_param[1].crp_p = (void *)w_xy;
++    kop.crk_param[1].crp_nbits = pub_key_len * 8;
++    kop.crk_param[2].crp_p = (void *)q;
++    kop.crk_param[2].crp_nbits = q_len * 8;
++    kop.crk_param[3].crp_p = (void *)ab;
++    kop.crk_param[3].crp_nbits = ab_len * 8;
++    kop.crk_iparams = 4;
++    kop.crk_param[4].crp_p = (void *)out;
++    kop.crk_param[4].crp_nbits = q_len * 8;
++    kop.crk_oparams = 1;
++    ret = q_len;
++    if (cryptodev_asym(&kop, 0, NULL, 0, NULL)) {
++        const ECDH_METHOD *meth = ECDH_OpenSSL();
++        ret = (meth->compute_key) (out, outlen, pub_key, ecdh, KDF);
++    } else
++        ret = q_len;
+  err:
+-    kop.crk_param[3].crp_p = NULL;
++    kop.crk_param[4].crp_p = NULL;
+     zapparams(&kop);
+-    return (dhret);
++    return ret;
+ }
+ 
+ static DH_METHOD cryptodev_dh = {
+@@ -1645,6 +2661,14 @@ static DH_METHOD cryptodev_dh = {
+     NULL                        /* app_data */
+ };
+ 
++static ECDH_METHOD cryptodev_ecdh = {
++    "cryptodev ECDH method",
++    NULL,                       /* cryptodev_ecdh_compute_key */
++    NULL,
++    0,                          /* flags */
++    NULL                        /* app_data */
++};
++
+ /*
+  * ctrl right now is just a wrapper that doesn't do much
+  * but I expect we'll want some options soon.
+@@ -1724,24 +2748,39 @@ void ENGINE_load_cryptodev(void)
+         memcpy(&cryptodev_dsa, meth, sizeof(DSA_METHOD));
+         if (cryptodev_asymfeat & CRF_DSA_SIGN)
+             cryptodev_dsa.dsa_do_sign = cryptodev_dsa_do_sign;
+-        if (cryptodev_asymfeat & CRF_MOD_EXP) {
+-            cryptodev_dsa.bn_mod_exp = cryptodev_dsa_bn_mod_exp;
+-            cryptodev_dsa.dsa_mod_exp = cryptodev_dsa_dsa_mod_exp;
+-        }
+         if (cryptodev_asymfeat & CRF_DSA_VERIFY)
+             cryptodev_dsa.dsa_do_verify = cryptodev_dsa_verify;
++        if (cryptodev_asymfeat & CRF_DSA_GENERATE_KEY)
++            cryptodev_dsa.dsa_keygen = cryptodev_dsa_keygen;
+     }
+ 
+     if (ENGINE_set_DH(engine, &cryptodev_dh)) {
+         const DH_METHOD *dh_meth = DH_OpenSSL();
++        memcpy(&cryptodev_dh, dh_meth, sizeof(DH_METHOD));
++        if (cryptodev_asymfeat & CRF_DH_COMPUTE_KEY) {
++            cryptodev_dh.compute_key = cryptodev_dh_compute_key;
++        }
++        if (cryptodev_asymfeat & CRF_DH_GENERATE_KEY) {
++            cryptodev_dh.generate_key = cryptodev_dh_keygen;
++        }
++    }
+ 
+-        cryptodev_dh.generate_key = dh_meth->generate_key;
+-        cryptodev_dh.compute_key = dh_meth->compute_key;
+-        cryptodev_dh.bn_mod_exp = dh_meth->bn_mod_exp;
+-        if (cryptodev_asymfeat & CRF_MOD_EXP) {
+-            cryptodev_dh.bn_mod_exp = cryptodev_mod_exp_dh;
+-            if (cryptodev_asymfeat & CRF_DH_COMPUTE_KEY)
+-                cryptodev_dh.compute_key = cryptodev_dh_compute_key;
++    if (ENGINE_set_ECDSA(engine, &cryptodev_ecdsa)) {
++        const ECDSA_METHOD *meth = ECDSA_OpenSSL();
++        memcpy(&cryptodev_ecdsa, meth, sizeof(ECDSA_METHOD));
++        if (cryptodev_asymfeat & CRF_DSA_SIGN) {
++            cryptodev_ecdsa.ecdsa_do_sign = cryptodev_ecdsa_do_sign;
++        }
++        if (cryptodev_asymfeat & CRF_DSA_VERIFY) {
++            cryptodev_ecdsa.ecdsa_do_verify = cryptodev_ecdsa_verify;
++        }
++    }
++
++    if (ENGINE_set_ECDH(engine, &cryptodev_ecdh)) {
++        const ECDH_METHOD *ecdh_meth = ECDH_OpenSSL();
++        memcpy(&cryptodev_ecdh, ecdh_meth, sizeof(ECDH_METHOD));
++        if (cryptodev_asymfeat & CRF_DH_COMPUTE_KEY) {
++            cryptodev_ecdh.compute_key = cryptodev_ecdh_compute_key;
+         }
+     }
+ 
+-- 
+2.7.0
+

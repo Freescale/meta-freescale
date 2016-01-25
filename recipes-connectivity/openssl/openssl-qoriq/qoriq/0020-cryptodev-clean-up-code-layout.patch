@@ -1,0 +1,73 @@
+From 453c617b10fb2c4e748b5799ab4b00c184470c60 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Wed, 18 Feb 2015 10:39:46 +0200
+Subject: [PATCH 20/48] cryptodev: clean-up code layout
+
+This is just a refactoring that uses else branch to check for malloc failures
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/engine/eng_cryptodev.c | 45 ++++++++++++++++++++-----------------------
+ 1 file changed, 21 insertions(+), 24 deletions(-)
+
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index bbc903b..14dcddf 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -1865,32 +1865,29 @@ cryptodev_asym_async(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+     fd = *(int *)cookie->eng_handle;
+ 
+     eng_cookie = malloc(sizeof(struct cryptodev_cookie_s));
+-
+-    if (eng_cookie) {
+-        memset(eng_cookie, 0, sizeof(struct cryptodev_cookie_s));
+-        if (r) {
+-            kop->crk_param[kop->crk_iparams].crp_p =
+-                calloc(rlen, sizeof(char));
+-            if (!kop->crk_param[kop->crk_iparams].crp_p)
+-                return -ENOMEM;
+-            kop->crk_param[kop->crk_iparams].crp_nbits = rlen * 8;
+-            kop->crk_oparams++;
+-            eng_cookie->r = r;
+-            eng_cookie->r_param = kop->crk_param[kop->crk_iparams];
+-        }
+-        if (s) {
+-            kop->crk_param[kop->crk_iparams + 1].crp_p =
+-                calloc(slen, sizeof(char));
+-            if (!kop->crk_param[kop->crk_iparams + 1].crp_p)
+-                return -ENOMEM;
+-            kop->crk_param[kop->crk_iparams + 1].crp_nbits = slen * 8;
+-            kop->crk_oparams++;
+-            eng_cookie->s = s;
+-            eng_cookie->s_param = kop->crk_param[kop->crk_iparams + 1];
+-        }
+-    } else
++    if (!eng_cookie)
+         return -ENOMEM;
+ 
++    memset(eng_cookie, 0, sizeof(struct cryptodev_cookie_s));
++    if (r) {
++        kop->crk_param[kop->crk_iparams].crp_p = calloc(rlen, sizeof(char));
++        if (!kop->crk_param[kop->crk_iparams].crp_p)
++            return -ENOMEM;
++        kop->crk_param[kop->crk_iparams].crp_nbits = rlen * 8;
++        kop->crk_oparams++;
++        eng_cookie->r = r;
++        eng_cookie->r_param = kop->crk_param[kop->crk_iparams];
++    }
++    if (s) {
++        kop->crk_param[kop->crk_iparams + 1].crp_p =
++            calloc(slen, sizeof(char));
++        if (!kop->crk_param[kop->crk_iparams + 1].crp_p)
++            return -ENOMEM;
++        kop->crk_param[kop->crk_iparams + 1].crp_nbits = slen * 8;
++        kop->crk_oparams++;
++        eng_cookie->s = s;
++        eng_cookie->s_param = kop->crk_param[kop->crk_iparams + 1];
++    }
+     eng_cookie->kop = kop;
+     cookie->eng_cookie = eng_cookie;
+     return ioctl(fd, CIOCASYMASYNCRYPT, kop);
+-- 
+2.7.0
+

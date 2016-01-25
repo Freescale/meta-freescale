@@ -1,0 +1,321 @@
+From 317e3d9870097e6b115dd8c9a13ccb5e5ca76f2e Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Mon, 16 Jun 2014 14:06:21 +0300
+Subject: [PATCH 14/48] cryptodev: add support for aes-gcm algorithm offloading
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ apps/speed.c                  |   6 +-
+ crypto/engine/eng_cryptodev.c | 236 +++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 240 insertions(+), 2 deletions(-)
+
+diff --git a/apps/speed.c b/apps/speed.c
+index 95adcc1..e5e609b 100644
+--- a/apps/speed.c
++++ b/apps/speed.c
+@@ -226,7 +226,11 @@
+ # endif
+ 
+ # undef BUFSIZE
+-# define BUFSIZE ((long)1024*8+1)
++/* The buffer overhead allows GCM tag at the end of the encrypted data. This
++   avoids buffer overflows from cryptodev since Linux kernel GCM
++   implementation allways adds the tag - unlike e_aes.c:aes_gcm_cipher()
++   which doesn't */
++#define BUFSIZE	((long)1024*8 + EVP_GCM_TLS_TAG_LEN)
+ static volatile int run = 0;
+ 
+ static int mr = 0;
+diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
+index 4929ae6..d2cdca0 100644
+--- a/crypto/engine/eng_cryptodev.c
++++ b/crypto/engine/eng_cryptodev.c
+@@ -2,6 +2,7 @@
+  * Copyright (c) 2002 Bob Beck <beck@openbsd.org>
+  * Copyright (c) 2002 Theo de Raadt
+  * Copyright (c) 2002 Markus Friedl
++ * Copyright (c) 2013-2014 Freescale Semiconductor, Inc.
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+@@ -77,8 +78,10 @@ struct dev_crypto_state {
+     struct session_op d_sess;
+     int d_fd;
+     unsigned char *aad;
+-    unsigned int aad_len;
++    int aad_len;
+     unsigned int len;
++    unsigned char *iv;
++    int ivlen;
+ # ifdef USE_CRYPTODEV_DIGESTS
+     char dummy_mac_key[HASH_MAX_LEN];
+     unsigned char digest_res[HASH_MAX_LEN];
+@@ -287,6 +290,9 @@ static struct {
+         CRYPTO_TLS10_AES_CBC_HMAC_SHA1, NID_aes_256_cbc_hmac_sha1, 16, 32, 20
+     },
+     {
++        CRYPTO_AES_GCM, NID_aes_128_gcm, 16, 16, 0
++    },
++    {
+         0, NID_undef, 0, 0, 0
+     },
+ };
+@@ -325,6 +331,22 @@ static struct {
+ };
+ # endif
+ 
++/* increment counter (64-bit int) by 1 */
++static void ctr64_inc(unsigned char *counter)
++{
++    int n = 8;
++    unsigned char c;
++
++    do {
++        --n;
++        c = counter[n];
++        ++c;
++        counter[n] = c;
++        if (c)
++            return;
++    } while (n);
++}
++
+ /*
+  * Return a fd if /dev/crypto seems usable, 0 otherwise.
+  */
+@@ -807,6 +829,199 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
+     }
+ }
+ 
++static int cryptodev_init_gcm_key(EVP_CIPHER_CTX *ctx,
++                                  const unsigned char *key,
++                                  const unsigned char *iv, int enc)
++{
++    struct dev_crypto_state *state = ctx->cipher_data;
++    struct session_op *sess = &state->d_sess;
++    int cipher = -1, i;
++    if (!iv && !key)
++        return 1;
++
++    if (iv)
++        memcpy(ctx->iv, iv, ctx->cipher->iv_len);
++
++    for (i = 0; ciphers[i].id; i++)
++        if (ctx->cipher->nid == ciphers[i].nid &&
++            ctx->cipher->iv_len <= ciphers[i].ivmax &&
++            ctx->key_len == ciphers[i].keylen) {
++            cipher = ciphers[i].id;
++            break;
++        }
++
++    if (!ciphers[i].id) {
++        state->d_fd = -1;
++        return 0;
++    }
++
++    memset(sess, 0, sizeof(struct session_op));
++
++    if ((state->d_fd = get_dev_crypto()) < 0)
++        return 0;
++
++    sess->key = (unsigned char *)key;
++    sess->keylen = ctx->key_len;
++    sess->cipher = cipher;
++
++    if (ioctl(state->d_fd, CIOCGSESSION, sess) == -1) {
++        put_dev_crypto(state->d_fd);
++        state->d_fd = -1;
++        return 0;
++    }
++    return 1;
++}
++
++static int cryptodev_gcm_tls_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
++                                    const unsigned char *in, size_t len)
++{
++    struct crypt_auth_op cryp = { 0 };
++    struct dev_crypto_state *state = ctx->cipher_data;
++    struct session_op *sess = &state->d_sess;
++    int rv = len;
++
++    if (EVP_CIPHER_CTX_ctrl(ctx, ctx->encrypt ?
++                            EVP_CTRL_GCM_IV_GEN : EVP_CTRL_GCM_SET_IV_INV,
++                            EVP_GCM_TLS_EXPLICIT_IV_LEN, out) <= 0)
++        return 0;
++
++    in += EVP_GCM_TLS_EXPLICIT_IV_LEN;
++    out += EVP_GCM_TLS_EXPLICIT_IV_LEN;
++    len -= EVP_GCM_TLS_EXPLICIT_IV_LEN;
++
++    if (ctx->encrypt) {
++        len -= EVP_GCM_TLS_TAG_LEN;
++    }
++    cryp.ses = sess->ses;
++    cryp.len = len;
++    cryp.src = (unsigned char *)in;
++    cryp.dst = out;
++    cryp.auth_src = state->aad;
++    cryp.auth_len = state->aad_len;
++    cryp.iv = ctx->iv;
++    cryp.op = ctx->encrypt ? COP_ENCRYPT : COP_DECRYPT;
++
++    if (ioctl(state->d_fd, CIOCAUTHCRYPT, &cryp) == -1) {
++        return 0;
++    }
++
++    if (ctx->encrypt)
++        ctr64_inc(state->iv + state->ivlen - 8);
++    else
++        rv = len - EVP_GCM_TLS_TAG_LEN;
++
++    return rv;
++}
++
++static int cryptodev_gcm_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
++                                const unsigned char *in, size_t len)
++{
++    struct crypt_auth_op cryp;
++    struct dev_crypto_state *state = ctx->cipher_data;
++    struct session_op *sess = &state->d_sess;
++
++    if (state->d_fd < 0)
++        return 0;
++
++    if ((len % ctx->cipher->block_size) != 0)
++        return 0;
++
++    if (state->aad_len >= 0)
++        return cryptodev_gcm_tls_cipher(ctx, out, in, len);
++
++    memset(&cryp, 0, sizeof(cryp));
++
++    cryp.ses = sess->ses;
++    cryp.len = len;
++    cryp.src = (unsigned char *)in;
++    cryp.dst = out;
++    cryp.auth_src = NULL;
++    cryp.auth_len = 0;
++    cryp.iv = ctx->iv;
++    cryp.op = ctx->encrypt ? COP_ENCRYPT : COP_DECRYPT;
++
++    if (ioctl(state->d_fd, CIOCAUTHCRYPT, &cryp) == -1) {
++        return 0;
++    }
++
++    return len;
++}
++
++static int cryptodev_gcm_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg,
++                              void *ptr)
++{
++    struct dev_crypto_state *state = ctx->cipher_data;
++    switch (type) {
++    case EVP_CTRL_INIT:
++        {
++            state->ivlen = ctx->cipher->iv_len;
++            state->iv = ctx->iv;
++            state->aad_len = -1;
++            return 1;
++        }
++    case EVP_CTRL_GCM_SET_IV_FIXED:
++        {
++            /* Special case: -1 length restores whole IV */
++            if (arg == -1) {
++                memcpy(state->iv, ptr, state->ivlen);
++                return 1;
++            }
++            /*
++             * Fixed field must be at least 4 bytes and invocation field at
++             * least 8.
++             */
++            if ((arg < 4) || (state->ivlen - arg) < 8)
++                return 0;
++            if (arg)
++                memcpy(state->iv, ptr, arg);
++            if (ctx->encrypt &&
++                RAND_bytes(state->iv + arg, state->ivlen - arg) <= 0)
++                return 0;
++            return 1;
++        }
++    case EVP_CTRL_AEAD_TLS1_AAD:
++        {
++            unsigned int len;
++            if (arg != 13)
++                return 0;
++
++            memcpy(ctx->buf, ptr, arg);
++            len = ctx->buf[arg - 2] << 8 | ctx->buf[arg - 1];
++
++            /* Correct length for explicit IV */
++            len -= EVP_GCM_TLS_EXPLICIT_IV_LEN;
++
++            /* If decrypting correct for tag too */
++            if (!ctx->encrypt)
++                len -= EVP_GCM_TLS_TAG_LEN;
++
++            ctx->buf[arg - 2] = len >> 8;
++            ctx->buf[arg - 1] = len & 0xff;
++
++            state->aad = ctx->buf;
++            state->aad_len = arg;
++            state->len = len;
++
++            /* Extra padding: tag appended to record */
++            return EVP_GCM_TLS_TAG_LEN;
++        }
++    case EVP_CTRL_GCM_SET_IV_INV:
++        {
++            if (ctx->encrypt)
++                return 0;
++            memcpy(state->iv + state->ivlen - arg, ptr, arg);
++            return 1;
++        }
++    case EVP_CTRL_GCM_IV_GEN:
++        if (arg <= 0 || arg > state->ivlen)
++            arg = state->ivlen;
++        memcpy(ptr, state->iv + state->ivlen - arg, arg);
++        return 1;
++    default:
++        return -1;
++    }
++}
++
+ /*
+  * libcrypto EVP stuff - this is how we get wired to EVP so the engine
+  * gets called when libcrypto requests a cipher NID.
+@@ -947,6 +1162,22 @@ const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1 = {
+     NULL
+ };
+ 
++const EVP_CIPHER cryptodev_aes_128_gcm = {
++    NID_aes_128_gcm,
++    1, 16, 12,
++    EVP_CIPH_GCM_MODE | EVP_CIPH_FLAG_AEAD_CIPHER | EVP_CIPH_FLAG_DEFAULT_ASN1
++        | EVP_CIPH_CUSTOM_IV | EVP_CIPH_FLAG_CUSTOM_CIPHER
++        | EVP_CIPH_ALWAYS_CALL_INIT | EVP_CIPH_CTRL_INIT,
++    cryptodev_init_gcm_key,
++    cryptodev_gcm_cipher,
++    cryptodev_cleanup,
++    sizeof(struct dev_crypto_state),
++    EVP_CIPHER_set_asn1_iv,
++    EVP_CIPHER_get_asn1_iv,
++    cryptodev_gcm_ctrl,
++    NULL
++};
++
+ # ifdef CRYPTO_AES_CTR
+ const EVP_CIPHER cryptodev_aes_ctr = {
+     NID_aes_128_ctr,
+@@ -1041,6 +1272,9 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
+     case NID_aes_256_cbc_hmac_sha1:
+         *cipher = &cryptodev_aes_256_cbc_hmac_sha1;
+         break;
++    case NID_aes_128_gcm:
++        *cipher = &cryptodev_aes_128_gcm;
++        break;
+     default:
+         *cipher = NULL;
+         break;
+-- 
+2.7.0
+

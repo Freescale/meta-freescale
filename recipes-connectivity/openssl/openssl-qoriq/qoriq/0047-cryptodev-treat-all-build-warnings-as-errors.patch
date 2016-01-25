@@ -1,0 +1,28 @@
+From 596735ad86a3dae987e19c21ef22259179966fc6 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 8 Feb 2016 15:15:02 +0200
+Subject: [PATCH 47/48] cryptodev: treat all build warnings as errors
+
+This patch has the purpose of maintaining a higher level of code quality.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ crypto/engine/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crypto/engine/Makefile b/crypto/engine/Makefile
+index 426388e..010f21d 100644
+--- a/crypto/engine/Makefile
++++ b/crypto/engine/Makefile
+@@ -10,7 +10,7 @@ CFLAG=-g
+ MAKEFILE=	Makefile
+ AR=		ar r
+ 
+-CFLAGS= $(INCLUDES) $(CFLAG)
++CFLAGS= -Wall -Werror $(INCLUDES) $(CFLAG)
+ 
+ GENERAL=Makefile
+ TEST= enginetest.c
+-- 
+2.7.0
+
