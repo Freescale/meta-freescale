@@ -1,0 +1,26 @@
+From 85146b8429ba11bd0be68c24c17dd77b21ec8c25 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Mon, 12 Oct 2015 23:03:28 +0300
+Subject: [PATCH 22/38] fix double free pkc->req on error
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/main.c b/main.c
+index e5adb93..ec11129 100644
+--- a/main.c
++++ b/main.c
+@@ -747,7 +747,7 @@ int crypto_run_asym(struct cryptodev_pkc *pkc)
+ 	/* todo - fix alloc-free on error path */
+ 	pkc->req->type = pkc_req_type;
+ 	err = call_next_action(pkc);
+-	if (pkc->type == SYNCHRONOUS)
++	if (err == 0 && pkc->type == SYNCHRONOUS)
+ 		kfree(pkc->req);
+ 
+ 	return err;
+-- 
+2.7.0
+

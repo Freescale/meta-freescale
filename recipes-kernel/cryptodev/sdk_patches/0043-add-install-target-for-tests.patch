@@ -1,0 +1,46 @@
+From 44629033d47543d106299b6c8bed9e5c9fed1513 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 11 Feb 2016 16:48:53 +0200
+Subject: [PATCH 43/43] add install target for tests
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 89f88fe..5e3111d 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -19,6 +19,10 @@ example-async-hmac-objs := async_hmac.o
+ example-async-speed-objs := async_speed.o
+ example-hashcrypt-speed-objs := hashcrypt_speed.c
+ 
++prefix ?= /usr/local
++execprefix ?= $(prefix)
++bindir = $(execprefix)/bin
++
+ all: $(hostprogs)
+ 
+ check: $(hostprogs)
+@@ -30,10 +34,16 @@ check: $(hostprogs)
+ 	./cipher-gcm
+ 	./cipher-aead
+ 
++install:
++	install -d $(DESTDIR)/$(bindir)
++	for prog in $(hostprogs); do \
++		install -m 755 $$prog $(DESTDIR)/$(bindir); \
++	done
++
+ clean:
+ 	rm -f *.o *~ $(hostprogs)
+ 
+ ${comp_progs}: LDLIBS += -lssl -lcrypto
+ ${comp_progs}: %: %.o openssl_wrapper.o
+ 
+-.PHONY: all clean check
++.PHONY: all clean check install
+-- 
+2.7.0
+

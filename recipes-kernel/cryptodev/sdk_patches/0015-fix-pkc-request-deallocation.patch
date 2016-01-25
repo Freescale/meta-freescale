@@ -1,0 +1,40 @@
+From 212e418fa7b70c8ba79446006001c574cb9d42f8 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Mon, 23 Feb 2015 15:28:22 +0200
+Subject: [PATCH 15/38] fix pkc request deallocation
+
+The request to be freed is actually pkc->req, and should be done inside
+the fetch ioctl for ASYNC (this patch) and in crypt ioctl for SYNC
+operations.
+
+Change-Id: I6f046f2ebeae4cb513a419996ca96b52e37468ed
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/34224
+---
+ ioctl.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index 797b73c..da3a842 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -114,8 +114,6 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
+ 		/* wake for POLLIN */
+ 		wake_up_interruptible(&pcr->user_waiter);
+ 	}
+-
+-	kfree(req);
+ }
+ 
+ #define FILL_SG(sg, ptr, len)					\
+@@ -1113,6 +1111,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 					cookie_list.cookie[i] =	pkc->kop.kop.cookie;
+ 					cookie_list.status[i] = pkc->result.err;
+ 				}
++				kfree(pkc->req);
+ 				kfree(pkc);
+ 			} else {
+ 				spin_unlock_bh(&pcr->completion_lock);
+-- 
+2.7.0
+

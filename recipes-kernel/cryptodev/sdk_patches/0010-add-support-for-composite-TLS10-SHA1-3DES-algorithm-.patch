@@ -1,0 +1,54 @@
+From 269564f4e00fa907388ccfa046b930b3c4eef4dc Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Tue, 10 Jun 2014 08:27:59 +0300
+Subject: [PATCH 10/38] add support for composite TLS10(SHA1,3DES) algorithm
+ offload
+
+This adds support for composite algorithm offload in a single crypto
+(cipher + hmac) operation.
+
+It requires either software or hardware TLS support in the Linux kernel
+and can be used with Freescale B*, P* and T* platforms that have support
+for hardware TLS acceleration.
+
+Change-Id: Ibce0ceb4174809c9c96b453cd3202bc5220ff084
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/34000
+Reviewed-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/cryptodev.h | 1 +
+ ioctl.c            | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index e7edd97..07f40b2 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -55,6 +55,7 @@ enum cryptodev_crypto_op_t {
+ 	CRYPTO_SHA2_512,
+ 	CRYPTO_SHA2_224_HMAC,
+ 	CRYPTO_TLS10_AES_CBC_HMAC_SHA1,
++	CRYPTO_TLS10_3DES_CBC_HMAC_SHA1,
+ 	CRYPTO_ALGORITHM_ALL, /* Keep updated - see below */
+ };
+ 
+diff --git a/ioctl.c b/ioctl.c
+index c97320b..574e913 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -191,6 +191,11 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		stream = 0;
+ 		aead = 1;
+ 		break;
++	case CRYPTO_TLS10_3DES_CBC_HMAC_SHA1:
++		alg_name = "tls10(hmac(sha1),cbc(des3_ede))";
++		stream = 0;
++		aead = 1;
++		break;
+ 	case CRYPTO_NULL:
+ 		alg_name = "ecb(cipher_null)";
+ 		stream = 1;
+-- 
+2.7.0
+

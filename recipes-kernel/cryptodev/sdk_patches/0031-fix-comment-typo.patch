@@ -1,0 +1,26 @@
+From 73a2489ba634503a0cc2bb6e84627ceeda0f059f Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 12 Jan 2016 17:15:56 +0200
+Subject: [PATCH 31/38] fix comment typo
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index a537886..7adde75 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -397,7 +397,7 @@ session_error:
+ 	return ret;
+ }
+ 
+-/* Everything that needs to be done when remowing a session. */
++/* Everything that needs to be done when removing a session. */
+ static inline void
+ crypto_destroy_session(struct csession *ses_ptr)
+ {
+-- 
+2.7.0
+

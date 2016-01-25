@@ -1,0 +1,207 @@
+From d9f27d08708556e22e1b1dc87b0495896879ca66 Mon Sep 17 00:00:00 2001
+From: Horia Geanta <horia.geanta@freescale.com>
+Date: Wed, 4 Dec 2013 15:43:41 +0200
+Subject: [PATCH 02/38] add support for COMPAT_CIOCAUTHCRYPT ioctl()
+
+Upstream-status: Pending
+
+Needed for 64b kernel with 32b user space.
+
+Change-Id: I44a999a4164e7ae7122dee6ed0716b2f25cadbc1
+Signed-off-by: Horia Geanta <horia.geanta@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ authenc.c       | 78 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ cryptodev_int.h | 40 +++++++++++++++++++++++++++++
+ ioctl.c         | 16 ++++++++++++
+ 3 files changed, 134 insertions(+)
+
+diff --git a/authenc.c b/authenc.c
+index 1bd7377..ef0d3db 100644
+--- a/authenc.c
++++ b/authenc.c
+@@ -272,6 +272,84 @@ static int fill_caop_from_kcaop(struct kernel_crypt_auth_op *kcaop, struct fcryp
+ 	return 0;
+ }
+ 
++/* compatibility code for 32bit userlands */
++#ifdef CONFIG_COMPAT
++
++static inline void
++compat_to_crypt_auth_op(struct compat_crypt_auth_op *compat,
++			struct crypt_auth_op *caop)
++{
++	caop->ses = compat->ses;
++	caop->op = compat->op;
++	caop->flags = compat->flags;
++	caop->len = compat->len;
++	caop->auth_len = compat->auth_len;
++	caop->tag_len = compat->tag_len;
++	caop->iv_len = compat->iv_len;
++
++	caop->auth_src = compat_ptr(compat->auth_src);
++	caop->src = compat_ptr(compat->src);
++	caop->dst = compat_ptr(compat->dst);
++	caop->tag = compat_ptr(compat->tag);
++	caop->iv = compat_ptr(compat->iv);
++}
++
++static inline void
++crypt_auth_op_to_compat(struct crypt_auth_op *caop,
++			struct compat_crypt_auth_op *compat)
++{
++	compat->ses = caop->ses;
++	compat->op = caop->op;
++	compat->flags = caop->flags;
++	compat->len = caop->len;
++	compat->auth_len = caop->auth_len;
++	compat->tag_len = caop->tag_len;
++	compat->iv_len = caop->iv_len;
++
++	compat->auth_src = ptr_to_compat(caop->auth_src);
++	compat->src = ptr_to_compat(caop->src);
++	compat->dst = ptr_to_compat(caop->dst);
++	compat->tag = ptr_to_compat(caop->tag);
++	compat->iv = ptr_to_compat(caop->iv);
++}
++
++int compat_kcaop_from_user(struct kernel_crypt_auth_op *kcaop,
++				struct fcrypt *fcr, void __user *arg)
++{
++	struct compat_crypt_auth_op compat_caop;
++
++	if (unlikely(copy_from_user(&compat_caop, arg, sizeof(compat_caop)))) {
++		dprintk(1, KERN_ERR, "Error in copying from userspace\n");
++		return -EFAULT;
++	}
++
++	compat_to_crypt_auth_op(&compat_caop, &kcaop->caop);
++
++	return fill_kcaop_from_caop(kcaop, fcr);
++}
++
++int compat_kcaop_to_user(struct kernel_crypt_auth_op *kcaop,
++				struct fcrypt *fcr, void __user *arg)
++{
++	int ret;
++	struct compat_crypt_auth_op compat_caop;
++
++	ret = fill_caop_from_kcaop(kcaop, fcr);
++	if (unlikely(ret)) {
++		dprintk(1, KERN_ERR, "fill_caop_from_kcaop\n");
++		return ret;
++	}
++
++	crypt_auth_op_to_compat(&kcaop->caop, &compat_caop);
++
++	if (unlikely(copy_to_user(arg, &compat_caop, sizeof(compat_caop)))) {
++		dprintk(1, KERN_ERR, "Error in copying to userspace\n");
++		return -EFAULT;
++	}
++	return 0;
++}
++
++#endif /* CONFIG_COMPAT */
+ 
+ int kcaop_from_user(struct kernel_crypt_auth_op *kcaop,
+ 			struct fcrypt *fcr, void __user *arg)
+diff --git a/cryptodev_int.h b/cryptodev_int.h
+index d7660fa..8e687e7 100644
+--- a/cryptodev_int.h
++++ b/cryptodev_int.h
+@@ -73,11 +73,42 @@ struct compat_crypt_op {
+ 	compat_uptr_t	iv;/* initialization vector for encryption operations */
+ };
+ 
++ /* input of CIOCAUTHCRYPT */
++struct compat_crypt_auth_op {
++	uint32_t	ses;		/* session identifier */
++	uint16_t	op;		/* COP_ENCRYPT or COP_DECRYPT */
++	uint16_t	flags;		/* see COP_FLAG_AEAD_* */
++	uint32_t	len;		/* length of source data */
++	uint32_t	auth_len;	/* length of auth data */
++	compat_uptr_t	auth_src;	/* authenticated-only data */
++
++	/* The current implementation is more efficient if data are
++	 * encrypted in-place (src==dst). */
++	compat_uptr_t	src;		/* data to be encrypted and
++	authenticated */
++	compat_uptr_t	dst;		/* pointer to output data. Must have
++					 * space for tag. For TLS this should be
++					 * at least len + tag_size + block_size
++					 * for padding */
++
++	compat_uptr_t	tag;		/* where the tag will be copied to. TLS
++					 * mode doesn't use that as tag is
++					 * copied to dst.
++					 * SRTP mode copies tag there. */
++	uint32_t	tag_len;	/* the length of the tag. Use zero for
++					 * digest size or max tag. */
++
++	/* initialization vector for encryption operations */
++	compat_uptr_t	iv;
++	uint32_t	iv_len;
++};
++
+ /* compat ioctls, defined for the above structs */
+ #define COMPAT_CIOCGSESSION    _IOWR('c', 102, struct compat_session_op)
+ #define COMPAT_CIOCCRYPT       _IOWR('c', 104, struct compat_crypt_op)
+ #define COMPAT_CIOCASYNCCRYPT  _IOW('c', 107, struct compat_crypt_op)
+ #define COMPAT_CIOCASYNCFETCH  _IOR('c', 108, struct compat_crypt_op)
++#define COMPAT_CIOCAUTHCRYPT   _IOWR('c', 109, struct compat_crypt_auth_op)
+ 
+ #endif /* CONFIG_COMPAT */
+ 
+@@ -108,6 +139,15 @@ struct kernel_crypt_auth_op {
+ 
+ /* auth */
+ 
++#ifdef CONFIG_COMPAT
++int compat_kcaop_from_user(struct kernel_crypt_auth_op *kcaop,
++				struct fcrypt *fcr, void __user *arg);
++
++int compat_kcaop_to_user(struct kernel_crypt_auth_op *kcaop,
++				struct fcrypt *fcr, void __user *arg);
++#endif /* CONFIG_COMPAT */
++
++
+ int kcaop_from_user(struct kernel_crypt_auth_op *kcop,
+ 			struct fcrypt *fcr, void __user *arg);
+ int kcaop_to_user(struct kernel_crypt_auth_op *kcaop,
+diff --git a/ioctl.c b/ioctl.c
+index a3f8379..5a44807 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -998,6 +998,7 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 	struct session_op sop;
+ 	struct compat_session_op compat_sop;
+ 	struct kernel_crypt_op kcop;
++	struct kernel_crypt_auth_op kcaop;
+ 	int ret;
+ 
+ 	if (unlikely(!pcr))
+@@ -1040,6 +1041,21 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 			return ret;
+ 
+ 		return compat_kcop_to_user(&kcop, fcr, arg);
++
++	case COMPAT_CIOCAUTHCRYPT:
++		if (unlikely(ret = compat_kcaop_from_user(&kcaop, fcr, arg))) {
++			dprintk(1, KERN_WARNING, "Error copying from user\n");
++			return ret;
++		}
++
++		ret = crypto_auth_run(fcr, &kcaop);
++		if (unlikely(ret)) {
++			dprintk(1, KERN_WARNING, "Error in crypto_auth_run\n");
++			return ret;
++		}
++
++		return compat_kcaop_to_user(&kcaop, fcr, arg);
++
+ #ifdef ENABLE_ASYNC
+ 	case COMPAT_CIOCASYNCCRYPT:
+ 		if (unlikely(ret = compat_kcop_from_user(&kcop, fcr, arg)))
+-- 
+2.7.0
+

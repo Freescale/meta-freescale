@@ -1,0 +1,76 @@
+From 73c20be9ae1ed57d8c428c86471f42d953e79fba Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Tue, 31 Mar 2015 16:15:47 +0300
+Subject: [PATCH 11/38] add support for TLSv1.1 record offload
+
+This adds support for composite algorithm offload in a single crypto
+(cipher + hmac) operation.
+
+Supported cipher suites:
+- 3des-ede-cbc-sha
+- aes-128-cbc-hmac-sha
+- aes-256-cbc-hmac-sha
+
+It requires either software or hardware TLS support in the Linux kernel
+and can be used with Freescale B*, P* and T* platforms that have support
+for hardware TLS acceleration.
+
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+Change-Id: Ia5f3fa7ec090d5643d71b0f608c68a274ec6b51f
+Reviewed-on: http://git.am.freescale.net:8181/33998
+Reviewed-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/cryptodev.h |  4 +++-
+ ioctl.c            | 14 ++++++++++++--
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index 07f40b2..61e8599 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -54,8 +54,10 @@ enum cryptodev_crypto_op_t {
+ 	CRYPTO_SHA2_384,
+ 	CRYPTO_SHA2_512,
+ 	CRYPTO_SHA2_224_HMAC,
+-	CRYPTO_TLS10_AES_CBC_HMAC_SHA1,
+ 	CRYPTO_TLS10_3DES_CBC_HMAC_SHA1,
++	CRYPTO_TLS10_AES_CBC_HMAC_SHA1,
++	CRYPTO_TLS11_3DES_CBC_HMAC_SHA1,
++	CRYPTO_TLS11_AES_CBC_HMAC_SHA1,
+ 	CRYPTO_ALGORITHM_ALL, /* Keep updated - see below */
+ };
+ 
+diff --git a/ioctl.c b/ioctl.c
+index 574e913..ba82387 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -186,13 +186,23 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		stream = 1;
+ 		aead = 1;
+ 		break;
++	case CRYPTO_TLS10_3DES_CBC_HMAC_SHA1:
++		alg_name = "tls10(hmac(sha1),cbc(des3_ede))";
++		stream = 0;
++		aead = 1;
++		break;
+ 	case CRYPTO_TLS10_AES_CBC_HMAC_SHA1:
+ 		alg_name = "tls10(hmac(sha1),cbc(aes))";
+ 		stream = 0;
+ 		aead = 1;
+ 		break;
+-	case CRYPTO_TLS10_3DES_CBC_HMAC_SHA1:
+-		alg_name = "tls10(hmac(sha1),cbc(des3_ede))";
++	case CRYPTO_TLS11_3DES_CBC_HMAC_SHA1:
++		alg_name = "tls11(hmac(sha1),cbc(des3_ede))";
++		stream = 0;
++		aead = 1;
++		break;
++	case CRYPTO_TLS11_AES_CBC_HMAC_SHA1:
++		alg_name = "tls11(hmac(sha1),cbc(aes))";
+ 		stream = 0;
+ 		aead = 1;
+ 		break;
+-- 
+2.7.0
+

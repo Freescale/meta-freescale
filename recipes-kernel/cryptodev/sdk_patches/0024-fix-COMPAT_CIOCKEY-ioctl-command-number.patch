@@ -1,0 +1,29 @@
+From 53e4d0fe4a334dae3df32b2053e4ebdfda2e9148 Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Tue, 27 Oct 2015 15:51:02 +0200
+Subject: [PATCH 24/38] fix COMPAT_CIOCKEY ioctl command number
+
+CIOCKEY and COMPAT_CIOCKEY had different command numbers,
+so that 32-bit applications got EINVAL error on 64-bit kernel.
+
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+---
+ cryptodev_int.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cryptodev_int.h b/cryptodev_int.h
+index c83c885..cb005d7 100644
+--- a/cryptodev_int.h
++++ b/cryptodev_int.h
+@@ -132,7 +132,7 @@ struct compat_crypt_auth_op {
+ /* compat ioctls, defined for the above structs */
+ #define COMPAT_CIOCGSESSION    _IOWR('c', 102, struct compat_session_op)
+ #define COMPAT_CIOCCRYPT       _IOWR('c', 104, struct compat_crypt_op)
+-#define COMPAT_CIOCKEY    _IOW('c', 105, struct compat_crypt_kop)
++#define COMPAT_CIOCKEY    _IOWR('c', 105, struct compat_crypt_kop)
+ #define COMPAT_CIOCASYNCCRYPT  _IOW('c', 107, struct compat_crypt_op)
+ #define COMPAT_CIOCASYNCFETCH  _IOR('c', 108, struct compat_crypt_op)
+ #define COMPAT_CIOCAUTHCRYPT   _IOWR('c', 109, struct compat_crypt_auth_op)
+-- 
+2.7.0
+

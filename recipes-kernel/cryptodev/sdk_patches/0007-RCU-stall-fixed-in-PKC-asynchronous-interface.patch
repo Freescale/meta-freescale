@@ -1,0 +1,238 @@
+From 00a8ac310a33767eac0a07e32597c1a6f467315f Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Fri, 7 Mar 2014 08:49:15 +0545
+Subject: [PATCH 07/38] RCU stall fixed in PKC asynchronous interface
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+---
+ ioctl.c | 23 +++++++++++------------
+ main.c  | 43 +++++++++++++++++++++++++++----------------
+ 2 files changed, 38 insertions(+), 28 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index 1f0741a..e4e16a8 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -108,10 +108,9 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
+ 		complete(&res->completion);
+ 	} else {
+ 		struct crypt_priv *pcr = pkc->priv;
+-		unsigned long flags;
+-		spin_lock_irqsave(&pcr->completion_lock, flags);
++		spin_lock_bh(&pcr->completion_lock);
+ 		list_add_tail(&pkc->list, &pcr->asym_completed_list);
+-		spin_unlock_irqrestore(&pcr->completion_lock, flags);
++		spin_unlock_bh(&pcr->completion_lock);
+ 		/* wake for POLLIN */
+ 		wake_up_interruptible(&pcr->user_waiter);
+ 	}
+@@ -958,7 +957,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 	case CIOCASYMFEAT:
+ 		return put_user(CRF_MOD_EXP_CRT |  CRF_MOD_EXP | CRF_DSA_SIGN |
+ 			CRF_DSA_VERIFY | CRF_DH_COMPUTE_KEY |
+-			CRF_DSA_GENERATE_KEY, p);
++			CRF_DSA_GENERATE_KEY | CRF_DH_GENERATE_KEY, p);
+ 	case CRIOGET:
+ 		fd = clonefd(filp);
+ 		ret = put_user(fd, p);
+@@ -997,7 +996,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 	case CIOCKEY:
+ 	{
+ 		struct cryptodev_pkc *pkc =
+-			kzalloc(sizeof(struct cryptodev_pkc), GFP_KERNEL);
++			kmalloc(sizeof(struct cryptodev_pkc), GFP_KERNEL);
+ 
+ 		if (!pkc)
+ 			return -ENOMEM;
+@@ -1053,7 +1052,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 	case CIOCASYMASYNCRYPT:
+ 	{
+ 		struct cryptodev_pkc *pkc =
+-			kzalloc(sizeof(struct cryptodev_pkc), GFP_KERNEL);
++			kmalloc(sizeof(struct cryptodev_pkc), GFP_KERNEL);
+ 		ret = kop_from_user(&pkc->kop, arg);
+ 
+ 		if (unlikely(ret))
+@@ -1070,13 +1069,12 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 	case CIOCASYMFETCHCOOKIE:
+ 	{
+ 		struct cryptodev_pkc *pkc;
+-		unsigned long flags;
+ 		int i;
+ 		struct pkc_cookie_list_s cookie_list;
+ 
+-		spin_lock_irqsave(&pcr->completion_lock, flags);
+ 		cookie_list.cookie_available = 0;
+ 		for (i = 0; i < MAX_COOKIES; i++) {
++			spin_lock_bh(&pcr->completion_lock);
+ 			if (!list_empty(&pcr->asym_completed_list)) {
+ 				/* Run a loop in the list for upto  elements
+ 				 and copy their response back */
+@@ -1084,6 +1082,7 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 				 list_first_entry(&pcr->asym_completed_list,
+ 						struct cryptodev_pkc, list);
+ 				list_del(&pkc->list);
++				spin_unlock_bh(&pcr->completion_lock);
+ 				ret = crypto_async_fetch_asym(pkc);
+ 				if (!ret) {
+ 					cookie_list.cookie_available++;
+@@ -1093,10 +1092,10 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 				}
+ 				kfree(pkc);
+ 			} else {
++				spin_unlock_bh(&pcr->completion_lock);
+ 				break;
+ 			}
+ 		}
+-		spin_unlock_irqrestore(&pcr->completion_lock, flags);
+ 
+ 		/* Reflect the updated request to user-space */
+ 		if (cookie_list.cookie_available)
+@@ -1386,14 +1385,13 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 	case COMPAT_CIOCASYMFETCHCOOKIE:
+ 	{
+ 		struct cryptodev_pkc *pkc;
+-		unsigned long flags;
+ 		int i = 0;
+ 		struct compat_pkc_cookie_list_s cookie_list;
+ 
+-		spin_lock_irqsave(&pcr->completion_lock, flags);
+ 		cookie_list.cookie_available = 0;
+ 
+ 		for (i = 0; i < MAX_COOKIES; i++) {
++			spin_lock_bh(&pcr->completion_lock);
+ 			if (!list_empty(&pcr->asym_completed_list)) {
+ 				/* Run a loop in the list for upto  elements
+ 				 and copy their response back */
+@@ -1401,6 +1399,7 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 				 list_first_entry(&pcr->asym_completed_list,
+ 						struct cryptodev_pkc, list);
+ 				list_del(&pkc->list);
++				spin_unlock_bh(&pcr->completion_lock);
+ 				ret = crypto_async_fetch_asym(pkc);
+ 				if (!ret) {
+ 					cookie_list.cookie_available++;
+@@ -1409,10 +1408,10 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 				}
+ 				kfree(pkc);
+ 			} else {
++				spin_unlock_bh(&pcr->completion_lock);
+ 				break;
+ 			}
+ 		}
+-		spin_unlock_irqrestore(&pcr->completion_lock, flags);
+ 
+ 		/* Reflect the updated request to user-space */
+ 		if (cookie_list.cookie_available)
+diff --git a/main.c b/main.c
+index c901bc7..2747706 100644
+--- a/main.c
++++ b/main.c
+@@ -215,7 +215,9 @@ int crypto_kop_dsasign(struct cryptodev_pkc *pkc)
+ 		pkc_req->type = DSA_SIGN;
+ 	}
+ 
+-	buf = kzalloc(buf_size, GFP_DMA);
++	buf = kmalloc(buf_size, GFP_DMA);
++	if (!buf)
++		return -ENOMEM;
+ 
+ 	dsa_req->q = buf;
+ 	dsa_req->r = dsa_req->q + dsa_req->q_len;
+@@ -298,7 +300,9 @@ int crypto_kop_dsaverify(struct cryptodev_pkc *pkc)
+ 		pkc_req->type = DSA_VERIFY;
+ 	}
+ 
+-	buf = kzalloc(buf_size, GFP_DMA);
++	buf = kmalloc(buf_size, GFP_DMA);
++	if (!buf)
++		return -ENOMEM;
+ 
+ 	dsa_req->q = buf;
+ 	dsa_req->r = dsa_req->q + dsa_req->q_len;
+@@ -378,7 +382,7 @@ int crypto_kop_keygen(struct cryptodev_pkc *pkc)
+ 		pkc_req->curve_type = cop->curve_type;
+ 	}
+ 
+-	buf = kzalloc(buf_size, GFP_DMA);
++	buf = kmalloc(buf_size, GFP_DMA);
+ 	if (!buf)
+ 		return -ENOMEM;
+ 
+@@ -390,25 +394,28 @@ int crypto_kop_keygen(struct cryptodev_pkc *pkc)
+ 	copy_from_user(key_req->q, cop->crk_param[0].crp_p, key_req->q_len);
+ 	copy_from_user(key_req->r, cop->crk_param[1].crp_p, key_req->r_len);
+ 	copy_from_user(key_req->g, cop->crk_param[2].crp_p, key_req->g_len);
+-	if (cop->crk_iparams == 3) {
+-		copy_from_user(key_req->pub_key, cop->crk_param[3].crp_p,
+-			       key_req->pub_key_len);
+-		copy_from_user(key_req->priv_key, cop->crk_param[4].crp_p,
+-			       key_req->priv_key_len);
+-	} else {
++	if (cop->crk_iparams == 4) {
+ 		key_req->ab = key_req->priv_key + key_req->priv_key_len;
+ 		copy_from_user(key_req->ab, cop->crk_param[3].crp_p,
+ 			       key_req->ab_len);
+-		copy_from_user(key_req->pub_key, cop->crk_param[4].crp_p,
+-			       key_req->pub_key_len);
+-		copy_from_user(key_req->priv_key, cop->crk_param[5].crp_p,
+-			       key_req->priv_key_len);
+ 	}
+ 
+ 	rc = cryptodev_pkc_offload(pkc);
+ 	if (pkc->type == SYNCHRONOUS) {
+ 		if (rc)
+ 			goto err;
++
++		if (cop->crk_iparams == 4) {
++			copy_to_user(cop->crk_param[4].crp_p, key_req->pub_key,
++				     key_req->pub_key_len);
++			copy_to_user(cop->crk_param[5].crp_p, key_req->priv_key,
++				     key_req->priv_key_len);
++		} else {
++			copy_to_user(cop->crk_param[3].crp_p, key_req->pub_key,
++				     key_req->pub_key_len);
++			copy_to_user(cop->crk_param[4].crp_p,
++				     key_req->priv_key, key_req->priv_key_len);
++		}
+ 	} else {
+ 		if (rc != -EINPROGRESS && !rc)
+ 			goto err;
+@@ -447,7 +454,9 @@ int crypto_kop_dh_key(struct cryptodev_pkc *pkc)
+ 		pkc_req->type = DH_COMPUTE_KEY;
+ 	}
+ 	buf_size += dh_req->z_len;
+-	buf = kzalloc(buf_size, GFP_DMA);
++	buf = kmalloc(buf_size, GFP_DMA);
++	if (!buf)
++		return -ENOMEM;
+ 	dh_req->q = buf;
+ 	dh_req->s = dh_req->q + dh_req->q_len;
+ 	dh_req->pub_key = dh_req->s + dh_req->s_len;
+@@ -508,9 +517,11 @@ int crypto_modexp_crt(struct cryptodev_pkc *pkc)
+ 	rsa_req->dq_len = (cop->crk_param[4].crp_nbits + 7)/8;
+ 	rsa_req->c_len = (cop->crk_param[5].crp_nbits + 7)/8;
+ 	rsa_req->f_len = (cop->crk_param[6].crp_nbits + 7)/8;
+-	buf = kzalloc(rsa_req->p_len + rsa_req->q_len + rsa_req->f_len +
++	buf = kmalloc(rsa_req->p_len + rsa_req->q_len + rsa_req->f_len +
+ 		      rsa_req->dp_len + rsa_req->dp_len + rsa_req->c_len +
+ 		      rsa_req->g_len, GFP_DMA);
++	if (!buf)
++		return -ENOMEM;
+ 	rsa_req->p = buf;
+ 	rsa_req->q = rsa_req->p + rsa_req->p_len;
+ 	rsa_req->g = rsa_req->q + rsa_req->q_len;
+@@ -563,7 +574,7 @@ int crypto_bn_modexp(struct cryptodev_pkc *pkc)
+ 	rsa_req->e_len = (cop->crk_param[1].crp_nbits + 7)/8;
+ 	rsa_req->n_len = (cop->crk_param[2].crp_nbits + 7)/8;
+ 	rsa_req->g_len = (cop->crk_param[3].crp_nbits + 7)/8;
+-	buf = kzalloc(rsa_req->f_len + rsa_req->e_len + rsa_req->n_len
++	buf = kmalloc(rsa_req->f_len + rsa_req->e_len + rsa_req->n_len
+ 			+ rsa_req->g_len, GFP_DMA);
+ 	if (!buf)
+ 		return -ENOMEM;
+-- 
+2.7.0
+

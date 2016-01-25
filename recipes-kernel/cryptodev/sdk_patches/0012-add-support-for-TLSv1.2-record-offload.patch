@@ -1,0 +1,72 @@
+From f1a519d9eed072bd45a45d251603c64f942814fb Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Tue, 31 Mar 2015 16:16:28 +0300
+Subject: [PATCH 12/38] add support for TLSv1.2 record offload
+
+This adds support for composite algorithm offload in a single crypto
+(cipher + hmac) operation.
+
+Supported cipher suites:
+- 3des-ede-cbc-sha
+- aes-128-cbc-hmac-sha
+- aes-256-cbc-hmac-sha
+- aes-128-cbc-hmac-sha256
+- aes-256-cbc-hmac-sha256
+
+It requires either software or hardware TLS support in the Linux kernel
+and can be used with Freescale B*, P* and T* platforms that have support
+for hardware TLS acceleration.
+
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+Change-Id: I21f45993505fc3dad09848a13aa20f778a7c2de0
+Reviewed-on: http://git.am.freescale.net:8181/33999
+Reviewed-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ crypto/cryptodev.h |  3 +++
+ ioctl.c            | 15 +++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index 61e8599..f6058ca 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -58,6 +58,9 @@ enum cryptodev_crypto_op_t {
+ 	CRYPTO_TLS10_AES_CBC_HMAC_SHA1,
+ 	CRYPTO_TLS11_3DES_CBC_HMAC_SHA1,
+ 	CRYPTO_TLS11_AES_CBC_HMAC_SHA1,
++	CRYPTO_TLS12_3DES_CBC_HMAC_SHA1,
++	CRYPTO_TLS12_AES_CBC_HMAC_SHA1,
++	CRYPTO_TLS12_AES_CBC_HMAC_SHA256,
+ 	CRYPTO_ALGORITHM_ALL, /* Keep updated - see below */
+ };
+ 
+diff --git a/ioctl.c b/ioctl.c
+index ba82387..fb4c4e3 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -206,6 +206,21 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		stream = 0;
+ 		aead = 1;
+ 		break;
++	case CRYPTO_TLS12_3DES_CBC_HMAC_SHA1:
++		alg_name = "tls12(hmac(sha1),cbc(des3_ede))";
++		stream = 0;
++		aead = 1;
++		break;
++	case CRYPTO_TLS12_AES_CBC_HMAC_SHA1:
++		alg_name = "tls12(hmac(sha1),cbc(aes))";
++		stream = 0;
++		aead = 1;
++		break;
++	case CRYPTO_TLS12_AES_CBC_HMAC_SHA256:
++		alg_name = "tls12(hmac(sha256),cbc(aes))";
++		stream = 0;
++		aead = 1;
++		break;
+ 	case CRYPTO_NULL:
+ 		alg_name = "ecb(cipher_null)";
+ 		stream = 1;
+-- 
+2.7.0
+

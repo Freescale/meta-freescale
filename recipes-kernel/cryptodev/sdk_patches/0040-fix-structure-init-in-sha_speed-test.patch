@@ -1,0 +1,53 @@
+From 3eb9ed52743584949ff9b4844e810333c34a3a1f Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 12 Feb 2016 11:23:41 +0200
+Subject: [PATCH 40/40] fix structure init in sha_speed test
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/sha_speed.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tests/sha_speed.c b/tests/sha_speed.c
+index d731c66..75d0f42 100644
+--- a/tests/sha_speed.c
++++ b/tests/sha_speed.c
+@@ -257,7 +257,7 @@ int hash_session(struct session_op *sess, int fdc)
+ int test_sha1(struct session_op *sess, int fdc)
+ {
+ 	fprintf(stderr, "Testing SHA1 Hash: \n");
+-	memset(sess, 0, sizeof(sess));
++	memset(sess, 0, sizeof(struct session_op));
+ 	sess->mac = CRYPTO_SHA1;
+ 	return hash_session(sess, fdc);
+ }
+@@ -266,7 +266,7 @@ int test_sha1(struct session_op *sess, int fdc)
+ int test_sha1_ciochash(struct session_op *sess, int fdc)
+ {
+ 	fprintf(stderr, "Testing SHA1 CIOCHASH: \n");
+-	memset(sess, 0, sizeof(sess));
++	memset(sess, 0, sizeof(struct session_op));
+ 	sess->mac = CRYPTO_SHA1;
+ 	return ciochash_session(sess, fdc);
+ }
+@@ -275,7 +275,7 @@ int test_sha1_ciochash(struct session_op *sess, int fdc)
+ int test_sha256(struct session_op *sess, int fdc)
+ {
+ 	fprintf(stderr, "Testing SHA256 Hash: \n");
+-	memset(sess, 0, sizeof(sess));
++	memset(sess, 0, sizeof(struct session_op));
+ 	sess->mac = CRYPTO_SHA2_256;
+ 	return hash_session(sess, fdc);
+ }
+@@ -284,7 +284,7 @@ int test_sha256(struct session_op *sess, int fdc)
+ int test_sha256_ciochash(struct session_op *sess, int fdc)
+ {
+ 	fprintf(stderr, "Testing SHA256 CIOCHASH: \n");
+-	memset(sess, 0, sizeof(sess));
++	memset(sess, 0, sizeof(struct session_op));
+ 	sess->mac = CRYPTO_SHA2_256;
+ 	return ciochash_session(sess, fdc);
+ }
+-- 
+2.7.0
+

@@ -1,0 +1,38 @@
+From 0d58530f5c5970db9787a23aef4227c68f941fcc Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 10 Feb 2016 16:22:05 +0200
+Subject: [PATCH 41/43] add separate target for building tests
+
+A separate target for build is useful with cross-compilation. In this
+case it makes sense to build the tests without running them on the host
+machine.
+
+The default target is now 'all' and only builds the tests
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 3155da9..89f88fe 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -19,6 +19,8 @@ example-async-hmac-objs := async_hmac.o
+ example-async-speed-objs := async_speed.o
+ example-hashcrypt-speed-objs := hashcrypt_speed.c
+ 
++all: $(hostprogs)
++
+ check: $(hostprogs)
+ 	./cipher
+ 	./hmac
+@@ -33,3 +35,5 @@ clean:
+ 
+ ${comp_progs}: LDLIBS += -lssl -lcrypto
+ ${comp_progs}: %: %.o openssl_wrapper.o
++
++.PHONY: all clean check
+-- 
+2.7.0
+

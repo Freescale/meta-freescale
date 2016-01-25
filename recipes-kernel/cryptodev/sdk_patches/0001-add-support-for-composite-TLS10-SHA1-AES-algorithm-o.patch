@@ -1,0 +1,52 @@
+From 25a68839e3aab5acebcbe51f7fbe9d2d26216bc0 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Thu, 29 Aug 2013 16:52:30 +0300
+Subject: [PATCH 01/38] add support for composite TLS10(SHA1,AES) algorithm
+ offload
+
+This adds support for composite algorithm offload as a primitive
+crypto (cipher + hmac) operation.
+
+It requires kernel support for tls10(hmac(sha1),cbc(aes)) algorithm
+provided either in software or accelerated by hardware such as
+Freescale B*, P* and T* platforms.
+
+Change-Id: Ia1c605da3860e91e681295dfc8df7c09eb4006cf
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Reviewed-on: http://git.am.freescale.net:8181/17218
+---
+ crypto/cryptodev.h | 1 +
+ ioctl.c            | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index 7fb9c7d..c0e8cd4 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -50,6 +50,7 @@ enum cryptodev_crypto_op_t {
+ 	CRYPTO_SHA2_384,
+ 	CRYPTO_SHA2_512,
+ 	CRYPTO_SHA2_224_HMAC,
++	CRYPTO_TLS10_AES_CBC_HMAC_SHA1,
+ 	CRYPTO_ALGORITHM_ALL, /* Keep updated - see below */
+ };
+ 
+diff --git a/ioctl.c b/ioctl.c
+index b23f5fd..a3f8379 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -159,6 +159,11 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		stream = 1;
+ 		aead = 1;
+ 		break;
++	case CRYPTO_TLS10_AES_CBC_HMAC_SHA1:
++		alg_name = "tls10(hmac(sha1),cbc(aes))";
++		stream = 0;
++		aead = 1;
++		break;
+ 	case CRYPTO_NULL:
+ 		alg_name = "ecb(cipher_null)";
+ 		stream = 1;
+-- 
+2.7.0
+

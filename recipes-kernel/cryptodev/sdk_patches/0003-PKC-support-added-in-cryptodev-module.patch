@@ -1,0 +1,898 @@
+From 2bda43095b511e0052b3bc27b216ff9909cc03d2 Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Fri, 7 Mar 2014 06:16:09 +0545
+Subject: [PATCH 03/38] PKC support added in cryptodev module
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+---
+ cryptlib.c         |  66 +++++++++-
+ cryptlib.h         |  28 ++++
+ crypto/cryptodev.h |  15 ++-
+ cryptodev_int.h    |  20 ++-
+ ioctl.c            | 196 +++++++++++++++++++++++++--
+ main.c             | 378 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 685 insertions(+), 18 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 44ce763..6900028 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -5,6 +5,8 @@
+  * Portions Copyright (c) 2010 Michael Weiser
+  * Portions Copyright (c) 2010 Phil Sutter
+  *
++ * Copyright 2012 Freescale Semiconductor, Inc.
++ *
+  * This file is part of linux cryptodev.
+  *
+  * This program is free software; you can redistribute it and/or
+@@ -39,11 +41,6 @@
+ #include "cryptodev_int.h"
+ 
+ 
+-struct cryptodev_result {
+-	struct completion completion;
+-	int err;
+-};
+-
+ static void cryptodev_complete(struct crypto_async_request *req, int err)
+ {
+ 	struct cryptodev_result *res = req->data;
+@@ -259,7 +256,6 @@ static inline int waitfor(struct cryptodev_result *cr, ssize_t ret)
+ 	case 0:
+ 		break;
+ 	case -EINPROGRESS:
+-	case -EBUSY:
+ 		wait_for_completion(&cr->completion);
+ 		/* At this point we known for sure the request has finished,
+ 		 * because wait_for_completion above was not interruptible.
+@@ -439,3 +435,61 @@ int cryptodev_hash_final(struct hash_data *hdata, void *output)
+ 	return waitfor(hdata->async.result, ret);
+ }
+ 
++int cryptodev_pkc_offload(struct cryptodev_pkc  *pkc)
++{
++	int ret = 0;
++	struct pkc_request *pkc_req = &pkc->req, *pkc_requested;
++
++	switch (pkc_req->type) {
++	case RSA_PUB:
++	case RSA_PRIV_FORM1:
++	case RSA_PRIV_FORM2:
++	case RSA_PRIV_FORM3:
++		pkc->s = crypto_alloc_pkc("pkc(rsa)",
++			 CRYPTO_ALG_TYPE_PKC_RSA, 0);
++		break;
++	case DSA_SIGN:
++	case DSA_VERIFY:
++	case ECDSA_SIGN:
++	case ECDSA_VERIFY:
++		pkc->s = crypto_alloc_pkc("pkc(dsa)",
++			 CRYPTO_ALG_TYPE_PKC_DSA, 0);
++		break;
++	case DH_COMPUTE_KEY:
++	case ECDH_COMPUTE_KEY:
++		pkc->s = crypto_alloc_pkc("pkc(dh)",
++			 CRYPTO_ALG_TYPE_PKC_DH, 0);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (IS_ERR_OR_NULL(pkc->s))
++		return -EINVAL;
++
++	init_completion(&pkc->result.completion);
++	pkc_requested = pkc_request_alloc(pkc->s, GFP_KERNEL);
++
++	if (unlikely(IS_ERR_OR_NULL(pkc_requested))) {
++		ret = -ENOMEM;
++		goto error;
++	}
++	pkc_requested->type = pkc_req->type;
++	pkc_requested->curve_type = pkc_req->curve_type;
++	memcpy(&pkc_requested->req_u, &pkc_req->req_u, sizeof(pkc_req->req_u));
++	pkc_request_set_callback(pkc_requested, CRYPTO_TFM_REQ_MAY_BACKLOG,
++				 cryptodev_complete_asym, pkc);
++	ret = crypto_pkc_op(pkc_requested);
++	if (ret != -EINPROGRESS && ret != 0)
++		goto error2;
++
++	if (pkc->type == SYNCHRONOUS)
++		ret = waitfor(&pkc->result, ret);
++
++	return ret;
++error2:
++	kfree(pkc_requested);
++error:
++	crypto_free_pkc(pkc->s);
++	return ret;
++}
+diff --git a/cryptlib.h b/cryptlib.h
+index a0a8a63..56d325a 100644
+--- a/cryptlib.h
++++ b/cryptlib.h
+@@ -1,3 +1,6 @@
++/*
++ * Copyright 2012 Freescale Semiconductor, Inc.
++ */
+ #ifndef CRYPTLIB_H
+ # define CRYPTLIB_H
+ 
+@@ -89,5 +92,30 @@ void cryptodev_hash_deinit(struct hash_data *hdata);
+ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+ 			int hmac_mode, void *mackey, size_t mackeylen);
+ 
++/* Operation Type */
++enum offload_type {
++	SYNCHRONOUS,
++	ASYNCHRONOUS
++};
++
++struct cryptodev_result {
++	struct completion completion;
++	int err;
++};
++
++struct cryptodev_pkc {
++	struct list_head list; /* To maintain the Jobs in completed
++				 cryptodev lists */
++	struct kernel_crypt_kop kop;
++	struct crypto_pkc *s;    /* Transform pointer from CryptoAPI */
++	struct cryptodev_result result;	/* Result to be updated by
++					 completion handler */
++	struct pkc_request req; /* PKC request structure allocated
++				 from CryptoAPI */
++	enum offload_type type; /* Synchronous Vs Asynchronous request */
++	void *cookie; /*Additional opaque cookie to be used in future */
++	struct crypt_priv *priv;
++};
+ 
++int cryptodev_pkc_offload(struct cryptodev_pkc  *);
+ #endif
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index c0e8cd4..96675fe 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -1,6 +1,10 @@
+-/* This is a source compatible implementation with the original API of
++/*
++ * Copyright 2012 Freescale Semiconductor, Inc.
++ *
++ * This is a source compatible implementation with the original API of
+  * cryptodev by Angelos D. Keromytis, found at openbsd cryptodev.h.
+- * Placed under public domain */
++ * Placed under public domain
++ */
+ 
+ #ifndef L_CRYPTODEV_H
+ #define L_CRYPTODEV_H
+@@ -245,6 +249,9 @@ struct crypt_kop {
+ 	__u16	crk_oparams;
+ 	__u32	crk_pad1;
+ 	struct crparam	crk_param[CRK_MAXPARAM];
++	enum curve_t curve_type; /* 0 == Discrete Log,
++				1 = EC_PRIME, 2 = EC_BINARY */
++	void *cookie;
+ };
+ 
+ enum cryptodev_crk_op_t {
+@@ -289,5 +296,7 @@ enum cryptodev_crk_op_t {
+  */
+ #define CIOCASYNCCRYPT    _IOW('c', 110, struct crypt_op)
+ #define CIOCASYNCFETCH    _IOR('c', 111, struct crypt_op)
+-
++/* additional ioctls for asynchronous  operation for asymmetric ciphers*/
++#define CIOCASYMASYNCRYPT    _IOW('c', 112, struct crypt_kop)
++#define CIOCASYMASYNFETCH    _IOR('c', 113, struct crypt_kop)
+ #endif /* L_CRYPTODEV_H */
+diff --git a/cryptodev_int.h b/cryptodev_int.h
+index 8e687e7..fdbcc61 100644
+--- a/cryptodev_int.h
++++ b/cryptodev_int.h
+@@ -1,4 +1,6 @@
+-/* cipher stuff */
++/* cipher stuff
++ * Copyright 2012 Freescale Semiconductor, Inc.
++ */
+ #ifndef CRYPTODEV_INT_H
+ # define CRYPTODEV_INT_H
+ 
+@@ -112,6 +114,14 @@ struct compat_crypt_auth_op {
+ 
+ #endif /* CONFIG_COMPAT */
+ 
++/* kernel-internal extension to struct crypt_kop */
++struct kernel_crypt_kop {
++	struct crypt_kop kop;
++
++	struct task_struct *task;
++	struct mm_struct *mm;
++};
++
+ /* kernel-internal extension to struct crypt_op */
+ struct kernel_crypt_op {
+ 	struct crypt_op cop;
+@@ -157,6 +167,14 @@ int crypto_run(struct fcrypt *fcr, struct kernel_crypt_op *kcop);
+ 
+ #include <cryptlib.h>
+ 
++/* Cryptodev Key operation handler */
++int crypto_bn_modexp(struct cryptodev_pkc *);
++int crypto_modexp_crt(struct cryptodev_pkc *);
++int crypto_kop_dsasign(struct cryptodev_pkc *);
++int crypto_kop_dsaverify(struct cryptodev_pkc *);
++int crypto_run_asym(struct cryptodev_pkc *);
++void cryptodev_complete_asym(struct crypto_async_request *, int);
++
+ /* other internal structs */
+ struct csession {
+ 	struct list_head entry;
+diff --git a/ioctl.c b/ioctl.c
+index 5a44807..69980e3 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -4,6 +4,7 @@
+  * Copyright (c) 2004 Michal Ludvig <mludvig@logix.net.nz>, SuSE Labs
+  * Copyright (c) 2009,2010,2011 Nikos Mavrogiannopoulos <nmav@gnutls.org>
+  * Copyright (c) 2010 Phil Sutter
++ * Copyright 2012 Freescale Semiconductor, Inc.
+  *
+  * This file is part of linux cryptodev.
+  *
+@@ -89,8 +90,37 @@ struct crypt_priv {
+ 	int itemcount;
+ 	struct work_struct cryptask;
+ 	wait_queue_head_t user_waiter;
++	/* List of pending cryptodev_pkc asym requests */
++	struct list_head asym_completed_list;
++	/* For addition/removal of entry in pending list of asymmetric request*/
++	spinlock_t completion_lock;
+ };
+ 
++/* Asymmetric request Completion handler */
++void cryptodev_complete_asym(struct crypto_async_request *req, int err)
++{
++	struct cryptodev_pkc *pkc = req->data;
++	struct cryptodev_result *res = &pkc->result;
++
++	crypto_free_pkc(pkc->s);
++	res->err = err;
++	if (pkc->type == SYNCHRONOUS) {
++		if (err == -EINPROGRESS)
++			return;
++		complete(&res->completion);
++	} else {
++		struct crypt_priv *pcr = pkc->priv;
++		unsigned long flags;
++		spin_lock_irqsave(&pcr->completion_lock, flags);
++		list_add_tail(&pkc->list, &pcr->asym_completed_list);
++		spin_unlock_irqrestore(&pcr->completion_lock, flags);
++		/* wake for POLLIN */
++		wake_up_interruptible(&pcr->user_waiter);
++	}
++
++	kfree(req);
++}
++
+ #define FILL_SG(sg, ptr, len)					\
+ 	do {							\
+ 		(sg)->page = virt_to_page(ptr);			\
+@@ -472,7 +502,8 @@ cryptodev_open(struct inode *inode, struct file *filp)
+ 	INIT_LIST_HEAD(&pcr->free.list);
+ 	INIT_LIST_HEAD(&pcr->todo.list);
+ 	INIT_LIST_HEAD(&pcr->done.list);
+-
++	INIT_LIST_HEAD(&pcr->asym_completed_list);
++	spin_lock_init(&pcr->completion_lock);
+ 	INIT_WORK(&pcr->cryptask, cryptask_routine);
+ 
+ 	init_waitqueue_head(&pcr->user_waiter);
+@@ -639,6 +670,79 @@ static int crypto_async_fetch(struct crypt_priv *pcr,
+ }
+ #endif
+ 
++/* get the first asym cipher completed job from the "done" queue
++ *
++ * returns:
++ * -EBUSY if no completed jobs are ready (yet)
++ * the return value otherwise */
++static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
++{
++	int ret = 0;
++	struct kernel_crypt_kop *kop = &pkc->kop;
++	struct crypt_kop *ckop = &kop->kop;
++	struct pkc_request *pkc_req = &pkc->req;
++
++	switch (ckop->crk_op) {
++	case CRK_MOD_EXP:
++	{
++		struct rsa_pub_req_s *rsa_req = &pkc_req->req_u.rsa_pub_req;
++		copy_to_user(ckop->crk_param[3].crp_p, rsa_req->g,
++			     rsa_req->g_len);
++	}
++	break;
++	case CRK_MOD_EXP_CRT:
++	{
++		struct rsa_priv_frm3_req_s *rsa_req =
++			 &pkc_req->req_u.rsa_priv_f3;
++		copy_to_user(ckop->crk_param[6].crp_p,
++			     rsa_req->f, rsa_req->f_len);
++	}
++	break;
++	case CRK_DSA_SIGN:
++	{
++		struct dsa_sign_req_s *dsa_req = &pkc_req->req_u.dsa_sign;
++
++		if (pkc_req->type == ECDSA_SIGN) {
++			copy_to_user(ckop->crk_param[6].crp_p,
++				     dsa_req->c, dsa_req->d_len);
++			copy_to_user(ckop->crk_param[7].crp_p,
++				     dsa_req->d, dsa_req->d_len);
++		} else {
++			copy_to_user(ckop->crk_param[5].crp_p,
++				     dsa_req->c, dsa_req->d_len);
++			copy_to_user(ckop->crk_param[6].crp_p,
++				     dsa_req->d, dsa_req->d_len);
++		}
++	}
++	break;
++	case CRK_DSA_VERIFY:
++		break;
++	case CRK_DH_COMPUTE_KEY:
++	{
++		struct dh_key_req_s *dh_req = &pkc_req->req_u.dh_req;
++		if (pkc_req->type == ECDH_COMPUTE_KEY)
++			copy_to_user(ckop->crk_param[4].crp_p,
++				     dh_req->z, dh_req->z_len);
++		else
++			copy_to_user(ckop->crk_param[3].crp_p,
++				     dh_req->z, dh_req->z_len);
++	}
++	break;
++	default:
++		ret = -EINVAL;
++	}
++	kfree(pkc->cookie);
++	return ret;
++}
++
++/* this function has to be called from process context */
++static int fill_kop_from_cop(struct kernel_crypt_kop *kop)
++{
++	kop->task = current;
++	kop->mm = current->mm;
++	return 0;
++}
++
+ /* this function has to be called from process context */
+ static int fill_kcop_from_cop(struct kernel_crypt_op *kcop, struct fcrypt *fcr)
+ {
+@@ -662,11 +766,8 @@ static int fill_kcop_from_cop(struct kernel_crypt_op *kcop, struct fcrypt *fcr)
+ 
+ 	if (cop->iv) {
+ 		rc = copy_from_user(kcop->iv, cop->iv, kcop->ivlen);
+-		if (unlikely(rc)) {
+-			derr(1, "error copying IV (%d bytes), copy_from_user returned %d for address %p",
+-					kcop->ivlen, rc, cop->iv);
++		if (unlikely(rc))
+ 			return -EFAULT;
+-		}
+ 	}
+ 
+ 	return 0;
+@@ -692,6 +793,25 @@ static int fill_cop_from_kcop(struct kernel_crypt_op *kcop, struct fcrypt *fcr)
+ 	return 0;
+ }
+ 
++static int kop_from_user(struct kernel_crypt_kop *kop,
++			void __user *arg)
++{
++	if (unlikely(copy_from_user(&kop->kop, arg, sizeof(kop->kop))))
++		return -EFAULT;
++
++	return fill_kop_from_cop(kop);
++}
++
++static int kop_to_user(struct kernel_crypt_kop *kop,
++			void __user *arg)
++{
++	if (unlikely(copy_to_user(arg, &kop->kop, sizeof(kop->kop)))) {
++		dprintk(1, KERN_ERR, "Cannot copy to userspace\n");
++		return -EFAULT;
++	}
++	return 0;
++}
++
+ static int kcop_from_user(struct kernel_crypt_op *kcop,
+ 			struct fcrypt *fcr, void __user *arg)
+ {
+@@ -821,7 +941,8 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 
+ 	switch (cmd) {
+ 	case CIOCASYMFEAT:
+-		return put_user(0, p);
++		return put_user(CRF_MOD_EXP_CRT |  CRF_MOD_EXP |
++			CRF_DSA_SIGN | CRF_DSA_VERIFY | CRF_DH_COMPUTE_KEY, p);
+ 	case CRIOGET:
+ 		fd = clonefd(filp);
+ 		ret = put_user(fd, p);
+@@ -857,6 +978,24 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 		if (unlikely(ret))
+ 			return ret;
+ 		return copy_to_user(arg, &siop, sizeof(siop));
++	case CIOCKEY:
++	{
++		struct cryptodev_pkc *pkc =
++			kzalloc(sizeof(struct cryptodev_pkc), GFP_KERNEL);
++
++		if (!pkc)
++			return -ENOMEM;
++
++		ret = kop_from_user(&pkc->kop, arg);
++		if (unlikely(ret)) {
++			kfree(pkc);
++			return ret;
++		}
++		pkc->type = SYNCHRONOUS;
++		ret = crypto_run_asym(pkc);
++		kfree(pkc);
++	}
++	return ret;
+ 	case CIOCCRYPT:
+ 		if (unlikely(ret = kcop_from_user(&kcop, fcr, arg))) {
+ 			dwarning(1, "Error copying from user");
+@@ -895,6 +1034,45 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 
+ 		return kcop_to_user(&kcop, fcr, arg);
+ #endif
++	case CIOCASYMASYNCRYPT:
++	{
++		struct cryptodev_pkc *pkc =
++			kzalloc(sizeof(struct cryptodev_pkc), GFP_KERNEL);
++		ret = kop_from_user(&pkc->kop, arg);
++
++		if (unlikely(ret))
++			return -EINVAL;
++
++		/* Store associated FD priv data with asymmetric request */
++		pkc->priv = pcr;
++		pkc->type = ASYNCHRONOUS;
++		ret = crypto_run_asym(pkc);
++		if (ret == -EINPROGRESS)
++			ret = 0;
++	}
++	return ret;
++	case CIOCASYMASYNFETCH:
++	{
++		struct cryptodev_pkc *pkc;
++		unsigned long flags;
++
++		spin_lock_irqsave(&pcr->completion_lock, flags);
++		if (list_empty(&pcr->asym_completed_list)) {
++			spin_unlock_irqrestore(&pcr->completion_lock, flags);
++			return -ENOMEM;
++		}
++		pkc = list_first_entry(&pcr->asym_completed_list,
++			struct cryptodev_pkc, list);
++		list_del(&pkc->list);
++		spin_unlock_irqrestore(&pcr->completion_lock, flags);
++		ret = crypto_async_fetch_asym(pkc);
++
++		/* Reflect the updated request to user-space */
++		if (!ret)
++			kop_to_user(&pkc->kop, arg);
++		kfree(pkc);
++	}
++	return ret;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1083,9 +1261,11 @@ static unsigned int cryptodev_poll(struct file *file, poll_table *wait)
+ 
+ 	poll_wait(file, &pcr->user_waiter, wait);
+ 
+-	if (!list_empty_careful(&pcr->done.list))
++	if (!list_empty_careful(&pcr->done.list) ||
++	    !list_empty_careful(&pcr->asym_completed_list))
+ 		ret |= POLLIN | POLLRDNORM;
+-	if (!list_empty_careful(&pcr->free.list) || pcr->itemcount < MAX_COP_RINGSIZE)
++	if (!list_empty_careful(&pcr->free.list) ||
++	    pcr->itemcount < MAX_COP_RINGSIZE)
+ 		ret |= POLLOUT | POLLWRNORM;
+ 
+ 	return ret;
+diff --git a/main.c b/main.c
+index 57e5c38..0b7951e 100644
+--- a/main.c
++++ b/main.c
+@@ -181,6 +181,384 @@ __crypto_run_zc(struct csession *ses_ptr, struct kernel_crypt_op *kcop)
+ 	return ret;
+ }
+ 
++int crypto_kop_dsasign(struct cryptodev_pkc *pkc)
++{
++	struct kernel_crypt_kop *kop = &pkc->kop;
++	struct crypt_kop *cop = &kop->kop;
++	struct pkc_request *pkc_req = &pkc->req;
++	struct dsa_sign_req_s *dsa_req = &pkc_req->req_u.dsa_sign;
++	int rc, buf_size;
++	uint8_t *buf;
++
++	if (!cop->crk_param[0].crp_nbits || !cop->crk_param[1].crp_nbits ||
++	    !cop->crk_param[2].crp_nbits || !cop->crk_param[3].crp_nbits ||
++	    !cop->crk_param[4].crp_nbits || !cop->crk_param[5].crp_nbits ||
++	    !cop->crk_param[6].crp_nbits || (cop->crk_iparams == 6 &&
++	    !cop->crk_param[7].crp_nbits))
++		return -EINVAL;
++
++	dsa_req->m_len = (cop->crk_param[0].crp_nbits + 7)/8;
++	dsa_req->q_len = (cop->crk_param[1].crp_nbits + 7)/8;
++	dsa_req->r_len = (cop->crk_param[2].crp_nbits + 7)/8;
++	dsa_req->g_len = (cop->crk_param[3].crp_nbits + 7)/8;
++	dsa_req->priv_key_len = (cop->crk_param[4].crp_nbits + 7)/8;
++	dsa_req->d_len = (cop->crk_param[6].crp_nbits + 7)/8;
++	buf_size = dsa_req->m_len + dsa_req->q_len + dsa_req->r_len +
++		   dsa_req->g_len + dsa_req->priv_key_len + dsa_req->d_len +
++		   dsa_req->d_len;
++	if (cop->crk_iparams == 6) {
++		dsa_req->ab_len = (cop->crk_param[5].crp_nbits + 7)/8;
++		buf_size += dsa_req->ab_len;
++		pkc_req->type = ECDSA_SIGN;
++		pkc_req->curve_type = cop->curve_type;
++	} else {
++		pkc_req->type = DSA_SIGN;
++	}
++
++	buf = kzalloc(buf_size, GFP_DMA);
++
++	dsa_req->q = buf;
++	dsa_req->r = dsa_req->q + dsa_req->q_len;
++	dsa_req->g = dsa_req->r + dsa_req->r_len;
++	dsa_req->priv_key = dsa_req->g + dsa_req->g_len;
++	dsa_req->m = dsa_req->priv_key + dsa_req->priv_key_len;
++	dsa_req->c = dsa_req->m + dsa_req->m_len;
++	dsa_req->d = dsa_req->c + dsa_req->d_len;
++	copy_from_user(dsa_req->m, cop->crk_param[0].crp_p, dsa_req->m_len);
++	copy_from_user(dsa_req->q, cop->crk_param[1].crp_p, dsa_req->q_len);
++	copy_from_user(dsa_req->r, cop->crk_param[2].crp_p, dsa_req->r_len);
++	copy_from_user(dsa_req->g, cop->crk_param[3].crp_p, dsa_req->g_len);
++	copy_from_user(dsa_req->priv_key, cop->crk_param[4].crp_p,
++		       dsa_req->priv_key_len);
++	if (cop->crk_iparams == 6) {
++		dsa_req->ab = dsa_req->d + dsa_req->d_len;
++		copy_from_user(dsa_req->ab, cop->crk_param[5].crp_p,
++			       dsa_req->ab_len);
++	}
++	rc = cryptodev_pkc_offload(pkc);
++	if (pkc->type == SYNCHRONOUS) {
++		if (rc)
++			goto err;
++		if (cop->crk_iparams == 6) {
++			copy_to_user(cop->crk_param[6].crp_p, dsa_req->c,
++				     dsa_req->d_len);
++			copy_to_user(cop->crk_param[7].crp_p, dsa_req->d,
++				     dsa_req->d_len);
++		} else {
++			copy_to_user(cop->crk_param[5].crp_p, dsa_req->c,
++				     dsa_req->d_len);
++			copy_to_user(cop->crk_param[6].crp_p, dsa_req->d,
++				     dsa_req->d_len);
++		}
++	} else {
++		if (rc != -EINPROGRESS && rc != 0)
++			goto err;
++
++		pkc->cookie = buf;
++		return rc;
++	}
++err:
++	kfree(buf);
++	return rc;
++}
++
++int crypto_kop_dsaverify(struct cryptodev_pkc *pkc)
++{
++	struct kernel_crypt_kop *kop = &pkc->kop;
++	struct crypt_kop *cop = &kop->kop;
++	struct pkc_request *pkc_req;
++	struct dsa_verify_req_s *dsa_req;
++	int rc, buf_size;
++	uint8_t *buf;
++
++	if (!cop->crk_param[0].crp_nbits || !cop->crk_param[1].crp_nbits ||
++	    !cop->crk_param[2].crp_nbits || !cop->crk_param[3].crp_nbits ||
++	    !cop->crk_param[4].crp_nbits || !cop->crk_param[5].crp_nbits ||
++	    !cop->crk_param[6].crp_nbits  || (cop->crk_iparams == 8 &&
++	    !cop->crk_param[7].crp_nbits))
++		return -EINVAL;
++
++	pkc_req = &pkc->req;
++	dsa_req = &pkc_req->req_u.dsa_verify;
++	dsa_req->m_len = (cop->crk_param[0].crp_nbits + 7)/8;
++	dsa_req->q_len = (cop->crk_param[1].crp_nbits + 7)/8;
++	dsa_req->r_len = (cop->crk_param[2].crp_nbits + 7)/8;
++	dsa_req->g_len = (cop->crk_param[3].crp_nbits + 7)/8;
++	dsa_req->pub_key_len = (cop->crk_param[4].crp_nbits + 7)/8;
++	dsa_req->d_len = (cop->crk_param[6].crp_nbits + 7)/8;
++	buf_size = dsa_req->m_len + dsa_req->q_len + dsa_req->r_len +
++		dsa_req->g_len + dsa_req->pub_key_len + dsa_req->d_len +
++		dsa_req->d_len;
++	if (cop->crk_iparams == 8) {
++		dsa_req->ab_len = (cop->crk_param[5].crp_nbits + 7)/8;
++		buf_size += dsa_req->ab_len;
++		pkc_req->type = ECDSA_VERIFY;
++		pkc_req->curve_type = cop->curve_type;
++	} else {
++		pkc_req->type = DSA_VERIFY;
++	}
++
++	buf = kzalloc(buf_size, GFP_DMA);
++
++	dsa_req->q = buf;
++	dsa_req->r = dsa_req->q + dsa_req->q_len;
++	dsa_req->g = dsa_req->r + dsa_req->r_len;
++	dsa_req->pub_key = dsa_req->g + dsa_req->g_len;
++	dsa_req->m = dsa_req->pub_key + dsa_req->pub_key_len;
++	dsa_req->c = dsa_req->m + dsa_req->m_len;
++	dsa_req->d = dsa_req->c + dsa_req->d_len;
++	copy_from_user(dsa_req->m, cop->crk_param[0].crp_p, dsa_req->m_len);
++	copy_from_user(dsa_req->q, cop->crk_param[1].crp_p, dsa_req->q_len);
++	copy_from_user(dsa_req->r, cop->crk_param[2].crp_p, dsa_req->r_len);
++	copy_from_user(dsa_req->g, cop->crk_param[3].crp_p, dsa_req->g_len);
++	copy_from_user(dsa_req->pub_key, cop->crk_param[4].crp_p,
++		       dsa_req->pub_key_len);
++	if (cop->crk_iparams == 8) {
++		dsa_req->ab = dsa_req->d + dsa_req->d_len;
++		copy_from_user(dsa_req->ab, cop->crk_param[5].crp_p,
++			       dsa_req->ab_len);
++		copy_from_user(dsa_req->c, cop->crk_param[6].crp_p,
++			       dsa_req->d_len);
++		copy_from_user(dsa_req->d, cop->crk_param[7].crp_p,
++			       dsa_req->d_len);
++	} else {
++		copy_from_user(dsa_req->c, cop->crk_param[5].crp_p,
++			       dsa_req->d_len);
++		copy_from_user(dsa_req->d, cop->crk_param[6].crp_p,
++			       dsa_req->d_len);
++	}
++	rc = cryptodev_pkc_offload(pkc);
++	if (pkc->type == SYNCHRONOUS) {
++		if (rc)
++			goto err;
++	} else {
++		if (rc != -EINPROGRESS && !rc)
++			goto err;
++		pkc->cookie = buf;
++		return rc;
++	}
++err:
++	kfree(buf);
++	return rc;
++}
++
++int crypto_kop_dh_key(struct cryptodev_pkc *pkc)
++{
++	struct kernel_crypt_kop *kop = &pkc->kop;
++	struct crypt_kop *cop = &kop->kop;
++	struct pkc_request *pkc_req;
++	struct dh_key_req_s *dh_req;
++	int buf_size;
++	uint8_t *buf;
++	int rc = -EINVAL;
++
++	pkc_req = &pkc->req;
++	dh_req = &pkc_req->req_u.dh_req;
++	dh_req->s_len = (cop->crk_param[0].crp_nbits + 7)/8;
++	dh_req->pub_key_len = (cop->crk_param[1].crp_nbits + 7)/8;
++	dh_req->q_len = (cop->crk_param[2].crp_nbits + 7)/8;
++	buf_size = dh_req->q_len + dh_req->pub_key_len + dh_req->s_len;
++	if (cop->crk_iparams == 4) {
++		pkc_req->type = ECDH_COMPUTE_KEY;
++		dh_req->ab_len = (cop->crk_param[3].crp_nbits + 7)/8;
++		dh_req->z_len = (cop->crk_param[4].crp_nbits + 7)/8;
++		buf_size += dh_req->ab_len;
++	} else {
++		dh_req->z_len = (cop->crk_param[3].crp_nbits + 7)/8;
++		pkc_req->type = DH_COMPUTE_KEY;
++	}
++	buf_size += dh_req->z_len;
++	buf = kzalloc(buf_size, GFP_DMA);
++	dh_req->q = buf;
++	dh_req->s = dh_req->q + dh_req->q_len;
++	dh_req->pub_key = dh_req->s + dh_req->s_len;
++	dh_req->z = dh_req->pub_key + dh_req->pub_key_len;
++	if (cop->crk_iparams == 4) {
++		dh_req->ab = dh_req->z + dh_req->z_len;
++		pkc_req->curve_type = cop->curve_type;
++		copy_from_user(dh_req->ab, cop->crk_param[3].crp_p,
++			       dh_req->ab_len);
++	}
++	copy_from_user(dh_req->s, cop->crk_param[0].crp_p, dh_req->s_len);
++	copy_from_user(dh_req->pub_key, cop->crk_param[1].crp_p,
++		       dh_req->pub_key_len);
++	copy_from_user(dh_req->q, cop->crk_param[2].crp_p, dh_req->q_len);
++	rc = cryptodev_pkc_offload(pkc);
++	if (pkc->type == SYNCHRONOUS) {
++		if (rc)
++			goto err;
++		if (cop->crk_iparams == 4)
++			copy_to_user(cop->crk_param[4].crp_p, dh_req->z,
++				     dh_req->z_len);
++		else
++			copy_to_user(cop->crk_param[3].crp_p, dh_req->z,
++				     dh_req->z_len);
++	} else {
++		if (rc != -EINPROGRESS && rc != 0)
++			goto err;
++
++		pkc->cookie = buf;
++		return rc;
++	}
++err:
++	kfree(buf);
++	return rc;
++}
++
++int crypto_modexp_crt(struct cryptodev_pkc *pkc)
++{
++	struct kernel_crypt_kop *kop = &pkc->kop;
++	struct crypt_kop *cop = &kop->kop;
++	struct pkc_request *pkc_req;
++	struct rsa_priv_frm3_req_s *rsa_req;
++	int rc;
++	uint8_t *buf;
++
++	if (!cop->crk_param[0].crp_nbits || !cop->crk_param[1].crp_nbits ||
++	    !cop->crk_param[2].crp_nbits || !cop->crk_param[3].crp_nbits ||
++	    !cop->crk_param[4].crp_nbits || !cop->crk_param[5].crp_nbits)
++		return -EINVAL;
++
++	pkc_req = &pkc->req;
++	pkc_req->type = RSA_PRIV_FORM3;
++	rsa_req = &pkc_req->req_u.rsa_priv_f3;
++	rsa_req->p_len = (cop->crk_param[0].crp_nbits + 7)/8;
++	rsa_req->q_len = (cop->crk_param[1].crp_nbits + 7)/8;
++	rsa_req->g_len = (cop->crk_param[2].crp_nbits + 7)/8;
++	rsa_req->dp_len = (cop->crk_param[3].crp_nbits + 7)/8;
++	rsa_req->dq_len = (cop->crk_param[4].crp_nbits + 7)/8;
++	rsa_req->c_len = (cop->crk_param[5].crp_nbits + 7)/8;
++	rsa_req->f_len = (cop->crk_param[6].crp_nbits + 7)/8;
++	buf = kzalloc(rsa_req->p_len + rsa_req->q_len + rsa_req->f_len +
++		      rsa_req->dp_len + rsa_req->dp_len + rsa_req->c_len +
++		      rsa_req->g_len, GFP_DMA);
++	rsa_req->p = buf;
++	rsa_req->q = rsa_req->p + rsa_req->p_len;
++	rsa_req->g = rsa_req->q + rsa_req->q_len;
++	rsa_req->dp = rsa_req->g + rsa_req->g_len;
++	rsa_req->dq = rsa_req->dp + rsa_req->dp_len;
++	rsa_req->c = rsa_req->dq + rsa_req->dq_len;
++	rsa_req->f = rsa_req->c + rsa_req->c_len;
++	copy_from_user(rsa_req->p, cop->crk_param[0].crp_p, rsa_req->p_len);
++	copy_from_user(rsa_req->q, cop->crk_param[1].crp_p, rsa_req->q_len);
++	copy_from_user(rsa_req->g, cop->crk_param[2].crp_p, rsa_req->g_len);
++	copy_from_user(rsa_req->dp, cop->crk_param[3].crp_p, rsa_req->dp_len);
++	copy_from_user(rsa_req->dq, cop->crk_param[4].crp_p, rsa_req->dq_len);
++	copy_from_user(rsa_req->c, cop->crk_param[5].crp_p, rsa_req->c_len);
++	rc = cryptodev_pkc_offload(pkc);
++
++	if (pkc->type == SYNCHRONOUS) {
++		if (rc)
++			goto err;
++		copy_to_user(cop->crk_param[6].crp_p, rsa_req->f,
++			     rsa_req->f_len);
++	} else {
++		if (rc != -EINPROGRESS && rc != 0)
++			goto err;
++
++		pkc->cookie = buf;
++		return rc;
++	}
++err:
++	kfree(buf);
++	return rc;
++}
++
++int crypto_bn_modexp(struct cryptodev_pkc *pkc)
++{
++	struct pkc_request *pkc_req;
++	struct rsa_pub_req_s *rsa_req;
++	int rc;
++	struct kernel_crypt_kop *kop = &pkc->kop;
++	struct crypt_kop *cop = &kop->kop;
++	uint8_t *buf;
++
++	if (!cop->crk_param[0].crp_nbits || !cop->crk_param[1].crp_nbits ||
++	    !cop->crk_param[2].crp_nbits || !cop->crk_param[3].crp_nbits)
++		return -EINVAL;
++
++	pkc_req = &pkc->req;
++	pkc_req->type = RSA_PUB;
++	rsa_req = &pkc_req->req_u.rsa_pub_req;
++	rsa_req->f_len = (cop->crk_param[0].crp_nbits + 7)/8;
++	rsa_req->e_len = (cop->crk_param[1].crp_nbits + 7)/8;
++	rsa_req->n_len = (cop->crk_param[2].crp_nbits + 7)/8;
++	rsa_req->g_len = (cop->crk_param[3].crp_nbits + 7)/8;
++	buf = kzalloc(rsa_req->f_len + rsa_req->e_len + rsa_req->n_len
++			+ rsa_req->g_len, GFP_DMA);
++	if (!buf)
++		return -ENOMEM;
++
++	rsa_req->e = buf;
++	rsa_req->f = rsa_req->e + rsa_req->e_len;
++	rsa_req->g = rsa_req->f + rsa_req->f_len;
++	rsa_req->n = rsa_req->g + rsa_req->g_len;
++	copy_from_user(rsa_req->f, cop->crk_param[0].crp_p, rsa_req->f_len);
++	copy_from_user(rsa_req->e, cop->crk_param[1].crp_p, rsa_req->e_len);
++	copy_from_user(rsa_req->n, cop->crk_param[2].crp_p, rsa_req->n_len);
++	rc = cryptodev_pkc_offload(pkc);
++	if (pkc->type == SYNCHRONOUS) {
++		if (rc)
++			goto err;
++
++		copy_to_user(cop->crk_param[3].crp_p, rsa_req->g,
++			     rsa_req->g_len);
++	} else {
++		if (rc != -EINPROGRESS && rc != 0)
++			goto err;
++
++		/* This one will be freed later in fetch handler */
++		pkc->cookie = buf;
++		return rc;
++	}
++err:
++	kfree(buf);
++	return rc;
++}
++
++int crypto_run_asym(struct cryptodev_pkc *pkc)
++{
++	int ret = -EINVAL;
++	struct kernel_crypt_kop *kop = &pkc->kop;
++
++	switch (kop->kop.crk_op) {
++	case CRK_MOD_EXP:
++		if (kop->kop.crk_iparams != 3 && kop->kop.crk_oparams != 1)
++			goto err;
++
++		ret = crypto_bn_modexp(pkc);
++		break;
++	case CRK_MOD_EXP_CRT:
++		if (kop->kop.crk_iparams != 6 && kop->kop.crk_oparams != 1)
++			goto err;
++
++		ret = crypto_modexp_crt(pkc);
++		break;
++	case CRK_DSA_SIGN:
++		if ((kop->kop.crk_iparams != 5 && kop->kop.crk_iparams != 6) ||
++		    kop->kop.crk_oparams != 2)
++			goto err;
++
++		ret = crypto_kop_dsasign(pkc);
++		break;
++	case CRK_DSA_VERIFY:
++		if ((kop->kop.crk_iparams != 7 && kop->kop.crk_iparams != 8) ||
++		    kop->kop.crk_oparams != 0)
++			goto err;
++
++		ret = crypto_kop_dsaverify(pkc);
++		break;
++	case CRK_DH_COMPUTE_KEY:
++		if ((kop->kop.crk_iparams != 3 && kop->kop.crk_iparams != 4) ||
++		    kop->kop.crk_oparams != 1)
++			goto err;
++		ret = crypto_kop_dh_key(pkc);
++		break;
++	}
++err:
++	return ret;
++}
++
+ int crypto_run(struct fcrypt *fcr, struct kernel_crypt_op *kcop)
+ {
+ 	struct csession *ses_ptr;
+-- 
+2.7.0
+

@@ -1,0 +1,73 @@
+From 22b63631de17507c12355c30e408dbd88350bb3a Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 10 Dec 2015 12:42:20 +0200
+Subject: [PATCH 28/38] for consistency, use $(...) instead of ${...} in
+ makefiles
+
+Both syntax rules are equaly valid and mixing them is permitted but
+looks inconsistent.
+
+See section "6.1 Basics of Variable References" of GNU make manual
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ Makefile       | 16 ++++++++--------
+ tests/Makefile |  2 +-
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 7c7e193..7f8df37 100644
+--- a/Makefile
++++ b/Makefile
+@@ -14,11 +14,11 @@ cryptodev-objs = ioctl.o main.o cryptlib.o authenc.o zc.o util.o
+ obj-m += cryptodev.o
+ 
+ KERNEL_MAKE_OPTS := -C $(KERNEL_DIR) M=$(PWD)
+-ifneq (${ARCH},)
+-KERNEL_MAKE_OPTS += ARCH=${ARCH}
++ifneq ($(ARCH),)
++KERNEL_MAKE_OPTS += ARCH=$(ARCH)
+ endif
+-ifneq (${CROSS_COMPILE},)
+-KERNEL_MAKE_OPTS += CROSS_COMPILE=${CROSS_COMPILE}
++ifneq ($(CROSS_COMPILE),)
++KERNEL_MAKE_OPTS += CROSS_COMPILE=$(CROSS_COMPILE)
+ endif
+ 
+ build: version.h
+@@ -43,15 +43,15 @@ check:
+ 	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests check
+ 
+ CPOPTS =
+-ifneq (${SHOW_TYPES},)
++ifneq ($(SHOW_TYPES),)
+ CPOPTS += --show-types
+ endif
+-ifneq (${IGNORE_TYPES},)
+-CPOPTS += --ignore ${IGNORE_TYPES}
++ifneq ($(IGNORE_TYPES),)
++CPOPTS += --ignore $(IGNORE_TYPES)
+ endif
+ 
+ checkpatch:
+-	$(KERNEL_DIR)/scripts/checkpatch.pl ${CPOPTS} --file *.c *.h
++	$(KERNEL_DIR)/scripts/checkpatch.pl $(CPOPTS) --file *.c *.h
+ 
+ VERSIONTAG = refs/tags/cryptodev-linux-$(VERSION)
+ FILEBASE = cryptodev-linux-$(VERSION)
+diff --git a/tests/Makefile b/tests/Makefile
+index 20c52ba..3155da9 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -6,7 +6,7 @@ comp_progs := cipher_comp hash_comp hmac_comp
+ 
+ hostprogs := cipher cipher-aead hmac speed async_cipher async_hmac \
+ 	async_speed sha_speed hashcrypt_speed fullspeed cipher-gcm \
+-	cipher-aead-srtp ${comp_progs}
++	cipher-aead-srtp $(comp_progs)
+ 
+ example-cipher-objs := cipher.o
+ example-cipher-aead-objs := cipher-aead.o
+-- 
+2.7.0
+

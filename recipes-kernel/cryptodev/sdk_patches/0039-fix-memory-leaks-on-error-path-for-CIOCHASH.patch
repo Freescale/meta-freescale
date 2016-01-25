@@ -1,0 +1,70 @@
+From 3e3996b40fd3a93cbe2e5ddee244280dd7de6c18 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Tue, 9 Feb 2016 21:07:06 +0200
+Subject: [PATCH 39/40] fix memory leaks on error path for CIOCHASH
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ ioctl.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index ff3de44..8d81b56 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -1190,18 +1190,17 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 		ret = hash_run(&khop);
+ 		if (unlikely(ret)) {
+ 			dwarning(1, "Error in hash run");
+-			return ret;
++			goto hash_err;
+ 		}
+ 
+ 		ret = copy_to_user(khop.hash_op.mac_result, khop.hash_output, khop.digestsize);
+ 		if (unlikely(ret)) {
+ 			dwarning(1, "Error in copy to user");
+-			return ret;
+ 		}
+ 
+-		/* put session */
++	hash_err:
+ 		hash_destroy_session(khop.hash_op.ses);
+-		return 0;
++		return ret;
+ 	case CIOCAUTHCRYPT:
+ 		if (unlikely(ret = kcaop_from_user(&kcaop, fcr, arg))) {
+ 			dwarning(1, "Error copying from user");
+@@ -1532,22 +1531,25 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 		ret = hash_run(&khop);
+ 		if (unlikely(ret)) {
+ 			dwarning(1, "Error in hash run");
+-			return ret;
++			goto hash_err;
+ 		}
+ 
+ 		ret = copy_to_user(khop.hash_op.mac_result, khop.hash_output,
+ 				   khop.digestsize);
+ 		if (unlikely(ret)) {
+ 			dwarning(1, "Error in copy to user");
+-			return ret;
++			goto hash_err;
+ 		}
+ 
+-		copy_to_user(arg, &compat_hash_op_data,
++		ret = copy_to_user(arg, &compat_hash_op_data,
+ 			     sizeof(struct compat_hash_op_data));
++		if (unlikely(ret)) {
++			dwarning(1, "Error in copy to user");
++		}
+ 
+-		/* put session */
++	hash_err:
+ 		hash_destroy_session(khop.hash_op.ses);
+-		return 0;
++		return ret;
+ 
+ 	case COMPAT_CIOCAUTHCRYPT:
+ 		if (unlikely(ret = compat_kcaop_from_user(&kcaop, fcr, arg))) {
+-- 
+2.7.0
+

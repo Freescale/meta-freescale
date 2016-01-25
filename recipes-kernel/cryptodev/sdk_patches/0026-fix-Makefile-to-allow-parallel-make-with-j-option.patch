@@ -1,0 +1,56 @@
+From d96ae48c87f80af1a202c2d2e837bf477edc0fb7 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 10 Dec 2015 12:42:18 +0200
+Subject: [PATCH 26/38] fix Makefile to allow parallel make with -j option
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Recursive make commands should always use the variable MAKE, not the
+explicit command name ‘make’
+
+Documented in section "5.7.1 How the MAKE Variable Works" of GNU Make manual
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ Makefile | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 9e56e9d..2f50210 100644
+--- a/Makefile
++++ b/Makefile
+@@ -22,7 +22,7 @@ KERNEL_MAKE_OPTS += CROSS_COMPILE=${CROSS_COMPILE}
+ endif
+ 
+ build: version.h
+-	make ${KERNEL_MAKE_OPTS} modules
++	$(MAKE) $(KERNEL_MAKE_OPTS) modules
+ 
+ version.h: Makefile
+ 	@echo "#define VERSION \"$(VERSION)\"" > version.h
+@@ -30,17 +30,17 @@ version.h: Makefile
+ install: modules_install
+ 
+ modules_install:
+-	make -C $(KERNEL_DIR) SUBDIRS=`pwd` modules_install
++	$(MAKE) -C $(KERNEL_DIR) SUBDIRS=`pwd` modules_install
+ 	@echo "Installing cryptodev.h in $(PREFIX)/usr/include/crypto ..."
+ 	@install -D crypto/cryptodev.h $(PREFIX)/usr/include/crypto/cryptodev.h
+ 
+ clean:
+-	make -C $(KERNEL_DIR) SUBDIRS=`pwd` clean
++	$(MAKE) -C $(KERNEL_DIR) SUBDIRS=`pwd` clean
+ 	rm -f $(hostprogs) *~
+-	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) make -C tests clean
++	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests clean
+ 
+ check:
+-	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) make -C tests check
++	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests check
+ 
+ CPOPTS =
+ ifneq (${SHOW_TYPES},)
+-- 
+2.7.0
+

@@ -1,0 +1,61 @@
+From 1d10f06bef0f07980a08b387850c1daf1d3a8e87 Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Tue, 2 Jun 2015 12:11:12 +0300
+Subject: [PATCH 19/38] fix size_t print format
+
+  CC [M]  crypto/../../cryptodev-linux/cryptlib.o
+crypto/../../cryptodev-linux/cryptlib.c: In function 'cryptodev_cipher_init':
+crypto/../../cryptodev-linux/cryptlib.c:146:5: warning: format '%u' expects argument of type 'unsigned int', but argument 6 has type 'size_t' [-Wformat=]
+     ddebug(1, "Wrong keylen '%u' for algorithm '%s'. Use %u to %u.",
+     ^
+crypto/../../cryptodev-linux/cryptlib.c:173:3: warning: format '%u' expects argument of type 'unsigned int', but argument 7 has type 'size_t' [-Wformat=]
+   ddebug(1, "Setting key failed for %s-%u.", alg_name, keylen*8);
+   ^
+crypto/../../cryptodev-linux/cryptlib.c: In function 'cryptodev_hash_init':
+crypto/../../cryptodev-linux/cryptlib.c:340:4: warning: format '%u' expects argument of type 'unsigned int', but argument 7 has type 'size_t' [-Wformat=]
+    ddebug(1, "Setting hmac key failed for %s-%u.",
+    ^
+
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+Change-Id: I67f2d79f68b4d62b598073c6a918a110523fadfd
+Reviewed-on: http://git.am.freescale.net:8181/37443
+Reviewed-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ cryptlib.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 5882a30..10f5e1a 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -143,7 +143,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 			if (alg->max_keysize > 0 &&
+ 					unlikely((keylen < alg->min_keysize) ||
+ 					(keylen > alg->max_keysize))) {
+-				ddebug(1, "Wrong keylen '%u' for algorithm '%s'. Use %u to %u.",
++				ddebug(1, "Wrong keylen '%zu' for algorithm '%s'. Use %u to %u.",
+ 						keylen, alg_name, alg->min_keysize, alg->max_keysize);
+ 				ret = -EINVAL;
+ 				goto error;
+@@ -170,7 +170,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 	}
+ 
+ 	if (unlikely(ret)) {
+-		ddebug(1, "Setting key failed for %s-%u.", alg_name, keylen*8);
++		ddebug(1, "Setting key failed for %s-%zu.", alg_name, keylen*8);
+ 		ret = -EINVAL;
+ 		goto error;
+ 	}
+@@ -337,7 +337,7 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+ 	if (hmac_mode != 0) {
+ 		ret = crypto_ahash_setkey(hdata->async.s, mackey, mackeylen);
+ 		if (unlikely(ret)) {
+-			ddebug(1, "Setting hmac key failed for %s-%u.",
++			ddebug(1, "Setting hmac key failed for %s-%zu.",
+ 					alg_name, mackeylen*8);
+ 			ret = -EINVAL;
+ 			goto error;
+-- 
+2.7.0
+

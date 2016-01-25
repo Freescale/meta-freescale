@@ -1,0 +1,69 @@
+From 7d0d0deb255f8c59b0cf6d3944ee2e3be4133b4c Mon Sep 17 00:00:00 2001
+From: Alex Porosanu <alexandru.porosanu@freescale.com>
+Date: Mon, 19 Oct 2015 11:53:11 +0300
+Subject: [PATCH 23/38] remove MAY_BACKLOG flag from requests
+
+cryptodev doesn't implement the backlogging mechanism properly,
+since it misses the possibility of sleeping and waiting for
+wake-up when the crypto driver below starts working on the
+submitted backloggable request.
+In case the crypto driver below implements backlogging mechanisms,
+this can lead to side-effects such as working on previously-free'ed
+data.
+This patch removes the MAY_BACKLOG flag from the requests.
+
+Change-Id: Ia3d822b1abfc1a51e2ce3e9682476b2c99d19c5a
+Signed-off-by: Alex Porosanu <alexandru.porosanu@freescale.com>
+---
+ cryptlib.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 10f5e1a..eba4616 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -194,8 +194,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 			goto error;
+ 		}
+ 
+-		ablkcipher_request_set_callback(out->async.request,
+-					CRYPTO_TFM_REQ_MAY_BACKLOG,
++		ablkcipher_request_set_callback(out->async.request, 0,
+ 					cryptodev_complete, out->async.result);
+ 	} else {
+ 		out->async.arequest = aead_request_alloc(out->async.as, GFP_KERNEL);
+@@ -205,8 +204,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 			goto error;
+ 		}
+ 
+-		aead_request_set_callback(out->async.arequest,
+-					CRYPTO_TFM_REQ_MAY_BACKLOG,
++		aead_request_set_callback(out->async.arequest, 0,
+ 					cryptodev_complete, out->async.result);
+ 	}
+ 
+@@ -362,9 +360,8 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+ 		goto error;
+ 	}
+ 
+-	ahash_request_set_callback(hdata->async.request,
+-			CRYPTO_TFM_REQ_MAY_BACKLOG,
+-			cryptodev_complete, hdata->async.result);
++	ahash_request_set_callback(hdata->async.request, 0,
++				   cryptodev_complete, hdata->async.result);
+ 
+ 	ret = crypto_ahash_init(hdata->async.request);
+ 	if (unlikely(ret)) {
+@@ -439,8 +436,7 @@ int cryptodev_pkc_offload(struct cryptodev_pkc *pkc)
+ 	int ret;
+ 
+ 	init_completion(&pkc->result.completion);
+-	pkc_request_set_callback(pkc->req, CRYPTO_TFM_REQ_MAY_BACKLOG,
+-				 cryptodev_complete_asym, pkc);
++	pkc_request_set_callback(pkc->req, 0, cryptodev_complete_asym, pkc);
+ 	ret = crypto_pkc_op(pkc->req);
+ 	if (ret != -EINPROGRESS && ret != 0)
+ 		goto error;
+-- 
+2.7.0
+

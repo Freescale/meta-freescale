@@ -1,0 +1,50 @@
+From 03257bf2aff37b78496ccc1b58a87e7baaea042a Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 22 Feb 2016 12:17:52 +0200
+Subject: [PATCH 2/2] Add the compile and install rules for cryptodev tests
+
+(original patch Signed-off-by: Yu Zongchun <b40527@freescale.com>)
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+
+Upstream-Status: Inappropriate [ OE specific ]
+---
+ Makefile       | 6 ++++++
+ tests/Makefile | 4 ++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 06202bd..a598b12 100644
+--- a/Makefile
++++ b/Makefile
+@@ -42,6 +42,12 @@ clean:
+ check:
+ 	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests check
+ 
++testprogs:
++	KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests all
++
++install_tests:
++	$(MAKE) -C tests install
++
+ CPOPTS =
+ ifneq ($(SHOW_TYPES),)
+ CPOPTS += --show-types
+diff --git a/tests/Makefile b/tests/Makefile
+index 5e3111d..cda971c 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -35,9 +35,9 @@ check: $(hostprogs)
+ 	./cipher-aead
+ 
+ install:
+-	install -d $(DESTDIR)/$(bindir)
++	install -d $(DESTDIR)/$(bindir)/tests_cryptodev
+ 	for prog in $(hostprogs); do \
+-		install -m 755 $$prog $(DESTDIR)/$(bindir); \
++		install -m 755 $$prog $(DESTDIR)/$(bindir)/tests_cryptodev/; \
+ 	done
+ 
+ clean:
+-- 
+2.7.0
+

@@ -1,0 +1,37 @@
+From 4ce4081d9abef651473e9d7e089a0748f77db631 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Mon, 20 Apr 2015 13:18:47 +0300
+Subject: [PATCH 16/38] add basic detection of asym features
+
+Change-Id: I3b3ba8664bf631a63be1f11e715024509e20f841
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ ioctl.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index da3a842..53dbf64 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -977,10 +977,14 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 
+ 	switch (cmd) {
+ 	case CIOCASYMFEAT:
+-		return put_user(CRF_MOD_EXP_CRT |  CRF_MOD_EXP | CRF_DSA_SIGN |
+-			CRF_DSA_VERIFY | CRF_DH_COMPUTE_KEY |
+-			CRF_DSA_GENERATE_KEY | CRF_DH_GENERATE_KEY |
+-			CRF_RSA_GENERATE_KEY, p);
++		ses = 0;
++		if (crypto_has_alg("pkc(rsa)", 0, 0))
++			ses = CRF_MOD_EXP_CRT |	CRF_MOD_EXP | CRF_RSA_GENERATE_KEY;
++		if (crypto_has_alg("pkc(dsa)", 0, 0))
++			ses |= CRF_DSA_SIGN | CRF_DSA_VERIFY | CRF_DSA_GENERATE_KEY;
++		if (crypto_has_alg("pkc(dh)", 0, 0))
++			ses |= CRF_DH_COMPUTE_KEY |CRF_DH_GENERATE_KEY;
++		return put_user(ses, p);
+ 	case CRIOGET:
+ 		fd = clonefd(filp);
+ 		ret = put_user(fd, p);
+-- 
+2.7.0
+

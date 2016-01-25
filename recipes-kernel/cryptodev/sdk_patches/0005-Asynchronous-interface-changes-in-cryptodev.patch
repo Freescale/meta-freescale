@@ -1,0 +1,213 @@
+From d98f979d76c30058da24e62220f19c5b8c627819 Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Fri, 7 Mar 2014 07:24:00 +0545
+Subject: [PATCH 05/38] Asynchronous interface changes in cryptodev
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+---
+ cryptlib.h         |  7 ++++-
+ crypto/cryptodev.h | 10 ++++++-
+ cryptodev_int.h    | 10 ++++++-
+ ioctl.c            | 76 +++++++++++++++++++++++++++++++++++++-----------------
+ 4 files changed, 76 insertions(+), 27 deletions(-)
+
+diff --git a/cryptlib.h b/cryptlib.h
+index 56d325a..7ffa54c 100644
+--- a/cryptlib.h
++++ b/cryptlib.h
+@@ -113,7 +113,12 @@ struct cryptodev_pkc {
+ 	struct pkc_request req; /* PKC request structure allocated
+ 				 from CryptoAPI */
+ 	enum offload_type type; /* Synchronous Vs Asynchronous request */
+-	void *cookie; /*Additional opaque cookie to be used in future */
++	/*
++	 * cookie used for transfering tranparent information from async
++	 * submission to async fetch. Currently some dynamic allocated
++	 * buffers are maintained which will be freed later during fetch
++	 */
++	void *cookie;
+ 	struct crypt_priv *priv;
+ };
+ 
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index 96675fe..4436fbf 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -254,6 +254,14 @@ struct crypt_kop {
+ 	void *cookie;
+ };
+ 
++#define MAX_COOKIES 4
++
++struct pkc_cookie_list_s {
++	int cookie_available;
++	void *cookie[MAX_COOKIES];
++	int status[MAX_COOKIES];
++};
++
+ enum cryptodev_crk_op_t {
+ 	CRK_MOD_EXP = 0,
+ 	CRK_MOD_EXP_CRT = 1,
+@@ -298,5 +306,5 @@ enum cryptodev_crk_op_t {
+ #define CIOCASYNCFETCH    _IOR('c', 111, struct crypt_op)
+ /* additional ioctls for asynchronous  operation for asymmetric ciphers*/
+ #define CIOCASYMASYNCRYPT    _IOW('c', 112, struct crypt_kop)
+-#define CIOCASYMASYNFETCH    _IOR('c', 113, struct crypt_kop)
++#define CIOCASYMFETCHCOOKIE    _IOR('c', 113, struct pkc_cookie_list_s)
+ #endif /* L_CRYPTODEV_H */
+diff --git a/cryptodev_int.h b/cryptodev_int.h
+index cf54dac..5347cae 100644
+--- a/cryptodev_int.h
++++ b/cryptodev_int.h
+@@ -93,6 +93,12 @@ struct compat_crypt_kop {
+ 	compat_uptr_t cookie;
+ };
+ 
++struct compat_pkc_cookie_list_s {
++	int cookie_available;
++	compat_uptr_t cookie[MAX_COOKIES];
++	int status[MAX_COOKIES];
++};
++
+  /* input of CIOCAUTHCRYPT */
+ struct compat_crypt_auth_op {
+ 	uint32_t	ses;		/* session identifier */
+@@ -126,11 +132,13 @@ struct compat_crypt_auth_op {
+ /* compat ioctls, defined for the above structs */
+ #define COMPAT_CIOCGSESSION    _IOWR('c', 102, struct compat_session_op)
+ #define COMPAT_CIOCCRYPT       _IOWR('c', 104, struct compat_crypt_op)
++#define COMPAT_CIOCKEY    _IOW('c', 105, struct compat_crypt_kop)
+ #define COMPAT_CIOCASYNCCRYPT  _IOW('c', 107, struct compat_crypt_op)
+ #define COMPAT_CIOCASYNCFETCH  _IOR('c', 108, struct compat_crypt_op)
+ #define COMPAT_CIOCAUTHCRYPT   _IOWR('c', 109, struct compat_crypt_auth_op)
+ #define COMPAT_CIOCASYMASYNCRYPT    _IOW('c', 110, struct compat_crypt_kop)
+-#define COMPAT_CIOCASYMASYNFETCH    _IOR('c', 111, struct compat_crypt_kop)
++#define COMPAT_CIOCASYMFETCHCOOKIE    _IOR('c', 111, \
++				struct compat_pkc_cookie_list_s)
+ 
+ #endif /* CONFIG_COMPAT */
+ 
+diff --git a/ioctl.c b/ioctl.c
+index 9431025..e2f407f 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -105,8 +105,6 @@ void cryptodev_complete_asym(struct crypto_async_request *req, int err)
+ 	crypto_free_pkc(pkc->s);
+ 	res->err = err;
+ 	if (pkc->type == SYNCHRONOUS) {
+-		if (err == -EINPROGRESS)
+-			return;
+ 		complete(&res->completion);
+ 	} else {
+ 		struct crypt_priv *pcr = pkc->priv;
+@@ -1051,26 +1049,41 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 			ret = 0;
+ 	}
+ 	return ret;
+-	case CIOCASYMASYNFETCH:
++	case CIOCASYMFETCHCOOKIE:
+ 	{
+ 		struct cryptodev_pkc *pkc;
+ 		unsigned long flags;
++		int i;
++		struct pkc_cookie_list_s cookie_list;
+ 
+ 		spin_lock_irqsave(&pcr->completion_lock, flags);
+-		if (list_empty(&pcr->asym_completed_list)) {
+-			spin_unlock_irqrestore(&pcr->completion_lock, flags);
+-			return -ENOMEM;
++		cookie_list.cookie_available = 0;
++		for (i = 0; i < MAX_COOKIES; i++) {
++			if (!list_empty(&pcr->asym_completed_list)) {
++				/* Run a loop in the list for upto  elements
++				 and copy their response back */
++				pkc =
++				 list_first_entry(&pcr->asym_completed_list,
++						struct cryptodev_pkc, list);
++				list_del(&pkc->list);
++				ret = crypto_async_fetch_asym(pkc);
++				if (!ret) {
++					cookie_list.cookie_available++;
++					cookie_list.cookie[i] =
++						pkc->kop.kop.cookie;
++					cookie_list.status[i] = pkc->result.err;
++				}
++				kfree(pkc);
++			} else {
++				break;
++			}
+ 		}
+-		pkc = list_first_entry(&pcr->asym_completed_list,
+-			struct cryptodev_pkc, list);
+-		list_del(&pkc->list);
+ 		spin_unlock_irqrestore(&pcr->completion_lock, flags);
+-		ret = crypto_async_fetch_asym(pkc);
+ 
+ 		/* Reflect the updated request to user-space */
+-		if (!ret)
+-			kop_to_user(&pkc->kop, arg);
+-		kfree(pkc);
++		if (cookie_list.cookie_available)
++			copy_to_user(arg, &cookie_list,
++				     sizeof(struct pkc_cookie_list_s));
+ 	}
+ 	return ret;
+ 	default:
+@@ -1345,26 +1358,41 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 			ret = 0;
+ 	}
+ 	return ret;
+-	case COMPAT_CIOCASYMASYNFETCH:
++	case COMPAT_CIOCASYMFETCHCOOKIE:
+ 	{
+ 		struct cryptodev_pkc *pkc;
+ 		unsigned long flags;
++		int i = 0;
++		struct compat_pkc_cookie_list_s cookie_list;
+ 
+ 		spin_lock_irqsave(&pcr->completion_lock, flags);
+-		if (list_empty(&pcr->asym_completed_list)) {
+-			spin_unlock_irqrestore(&pcr->completion_lock, flags);
+-			return -ENOMEM;
++		cookie_list.cookie_available = 0;
++
++		for (i = 0; i < MAX_COOKIES; i++) {
++			if (!list_empty(&pcr->asym_completed_list)) {
++				/* Run a loop in the list for upto  elements
++				 and copy their response back */
++				pkc =
++				 list_first_entry(&pcr->asym_completed_list,
++						struct cryptodev_pkc, list);
++				list_del(&pkc->list);
++				ret = crypto_async_fetch_asym(pkc);
++				if (!ret) {
++					cookie_list.cookie_available++;
++					cookie_list.cookie[i] =
++						 pkc->kop.kop.cookie;
++				}
++				kfree(pkc);
++			} else {
++				break;
++			}
+ 		}
+-		pkc = list_first_entry(&pcr->asym_completed_list,
+-			 struct cryptodev_pkc, list);
+-		list_del(&pkc->list);
+ 		spin_unlock_irqrestore(&pcr->completion_lock, flags);
+-		ret = crypto_async_fetch_asym(pkc);
+ 
+ 		/* Reflect the updated request to user-space */
+-		if (!ret)
+-			compat_kop_to_user(&pkc->kop, arg);
+-		kfree(pkc);
++		if (cookie_list.cookie_available)
++			copy_to_user(arg, &cookie_list,
++				     sizeof(struct compat_pkc_cookie_list_s));
+ 	}
+ 	return ret;
+ 	default:
+-- 
+2.7.0
+

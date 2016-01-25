@@ -1,0 +1,33 @@
+From 774c6bd169b683ed54ebad164d0ff541e1381a64 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 12 Jan 2016 17:09:33 +0200
+Subject: [PATCH 33/38] avoid unnecessary checks for hash clean-up
+
+hdata->init is set only after all necessary allocations succeed. On
+clean-up is no longer necessary to make the allocation checks.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ cryptlib.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 5972fc2..5d1a5a9 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -359,10 +359,8 @@ error:
+ void cryptodev_hash_deinit(struct hash_data *hdata)
+ {
+ 	if (hdata->init) {
+-		if (hdata->async.request)
+-			ahash_request_free(hdata->async.request);
+-		if (hdata->async.s)
+-			crypto_free_ahash(hdata->async.s);
++		ahash_request_free(hdata->async.request);
++		crypto_free_ahash(hdata->async.s);
+ 		hdata->init = 0;
+ 	}
+ }
+-- 
+2.7.0
+

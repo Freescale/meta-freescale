@@ -1,0 +1,67 @@
+From 0ca641091b4113d73e75d30ef530c88836849308 Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Fri, 29 May 2015 15:28:47 +0300
+Subject: [PATCH 17/38] remove dead code
+
+Functions kop_to_user and compat_kop_to_user are never used. Delete them
+to avoid compiler warnings.
+
+
+crypto/../../cryptodev-linux/ioctl.c:841:12: warning: 'kop_to_user' defined but not used [-Wunused-function]
+ static int kop_to_user(struct kernel_crypt_kop *kop,
+            ^
+crypto/../../cryptodev-linux/ioctl.c: At top level:
+crypto/../../cryptodev-linux/ioctl.c:1195:12: warning: 'compat_kop_to_user' defined but not used [-Wunused-function]
+ static int compat_kop_to_user(struct kernel_crypt_kop *kop, void __user *arg)
+            ^
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Change-Id: I6bd8a7eb6144224a20cd400813ab15a7a192dbb1
+Reviewed-on: http://git.am.freescale.net:8181/37440
+---
+ ioctl.c | 22 ----------------------
+ 1 file changed, 22 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index 53dbf64..39635a4 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -838,16 +838,6 @@ static int kop_from_user(struct kernel_crypt_kop *kop,
+ 	return fill_kop_from_cop(kop);
+ }
+ 
+-static int kop_to_user(struct kernel_crypt_kop *kop,
+-			void __user *arg)
+-{
+-	if (unlikely(copy_to_user(arg, &kop->kop, sizeof(kop->kop)))) {
+-		dprintk(1, KERN_ERR, "Cannot copy to userspace\n");
+-		return -EFAULT;
+-	}
+-	return 0;
+-}
+-
+ static int kcop_from_user(struct kernel_crypt_op *kcop,
+ 			struct fcrypt *fcr, void __user *arg)
+ {
+@@ -1192,18 +1182,6 @@ static inline void crypt_kop_to_compat(struct crypt_kop *kop,
+ 	compat->curve_type = kop->curve_type;
+ }
+ 
+-static int compat_kop_to_user(struct kernel_crypt_kop *kop, void __user *arg)
+-{
+-	struct compat_crypt_kop compat_kop;
+-
+-	crypt_kop_to_compat(&kop->kop, &compat_kop);
+-	if (unlikely(copy_to_user(arg, &compat_kop, sizeof(compat_kop)))) {
+-		dprintk(1, KERN_ERR, "Cannot copy to userspace\n");
+-		return -EFAULT;
+-	}
+-	return 0;
+-}
+-
+ static inline void
+ compat_to_session_op(struct compat_session_op *compat, struct session_op *sop)
+ {
+-- 
+2.7.0
+

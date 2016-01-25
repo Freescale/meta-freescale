@@ -1,0 +1,55 @@
+From dcb8fe0fcf71feac2a4f57c44a5153bfc404b4c3 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 11 Feb 2016 16:37:23 +0200
+Subject: [PATCH 42/43] fix destination for staged installs
+
+The standard variable for staged installations is DESTDIR and it should
+be set only by the user, outside of Makefile. This is consistent with
+recommendations from both GNU Make and FreeBSD porters-handbook.
+
+	make DESTDIR=/tmp/stage install
+
+$prefix and $PREFIX (in FreeBSD world) are used to specify where the
+files will be installed. It defaults to /usr/local but can be /usr or
+/opt or something else.
+
+Usually one wants to do a stage installation when cross-building or for
+other purposes. The convention is to use DESTDIR.
+Changing $prefix is useful for installers. They can override its value
+when calling make:
+
+	make prefix=/usr install
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ Makefile | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 7f8df37..9871a8e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -7,7 +7,9 @@ CRYPTODEV_CFLAGS ?= #-DENABLE_ASYNC
+ KBUILD_CFLAGS += -I$(src) $(CRYPTODEV_CFLAGS)
+ KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
+ VERSION = 1.8
+-PREFIX ?=
++
++prefix ?= /usr/local
++includedir = $(prefix)/include
+ 
+ cryptodev-objs = ioctl.o main.o cryptlib.o authenc.o zc.o util.o
+ 
+@@ -31,8 +33,7 @@ install: modules_install
+ 
+ modules_install:
+ 	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) modules_install
+-	@echo "Installing cryptodev.h in $(PREFIX)/usr/include/crypto ..."
+-	@install -D crypto/cryptodev.h $(PREFIX)/usr/include/crypto/cryptodev.h
++	install -m 644 -D crypto/cryptodev.h $(DESTDIR)/$(includedir)/crypto/cryptodev.h
+ 
+ clean:
+ 	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) clean
+-- 
+2.7.0
+

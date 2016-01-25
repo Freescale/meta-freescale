@@ -1,0 +1,64 @@
+From 596378a22532908487f2c5e4d717c5ae618c4c7d Mon Sep 17 00:00:00 2001
+From: Tudor Ambarus <tudor.ambarus@freescale.com>
+Date: Tue, 2 Jun 2015 10:44:12 +0300
+Subject: [PATCH 18/38] fix compat warnings
+
+  CC [M]  crypto/../../cryptodev-linux/ioctl.o
+crypto/../../cryptodev-linux/ioctl.c: In function 'compat_to_crypt_kop':
+crypto/../../cryptodev-linux/ioctl.c:1161:14: warning: assignment makes pointer from integer without a cast
+  kop->cookie = compat->cookie;
+              ^
+crypto/../../cryptodev-linux/ioctl.c: In function 'crypt_kop_to_compat':
+crypto/../../cryptodev-linux/ioctl.c:1191:17: warning: assignment makes integer from pointer without a cast
+  compat->cookie = kop->cookie;
+                 ^
+crypto/../../cryptodev-linux/ioctl.c: In function 'cryptodev_compat_ioctl':
+crypto/../../cryptodev-linux/ioctl.c:1430:28: warning: assignment makes integer from pointer without a cast
+      cookie_list.cookie[i] =
+                            ^
+
+Signed-off-by: Tudor Ambarus <tudor.ambarus@freescale.com>
+Change-Id: Id851408c0c743c01447f3b0ced38fbc1ae94d4db
+Reviewed-on: http://git.am.freescale.net:8181/37442
+Reviewed-by: Cristian Stoica <cristian.stoica@freescale.com>
+Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ ioctl.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index 39635a4..f3ce2f6 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -1148,7 +1148,7 @@ static inline void compat_to_crypt_kop(struct compat_crypt_kop *compat,
+ 	}
+ 
+ 	kop->curve_type = compat->curve_type;
+-	kop->cookie = compat->cookie;
++	kop->cookie = compat_ptr(compat->cookie);
+ }
+ 
+ static int compat_kop_from_user(struct kernel_crypt_kop *kop,
+@@ -1178,7 +1178,7 @@ static inline void crypt_kop_to_compat(struct crypt_kop *kop,
+ 			 ptr_to_compat(kop->crk_param[i].crp_p);
+ 		compat->crk_param[i].crp_nbits = kop->crk_param[i].crp_nbits;
+ 	}
+-	compat->cookie = kop->cookie;
++	compat->cookie = ptr_to_compat(kop->cookie);
+ 	compat->curve_type = kop->curve_type;
+ }
+ 
+@@ -1405,8 +1405,8 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 				ret = crypto_async_fetch_asym(pkc);
+ 				if (!ret) {
+ 					cookie_list.cookie_available++;
+-					cookie_list.cookie[i] =
+-						 pkc->kop.kop.cookie;
++					cookie_list.cookie[i] = ptr_to_compat(
++							pkc->kop.kop.cookie);
+ 				}
+ 				kfree(pkc);
+ 			} else {
+-- 
+2.7.0
+

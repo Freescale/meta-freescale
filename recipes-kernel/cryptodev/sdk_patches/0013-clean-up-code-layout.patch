@@ -1,0 +1,186 @@
+From 5a87b9d5f2295ed0fd36a41c8376e01eb0df62b2 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Fri, 20 Feb 2015 12:46:58 +0200
+Subject: [PATCH 13/38] clean-up code layout
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+Change-Id: I92c2f4baeed9470a2c3c42b592d878e65918b0af
+Reviewed-on: http://git.am.freescale.net:8181/34222
+---
+ cryptlib.c | 11 ++++-------
+ ioctl.c    | 55 +++++++++++++++++++++----------------------------------
+ main.c     |  4 +---
+ 3 files changed, 26 insertions(+), 44 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index ec6693e..21e691b 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -434,7 +434,7 @@ int cryptodev_hash_final(struct hash_data *hdata, void *output)
+ 	return waitfor(hdata->async.result, ret);
+ }
+ 
+-int cryptodev_pkc_offload(struct cryptodev_pkc  *pkc)
++int cryptodev_pkc_offload(struct cryptodev_pkc *pkc)
+ {
+ 	int ret = 0;
+ 	struct pkc_request *pkc_req = &pkc->req, *pkc_requested;
+@@ -445,8 +445,7 @@ int cryptodev_pkc_offload(struct cryptodev_pkc  *pkc)
+ 	case RSA_PRIV_FORM1:
+ 	case RSA_PRIV_FORM2:
+ 	case RSA_PRIV_FORM3:
+-		pkc->s = crypto_alloc_pkc("pkc(rsa)",
+-			 CRYPTO_ALG_TYPE_PKC_RSA, 0);
++		pkc->s = crypto_alloc_pkc("pkc(rsa)", CRYPTO_ALG_TYPE_PKC_RSA, 0);
+ 		break;
+ 	case DSA_SIGN:
+ 	case DSA_VERIFY:
+@@ -454,13 +453,11 @@ int cryptodev_pkc_offload(struct cryptodev_pkc  *pkc)
+ 	case ECDSA_VERIFY:
+ 	case DLC_KEYGEN:
+ 	case ECC_KEYGEN:
+-		pkc->s = crypto_alloc_pkc("pkc(dsa)",
+-			 CRYPTO_ALG_TYPE_PKC_DSA, 0);
++		pkc->s = crypto_alloc_pkc("pkc(dsa)", CRYPTO_ALG_TYPE_PKC_DSA, 0);
+ 		break;
+ 	case DH_COMPUTE_KEY:
+ 	case ECDH_COMPUTE_KEY:
+-		pkc->s = crypto_alloc_pkc("pkc(dh)",
+-			 CRYPTO_ALG_TYPE_PKC_DH, 0);
++		pkc->s = crypto_alloc_pkc("pkc(dh)", CRYPTO_ALG_TYPE_PKC_DH, 0);
+ 		break;
+ 	default:
+ 		return -EINVAL;
+diff --git a/ioctl.c b/ioctl.c
+index fb4c4e3..ee0486c 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -714,16 +714,13 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 	case CRK_MOD_EXP:
+ 	{
+ 		struct rsa_pub_req_s *rsa_req = &pkc_req->req_u.rsa_pub_req;
+-		copy_to_user(ckop->crk_param[3].crp_p, rsa_req->g,
+-			     rsa_req->g_len);
++		copy_to_user(ckop->crk_param[3].crp_p, rsa_req->g, rsa_req->g_len);
+ 	}
+ 	break;
+ 	case CRK_MOD_EXP_CRT:
+ 	{
+-		struct rsa_priv_frm3_req_s *rsa_req =
+-			 &pkc_req->req_u.rsa_priv_f3;
+-		copy_to_user(ckop->crk_param[6].crp_p,
+-			     rsa_req->f, rsa_req->f_len);
++		struct rsa_priv_frm3_req_s *rsa_req = &pkc_req->req_u.rsa_priv_f3;
++		copy_to_user(ckop->crk_param[6].crp_p, rsa_req->f, rsa_req->f_len);
+ 	}
+ 	break;
+ 	case CRK_DSA_SIGN:
+@@ -731,15 +728,11 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 		struct dsa_sign_req_s *dsa_req = &pkc_req->req_u.dsa_sign;
+ 
+ 		if (pkc_req->type == ECDSA_SIGN) {
+-			copy_to_user(ckop->crk_param[6].crp_p,
+-				     dsa_req->c, dsa_req->d_len);
+-			copy_to_user(ckop->crk_param[7].crp_p,
+-				     dsa_req->d, dsa_req->d_len);
++			copy_to_user(ckop->crk_param[6].crp_p, dsa_req->c, dsa_req->d_len);
++			copy_to_user(ckop->crk_param[7].crp_p, dsa_req->d, dsa_req->d_len);
+ 		} else {
+-			copy_to_user(ckop->crk_param[5].crp_p,
+-				     dsa_req->c, dsa_req->d_len);
+-			copy_to_user(ckop->crk_param[6].crp_p,
+-				     dsa_req->d, dsa_req->d_len);
++			copy_to_user(ckop->crk_param[5].crp_p, dsa_req->c, dsa_req->d_len);
++			copy_to_user(ckop->crk_param[6].crp_p, dsa_req->d, dsa_req->d_len);
+ 		}
+ 	}
+ 	break;
+@@ -749,11 +742,9 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 	{
+ 		struct dh_key_req_s *dh_req = &pkc_req->req_u.dh_req;
+ 		if (pkc_req->type == ECDH_COMPUTE_KEY)
+-			copy_to_user(ckop->crk_param[4].crp_p,
+-				     dh_req->z, dh_req->z_len);
++			copy_to_user(ckop->crk_param[4].crp_p, dh_req->z, dh_req->z_len);
+ 		else
+-			copy_to_user(ckop->crk_param[3].crp_p,
+-				     dh_req->z, dh_req->z_len);
++			copy_to_user(ckop->crk_param[3].crp_p, dh_req->z, dh_req->z_len);
+ 	}
+ 	break;
+ 	case CRK_DSA_GENERATE_KEY:
+@@ -763,14 +754,14 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 
+ 		if (pkc_req->type == ECC_KEYGEN) {
+ 			copy_to_user(ckop->crk_param[4].crp_p, key_req->pub_key,
+-				     key_req->pub_key_len);
+-			copy_to_user(ckop->crk_param[5].crp_p,
+-				     key_req->priv_key, key_req->priv_key_len);
++					key_req->pub_key_len);
++			copy_to_user(ckop->crk_param[5].crp_p, key_req->priv_key,
++					key_req->priv_key_len);
+ 		} else {
+-			copy_to_user(ckop->crk_param[3].crp_p,
+-				     key_req->pub_key, key_req->pub_key_len);
+-			copy_to_user(ckop->crk_param[4].crp_p,
+-				     key_req->priv_key, key_req->priv_key_len);
++			copy_to_user(ckop->crk_param[3].crp_p, key_req->pub_key,
++					key_req->pub_key_len);
++			copy_to_user(ckop->crk_param[4].crp_p, key_req->priv_key,
++					key_req->priv_key_len);
+ 		}
+ 	}
+ 	default:
+@@ -1113,16 +1104,14 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 			if (!list_empty(&pcr->asym_completed_list)) {
+ 				/* Run a loop in the list for upto  elements
+ 				 and copy their response back */
+-				pkc =
+-				 list_first_entry(&pcr->asym_completed_list,
++				pkc = list_first_entry(&pcr->asym_completed_list,
+ 						struct cryptodev_pkc, list);
+ 				list_del(&pkc->list);
+ 				spin_unlock_bh(&pcr->completion_lock);
+ 				ret = crypto_async_fetch_asym(pkc);
+ 				if (!ret) {
+ 					cookie_list.cookie_available++;
+-					cookie_list.cookie[i] =
+-						pkc->kop.kop.cookie;
++					cookie_list.cookie[i] =	pkc->kop.kop.cookie;
+ 					cookie_list.status[i] = pkc->result.err;
+ 				}
+ 				kfree(pkc);
+@@ -1133,12 +1122,10 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 		}
+ 
+ 		/* Reflect the updated request to user-space */
+-		if (cookie_list.cookie_available)
+-			copy_to_user(arg, &cookie_list,
+-				     sizeof(struct pkc_cookie_list_s));
+-		else {
++		if (cookie_list.cookie_available) {
++			copy_to_user(arg, &cookie_list, sizeof(struct pkc_cookie_list_s));
++		} else {
+ 			struct pkc_cookie_list_s *user_ck_list = (void *)arg;
+-
+ 			put_user(0, &(user_ck_list->cookie_available));
+ 		}
+ 		ret = cookie_list.cookie_available;
+diff --git a/main.c b/main.c
+index 6365911..af66553 100644
+--- a/main.c
++++ b/main.c
+@@ -666,9 +666,7 @@ int crypto_bn_modexp(struct cryptodev_pkc *pkc)
+ 	if (pkc->type == SYNCHRONOUS) {
+ 		if (rc)
+ 			goto err;
+-
+-		copy_to_user(cop->crk_param[3].crp_p, rsa_req->g,
+-			     rsa_req->g_len);
++		copy_to_user(cop->crk_param[3].crp_p, rsa_req->g, rsa_req->g_len);
+ 	} else {
+ 		if (rc != -EINPROGRESS && rc != 0)
+ 			goto err;
+-- 
+2.7.0
+

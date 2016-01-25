@@ -1,0 +1,398 @@
+From 4078382cfc69c0f5e582d485fe8cc778f9e458d1 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@freescale.com>
+Date: Mon, 21 Sep 2015 16:39:52 +0300
+Subject: [PATCH 21/38] check return codes for copy to/from user functions
+
+- these functions may fail and we should check their return codes.
+- fix an unintended fall-through in CRK_DSA_GENERATE_KEY
+- fix incorrect return code for CIOCASYMFETCHCOOKIE
+
+Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
+---
+ ioctl.c |  42 +++++++--------
+ main.c  | 183 ++++++++++++++++++++++++++++++----------------------------------
+ 2 files changed, 108 insertions(+), 117 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index 7cd3c56..8fa3e5c 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -711,13 +711,13 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 	case CRK_MOD_EXP:
+ 	{
+ 		struct rsa_pub_req_s *rsa_req = &pkc->req->req_u.rsa_pub_req;
+-		copy_to_user(ckop->crk_param[3].crp_p, rsa_req->g, rsa_req->g_len);
++		ret = copy_to_user(ckop->crk_param[3].crp_p, rsa_req->g, rsa_req->g_len);
+ 	}
+ 	break;
+ 	case CRK_MOD_EXP_CRT:
+ 	{
+ 		struct rsa_priv_frm3_req_s *rsa_req = &pkc->req->req_u.rsa_priv_f3;
+-		copy_to_user(ckop->crk_param[6].crp_p, rsa_req->f, rsa_req->f_len);
++		ret = copy_to_user(ckop->crk_param[6].crp_p, rsa_req->f, rsa_req->f_len);
+ 	}
+ 	break;
+ 	case CRK_DSA_SIGN:
+@@ -725,11 +725,11 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 		struct dsa_sign_req_s *dsa_req = &pkc->req->req_u.dsa_sign;
+ 
+ 		if (pkc->req->type == ECDSA_SIGN) {
+-			copy_to_user(ckop->crk_param[6].crp_p, dsa_req->c, dsa_req->d_len);
+-			copy_to_user(ckop->crk_param[7].crp_p, dsa_req->d, dsa_req->d_len);
++			ret = copy_to_user(ckop->crk_param[6].crp_p, dsa_req->c, dsa_req->d_len) ||
++			      copy_to_user(ckop->crk_param[7].crp_p, dsa_req->d, dsa_req->d_len);
+ 		} else {
+-			copy_to_user(ckop->crk_param[5].crp_p, dsa_req->c, dsa_req->d_len);
+-			copy_to_user(ckop->crk_param[6].crp_p, dsa_req->d, dsa_req->d_len);
++			ret = copy_to_user(ckop->crk_param[5].crp_p, dsa_req->c, dsa_req->d_len) ||
++			      copy_to_user(ckop->crk_param[6].crp_p, dsa_req->d, dsa_req->d_len);
+ 		}
+ 	}
+ 	break;
+@@ -739,9 +739,9 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 	{
+ 		struct dh_key_req_s *dh_req = &pkc->req->req_u.dh_req;
+ 		if (pkc->req->type == ECDH_COMPUTE_KEY)
+-			copy_to_user(ckop->crk_param[4].crp_p, dh_req->z, dh_req->z_len);
++			ret = copy_to_user(ckop->crk_param[4].crp_p, dh_req->z, dh_req->z_len);
+ 		else
+-			copy_to_user(ckop->crk_param[3].crp_p, dh_req->z, dh_req->z_len);
++			ret = copy_to_user(ckop->crk_param[3].crp_p, dh_req->z, dh_req->z_len);
+ 	}
+ 	break;
+ 	case CRK_DSA_GENERATE_KEY:
+@@ -750,16 +750,17 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 		struct keygen_req_s *key_req = &pkc->req->req_u.keygen;
+ 
+ 		if (pkc->req->type == ECC_KEYGEN) {
+-			copy_to_user(ckop->crk_param[4].crp_p, key_req->pub_key,
+-					key_req->pub_key_len);
+-			copy_to_user(ckop->crk_param[5].crp_p, key_req->priv_key,
++			ret = copy_to_user(ckop->crk_param[4].crp_p, key_req->pub_key,
++					key_req->pub_key_len) ||
++			      copy_to_user(ckop->crk_param[5].crp_p, key_req->priv_key,
+ 					key_req->priv_key_len);
+ 		} else {
+-			copy_to_user(ckop->crk_param[3].crp_p, key_req->pub_key,
+-					key_req->pub_key_len);
+-			copy_to_user(ckop->crk_param[4].crp_p, key_req->priv_key,
++			ret = copy_to_user(ckop->crk_param[3].crp_p, key_req->pub_key,
++					key_req->pub_key_len) ||
++			      copy_to_user(ckop->crk_param[4].crp_p, key_req->priv_key,
+ 					key_req->priv_key_len);
+ 		}
++	break;
+ 	}
+ 	default:
+ 		ret = -EINVAL;
+@@ -1115,14 +1116,12 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 
+ 		/* Reflect the updated request to user-space */
+ 		if (cookie_list.cookie_available) {
+-			copy_to_user(arg, &cookie_list, sizeof(struct pkc_cookie_list_s));
++			ret = copy_to_user(arg, &cookie_list, sizeof(struct pkc_cookie_list_s));
+ 		} else {
+ 			struct pkc_cookie_list_s *user_ck_list = (void *)arg;
+-			put_user(0, &(user_ck_list->cookie_available));
++			ret = put_user(0, &(user_ck_list->cookie_available));
+ 		}
+-		ret = cookie_list.cookie_available;
+ 	}
+-
+ 	return ret;
+ 	default:
+ 		return -EINVAL;
+@@ -1417,9 +1416,10 @@ cryptodev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg_)
+ 		}
+ 
+ 		/* Reflect the updated request to user-space */
+-		if (cookie_list.cookie_available)
+-			copy_to_user(arg, &cookie_list,
+-				     sizeof(struct compat_pkc_cookie_list_s));
++		if (cookie_list.cookie_available) {
++			ret = copy_to_user(arg, &cookie_list,
++					sizeof(struct compat_pkc_cookie_list_s));
++		}
+ 	}
+ 	return ret;
+ 	default:
+diff --git a/main.c b/main.c
+index ed1c69a..e5adb93 100644
+--- a/main.c
++++ b/main.c
+@@ -223,31 +223,29 @@ int crypto_kop_dsasign(struct cryptodev_pkc *pkc)
+ 	dsa_req->m = dsa_req->priv_key + dsa_req->priv_key_len;
+ 	dsa_req->c = dsa_req->m + dsa_req->m_len;
+ 	dsa_req->d = dsa_req->c + dsa_req->d_len;
+-	copy_from_user(dsa_req->m, cop->crk_param[0].crp_p, dsa_req->m_len);
+-	copy_from_user(dsa_req->q, cop->crk_param[1].crp_p, dsa_req->q_len);
+-	copy_from_user(dsa_req->r, cop->crk_param[2].crp_p, dsa_req->r_len);
+-	copy_from_user(dsa_req->g, cop->crk_param[3].crp_p, dsa_req->g_len);
+-	copy_from_user(dsa_req->priv_key, cop->crk_param[4].crp_p,
+-		       dsa_req->priv_key_len);
++	rc = copy_from_user(dsa_req->m, cop->crk_param[0].crp_p, dsa_req->m_len) ||
++	     copy_from_user(dsa_req->q, cop->crk_param[1].crp_p, dsa_req->q_len) ||
++	     copy_from_user(dsa_req->r, cop->crk_param[2].crp_p, dsa_req->r_len) ||
++	     copy_from_user(dsa_req->g, cop->crk_param[3].crp_p, dsa_req->g_len) ||
++	     copy_from_user(dsa_req->priv_key, cop->crk_param[4].crp_p, dsa_req->priv_key_len);
+ 	if (cop->crk_iparams == 6) {
+ 		dsa_req->ab = dsa_req->d + dsa_req->d_len;
+-		copy_from_user(dsa_req->ab, cop->crk_param[5].crp_p,
++		rc = rc || copy_from_user(dsa_req->ab, cop->crk_param[5].crp_p,
+ 			       dsa_req->ab_len);
+ 	}
++	if (rc)
++		goto err;
++
+ 	rc = cryptodev_pkc_offload(pkc);
+ 	if (pkc->type == SYNCHRONOUS) {
+-		if (rc)
+-			goto err;
+ 		if (cop->crk_iparams == 6) {
+-			copy_to_user(cop->crk_param[6].crp_p, dsa_req->c,
+-				     dsa_req->d_len);
+-			copy_to_user(cop->crk_param[7].crp_p, dsa_req->d,
+-				     dsa_req->d_len);
++			rc = rc ||
++			     copy_to_user(cop->crk_param[6].crp_p, dsa_req->c, dsa_req->d_len) ||
++			     copy_to_user(cop->crk_param[7].crp_p, dsa_req->d, dsa_req->d_len);
+ 		} else {
+-			copy_to_user(cop->crk_param[5].crp_p, dsa_req->c,
+-				     dsa_req->d_len);
+-			copy_to_user(cop->crk_param[6].crp_p, dsa_req->d,
+-				     dsa_req->d_len);
++			rc = rc ||
++			     copy_to_user(cop->crk_param[5].crp_p, dsa_req->c, dsa_req->d_len) ||
++			     copy_to_user(cop->crk_param[6].crp_p, dsa_req->d, dsa_req->d_len);
+ 		}
+ 	} else {
+ 		if (rc != -EINPROGRESS && rc != 0)
+@@ -303,31 +301,28 @@ int crypto_kop_dsaverify(struct cryptodev_pkc *pkc)
+ 	dsa_req->m = dsa_req->pub_key + dsa_req->pub_key_len;
+ 	dsa_req->c = dsa_req->m + dsa_req->m_len;
+ 	dsa_req->d = dsa_req->c + dsa_req->d_len;
+-	copy_from_user(dsa_req->m, cop->crk_param[0].crp_p, dsa_req->m_len);
+-	copy_from_user(dsa_req->q, cop->crk_param[1].crp_p, dsa_req->q_len);
+-	copy_from_user(dsa_req->r, cop->crk_param[2].crp_p, dsa_req->r_len);
+-	copy_from_user(dsa_req->g, cop->crk_param[3].crp_p, dsa_req->g_len);
+-	copy_from_user(dsa_req->pub_key, cop->crk_param[4].crp_p,
+-		       dsa_req->pub_key_len);
++	rc = copy_from_user(dsa_req->m, cop->crk_param[0].crp_p, dsa_req->m_len) ||
++	     copy_from_user(dsa_req->q, cop->crk_param[1].crp_p, dsa_req->q_len) ||
++	     copy_from_user(dsa_req->r, cop->crk_param[2].crp_p, dsa_req->r_len) ||
++	     copy_from_user(dsa_req->g, cop->crk_param[3].crp_p, dsa_req->g_len) ||
++	     copy_from_user(dsa_req->pub_key, cop->crk_param[4].crp_p, dsa_req->pub_key_len);
+ 	if (cop->crk_iparams == 8) {
+ 		dsa_req->ab = dsa_req->d + dsa_req->d_len;
+-		copy_from_user(dsa_req->ab, cop->crk_param[5].crp_p,
+-			       dsa_req->ab_len);
+-		copy_from_user(dsa_req->c, cop->crk_param[6].crp_p,
+-			       dsa_req->d_len);
+-		copy_from_user(dsa_req->d, cop->crk_param[7].crp_p,
+-			       dsa_req->d_len);
++		rc = rc ||
++		     copy_from_user(dsa_req->ab, cop->crk_param[5].crp_p, dsa_req->ab_len) ||
++		     copy_from_user(dsa_req->c, cop->crk_param[6].crp_p, dsa_req->d_len) ||
++		     copy_from_user(dsa_req->d, cop->crk_param[7].crp_p, dsa_req->d_len);
+ 	} else {
+-		copy_from_user(dsa_req->c, cop->crk_param[5].crp_p,
+-			       dsa_req->d_len);
+-		copy_from_user(dsa_req->d, cop->crk_param[6].crp_p,
+-			       dsa_req->d_len);
++		rc = rc ||
++		     copy_from_user(dsa_req->c, cop->crk_param[5].crp_p, dsa_req->d_len) ||
++		     copy_from_user(dsa_req->d, cop->crk_param[6].crp_p, dsa_req->d_len);
+ 	}
++
++	if (rc)
++		goto err;
++
+ 	rc = cryptodev_pkc_offload(pkc);
+-	if (pkc->type == SYNCHRONOUS) {
+-		if (rc)
+-			goto err;
+-	} else {
++	if (pkc->type != SYNCHRONOUS) {
+ 		if (rc != -EINPROGRESS && !rc)
+ 			goto err;
+ 		pkc->cookie = buf;
+@@ -380,24 +375,15 @@ int crypto_kop_rsa_keygen(struct cryptodev_pkc *pkc)
+ 	rc = cryptodev_pkc_offload(pkc);
+ 
+ 	if (pkc->type == SYNCHRONOUS) {
+-		if (rc)
+-			goto err;
+-
+-		copy_to_user(cop->crk_param[0].crp_p,
+-				key_req->p, key_req->p_len);
+-		copy_to_user(cop->crk_param[1].crp_p,
+-				key_req->q, key_req->q_len);
+-		copy_to_user(cop->crk_param[2].crp_p,
+-				key_req->n, key_req->n_len);
+-		copy_to_user(cop->crk_param[3].crp_p,
+-				key_req->d, key_req->d_len);
+-		copy_to_user(cop->crk_param[4].crp_p,
+-				key_req->dp, key_req->dp_len);
+-		copy_to_user(cop->crk_param[5].crp_p,
+-				key_req->dq, key_req->dq_len);
+-		copy_to_user(cop->crk_param[6].crp_p,
+-				key_req->c, key_req->c_len);
+-		} else {
++		rc = rc ||
++		     copy_to_user(cop->crk_param[0].crp_p, key_req->p, key_req->p_len) ||
++		     copy_to_user(cop->crk_param[1].crp_p, key_req->q, key_req->q_len) ||
++		     copy_to_user(cop->crk_param[2].crp_p, key_req->n, key_req->n_len) ||
++		     copy_to_user(cop->crk_param[3].crp_p, key_req->d, key_req->d_len) ||
++		     copy_to_user(cop->crk_param[4].crp_p, key_req->dp, key_req->dp_len) ||
++		     copy_to_user(cop->crk_param[5].crp_p, key_req->dq, key_req->dq_len) ||
++		     copy_to_user(cop->crk_param[6].crp_p, key_req->c, key_req->c_len);
++	} else {
+ 		if (rc != -EINPROGRESS && !rc) {
+ 			printk("%s: Failed\n", __func__);
+ 			goto err;
+@@ -451,30 +437,33 @@ int crypto_kop_keygen(struct cryptodev_pkc *pkc)
+ 	key_req->g = key_req->r + key_req->r_len;
+ 	key_req->pub_key = key_req->g + key_req->g_len;
+ 	key_req->priv_key = key_req->pub_key + key_req->pub_key_len;
+-	copy_from_user(key_req->q, cop->crk_param[0].crp_p, key_req->q_len);
+-	copy_from_user(key_req->r, cop->crk_param[1].crp_p, key_req->r_len);
+-	copy_from_user(key_req->g, cop->crk_param[2].crp_p, key_req->g_len);
++	rc = copy_from_user(key_req->q, cop->crk_param[0].crp_p, key_req->q_len) ||
++	     copy_from_user(key_req->r, cop->crk_param[1].crp_p, key_req->r_len) ||
++	     copy_from_user(key_req->g, cop->crk_param[2].crp_p, key_req->g_len);
++
+ 	if (cop->crk_iparams == 4) {
+ 		key_req->ab = key_req->priv_key + key_req->priv_key_len;
+-		copy_from_user(key_req->ab, cop->crk_param[3].crp_p,
++		rc = rc || copy_from_user(key_req->ab, cop->crk_param[3].crp_p,
+ 			       key_req->ab_len);
+ 	}
+ 
++	if (rc)
++		goto err;
++
+ 	rc = cryptodev_pkc_offload(pkc);
+ 	if (pkc->type == SYNCHRONOUS) {
+-		if (rc)
+-			goto err;
+-
+ 		if (cop->crk_iparams == 4) {
+-			copy_to_user(cop->crk_param[4].crp_p, key_req->pub_key,
+-				     key_req->pub_key_len);
+-			copy_to_user(cop->crk_param[5].crp_p, key_req->priv_key,
++			rc = rc ||
++			     copy_to_user(cop->crk_param[4].crp_p, key_req->pub_key,
++				     key_req->pub_key_len) ||
++			     copy_to_user(cop->crk_param[5].crp_p, key_req->priv_key,
+ 				     key_req->priv_key_len);
+ 		} else {
+-			copy_to_user(cop->crk_param[3].crp_p, key_req->pub_key,
+-				     key_req->pub_key_len);
+-			copy_to_user(cop->crk_param[4].crp_p,
+-				     key_req->priv_key, key_req->priv_key_len);
++			rc = rc ||
++			     copy_to_user(cop->crk_param[3].crp_p, key_req->pub_key,
++				     key_req->pub_key_len) ||
++			     copy_to_user(cop->crk_param[4].crp_p, key_req->priv_key,
++				     key_req->priv_key_len);
+ 		}
+ 	} else {
+ 		if (rc != -EINPROGRESS && !rc)
+@@ -495,7 +484,7 @@ int crypto_kop_dh_key(struct cryptodev_pkc *pkc)
+ 	struct dh_key_req_s *dh_req;
+ 	int buf_size;
+ 	uint8_t *buf;
+-	int rc = -EINVAL;
++	int rc = 0;
+ 
+ 	dh_req = &pkc->req->req_u.dh_req;
+ 	dh_req->s_len = (cop->crk_param[0].crp_nbits + 7)/8;
+@@ -520,22 +509,23 @@ int crypto_kop_dh_key(struct cryptodev_pkc *pkc)
+ 	if (cop->crk_iparams == 4) {
+ 		dh_req->ab = dh_req->z + dh_req->z_len;
+ 		pkc->req->curve_type = cop->curve_type;
+-		copy_from_user(dh_req->ab, cop->crk_param[3].crp_p,
+-			       dh_req->ab_len);
++		rc = copy_from_user(dh_req->ab, cop->crk_param[3].crp_p, dh_req->ab_len);
+ 	}
+-	copy_from_user(dh_req->s, cop->crk_param[0].crp_p, dh_req->s_len);
+-	copy_from_user(dh_req->pub_key, cop->crk_param[1].crp_p,
+-		       dh_req->pub_key_len);
+-	copy_from_user(dh_req->q, cop->crk_param[2].crp_p, dh_req->q_len);
++
++	rc = rc ||
++	     copy_from_user(dh_req->s, cop->crk_param[0].crp_p, dh_req->s_len) ||
++	     copy_from_user(dh_req->pub_key, cop->crk_param[1].crp_p, dh_req->pub_key_len) ||
++	     copy_from_user(dh_req->q, cop->crk_param[2].crp_p, dh_req->q_len);
++	if (rc)
++		goto err;
++
+ 	rc = cryptodev_pkc_offload(pkc);
+ 	if (pkc->type == SYNCHRONOUS) {
+-		if (rc)
+-			goto err;
+ 		if (cop->crk_iparams == 4)
+-			copy_to_user(cop->crk_param[4].crp_p, dh_req->z,
++			rc = rc || copy_to_user(cop->crk_param[4].crp_p, dh_req->z,
+ 				     dh_req->z_len);
+ 		else
+-			copy_to_user(cop->crk_param[3].crp_p, dh_req->z,
++			rc = rc || copy_to_user(cop->crk_param[3].crp_p, dh_req->z,
+ 				     dh_req->z_len);
+ 	} else {
+ 		if (rc != -EINPROGRESS && rc != 0)
+@@ -582,19 +572,19 @@ int crypto_modexp_crt(struct cryptodev_pkc *pkc)
+ 	rsa_req->dq = rsa_req->dp + rsa_req->dp_len;
+ 	rsa_req->c = rsa_req->dq + rsa_req->dq_len;
+ 	rsa_req->f = rsa_req->c + rsa_req->c_len;
+-	copy_from_user(rsa_req->p, cop->crk_param[0].crp_p, rsa_req->p_len);
+-	copy_from_user(rsa_req->q, cop->crk_param[1].crp_p, rsa_req->q_len);
+-	copy_from_user(rsa_req->g, cop->crk_param[2].crp_p, rsa_req->g_len);
+-	copy_from_user(rsa_req->dp, cop->crk_param[3].crp_p, rsa_req->dp_len);
+-	copy_from_user(rsa_req->dq, cop->crk_param[4].crp_p, rsa_req->dq_len);
+-	copy_from_user(rsa_req->c, cop->crk_param[5].crp_p, rsa_req->c_len);
++	rc = copy_from_user(rsa_req->p, cop->crk_param[0].crp_p, rsa_req->p_len) ||
++	     copy_from_user(rsa_req->q, cop->crk_param[1].crp_p, rsa_req->q_len) ||
++	     copy_from_user(rsa_req->g, cop->crk_param[2].crp_p, rsa_req->g_len) ||
++	     copy_from_user(rsa_req->dp, cop->crk_param[3].crp_p, rsa_req->dp_len) ||
++	     copy_from_user(rsa_req->dq, cop->crk_param[4].crp_p, rsa_req->dq_len) ||
++	     copy_from_user(rsa_req->c, cop->crk_param[5].crp_p, rsa_req->c_len);
++	if (rc)
++		goto err;
++
+ 	rc = cryptodev_pkc_offload(pkc);
+ 
+ 	if (pkc->type == SYNCHRONOUS) {
+-		if (rc)
+-			goto err;
+-		copy_to_user(cop->crk_param[6].crp_p, rsa_req->f,
+-			     rsa_req->f_len);
++		rc = rc || copy_to_user(cop->crk_param[6].crp_p, rsa_req->f, rsa_req->f_len);
+ 	} else {
+ 		if (rc != -EINPROGRESS && rc != 0)
+ 			goto err;
+@@ -633,14 +623,15 @@ int crypto_bn_modexp(struct cryptodev_pkc *pkc)
+ 	rsa_req->f = rsa_req->e + rsa_req->e_len;
+ 	rsa_req->g = rsa_req->f + rsa_req->f_len;
+ 	rsa_req->n = rsa_req->g + rsa_req->g_len;
+-	copy_from_user(rsa_req->f, cop->crk_param[0].crp_p, rsa_req->f_len);
+-	copy_from_user(rsa_req->e, cop->crk_param[1].crp_p, rsa_req->e_len);
+-	copy_from_user(rsa_req->n, cop->crk_param[2].crp_p, rsa_req->n_len);
++	rc = copy_from_user(rsa_req->f, cop->crk_param[0].crp_p, rsa_req->f_len) ||
++	     copy_from_user(rsa_req->e, cop->crk_param[1].crp_p, rsa_req->e_len) ||
++	     copy_from_user(rsa_req->n, cop->crk_param[2].crp_p, rsa_req->n_len);
++	if (rc)
++		goto err;
++
+ 	rc = cryptodev_pkc_offload(pkc);
+ 	if (pkc->type == SYNCHRONOUS) {
+-		if (rc)
+-			goto err;
+-		copy_to_user(cop->crk_param[3].crp_p, rsa_req->g, rsa_req->g_len);
++		rc = rc || copy_to_user(cop->crk_param[3].crp_p, rsa_req->g, rsa_req->g_len);
+ 	} else {
+ 		if (rc != -EINPROGRESS && rc != 0)
+ 			goto err;
+-- 
+2.7.0
+

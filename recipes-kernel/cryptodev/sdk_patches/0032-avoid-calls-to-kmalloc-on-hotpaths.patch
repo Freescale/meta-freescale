@@ -1,0 +1,220 @@
+From 9b513838035c35fd3706bb824edd17d705641439 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 12 Jan 2016 15:13:15 +0200
+Subject: [PATCH 32/38] avoid calls to kmalloc on hotpaths
+
+We replace a pointer to a small structure with the structure itself to
+avoid unnecessary dynamic allocations at runtime. The embedding
+structure is itself dynamically allocated and we get a slight increase
+in performance from elimination of unnecessary code.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ cryptlib.c | 42 +++++++++++++-----------------------------
+ cryptlib.h | 14 +++++++-------
+ 2 files changed, 20 insertions(+), 36 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 4fd29eb..5972fc2 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -178,13 +178,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 	out->stream = stream;
+ 	out->aead = aead;
+ 
+-	out->async.result = kzalloc(sizeof(*out->async.result), GFP_KERNEL);
+-	if (unlikely(!out->async.result)) {
+-		ret = -ENOMEM;
+-		goto error;
+-	}
+-
+-	init_completion(&out->async.result->completion);
++	init_completion(&out->async.result.completion);
+ 
+ 	if (aead == 0) {
+ 		out->async.request = ablkcipher_request_alloc(out->async.s, GFP_KERNEL);
+@@ -195,7 +189,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 		}
+ 
+ 		ablkcipher_request_set_callback(out->async.request, 0,
+-					cryptodev_complete, out->async.result);
++					cryptodev_complete, &out->async.result);
+ 	} else {
+ 		out->async.arequest = aead_request_alloc(out->async.as, GFP_KERNEL);
+ 		if (unlikely(!out->async.arequest)) {
+@@ -205,7 +199,7 @@ int cryptodev_cipher_init(struct cipher_data *out, const char *alg_name,
+ 		}
+ 
+ 		aead_request_set_callback(out->async.arequest, 0,
+-					cryptodev_complete, out->async.result);
++					cryptodev_complete, &out->async.result);
+ 	}
+ 
+ 	out->init = 1;
+@@ -222,7 +216,6 @@ error:
+ 		if (out->async.as)
+ 			crypto_free_aead(out->async.as);
+ 	}
+-	kfree(out->async.result);
+ 
+ 	return ret;
+ }
+@@ -242,7 +235,6 @@ void cryptodev_cipher_deinit(struct cipher_data *cdata)
+ 				crypto_free_aead(cdata->async.as);
+ 		}
+ 
+-		kfree(cdata->async.result);
+ 		cdata->init = 0;
+ 	}
+ }
+@@ -279,7 +271,7 @@ ssize_t cryptodev_cipher_encrypt(struct cipher_data *cdata,
+ {
+ 	int ret;
+ 
+-	reinit_completion(&cdata->async.result->completion);
++	reinit_completion(&cdata->async.result.completion);
+ 
+ 	if (cdata->aead == 0) {
+ 		ablkcipher_request_set_crypt(cdata->async.request,
+@@ -293,7 +285,7 @@ ssize_t cryptodev_cipher_encrypt(struct cipher_data *cdata,
+ 		ret = crypto_aead_encrypt(cdata->async.arequest);
+ 	}
+ 
+-	return waitfor(cdata->async.result, ret);
++	return waitfor(&cdata->async.result, ret);
+ }
+ 
+ ssize_t cryptodev_cipher_decrypt(struct cipher_data *cdata,
+@@ -302,7 +294,7 @@ ssize_t cryptodev_cipher_decrypt(struct cipher_data *cdata,
+ {
+ 	int ret;
+ 
+-	reinit_completion(&cdata->async.result->completion);
++	reinit_completion(&cdata->async.result.completion);
+ 	if (cdata->aead == 0) {
+ 		ablkcipher_request_set_crypt(cdata->async.request,
+ 			(struct scatterlist *)src, dst,
+@@ -315,7 +307,7 @@ ssize_t cryptodev_cipher_decrypt(struct cipher_data *cdata,
+ 		ret = crypto_aead_decrypt(cdata->async.arequest);
+ 	}
+ 
+-	return waitfor(cdata->async.result, ret);
++	return waitfor(&cdata->async.result, ret);
+ }
+ 
+ /* Hash functions */
+@@ -345,13 +337,7 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+ 	hdata->digestsize = crypto_ahash_digestsize(hdata->async.s);
+ 	hdata->alignmask = crypto_ahash_alignmask(hdata->async.s);
+ 
+-	hdata->async.result = kzalloc(sizeof(*hdata->async.result), GFP_KERNEL);
+-	if (unlikely(!hdata->async.result)) {
+-		ret = -ENOMEM;
+-		goto error;
+-	}
+-
+-	init_completion(&hdata->async.result->completion);
++	init_completion(&hdata->async.result.completion);
+ 
+ 	hdata->async.request = ahash_request_alloc(hdata->async.s, GFP_KERNEL);
+ 	if (unlikely(!hdata->async.request)) {
+@@ -361,12 +347,11 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+ 	}
+ 
+ 	ahash_request_set_callback(hdata->async.request, 0,
+-				   cryptodev_complete, hdata->async.result);
++				   cryptodev_complete, &hdata->async.result);
+ 	hdata->init = 1;
+ 	return 0;
+ 
+ error:
+-	kfree(hdata->async.result);
+ 	crypto_free_ahash(hdata->async.s);
+ 	return ret;
+ }
+@@ -376,7 +361,6 @@ void cryptodev_hash_deinit(struct hash_data *hdata)
+ 	if (hdata->init) {
+ 		if (hdata->async.request)
+ 			ahash_request_free(hdata->async.request);
+-		kfree(hdata->async.result);
+ 		if (hdata->async.s)
+ 			crypto_free_ahash(hdata->async.s);
+ 		hdata->init = 0;
+@@ -402,24 +386,24 @@ ssize_t cryptodev_hash_update(struct hash_data *hdata,
+ {
+ 	int ret;
+ 
+-	reinit_completion(&hdata->async.result->completion);
++	reinit_completion(&hdata->async.result.completion);
+ 	ahash_request_set_crypt(hdata->async.request, sg, NULL, len);
+ 
+ 	ret = crypto_ahash_update(hdata->async.request);
+ 
+-	return waitfor(hdata->async.result, ret);
++	return waitfor(&hdata->async.result, ret);
+ }
+ 
+ int cryptodev_hash_final(struct hash_data *hdata, void *output)
+ {
+ 	int ret;
+ 
+-	reinit_completion(&hdata->async.result->completion);
++	reinit_completion(&hdata->async.result.completion);
+ 	ahash_request_set_crypt(hdata->async.request, NULL, output, 0);
+ 
+ 	ret = crypto_ahash_final(hdata->async.request);
+ 
+-	return waitfor(hdata->async.result, ret);
++	return waitfor(&hdata->async.result, ret);
+ }
+ 
+ int cryptodev_pkc_offload(struct cryptodev_pkc *pkc)
+diff --git a/cryptlib.h b/cryptlib.h
+index e1c4e3e..d8e8046 100644
+--- a/cryptlib.h
++++ b/cryptlib.h
+@@ -6,6 +6,11 @@
+ 
+ #include <linux/version.h>
+ 
++struct cryptodev_result {
++	struct completion completion;
++	int err;
++};
++
+ struct cipher_data {
+ 	int init; /* 0 uninitialized */
+ 	int blocksize;
+@@ -22,7 +27,7 @@ struct cipher_data {
+ 		struct crypto_aead *as;
+ 		struct aead_request *arequest;
+ 
+-		struct cryptodev_result *result;
++		struct cryptodev_result result;
+ 		uint8_t iv[EALG_MAX_BLOCK_LEN];
+ 	} async;
+ };
+@@ -85,7 +90,7 @@ struct hash_data {
+ 	int alignmask;
+ 	struct {
+ 		struct crypto_ahash *s;
+-		struct cryptodev_result *result;
++		struct cryptodev_result result;
+ 		struct ahash_request *request;
+ 	} async;
+ };
+@@ -104,11 +109,6 @@ enum offload_type {
+ 	ASYNCHRONOUS
+ };
+ 
+-struct cryptodev_result {
+-	struct completion completion;
+-	int err;
+-};
+-
+ struct cryptodev_pkc {
+ 	struct list_head list; /* To maintain the Jobs in completed
+ 				 cryptodev lists */
+-- 
+2.7.0
+

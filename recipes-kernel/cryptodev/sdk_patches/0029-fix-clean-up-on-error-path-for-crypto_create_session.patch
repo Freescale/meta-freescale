@@ -1,0 +1,117 @@
+From 294abaaa4540ec340ed6046a784c9789c8724420 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 11 Jan 2016 17:45:50 +0200
+Subject: [PATCH 29/38] fix clean-up on error path for crypto_create_session
+
+This patch fixes clean-up on error path for failed allocations of
+ses_new->pages or ses_new->sg. In these cases, allocations made in
+cryptodev_hash_init have not been undone resulting in possible memory
+leaks.
+
+We take advantage of the initializations with zeros of the session
+structure to trim the code to a single clean-up path.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ ioctl.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/ioctl.c b/ioctl.c
+index b23f5fd..c781f9d 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -228,7 +228,8 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		return -EINVAL;
+ 	}
+ 
+-	/* Create a session and put it to the list. */
++	/* Create a session and put it to the list. Zeroing the structure helps
++	 * also with a single exit point in case of errors */
+ 	ses_new = kzalloc(sizeof(*ses_new), GFP_KERNEL);
+ 	if (!ses_new)
+ 		return -ENOMEM;
+@@ -240,19 +241,19 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		if (unlikely(ret < 0)) {
+ 			ddebug(1, "Setting key failed for %s-%zu.",
+ 				alg_name, (size_t)sop->keylen*8);
+-			goto error_cipher;
++			goto session_error;
+ 		}
+ 
+ 		ret = cryptodev_get_cipher_key(keys.ckey, sop, aead);
+ 		if (unlikely(ret < 0))
+-			goto error_cipher;
++			goto session_error;
+ 
+ 		ret = cryptodev_cipher_init(&ses_new->cdata, alg_name, keys.ckey,
+ 						keylen, stream, aead);
+ 		if (ret < 0) {
+ 			ddebug(1, "Failed to load cipher for %s", alg_name);
+ 			ret = -EINVAL;
+-			goto error_cipher;
++			goto session_error;
+ 		}
+ 	}
+ 
+@@ -261,13 +262,13 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 			ddebug(1, "Setting key failed for %s-%zu.",
+ 				hash_name, (size_t)sop->mackeylen*8);
+ 			ret = -EINVAL;
+-			goto error_hash;
++			goto session_error;
+ 		}
+ 
+ 		if (sop->mackey && unlikely(copy_from_user(keys.mkey, sop->mackey,
+ 					    sop->mackeylen))) {
+ 			ret = -EFAULT;
+-			goto error_hash;
++			goto session_error;
+ 		}
+ 
+ 		ret = cryptodev_hash_init(&ses_new->hdata, hash_name, hmac_mode,
+@@ -275,7 +276,7 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		if (ret != 0) {
+ 			ddebug(1, "Failed to load hash for %s", hash_name);
+ 			ret = -EINVAL;
+-			goto error_hash;
++			goto session_error;
+ 		}
+ 	}
+ 
+@@ -292,7 +293,7 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 	if (ses_new->sg == NULL || ses_new->pages == NULL) {
+ 		ddebug(0, "Memory error");
+ 		ret = -ENOMEM;
+-		goto error_hash;
++		goto session_error;
+ 	}
+ 
+ 	/* put the new session to the list */
+@@ -316,18 +317,19 @@ restart:
+ 
+ 	/* Fill in some values for the user. */
+ 	sop->ses = ses_new->sid;
+-
+ 	return 0;
+ 
+-error_hash:
++	/* We count on ses_new to be initialized with zeroes
++	 * Since hdata and cdata are embedded within ses_new, it follows that
++	 * hdata->init and cdata->init are either zero or one as they have been
++	 * initialized or not */
++session_error:
++	cryptodev_hash_deinit(&ses_new->hdata);
+ 	cryptodev_cipher_deinit(&ses_new->cdata);
+ 	kfree(ses_new->sg);
+ 	kfree(ses_new->pages);
+-error_cipher:
+ 	kfree(ses_new);
+-
+ 	return ret;
+-
+ }
+ 
+ /* Everything that needs to be done when remowing a session. */
+-- 
+2.7.0
+

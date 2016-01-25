@@ -1,0 +1,47 @@
+From e51bf208fbd3796238ff4d721e8d070f711f8c56 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 10 Dec 2015 12:42:19 +0200
+Subject: [PATCH 27/38] use Linux kernel conventions for Makefile variables
+
+The kernel Makefile specifies to use M=... instead of SUBDIR=... for
+external modules.
+
+PWD variable is already set in a POSIX system and calling `pwd` to find
+it is redundant.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 2f50210..7c7e193 100644
+--- a/Makefile
++++ b/Makefile
+@@ -13,7 +13,7 @@ cryptodev-objs = ioctl.o main.o cryptlib.o authenc.o zc.o util.o
+ 
+ obj-m += cryptodev.o
+ 
+-KERNEL_MAKE_OPTS := -C ${KERNEL_DIR} SUBDIRS=`pwd`
++KERNEL_MAKE_OPTS := -C $(KERNEL_DIR) M=$(PWD)
+ ifneq (${ARCH},)
+ KERNEL_MAKE_OPTS += ARCH=${ARCH}
+ endif
+@@ -30,12 +30,12 @@ version.h: Makefile
+ install: modules_install
+ 
+ modules_install:
+-	$(MAKE) -C $(KERNEL_DIR) SUBDIRS=`pwd` modules_install
++	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) modules_install
+ 	@echo "Installing cryptodev.h in $(PREFIX)/usr/include/crypto ..."
+ 	@install -D crypto/cryptodev.h $(PREFIX)/usr/include/crypto/cryptodev.h
+ 
+ clean:
+-	$(MAKE) -C $(KERNEL_DIR) SUBDIRS=`pwd` clean
++	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) clean
+ 	rm -f $(hostprogs) *~
+ 	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests clean
+ 
+-- 
+2.7.0
+

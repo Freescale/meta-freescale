@@ -1,0 +1,190 @@
+From 344a0243e31f8fc467253404a548eedbb72b35d0 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 20 Jan 2016 17:11:49 +0200
+Subject: [PATCH 37/38] rewrite sha_speed.c to reduce code duplication
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/sha_speed.c | 131 ++++++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 84 insertions(+), 47 deletions(-)
+
+diff --git a/tests/sha_speed.c b/tests/sha_speed.c
+index e1dc54b..5f694bd 100644
+--- a/tests/sha_speed.c
++++ b/tests/sha_speed.c
+@@ -28,6 +28,13 @@
+ 
+ #include <crypto/cryptodev.h>
+ 
++/* Sizes of buffers to be hashed */
++int buffer_lengths[] = {256, 512, 1024, 2048, 4096, 8192, 65536, 0};
++
++/* Time in seconds allocated for each tested buffer lengths */
++#define BUFFER_TEST_TIME 10
++
++
+ static double udifftimeval(struct timeval start, struct timeval end)
+ {
+ 	return (double)(end.tv_usec - start.tv_usec) +
+@@ -97,7 +104,7 @@ int hash_data(struct session_op *sess, int fdc, int chunksize, int alignmask)
+ 	memset(buffer, val++, chunksize);
+ 
+ 	must_finish = 0;
+-	alarm(5);
++	alarm(BUFFER_TEST_TIME);
+ 
+ 	gettimeofday(&start, NULL);
+ 	do {
+@@ -126,73 +133,103 @@ int hash_data(struct session_op *sess, int fdc, int chunksize, int alignmask)
+ 	return 0;
+ }
+ 
+-int main(void)
+-{
+-	int fd, i, fdc = -1, alignmask = 0;
+-	struct session_op sess;
+-	char keybuf[32];
++
+ #ifdef CIOCGSESSINFO
++int get_alignmask(struct session_op *sess, int fdc)
++{
+ 	struct session_info_op siop;
++
++	siop.ses = sess->ses;
++	if (ioctl(fdc, CIOCGSESSINFO, &siop) < 0) {
++		perror("ioctl(CIOCGSESSINFO)");
++		/* continue test ignoring CIOCGSESSINFO error */
++		return 0;
++	}
++
++	printf("using algorithm %s with driver %s\n",
++		siop.hash_info.cra_name, siop.hash_info.cra_driver_name);
++
++	return siop.alignmask;
++}
+ #endif
+ 
+-	signal(SIGALRM, alarm_handler);
+ 
+-	if ((fd = open("/dev/crypto", O_RDWR, 0)) < 0) {
+-		perror("open()");
+-		return 1;
+-	}
+-	if (ioctl(fd, CRIOGET, &fdc)) {
+-		perror("ioctl(CRIOGET)");
+-		return 1;
+-	}
++int hash_session(struct session_op *sess, int fdc)
++{
++	int i;
++	int err;
++	int alignmask;
+ 
+-	fprintf(stderr, "Testing SHA1 Hash: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_SHA1;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++	if (ioctl(fdc, CIOCGSESSION, sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+ 		return 1;
+ 	}
++
+ #ifdef CIOCGSESSINFO
+-	siop.ses = sess.ses;
+-	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
+-		perror("ioctl(CIOCGSESSINFO)");
+-		return 1;
+-	}
+-	printf("requested hash CRYPTO_SHA1, got %s with driver %s\n",
+-			siop.hash_info.cra_name, siop.hash_info.cra_driver_name);
+-	alignmask = siop.alignmask;
++	alignmask = get_alignmask(sess, fdc);
++#else
++	alignmask = 0;
+ #endif
+ 
+-	for (i = 256; i <= (64 * 1024); i *= 4) {
+-		if (hash_data(&sess, fdc, i, alignmask))
+-			break;
++	err = 0;
++	for(i = 0; (err == 0) && (buffer_lengths[i] != 0); i++) {
++		err = hash_data(sess, fdc, buffer_lengths[i], alignmask);
+ 	}
+ 
+-	fprintf(stderr, "\nTesting SHA256 Hash: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_SHA2_256;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
++	if (ioctl(fdc, CIOCFSESSION, sess)) {
++		perror("ioctl(CIOCFSESSION)");
+ 		return 1;
+ 	}
+-#ifdef CIOCGSESSINFO
+-	siop.ses = sess.ses;
+-	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
+-		perror("ioctl(CIOCGSESSINFO)");
++
++	return err;
++}
++
++int test_sha1(struct session_op *sess, int fdc)
++{
++	fprintf(stderr, "Testing SHA1 Hash: \n");
++	memset(sess, 0, sizeof(sess));
++	sess->mac = CRYPTO_SHA1;
++	return hash_session(sess, fdc);
++}
++
++
++int test_sha256(struct session_op *sess, int fdc)
++{
++	fprintf(stderr, "Testing SHA256 Hash: \n");
++	memset(sess, 0, sizeof(sess));
++	sess->mac = CRYPTO_SHA2_256;
++	return hash_session(sess, fdc);
++}
++
++
++int main(void)
++{
++	int fd;
++	int fdc;
++	int err;
++	int i;
++	struct session_op sess;
++
++	signal(SIGALRM, alarm_handler);
++
++	fd = open("/dev/crypto", O_RDWR, 0);
++	if (fd < 0) {
++		perror("open()");
+ 		return 1;
+ 	}
+-	printf("requested hash CRYPTO_SHA2_256, got %s with driver %s\n",
+-			siop.hash_info.cra_name, siop.hash_info.cra_driver_name);
+-	alignmask = siop.alignmask;
+-#endif
+ 
+-	for (i = 256; i <= (64 * 1024); i *= 4) {
+-		if (hash_data(&sess, fdc, i, alignmask))
+-			break;
++	err = ioctl(fd, CRIOGET, &fdc);
++	if (err != 0) {
++		perror("ioctl(CRIOGET)");
++		close(fd);
++		return 1;
+ 	}
+ 
++	/* run all tests but return an eventual error */
++	err |= test_sha1(&sess, fdc);
++	err |= test_sha256(&sess, fdc);
++
+ 	close(fdc);
+ 	close(fd);
+-	return 0;
++	return err;
+ }
+-- 
+2.7.0
+

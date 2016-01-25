@@ -1,0 +1,59 @@
+From f4534df637b078fce275763bd8bc2a83bfad25e0 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Mon, 11 Jan 2016 18:01:06 +0200
+Subject: [PATCH 30/38] remove code duplication in cryptodev_hash_init
+
+cryptodev_hash_init is concerned mostly with allocating data structures
+for hash operations.
+This patch replaces the call it makes to crypto_ahash_init with
+one to cryptodev_hash_reset to avoid code duplication. This call is made
+now outside of the original function to increase modularity.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ cryptlib.c | 9 ---------
+ ioctl.c    | 5 +++++
+ 2 files changed, 5 insertions(+), 9 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index eba4616..4fd29eb 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -362,18 +362,9 @@ int cryptodev_hash_init(struct hash_data *hdata, const char *alg_name,
+ 
+ 	ahash_request_set_callback(hdata->async.request, 0,
+ 				   cryptodev_complete, hdata->async.result);
+-
+-	ret = crypto_ahash_init(hdata->async.request);
+-	if (unlikely(ret)) {
+-		derr(0, "error in crypto_hash_init()");
+-		goto error_request;
+-	}
+-
+ 	hdata->init = 1;
+ 	return 0;
+ 
+-error_request:
+-	ahash_request_free(hdata->async.request);
+ error:
+ 	kfree(hdata->async.result);
+ 	crypto_free_ahash(hdata->async.s);
+diff --git a/ioctl.c b/ioctl.c
+index b36dd03..a537886 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -338,6 +338,11 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 			ret = -EINVAL;
+ 			goto session_error;
+ 		}
++
++		ret = cryptodev_hash_reset(&ses_new->hdata);
++		if (ret != 0) {
++			goto session_error;
++		}
+ 	}
+ 
+ 	ses_new->alignmask = max(ses_new->cdata.alignmask,
+-- 
+2.7.0
+

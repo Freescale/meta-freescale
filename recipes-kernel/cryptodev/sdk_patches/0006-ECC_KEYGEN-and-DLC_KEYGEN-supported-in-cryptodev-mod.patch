@@ -1,0 +1,212 @@
+From b92d23a790d9634d52db3b9a5e1882fde620b073 Mon Sep 17 00:00:00 2001
+From: Yashpal Dutta <yashpal.dutta@freescale.com>
+Date: Fri, 7 Mar 2014 07:53:53 +0545
+Subject: [PATCH 06/38] ECC_KEYGEN and DLC_KEYGEN supported in cryptodev module
+
+Upstream-status: Pending
+
+Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
+---
+ cryptlib.c         |  2 ++
+ crypto/cryptodev.h |  5 +++-
+ ioctl.c            | 29 +++++++++++++++++--
+ main.c             | 85 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 118 insertions(+), 3 deletions(-)
+
+diff --git a/cryptlib.c b/cryptlib.c
+index 6900028..47cd568 100644
+--- a/cryptlib.c
++++ b/cryptlib.c
+@@ -452,6 +452,8 @@ int cryptodev_pkc_offload(struct cryptodev_pkc  *pkc)
+ 	case DSA_VERIFY:
+ 	case ECDSA_SIGN:
+ 	case ECDSA_VERIFY:
++	case DLC_KEYGEN:
++	case ECC_KEYGEN:
+ 		pkc->s = crypto_alloc_pkc("pkc(dsa)",
+ 			 CRYPTO_ALG_TYPE_PKC_DSA, 0);
+ 		break;
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index 4436fbf..275a55c 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -268,6 +268,8 @@ enum cryptodev_crk_op_t {
+ 	CRK_DSA_SIGN = 2,
+ 	CRK_DSA_VERIFY = 3,
+ 	CRK_DH_COMPUTE_KEY = 4,
++	CRK_DSA_GENERATE_KEY = 5,
++	CRK_DH_GENERATE_KEY = 6,
+ 	CRK_ALGORITHM_ALL
+ };
+ 
+@@ -280,7 +282,8 @@ enum cryptodev_crk_op_t {
+ #define CRF_DSA_SIGN		(1 << CRK_DSA_SIGN)
+ #define CRF_DSA_VERIFY		(1 << CRK_DSA_VERIFY)
+ #define CRF_DH_COMPUTE_KEY	(1 << CRK_DH_COMPUTE_KEY)
+-
++#define CRF_DSA_GENERATE_KEY	(1 << CRK_DSA_GENERATE_KEY)
++#define CRF_DH_GENERATE_KEY	(1 << CRK_DH_GENERATE_KEY)
+ 
+ /* ioctl's. Compatible with old linux cryptodev.h
+  */
+diff --git a/ioctl.c b/ioctl.c
+index e2f407f..1f0741a 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -726,6 +726,23 @@ static int crypto_async_fetch_asym(struct cryptodev_pkc *pkc)
+ 				     dh_req->z, dh_req->z_len);
+ 	}
+ 	break;
++	case CRK_DSA_GENERATE_KEY:
++	case CRK_DH_GENERATE_KEY:
++	{
++		struct keygen_req_s *key_req = &pkc_req->req_u.keygen;
++
++		if (pkc_req->type == ECC_KEYGEN) {
++			copy_to_user(ckop->crk_param[4].crp_p, key_req->pub_key,
++				     key_req->pub_key_len);
++			copy_to_user(ckop->crk_param[5].crp_p,
++				     key_req->priv_key, key_req->priv_key_len);
++		} else {
++			copy_to_user(ckop->crk_param[3].crp_p,
++				     key_req->pub_key, key_req->pub_key_len);
++			copy_to_user(ckop->crk_param[4].crp_p,
++				     key_req->priv_key, key_req->priv_key_len);
++		}
++	}
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+@@ -939,8 +956,9 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 
+ 	switch (cmd) {
+ 	case CIOCASYMFEAT:
+-		return put_user(CRF_MOD_EXP_CRT |  CRF_MOD_EXP |
+-			CRF_DSA_SIGN | CRF_DSA_VERIFY | CRF_DH_COMPUTE_KEY, p);
++		return put_user(CRF_MOD_EXP_CRT |  CRF_MOD_EXP | CRF_DSA_SIGN |
++			CRF_DSA_VERIFY | CRF_DH_COMPUTE_KEY |
++			CRF_DSA_GENERATE_KEY, p);
+ 	case CRIOGET:
+ 		fd = clonefd(filp);
+ 		ret = put_user(fd, p);
+@@ -1084,7 +1102,14 @@ cryptodev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg_)
+ 		if (cookie_list.cookie_available)
+ 			copy_to_user(arg, &cookie_list,
+ 				     sizeof(struct pkc_cookie_list_s));
++		else {
++			struct pkc_cookie_list_s *user_ck_list = (void *)arg;
++
++			put_user(0, &(user_ck_list->cookie_available));
++		}
++		ret = cookie_list.cookie_available;
+ 	}
++
+ 	return ret;
+ 	default:
+ 		return -EINVAL;
+diff --git a/main.c b/main.c
+index 0b7951e..c901bc7 100644
+--- a/main.c
++++ b/main.c
+@@ -342,6 +342,85 @@ err:
+ 	return rc;
+ }
+ 
++int crypto_kop_keygen(struct cryptodev_pkc *pkc)
++{
++	struct kernel_crypt_kop *kop = &pkc->kop;
++	struct crypt_kop *cop = &kop->kop;
++	struct pkc_request *pkc_req;
++	struct keygen_req_s *key_req;
++	int rc, buf_size;
++	uint8_t *buf;
++
++	if (!cop->crk_param[0].crp_nbits || !cop->crk_param[1].crp_nbits ||
++	    !cop->crk_param[2].crp_nbits || !cop->crk_param[3].crp_nbits ||
++	    !cop->crk_param[4].crp_nbits)
++		return -EINVAL;
++
++	pkc_req = &pkc->req;
++	key_req = &pkc_req->req_u.keygen;
++	key_req->q_len = (cop->crk_param[0].crp_nbits + 7)/8;
++	key_req->r_len = (cop->crk_param[1].crp_nbits + 7)/8;
++	key_req->g_len = (cop->crk_param[2].crp_nbits + 7)/8;
++	if (cop->crk_iparams == 3) {
++		key_req->pub_key_len = (cop->crk_param[3].crp_nbits + 7)/8;
++		key_req->priv_key_len = (cop->crk_param[4].crp_nbits + 7)/8;
++		buf_size = key_req->q_len + key_req->r_len + key_req->g_len +
++			key_req->pub_key_len + key_req->priv_key_len;
++		pkc_req->type = DLC_KEYGEN;
++	} else {
++		key_req->ab_len = (cop->crk_param[3].crp_nbits + 7)/8;
++		key_req->pub_key_len = (cop->crk_param[4].crp_nbits + 7)/8;
++		key_req->priv_key_len = (cop->crk_param[5].crp_nbits + 7)/8;
++		buf_size = key_req->q_len + key_req->r_len + key_req->g_len +
++			key_req->pub_key_len + key_req->priv_key_len +
++			key_req->ab_len;
++		pkc_req->type = ECC_KEYGEN;
++		pkc_req->curve_type = cop->curve_type;
++	}
++
++	buf = kzalloc(buf_size, GFP_DMA);
++	if (!buf)
++		return -ENOMEM;
++
++	key_req->q = buf;
++	key_req->r = key_req->q + key_req->q_len;
++	key_req->g = key_req->r + key_req->r_len;
++	key_req->pub_key = key_req->g + key_req->g_len;
++	key_req->priv_key = key_req->pub_key + key_req->pub_key_len;
++	copy_from_user(key_req->q, cop->crk_param[0].crp_p, key_req->q_len);
++	copy_from_user(key_req->r, cop->crk_param[1].crp_p, key_req->r_len);
++	copy_from_user(key_req->g, cop->crk_param[2].crp_p, key_req->g_len);
++	if (cop->crk_iparams == 3) {
++		copy_from_user(key_req->pub_key, cop->crk_param[3].crp_p,
++			       key_req->pub_key_len);
++		copy_from_user(key_req->priv_key, cop->crk_param[4].crp_p,
++			       key_req->priv_key_len);
++	} else {
++		key_req->ab = key_req->priv_key + key_req->priv_key_len;
++		copy_from_user(key_req->ab, cop->crk_param[3].crp_p,
++			       key_req->ab_len);
++		copy_from_user(key_req->pub_key, cop->crk_param[4].crp_p,
++			       key_req->pub_key_len);
++		copy_from_user(key_req->priv_key, cop->crk_param[5].crp_p,
++			       key_req->priv_key_len);
++	}
++
++	rc = cryptodev_pkc_offload(pkc);
++	if (pkc->type == SYNCHRONOUS) {
++		if (rc)
++			goto err;
++	} else {
++		if (rc != -EINPROGRESS && !rc)
++			goto err;
++
++		pkc->cookie = buf;
++		return rc;
++	}
++err:
++	kfree(buf);
++	return rc;
++}
++
+ int crypto_kop_dh_key(struct cryptodev_pkc *pkc)
+ {
+ 	struct kernel_crypt_kop *kop = &pkc->kop;
+@@ -554,6 +633,12 @@ int crypto_run_asym(struct cryptodev_pkc *pkc)
+ 			goto err;
+ 		ret = crypto_kop_dh_key(pkc);
+ 		break;
++	case CRK_DH_GENERATE_KEY:
++	case CRK_DSA_GENERATE_KEY:
++		if ((kop->kop.crk_iparams != 3 && kop->kop.crk_iparams != 4))
++			goto err;
++		ret = crypto_kop_keygen(pkc);
++		break;
+ 	}
+ err:
+ 	return ret;
+-- 
+2.7.0
+
