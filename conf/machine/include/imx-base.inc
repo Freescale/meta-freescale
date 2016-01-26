@@ -144,9 +144,11 @@ IMX_DEFAULT_KERNEL_mx6ul = "linux-imx"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
+SOC_DEFAULT_IMAGE_FSTYPES = "sdcard.gz"
+SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot.mxsboot-sdcard sdcard.gz"
+
 SDCARD_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.ext4"
-IMAGE_FSTYPES ?= "sdcard.gz"
-IMAGE_FSTYPES_mxs ?= "uboot.mxsboot-sdcard sdcard.gz"
+IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
