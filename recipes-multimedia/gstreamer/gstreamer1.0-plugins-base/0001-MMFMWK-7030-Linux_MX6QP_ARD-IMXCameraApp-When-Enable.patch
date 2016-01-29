@@ -1,0 +1,58 @@
+From f19e83a1a69a3dbbeb16dc4bcee3fb87317bb65b Mon Sep 17 00:00:00 2001
+From: Song Bing <b06498@freescale.com>
+Date: Mon, 11 Jan 2016 14:51:17 +0800
+Subject: [PATCH] MMFMWK-7030 [Linux_MX6QP_ARD]IMXCameraApp:When Enabled "save
+ time to image" item, preview, find the time can not display
+ completely. 100%
+
+As IPU need 8 pixels alignment, add one workaround in base text overlay
+to generate 8 pixels alignment text video buffer. The side effect should
+cause all text a little smaller.
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Song Bing b06498@freescale.com
+---
+ ext/pango/gstbasetextoverlay.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/ext/pango/gstbasetextoverlay.c b/ext/pango/gstbasetextoverlay.c
+index 3e98aa1..de64c92 100755
+--- a/ext/pango/gstbasetextoverlay.c
++++ b/ext/pango/gstbasetextoverlay.c
+@@ -1545,7 +1545,7 @@ gst_base_text_overlay_render_pangocairo (GstBaseTextOverlay * overlay,
+   gint unscaled_width, unscaled_height;
+   gint width, height;
+   gboolean full_width = FALSE;
+-  double scalef = 1.0;
++  double scalef = 1.0, scalefx, scalefy;
+   double a, r, g, b;
+   gdouble shadow_offset = 0.0;
+   gdouble outline_offset = 0.0;
+@@ -1673,6 +1673,14 @@ gst_base_text_overlay_render_pangocairo (GstBaseTextOverlay * overlay,
+   height = ceil (height * overlay->render_scale);
+   scalef *= overlay->render_scale;
+ 
++  /* i.MX special, will cause text a little small */
++  scalefx = scalef * ((gdouble)GST_ROUND_DOWN_8 (width)) / width;
++  scalefy = scalef * ((gdouble)GST_ROUND_DOWN_8 (height)) / height;
++  width = GST_ROUND_DOWN_8 (width);
++  height = GST_ROUND_DOWN_8 (height);
++  GST_DEBUG_OBJECT (overlay, "Rendering with width %d and height %d "
++      , width, height);
++
+   if (width <= 0 || height <= 0) {
+     g_mutex_unlock (GST_BASE_TEXT_OVERLAY_GET_CLASS (overlay)->pango_lock);
+     GST_DEBUG_OBJECT (overlay,
+@@ -1689,7 +1697,7 @@ gst_base_text_overlay_render_pangocairo (GstBaseTextOverlay * overlay,
+   /* Prepare the transformation matrix. Note that the transformation happens
+    * in reverse order. So for horizontal text, we will translate and then
+    * scale. This is important to understand which scale shall be used. */
+-  cairo_matrix_init_scale (&cairo_matrix, scalef, scalef);
++  cairo_matrix_init_scale (&cairo_matrix, scalefx, scalefy);
+ 
+   if (overlay->use_vertical_render) {
+     gint tmp;
+-- 
+1.7.9.5
+
