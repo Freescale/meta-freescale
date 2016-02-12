@@ -1,3 +1,4 @@
+# Copyright (C) 2013-2016 O.S. Systems Software LTDA.
 # Copyright (C) 2013 Freescale Semiconductor
 DESCRIPTION = "Freescale VPU library"
 LICENSE = "Proprietary"
@@ -19,3 +20,4 @@ do_install () {
     oe_runmake PLATFORM="${PLATFORM}" DEST_DIR="${D}" install
 }
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
