@@ -68,6 +68,14 @@ MACHINE_SOCARCH_FILTER_append_mx6 = " virtual/libopenvg virtual/libgles1 virtual
 
 INHERIT += "fsl-dynamic-packagearch"
 
+SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS_append_mx6 = " \
+    imx-gpu-viv->kernel-module-imx-gpu-viv \
+    libimxvpuapi->imx-vpu \
+    imx-vpuwrap->imx-vpu \
+    imx-codec->imx-vpu \
+    imx-test->imx-vpu \
+"
+
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE_append_mx7 = " firmware-imx-epdc"
