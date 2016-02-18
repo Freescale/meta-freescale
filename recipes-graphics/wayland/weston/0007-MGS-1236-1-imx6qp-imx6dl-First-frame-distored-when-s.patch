@@ -1,0 +1,51 @@
+From b33d44b736b7b7ae4db31dc32ff9441c753219fb Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Mon, 28 Dec 2015 22:15:05 -0600
+Subject: [PATCH] MGS-1236-1 : [imx6qp/imx6dl] First frame distored when some
+ wayland apps run continuously using g2d
+
+Remove residual galGetStretchFactors functions. the function is not needed
+any more
+
+Date: Dec 28, 2015
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ src/gal2d-renderer.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/src/gal2d-renderer.c b/src/gal2d-renderer.c
+index dbec2d0..2ecc8ac 100644
+--- a/src/gal2d-renderer.c
++++ b/src/gal2d-renderer.c
+@@ -781,11 +781,11 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 			}
+ 			else
+ 			{
+-                               gcmVERIFY_OK(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.right - srcRect.left,
+-                                        dstrect.right - dstrect.left, &horFactor));
++				gcmVERIFY_OK(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.right - srcRect.left,
++						dstrect.right - dstrect.left, &horFactor));
+ 
+-                               gcmONERROR(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.bottom - srcRect.top,
+-                                        dstrect.bottom - dstrect.top, &verFactor));
++				gcmONERROR(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.bottom - srcRect.top,
++						dstrect.bottom - dstrect.top, &verFactor));
+ 
+ 				if(verFactor == 65536 && horFactor == 65536)
+ 				{
+@@ -799,7 +799,11 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 					srcRect.right = srcRect.right < dstWidth ? srcRect.right : dstWidth;
+ 					srcRect.bottom = srcRect.bottom < dstHeight ? srcRect.bottom : dstHeight;
+ 
+-					gcmVERIFY_OK(galGetStretchFactors(&srcRect, &dstrect, &horFactor, &verFactor));
++					gcmVERIFY_OK(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.right - srcRect.left,
++						dstrect.right - dstrect.left, &horFactor));
++
++					gcmONERROR(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.bottom - srcRect.top,
++							dstrect.bottom - dstrect.top, &verFactor));
+ 					/* Program the stretch factors. */
+ 					gcmVERIFY_OK(gco2D_SetStretchFactors(gr->gcoEngine2d, horFactor, verFactor));
+ 
+-- 
+2.6.2
+
