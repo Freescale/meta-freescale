@@ -1,32 +1,28 @@
-From 0da66b0b96a7059392f0b62d3a13fcedf1023ba8 Mon Sep 17 00:00:00 2001
+From e766967ae24d15048c01d03de09fc39757d13ec3 Mon Sep 17 00:00:00 2001
 From: Prabhu <prabhu.sundararaj@freescale.com>
-Date: Wed, 24 Jun 2015 17:29:03 -0500
-Subject: [PATCH] MGS-840 Add i.MX6 support for weston
+Date: Sat, 3 Oct 2015 19:44:33 -0500
+Subject: [PATCH] MGS-1111: Add GPU-VIV suport for wayland and weston 1.9
 
-Add fbdev backend support for Vivante FBdev EGL
+Add support GPU-VIV support for weston 1.9
 
-Date: June 24, 2015
 Signed-off-by: Prabhu <prabhu.sundararaj@freescale.com>
 ---
- Makefile.am            |   13 +
- src/compositor-fbdev.c |  139 ++++-
- src/gal2d-renderer.c   | 1337 ++++++++++++++++++++++++++++++++++++++++++++++++
- src/gal2d-renderer.h   |   47 ++
- 4 files changed, 1519 insertions(+), 17 deletions(-)
- mode change 100644 => 100755 Makefile.am
+ Makefile.am            |   12 +
+ src/compositor-fbdev.c |  128 ++++-
+ src/gal2d-renderer.c   | 1342 ++++++++++++++++++++++++++++++++++++++++++++++++
+ src/gal2d-renderer.h   |   50 ++
+ 4 files changed, 1519 insertions(+), 13 deletions(-)
  create mode 100644 src/gal2d-renderer.c
  create mode 100644 src/gal2d-renderer.h
 
 diff --git a/Makefile.am b/Makefile.am
-old mode 100644
-new mode 100755
-index 5819b19..e7e2d49
+index 62719c9..86d3dfa 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -207,6 +207,19 @@ gl_renderer_la_SOURCES =			\
- 	src/vertex-clipping.h
+@@ -214,6 +214,18 @@ gl_renderer_la_SOURCES =			\
+ 	src/vertex-clipping.h			\
+ 	shared/helpers.h
  endif
- 
 +module_LTLIBRARIES += gal2d-renderer.la
 +gal2d_renderer_la_LDFLAGS = -module -avoid-version
 +gal2d_renderer_la_LIBADD = $(COMPOSITOR_LIBS) $(EGL_LIBS)
@@ -39,23 +35,22 @@ index 5819b19..e7e2d49
 +	src/gal2d-renderer.c			\
 +	src/vertex-clipping.c			\
 +	src/vertex-clipping.h
-+
+ 
  if ENABLE_X11_COMPOSITOR
  module_LTLIBRARIES += x11-backend.la
- x11_backend_la_LDFLAGS = -module -avoid-version
 diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
-index 3f3394f..9d18c45 100644
+index 81281d0..c6f732e 100644
 --- a/src/compositor-fbdev.c
 +++ b/src/compositor-fbdev.c
-@@ -45,6 +45,7 @@
+@@ -49,6 +49,7 @@
  #include "libinput-seat.h"
  #include "gl-renderer.h"
  #include "presentation_timing-server-protocol.h"
 +#include "gal2d-renderer.h"
  
- struct fbdev_compositor {
- 	struct weston_compositor base;
-@@ -53,7 +54,9 @@ struct fbdev_compositor {
+ struct fbdev_backend {
+ 	struct weston_backend base;
+@@ -58,7 +59,9 @@ struct fbdev_backend {
  	struct udev *udev;
  	struct udev_input input;
  	int use_pixman;
@@ -65,7 +60,7 @@ index 3f3394f..9d18c45 100644
  };
  
  struct fbdev_screeninfo {
-@@ -88,15 +91,20 @@ struct fbdev_output {
+@@ -93,15 +96,20 @@ struct fbdev_output {
  	pixman_image_t *shadow_surface;
  	void *shadow_buf;
  	uint8_t depth;
@@ -86,7 +81,7 @@ index 3f3394f..9d18c45 100644
  
  static const char default_seat[] = "seat0";
  
-@@ -471,6 +479,10 @@ fbdev_frame_buffer_destroy(struct fbdev_output *output)
+@@ -476,6 +484,10 @@ fbdev_frame_buffer_destroy(struct fbdev_output *output)
  		           strerror(errno));
  
  	output->fb = NULL;
@@ -97,16 +92,16 @@ index 3f3394f..9d18c45 100644
  }
  
  static void fbdev_output_destroy(struct weston_output *base);
-@@ -478,7 +490,7 @@ static void fbdev_output_disable(struct weston_output *base);
+@@ -483,7 +495,7 @@ static void fbdev_output_disable(struct weston_output *base);
  
  static int
- fbdev_output_create(struct fbdev_compositor *compositor,
+ fbdev_output_create(struct fbdev_backend *backend,
 -                    const char *device)
 +                   int x, int y, const char *device)
  {
  	struct fbdev_output *output;
  	struct weston_config_section *section;
-@@ -489,7 +501,7 @@ fbdev_output_create(struct fbdev_compositor *compositor,
+@@ -494,7 +506,7 @@ fbdev_output_create(struct fbdev_backend *backend,
  	uint32_t config_transform;
  	char *s;
  
@@ -115,26 +110,26 @@ index 3f3394f..9d18c45 100644
  
  	output = zalloc(sizeof *output);
  	if (output == NULL)
-@@ -542,7 +554,7 @@ fbdev_output_create(struct fbdev_compositor *compositor,
+@@ -547,7 +559,7 @@ fbdev_output_create(struct fbdev_backend *backend,
  	free(s);
  
- 	weston_output_init(&output->base, &compositor->base,
+ 	weston_output_init(&output->base, backend->compositor,
 -	                   0, 0, output->fb_info.width_mm,
 +	                   x, y, output->fb_info.width_mm,
  	                   output->fb_info.height_mm,
  	                   config_transform,
  			   1);
-@@ -565,12 +577,43 @@ fbdev_output_create(struct fbdev_compositor *compositor,
- 	if (compositor->use_pixman) {
+@@ -570,10 +582,41 @@ fbdev_output_create(struct fbdev_backend *backend,
+ 	if (backend->use_pixman) {
  		if (pixman_renderer_output_create(&output->base) < 0)
  			goto out_shadow_surface;
 -	} else {
-+	}
-+	else if(compositor->use_gal2d) {
++	} 
++    else if(backend->use_gal2d) {
 +
 +		char* fbenv = getenv("FB_FRAMEBUFFER_0");
 +		setenv("FB_FRAMEBUFFER_0", device, 1);
-+		output->display = fbGetDisplay(compositor->base.wl_display);
++		output->display = fbGetDisplay(backend->compositor->wl_display);
 +		if (output->display == NULL) {
 +			fprintf(stderr, "failed to get display\n");
 +			return 0;
@@ -155,64 +150,48 @@ index 3f3394f..9d18c45 100644
 +		}
 +
 +	}
-+	else {
++    else {
  		setenv("HYBRIS_EGLPLATFORM", "wayland", 1);
-+		output->window = fbCreateWindow(compositor->display, -1, -1, 0, 0);
++		output->window = fbCreateWindow(backend->display, -1, -1, 0, 0);
 +		if (output->window == NULL) {
 +			fprintf(stderr, "failed to create window\n");
 +			return 0;
 +		}
  		if (gl_renderer->output_create(&output->base,
 -					       (EGLNativeWindowType)NULL, NULL,
--					       gl_renderer->opaque_attribs,
--					       NULL, 0) < 0) {
-+						(NativeWindowType)output->window, NULL,
-+						gl_renderer->opaque_attribs,
-+						NULL, 0) < 0) {
++					       (EGLNativeWindowType)output->window, NULL,
+ 					       gl_renderer->opaque_attribs,
+ 					       NULL, 0) < 0) {
  			weston_log("gl_renderer_output_create failed.\n");
- 			goto out_shadow_surface;
- 		}
-@@ -629,7 +672,11 @@ fbdev_output_destroy(struct weston_output *base)
+@@ -634,7 +677,11 @@ fbdev_output_destroy(struct weston_output *base)
  			free(output->shadow_buf);
  			output->shadow_buf = NULL;
  		}
 -	} else {
 +	}
-+	else if (compositor->use_gal2d) {
++	else if (backend->use_gal2d) {
 +		gal2d_renderer->output_destroy(base);
 +	}
 +	else {
  		gl_renderer->output_destroy(base);
  	}
  
-@@ -692,7 +739,7 @@ fbdev_output_reenable(struct fbdev_compositor *compositor,
+@@ -697,7 +744,7 @@ fbdev_output_reenable(struct fbdev_backend *backend,
  		 * are re-initialised. */
  		device = output->device;
  		fbdev_output_destroy(base);
--		fbdev_output_create(compositor, device);
-+		fbdev_output_create(compositor, 0, 0, device);
+-		fbdev_output_create(backend, device);
++		fbdev_output_create(backend, 0, 0, device);
  
  		return 0;
  	}
-@@ -850,7 +897,10 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
- 	compositor->base.restore = fbdev_restore;
- 
- 	compositor->prev_state = WESTON_COMPOSITOR_ACTIVE;
--	compositor->use_pixman = !param->use_gl;
-+	compositor->use_gal2d = param->use_gal2d;
-+	weston_log("compositor->use_gal2d=%d\n", compositor->use_gal2d);
-+	if(param->use_gl == 0 && param->use_gal2d == 0)
-+		compositor->use_pixman = 1;
- 
- 	for (key = KEY_F1; key < KEY_F9; key++)
- 		weston_compositor_add_key_binding(&compositor->base, key,
-@@ -860,7 +910,50 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
- 	if (compositor->use_pixman) {
- 		if (pixman_renderer_init(&compositor->base) < 0)
+@@ -863,7 +910,50 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+ 	if (backend->use_pixman) {
+ 		if (pixman_renderer_init(compositor) < 0)
  			goto out_launcher;
 -	} else {
 +	}
-+	else if (compositor->use_gal2d) {
++	else if (backend->use_gal2d) {
 +		int x = 0, y = 0;
 +		int i=0;
 +		int count = 0;
@@ -225,7 +204,7 @@ index 3f3394f..9d18c45 100644
 +			goto out_launcher;
 +		}
 +
-+		if (gal2d_renderer->create(&compositor->base) < 0) {
++		if (gal2d_renderer->create(backend->compositor) < 0) {
 +			weston_log("gal2d_renderer_create failed.\n");
 +			goto out_launcher;
 +		}
@@ -247,30 +226,29 @@ index 3f3394f..9d18c45 100644
 +
 +		for(i=0; i<dispCount; i++)
 +		{
-+			if (fbdev_output_create(compositor, x, y, displays[i]) < 0)
-+				goto out_pixman;
-+			x += container_of(compositor->base.output_list.prev,
++			if (fbdev_output_create(backend, x, y, displays[i]) < 0)
++				goto out_launcher;
++			x += container_of(backend->compositor->output_list.prev,
 +								  struct weston_output,
 +								  link)->width;
 +		}
 +	}
-+	else {
++	 else {
  		gl_renderer = weston_load_module("gl-renderer.so",
  						 "gl_renderer_interface");
  		if (!gl_renderer) {
-@@ -868,17 +961,22 @@ fbdev_compositor_create(struct wl_display *display, int *argc, char *argv[],
+@@ -871,17 +961,22 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
  			goto out_launcher;
  		}
  
--		if (gl_renderer->create(&compositor->base, NO_EGL_PLATFORM,
--					EGL_DEFAULT_DISPLAY,
-+		compositor->display = fbGetDisplay(compositor->base.wl_display);
-+		if (compositor->display == NULL) {
++		backend->display = fbGetDisplay(backend->compositor->wl_display);
++		if (backend->display == NULL) {
 +			weston_log("fbGetDisplay failed.\n");
 +			goto out_launcher;
 +		}
-+
-+		if (gl_renderer->create(&compositor->base, NO_EGL_PLATFORM, compositor->display,
+ 		if (gl_renderer->create(compositor, NO_EGL_PLATFORM,
+-					EGL_DEFAULT_DISPLAY,
++					backend->display,
  					gl_renderer->opaque_attribs,
  					NULL, 0) < 0) {
  			weston_log("gl_renderer_create failed.\n");
@@ -278,15 +256,15 @@ index 3f3394f..9d18c45 100644
  		}
  	}
 -
--	if (fbdev_output_create(compositor, param->device) < 0)
--		goto out_pixman;
-+	if(!compositor->use_gal2d)
-+		if (fbdev_output_create(compositor, 0, 0, param->device) < 0)
-+			goto out_pixman;
+-	if (fbdev_output_create(backend, param->device) < 0)
+-		goto out_launcher;
++	if(!backend->use_gal2d)
++		if (fbdev_output_create(backend, 0, 0, param->device) < 0)
++			goto out_launcher;
  
- 	udev_input_init(&compositor->input, &compositor->base, compositor->udev, seat_id);
+ 	udev_input_init(&backend->input, compositor, backend->udev, seat_id);
  
-@@ -911,13 +1009,20 @@ backend_init(struct wl_display *display, int *argc, char *argv[],
+@@ -911,13 +1006,20 @@ backend_init(struct weston_compositor *compositor, int *argc, char *argv[],
  	struct fbdev_parameters param = {
  		.tty = 0, /* default to current tty */
  		.device = "/dev/fb0", /* default frame buffer */
@@ -310,31 +288,35 @@ index 3f3394f..9d18c45 100644
  	parse_options(fbdev_options, ARRAY_LENGTH(fbdev_options), argc, argv);
 diff --git a/src/gal2d-renderer.c b/src/gal2d-renderer.c
 new file mode 100644
-index 0000000..7ebbf98
+index 0000000..c68f02c
 --- /dev/null
 +++ b/src/gal2d-renderer.c
-@@ -0,0 +1,1337 @@
+@@ -0,0 +1,1342 @@
 +/*
 + * Copyright (c) 2015 Freescale Semiconductor, Inc.
 + * Copyright © 2012 Intel Corporation
++ * Copyright © 2015 Collabora, Ltd.
 + *
-+ * Permission to use, copy, modify, distribute, and sell this software and
-+ * its documentation for any purpose is hereby granted without fee, provided
-+ * that the above copyright notice appear in all copies and that both that
-+ * copyright notice and this permission notice appear in supporting
-+ * documentation, and that the name of the copyright holders not be used in
-+ * advertising or publicity pertaining to distribution of the software
-+ * without specific, written prior permission.  The copyright holders make
-+ * no representations about the suitability of this software for any
-+ * purpose.  It is provided "as is" without express or implied warranty.
++ * Permission is hereby granted, free of charge, to any person obtaining
++ * a copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sublicense, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
 + *
-+ * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS
-+ * SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
-+ * FITNESS, IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY
-+ * SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
-+ * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
-+ * CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial
++ * portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
++ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
++ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
++ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
 + */
 +
 +#define _GNU_SOURCE
@@ -349,6 +331,7 @@ index 0000000..7ebbf98
 +#include "compositor.h"
 +#include "gal2d-renderer.h"
 +#include "vertex-clipping.h"
++#include "shared/helpers.h"
 +#include "HAL/gc_hal.h"
 +#include "HAL/gc_hal_raster.h"
 +#include "HAL/gc_hal_eglplatform.h"
@@ -1653,31 +1636,34 @@ index 0000000..7ebbf98
 +};
 diff --git a/src/gal2d-renderer.h b/src/gal2d-renderer.h
 new file mode 100644
-index 0000000..fefcfd1
+index 0000000..279358d
 --- /dev/null
 +++ b/src/gal2d-renderer.h
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,50 @@
 +/*
 + * Copyright (c) 2015 Freescale Semiconductor, Inc.
 + * Copyright © 2013 Vasily Khoruzhick <anarsoul@gmail.com>
 + *
-+ * Permission to use, copy, modify, distribute, and sell this software and
-+ * its documentation for any purpose is hereby granted without fee, provided
-+ * that the above copyright notice appear in all copies and that both that
-+ * copyright notice and this permission notice appear in supporting
-+ * documentation, and that the name of the copyright holders not be used in
-+ * advertising or publicity pertaining to distribution of the software
-+ * without specific, written prior permission.  The copyright holders make
-+ * no representations about the suitability of this software for any
-+ * purpose.  It is provided "as is" without express or implied warranty.
++ * Permission is hereby granted, free of charge, to any person obtaining
++ * a copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sublicense, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
 + *
-+ * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS
-+ * SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
-+ * FITNESS, IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY
-+ * SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
-+ * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
-+ * CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial
++ * portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
++ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
++ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
++ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
 + */
 +#ifndef __gal_2d_renderer_h_
 +#define __gal_2d_renderer_h_
@@ -1705,5 +1691,5 @@ index 0000000..fefcfd1
 +
 +#endif
 -- 
-2.3.6
+2.5.1
 

@@ -1,0 +1,106 @@
+From 2bd1096ac342e251980c639543c0fad2f7173e82 Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Wed, 9 Dec 2015 18:20:35 -0600
+Subject: [PATCH] MGS-1236 : [imx6qp/imx6dl] First frame distored when some
+ wayland apps run continuously using g2d
+
+gco2D_SetSource was missing when using the blit operations and
+hence causing the issue.
+
+If the weston started without weston.ini, animations will be disabled,
+for xwayland the weston.ini need to be included and hence the error
+was shown.
+
+Also removing util functions reusing from libGAL.so
+
+Date: Dec 10, 2015
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ src/gal2d-renderer.c | 57 ++++++----------------------------------------------
+ 1 file changed, 6 insertions(+), 51 deletions(-)
+
+diff --git a/src/gal2d-renderer.c b/src/gal2d-renderer.c
+index 6e7d640..dbec2d0 100644
+--- a/src/gal2d-renderer.c
++++ b/src/gal2d-renderer.c
+@@ -186,56 +186,6 @@ get_output_state(struct weston_output *output)
+ 	return (struct gal2d_output_state *)output->renderer_state;
+ }
+ 
+-static gctUINT32
+-galGetStretchFactor(gctINT32 SrcSize, gctINT32 DestSize)
+-{
+-	gctUINT stretchFactor;
+-	if ( (SrcSize > 0) && (DestSize > 1) )
+-	{
+-		stretchFactor = ((SrcSize - 1) << 16) / (DestSize - 1);
+-	}
+-	else
+-	{
+-		stretchFactor = 0;
+-	}
+-	return stretchFactor;
+-}
+-
+-static gceSTATUS
+-galGetStretchFactors(
+-	IN gcsRECT_PTR SrcRect,
+-	IN gcsRECT_PTR DestRect,
+-	OUT gctUINT32 * HorFactor,
+-	OUT gctUINT32 * VerFactor
+-	)
+-{
+-	if (HorFactor != gcvNULL)
+-	{
+-        gctINT32 src, dest;
+-
+-        /* Compute width of rectangles. */
+-        gcmVERIFY_OK(gcsRECT_Width(SrcRect, &src));
+-        gcmVERIFY_OK(gcsRECT_Width(DestRect, &dest));
+-
+-        /* Compute and return horizontal stretch factor. */
+-		*HorFactor = galGetStretchFactor(src, dest);
+-	}
+-
+-	if (VerFactor != gcvNULL)
+-	{
+-		gctINT32 src, dest;
+-
+-		/* Compute height of rectangles. */
+-		gcmVERIFY_OK(gcsRECT_Height(SrcRect, &src));
+-		gcmVERIFY_OK(gcsRECT_Height(DestRect, &dest));
+-
+-		/* Compute and return vertical stretch factor. */
+-		*VerFactor = galGetStretchFactor(src, dest);
+-	}
+-    /* Success. */
+-    return gcvSTATUS_OK;
+-}
+-
+ static gceSTATUS
+ gal2d_getSurfaceFormat(halDISPLAY_INFO info, gceSURF_FORMAT * Format)
+ {
+@@ -725,6 +675,7 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 				        srcStride, 1,
+ 				        tiling, srcFormat, gcvSURF_0_DEGREE,
+ 				        srcWidth, srcHeight);
++        gcmVERIFY_OK(gco2D_SetSource(gr->gcoEngine2d, &srcRect));
+          /* Setup mirror. */
+         gcmONERROR(gco2D_SetBitBlitMirror(gr->gcoEngine2d, gcvFALSE, gcvFALSE));
+         gcmONERROR(gco2D_SetROP(gr->gcoEngine2d, 0xCC, 0xCC));
+@@ -830,7 +781,11 @@ repaint_region(struct weston_view *ev, struct weston_output *output, struct gal2
+ 			}
+ 			else
+ 			{
+-				gcmVERIFY_OK(galGetStretchFactors(&srcRect, &dstrect, &horFactor, &verFactor));
++                               gcmVERIFY_OK(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.right - srcRect.left,
++                                        dstrect.right - dstrect.left, &horFactor));
++
++                               gcmONERROR(gco2D_CalcStretchFactor(gr->gcoEngine2d, srcRect.bottom - srcRect.top,
++                                        dstrect.bottom - dstrect.top, &verFactor));
+ 
+ 				if(verFactor == 65536 && horFactor == 65536)
+ 				{
+-- 
+2.6.2
+
