@@ -20,7 +20,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
 
 SRC_URI = " \
     ${FSL_MIRROR}/gst1.0-fsl-plugins-${PV}.tar.gz \
-    file://0001-gst1.0-fsl-plugins-fix-appending-data-to-variable.patch \
 "
 
 SRC_URI[md5sum] = "0669eeea4e37203e2e654a00ded35ba2"
