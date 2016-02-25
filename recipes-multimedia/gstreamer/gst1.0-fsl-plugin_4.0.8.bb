@@ -40,7 +40,7 @@ PLATFORM_mx7= "MX7D"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
-                CPPFLAGS="-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include" \
+                CPPFLAGS="-I${STAGING_KERNEL_BUILDDIR}/include/generated/uapi -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include" \
                 CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR} \
                 ${@base_contains('DISTRO_FEATURES', 'wayland', base_contains('DISTRO_FEATURES', 'x11', '--disable-x11', '', d), '', d)}"
 
