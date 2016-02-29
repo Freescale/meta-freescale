@@ -11,15 +11,15 @@ PV .= "+git${SRCPV}"
 SRCBRANCH = "3.14-1.1.x-imx"
 SRCREV = "327d5c9063b715c91a88655533d5e477a0afe218"
 
-SRC_URI += "\
-    https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/patch-3.14.58-rt59.patch.gz;name=rt-patch1 \
+SRC_URI += " \
+    https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/patch-3.14.61-rt62.patch.gz;name=patch-3.14.61-rt62.patch \
     file://0001-fix-build.patch \
     file://0003-no-split-ptlocks.patch \
     file://0004-imx-sdma-channel-use-raw-spinlock.patch \
 "
 
-SRC_URI[rt-patch1.md5sum] = "d4b380eab31878e607e92fec3e150e8f"
-SRC_URI[rt-patch1.sha256sum] = "56c8a9fc6b1c11883ee40b4edc529d19cf9ba0855dd0d0878581900f51d60064"
+SRC_URI[patch-3.14.61-rt62.patch.md5sum] = "d275057ffe5e6dac3c3d8704773c0aee"
+SRC_URI[patch-3.14.61-rt62.patch.sha256sum] = "48df9b6e76f24aa1d6fcd5ab150d26830da35c630acba73bf8c81dd341c31951"
 
 python () {
     using_builtin_driver = (d.getVar("MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE", True) or "") != "1"
