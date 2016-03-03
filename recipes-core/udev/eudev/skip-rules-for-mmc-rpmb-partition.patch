@@ -1,0 +1,30 @@
+skip rules for mmc rpmb partition
+
+Upstream-status: Pending
+
+In FSL SDK 1.6 Kernel, mmc driver has created a new partition
+with "mmcblkXrpmb" if device expresses it support of RPMB.
+
+RPMB (Replay Protected Memory Block), A signed access to a Replay
+Protected Memory Block is provided. This function provides means
+for the system to store data to the specific memory area in an
+authenticated and replay protected manner.
+
+In that case, any read/write access to this partition device will
+report errors which will not impact any fuction.
+
+add rules to skip it.
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+Signed-off-by: Zhenhua Luo <zhenhua.luo@nxp.com>
+
+--- ./rules/60-persistent-storage.rules.orig	2016-03-01 21:07:13.304170363 -0600
++++ ./rules/60-persistent-storage.rules	2016-03-01 21:07:32.784169668 -0600
+@@ -6,6 +6,7 @@
+ ACTION=="remove", GOTO="persistent_storage_end"
+ 
+ SUBSYSTEM!="block", GOTO="persistent_storage_end"
++KERNEL=="mmcblk*rpmb", GOTO="persistent_storage_end"
+ KERNEL!="loop*|mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|nvme*|sd*|sr*|vd*|xvd*|bcache*|cciss*|dasd*|ubd*", GOTO="persistent_storage_end"
+ 
+ # ignore partitions that span the entire disk
