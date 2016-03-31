@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2015 Freescale Semiconductor
+# Copyright (C) 2013-2016 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "Linux Kernel provided and supported by Freescale"
@@ -10,13 +10,9 @@ require recipes-kernel/linux/linux-dtb.inc
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_3.14.52_1.1.0_ga"
-LOCALVERSION = "-1.1.0_ga"
-SRCREV = "5f6f0a50e6039370078369ddf380179d59024789"
-
-SRC_URI += " \
-    file://0004-mmc-sdhci-esdhc-imx-Fixup-runtime-PM-conditions-duri.patch \
-"
+SRCBRANCH = "imx_4.1.15_1.0.0_ga"
+LOCALVERSION = "-1.0.0"
+SRCREV = "3924425928aab27283e4c635f61bd523f20a7168"
 
 DEFAULT_PREFERENCE = "1"
 
