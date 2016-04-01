@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2015 Freescale Semiconductor
+# Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright (C) 2012-2016 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -192,7 +192,7 @@ do_install () {
         rm ${D}${libdir}/libwayland-viv.*
     fi
 
-    for backend in wl x11 fb dfb dri; do
+    for backend in wl x11 fb dri; do
         find ${D}${libdir} -name "*-$backend.so" -exec rm '{}' ';'
         find ${D}${libdir} -name "*.$backend.so" -exec rm '{}' ';'
     done
