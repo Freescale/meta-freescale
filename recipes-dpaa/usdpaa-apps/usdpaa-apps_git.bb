@@ -66,3 +66,5 @@ FILES_${PN} += "/root/SOURCE_THIS /usr/etc/"
 
 COMPATIBLE_HOST_qoriq-ppc = ".*"
 COMPATIBLE_HOST ?= "(none)"
+
+CLEANBROKEN = "1"
