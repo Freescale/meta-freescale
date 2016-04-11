@@ -11,10 +11,6 @@ DEPENDS_mx6sx = "virtual/kernel imx-lib"
 DEPENDS_mx6ul = "virtual/kernel imx-lib"
 DEPENDS_mx7   = "virtual/kernel imx-lib"
 
-DEPENDS_append = " \
-    ${@base_contains('DISTRO_FEATURES', 'x11', 'libx11 libxdamage libxrender libxrandr', '', d)} \
-"
-
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
@@ -32,6 +28,9 @@ PLATFORM_mx6sl = "IMX6SL"
 PLATFORM_mx6sx = "IMX6SX"
 PLATFORM_mx7 = "IMX7D"
 PLATFORM_mx6ul = "IMX6UL"
+
+PACKAGECONFIG ?= "${@base_contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
+PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 
 # Required so the fixdep binary is generated
 addtask make_scripts after do_patch before do_compile
