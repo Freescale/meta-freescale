@@ -51,16 +51,6 @@ python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT', True) or '0')
         if has_vivante_kernel_driver_support != '1':
                 raise bb.parse.SkipPackage('The kernel of machine needs to have Vivante kernel driver support for this recipe to be used.')
-
-        # Skip package if it does not match the machine float-point type in use
-        is_machine_hardfp = base_contains("TUNE_FEATURES", "callconvention-hard", True, False, d)
-        is_package_hardfp = d.getVar("PACKAGE_FP_TYPE", True) == "hardfp"
-
-        if is_package_hardfp != is_machine_hardfp:
-                PN = d.getVar("PN", True)
-                PV = d.getVar("PV", True)
-                bb.debug(1, "Skipping %s (%s) as machine and package float-point does not match" % (PN, PV))
-                raise bb.parse.SkipPackage("Package Float-Point is not compatible with the machine")
 }
 
 USE_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
