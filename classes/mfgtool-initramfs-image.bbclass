@@ -4,7 +4,7 @@
 # image provides the utilities which are used, in the target, during
 # the process and receive the commands from the MfgTool application.
 #
-# Copyright 2014 (C) O.S. Systems Software LTDA.
+# Copyright 2014, 2016 (C) O.S. Systems Software LTDA.
 
 DEPENDS += "u-boot-mfgtool linux-mfgtool"
 
@@ -13,6 +13,7 @@ FEATURE_PACKAGES_extfs = "packagegroup-fsl-mfgtool-extfs"
 FEATURE_PACKAGES_f2fs = "packagegroup-fsl-mfgtool-f2fs"
 
 IMAGE_FSTYPES = "cpio.gz.u-boot"
+IMAGE_FSTYPES_mxs = "cpio.gz.u-boot"
 IMAGE_ROOTFS_SIZE ?= "8192"
 IMAGE_CLASSES = "image_types_uboot"
 
