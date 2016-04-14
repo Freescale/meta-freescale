@@ -1,5 +1,5 @@
 # Copyright (C) 2015 O.S. Systems Software LTDA.
-# Copyright (C) 2015 Freescale Semiconductor
+# Copyright (C) 2015-2016 Freescale Semiconductor
 
 SUMMARY = "Kernel loadable module for Vivante GPU"
 DESCRIPTION = "This package uses an exact copy of the GPU kernel driver source code of \
@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
 
 PV .= "+git${SRCPV}"
 
-SRCREV = "2b3290d1c1ce383e860a0fd6b53074848a848e65"
+SRCREV = "c5473a84cfa44870a8016c7f684d46abcd36a018"
 SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=https"
 
 S = "${WORKDIR}/git"
