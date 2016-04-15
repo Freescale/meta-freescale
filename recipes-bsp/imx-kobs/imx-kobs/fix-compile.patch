@@ -1,0 +1,17 @@
+This patch fixes a build error with kernel includes (>= 4.4) <stdint.h> must
+be explicitly included to get uintX_t types.
+
+Upstream-Status: Pending
+
+Index: imx-kobs-5.4/src/BootControlBlocks.h
+===================================================================
+--- imx-kobs-5.4.orig/src/BootControlBlocks.h
++++ imx-kobs-5.4/src/BootControlBlocks.h
+@@ -54,6 +54,7 @@
+ //! This structure holds the timing for the NAND.  This data is used by
+ //! rom_nand_hal_GpmiSetNandTiming to setup the GPMI hardware registers.
+ 
++#include <stdint.h>
+ typedef struct _NAND_Timing {
+ 	uint8_t m_u8DataSetup;
+ 	uint8_t m_u8DataHold;
