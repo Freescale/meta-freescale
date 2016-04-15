@@ -94,6 +94,7 @@ MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
 MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6q ?= "gstreamer1.0-plugins-imx-meta"
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6dl ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx7 ?= "gstreamer1.0-plugins-imx-meta"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT       = "0"
