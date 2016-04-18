@@ -53,8 +53,8 @@ PACKAGECONFIG[ipu] = ",--disable-ipu,"
 PACKAGECONFIG[vpu] = ",--disable-vpu,libimxvpuapi"
 PACKAGECONFIG[eglvivsink] = "${EGL_PLATFORM_CONF},--disable-eglvivsink,${EGLVIVSINK_DEPENDS}"
 PACKAGECONFIG[v4l2src] = ",--disable-v4l2src,"
-PACKAGECONFIG[uniaudiodec] = ",--disable-uniaudiodec,libfslcodec"
-PACKAGECONFIG[mp3encoder] = ",--disable-mp3encoder,libfslcodec"
+PACKAGECONFIG[uniaudiodec] = ",--disable-uniaudiodec,imx-codec"
+PACKAGECONFIG[mp3encoder] = ",--disable-mp3encoder,imx-codec"
 
 # LIBV is used by gst-plugins-package.inc to specify the GStreamer version (0.10 vs 1.0)
 LIBV = "1.0"
