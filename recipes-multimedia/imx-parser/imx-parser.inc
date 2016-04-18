@@ -1,10 +1,15 @@
 # Copyright (C) 2012-2014 O.S. Systems Software LTDA.
-# Copyright (C) 2012-2013 Freescale Semiconductor
+# Copyright (C) 2012-2016 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia parser libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=3880bb9c943b135a30fad5e8aabd3ee9"
+LIC_FILES_CHKSUM = "file://COPYING;md5=8cf95184c220e247b9917e7244124c5a"
+
+# For backwards compatibility
+RREPLACES_${PN} = "libfslparser"
+RPROVIDES_${PN} = "libfslparser"
+RCONFLICTS_${PN} = "libfslparser"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
