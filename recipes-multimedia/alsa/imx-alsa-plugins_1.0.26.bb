@@ -7,6 +7,7 @@ SECTION = "multimedia"
 DEPENDS = "alsa-lib virtual/kernel"
 
 # For backwards compatibility
+PROVIDES += "fsl-alsa-plugins"
 RREPLACES_${PN} = "fsl-alsa-plugins"
 RPROVIDES_${PN} = "fsl-alsa-plugins"
 RCONFLICTS_${PN} = "fsl-alsa-plugins"
