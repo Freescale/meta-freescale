@@ -1,9 +1,9 @@
-# Copyright (C) 2012-2014 Freescale Semiconductor
+# Copyright (C) 2012-2016 Freescale Semiconductor
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=3880bb9c943b135a30fad5e8aabd3ee9"
+LIC_FILES_CHKSUM = "file://COPYING;md5=8cf95184c220e247b9917e7244124c5a"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
@@ -19,8 +19,8 @@ PACKAGECONFIG_mx6dl = "vpu"
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,imx-vpu"
 
 do_install_append() {
-	# FIXME: This link points to nowhere
-	rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
+    # FIXME: This link points to nowhere
+    rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
 
     # LTIB move the files around or gst-fsl-plugin won't find them
     for p in $(find ${D}${libdir}/imx-mm -mindepth 2 -maxdepth 2 -not -type d); do
@@ -41,7 +41,7 @@ python __set_insane_skip() {
 
         # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
         # the source we cannot fix it. Disable the insane check for now.
-        if p == 'libfslcodec-test-bin':
+        if p == 'imx-codec-test-bin':
             # FIXME: includes the DUT .so files so we need to deploy those
             d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel libdir")
         else:
@@ -54,18 +54,29 @@ python __split_libfslcodec_plugins() {
     codecdir = bb.data.expand('${libdir}', d)
     do_split_packages(d, codecdir, '^lib_([^_]*).*_arm.*_elinux\.so\..*',
                       aux_files_pattern='${libdir}/imx-mm/audio-codec/wrap/lib_%sd_wrap_arm*_elinux.so.*',
-                      output_pattern='libfslcodec-%s',
+                      output_pattern='imx-codec-%s',
                       description='Freescale i.MX Codec (%s)',
                       extra_depends='')
+    pkgs = d.getVar('PACKAGES', True).split()
+    for pkg in pkgs:
+        meta = pkg[10:]
+        if meta != '':
+            d.setVar('RREPLACES_%s' % pkg, ' libfslcodec-%s' % meta)
+            d.setVar('RPROVIDES_%s' % pkg, ' libfslcodec-%s' % meta)
+            d.setVar('RCONFLICTS_%s' % pkg, ' libfslcodec-%s' % meta)
+        else :
+            d.setVar('RREPLACES_%s' % pkg, ' libfslcodec')
+            d.setVar('RPROVIDES_%s' % pkg, ' libfslcodec')
+            d.setVar('RCONFLICTS_%s' % pkg, ' libfslcodec')
 }
 
 python __set_metapkg_rdepends() {
     # Allow addition of all codecs in a image; useful specially for
     # debugging.
     codec_pkgs = oe.utils.packages_filter_out_system(d)
-    codec_pkgs = filter(lambda x: x not in ['libfslcodec-test-bin', 'libfslcodec-test-source'],
+    codec_pkgs = filter(lambda x: x not in ['imx-codec-test-bin', 'imx-codec-test-source'],
                         codec_pkgs)
-    d.appendVar('RDEPENDS_libfslcodec-meta', ' ' + ' '.join(codec_pkgs))
+    d.appendVar('RDEPENDS_imx-codec-meta', ' ' + ' '.join(codec_pkgs))
 }
 
 PACKAGESPLITFUNCS =+ "__split_libfslcodec_plugins __set_metapkg_rdepends"
