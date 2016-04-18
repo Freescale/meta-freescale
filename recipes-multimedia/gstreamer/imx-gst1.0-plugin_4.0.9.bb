@@ -1,4 +1,4 @@
-# Copyright (C) 2014,2015 Freescale Semiconductor
+# Copyright (C) 2014,2016 Freescale Semiconductor
 # Copyright (C) 2012-2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -6,26 +6,31 @@ DESCRIPTION = "Gstreamer freescale plugins"
 LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 
-DEPENDS = "libfslcodec libfslparser virtual/kernel gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
-DEPENDS_append_mx6q = " imx-lib imx-vpu libfslvpuwrap"
-DEPENDS_append_mx6dl = " imx-lib imx-vpu libfslvpuwrap"
+DEPENDS = "imx-codec imx-parser virtual/kernel gstreamer1.0 gstreamer1.0-plugins-base"
+DEPENDS_append_mx6q = " imx-lib imx-vpu imx-vpuwrap"
+DEPENDS_append_mx6dl = " imx-lib imx-vpu imx-vpuwrap"
 DEPENDS_append_mx6sl = " imx-lib"
 DEPENDS_append_mx6sx = " imx-lib"
 DEPENDS_append_mx6ul = " imx-lib"
 DEPENDS_append_mx7 = " imx-lib"
+
+# For backwards compatibility
+RREPLACES_${PN} = "gst1.0-fsl-plugin"
+RPROVIDES_${PN} = "gst1.0-fsl-plugin"
+RCONFLICTS_${PN} = "gst1.0-fsl-plugin"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = " \
-    ${FSL_MIRROR}/gst1.0-fsl-plugins-${PV}.tar.gz \
+    ${FSL_MIRROR}/imx-gst1.0-plugin-${PV}.tar.gz \
 "
 
-SRC_URI[md5sum] = "0669eeea4e37203e2e654a00ded35ba2"
-SRC_URI[sha256sum] = "43c86f88d3c7b1da8d38815eaec297a9b8652e1fb770ff89c26d617f63ea068b"
+SRC_URI[md5sum] = "56fc7d4fcbad0ba14739b668793fcf2c"
+SRC_URI[sha256sum] = "4ab74e3660a56c5a79c714b820bb1ce8dd1db5d66c92529b5378bb211cf25896"
 
-S = "${WORKDIR}/gst1.0-fsl-plugins-${PV}"
+S = "${WORKDIR}/imx-gst1.0-plugin-${PV}"
 
 inherit autotools pkgconfig
 
@@ -47,8 +52,8 @@ EXTRA_OECONF = "PLATFORM=${PLATFORM} \
 PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN}-librecorder-engine ${PN}-libplayengine"
 
 # Add codec list that the beep plugin run-time depended
-BEEP_RDEPENDS = "libfslcodec-aac libfslcodec-mp3 libfslcodec-oggvorbis"
-RDEPENDS_${PN} += "libfslparser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
+BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
+RDEPENDS_${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
 PACKAGECONFIG ?= ""
 PACKAGECONFIG_mx6 = "overlaysink"
@@ -56,10 +61,10 @@ PACKAGECONFIG_mx6 = "overlaysink"
 
 # FIXME: Add all features
 # feature from excluded mm packages
-PACKAGECONFIG[ac3] += ",,libfslac3codec,libfslac3codec"
+PACKAGECONFIG[ac3] += ",,imx-ac3codec,imx-ac3codec"
 # feature from special mm packages
-PACKAGECONFIG[aacp] += ",,libfslaacpcodec,libfslaacpcodec"
-MSDEPENDS = "libfslmsparser libfslmscodec"
+PACKAGECONFIG[aacp] += ",,imx-aacpcodec,imx-aacpcodec"
+MSDEPENDS = "imx-msparser imx-mscodec"
 PACKAGECONFIG[wma10dec] += ",,${MSDEPENDS},${MSDEPENDS}"
 PACKAGECONFIG[wma8enc] += "--enable-wma8enc,--disable-wma8enc,${MSDEPENDS},${MSDEPENDS}"
 OVDEPENDS = "virtual/libg2d"
