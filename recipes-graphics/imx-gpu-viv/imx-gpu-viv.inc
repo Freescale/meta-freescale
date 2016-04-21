@@ -209,6 +209,8 @@ do_install () {
 
     find ${D}${libdir} -type f -exec chmod 644 {} \;
     find ${D}${includedir} -type f -exec chmod 644 {} \;
+
+    chown -R root:root "${D}"
 }
 
 ALLOW_EMPTY_${PN} = "1"
