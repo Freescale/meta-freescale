@@ -12,7 +12,7 @@ SRCBRANCH = "3.14-1.1.x-imx"
 SRCREV = "327d5c9063b715c91a88655533d5e477a0afe218"
 
 SRC_URI += " \
-    https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/patch-3.14.61-rt62.patch.gz;name=patch-3.14.61-rt62.patch \
+    https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/older/patch-3.14.61-rt62.patch.gz;name=patch-3.14.61-rt62.patch \
     file://0001-fix-build.patch \
     file://0003-no-split-ptlocks.patch \
     file://0004-imx-sdma-channel-use-raw-spinlock.patch \
