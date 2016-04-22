@@ -37,3 +37,4 @@ FILES_${PN} += "${libdir}/imx-mm/*/*${SOLIBS} ${libdir}/imx-mm/*/*${SOLIBSDEV}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
+INHIBIT_SYSROOT_STRIP = "1"
