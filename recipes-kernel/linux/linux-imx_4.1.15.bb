@@ -11,8 +11,8 @@ require recipes-kernel/linux/linux-dtb.inc
 DEPENDS += "lzop-native bc-native"
 
 SRCBRANCH = "imx_4.1.15_1.0.0_ga"
-LOCALVERSION = "-1.0.0"
-SRCREV = "3924425928aab27283e4c635f61bd523f20a7168"
+LOCALVERSION = "-1.1.0"
+SRCREV = "a4d2a08f3bfc57ff5d7d1307fb23f52f1e681aca"
 
 DEFAULT_PREFERENCE = "1"
 
