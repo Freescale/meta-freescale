@@ -53,8 +53,8 @@ python __anonymous () {
                 raise bb.parse.SkipPackage('The kernel of machine needs to have Vivante kernel driver support for this recipe to be used.')
 }
 
-USE_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
-USE_WL = "${@base_contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
+HAS_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
+HAS_WL = "${@base_contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
 
 # Inhibit warnings about files being stripped.
 INHIBIT_PACKAGE_STRIP = "1"
@@ -112,7 +112,7 @@ do_install () {
     install -d ${D}${libdir}/pkgconfig
 
     # The preference order, based in DISTRO_FEATURES, is x11, wayland and fb
-    if [ "${USE_X11}" = "yes" ]; then
+    if [ "${HAS_X11}" = "yes" ]; then
         cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
         cp -r ${S}/apitrace/x11/usr/lib/* ${D}${libdir}
         cp -r ${S}/apitrace/x11/usr/bin/* ${D}${bindir}
@@ -123,7 +123,7 @@ do_install () {
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg_x11.pc ${D}${libdir}/pkgconfig/vg.pc
-    elif [ "${USE_WL}" = "yes" ]; then
+    elif [ "${HAS_WL}" = "yes" ]; then
         cp -r ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
         cp -r ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
 
@@ -171,7 +171,7 @@ do_install () {
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
     # skip packaging wayland libraries if no support is requested
-    if [ "${USE_WL}" = "no" ]; then
+    if [ "${HAS_WL}" = "no" ]; then
         rm ${D}${libdir}/libgc_wayland_protocol.*
         rm ${D}${libdir}/libwayland-viv.*
     fi
