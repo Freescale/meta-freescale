@@ -6,7 +6,7 @@ SECTION = "multimedia"
 DEPENDS = "imx-vpu"
 
 SRCBRANCH ?= "master"
-SRCREV = "58ad556180fc3868f26af0a55504dc461e2fb7e9"
+SRCREV = "4d919f4813b2288ed79a9026557326df0314ad07"
 SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
