@@ -271,6 +271,7 @@ RDEPENDS_libvivante-dri-mx6 = "libdrm"
 INSANE_SKIP_libwayland-viv-mx6 += "dev-so"
 FILES_libwayland-viv-mx6 =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"
 FILES_libwayland-viv-mx6-dev = "${includedir}/wayland-viv ${libdir})/libwayland-viv${SOLIBSDEV} ${libdir}/pkgconfig/wayland-viv.pc"
+RPROVIDES_libwayland-viv-mx6 += "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'xf86-video-imxfb-vivante', '', d)}"
 
 INSANE_SKIP_libgc-wayland-protocol-mx6 += "dev-so"
 FILES_libgc-wayland-protocol-mx6 = "${libdir}/libgc_wayland_protocol${REALSOLIBS} ${libdir}/libgc_wayland_protocol${SOLIBS}"
