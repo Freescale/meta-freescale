@@ -30,7 +30,7 @@ RDEPENDS_${PN}-base = " \
     base-files \
     base-passwd \
     busybox \
-    ${@base_contains("MACHINE_FEATURES", "keyboard", "${VIRTUAL-RUNTIME_keymaps}", "", d)} \
+    ${@bb.utils.contains("MACHINE_FEATURES", "keyboard", "${VIRTUAL-RUNTIME_keymaps}", "", d)} \
     ${MACHINE_ESSENTIAL_EXTRA_RDEPENDS} \
 "
 
