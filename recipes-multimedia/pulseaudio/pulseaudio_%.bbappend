@@ -5,7 +5,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/imx:"
 
 SRC_URI_append_mx6 = " file://daemon.conf file://default.pa"
 SRC_URI_append_mx6ul = " file://daemon.conf file://default.pa"
-SRC_URI_append_mx7 = " file://daemon.conf file://default.pa"
+SRC_URI_append_mx7 = " file://daemon.conf file://default.pa \
+                       file://pulseaudio-remove-the-control-for-speaker-headphone-widge.patch \
+"
 
 do_install_append() {
     if [ -e "${WORKDIR}/daemon.conf" ] && [ -e "${WORKDIR}/default.pa" ]; then

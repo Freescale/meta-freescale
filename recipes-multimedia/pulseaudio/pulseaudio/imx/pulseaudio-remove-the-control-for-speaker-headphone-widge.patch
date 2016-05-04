@@ -1,0 +1,73 @@
+From 015e048d3662b9f82e9aa5cd04d7c9de4eadb68d Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <shengjiu.wang@freescale.com>
+Date: Mon, 30 Mar 2015 10:26:14 +0800
+Subject: [PATCH] pulseaudio: remove the control for speaker/headphone widget
+
+In imx7d-sdb, there is no headphone jack, the jack detection is done
+by the codec itself. When headphone plugin, pulseaudio can't detect
+the headphone jack status, so it will set the heaphone volume to zero.
+Here fix this issue by remove the control in configuration.
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@freescale.com>
+---
+ .../alsa/mixer/paths/analog-output-headphones.conf |    8 ++++----
+ .../alsa/mixer/paths/analog-output-speaker.conf    |    8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/src/modules/alsa/mixer/paths/analog-output-headphones.conf b/src/modules/alsa/mixer/paths/analog-output-headphones.conf
+index b6ee70b..a617976 100644
+--- a/src/modules/alsa/mixer/paths/analog-output-headphones.conf
++++ b/src/modules/alsa/mixer/paths/analog-output-headphones.conf
+@@ -81,8 +81,8 @@ override-map.2 = all-left,all-right
+ 
+ [Element Headphone]
+ required-any = any
+-switch = mute
+-volume = merge
++switch = on
++volume = ignore
+ override-map.1 = all
+ override-map.2 = all-left,all-right
+ 
+@@ -105,8 +105,8 @@ switch = mute
+ volume = zero
+ 
+ [Element Speaker]
+-switch = off
+-volume = off
++switch = on
++volume = ignore
+ 
+ [Element Desktop Speaker]
+ switch = off
+diff --git a/src/modules/alsa/mixer/paths/analog-output-speaker.conf b/src/modules/alsa/mixer/paths/analog-output-speaker.conf
+index 39193dd..34bbb85 100644
+--- a/src/modules/alsa/mixer/paths/analog-output-speaker.conf
++++ b/src/modules/alsa/mixer/paths/analog-output-speaker.conf
+@@ -73,8 +73,8 @@ volume = off
+ ; This profile path is intended to control the speaker, let's mute headphones
+ ; else there will be a spike when plugging in headphones
+ [Element Headphone]
+-switch = off
+-volume = off
++switch = on
++volume = ignore
+ 
+ [Element Headphone2]
+ switch = off
+@@ -93,8 +93,8 @@ override-map.2 = all-left,all-right
+ 
+ [Element Speaker]
+ required-any = any
+-switch = mute
+-volume = merge
++switch = on
++volume = ignore
+ override-map.1 = all
+ override-map.2 = all-left,all-right
+ 
+-- 
+1.7.9.5
+
