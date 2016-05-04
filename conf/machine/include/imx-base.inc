@@ -85,7 +85,7 @@ MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
 # Extra audio support
 # FIXME: Add support for ALL SoC families
-MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " ${@base_contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
+MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
 
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
