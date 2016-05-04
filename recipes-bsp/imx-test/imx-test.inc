@@ -29,7 +29,7 @@ PLATFORM_mx6sx = "IMX6SX"
 PLATFORM_mx7 = "IMX7D"
 PLATFORM_mx6ul = "IMX6UL"
 
-PACKAGECONFIG ?= "${@base_contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
+PACKAGECONFIG ?= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 
 # Required so the fixdep binary is generated
