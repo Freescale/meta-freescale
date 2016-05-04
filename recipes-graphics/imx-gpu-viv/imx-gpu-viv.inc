@@ -7,8 +7,8 @@ SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://gpu-core/usr/include/gc_vdk.h;beginline=5;endline=11;md5=12c028cbbbedb4b8770267131500592c"
 
-DEPENDS += "${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
-                             base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
+                             bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
                                            '', d), d)} \
             libpng"
 
@@ -53,8 +53,8 @@ python __anonymous () {
                 raise bb.parse.SkipPackage('The kernel of machine needs to have Vivante kernel driver support for this recipe to be used.')
 }
 
-HAS_X11 = "${@base_contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
-HAS_WL = "${@base_contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
+HAS_X11 = "${@bb.utils.contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
+HAS_WL = "${@bb.utils.contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
 
 # Inhibit warnings about files being stripped.
 INHIBIT_PACKAGE_STRIP = "1"
