@@ -27,8 +27,8 @@ do_compile[depends] += "virtual/kernel:do_shared_workdir"
 # X11 if x11 is present in DISTRO_FEATURES
 # Wayland if x11 is not present in DISTRO_FEATURES, but wayland is
 # Framebuffer otherwise
-EGLVIVSINK_PLATFORM = "${@base_contains('DISTRO_FEATURES', 'x11', 'x11', \
-                          base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+EGLVIVSINK_PLATFORM = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', \
+                          bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
                           'fb', d),d)}"
 
 EGL_PLATFORM_CONF = "--egl-platform=${EGLVIVSINK_PLATFORM}"
@@ -36,8 +36,8 @@ EXTRA_OECONF = "--kernel-headers=${STAGING_KERNEL_DIR}/include"
 
 EGLVIVSINK_DEPENDS = " \
     virtual/egl virtual/libgles2 \
-    ${@base_contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', \
-       base_contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', \
+       bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
        '', d),d)}"
 
 PACKAGECONFIG ?= ""
