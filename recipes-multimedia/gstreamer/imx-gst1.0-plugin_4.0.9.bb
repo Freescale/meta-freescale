@@ -47,7 +47,7 @@ PLATFORM_mx7= "MX7D"
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
                 CPPFLAGS="-I${STAGING_KERNEL_BUILDDIR}/include/generated/uapi -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include" \
                 CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR} \
-                ${@base_contains('DISTRO_FEATURES', 'wayland', base_contains('DISTRO_FEATURES', 'x11', '--disable-x11', '', d), '', d)}"
+                ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', bb.utils.contains('DISTRO_FEATURES', 'x11', '--disable-x11', '', d), '', d)}"
 
 PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN}-librecorder-engine ${PN}-libplayengine"
 
