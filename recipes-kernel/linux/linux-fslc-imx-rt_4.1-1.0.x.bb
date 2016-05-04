@@ -8,18 +8,18 @@ include linux-fslc.inc
 
 PV .= "+git${SRCPV}"
 
-SRCBRANCH = "3.14-1.1.x-imx"
-SRCREV = "327d5c9063b715c91a88655533d5e477a0afe218"
+SRCBRANCH = "4.1-1.0.x-imx"
+SRCREV = "445b81a703861b3c146ccd074cb5c14a5363c6d3"
 
 SRC_URI += " \
-    https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/older/patch-3.14.61-rt62.patch.gz;name=patch-3.14.61-rt62.patch \
+    https://www.kernel.org/pub/linux/kernel/projects/rt/4.1/older/patch-4.1.19-rt22.patch.gz;name=patch-4.1.19-rt22.patch \
     file://0001-fix-build.patch \
-    file://0003-no-split-ptlocks.patch \
-    file://0004-imx-sdma-channel-use-raw-spinlock.patch \
+    file://0002-no-split-ptlocks.patch \
+    file://0003-Work-around-CPU-stalls-in-the-imx-sdma-driver.patch \
 "
 
-SRC_URI[patch-3.14.61-rt62.patch.md5sum] = "d275057ffe5e6dac3c3d8704773c0aee"
-SRC_URI[patch-3.14.61-rt62.patch.sha256sum] = "48df9b6e76f24aa1d6fcd5ab150d26830da35c630acba73bf8c81dd341c31951"
+SRC_URI[patch-4.1.19-rt22.patch.md5sum] = "20a893d189c619ea3e7489f870478e7a"
+SRC_URI[patch-4.1.19-rt22.patch.sha256sum] = "81a6429eb03f085e7f58a669eb23719ae14876c14fe244f5aac909c28ee4104e"
 
 python () {
     using_builtin_driver = (d.getVar("MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE", True) or "") != "1"
