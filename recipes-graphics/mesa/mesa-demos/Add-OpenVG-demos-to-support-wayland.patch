@@ -11,11 +11,11 @@ Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
  src/egl/openvg/Makefile.am | 33 +++++++++++++++++++++++++++++----
  2 files changed, 32 insertions(+), 7 deletions(-)
 
-diff --git a/src/egl/Makefile.am b/src/egl/Makefile.am
-index 4fe1ca8..65f4570 100644
---- a/src/egl/Makefile.am
-+++ b/src/egl/Makefile.am
-@@ -26,10 +26,10 @@ SUBDIRS = \
+Index: mesa-demos-8.2.0/src/egl/Makefile.am
+===================================================================
+--- mesa-demos-8.2.0.orig/src/egl/Makefile.am	2016-05-09 11:45:51.479100180 -0500
++++ mesa-demos-8.2.0/src/egl/Makefile.am	2016-05-09 11:45:51.475100160 -0500
+@@ -26,10 +26,10 @@
  	eglut \
  	opengles1 \
  	opengles2 \
@@ -29,51 +29,39 @@ index 4fe1ca8..65f4570 100644
 -	openvg
 +	opengl
  endif
-diff --git a/src/egl/openvg/Makefile.am b/src/egl/openvg/Makefile.am
-index b545225..a2e0d94 100644
---- a/src/egl/openvg/Makefile.am
-+++ b/src/egl/openvg/Makefile.am
-@@ -46,31 +46,56 @@ EGL_X11_DEMOS += \
- 	text
+Index: mesa-demos-8.2.0/src/egl/openvg/Makefile.am
+===================================================================
+--- mesa-demos-8.2.0.orig/src/egl/openvg/Makefile.am	2016-05-09 11:45:51.479100180 -0500
++++ mesa-demos-8.2.0/src/egl/openvg/Makefile.am	2016-05-09 12:39:30.000000000 -0500
+@@ -47,13 +47,26 @@
  endif
  endif
+ 
 +if HAVE_WAYLAND
 +EGL_WL_DEMOS = \
 +    lion_wayland \
 +    sp_wayland
- 
++
 +if HAVE_FREETYPE2
 +EGL_WL_DEMOS += \
-+	vgtext_wayland 
++	vgtext_wayland
 +endif
 +endif
++
  if HAVE_EGL
  if HAVE_VG
  bin_PROGRAMS = \
- 	lion_screen \
- 	sp_screen \
 -	$(EGL_X11_DEMOS)
 +	$(EGL_X11_DEMOS) \
 +	$(EGL_WL_DEMOS)
  endif
  endif
  
- lion_screen_SOURCES = lion.c lion-render.c lion-render.h
-+lion_screen_LDADD = ../eglut/libeglut_screen.la
-+
- sp_screen_SOURCES = sp.c
-+sp_screen_LDADD = ../eglut/libeglut_screen.la
- 
 +if HAVE_X11
  lion_x11_SOURCES = lion.c lion-render.c lion-render.h
  sp_x11_SOURCES = sp.c
  
--lion_screen_LDADD = ../eglut/libeglut_screen.la
--sp_screen_LDADD = ../eglut/libeglut_screen.la
--
- lion_x11_LDADD = ../eglut/libeglut_x11.la
- sp_x11_LDADD = ../eglut/libeglut_x11.la
- 
+@@ -63,6 +76,20 @@
  text_SOURCES = text.c
  text_CFLAGS = $(AM_CFLAGS) @FREETYPE2_CFLAGS@
  text_LDADD = @FREETYPE2_LIBS@ ../eglut/libeglut_x11.la
@@ -94,6 +82,3 @@ index b545225..a2e0d94 100644
  
  SUBDIRS = \
  	trivial
--- 
-2.3.5
-
