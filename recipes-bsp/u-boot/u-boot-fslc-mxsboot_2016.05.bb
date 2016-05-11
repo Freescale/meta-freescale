@@ -5,10 +5,10 @@ SECTION = "bootloader"
 DEPENDS = "openssl"
 PROVIDES = "u-boot-mxsboot"
 
-PV = "v2016.03+git${SRCPV}"
+PV = "v2016.05+git${SRCPV}"
 
-SRCREV = "1e82446ebd54b50a45dfb0a564a3e6763f309341"
-SRCBRANCH = "2016.03+fslc"
+SRCREV = "0fcd279712bdc2f4860bf9466323eb6874d411ed"
+SRCBRANCH = "2016.05+fslc"
 
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
 
