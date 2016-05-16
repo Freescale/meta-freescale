@@ -3,7 +3,7 @@ From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
 Date: Thu, 9 Apr 2015 15:47:21 -0500
 Subject: [PATCH] Add OpenVG demos to support wayland.
 
-Upstream Status: Pending
+Upstream-Status: Pending
 
 Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
 ---
