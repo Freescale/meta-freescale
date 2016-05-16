@@ -1,0 +1,30 @@
+From 7e232c0ebb30cb4f99f941daaccb610df0a11cbe Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Mon, 16 May 2016 11:30:35 -0500
+Subject: [PATCH] Fix gcc 6 build error -Werror=misleading-indentation
+
+Upstream-Status: Backport [internal release]
+
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ .../linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel-module-imx-gpu-viv-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c b/kernel-module-imx-gpu-viv-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+index e436ada..f8d7233 100644
+--- a/kernel-module-imx-gpu-viv-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
++++ b/kernel-module-imx-gpu-viv-src/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+@@ -475,8 +475,8 @@ gckPLATFORM_AdjustParam(
+ 
+     Args->gpu3DMinClock = initgpu3DMinClock;
+ 
+-  if(Args->physSize == 0)
+-    Args->physSize = 0x80000000;
++    if (Args->physSize == 0)
++        Args->physSize = 0x80000000;
+ 
+     return gcvSTATUS_OK;
+ }
+-- 
+1.9.1
+

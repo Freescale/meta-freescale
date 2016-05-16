@@ -10,7 +10,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
 PV .= "+git${SRCPV}"
 
 SRCREV = "c5473a84cfa44870a8016c7f684d46abcd36a018"
-SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=https"
+SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=https \
+           file://0001-Fix-gcc-6-build-error-Werror-misleading-indentation.patch"
 
 S = "${WORKDIR}/git"
 
