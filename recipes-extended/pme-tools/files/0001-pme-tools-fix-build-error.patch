@@ -1,0 +1,127 @@
+From 576218f3a173dcd8b68b7c247612d1b585906742 Mon Sep 17 00:00:00 2001
+From: Zhenhua Luo <zhenhua.luo@nxp.com>
+Date: Wed, 13 Jan 2016 04:07:12 -0600
+Subject: [PATCH] pme-tools: fix build error
+
+Fix the following build error:
+| *.y: error: expected ';' before '}' token
+
+Signed-off-by: Zhenhua Luo <zhenhua.luo@nxp.com>
+---
+ compilers/regularExpression/engine/pmrec.y |    6 ++--
+ compilers/statefulRule/engine/pmsrc.y      |   46 ++++++++++++++--------------
+ 2 files changed, 26 insertions(+), 26 deletions(-)
+
+diff --git a/compilers/regularExpression/engine/pmrec.y b/compilers/regularExpression/engine/pmrec.y
+index ececd81..a9bed4b 100644
+--- a/compilers/regularExpression/engine/pmrec.y
++++ b/compilers/regularExpression/engine/pmrec.y
+@@ -2939,7 +2939,7 @@ input                      :   /* empty */
+                              | end_of_lines
+                              | input regex
+                              | input error
+-                               {return(pmrec_syntax_error_e)}
++                               {return(pmrec_syntax_error_e);}
+                              ;
+ 
+ regex                      :   start_regex branches end_regex
+@@ -3324,9 +3324,9 @@ one_character_regex        :   non_meta_character
+                              ;
+ 
+ non_meta_characters        :   non_meta_character
+-                                  {_pmrec_context_p->currentPattern_p->blockAnchorNumSymbols++}
++                                  {_pmrec_context_p->currentPattern_p->blockAnchorNumSymbols++;}
+                              | non_meta_characters non_meta_character
+-                                  {_pmrec_context_p->currentPattern_p->blockAnchorNumSymbols++}
++                                  {_pmrec_context_p->currentPattern_p->blockAnchorNumSymbols++;}
+                              ;
+ 
+ non_meta_character         :   alpha
+diff --git a/compilers/statefulRule/engine/pmsrc.y b/compilers/statefulRule/engine/pmsrc.y
+index 513e22f..0bc4d6a 100644
+--- a/compilers/statefulRule/engine/pmsrc.y
++++ b/compilers/statefulRule/engine/pmsrc.y
+@@ -6361,45 +6361,45 @@ state_definitions     :   state_definition
+                         ;
+ 
+ reserved_word         :   RULE_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | RESET_ON_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | RESET_STATE_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | EVENT_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | STATE_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | NEXT_STATE_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | EXIT_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | GPRV
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | TEMP_GPRV
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | GLOBAL_GPRV
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | FLAG
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | VOLATILE_FLAG
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | REPORT_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | WRITE_LABEL
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | WHILE
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | BREAK
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | IF
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | ELSE
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | LOGICAL_AND
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | LOGICAL_OR
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | END_OF_SUI
+                           {$$ = $1;
+                            _pmsrc_parse_warning(_pmsrc_context_p,
+@@ -6408,11 +6408,11 @@ reserved_word         :   RULE_LABEL
+                           }
+ 
+ no_keywords_name      :   NAME
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | DEC_NUM
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         | HEX_NUM
+-                          {$$ = $1}
++                          {$$ = $1;}
+                         ;
+ any_name              :   no_keywords_name
+                         | reserved_word
+-- 
+1.7.9.5
+
