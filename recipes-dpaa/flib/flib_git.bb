@@ -3,8 +3,8 @@ SECTION = "flib"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=75d2f6a74299640c05ae6c69ed7a4ad6"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/flib.git;nobranch=1"
-SRCREV = "91bbb134df1cd8b65c7c19db9bec9f00d1435377"
+SRC_URI = "git://git.freescale.com/ppc/sdk/flib.git;branch=sdk-v2.0.x"
+SRCREV = "08e2aeb7d5c72ebbef30277ab4e73ab147c4c0c7"
 
 S = "${WORKDIR}/git"
 
