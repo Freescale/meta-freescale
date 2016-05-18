@@ -7,12 +7,12 @@ DEPENDS = "libedit openssl virtual/kernel"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;nobranch=1 \
+SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;branch=sdk-v2.0.x \
     file://add-two-missing-header-files.patch \
     file://skmm-ep-fix-the-inline-function-definition-with-gcc-.patch \
     file://skmm-ep-remove-duplicated-pa_to_va-and-va_to_pa.patch \
 "
-SRCREV = "27156a6621c8f6d7f98210b1ca5cd97bde926875"
+SRCREV = "bbf1ba00fcf407252a4c2e56783e63861088f9cb"
 
 S = "${WORKDIR}/git"
 
