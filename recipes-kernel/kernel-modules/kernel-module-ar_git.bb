@@ -4,8 +4,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
 inherit module
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/auto-resp.git;branch=sdk-v1.7.x"
-SRCREV =  "dbede76fb4020a370baa393f7c53af4c0db8f175"
+SRC_URI = "git://git.freescale.com/ppc/sdk/auto-resp.git;branch=sdk-v2.0.x"
+SRCREV =  "9a74743167dcfcfbca5056eedbff9a52337c9712"
 
 S = "${WORKDIR}/git"
 
