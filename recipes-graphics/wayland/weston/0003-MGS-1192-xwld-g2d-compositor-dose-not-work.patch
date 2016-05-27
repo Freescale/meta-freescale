@@ -1,0 +1,31 @@
+From 9de82e2b39f839b5547308bf25d0d71f79936631 Mon Sep 17 00:00:00 2001
+From: Yong Gan <b45748@freescale.com>
+Date: Tue, 27 Oct 2015 15:07:02 +0800
+Subject: [PATCH] MGS-1192: xwld: g2d compositor dose not work
+
+Initial the backend->use_gal2d by input parameters.
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Yong Gan <yong.gan@freescale.com>
+---
+ src/compositor-fbdev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
+index c6f732e..ed25576 100644
+--- a/src/compositor-fbdev.c
++++ b/src/compositor-fbdev.c
+@@ -900,7 +900,8 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+ 	backend->base.restore = fbdev_restore;
+ 
+ 	backend->prev_state = WESTON_COMPOSITOR_ACTIVE;
+-	backend->use_pixman = !param->use_gl;
++	backend->use_pixman = !(param->use_gl || param->use_gal2d);
++	backend->use_gal2d = param->use_gal2d;
+ 
+ 	for (key = KEY_F1; key < KEY_F9; key++)
+ 		weston_compositor_add_key_binding(compositor, key,
+-- 
+1.9.1
+
