@@ -6,5 +6,5 @@ require xf86-video-imxfb-vivante.inc
 
 SRC_URI += "file://Stop-using-Git-to-write-local-version.patch"
 
-SRC_URI[md5sum] = "457b39733b34009754c36224dfd25ea1"
-SRC_URI[sha256sum] = "00b4925819601461c0aa293a25024709410ab8d669accfa71ffd3177ff3cdeb2"
+SRC_URI[md5sum] = "7a2c8d4e56c33b9692d252193f00ef44"
+SRC_URI[sha256sum] = "ddb6de9e00ce0b22f6c905eaf6694424413eade53ef6cd3b36e20ac99dcc0e0f"
