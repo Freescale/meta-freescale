@@ -58,7 +58,7 @@ index de50aad..1a8b5f7 100644
 +COMPILE_SLOWFLOAT_C = $(CC) -c -o $@ $(INCLUDES) -I- -O
  
 -LINK = $(COMPILE_PREFIX)gcc -lm -o $@
-+LINK = $(CC) -lm -o $@
++LINK = $(CC) -lm -o $@ ${LDFLAGS}
  
  SOFTFLOAT_H = $(SOFTFLOAT_DIR)/softfloat.h
  SOFTFLOAT_OBJ = $(SOFTFLOAT_DIR)/softfloat$(OBJ)
