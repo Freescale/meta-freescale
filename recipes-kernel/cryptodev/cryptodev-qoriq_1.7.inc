@@ -55,7 +55,7 @@ file://0024-fix-COMPAT_CIOCKEY-ioctl-command-number.patch \
 
 # NOTE: remove this patch and all traces of DISTRO_FEATURE c29x_pkc
 # if pkc-host does not need customized cryptodev patches anymore
-SRC_URI_append = "${@base_contains('DISTRO_FEATURES', 'c29x_pkc', ' file://0001-don-t-advertise-RSA-keygen.patch', '', d)}"
+SRC_URI_append = "${@bb.utils.contains('DISTRO_FEATURES', 'c29x_pkc', ' file://0001-don-t-advertise-RSA-keygen.patch', '', d)}"
 
 S = "${WORKDIR}/cryptodev-linux-${PV}"
 
