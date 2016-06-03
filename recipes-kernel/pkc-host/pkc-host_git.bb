@@ -17,6 +17,10 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE='KERNEL_DIR="${STAGING_KERNEL_DIR}" PREFIX="${D}"'
 
+do_compile_prepend() {
+    sed -i 's#-Werror##g' ${S}/Makefile
+}
+
 do_install() {
     oe_runmake INSTALL_MOD_PATH="${D}" modules_install
     install -d ${D}/etc/crypto
