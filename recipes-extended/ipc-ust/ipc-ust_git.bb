@@ -49,3 +49,6 @@ do_install () {
 FILES_${PN} += "${base_libdir}/*.so /ipc/*"
 FILES_${PN}-dev = "${includedir}"
 FILES_${PN}-dbg += "/ipc/.debug"
+
+INSANE_SKIP_${PN} += "file-rdeps"
+INSANE_SKIP_${PN}-dev += "dev-elf"
