@@ -26,6 +26,7 @@ SRCBRANCH = "sdk-v1.9.x"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
     file://gcc5.patch \
     file://add-fgnu89-inline-option-for-gcc5.patch \
+    file://fix-build-error-under-gcc6.patch \
 "
 SRCREV = "eb3d4fc5759729d7af71ac31ebf6a7e8d0e79da3"
 
