@@ -16,6 +16,7 @@ do_compile[noexec] = "1"
 do_install(){
     install -d  ${D}${datadir}
     cp -a ${WORKDIR}/test_setkey ${D}${datadir}/
+    chown -R root:root ${D}${datadir}/test_setkey
 }
 
 FILES_${PN} = "${datadir}/*"
