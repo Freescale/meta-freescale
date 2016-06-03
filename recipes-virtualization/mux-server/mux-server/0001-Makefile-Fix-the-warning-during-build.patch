@@ -1,0 +1,31 @@
+From bcb58c751a7ff82095642d2c9424a7ae18bca3c6 Mon Sep 17 00:00:00 2001
+From: Sujith Haridasan <Sujith_Haridasan@mentor.com>
+Date: Wed, 27 Apr 2016 16:49:09 +0530
+Subject: [PATCH] Makefile: Fix the warning during build
+
+Fix QA Issue: No GNU_HASH in the elf binary
+This warning is caused when built with external
+toolchain sourcery.
+
+Signed-off-by: Sujith H <sujith.h@gmail.com>
+Signed-off-by: Sujith Haridasan <Sujith_Haridasan@mentor.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index c41030d..fa69b6f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -36,7 +36,7 @@ HOSTCC_OPTS_C= -Wall \
+ all: mux_server
+ 
+ mux_server: mux_server.c
+-	$(HOSTCC) $(HOSTCC_OPTS) $(HOSTCC_OPTS_C) -o $@ $< -lpthread
++	$(HOSTCC) $(HOSTCC_OPTS) $(HOSTCC_OPTS_C) -o $@ $< -lpthread ${LDFLAGS}
+ 
+ clean:
+ 	rm -f mux_server
+-- 
+1.9.1
+
