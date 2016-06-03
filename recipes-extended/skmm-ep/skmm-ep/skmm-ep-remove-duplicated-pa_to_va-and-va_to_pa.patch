@@ -1,0 +1,40 @@
+skmm-ep: remove duplicated definition
+
+Remove the duplicated definition to fix the following build errors:
+| apps/skmm/lib/skmm_sram.c:42:18: error: redefinition of 'pa_to_va'
+| apps/skmm/lib/skmm_sram.c:51:20: error: redefinition of 'va_to_pa'
+
+Upstream-Status: Pending
+
+Signed-off-by: Zhenhua Luo <zhenhua.luo@freescale.com>
+
+diff --git a/apps/skmm/lib/skmm_sram.c b/apps/skmm/lib/skmm_sram.c
+index 2d84d93..6ab0421 100644
+--- a/apps/skmm/lib/skmm_sram.c
++++ b/apps/skmm/lib/skmm_sram.c
+@@ -39,24 +39,6 @@
+ static phys_addr_t sram_phys_addr;
+ static va_addr_t sram_virt_addr;
+ 
+-inline va_addr_t pa_to_va(phys_addr_t addr)
+-{
+-	va_addr_t offset;
+-
+-	offset = (va_addr_t)(addr - sram_phys_addr);
+-
+-	return sram_virt_addr + offset;
+-}
+-
+-inline phys_addr_t va_to_pa(va_addr_t addr)
+-{
+-	phys_addr_t offset;
+-
+-	offset = (phys_addr_t)(addr - sram_virt_addr);
+-
+-	return sram_phys_addr + offset;
+-}
+-
+ static int setup_law_for_plt_sram(phys_addr_t l2sram, u32 *size)
+ {
+ 	int fd;
+-- 
