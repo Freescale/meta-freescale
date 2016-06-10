@@ -22,7 +22,7 @@ kernel_conf_variable() {
 	fi
 }
 
-do_configure_prepend() {
+do_preconfigure() {
 	echo "" > ${B}/.config
 	CONF_SED_SCRIPT=""
 
@@ -37,3 +37,4 @@ do_configure_prepend() {
 		printf "%s%s" +g $head > ${S}/.scmversion
 	fi
 }
+addtask preconfigure before do_configure after do_patch
