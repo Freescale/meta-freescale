@@ -1,12 +1,12 @@
 DESCRIPTION = "qe microcode binary"
 SECTION = "qe-ucode"
 LICENSE = "Freescale-EULA"
-LIC_FILES_CHKSUM = "file://EULA;md5=60037ccba533a5995e8d1a838d85799c"
+LIC_FILES_CHKSUM = "file://EULA;md5=c9ae442cf1f9dd6c13dfad64b0ffe73f"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/qe-ucode.git;nobranch=1"
-SRCREV= "49efc94b553de5c2a9bd28093592eff0068e161c"
+SRC_URI = "git://git.freescale.com/ppc/sdk/qe-ucode.git;branch=sdk-v2.0.x"
+SRCREV= "a95f42aef152fc613f11099d7e7bc25b44c09836"
 
 S = "${WORKDIR}/git"
 
@@ -32,5 +32,4 @@ addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot/*"
-ALLOW_EMPTY_${PN} = "1"
-COMPATIBLE_MACHINE = "(ls102xa|p1021rdb|p1025twr|t1)"
+COMPATIBLE_MACHINE = "(ls1021a|ls1043a|t1)"
