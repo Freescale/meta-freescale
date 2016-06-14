@@ -14,30 +14,28 @@ RDEPENDS_${PN} = "libgcc bash"
 RDEPENDS_${PN}_append_b4860qds = " ipc-ust"
 RDEPENDS_${PN}_append_b4420qds = " ipc-ust"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa/usdpaa-apps.git;branch=sdk-v1.9.x \
-    file://fix-the-inline-function-definition-with-gcc-5.x.patch \
-    file://xfrm_km.c-use-in6_-macros-from-glibc-instead-of-kern.patch \
-"
-SRCREV = "1d9418af04990289bec72cd43a9385690523fcdb"
+SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa/usdpaa-apps.git;branch=sdk-v2.0.x"
+SRCREV = "835cbceb4f76de1b493fea5dbe43a90f516b6f35"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}"'
-export ARCH="${TARGET_ARCH}"
+WRAP_ARCH ?= "${TARGET_ARCH}"
+WRAP_ARCH_ls1043ardb = "arm64"
+EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}" ARCH="${WRAP_ARCH}"'
 
 SOC ?= "P4080"
 SOC_b4 = "B4860"
 SOC_t1 = "T1040"
 SOC_t2 = "T2080"
 SOC_t4 = "T4240"
-SOC_p1023rdb = "P1023"
+SOC_ls1043ardb = "LS1043"
 
 FMAN_VARIANT ?= "P4080"
 FMAN_VARIANT_b4 = "FMAN_V3H"
 FMAN_VARIANT_t1 = "FMAN_V3L"
 FMAN_VARIANT_t2 = "FMAN_V3H"
 FMAN_VARIANT_t4 = "FMAN_V3H"
-FMAN_VARIANT_p1023rdb = "P1023"
+FMAN_VARIANT_ls1043ardb = "LS1043"
 
 do_compile_prepend () {
     export SOC=${SOC}
@@ -58,11 +56,9 @@ do_compile_prepend () {
 
 do_install () {
     export SOC=${SOC}
-    oe_runmake install DESTDIR=${D}
+    oe_runmake install LIBDIR=${BASELIB} DESTDIR=${D}
 }
 
 PARALLEL_MAKE_pn-${PN} = ""
 FILES_${PN} += "/root/SOURCE_THIS /usr/etc/"
-
-COMPATIBLE_HOST_qoriq-ppc = ".*"
-COMPATIBLE_HOST ?= "(none)"
+COMPATIBLE_MACHINE = "(qoriq-ppc|ls1043a)"
