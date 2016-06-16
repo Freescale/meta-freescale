@@ -1,0 +1,32 @@
+From 15895f6880829ee502f0a48412173fb452b23c0b Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@nxp.com>
+Date: Fri, 17 Jun 2016 10:57:35 +0800
+Subject: [PATCH] only set vmpic_msi_feature if CONFIG_EPAPR_PARAVIRT defined
+
+Upstream-Status: Pending
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+---
+ arch/powerpc/sysdev/fsl_msi.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/powerpc/sysdev/fsl_msi.c b/arch/powerpc/sysdev/fsl_msi.c
+index 963661a..95d7111 100644
+--- a/arch/powerpc/sysdev/fsl_msi.c
++++ b/arch/powerpc/sysdev/fsl_msi.c
+@@ -658,10 +658,12 @@ static const struct fsl_msi_feature ipic_msi_feature = {
+ 	.msiir_offset = 0x38,
+ };
+ 
++#ifdef CONFIG_EPAPR_PARAVIRT
+ static const struct fsl_msi_feature vmpic_msi_feature = {
+ 	.fsl_pic_ip = FSL_PIC_IP_VMPIC,
+ 	.msiir_offset = 0,
+ };
++#endif
+ 
+ static const struct of_device_id fsl_of_msi_ids[] = {
+ 	{
+-- 
+1.9.2
+

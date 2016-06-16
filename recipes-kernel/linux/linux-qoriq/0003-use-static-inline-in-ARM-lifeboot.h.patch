@@ -4,24 +4,10 @@ Date: Thu, 8 Oct 2015 22:48:22 -0500
 Subject: [PATCH] use static inline in ARM lifeboot.h
 
 ---
- drivers/input/mouse/lifebook.h   | 2 +-
  drivers/input/mouse/sentelic.h   | 2 +-
  drivers/input/mouse/trackpoint.h | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/mouse/lifebook.h b/drivers/input/mouse/lifebook.h
-index 4c4326c..e4c2453 100644
---- a/drivers/input/mouse/lifebook.h
-+++ b/drivers/input/mouse/lifebook.h
-@@ -19,7 +19,7 @@ int lifebook_init(struct psmouse *psmouse);
- inline void lifebook_module_init(void)
- {
- }
--inline int lifebook_detect(struct psmouse *psmouse, bool set_properties)
-+static inline int lifebook_detect(struct psmouse *psmouse, bool set_properties)
- {
- 	return -ENOSYS;
- }
 diff --git a/drivers/input/mouse/sentelic.h b/drivers/input/mouse/sentelic.h
 index aa697ec..9e69e94 100644
 --- a/drivers/input/mouse/sentelic.h
