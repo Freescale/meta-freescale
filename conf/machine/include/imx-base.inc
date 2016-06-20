@@ -30,7 +30,6 @@ UBOOT_ENTRYPOINT_vf = "0x80008000"
 PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
 XSERVER_DRIVER = "xf86-video-fbdev"
 XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
-XSERVER_DRIVER_mx6ul = "xf86-video-fbdev"
 XSERVER_DRIVER_vf = "xf86-video-modesetting"
 XSERVER = "xserver-xorg \
            xf86-input-evdev \
