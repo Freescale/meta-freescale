@@ -64,6 +64,8 @@ MACHINE_SOCARCH_SUFFIX_mx6ul = "-mx6ul"
 MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER_append_mx6 = " imx-vpu libimxvpuapi imx-codec imx-vpuwrap imx-parser"
 MACHINE_SOCARCH_FILTER_append_mx6 = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d"
+MACHINE_SOCARCH_FILTER_append_mx6ul = " imx-codec imx-parser"
+MACHINE_SOCARCH_FILTER_append_mx7 =  " imx-codec imx-parser"
 
 INHERIT += "fsl-dynamic-packagearch"
 
