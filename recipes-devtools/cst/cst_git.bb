@@ -6,6 +6,7 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://common/include/global.h;endline=26;md5=e31e31c35cc53f6fba7e3c4e9baf4339"
 
 DEPENDS += "openssl"
+RDEPENDS_${PN} = "bash"
 
 inherit kernel-arch
 
