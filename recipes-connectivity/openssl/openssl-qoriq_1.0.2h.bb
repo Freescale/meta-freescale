@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=27ffa5d74bb5a337056c14b2ef93fbf6"
 export DIRS = "crypto ssl apps engines"
 export OE_LDFLAGS="${LDFLAGS}"
 
-SRC_URI += "file://find.pl;subdir=${BP}/util/ \
+SRC_URI += "file://find.pl;subdir=openssl-${PV}/util/ \
             file://run-ptest \
             file://openssl-c_rehash.sh \
             file://configure-targets.patch \
