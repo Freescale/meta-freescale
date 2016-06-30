@@ -1,0 +1,11 @@
+# Rules for handling naming the DPAA FMan ethernet ports in a consistent way
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae0000", NAME="fm1-mac1"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae2000", NAME="fm1-mac2"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae4000", NAME="fm1-mac3"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae6000", NAME="fm1-mac4"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1ae8000", NAME="fm1-mac5"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1aea000", NAME="fm1-mac6"
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1af0000", NAME="fm1-mac9"
+
+# Rename macless0 to "macless0"
+SUBSYSTEM=="net", ATTR{device_type}=="macless0", NAME="macless0"
