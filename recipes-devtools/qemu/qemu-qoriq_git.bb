@@ -2,7 +2,16 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 require recipes-devtools/qemu/qemu.inc
 
-PROVIDES += "qemu"
+PROVIDES = "qemu"
+
+python() {
+    pkgs = d.getVar('PACKAGES', True).split()
+    for p in pkgs:
+        if 'qemu-qoriq' in p:
+            d.appendVar("RPROVIDES_%s" % p, p.replace('qemu-qoriq', 'qemu'))
+            d.appendVar("RCONFLICTS_%s" % p, p.replace('qemu-qoriq', 'qemu'))
+            d.appendVar("RREPLACES_%s" % p, p.replace('qemu-qoriq', 'qemu'))
+}
 
 DESCRIPTION = "This recipe requires poky's qemu.inc which includes the FSL \
 fixes of QorIQ ARM and QorIQ PPC targets, the recipe assumes that glx enable \
