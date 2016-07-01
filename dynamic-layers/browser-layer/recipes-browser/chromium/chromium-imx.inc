@@ -1,5 +1,4 @@
-DEPENDS_append_mx6q = " imx-vpuwrap"
-DEPENDS_append_mx6dl = " imx-vpuwrap"
+DEPENDS_append_imxvpu = " imx-vpuwrap"
 
 # Additional imx code and patches are included in the chromium-imx git repository.
 # The code below fetches this repository, copies the extra source over to the main
