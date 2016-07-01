@@ -48,6 +48,15 @@ DEFAULTTUNE_mx6ul ?= "cortexa7thf-neon"
 DEFAULTTUNE_mx7 ?= "cortexa7thf-neon"
 DEFAULTTUNE_vf ?= "cortexa5thf-neon"
 
+INHERIT += "machine-overrides-extender"
+
+MACHINEOVERRIDES_EXTENDER_mx6q  = "imxipu:imxvpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx6dl = "imxpxp:imxipu:imxvpu:imxgpu2d:imxgpu3d:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx6sx = "imxpxp:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx6sl = "imxpxp:imxgpu2d:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx6ul = "imxpxp"
+MACHINEOVERRIDES_EXTENDER_mx7d  = "imxpxp:imxepdc"
+
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
 MACHINE_SOCARCH_SUFFIX_mx6q = "-mx6qdl"
