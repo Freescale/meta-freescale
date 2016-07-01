@@ -1,25 +1,24 @@
 # Copyright (C) 2013 Eric Bénard - Eukréa Electromatique
+# Copyright (C) 2016 O.S. Systems Software LTDA.
 
 HAS_X11 = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 1, 0, d)}"
 
-IS_MX6SL = "0"
-IS_MX6SL_mx6sl = "1"
+IMXGPU_imxgpu3d = "3d"
+IMXGPU_imxgpu2d = "2d"
 
-PACKAGECONFIG_GL_mx6q = "gles2"
-PACKAGECONFIG_GL_mx6dl = "gles2"
-PACKAGECONFIG_GL_mx6sx = "gles2"
-PACKAGECONFIG_GL_mx6sl = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' gl', '', d)}"
-QT_CONFIG_FLAGS_append_mx6q = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
-QT_CONFIG_FLAGS_append_mx6dl = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
-QT_CONFIG_FLAGS_append_mx6sx = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
-QT_CONFIG_FLAGS_append_mx6sl = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', \
-                                                 ' -no-opengl -linuxfb -no-eglfs', d)}"
+PACKAGECONFIG_GL_imxgpu3d = "gles2"
+PACKAGECONFIG_GL_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' gl', '', d)}"
+
+QT_CONFIG_FLAGS_APPEND = ""
+QT_CONFIG_FLAGS_APPEND_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -no-opengl -linuxfb -no-eglfs', d)}"
+QT_CONFIG_FLAGS_APPEND_imxgpu3d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' -no-eglfs', ' -eglfs', d)}"
+QT_CONFIG_FLAGS_append = " ${QT_CONFIG_FLAGS_APPEND}"
 
 do_configure_prepend_mx6() {
     # adapt qmake.conf to our needs
     sed -i 's!load(qt_config)!!' ${S}/mkspecs/linux-oe-g++/qmake.conf
     if test ${HAS_X11} -eq 0; then
-        if test ${IS_MX6SL} -eq 0; then
+        if [ "${IMXGPU}" = "3d"; then
     
             cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
 IMX6_CFLAGS             = -DLINUX=1 -DEGL_API_FB=1
