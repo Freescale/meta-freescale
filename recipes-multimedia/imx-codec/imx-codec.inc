@@ -16,8 +16,7 @@ SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d)}"
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_mx6q = "vpu"
-PACKAGECONFIG_mx6dl = "vpu"
+PACKAGECONFIG_imxvpu = "vpu"
 
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,imx-vpu"
 
