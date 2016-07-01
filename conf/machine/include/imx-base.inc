@@ -3,8 +3,6 @@
 include conf/machine/include/fsl-default-settings.inc
 include conf/machine/include/fsl-default-versions.inc
 
-include conf/machine/include/soc-family.inc
-
 # Set specific make target and binary suffix
 PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
 PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
