@@ -40,12 +40,12 @@ EGLVIVSINK_DEPENDS = " \
        bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
        '', d),d)}"
 
-PACKAGECONFIG ?= ""
-PACKAGECONFIG_mx6q = "uniaudiodec mp3encoder v4l2src g2d eglvivsink ipu vpu"
-PACKAGECONFIG_mx6dl = "uniaudiodec mp3encoder v4l2src pxp g2d eglvivsink ipu vpu"
-PACKAGECONFIG_mx6sx = "uniaudiodec mp3encoder v4l2src pxp g2d eglvivsink"
-PACKAGECONFIG_mx6sl = "uniaudiodec mp3encoder v4l2src pxp g2d"
-PACKAGECONFIG_mx7 = "uniaudiodec mp3encoder v4l2src pxp"
+PACKAGECONFIG ?= "uniaudiodec mp3encoder v4l2src"
+PACKAGECONFIG_append_imxgpu3d = " eglvivsink"
+PACKAGECONFIG_append_imxgpu2d = " g2d"
+PACKAGECONFIG_append_imxipu   = " ipu"
+PACKAGECONFIG_append_imxvpu   = " vpu"
+PACKAGECONFIG_append_imxpxp   = " pxp"
 
 PACKAGECONFIG[g2d] = ",--disable-g2d,imx-gpu-viv"
 PACKAGECONFIG[pxp] = ",--disable-pxp,"
