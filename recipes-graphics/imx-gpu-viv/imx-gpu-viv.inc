@@ -13,9 +13,7 @@ DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxd
             libpng"
 
 EXTRA_PROVIDES = ""
-EXTRA_PROVIDES_mx6q  = " virtual/libgl virtual/libgles1 virtual/libgles2"
-EXTRA_PROVIDES_mx6dl  = " virtual/libgl virtual/libgles1 virtual/libgles2"
-EXTRA_PROVIDES_mx6sx  = " virtual/libgl virtual/libgles1 virtual/libgles2"
+EXTRA_PROVIDES_imxgpu3d = " virtual/libgl virtual/libgles1 virtual/libgles2"
 PROVIDES += "virtual/wayland-egl virtual/libgal-x11 virtual/egl virtual/libopenvg virtual/libg2d ${EXTRA_PROVIDES}"
 
 PE = "1"
@@ -94,8 +92,8 @@ python __anonymous() {
         d.appendVar("RCONFLICTS_" + fullp, pkgs)
 }
 
-IS_MX6SL = "0"
-IS_MX6SL_mx6sl = "1"
+IMXGPU_imxgpu3d = "3d"
+IMXGPU_imxgpu2d = "2d"
 
 do_install () {
     install -d ${D}${libdir}
@@ -182,8 +180,9 @@ do_install () {
         find ${D}${libdir} -name "*.$backend.so" -exec rm '{}' ';'
     done
 
-    # FIXME: MX6SL does not have 3D support; hack it for now
-    if [ "${IS_MX6SL}" = "1" ]; then
+    # FIXME: For 2D only GPU, we need to remove some content which is
+    #        3D specific.
+    if [ "${IMXGPU}" = "2d" ]; then
         rm -rf ${D}${libdir}/libCLC* ${D}${includedir}/CL \
                \
                ${D}${libdir}/libGL* ${D}${includedir}/GL* \ 
