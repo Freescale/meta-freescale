@@ -9,7 +9,7 @@ DEPENDS_mx6dl = "virtual/kernel imx-lib imx-vpu"
 DEPENDS_mx6sl = "virtual/kernel imx-lib"
 DEPENDS_mx6sx = "virtual/kernel imx-lib"
 DEPENDS_mx6ul = "virtual/kernel imx-lib"
-DEPENDS_mx7   = "virtual/kernel imx-lib"
+DEPENDS_mx7d  = "virtual/kernel imx-lib"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
@@ -23,10 +23,11 @@ inherit module-base
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
-PLATFORM_mx6 = "IMX6Q"
+PLATFORM_mx6q  = "IMX6Q"
+PLATFORM_mx6dl = "IMX6Q"
 PLATFORM_mx6sl = "IMX6SL"
 PLATFORM_mx6sx = "IMX6SX"
-PLATFORM_mx7 = "IMX7D"
+PLATFORM_mx7d  = "IMX7D"
 PLATFORM_mx6ul = "IMX6UL"
 
 PACKAGECONFIG ?= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
