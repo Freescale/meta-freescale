@@ -151,7 +151,7 @@ IMX_DEFAULT_KERNEL_mxs = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx5 = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-imx"
 IMX_DEFAULT_KERNEL_mx7 = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL_mx6ul = "linux-imx"
+IMX_DEFAULT_KERNEL_mx6ul = "linux-fslc-imx"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
