@@ -20,7 +20,7 @@
 #       0 - enable the builtin kernel driver module
 #       1 - enable the external kernel module
 #
-# Copyright 2015 (C) O.S. Systems Software LTDA.
+# Copyright 2015, 2016 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 # Handle Vivante kernel driver setting:
@@ -31,7 +31,7 @@ MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ??= "0"
 # Use Vivante kernel driver module:
 #   0 - enable the builtin kernel driver module
 #   1 - enable the external kernel module
-MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE ??= "1"
+MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE ??= "${@d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT', False) or '0'}"
 
 python fsl_vivante_kernel_driver_handler () {
     has_vivante_kernel_driver_support = e.data.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT', True) or "0"
