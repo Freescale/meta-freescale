@@ -10,5 +10,3 @@ PACKAGECONFIG_GL_mx6sl = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', \
                                     'opengl', '', d), '', d)}"
 
 PACKAGE_ARCH_mx6 = "${MACHINE_SOCARCH}"
-PACKAGE_ARCH_mx6ul = "${MACHINE_SOCARCH}"
-PACKAGE_ARCH_mx7 = "${MACHINE_SOCARCH}"
