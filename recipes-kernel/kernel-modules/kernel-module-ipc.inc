@@ -9,11 +9,6 @@ inherit module qoriq_build_64bit_kernel
 
 S = "${WORKDIR}/git"
 
-SOC ?= ""
-SOC_b4 = "B4860"
-SOC_bsc9131 = "B913x"
-SOC_bsc9132 = "B913x"
-
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 do_compile_prepend () {
     cd ${S}/kernel

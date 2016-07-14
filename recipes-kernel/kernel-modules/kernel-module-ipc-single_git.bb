@@ -1,6 +1,6 @@
 require kernel-module-ipc.inc
 
-EXTRA_OEMAKE ="KERNEL_DIR=${STAGING_KERNEL_DIR} ${SOC}=1"
+EXTRA_OEMAKE ="KERNEL_DIR=${STAGING_KERNEL_DIR} B4860=1"
 
 do_install(){
     install -d ${D}/usr/driver/IPC/single_rat
