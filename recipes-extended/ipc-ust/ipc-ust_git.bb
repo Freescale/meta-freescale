@@ -3,7 +3,8 @@ DESCRIPTION = "DSP boot application and ipc test application"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fa38cd73d71527dc6efb546474f64d10"
 
-require ipc.inc
+SRC_URI = "git://git.freescale.com/ppc/sdk/ipc.git;branch=sdk-v2.0.x"
+SRCREV = "74d662707558290f070f9589177db730444bc435"
 
 S = "${WORKDIR}/git"
 
@@ -43,3 +44,5 @@ FILES_${PN}-dbg += "/ipc/.debug"
 
 INSANE_SKIP_${PN} += "file-rdeps"
 INSANE_SKIP_${PN}-dev += "dev-elf"
+
+COMPATIBLE_MACHINE = "(b4860qds|b4420qds)"

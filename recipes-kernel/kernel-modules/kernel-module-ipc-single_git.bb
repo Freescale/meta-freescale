@@ -9,3 +9,5 @@ do_install(){
 
 FILES_${PN} += "/usr/driver/IPC/single_rat/*.ko"
 FILES_${PN}-dbg += "/usr/driver/IPC/single_rat/.debug"
+
+COMPATIBLE_MACHINE = "(b4860qds|b4420qds)"
