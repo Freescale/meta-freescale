@@ -5,21 +5,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=fa38cd73d71527dc6efb546474f64d10"
 
 require ipc.inc
 
-python () {
-    if not d.getVar("IPC_UST_SOC", True):
-        raise bb.parse.SkipPackage("IPC_UST_SOC is not defined in qoriq-base.inc")
-}
-
 S = "${WORKDIR}/git"
 
 # workaround for issue of parallel build, required a actual fix in ipc source
 PARALLEL_MAKE = ""
 
-EXTRA_OEMAKE = 'CROSS_COMPILE="${TARGET_PREFIX}" CC="${CC}" AR="${AR}"'
-
-do_compile () {
-    oe_runmake ${IPC_UST_SOC}=1
-}
+EXTRA_OEMAKE = 'CROSS_COMPILE="${TARGET_PREFIX}" CC="${CC}" AR="${AR}" B4860=1'
 
 do_install () {
     install -d ${D}${bindir}

@@ -20,8 +20,4 @@ MACHINE_EXTRA_RRECOMMENDS ?= "udev-rules-qoriq"
 
 EXTRA_IMAGEDEPENDS += "u-boot cst-native"
 
-IPC_UST_SOC_bsc9131 = "B913x"
-IPC_UST_SOC_bsc9132 = "B913x"
-IPC_UST_SOC_b4 = "B4860"
-
 MACHINEOVERRIDES =. "qoriq:"
