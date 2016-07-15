@@ -11,6 +11,13 @@ fconfigure $fileid_o -translation {binary binary}
 
 set old_bin [read $fileid_i]
 set new_bin {}
+set old_length [string length $old_bin]
+set old_rem [expr $old_length % $num_b]
+if {$old_rem != 0} {
+	for {set i 0} {$i< [expr $num_b - $old_rem]} {incr i 1} {
+	        append old_bin y
+	}
+}
 for {set i 0} {$i<[string length $old_bin]} {incr i $num_b} {
         for {set j $num_b} {$j>0} {incr j -1} {
                 append new_bin [string index $old_bin [expr $i+($j-1)]]
@@ -20,7 +27,7 @@ for {set i 0} {$i<[string length $old_bin]} {incr i $num_b} {
 for {set i 0} {$i<[string length $old_bin]} {incr i $num_b} {
         set binValue [string range $old_bin [expr $i+0] [expr $i+($num_b-1)]]
         binary scan $binValue H[expr $num_b*2] hexValue
-        
+
         set binValue [string range $new_bin [expr $i+0] [expr $i+($num_b-1)]]
         binary scan $binValue H[expr $num_b*2] hexValue
 }
