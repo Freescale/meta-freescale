@@ -31,8 +31,10 @@ ZIMAGE_BASE_NAME[vardepsexclude] = "DATETIME"
 SCMVERSION ?= "y"
 LOCALVERSION = ""
 DELTA_KERNEL_DEFCONFIG ?= ""
+DELTA_KERNEL_DEFCONFIG_prepend_ls1043ardb = "freescale.config "
+DELTA_KERNEL_DEFCONFIG_prepend_ls2080ardb = "freescale.config "
 
-do_configure_prepend() {
+do_merge_delta_config() {
     # copy desired defconfig so we pick it up for the real kernel_do_configure
     cp ${KERNEL_DEFCONFIG} .config
     
@@ -44,11 +46,12 @@ do_configure_prepend() {
             ${S}/scripts/kconfig/merge_config.sh -m .config ${WORKDIR}/${deltacfg}
         elif [ -f "${S}/arch/${ARCH}/configs/${deltacfg}" ]; then
             ${S}/scripts/kconfig/merge_config.sh -m .config \
-                ${S}/arch/powerpc/configs/${deltacfg}
+                ${S}/arch/${ARCH}/configs/${deltacfg}
         fi
     done
     cp .config ${WORKDIR}/defconfig
 }
+addtask merge_delta_config before do_preconfigure after do_patch
 
 do_install_append_qoriq-arm() {
     install -m 0644 arch/${ARCH}/boot/zImage ${D}/boot/zImage-${KERNEL_VERSION}
