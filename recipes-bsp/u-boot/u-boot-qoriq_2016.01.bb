@@ -1,10 +1,8 @@
 require recipes-bsp/u-boot/u-boot.inc
 inherit fsl-u-boot-localversion
 
-DESCRIPTION = "U-boot provided by Freescale with focus on QorIQ boards"
-HOMEPAGE = "http://u-boot.sf.net"
-SECTION = "bootloaders"
-PROVIDES = "virtual/bootloader u-boot"
+DESCRIPTION = "U-Boot provided by Freescale with focus on QorIQ boards"
+PROVIDES += "u-boot"
 LICENSE = "GPLv2 & BSD-3-Clause & BSD-2-Clause & LGPL-2.0 & LGPL-2.1"
 LIC_FILES_CHKSUM = " \
     file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
@@ -19,8 +17,6 @@ INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "libgcc virtual/${TARGET_PREFIX}gcc"
 DEPENDS_append_qoriq-arm = " change-file-endianess-native dtc-native tcl-native"
 DEPENDS_append_qoriq-ppc = " boot-format-native"
-
-inherit deploy
 
 SRCBRANCH = "sdk-v2.0.x"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
@@ -46,8 +42,6 @@ python () {
 }
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 LOCALVERSION = "${@d.getVar('SDK_VERSION', True).partition(' ')[0]}"
 
@@ -84,5 +78,4 @@ do_compile_append_qoriq () {
 
 PACKAGES += "${PN}-images"
 FILES_${PN}-images += "/boot"
-
 COMPATIBLE_MACHINE = "(qoriq)"
