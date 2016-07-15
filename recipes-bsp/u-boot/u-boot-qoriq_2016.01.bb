@@ -15,6 +15,7 @@ LIC_FILES_CHKSUM = " \
 PV_append = "+fslgit"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "libgcc virtual/${TARGET_PREFIX}gcc"
+DEPENDS_append_qoriq-arm64 = " change-file-endianess-native dtc-native tcl-native"
 DEPENDS_append_qoriq-arm = " change-file-endianess-native dtc-native tcl-native"
 DEPENDS_append_qoriq-ppc = " boot-format-native"
 
