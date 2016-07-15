@@ -14,7 +14,7 @@ PREFERRED_PROVIDER_qemu = "qemu-qoriq"
 IMAGE_CLASSES ?= "image_types_uboot"
 
 MACHINE_FEATURES ?= "pci ext2 ext3 serial"
-MACHINE_EXTRA_RRECOMMENDS ?= "udev-rules-qoriq"
+MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf kernel-modules"
 
 EXTRA_IMAGEDEPENDS += "u-boot cst-native"
 
