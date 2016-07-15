@@ -11,7 +11,7 @@ PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
 PREFERRED_PROVIDER_qemu = "qemu-qoriq"
 
-IMAGE_CLASSES ?= "image_types_uboot"
+IMAGE_CLASSES += "image_types_uboot"
 
 MACHINE_FEATURES ?= "pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf kernel-modules"
