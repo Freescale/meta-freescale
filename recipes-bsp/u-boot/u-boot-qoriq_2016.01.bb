@@ -55,56 +55,25 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
 
-do_compile_append_qoriq-ppc() {
-    for board in ${UBOOT_MACHINE}; do
-        case "${board}" in
-            *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
-            *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
-            *NAND*)     UBOOT_TARGET="u-boot-nand";;
-            *SRIO*)     UBOOT_TARGET="u-boot-srio";;
-            *)      UBOOT_TARGET="";;
-        esac
-
-        # deal with sd/spi/nand/srio image
-        UBOOT_SOURCE=u-boot.bin
-        if [ "x${UBOOT_TARGET}" != "x" ] && echo $board |egrep -qi "SECBOOT|SECURE"; then
-            cp ${S}/${board}/${UBOOT_SOURCE}  ${S}/${board}/${UBOOT_TARGET}.bin
-        elif [ "x${UBOOT_TARGET}" != "x" ]; then
-            # some boards' final binary was not named as u-boot.bin
-            if [ "${UBOOT_TARGET}" = "u-boot-nand" ] && [ "${UBOOT_SOURCE_NAND}" != "" ]; then
-                UBOOT_SOURCE="${UBOOT_SOURCE_NAND}"
-            elif [ "${UBOOT_TARGET}" = "u-boot-spi" ] && [ "${UBOOT_SOURCE_SPI}" != "" ]; then
-                UBOOT_SOURCE="${UBOOT_SOURCE_SPI}"
-            elif [ "${UBOOT_TARGET}" = "u-boot-sd" ] && [ "${UBOOT_SOURCE_SD}" != "" ]; then
-                UBOOT_SOURCE="${UBOOT_SOURCE_SD}"
-            fi
-            cp ${S}/${board}/${UBOOT_SOURCE}  ${S}/${board}/${UBOOT_TARGET}.bin
-
-            # use boot-format to regenerate spi image if BOOTFORMAT_CONFIG is not empty
-            if [ "${UBOOT_TARGET}" = "u-boot-spi" ] && [ -n "${BOOTFORMAT_CONFIG}" ];then
-                ${STAGING_BINDIR_NATIVE}/boot_format \
-                ${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
-                ${S}/${board}/${UBOOT_SOURCE} -spi ${S}/${board}/${UBOOT_TARGET}.bin
-            fi
-        fi
-    done
-}
-
-do_compile_append_qoriq-arm () {
+do_compile_append_qoriq () {
     unset i j
-    if [ "x${UBOOT_CONFIG}" != "x" ]; then
+    if [ -n "${UBOOT_CONFIG}" ];then
         for config in ${UBOOT_MACHINE}; do
             i=`expr $i + 1`;
             for type in ${UBOOT_CONFIG}; do
                 j=`expr $j + 1`;
                 if [ $j -eq $i ]; then
-                    case "${config}" in
-                        *nand* | *sdcard*)
-                            cp ${config}/u-boot-with-spl-pbl.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX};;
-                        *spi*) 
-                            tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl ${config}/u-boot-dtb.bin ${config}/u-boot.swap.bin 8
-                            cp ${config}/u-boot.swap.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX};;
-                    esac
+                    if [ -n "${BOOTFORMAT_CONFIG}" ] && echo "${type}" |grep -q spi;then
+                        # regenerate spi binary if BOOTFORMAT_CONFIG is set
+                        boot_format ${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
+                            ${config}/u-boot-${type}.${UBOOT_SUFFIX} -spi ${config}/u-boot.format.bin
+                        cp ${config}/u-boot.format.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX}
+                    elif [ "qspi" = "${type}" ];then
+                        # change qspi binary endianess
+                        tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl \
+                            ${config}/u-boot-${type}.${UBOOT_SUFFIX} ${config}/u-boot.swap.bin 8
+                        cp ${config}/u-boot.swap.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX}
+                    fi
                 fi
             done
             unset j
@@ -112,49 +81,6 @@ do_compile_append_qoriq-arm () {
         unset i
     fi
 }
-
-
-do_install_append_qoriq-ppc() {
-    for board in ${UBOOT_MACHINE}; do
-        case "${board}" in
-            *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
-            *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
-            *NAND*)     UBOOT_TARGET="u-boot-nand";;
-            *SRIO*)     UBOOT_TARGET="u-boot-srio";;
-            *)      UBOOT_TARGET="u-boot";;
-        esac
-
-        if [ -f ${S}/${board}/${UBOOT_TARGET}.bin ]; then
-            mkdir -p ${D}/boot/
-            install ${S}/${board}/${UBOOT_TARGET}.bin ${D}/boot/${UBOOT_TARGET}-${board}-${PV}-${PR}.bin
-            ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${D}/boot/${UBOOT_TARGET}.bin
-        fi
-    done
-}
-
-do_deploy_append_qoriq-ppc() {
-    if [ "x${UBOOT_MACHINES}" = "x" ]; then
-        UBOOT_MACHINES="${UBOOT_MACHINE}"
-    fi
-
-    for board in ${UBOOT_MACHINES}; do
-        case "${board}" in
-            *SDCARD*)   UBOOT_TARGET="u-boot-sd";;
-            *SPIFLASH*) UBOOT_TARGET="u-boot-spi";;
-            *NAND*)     UBOOT_TARGET="u-boot-nand";;
-            *SRIO*)     UBOOT_TARGET="u-boot-srio";;
-            *)      UBOOT_TARGET="u-boot";;
-        esac
-
-        if [ -f ${S}/${board}/${UBOOT_TARGET}.bin ]; then
-            mkdir -p ${DEPLOYDIR}
-            install ${S}/${board}/${UBOOT_TARGET}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${board}-${PV}-${PR}.bin
-            rm -f ${DEPLOYDIR}/${UBOOT_TARGET}-${board}.bin
-            ln -sf ${UBOOT_TARGET}-${board}-${PV}-${PR}.bin ${DEPLOYDIR}/${UBOOT_TARGET}-${board}.bin
-        fi
-    done
-}
-addtask deploy after do_install
 
 PACKAGES += "${PN}-images"
 FILES_${PN}-images += "/boot"
