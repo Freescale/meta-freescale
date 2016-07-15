@@ -23,11 +23,8 @@ SRCREV = "348748b2ce26258509997b19fead0dd7bba4dea4"
 
 S = "${WORKDIR}/git"
 
-python () {
-    if not d.getVar("HV_CFG_M", True):
-        raise bb.parse.SkipPackage("HV_CFG_M is not defined, please \
-check ${MACHINE}.conf file.")
-}
+HV_CFG_M ?= "${@d.getVar('MACHINE', True).replace('-64b','')}"
+HV_CFG_M_t1042 = "t1040rdb"
 
 do_install () {
 	make install
