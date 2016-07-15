@@ -1,5 +1,4 @@
 require recipes-bsp/u-boot/u-boot.inc
-inherit fsl-u-boot-localversion
 
 DESCRIPTION = "U-Boot provided by Freescale with focus on QorIQ boards"
 PROVIDES += "u-boot"
@@ -25,6 +24,8 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;branch=${SRCBRANCH} \
 "
 SRCREV = "a9b437f50e2051f8d42ec9e1a6df52de4bc00e1e"
 
+S = "${WORKDIR}/git"
+
 python () {
     if d.getVar("TCMODE", True) == "external-fsl":
         return
@@ -43,12 +44,10 @@ python () {
 }
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
-
-LOCALVERSION = "${@d.getVar('SDK_VERSION', True).partition(' ')[0]}"
-
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE = 'CROSS_COMPILE=${WRAP_TARGET_PREFIX} CC="${WRAP_TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
+
+inherit fsl-u-boot-localversion
+LOCALVERSION = "+fsl"
 
 do_compile_append_qoriq () {
     unset i j
