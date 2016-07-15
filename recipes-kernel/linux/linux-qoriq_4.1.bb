@@ -55,6 +55,7 @@ addtask merge_delta_config before do_preconfigure after do_patch
 
 do_install_append_qoriq-arm() {
     install -m 0644 arch/${ARCH}/boot/zImage ${D}/boot/zImage-${KERNEL_VERSION}
+    ln -sf zImage-${KERNEL_VERSION} ${D}/boot/zImage
 }
 
 do_deploy_append_qoriq-arm() {
