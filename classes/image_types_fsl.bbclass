@@ -325,3 +325,10 @@ IMAGE_CMD_sdcard () {
 # The sdcard requires the rootfs filesystem to be built before using
 # it so we must make this dependency explicit.
 IMAGE_TYPEDEP_sdcard += "${@d.getVar('SDCARD_ROOTFS', 1).split('.')[-1]}"
+
+# In case we are building for i.MX23 or i.MX28 we need to have the
+# image stream built before the sdcard generation
+IMAGE_TYPEDEP_sdcard += " \
+    ${@bb.utils.contains('IMAGE_FSTYPES', 'uboot.mxsboot-sdcard', 'uboot.mxsboot-sdcard', '', d)} \
+    ${@bb.utils.contains('IMAGE_FSTYPES', 'barebox.mxsboot-sdcard', 'barebox.mxsboot-sdcard', '', d)} \
+"
