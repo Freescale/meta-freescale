@@ -324,4 +324,4 @@ IMAGE_CMD_sdcard () {
 
 # The sdcard requires the rootfs filesystem to be built before using
 # it so we must make this dependency explicit.
-IMAGE_TYPEDEP_sdcard = "${@d.getVar('SDCARD_ROOTFS', 1).split('.')[-1]}"
+IMAGE_TYPEDEP_sdcard += "${@d.getVar('SDCARD_ROOTFS', 1).split('.')[-1]}"
