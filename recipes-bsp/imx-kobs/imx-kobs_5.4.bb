@@ -7,6 +7,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
 SRC_URI = "${FSL_MIRROR}/imx-kobs-${PV}.tar.gz \
            file://fix-compile.patch \
+           file://raw-mode.patch \
+           file://fix-cal_nfc_geometry.patch \
 "
 
 SRC_URI[md5sum] = "77467d834f858c2ec216841583e5f437"
