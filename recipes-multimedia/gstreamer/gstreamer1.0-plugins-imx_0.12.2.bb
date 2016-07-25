@@ -68,3 +68,4 @@ COMPATIBLE_MACHINE = "(mx6|mx7)"
 # disable the false alarm (the "it isn't a build dependency" QA warning)
 INSANE_SKIP_gstreamer1.0-plugins-imx-imxaudio = "build-deps"
 INSANE_SKIP_gstreamer1.0-plugins-imx-imxvpu = "build-deps"
+INSANE_SKIP_gstreamer1.0-plugins-imx-imxg2d = "build-deps"
