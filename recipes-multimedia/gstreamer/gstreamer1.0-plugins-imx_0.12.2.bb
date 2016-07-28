@@ -14,7 +14,7 @@ RDEPENDS_gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audiopar
 RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 SRCBRANCH ?= "master"
-SRCREV = "11a7b366f211e54e0ec67c692287603a02640ff6"
+SRCREV = "50ddcd9f2b6ecc3d94d0d2f71b6de841d8a8fb7b"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
