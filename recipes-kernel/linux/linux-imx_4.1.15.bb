@@ -14,6 +14,11 @@ SRCBRANCH = "imx_4.1.15_1.0.0_ga"
 LOCALVERSION = "-1.2.0"
 SRCREV = "77f61547834c4f127b44b13e43c59133a35880dc"
 
+# Add patches for gcc 6 compiler issue
+SRC_URI += "file://gcc6_integrate_fix.patch \
+            file://bcmhd_gcc6_indent_warning_error_fix.patch \
+            file://gpu-viv_gcc6_indent_warning_error_fix.patch"
+
 DEFAULT_PREFERENCE = "1"
 
 COMPATIBLE_MACHINE = "(mx6|mx6ul|mx7)"

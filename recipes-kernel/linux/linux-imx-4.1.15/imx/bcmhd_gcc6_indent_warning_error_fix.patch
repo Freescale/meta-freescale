@@ -1,0 +1,28 @@
+From 86e5baf037a03464e56ee1edcebb598c43ffb1f6 Mon Sep 17 00:00:00 2001
+From: Lauren Post <lauren.post@nxp.com>
+Date: Wed, 13 Jul 2016 01:37:31 -0500
+Subject: [PATCH] bcmdhd: dhd_sdio: Fix indent for gcc 6.0 error
+
+Upstream-Status: Pending
+
+Signed-off-by: Lauren Post <lauren.post@nxp.com>
+---
+ drivers/net/wireless/bcmdhd/dhd_sdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/bcmdhd/dhd_sdio.c b/drivers/net/wireless/bcmdhd/dhd_sdio.c
+index 8cb8796..09e1f32 100644
+--- a/drivers/net/wireless/bcmdhd/dhd_sdio.c
++++ b/drivers/net/wireless/bcmdhd/dhd_sdio.c
+@@ -8046,7 +8046,7 @@ dhd_bus_devreset(dhd_pub_t *dhdp, uint8 flag)
+ 			} else
+ 				bcmerror = BCME_SDIO_ERROR;
+ 
+-				dhd_os_sdunlock(dhdp);
++			dhd_os_sdunlock(dhdp);
+ 		} else {
+ 			bcmerror = BCME_SDIO_ERROR;
+ 			DHD_INFO(("%s called when dongle is not in reset\n",
+-- 
+1.9.1
+

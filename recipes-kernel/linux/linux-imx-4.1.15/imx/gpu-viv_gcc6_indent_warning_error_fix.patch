@@ -1,0 +1,30 @@
+From 8d0142efbfcfe4e3998f748496ceba62890c47f0 Mon Sep 17 00:00:00 2001
+From: Lauren Post <lauren.post@nxp.com>
+Date: Wed, 13 Jul 2016 03:07:23 -0500
+Subject: [PATCH] gpu-viv:  Fix gcc 6.0 indent warning error in gc_hal_kernel_platform_imx6ql4.c
+
+Upstream-Status: Pending
+
+Signed-off-by: Lauren Post <lauren.post@nxp.com>
+---
+ .../linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+index e436ada..d98c2f8 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+@@ -475,8 +475,8 @@ gckPLATFORM_AdjustParam(
+ 
+     Args->gpu3DMinClock = initgpu3DMinClock;
+ 
+-  if(Args->physSize == 0)
+-    Args->physSize = 0x80000000;
++    if(Args->physSize == 0)
++        Args->physSize = 0x80000000;
+ 
+     return gcvSTATUS_OK;
+ }
+-- 
+1.9.1
+
