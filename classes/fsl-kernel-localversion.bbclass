@@ -23,6 +23,7 @@ kernel_conf_variable() {
 }
 
 do_preconfigure() {
+	mkdir -p ${B}
 	echo "" > ${B}/.config
 	CONF_SED_SCRIPT=""
 
