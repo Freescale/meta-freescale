@@ -11,28 +11,28 @@ SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true"
 inherit fsl-eula-unpack
 
 do_install() {
-    install -d ${D}/lib/firmware/imx
-    cp -rfv firmware/* ${D}/lib/firmware/
+    install -d ${D}${base_libdir}/firmware/imx
+    cp -rfv firmware/* ${D}${base_libdir}/firmware/
 
-    mv ${D}/lib/firmware/epdc/ ${D}/lib/firmware/imx/epdc/
-    mv ${D}/lib/firmware/imx/epdc/epdc_ED060XH2C1.fw.nonrestricted ${D}/lib/firmware/imx/epdc/epdc_ED060XH2C1.fw
+    mv ${D}${base_libdir}/firmware/epdc/ ${D}${base_libdir}/firmware/imx/epdc/
+    mv ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw.nonrestricted ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw
 
-    find ${D}/lib/firmware -type f -exec chmod 644 '{}' ';'
-    find ${D}/lib/firmware -type f -exec chown root:root '{}' ';'
+    find ${D}${base_libdir}/firmware -type f -exec chmod 644 '{}' ';'
+    find ${D}${base_libdir}/firmware -type f -exec chown root:root '{}' ';'
 
     # Remove files not going to be installed
-    find ${D}/lib/firmware/ -name '*.mk' -exec rm '{}' ';'
+    find ${D}${base_libdir}/firmware/ -name '*.mk' -exec rm '{}' ';'
 }
 
 python populate_packages_prepend() {
-    vpudir = bb.data.expand('/lib/firmware/vpu', d)
+    vpudir = bb.data.expand('${base_libdir}/firmware/vpu', d)
     do_split_packages(d, vpudir, '^vpu_fw_([^_]*).*\.bin',
                       output_pattern='firmware-imx-vpu-%s',
                       description='Freescale IMX Firmware %s',
                       extra_depends='',
                       prepend=True)
 
-    sdmadir = bb.data.expand('/lib/firmware/sdma', d)
+    sdmadir = bb.data.expand('${base_libdir}/firmware/sdma', d)
     do_split_packages(d, sdmadir, '^sdma-([^-]*).*\.bin',
                       output_pattern='firmware-imx-sdma-%s',
                       description='Freescale IMX Firmware %s',
@@ -46,6 +46,6 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
 
 PACKAGES =+ "${PN}-epdc"
 
-FILES_${PN}-epdc = "/lib/firmware/imx/epdc/"
+FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
