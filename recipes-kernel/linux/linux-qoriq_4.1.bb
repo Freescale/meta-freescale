@@ -12,6 +12,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;branch=sdk-v2.0.x \
     file://0003-use-static-inline-in-ARM-lifeboot.h.patch \
     file://fix-the-compile-issue-under-gcc6.patch \
     file://only-set-vmpic_msi_feature-if-CONFIG_EPAPR_PARAVIRT-.patch \
+    file://powerpc-fsl-Fix-build-of-the-dtb-embedded-kernel-images.patch \
 "
 SRCREV = "bd51baffc04ecc73f933aee1c3a37c8b44b889a7"
 

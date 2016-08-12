@@ -1,0 +1,45 @@
+From 4680c9d50637f78338e786c920aef6c171c7cc00 Mon Sep 17 00:00:00 2001
+From: Alessio Igor Bogani <alessio.bogani@elettra.eu>
+Date: Mon, 18 Apr 2016 08:36:19 +0200
+Subject: powerpc/fsl: Fix build of the dtb embedded kernel images
+
+Commit dc37374b9c833 ("powerpc/fsl: Move Freescale device tree files
+into fsl folder") moved a lot of device tree files into fsl directory,
+fixing Makefile for cuImage target only.  Unfortunately there are other
+targets which require embedding a device tree into the kernel image
+(e.g. dtbImage.%).  So use a more generic approach.
+
+Signed-off-by: Alessio Igor Bogani <alessio.bogani@elettra.eu>
+[scottwood: cleaned up commit message]
+Signed-off-by: Scott Wood <oss@buserror.net>
+---
+ arch/powerpc/boot/Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
+index 6116510..8fe78a3 100644
+--- a/arch/powerpc/boot/Makefile
++++ b/arch/powerpc/boot/Makefile
+@@ -362,9 +362,6 @@ $(obj)/cuImage.initrd.%: vmlinux $(obj)/%.dtb $(wrapperbits)
+ $(obj)/cuImage.%: vmlinux $(obj)/%.dtb $(wrapperbits)
+ 	$(call if_changed,wrap,cuboot-$*,,$(obj)/$*.dtb)
+ 
+-$(obj)/cuImage.%: vmlinux $(obj)/fsl/%.dtb $(wrapperbits)
+-	$(call if_changed,wrap,cuboot-$*,,$(obj)/fsl/$*.dtb)
+-
+ $(obj)/simpleImage.initrd.%: vmlinux $(obj)/%.dtb $(wrapperbits)
+ 	$(call if_changed,wrap,simpleboot-$*,,$(obj)/$*.dtb,$(obj)/ramdisk.image.gz)
+ 
+@@ -381,6 +378,9 @@ $(obj)/treeImage.%: vmlinux $(obj)/%.dtb $(wrapperbits)
+ $(obj)/%.dtb: $(src)/dts/%.dts FORCE
+ 	$(call if_changed_dep,dtc)
+ 
++$(obj)/%.dtb: $(src)/dts/fsl/%.dts FORCE
++	$(call if_changed_dep,dtc)
++
+ # If there isn't a platform selected then just strip the vmlinux.
+ ifeq (,$(image-y))
+ image-y := vmlinux.strip
+-- 
+cgit v0.12
+
