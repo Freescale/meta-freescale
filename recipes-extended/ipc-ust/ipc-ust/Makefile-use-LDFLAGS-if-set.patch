@@ -1,0 +1,86 @@
+From 4c0accfce78610e21f5d9b75725a0b9fa2c6cfb9 Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@nxp.com>
+Date: Fri, 12 Aug 2016 10:41:51 +0800
+Subject: [PATCH] Makefile: use LDFLAGS if set
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+---
+ dsp_boot/Makefile |  6 +++---
+ fsl_shm/Makefile  |  4 ++--
+ ipc/Makefile      | 14 +++++++-------
+ 3 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/dsp_boot/Makefile b/dsp_boot/Makefile
+index 8f30076..59eb648 100644
+--- a/dsp_boot/Makefile
++++ b/dsp_boot/Makefile
+@@ -20,12 +20,12 @@ endif
+ all: fsl_shm lib_dsp_boot dsp_bt
+ lib_dsp_boot:
+ 	$(CC) -c ./libdspboot.c $(CFLAGS) -o ./libdspboot.o
+-	$(CC) -shared -fPIC ./libdspboot.o -o libdspboot.so
++	$(CC) -shared -fPIC $(LDFLAGS) ./libdspboot.o -o libdspboot.so
+ 	$(AR) rcs libdspboot.a ./libdspboot.o ../fsl_shm/lib/lg_shm.o
+ fsl_shm:
+-	$(CC) -c $(CFLAGS) $(SOURCES_FSL_SHM)
++	$(CC) -c $(CFLAGS) $(LDFLAGS) $(SOURCES_FSL_SHM)
+ dsp_bt:
+-	$(CC) $(CFLAGS) $(SOURCES) $(SOURCES_FSL_SHM) -L. -ldspboot -L../ipc -lipc -o $@
++	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) $(SOURCES_FSL_SHM) -L. -ldspboot -L../ipc -lipc -o $@
+ 	cp libdspboot.so  ../ipc/ -v
+ clean:
+ 	rm -rf *.o dsp_bt libdspboot.so *.a
+diff --git a/fsl_shm/Makefile b/fsl_shm/Makefile
+index 0042055..0b9f581 100644
+--- a/fsl_shm/Makefile
++++ b/fsl_shm/Makefile
+@@ -4,11 +4,11 @@ CFLAGS=-fPIC -I ./lib -I ./include -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -W
+ 
+ all: lg_shm_lib lg_shm_test
+ lg_shm_lib:
+-	$(CC) -c ./lib/lg_shm.c $(CFLAGS) -o ./lib/lg_shm.o
++	$(CC) -c ./lib/lg_shm.c $(CFLAGS) $(LDFLAGS) -o ./lib/lg_shm.o
+ 	$(AR) rcs liblg_shm.a ./lib/lg_shm.o
+ 
+ lg_shm_test:
+-	$(CC) ./test/app.c $(CFLAGS) -L. -llg_shm -o app
++	$(CC) ./test/app.c $(CFLAGS) $(LDFLAGS) -L. -llg_shm -o app
+ 
+ clean:
+ 	rm -rf app ./lib/*.o *.a
+diff --git a/ipc/Makefile b/ipc/Makefile
+index 06599f6..cbb63d6 100644
+--- a/ipc/Makefile
++++ b/ipc/Makefile
+@@ -29,21 +29,21 @@ ipc_lib:
+ 	$(CC) -c ./lib/fsl_user_dma.c $(CFLAGS) -o ./lib/fsl_user_dma.o
+ 	$(CC) -c ./lib/fsl_ipc_lock.c $(CFLAGS) -o ./lib/fsl_ipc_lock.o
+ 	$(CC) -c ../dsp_boot/libdspboot.c $(CFLAGS2) -o ../dsp_boot/libdspboot.o
+-	$(CC) -shared -fPIC -lpthread ./lib/fsl_user_dma.o ./lib/fsl_ipc_channel.o ./lib/fsl_ipc_lock.o ../dsp_boot/libdspboot.o -L../fsl_shm -llg_shm -o libipc.so
++	$(CC) -shared -fPIC -lpthread $(LDFLAGS) ./lib/fsl_user_dma.o ./lib/fsl_ipc_channel.o ./lib/fsl_ipc_lock.o ../dsp_boot/libdspboot.o -L../fsl_shm -llg_shm -o libipc.so
+ 	$(AR) rcs libipc.a ./lib/fsl_ipc_channel.o ./lib/fsl_ipc_lock.o ../dsp_boot/libdspboot.o ./lib/fsl_user_dma.o ../fsl_shm/lib/lg_shm.o
+ 
+ mem_lib:
+ 	$(CC) -c ./lib/fsl_usmmgr.c $(CFLAGS) -o ./lib/fsl_usmmgr.o
+ 	$(CC) -c ./lib/fsl_ipc_lock.c $(CFLAGS) -o ./lib/fsl_ipc_lock.o
+-	$(CC) -shared -fPIC ./lib/fsl_usmmgr.o ./lib/fsl_ipc_lock.o -L../fsl_shm -llg_shm  -o libmem.so
++	$(CC) -shared -fPIC $(LDFLAGS) ./lib/fsl_usmmgr.o ./lib/fsl_ipc_lock.o -L../fsl_shm -llg_shm  -o libmem.so
+ 	$(AR) rcs libmem.a ./lib/fsl_usmmgr.o ./lib/fsl_ipc_lock.o ../fsl_shm/lib/lg_shm.o
+ 
+ ipc_test:
+-	$(CC) ./test/ipc_test.c $(CFLAGS) -L. -lipc -lmem -o ipc_test
+-	$(CC) ./test/ipc_test67.c $(CFLAGS) -L. -lipc -lmem -o ipc_test67
+-	$(CC) ./test/dsp_recover.c $(CFLAGS) -L. -lipc -lmem -o dsp_recover
+-	$(CC) ./test/l1_defense_app.c $(CFLAGS) -L. -lipc -lmem -o l1d_app
+-	$(CC) ./test/fsl_dump_memory.c $(CFLAGS) -L. -lipc -lmem -o dump_mem
++	$(CC) ./test/ipc_test.c $(CFLAGS) $(LDFLAGS) -L. -lipc -lmem -o ipc_test
++	$(CC) ./test/ipc_test67.c $(CFLAGS) $(LDFLAGS) -L. -lipc -lmem -o ipc_test67
++	$(CC) ./test/dsp_recover.c $(CFLAGS) $(LDFLAGS) -L. -lipc -lmem -o dsp_recover
++	$(CC) ./test/l1_defense_app.c $(CFLAGS) $(LDFLAGS) -L. -lipc -lmem -o l1d_app
++	$(CC) ./test/fsl_dump_memory.c $(CFLAGS) $(LDFLAGS) -L. -lipc -lmem -o dump_mem
+ 
+ clean:
+ 	rm -rf dump_mem ipc_test ipc_test67 dsp_recover l1d_app ./lib/*.o *.a *.so
+-- 
+1.9.2
+
