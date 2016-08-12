@@ -9,7 +9,7 @@ SRCREV = "5b6622e127ac2f3e221cc0395985ac90e2ed9533"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = "ARCH=${TARGET_ARCH} USE_LTIB=1 LTIB_LIB_PATH=${STAGING_LIBDIR} SYSROOT=${STAGING_DIR_TARGET} CROSS_COMPILE=${HOST_PREFIX}"
+EXTRA_OEMAKE = 'ARCH=${TARGET_ARCH} USE_LTIB=1 LTIB_LIB_PATH=${STAGING_LIBDIR} SYSROOT=${STAGING_DIR_TARGET} CROSS_COMPILE=${HOST_PREFIX} EXTRA_LDFLAGS="${LDFLAGS}"'
 EXTRA_CFLAGS = "-Wno-unused-but-set-parameter -Wno-enum-compare -Wno-unused-but-set-variable"
 do_compile_prepend() {
     sed -i '/rec_yyget_leng/d' compilers/regularExpression/engine/pmrec.lex
