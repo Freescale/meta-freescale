@@ -16,7 +16,7 @@ SRCREV = "bbf1ba00fcf407252a4c2e56783e63861088f9cb"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = 'ARCH=${TARGET_ARCH} MACHINE=${MACHINE}'
+EXTRA_OEMAKE = 'ARCH=${TARGET_ARCH} MACHINE=${MACHINE} EXTRA_LDFLAGS="${LDFLAGS}"'
 
 export LIBEDIT_CFLAGS = "`pkg-config --cflags libedit`"
 export LIBEDIT_LDFLAGS = "`pkg-config --libs --static libedit`"
