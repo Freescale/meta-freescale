@@ -21,7 +21,7 @@ S = "${WORKDIR}/git"
 
 WRAP_ARCH ?= "${TARGET_ARCH}"
 WRAP_ARCH_ls1043ardb = "arm64"
-EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}" ARCH="${WRAP_ARCH}"'
+EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}" ARCH="${WRAP_ARCH}" EXTRA_LDFLAGS="${LDFLAGS}"'
 
 SOC ?= "P4080"
 SOC_b4 = "B4860"
