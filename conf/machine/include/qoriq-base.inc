@@ -10,6 +10,7 @@ PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
 PREFERRED_PROVIDER_qemu = "qemu-qoriq"
+PREFERRED_VERSION_testfloat = "2a"
 
 IMAGE_CLASSES += "image_types_uboot"
 
