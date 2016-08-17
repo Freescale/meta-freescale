@@ -166,7 +166,7 @@ SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
 
 KERNEL_IMAGETYPE = "zImage"
 
-MACHINE_FEATURES = "apm usbgadget usbhost vfat alsa touchscreen"
+MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
 
 # Add the ability to specify _imx machines
 MACHINEOVERRIDES =. "imx:"
