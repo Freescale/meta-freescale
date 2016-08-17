@@ -6,19 +6,13 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=8cf95184c220e247b9917e7244124c5a"
 
 PE = "1"
 
-SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
-           git://git.freescale.com/imx/imx-firmware.git;branch=${SRCBRANCH};destsuffix=${S}/git"
+SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true"
 
 inherit fsl-eula-unpack
 
 do_install() {
     install -d ${D}${base_libdir}/firmware/imx
-    install -d ${D}${base_libdir}/firmware/bcm
-
     cp -rfv firmware/* ${D}${base_libdir}/firmware/
-    cp -rfv firmware/* ${D}${base_libdir}/firmware/
-    cp -rfv git/BCM4339/TypeZP/BCM4339_wifi/*.bin ${D}${base_libdir}/firmware/bcm
-    cp -rfv git/BCM4339/TypeZP/BCM4339_BT/*.hcd ${D}${base_libdir}/firmware/
 
     mv ${D}${base_libdir}/firmware/epdc/ ${D}${base_libdir}/firmware/imx/epdc/
     mv ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw.nonrestricted ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw
@@ -44,16 +38,14 @@ python populate_packages_prepend() {
                       description='Freescale IMX Firmware %s',
                       extra_depends='',
                       prepend=True)
-
 }
 
 ALLOW_EMPTY_${PN} = "1"
 
 PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
 
-PACKAGES =+ "${PN}-epdc ${PN}-bcm4339"
+PACKAGES =+ "${PN}-epdc"
 
 FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
-FILES_${PN}-bcm4339 = "${base_libdir}/firmware/*.hcd ${base_libdir}/firmware/bcm/*"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
