@@ -1,5 +1,5 @@
 # Copyright (C) 2012-2015 Freescale Semiconductor
-# Copyright (C) 2012-2014 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2016 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require recipes-graphics/xorg-driver/xorg-driver-video.inc
@@ -21,6 +21,7 @@ INITSCRIPT_PARAMS = "start 99 2 3 4 5 ."
 
 EXTRA_OEMAKE += "-C ${S} -f Makefile prefix=${D}/usr \
                  sysroot=${STAGING_DIR_TARGET} \
+                 LFLAGS="${LDFLAGS}" \
                  BUSID_HAS_NUMBER=1 \
                  BUILD_IN_YOCTO=1 \
                  XSERVER_GREATER_THAN_13=1"
