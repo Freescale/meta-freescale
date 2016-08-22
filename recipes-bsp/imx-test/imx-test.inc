@@ -40,7 +40,6 @@ do_make_scripts[depends] += "virtual/kernel:do_install"
 
 do_compile() {
     CFLAGS="${TOOLCHAIN_OPTIONS}"
-    LDFLAGS="${TOOLCHAIN_OPTIONS} -L${STAGING_LIBDIR}"
     oe_runmake V=1 VERBOSE='' \
                CROSS_COMPILE=${TARGET_PREFIX} \
                INC="-I${STAGING_INCDIR} \
@@ -52,6 +51,7 @@ do_compile() {
                     -I${STAGING_KERNEL_DIR}/arch/arm/include \
                     -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
                     -I${STAGING_KERNEL_DIR}/drivers/mxc/security/sahara2/include" \
+               CC="${CC} -L${STAGING_LIBDIR} ${LDFLAGS}" \
                LINUXPATH=${STAGING_KERNEL_DIR} \
                KBUILD_OUTPUT=${STAGING_KERNEL_BUILDDIR} \
                PLATFORM=${PLATFORM}
