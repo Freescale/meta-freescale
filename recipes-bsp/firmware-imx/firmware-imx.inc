@@ -6,13 +6,40 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=8cf95184c220e247b9917e7244124c5a"
 
 PE = "1"
 
-SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true"
+#BRCM firmware git
+SRCBRANCH ?= "master"
+
+SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
+           git://git.freescale.com/imx/imx-firmware.git;branch=${SRCBRANCH};destsuffix=${S}/git "
 
 inherit fsl-eula-unpack
 
 do_install() {
     install -d ${D}${base_libdir}/firmware/imx
+    install -d ${D}${base_libdir}/firmware/brcm
+    install -d ${D}${sysconfdir}/firmware
+
     cp -rfv firmware/* ${D}${base_libdir}/firmware/
+
+    #1BW_BCM43340
+    cp -rfv git/brcm/1BW_BCM43340/*.bin ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/1BW_BCM43340/*.cal ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/1BW_BCM43340/*.hcd ${D}${sysconfdir}/firmware/
+
+    #1DX_BCM4343W
+    cp -rfv git/brcm/1DX_BCM4343W/*.bin ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/1DX_BCM4343W/*.cal ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/1DX_BCM4343W/*.hcd ${D}${sysconfdir}/firmware/
+
+    #SN8000_BCM43362
+    cp -rfv git/brcm/SN8000_BCM43362/*.bin ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/SN8000_BCM43362/*.cal ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/1DX_BCM4343W/*.hcd ${D}${sysconfdir}/firmware/
+
+    #ZP_BCM4339
+    cp -rfv git/brcm/ZP_BCM4339/*.bin ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/ZP_BCM4339/*.cal ${D}${base_libdir}/firmware/brcm
+    cp -rfv git/brcm/ZP_BCM4339/*.hcd ${D}${sysconfdir}/firmware/
 
     mv ${D}${base_libdir}/firmware/epdc/ ${D}${base_libdir}/firmware/imx/epdc/
     mv ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw.nonrestricted ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw
@@ -44,8 +71,9 @@ ALLOW_EMPTY_${PN} = "1"
 
 PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
 
-PACKAGES =+ "${PN}-epdc"
+PACKAGES =+ "${PN}-epdc ${PN}-brcm"
 
 FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
+FILES_${PN}-brcm = "${base_libdir}/firmware/brcm/*.bin ${base_libdir}/firmware/brcm/*.cal ${sysconfdir}/firmware/"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
