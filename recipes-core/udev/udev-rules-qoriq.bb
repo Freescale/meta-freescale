@@ -15,10 +15,14 @@ RULE_e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1024 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1023 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_ls1043ardb = "73-fsl-dpaa-persistent-networking.rules"
+RULE_ls2080ardb = ""
 
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d/
-    install -m 0644 ${WORKDIR}/${RULE} ${D}${sysconfdir}/udev/rules.d/
+    for r in ${RULE};do
+        install -m 0644 ${WORKDIR}/${r} ${D}${sysconfdir}/udev/rules.d/
+    done
 }
 
+ALLOW_EMPTY_${PN} = "1"
 COMPATIBLE_MACHINE = "(qoriq)"
