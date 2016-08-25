@@ -15,7 +15,7 @@ PREFERRED_VERSION_testfloat = "2a"
 IMAGE_CLASSES += "image_types_uboot"
 
 MACHINE_FEATURES ?= "pci ext2 ext3 serial"
-MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf kernel-modules"
+MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf udev-rules-qoriq kernel-modules"
 
 EXTRA_IMAGEDEPENDS += "u-boot cst-native"
 
