@@ -24,11 +24,11 @@ inherit waf
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 
 # configure the eglvivsink element to use the appropriate EGL platform code
-# X11 if x11 is present in DISTRO_FEATURES
-# Wayland if x11 is not present in DISTRO_FEATURES, but wayland is
+# Wayland if 'wayland' is present in DISTRO_FEATURES, if not,
+# X11 if x11 is present in DISTRO_FEATURES,
 # Framebuffer otherwise
-EGLVIVSINK_PLATFORM = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', \
-                          bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+EGLVIVSINK_PLATFORM = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+                          bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', \
                           'fb', d),d)}"
 
 EGL_PLATFORM_CONF = "--egl-platform=${EGLVIVSINK_PLATFORM}"
