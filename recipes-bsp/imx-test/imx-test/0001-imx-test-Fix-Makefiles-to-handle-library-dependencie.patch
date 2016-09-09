@@ -1,0 +1,170 @@
+From 251612f51136568331d3cf3826bf08c3f70d7eee Mon Sep 17 00:00:00 2001
+From: Lauren Post <lauren.post@nxp.com>
+Date: Wed, 24 Aug 2016 14:54:33 -0500
+Subject: [PATCH] imx-test:  Fix Makefiles to handle library dependencies
+
+Applications with library dependencies need different handling to pull in both
+CFLAGS and LDFLAGS. Without these changes the library dependencies are not
+linked in correctly causing build breaks.
+
+Signed-off-by: Lauren Post <lauren.post@nxp.com>
+---
+ test/mxc_cec_test/Makefile       | 13 ++++++++++---
+ test/mxc_i2c_slave_test/Makefile | 12 ++++++++++--
+ test/mxc_mpeg4_enc_test/Makefile | 18 ++++++------------
+ test/pxp_lib_test/Makefile       | 16 ++++++++++------
+ test/pxp_v4l2_test/Makefile      | 19 ++++++++++++++++---
+ 5 files changed, 52 insertions(+), 26 deletions(-)
+
+diff --git a/test/mxc_cec_test/Makefile b/test/mxc_cec_test/Makefile
+index 8327784..9d7ee9e 100755
+--- a/test/mxc_cec_test/Makefile
++++ b/test/mxc_cec_test/Makefile
+@@ -2,11 +2,18 @@
+ # Makefile for MediaLB driver test app.
+ #
+ INC += -I$(LINUXPATH)/include
+-CFLAGS += -lpthread -lcec -lrt
+ 
+-OBJS = $(OBJDIR)/mxc_cec_test.out
++TARGET = $(OBJDIR)/mxc_cec_test.out
++OBJ = mxc_cec_test.o
++
++all : $(TARGET)
++
++LDFLAGS += -lpthread -lcec -lrt -lstdc++ -pthread
++
++$(TARGET):$(OBJ)
++	$(CC) -o $(TARGET) $(OBJ) $(LDFLAGS) -Os
++	$(STRIP) $(TARGET)
+ 
+-all : $(OBJS)
+ 
+ .PHONY: clean
+ clean :
+diff --git a/test/mxc_i2c_slave_test/Makefile b/test/mxc_i2c_slave_test/Makefile
+index 07d0ff1..2b6b8ef 100644
+--- a/test/mxc_i2c_slave_test/Makefile
++++ b/test/mxc_i2c_slave_test/Makefile
+@@ -2,9 +2,17 @@
+ 
+ CFLAGS += -lpthread
+ 
+-OBJS = $(OBJDIR)/mxc_i2c_slave_test.out
++TARGET = $(OBJDIR)/mxc_i2c_slave_test.out
+ 
+-all : $(OBJS)
++all : $(TARGET)
++
++LDFLAGS += -lpthread -lstdc++ -pthread
++
++OBJ = mxc_i2c_slave_test.o
++
++$(TARGET):$(OBJ)
++	$(CC) -o $(TARGET) $(OBJ) $(LDFLAGS) -Os
++	$(STRIP) $(TARGET)
+ 
+ .PHONY: clean
+ clean :
+diff --git a/test/mxc_mpeg4_enc_test/Makefile b/test/mxc_mpeg4_enc_test/Makefile
+index 842ab58..1de4115 100644
+--- a/test/mxc_mpeg4_enc_test/Makefile
++++ b/test/mxc_mpeg4_enc_test/Makefile
+@@ -6,27 +6,21 @@ CFLAGS += -I . -lpthread
+ 
+ EXES = $(OBJDIR)/cam2mpeg4.out
+ SCRIPTS = $(OBJDIR)/autorun-hantro.sh
+-ifeq "$(PLATFORM)" "MXC30030EVB"
+-LIBS = libmpeg4enc_cif.a
+-TEMP_EXE = $(OBJDIR)/cam2mpeg4_cif.out
+-OBJS = $(OBJDIR)/cam2mpeg4_cif.o
+-else
+ LIBS = libmpeg4enc_vga.a
+-TEMP_EXE = $(OBJDIR)/cam2mpeg4_vga.out
+-OBJS = $(OBJDIR)/cam2mpeg4_vga.o
+-endif
++OBJS = cam2mpeg4_vga.o
+ 
+ all: $(EXES) $(SCRIPTS)
+ 
+-$(EXES): $(TEMP_EXE)
+-	@mv $< $@
++LDFLAGS += -lpthread
++
++$(EXES): $(OBJS)
++	$(CC) -o $(EXES) $(OBJS) libmpeg4enc_vga.a $(LDFLAGS) -Os
++	$(STRIP) $(EXES)
+ 
+ .PHONY: clean
+ clean:
+ 	rm -f $(EXES) $(OBJS) $(SCRIPTS)
+ 
+-$(TEMP_EXE): $(LIBS)
+-
+ #
+ # include the Rules
+ #
+diff --git a/test/pxp_lib_test/Makefile b/test/pxp_lib_test/Makefile
+index 978bea5..c73e4c2 100644
+--- a/test/pxp_lib_test/Makefile
++++ b/test/pxp_lib_test/Makefile
+@@ -1,13 +1,16 @@
+ SRCS = pxp_test.c utils.c
+-CFLAGS += -lpxp -lpthread
+ 
+-OBJS = $(OBJDIR)/pxp_test.out \
+-	$(OBJDIR)/autorun-pxp.sh
+-$(OBJS): $(SRCS)
+-	mkdir -p $(OBJDIR)
+-	$(VERBOSE) $(CC) -g $(INC) $(CFLAGS) $^ $(LIBS) -o $@
++TARGET = $(OBJDIR)/pxp_test.out
+ 
+-all: $(OBJS)
++all: $(TARGET)
++
++OBJ = pxp_test.o utils.o
++
++LDFLAGS += -pthread -lpxp -lstdc++ -pthread
++
++$(OBJDIR)/pxp_test.out: $(OBJ)
++	$(CC) -o  $(OBJDIR)/pxp_test.out $(OBJ) $(LDFLAGS) -Os
++	$(STRIP) $(OBJDIR)/pxp_test.out
+ 
+ .PHONY: clean
+ clean:
+diff --git a/test/pxp_v4l2_test/Makefile b/test/pxp_v4l2_test/Makefile
+index 8f72e63..da83f8a 100644
+--- a/test/pxp_v4l2_test/Makefile
++++ b/test/pxp_v4l2_test/Makefile
+@@ -1,12 +1,25 @@
+ # Just use the pxp library to get contiguous physical memory for USERPTR testing
+ # However, be aware that this is not the only way.
+-CFLAGS += -lpthread -lpxp -DGET_CONTI_PHY_MEM_VIA_PXP_LIB
++CFLAGS += -DGET_CONTI_PHY_MEM_VIA_PXP_LIB
+ 
+-OBJS = 	$(OBJDIR)/pxp_v4l2_test.out \
++TARGET = $(OBJDIR)/pxp_v4l2_test.out \
+ 	$(OBJDIR)/pxp_v4l2_out_test.sh \
+ 	$(OBJDIR)/mx6s_v4l2_capture.out
+ 
+-all : $(OBJS)
++all : $(TARGET)
++
++LDFLAGS += -lpthread -lpxp -lstdc++ -pthread
++
++$(OBJDIR)/pxp_v4l2_test.out : pxp_v4l2_test.o
++	$(CC) -o $(OBJDIR)/pxp_v4l2_test.out pxp_v4l2_test.o $(LDFLAGS) -Os
++	$(STRIP) $(OBJDIR)/pxp_v4l2_test.out
++
++$(OBJDIR)/mx6s_v4l2_capture.out : mx6s_v4l2_capture.o
++	$(CC) -o $(OBJDIR)/mx6s_v4l2_capture.out mx6s_v4l2_capture.o $(LDFLAGS) -Os
++	$(STRIP) $(OBJDIR)/mx6s_v4l2_capture.out
++
++$(OBJDIR)/pxp_v4l2_out_test.sh: pxp_v4l2_out_test.sh
++	cp pxp_v4l2_out_test.sh $(OBJDIR)
+ 
+ .PHONY: clean
+ clean :
+-- 
+1.9.1
+
