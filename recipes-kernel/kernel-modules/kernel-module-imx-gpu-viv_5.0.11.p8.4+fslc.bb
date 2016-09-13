@@ -1,4 +1,4 @@
-# Copyright (C) 2015 O.S. Systems Software LTDA.
+# Copyright (C) 2015-2016 O.S. Systems Software LTDA.
 # Copyright (C) 2015-2016 Freescale Semiconductor
 
 SUMMARY = "Kernel loadable module for Vivante GPU"
@@ -9,9 +9,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
 
 PV .= "+git${SRCPV}"
 
-SRCREV = "aa83874b916cf5655cb90498b1ea5691537fdbc8"
-SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=https \
-           file://0001-Fix-gcc-6-build-error-Werror-misleading-indentation.patch"
+SRCREV = "375bd95f4967272a135b9be90b8a16fc9734b7a6"
+SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=https"
 
 S = "${WORKDIR}/git"
 
