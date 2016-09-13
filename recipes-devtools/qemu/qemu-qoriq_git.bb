@@ -72,6 +72,13 @@ do_install_append() {
     if [ -d ${D}${localstatedir}/run ]; then rmdir ${D}${localstatedir}/run; fi
 }
 
+do_install_ptest() {
+    cp -rL ${B}/tests ${D}${PTEST_PATH}
+    find ${D}${PTEST_PATH}/tests -type f -name "*.[Sshcod]" | xargs -i rm -rf {}
+
+    cp ${S}/tests/Makefile ${D}${PTEST_PATH}/tests
+}
+
 FILES_${PN} += "${datadir}/qemu/"
 INSANE_SKIP_${PN} += "dev-deps"
 
