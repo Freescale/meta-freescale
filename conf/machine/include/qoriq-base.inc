@@ -17,3 +17,12 @@ MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf udev-rules-qoriq kernel-modules"
 EXTRA_IMAGEDEPENDS += "u-boot cst-native"
 
 MACHINEOVERRIDES =. "qoriq:"
+
+# Sub-architecture support
+MACHINE_SOCARCH_SUFFIX ?= ""
+MACHINE_SOCARCH_SUFFIX_qoriq = "-qoriq"
+
+MACHINE_ARCH_FILTER = "virtual/kernel"
+MACHINE_SOCARCH_FILTER_append_qoriq = " cryptodev-qoriq-linux cryptodev-qoriq-module cryptodev-qoriq-test openssl-qoriq"
+
+INHERIT += "fsl-dynamic-packagearch"
