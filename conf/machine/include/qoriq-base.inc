@@ -1,6 +1,3 @@
-# Provides the QorIQ common settings
-require conf/machine/include/soc-family.inc
-
 # common providers of QorIQ targets
 PREFERRED_PROVIDER_cryptodev-linux = "cryptodev-qoriq-linux"
 PREFERRED_PROVIDER_cryptodev-module = "cryptodev-qoriq-module"
