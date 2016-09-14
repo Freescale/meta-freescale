@@ -32,7 +32,7 @@ EGLVIVSINK_PLATFORM = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayla
                           'fb', d),d)}"
 
 EGL_PLATFORM_CONF = "--egl-platform=${EGLVIVSINK_PLATFORM}"
-EXTRA_OECONF = "--kernel-headers=${STAGING_KERNEL_DIR}/include"
+EXTRA_OECONF = "--kernel-headers=${STAGING_KERNEL_DIR}/include ${PACKAGECONFIG_CONFARGS}"
 
 EGLVIVSINK_DEPENDS = " \
     virtual/egl virtual/libgles2 \
@@ -64,8 +64,3 @@ require recipes-multimedia/gstreamer/gst-plugins-package.inc
 PACKAGES_DYNAMIC = "^${PN}-.*"
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
-
-# disable the false alarm (the "it isn't a build dependency" QA warning)
-INSANE_SKIP_gstreamer1.0-plugins-imx-imxaudio = "build-deps"
-INSANE_SKIP_gstreamer1.0-plugins-imx-imxvpu = "build-deps"
-INSANE_SKIP_gstreamer1.0-plugins-imx-imxg2d = "build-deps"
