@@ -43,6 +43,8 @@ SRC_URI += "file://find.pl;subdir=openssl-${PV}/util/ \
             file://ptest_makefile_deps.patch  \
             file://configure-musl-target.patch \
             file://parallel.patch \
+            file://CVE-2016-2177.patch \
+            file://CVE-2016-2178.patch \
            "
 SRC_URI += "file://0001-remove-double-initialization-of-cryptodev-engine.patch \
 	file://0002-eng_cryptodev-add-support-for-TLS-algorithms-offload.patch \

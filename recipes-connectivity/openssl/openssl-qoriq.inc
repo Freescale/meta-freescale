@@ -8,7 +8,7 @@ SECTION = "libs/network"
 LICENSE = "openssl"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f9a8f968107345e0b75aa8c2ecaa7ec8"
 
-DEPENDS = "hostperl-runtime-native"
+DEPENDS = "makedepend-native hostperl-runtime-native"
 DEPENDS_append_class-target = " openssl-native"
 
 PROVIDES = "openssl"
@@ -95,7 +95,7 @@ do_configure () {
 		target=linux-elf-armeb
 		;;
 	linux-aarch64*)
-		target=linux-aarch64
+		target=linux-generic64
 		;;
 	linux-sh3)
 		target=debian-sh3
@@ -160,10 +160,14 @@ do_compile_prepend_class-target () {
 }
 
 do_compile () {
+	oe_runmake depend
 	oe_runmake
 }
 
 do_compile_ptest () {
+	# build dependencies for test directory too
+	export DIRS="$DIRS test"
+	oe_runmake depend
 	oe_runmake buildtest
 }
 
