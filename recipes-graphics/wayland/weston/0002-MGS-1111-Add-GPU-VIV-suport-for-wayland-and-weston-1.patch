@@ -15,11 +15,11 @@ Signed-off-by: Prabhu <prabhu.sundararaj@freescale.com>
  create mode 100644 src/gal2d-renderer.c
  create mode 100644 src/gal2d-renderer.h
 
-Index: weston-1.10.0/Makefile.am
+Index: weston-1.11.0/Makefile.am
 ===================================================================
---- weston-1.10.0.orig/Makefile.am	2016-05-12 10:52:23.308495113 -0500
-+++ weston-1.10.0/Makefile.am	2016-05-12 10:52:23.524496184 -0500
-@@ -231,6 +231,18 @@
+--- weston-1.11.0.orig/Makefile.am	2016-05-19 16:36:04.000000000 -0500
++++ weston-1.11.0/Makefile.am	2016-09-20 15:28:46.634190725 -0500
+@@ -247,6 +247,18 @@
  	src/vertex-clipping.h			\
  	shared/helpers.h
  endif
@@ -38,29 +38,30 @@ Index: weston-1.10.0/Makefile.am
  
  if ENABLE_X11_COMPOSITOR
  module_LTLIBRARIES += x11-backend.la
-Index: weston-1.10.0/src/compositor-fbdev.c
+Index: weston-1.11.0/src/compositor-fbdev.c
 ===================================================================
---- weston-1.10.0.orig/src/compositor-fbdev.c	2016-05-12 10:52:21.356485434 -0500
-+++ weston-1.10.0/src/compositor-fbdev.c	2016-05-12 11:41:07.000000000 -0500
-@@ -49,6 +49,7 @@
+--- weston-1.11.0.orig/src/compositor-fbdev.c	2016-05-19 16:36:04.000000000 -0500
++++ weston-1.11.0/src/compositor-fbdev.c	2016-09-20 17:05:27.000000000 -0500
+@@ -50,6 +50,7 @@
  #include "libinput-seat.h"
  #include "gl-renderer.h"
- #include "presentation_timing-server-protocol.h"
+ #include "presentation-time-server-protocol.h"
 +#include "gal2d-renderer.h"
  
  struct fbdev_backend {
  	struct weston_backend base;
-@@ -58,7 +59,9 @@
+@@ -59,8 +60,10 @@
  	struct udev *udev;
  	struct udev_input input;
  	int use_pixman;
 +	int use_gal2d;
+ 	uint32_t output_transform;
  	struct wl_listener session_listener;
 +	NativeDisplayType display;
  };
  
  struct fbdev_screeninfo {
-@@ -91,15 +94,20 @@
+@@ -93,9 +96,13 @@
  	/* pixman details. */
  	pixman_image_t *hw_surface;
  	uint8_t depth;
@@ -69,19 +70,12 @@ Index: weston-1.10.0/src/compositor-fbdev.c
 +	NativeWindowType  window;
  };
  
- struct fbdev_parameters {
- 	int tty;
- 	char *device;
- 	int use_gl;
-+	int use_gal2d;
- };
- 
  struct gl_renderer_interface *gl_renderer;
 +struct gal2d_renderer_interface *gal2d_renderer;
  
  static const char default_seat[] = "seat0";
  
-@@ -447,6 +455,10 @@
+@@ -443,6 +450,10 @@
  		           strerror(errno));
  
  	output->fb = NULL;
@@ -92,7 +86,7 @@ Index: weston-1.10.0/src/compositor-fbdev.c
  }
  
  static void fbdev_output_destroy(struct weston_output *base);
-@@ -454,7 +466,7 @@
+@@ -450,13 +461,13 @@
  
  static int
  fbdev_output_create(struct fbdev_backend *backend,
@@ -100,26 +94,24 @@ Index: weston-1.10.0/src/compositor-fbdev.c
 +                   int x, int y, const char *device)
  {
  	struct fbdev_output *output;
- 	struct weston_config_section *section;
-@@ -463,7 +475,7 @@
- 	uint32_t config_transform;
- 	char *s;
+ 	int fb_fd;
+ 	struct wl_event_loop *loop;
  
 -	weston_log("Creating fbdev output.\n");
 +	weston_log("Creating fbdev output. %s x=%d y=%d\n", device, x, y);
  
  	output = zalloc(sizeof *output);
  	if (output == NULL)
-@@ -516,7 +528,7 @@
- 	free(s);
+@@ -500,7 +511,7 @@
+ 	output->base.name = strdup("fbdev");
  
  	weston_output_init(&output->base, backend->compositor,
 -	                   0, 0, output->fb_info.width_mm,
 +	                   x, y, output->fb_info.width_mm,
  	                   output->fb_info.height_mm,
- 	                   config_transform,
+ 	                   backend->output_transform,
  			   1);
-@@ -524,10 +536,39 @@
+@@ -508,10 +519,39 @@
  	if (backend->use_pixman) {
  		if (pixman_renderer_output_create(&output->base) < 0)
  			goto out_hw_surface;
@@ -160,7 +152,7 @@ Index: weston-1.10.0/src/compositor-fbdev.c
  					       gl_renderer->opaque_attribs,
  					       NULL, 0) < 0) {
  			weston_log("gl_renderer_output_create failed.\n");
-@@ -573,6 +614,8 @@
+@@ -558,6 +598,8 @@
  	if (backend->use_pixman) {
  		if (base->renderer_state != NULL)
  			pixman_renderer_output_destroy(base);
@@ -169,16 +161,16 @@ Index: weston-1.10.0/src/compositor-fbdev.c
  	} else {
  		gl_renderer->output_destroy(base);
  	}
-@@ -636,7 +679,7 @@
+@@ -622,7 +664,7 @@
  		 * are re-initialised. */
- 		device = output->device;
- 		fbdev_output_destroy(base);
+ 		device = strdup(output->device);
+ 		fbdev_output_destroy(&output->base);
 -		fbdev_output_create(backend, device);
 +		fbdev_output_create(backend, 0, 0, device);
+ 		free(device);
  
  		return 0;
- 	}
-@@ -789,7 +832,50 @@
+@@ -777,7 +819,50 @@
  	if (backend->use_pixman) {
  		if (pixman_renderer_init(compositor) < 0)
  			goto out_launcher;
@@ -230,7 +222,7 @@ Index: weston-1.10.0/src/compositor-fbdev.c
  		gl_renderer = weston_load_module("gl-renderer.so",
  						 "gl_renderer_interface");
  		if (!gl_renderer) {
-@@ -797,17 +883,22 @@
+@@ -785,17 +870,22 @@
  			goto out_launcher;
  		}
  
@@ -257,32 +249,24 @@ Index: weston-1.10.0/src/compositor-fbdev.c
  
  	udev_input_init(&backend->input, compositor, backend->udev, seat_id);
  
-@@ -838,13 +929,20 @@
- 	struct fbdev_parameters param = {
- 		.tty = 0, /* default to current tty */
- 		.device = "/dev/fb0", /* default frame buffer */
+@@ -822,7 +912,13 @@
+ 	 * udev, rather than passing a device node in as a parameter. */
+ 	config->tty = 0; /* default to current tty */
+ 	config->device = "/dev/fb0"; /* default frame buffer */
 +#ifdef ENABLE_EGL
-+		.use_gl = 1,
-+		.use_gal2d = 0,
++	config->use_gl = 1;
++	config->use_gal2d = 0;
 +#else
- 		.use_gl = 0,
-+		.use_gal2d = 1,
+ 	config->use_gl = 0;
++	config->use_gal2d = 1;
 +#endif
- 	};
+ 	config->output_transform = WL_OUTPUT_TRANSFORM_NORMAL;
+ }
  
- 	const struct weston_option fbdev_options[] = {
- 		{ WESTON_OPTION_INTEGER, "tty", 0, &param.tty },
- 		{ WESTON_OPTION_STRING, "device", 0, &param.device },
--		{ WESTON_OPTION_BOOLEAN, "use-gl", 0, &param.use_gl },
-+		{ WESTON_OPTION_INTEGER, "use-gl", 0, &param.use_gl },
-+		{ WESTON_OPTION_INTEGER, "use-gal2d", 0, &param.use_gal2d },
- 	};
- 
- 	parse_options(fbdev_options, ARRAY_LENGTH(fbdev_options), argc, argv);
-Index: weston-1.10.0/src/gal2d-renderer.c
+Index: weston-1.11.0/src/gal2d-renderer.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ weston-1.10.0/src/gal2d-renderer.c	2016-05-12 11:37:05.000000000 -0500
++++ weston-1.11.0/src/gal2d-renderer.c	2016-09-20 16:58:24.000000000 -0500
 @@ -0,0 +1,1342 @@
 +/*
 + * Copyright (c) 2015 Freescale Semiconductor, Inc.
@@ -1626,10 +1610,10 @@ Index: weston-1.10.0/src/gal2d-renderer.c
 +	.output_create = gal2d_renderer_output_create,
 +	.output_destroy = gal2d_renderer_output_destroy,
 +};
-Index: weston-1.10.0/src/gal2d-renderer.h
+Index: weston-1.11.0/src/gal2d-renderer.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ weston-1.10.0/src/gal2d-renderer.h	2016-05-12 10:52:23.524496184 -0500
++++ weston-1.11.0/src/gal2d-renderer.h	2016-09-20 15:28:46.638190745 -0500
 @@ -0,0 +1,50 @@
 +/*
 + * Copyright (c) 2015 Freescale Semiconductor, Inc.
@@ -1681,3 +1665,71 @@ Index: weston-1.10.0/src/gal2d-renderer.h
 +};
 +
 +#endif
+Index: weston-1.11.0/src/compositor-fbdev.h
+===================================================================
+--- weston-1.11.0.orig/src/compositor-fbdev.h	2016-05-19 16:36:04.000000000 -0500
++++ weston-1.11.0/src/compositor-fbdev.h	2016-09-20 17:03:37.000000000 -0500
+@@ -40,6 +40,7 @@
+ 	int tty;
+ 	char *device;
+ 	int use_gl;
++	int use_gal2d;
+ 
+ 	uint32_t output_transform;
+ };
+Index: weston-1.11.0/src/main.c
+===================================================================
+--- weston-1.11.0.orig/src/main.c	2016-05-19 16:36:04.000000000 -0500
++++ weston-1.11.0/src/main.c	2016-09-20 17:29:12.000000000 -0500
+@@ -285,7 +285,13 @@
+ 		"Options for fbdev-backend.so:\n\n"
+ 		"  --tty=TTY\t\tThe tty to use\n"
+ 		"  --device=DEVICE\tThe framebuffer device to use\n"
+-		"  --use-gl\t\tUse the GL renderer\n\n");
++#if defined ENABLE_EGL
++		"  --no-use-gl\t\tDo not use the GL renderer\n"
++		"  --use-gal2d\t\tUse the GAL2D renderer\n\n");
++#else
++		"  --use-gl\t\tUse the GL renderer\n"
++		"  --no-use-gal2d\t\tDo not use the GAL2D renderer\n\n");
++#endif
+ #endif
+ 
+ #if defined(BUILD_HEADLESS_COMPOSITOR)
+@@ -864,18 +870,35 @@
+ 	struct weston_config_section *section;
+ 	char *s = NULL;
+ 	int ret = 0;
++#ifdef ENABLE_EGL
++    /* GL rendering is default, so user options are --no-use-gl and --use-gal2d */
++    int no_use_gl = 0;
++#else
++    /* GAL2D rendering is default, so user options are --use-gl and --no-use-gal2d */
++    int no_use_gal2d = 0;
++#endif
+ 
+ 	const struct weston_option fbdev_options[] = {
+ 		{ WESTON_OPTION_INTEGER, "tty", 0, &config.tty },
+ 		{ WESTON_OPTION_STRING, "device", 0, &config.device },
++#ifdef ENABLE_EGL
++		{ WESTON_OPTION_BOOLEAN, "no-use-gl", 0, &no_use_gl },
++		{ WESTON_OPTION_BOOLEAN, "use-gal2d", 0, &config.use_gal2d },
++#else
+ 		{ WESTON_OPTION_BOOLEAN, "use-gl", 0, &config.use_gl },
++		{ WESTON_OPTION_BOOLEAN, "no-use-gal2d", 0, &no_use_gal2d },
++#endif
+ 	};
+ 
+ 	parse_options(fbdev_options, ARRAY_LENGTH(fbdev_options), argc, argv);
+ 
+ 	if (!config.device)
+ 		config.device = strdup("/dev/fb0");
+-
++#ifdef ENABLE_EGL
++    config.use_gl = !no_use_gl;
++#else
++    config.use_gal2d = !no_use_gal2d;
++#endif
+ 	section = weston_config_get_section(wc, "output", "name", "fbdev");
+ 	weston_config_section_get_string(section, "transform", &s, "normal");
+ 	if (weston_parse_transform(s, &config.output_transform) < 0)

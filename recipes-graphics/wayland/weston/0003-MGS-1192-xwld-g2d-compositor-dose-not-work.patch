@@ -12,20 +12,17 @@ Signed-off-by: Yong Gan <yong.gan@freescale.com>
  src/compositor-fbdev.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
-index c6f732e..ed25576 100644
---- a/src/compositor-fbdev.c
-+++ b/src/compositor-fbdev.c
-@@ -900,7 +900,8 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+Index: weston-1.11.0/src/compositor-fbdev.c
+===================================================================
+--- weston-1.11.0.orig/src/compositor-fbdev.c	2016-08-31 20:23:38.109228731 -0500
++++ weston-1.11.0/src/compositor-fbdev.c	2016-08-31 20:30:25.000000000 -0500
+@@ -811,7 +811,8 @@
  	backend->base.restore = fbdev_restore;
  
  	backend->prev_state = WESTON_COMPOSITOR_ACTIVE;
 -	backend->use_pixman = !param->use_gl;
 +	backend->use_pixman = !(param->use_gl || param->use_gal2d);
 +	backend->use_gal2d = param->use_gal2d;
+ 	backend->output_transform = param->output_transform;
  
- 	for (key = KEY_F1; key < KEY_F9; key++)
- 		weston_compositor_add_key_binding(compositor, key,
--- 
-1.9.1
-
+ 	weston_setup_vt_switch_bindings(compositor);
