@@ -1,0 +1,51 @@
+diff -Naur chromium-48.0.2548.0_org/third_party/libva/va/va_dec_jpeg.h chromium-48.0.2548.0/third_party/libva/va/va_dec_jpeg.h
+--- chromium-48.0.2548.0_org/third_party/libva/va/va_dec_jpeg.h	2016-05-27 11:45:31.248306710 -0500
++++ chromium-48.0.2548.0/third_party/libva/va/va_dec_jpeg.h	2016-05-27 11:49:53.000000000 -0500
+@@ -36,7 +36,7 @@
+ extern "C" {
+ #endif
+ 
+-#include <va/va.h>
++#include <libva/va/va.h>
+ 
+ /**
+  * \defgroup api_dec_jpeg JPEG decoding API
+diff -Naur chromium-48.0.2548.0_org/third_party/libva/va/va.h chromium-48.0.2548.0/third_party/libva/va/va.h
+--- chromium-48.0.2548.0_org/third_party/libva/va/va.h	2016-05-27 11:45:31.248306710 -0500
++++ chromium-48.0.2548.0/third_party/libva/va/va.h	2016-05-27 11:49:16.000000000 -0500
+@@ -80,7 +80,7 @@
+ 
+ #include <stddef.h>
+ #include <stdint.h>
+-#include <va/va_version.h>
++#include <libva/va/va_version.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -2836,16 +2836,16 @@
+  */
+ #define VA_PICTURE_HEVC_RPS_LT_CURR             0x00000040
+ 
+-#include <va/va_dec_hevc.h>
+-#include <va/va_dec_jpeg.h>
+-#include <va/va_dec_vp8.h>
+-#include <va/va_dec_vp9.h>
+-#include <va/va_enc_hevc.h>
+-#include <va/va_enc_h264.h>
+-#include <va/va_enc_jpeg.h>
+-#include <va/va_enc_mpeg2.h>
+-#include <va/va_enc_vp8.h>
+-#include <va/va_vpp.h>
++#include <libva/va/va_dec_hevc.h>
++#include <libva/va/va_dec_jpeg.h>
++#include <libva/va/va_dec_vp8.h>
++#include <libva/va/va_dec_vp9.h>
++#include <libva/va/va_enc_hevc.h>
++#include <libva/va/va_enc_h264.h>
++#include <libva/va/va_enc_jpeg.h>
++#include <libva/va/va_enc_mpeg2.h>
++#include <libva/va/va_enc_vp8.h>
++#include <libva/va/va_vpp.h>
+ 
+ /**@}*/
+ 
