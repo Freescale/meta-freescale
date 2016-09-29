@@ -11,7 +11,7 @@ LOCALVERSION ?= ""
 SCMVERSION ?= "y"
 SRCBRANCH ?= ""
 
-SRC_URI = "git://git.freescale.com/imx/linux-2.6-imx.git;branch=${SRCBRANCH} \
+SRC_URI = "git://git.freescale.com/imx/linux-imx.git;branch=${SRCBRANCH} \
            file://defconfig \
 "
 
