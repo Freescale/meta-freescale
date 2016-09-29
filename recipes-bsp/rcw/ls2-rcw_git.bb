@@ -8,7 +8,7 @@ inherit deploy
 INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/ls2-rcw.git;branch=sdk-v2.0.x"
+SRC_URI = "git://git.freescale.com/ppc/sdk/ls2-rcw.git;nobranch=1"
 SRCREV = "74ec3bcdf33fbbedf417b800e0d486d1e8031115"
 
 S = "${WORKDIR}/git"
