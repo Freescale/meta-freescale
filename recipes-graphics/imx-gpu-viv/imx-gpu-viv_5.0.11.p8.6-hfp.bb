@@ -3,5 +3,5 @@
 
 require imx-gpu-viv.inc
 
-SRC_URI[md5sum] = "d5400c6c54f6601eb34e442ee8fd1863"
-SRC_URI[sha256sum] = "8f79ce562d8ac1efb0a2af403b405541f98c55ae1631a18a3d7fad3224dfb44b"
+SRC_URI[md5sum] = "92fc34fc37b0865f61be1bd931f5166f"
+SRC_URI[sha256sum] = "caaabd59a259e29aa5b7f9d1d7f3fe71cff9336ba44904485d258baef276351f"
