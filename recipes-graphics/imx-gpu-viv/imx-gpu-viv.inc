@@ -109,8 +109,7 @@ do_install () {
 
     install -d ${D}${libdir}/pkgconfig
 
-    # The preference order, based in DISTRO_FEATURES. The backend
-    # preference order is Wayland, X11 and Framebuffer.
+    # The preference order, based in DISTRO_FEATURES, is Wayland (with or without X11), X11 and fb
     if [ "${HAS_WL}" = "yes" ]; then
         cp -r ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
         cp -r ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
@@ -124,7 +123,13 @@ do_install () {
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
+
+        if [ "${HAS_X11}" = "yes" ]; then
+            cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
+        fi
+
     elif [ "${HAS_X11}" = "yes" ]; then
+
         cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
         cp -r ${S}/apitrace/x11/usr/lib/* ${D}${libdir}
         cp -r ${S}/apitrace/x11/usr/bin/* ${D}${bindir}
@@ -136,11 +141,11 @@ do_install () {
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg_x11.pc ${D}${libdir}/pkgconfig/vg.pc
     else
-        # Regular framebuffer
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg.pc ${D}${libdir}/pkgconfig/vg.pc
 
+        # Regular framebuffer
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_linuxfb.pc ${D}${libdir}/pkgconfig/egl.pc
         cp -r ${S}/apitrace/non-x11/usr/lib/* ${D}${libdir}
         cp -r ${S}/apitrace/non-x11/usr/bin/* ${D}${bindir}
@@ -185,7 +190,7 @@ do_install () {
     if [ "${IMXGPU}" = "2d" ]; then
         rm -rf ${D}${libdir}/libCLC* ${D}${includedir}/CL \
                \
-               ${D}${libdir}/libGL* ${D}${includedir}/GL* \ 
+               ${D}${libdir}/libGL* ${D}${includedir}/GL* \
                \
                ${D}${libdir}/libGLES* \
                \
