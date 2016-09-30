@@ -3,7 +3,7 @@
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=8cf95184c220e247b9917e7244124c5a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d4f548f93b5fe0ee2bc86758c344412d"
 
 # Backward compatibility
 PROVIDES += "libfslcodec"
@@ -22,7 +22,9 @@ PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,imx-vpu"
 
 do_install_append() {
     # FIXME: This link points to nowhere
-    rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
+    if [ -e ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so ]; then
+        rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
+    fi
 
     # LTIB move the files around or gst-fsl-plugin won't find them
     for p in $(find ${D}${libdir}/imx-mm -mindepth 2 -maxdepth 2 -not -type d); do
