@@ -1,8 +1,8 @@
-Freescale Software Content Register
+NXP Software Content Register
 
 Release - Linux 4.1.15
 
-Date Created:              2015-Dec-7
+Date Created:              2016-Sep-14
 
 --------------------------------------------
 BSP PACKAGES
@@ -18,11 +18,11 @@ Package Category:          BSP
 
 Type of content:           Source code
 
-Description and comments:  The Linux kernel with Freescale-specific drivers
+Description and comments:  The Linux kernel with i.MX-specific drivers
 
-Release Location:          git.freescale.com branch imx_4.1.15_1.0.0_ga
+Release Location:          git.freescale.com branch imx_4.1.15_2.0.0_ga
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (GPL-2.0+)
                            kernel.org (GPL-2.0+) - https://www.kernel.org/
 
 --------------------------------------------
@@ -37,11 +37,11 @@ Package Category:          Bootloader
 
 Type of content:           Source code
 
-Description and comments:  Bootloader with Freescale-specific capabilities
+Description and comments:  Bootloader with i.MX-specific capabilities
 
-Release Location:          git.freescale.com branch imx_v2015.04_4.1.15_1.0.0_ga
+Release Location:          git.freescale.com branch imx_v2016.03_4.1.15_2.0.0_ga
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (GPL-2.0+)
                            Das U-Boot - Universal Bootloader (LGPL-2.0+) - http://www.denx.de/wiki/U-Boot/WebHome
                            Android Open Source Project (BSD-2-Clause) - https://source.android.com/
                            zlib (zlib license) - http://www.zlib.net/
@@ -52,43 +52,22 @@ Package:                   firmware-imx-5.4.bin
 
 Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          BSP
 
 Type of content:           Binaries
 
-Description and comments:  BSP firmware - SDMA, VPU
+Description and comments:  BSP firmware - EPDC, SDMA, VPU
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
-                           Chips & Media, Inc. 
-
---------------------------------------------
-
-Package:                   imx-kobs-5.4.tar.gz
-
-Outgoing License:          GPL-2.0+
-
-License Files:             COPYING: GPL-2.0
-
-Package Category:          BSP
-
-Type of content:           Source code
-
-Description and comments:  NAND boot writer
-
-Release Location:          Freescale Yocto Project mirror
-
-Origin:                    Freescale Semiconductor, Inc.
-                           AES (BSD-3-Clause) - http://brgladman.org/oldsite/AES/
-                           Secure Hash Algorithm Implementation (Public Domain) - http://www.nic.funet.fi/pub/crypt/hash/sha/
-                           IGEP Linux Kernel (GPL-2.0+) - http://www.igep.es/
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
+                           Chips & Media, Inc.  (proprietary)
 
 --------------------------------------------
 
-Package:                   imx-lib-5.4.tar.gz
+Package:                   imx-lib-5.5.tar.gz
 
 Outgoing License:          LGPL-2.1+
 
@@ -100,13 +79,13 @@ Type of content:           Source code
 
 Description and comments:  BSP libraries
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (LGPL-2.1+)
 
 --------------------------------------------
 
-Package:                   imx-test-5.4.tar.gz
+Package:                   imx-test-5.7.tar.gz
 
 Outgoing License:          Each test has its own license
 
@@ -118,12 +97,12 @@ Type of content:           Source code
 
 Description and comments:  Linux unit test applications
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
                            Linux Test Project (GPL-2.0+) - https://github.com/linux-test-project/ltp
-                           Chips and Media Resource (GPL2+)
-                           RTC Test in Linux Kernel (GPL-2.0+)
+                           Chips and Media Resource (GPL2+) - none
+                           RTC Test in Linux Kernel (GPL-2.0+) - http://kernel.org
                            BlueZ (GPL-2.0+) - http://www.bluez.org/
                            Embedded Alley v4l2 test (GPL-2.0+)
                            Android Open Source Project (BSD-2-Clause) - https://source.android.com/
@@ -133,11 +112,11 @@ Origin:                    Freescale Semiconductor, Inc.
 
 --------------------------------------------
 
-Package:                   imx-vpu-5.4.33.bin
+Package:                   imx-vpu-5.4.35.bin
 
 Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          BSP
 
@@ -145,38 +124,20 @@ Type of content:           Source code
 
 Description and comments:  VPU library
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
-                           Chips & Media, Inc.
-
---------------------------------------------
-
-Package:                   imx-uuc-0.5.1.tar.gz
-
-Outgoing License:          GPL-2.0+
-
-License Files:             COPYING: GPL-2.0
-
-Package Category:          BSP
-
-Type of content:           Binary and source code
-
-Description and comments:  
-
-Release Location:          Freescale Yocto Project mirror
-
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
+                           Chips & Media, Inc. (proprietary)
 
 --------------------------------------------
 GRAPHICS PACKAGES
 --------------------------------------------
 
-Package:                   imx-gpu-viv-5.0.11.p8.3-hfp.bin
+Package:                   imx-gpu-viv-5.0.11.p8.6.bin
 
-Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
+Outgoing License:          LA_OPT_BASE_LICENSE v14 June 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          Graphics
 
@@ -184,10 +145,10 @@ Type of content:           Binaries, scripts and header files
 
 Description and comments:  GPU Core IP in binary and test application source
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
-                           Vivante Corp.
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
+                           Vivante Corp. (proprietary)
                            apitrace (MIT) - https://github.com/apitrace/apitrace
                            opengleskul (MIT) - https://code.google.com/archive/p/opengleskul/
                            Khronos Group (MIT) - http://www.khronos.org/
@@ -198,7 +159,7 @@ Origin:                    Freescale Semiconductor, Inc.
 
 --------------------------------------------
 
-Package:                   kernel-module-imx-gpu-viv-5.0.11.p8.3.tar.gz
+Package:                   kernel-module-imx-gpu-viv-5.0.11.p8.6.tar.gz
 
 Outgoing License:          GPL-2.0+
 
@@ -210,18 +171,18 @@ Type of content:           Source code
 
 Description and comments:  GPU kernel source provided for kernel loadable modules
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
-                           Vivante Corp.
+Origin:                    Freescale Semiconductor, Inc. (GPL-2.0+)
+                           Vivante Corp. (proprietary)
 
 --------------------------------------------
 
-Package:                   xserver-xorg-video-imx-viv-5.0.11.p8.3.tar.gz
+Package:                   xserver-xorg-video-imx-viv-5.0.11.p8.6.tar.gz
 
 Outgoing License:          MIT
 
-License Files:             COPYING-MIT: MIT License
+License Files:             COPYING-MIT
 
 Package Category:          Graphics
 
@@ -229,21 +190,21 @@ Type of content:           Source code
 
 Description and comments:  Xserver Library extensions
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
-                           Vivante Corp.
+Origin:                    Freescale Semiconductor, Inc. (MIT)
+                           Vivante Corp. (MIT)
                            xorg-server (MIT) - http://xorg.freedesktop.org/
                            XFree86 Project (XFree86-1.0) - http://sourceforge.net/projects/xfree86/
                            xf86-video-freedreno (MIT) - http://github.com/freedreno/xf86-video-freedreno/
 
 --------------------------------------------
 
-Package:                   fsl-gpu-sdk-2.2.2.bin
+Package:                   imx-gpu-sdk-2.3.2.bin
 
-Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
+Outgoing License:          LA_OPT_BASE_LICENSE v14 June 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          Graphics
 
@@ -251,9 +212,9 @@ Type of content:           Source code
 
 Description and comments:  Graphics sample applications
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
                            DevIL (LGPL-2.1+) - https://sourceforge.net/projects/openil/ [separate binary]
                            Templatized C++ Command Line Parser [tclap] (MIT) - http://sourceforge.net/projects/tclap/
                            The Android Open Source Project (Apache-2.0) - https://source.android.com/
@@ -266,10 +227,28 @@ Origin:                    Freescale Semiconductor, Inc.
                            Chromium (BSD) - https://github.com/bloomberg/chromium.bb/
 
 --------------------------------------------
+
+Package:                   VivanteVTK-v5.0.11.p8.1.6.7.tgz
+
+Outgoing License:          Vivante Licenses in each msi install
+
+License Files:             included in msi install
+
+Package Category:          Graphics
+
+Type of content:           Setup MSI installations
+
+Description and comments:  Vivante Tools
+
+Release Location:          mx8_downloads
+
+Origin:                    VeriSilicon
+
+--------------------------------------------
 MULTIMEDIA PACKAGES
 --------------------------------------------
 
-Package:                   imx-gst1.0-plugin-4.0.9.tar.gz
+Package:                   imx-gst1.0-plugin-4.1.4.tar.gz
 
 Outgoing License:          LGPL-2.1+
 
@@ -281,84 +260,82 @@ Package Category:          Multimedia
 
 Type of content:           Source code
 
-Description and comments:  Freescale Gstreamer 1.0 plugins
+Description and comments:  i.MX Gstreamer 1.0 plugins
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (LGPL-2.1+)
                            Gstreamer plugins-Base (LGPL-2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-base/
                            Gstreamer plugins-Good (LGPL-2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-good/
                            Gstreamer plugins-Bad (LGPL-2.1+) - http://gstreamer.freedesktop.org/src/gst-plugins-bad/
 
 --------------------------------------------
 
-Package:                   imx-codec-4.0.9.bin
+Package:                   imx-codec-4.1.4.bin
 
-Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
+Outgoing License:          LA_OPT_BASE_LICENSE v14 June 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          Multimedia
 
 Type of content:           Binaries and header files
 
-Description and comments:  Freescale multimedia codec libraries
+Description and comments:  i.MX multimedia codec libraries
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
-                           ISO/IEC 13818-7 and ISO/IEC 14496-3 standards 
-                           3GPP 26.173 standard 
-                           FLAC (BSD-3-clause) - https://sourceforge.net/projects/flac/ 
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
+                           ISO/IEC 13818-7 and ISO/IEC 14496-3 standards
+                           3GPP 26.173 standard
+                           FLAC (BSD-3-clause) - https://sourceforge.net/projects/flac/
                            libjpeg (IJG) - http://www.ijg.org/
                            OggVorbis Tremor (BSD-3-Clause) - http://xiph.org/vorbis/
-                           ISO/IEC 13818-7 and ISO/IEC 14496-3 standards 
-                           3GPP 26.173 standard 
 
 --------------------------------------------
 
-Package:                   imx-parser-4.0.9.bin
+Package:                   imx-parser-4.1.4.bin
 
-Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
+Outgoing License:          LA_OPT_BASE_LICENSE v14 June 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          Multimedia
 
 Type of content:           Binaries and header files
 
-Description and comments:  Freescale multimedia parser libraries
+Description and comments:  i.MX multimedia parser libraries
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
 
 --------------------------------------------
 
-Package:                   imx-vpuwrap-1.0.65.bin
+Package:                   imx-vpuwrap-1.0.68.bin
 
-Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
+Outgoing License:          LA_OPT_BASE_LICENSE v14 June 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          Multimedia
 
 Type of content:           Source code
 
-Description and comments:  Freescale VPU wrapper library
+Description and comments:  i.MX VPU wrapper library
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
                            sqlite (Public Domain) - http://www.hwaci.com/sw/sqlite/index.html
 
 --------------------------------------------
 
-Package:                   imx-qtapplications-1.0.7.bin
+Package:                   imx-qtapplications-1.0.9.bin
 
-Outgoing License:          LA_OPT_BASE_LICENSE v12 March 2016
+Outgoing License:          LA_OPT_BASE_LICENSE v14 June 2016
 
-License Files:             COPYING: LA_OPT_BASE_LICENSE v12 March 2016
+License Files:             COPYING
 
 Package Category:          Multimedia
 
@@ -366,9 +343,9 @@ Type of content:           Binaries
 
 Description and comments:  i.MX QT multimedia player application
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (proprietary)
 
 --------------------------------------------
 
@@ -376,17 +353,17 @@ Package:                   simg2img-1.0.0.tar.gz
 
 Outgoing License:          Apache-2.0
 
-License Files:             COPYING: Apache 2.0
+License Files:             COPYING
 
 Package Category:          Multimedia
 
 Type of content:           Source
 
-Description and comments:  Tool to convert Android sparse images to raw images 
+Description and comments:  Tool to convert Android sparse images to raw images
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (Apache-2.0)
                            The Android Open Source Project (Apache-2.0) - https://android.googlesource.com/platform/system/core/+/master/libsparse
                            Gary S Brown (Public Domain) - http://www.opensource.apple.com/source/xnu/xnu-1456.1.26/bsd/libkern/crc32.c?txt
 --------------------------------------------
@@ -403,10 +380,25 @@ Type of content:           Source
 
 Description and comments:  Audio
 
-Release Location:          Freescale Yocto Project mirror
+Release Location:          i.MX Yocto Project mirror
 
-Origin:                    Freescale Semiconductor, Inc.
+Origin:                    Freescale Semiconductor, Inc. (GPL-2.0+)
                            Alsa Plugins (GPL-2.0+) - ftp://ftp.alsa-project.org/pub/plugins/
                            GNU libtool (GPL-2.0+) http://www.gnu.org/software/libtool/
 
 --------------------------------------------
+M4 PACKAGES
+--------------------------------------------
+Package:                   imx7d_sabresd_m4_freertos_1.0.1
+
+Outgoing License:          LA_OPT_BASE_LICENSE v14 June 2016
+
+Description and comments:  See the SW-Content-Register-FreeRTOS-BSP-1.0.1 for details
+                           on the contents and origins.
+
+Release Location:          i.MX Yocto Project mirror
+
+Origin overview:           Freescale Semiconductor, Inc. (BSD-3-clause)
+                           ARM (BSD-3-clause) - http://silver.arm.com
+                           Real Time Engineers, Ltd. (GPL-2.0-WITHfreertos-exception-2.0) - http://www.freertos.org
+                           Mentor Graphics, Ltd. (BSD-3-Clause) - https://github.com/OpenAMP/open-amp
