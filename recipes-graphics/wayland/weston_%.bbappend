@@ -12,6 +12,7 @@ SRC_URI_append_imxgpu2d = " \
     file://0011-MGS-1724-xwld-G2D-compositor-build-failed-in-slevk-b.patch \
     file://0012-MGS-1783-xwld-Add-clone-mode-support-for-multi-displ.patch \
     file://0013-MGS-1945-Use-common-API-to-support-G2d-compositor.patch    \
+    file://0014-MGS-1987-Get-stride-from-the-FB-buffe.patch                \
 "
 
 PACKAGECONFIG_IMX_TO_APPEND = ""

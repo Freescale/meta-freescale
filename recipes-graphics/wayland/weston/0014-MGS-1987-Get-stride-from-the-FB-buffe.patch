@@ -1,0 +1,76 @@
+From 735e58c6066fe1148d803168c6241a4d8cb5c973 Mon Sep 17 00:00:00 2001
+From: "yong.gan" <yong.gan@nxp.com>
+Date: Wed, 6 Jul 2016 08:28:18 +0800
+Subject: [PATCH] MGS-1987: Get stride from the FB buffe.
+
+Fix the stride setting error in the fbinfo.
+
+Date: Jul 6, 2016
+Signed-off-by: Yong Gan <yong.gan@nxp.com>
+---
+ src/g2d-renderer.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/src/g2d-renderer.c b/src/g2d-renderer.c
+index 0c26e91..30bf1a5 100644
+--- a/src/g2d-renderer.c
++++ b/src/g2d-renderer.c
+@@ -63,6 +63,7 @@ struct fb_screeninfo {
+ 	unsigned int y_resolution;
+ 	size_t buffer_length; /* length of frame buffer memory in bytes */
+ 	size_t physical;
++	size_t stride;
+ 	enum g2d_format pixel_format; /* frame buffer pixel format */
+ 	int fb_fd;
+ };
+@@ -322,8 +323,6 @@ get_g2dSurface(gcsWL_VIV_BUFFER *buffer, struct g2d_surfaceEx *g2dSurface)
+ 		weston_log("invalid EGL buffer in function %s\n", __func__);
+ 		return;
+ 	}
+-	int width  = buffer->alignedWidth;
+-	int height = buffer->alignedHeight;
+ 	g2d_getG2dFormat(buffer->format, &g2dSurface->base.format);
+ 	g2d_getG2dTiling(buffer->tiling, &g2dSurface->tiling);
+ 	g2dSurface->base.planes[0] = buffer->physical[0] + buffer->gpuBaseAddr;
+@@ -333,9 +332,9 @@ get_g2dSurface(gcsWL_VIV_BUFFER *buffer, struct g2d_surfaceEx *g2dSurface)
+ 	g2dSurface->base.top = 0;
+ 	g2dSurface->base.right = buffer->width;
+ 	g2dSurface->base.bottom = buffer->height;
+-	g2dSurface->base.stride = width;
+-	g2dSurface->base.width  = width;
+-	g2dSurface->base.height = height;
++	g2dSurface->base.stride = buffer->alignedWidth;
++	g2dSurface->base.width  = buffer->width;
++	g2dSurface->base.height = buffer->height;
+ 	g2dSurface->base.rot    = G2D_ROTATION_0;
+ }
+ 
+@@ -821,7 +820,7 @@ g2d_renderer_attach_shm(struct weston_surface *es, struct weston_buffer *buffer,
+ 	gs->g2d_surface.base.right  = buffer->width;
+ 	gs->g2d_surface.base.bottom = buffer->height;
+ 	gs->g2d_surface.base.stride = alignedWidth;
+-	gs->g2d_surface.base.width  = alignedWidth;
++	gs->g2d_surface.base.width  = buffer->width;
+ 	gs->g2d_surface.base.height = buffer->height;
+ 	gs->g2d_surface.base.rot    = G2D_ROTATION_0;
+ 	gs->g2d_surface.base.clrcolor = 0xFF400000;
+@@ -1079,7 +1078,7 @@ get_G2dSurface_from_screeninfo(struct fb_screeninfo *info, struct g2d_surfaceEx*
+ 		g2dSurface->base.top  = 0;
+ 		g2dSurface->base.right  = info->x_resolution;
+ 		g2dSurface->base.bottom = info->y_resolution;
+-		g2dSurface->base.stride = info->x_resolution;
++		g2dSurface->base.stride = info->stride;
+ 		g2dSurface->base.width  = info->x_resolution;
+ 		g2dSurface->base.height = info->y_resolution;
+ 		g2dSurface->base.format = info->pixel_format;
+@@ -1119,6 +1118,7 @@ fb_query_screen_info(struct g2d_output_state *output, int fd,
+ 	info->y_resolution = varinfo->yres;
+ 	info->physical = fixinfo->smem_start;
+ 	info->buffer_length = fixinfo->smem_len;
++	info->stride = fixinfo->line_length / (varinfo->bits_per_pixel >> 3);
+ 	calculate_g2d_format(varinfo, &info->pixel_format);
+ 
+ 	if (info->pixel_format < 0) {
+-- 
+1.9.1
+
