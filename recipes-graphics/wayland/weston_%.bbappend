@@ -7,6 +7,9 @@ SRC_URI_append_imxgpu2d = " \
     file://0005-MGS-1252-Fix-for-Qt5_CinematicExperience-will-meet-s.patch \
     file://0006-MGS-1236-imx6qp-imx6dl-First-frame-distored-when-som.patch \
     file://0007-MGS-1236-1-imx6qp-imx6dl-First-frame-distored-when-s.patch \
+    file://0009-MGS-1284-xwld-Re-implement-weston-2d-renderer-with-p.patch \
+    file://0010-MGS-1284-1-xwld-Re-implement-weston-2d-renderer-with.patch \
+    file://0011-MGS-1724-xwld-G2D-compositor-build-failed-in-slevk-b.patch \
 "
 
 PACKAGECONFIG_IMX_TO_APPEND = ""

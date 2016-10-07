@@ -1,0 +1,36 @@
+From 9a19dd911fc79fa828b03fce8cdb16c6cfcb25cb Mon Sep 17 00:00:00 2001
+From: "yong.gan" <yong.gan@nxp.com>
+Date: Tue, 22 Mar 2016 10:15:31 +0800
+Subject: [PATCH 2/3] MGS-1284-1: xwld: Re-implement weston 2d renderer with
+ porting g2d API
+
+Add gpu address to the buffer physical address, fix the mess in sx board.
+
+Date: Feb 22, 2016
+Upstream Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Yong Gan <yong.gan@freescale.com>
+---
+ src/g2d-renderer.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/g2d-renderer.c b/src/g2d-renderer.c
+index 756c8f0..19c93a0 100644
+--- a/src/g2d-renderer.c
++++ b/src/g2d-renderer.c
+@@ -317,9 +317,9 @@ get_g2dSurface(gcsWL_VIV_BUFFER *buffer, struct g2d_surfaceEx *g2dSurface)
+ 	int height = buffer->alignedHeight;
+ 	g2d_getG2dFormat(buffer->format, &g2dSurface->base.format);
+ 	g2d_getG2dTiling(buffer->tiling, &g2dSurface->tiling);
+-	g2dSurface->base.planes[0] = buffer->physical[0];
+-	g2dSurface->base.planes[1] = buffer->physical[1];
+-	g2dSurface->base.planes[2] = buffer->physical[2];
++	g2dSurface->base.planes[0] = buffer->physical[0] + buffer->gpuBaseAddr;
++	g2dSurface->base.planes[1] = buffer->physical[1] + buffer->gpuBaseAddr;
++	g2dSurface->base.planes[2] = buffer->physical[2] + buffer->gpuBaseAddr;
+ 	g2dSurface->base.left = 0;
+ 	g2dSurface->base.top = 0;
+ 	g2dSurface->base.right = buffer->width;
+-- 
+1.9.1
+
