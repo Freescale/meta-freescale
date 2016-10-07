@@ -1,0 +1,196 @@
+From bdf9a0349f84997397a1c9352ee041e6fa4256a9 Mon Sep 17 00:00:00 2001
+From: "yong.gan" <yong.gan@nxp.com>
+Date: Thu, 23 Jun 2016 09:15:51 +0800
+Subject: [PATCH] MGS-1945: Use common API to support G2d compositor.
+
+Replace gcoOS_WaylandCreateVivGlobal with eglBindWaylandDisplayWL.
+Fix a width set error in g2d_renderer_attach_shm.
+Use noncached buffer in weston shm buffer.
+
+Upstream-Status: Inappropriate [i.MX specific]
+Date: Jun 21, 2016
+Signed-off-by: Yong Gan <yong.gan@nxp.com>
+---
+ Makefile.am        |  4 ++++
+ src/g2d-renderer.c | 44 +++++++++++++++++++++++++++-----------------
+ src/g2d-renderer.h |  1 +
+ 3 files changed, 32 insertions(+), 17 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index f62bfc7..207864f 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -214,6 +214,7 @@ gl_renderer_la_SOURCES =			\
+ 	src/vertex-clipping.h			\
+ 	shared/helpers.h
+ endif
++
+ module_LTLIBRARIES += g2d-renderer.la
+ g2d_renderer_la_LDFLAGS = -module -avoid-version
+ g2d_renderer_la_LIBADD = $(COMPOSITOR_LIBS) $(EGL_LIBS) -lg2d
+@@ -226,6 +227,9 @@ g2d_renderer_la_SOURCES =			\
+ 	src/g2d-renderer.c			\
+ 	src/vertex-clipping.c			\
+ 	src/vertex-clipping.h
++if ENABLE_EGL
++g2d_renderer_la_CFLAGS += -DENABLE_EGL
++endif
+ 
+ if ENABLE_X11_COMPOSITOR
+ module_LTLIBRARIES += x11-backend.la
+diff --git a/src/g2d-renderer.c b/src/g2d-renderer.c
+index 4440fb9..0c26e91 100644
+--- a/src/g2d-renderer.c
++++ b/src/g2d-renderer.c
+@@ -46,7 +46,7 @@
+ #include "shared/helpers.h"
+ 
+ #define BUFFER_DAMAGE_COUNT 2
+-extern struct wl_global* gcoOS_WaylandCreateVivGlobal(struct wl_display* display);
++#define ALIGN_WIDTH(a) (((a) + 15) & ~15)
+ 
+ typedef struct _g2dRECT
+ {
+@@ -103,7 +103,11 @@ struct g2d_surface_state {
+ struct g2d_renderer {
+ 	struct weston_renderer base;
+ 	struct wl_signal destroy_signal;
+-	struct wl_global *viv_global;
++#ifdef ENABLE_EGL
++	NativeDisplayType display;
++	EGLDisplay egl_display;
++	struct wl_display *wl_display;
++#endif
+ 	void *handle;
+ };
+ 
+@@ -296,9 +300,10 @@ g2d_getG2dFormat(IN gceSURF_FORMAT Format, enum g2d_format* g2dFormat)
+ 	}
+ }
+ 
+-static void printG2dSurfaceInfo(struct g2d_surfaceEx* g2dSurface)
++static void printG2dSurfaceInfo(struct g2d_surfaceEx* g2dSurface, const char* msg)
+ {
+-	weston_log("physicAddr = %d left = %d right = %d top=%d bottom=%d stride= %d tiling = %d, format=%d \n",
++	weston_log("%s physicAddr = %x left = %d right = %d top=%d bottom=%d stride= %d tiling = %d, format=%d \n",
++				msg,
+ 				g2dSurface->base.planes[0],
+ 				g2dSurface->base.left,
+ 				g2dSurface->base.right,
+@@ -357,8 +362,8 @@ g2d_blitSurface(void *handle, struct g2d_surfaceEx * srcG2dSurface, struct g2d_s
+ 
+ 	if(g2d_blitEx(handle, srcG2dSurface, dstG2dSurface))
+ 	{
+-		printG2dSurfaceInfo(srcG2dSurface);
+-		printG2dSurfaceInfo(dstG2dSurface);
++		printG2dSurfaceInfo(srcG2dSurface, "SRC:");
++		printG2dSurfaceInfo(dstG2dSurface, "DST:");
+ 		return -1;
+ 	}
+ 	return 0;
+@@ -724,7 +729,7 @@ g2d_renderer_flush_damage(struct weston_surface *surface)
+ 		wl_shm_buffer_begin_access(buffer->shm_buffer);
+ 		if(gs->shm_buf)
+ 		{
+-			int alignedWidth = (buffer->width + 15) & ~15;
++			int alignedWidth = ALIGN_WIDTH(buffer->width);
+ 			if(alignedWidth == buffer->width)
+ 			{
+ 				int size = wl_shm_buffer_get_stride(buffer->shm_buffer)*buffer->height;
+@@ -743,7 +748,6 @@ g2d_renderer_flush_damage(struct weston_surface *surface)
+ 					}
+ 				}
+ 			}
+-			g2d_cache_op(gs->shm_buf, G2D_CACHE_CLEAN);
+ 		}
+ 		else
+ 		{
+@@ -768,7 +772,6 @@ g2d_renderer_attach_shm(struct weston_surface *es, struct weston_buffer *buffer,
+ 			struct wl_shm_buffer *shm_buffer)
+ {
+ 	struct g2d_surface_state *gs = get_surface_state(es);
+-	int stride = 0;
+ 	int buffer_length = 0;
+ 	int alloc_new_buff = 1;
+ 	int alignedWidth = 0;
+@@ -776,9 +779,7 @@ g2d_renderer_attach_shm(struct weston_surface *es, struct weston_buffer *buffer,
+ 	buffer->shm_buffer = shm_buffer;
+ 	buffer->width = wl_shm_buffer_get_width(shm_buffer);
+ 	buffer->height = wl_shm_buffer_get_height(shm_buffer);
+-	alignedWidth = (buffer->width + 15) & ~15;
+-	stride = wl_shm_buffer_get_stride(shm_buffer);
+-	buffer_length = stride * buffer->height;
++	alignedWidth = ALIGN_WIDTH(buffer->width);
+ 
+ 	switch (wl_shm_buffer_get_format(shm_buffer)) {
+ 	case WL_SHM_FORMAT_XRGB8888:
+@@ -812,7 +813,7 @@ g2d_renderer_attach_shm(struct weston_surface *es, struct weston_buffer *buffer,
+ 	{
+ 		if(gs->shm_buf)
+ 			g2d_free(gs->shm_buf);
+-		gs->shm_buf = g2d_alloc(buffer_length, 1);
++		gs->shm_buf = g2d_alloc(buffer_length, 0);
+ 		gs->g2d_surface.base.planes[0] = gs->shm_buf->buf_paddr;
+ 	}
+ 	gs->g2d_surface.base.left = 0;
+@@ -820,7 +821,7 @@ g2d_renderer_attach_shm(struct weston_surface *es, struct weston_buffer *buffer,
+ 	gs->g2d_surface.base.right  = buffer->width;
+ 	gs->g2d_surface.base.bottom = buffer->height;
+ 	gs->g2d_surface.base.stride = alignedWidth;
+-	gs->g2d_surface.base.width  = buffer->width;
++	gs->g2d_surface.base.width  = alignedWidth;
+ 	gs->g2d_surface.base.height = buffer->height;
+ 	gs->g2d_surface.base.rot    = G2D_ROTATION_0;
+ 	gs->g2d_surface.base.clrcolor = 0xFF400000;
+@@ -953,7 +954,7 @@ static void
+ g2d_renderer_output_destroy(struct weston_output *output)
+ {
+ 	struct g2d_output_state *go = get_output_state(output);
+-	gctUINT32 i;
++	int i;
+ 
+ 	for (i = 0; i < 2; i++)
+ 	{
+@@ -1005,8 +1006,12 @@ g2d_renderer_destroy(struct weston_compositor *ec)
+ 	struct g2d_renderer *gr = get_renderer(ec);
+ 
+ 	wl_signal_emit(&gr->destroy_signal, gr);
+-	wl_global_destroy(gr->viv_global);
+ 	g2d_close(gr->handle);
++#ifdef ENABLE_EGL
++	eglUnbindWaylandDisplayWL(gr->egl_display);
++	eglTerminate(gr->egl_display);
++	fbDestroyDisplay(gr->display);
++#endif
+ 	free(ec->renderer);
+ 	ec->renderer = NULL;
+ }
+@@ -1247,7 +1252,12 @@ g2d_renderer_output_create(struct weston_output *output, struct wl_display *wl_d
+ 		return -1;
+ 	go->clone_display_num  = clone_display_num;
+ 	output->renderer_state = go;
+-	gr->viv_global = gcoOS_WaylandCreateVivGlobal(wl_display);
++#ifdef ENABLE_EGL
++	gr->wl_display = wl_display;
++	gr->display = fbGetDisplay(wl_display);
++	gr->egl_display = eglGetDisplay(gr->display);
++	eglBindWaylandDisplayWL(gr->egl_display, wl_display);
++#endif
+ 	getBufferNumber(go);
+ 
+ 	if(g2d_renderer_surface_create(go, gr, displays[0]) < 0)
+diff --git a/src/g2d-renderer.h b/src/g2d-renderer.h
+index 45c72de..fc4ca49 100644
+--- a/src/g2d-renderer.h
++++ b/src/g2d-renderer.h
+@@ -30,6 +30,7 @@
+ 
+ #ifdef ENABLE_EGL
+ #include <EGL/egl.h>
++#include <EGL/eglext.h>
+ #endif
+ 
+ struct g2d_renderer_interface {
+-- 
+1.9.1
+
