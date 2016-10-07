@@ -1,0 +1,62 @@
+From 66a40759e44998edecf242bc100be0fcdd62937e Mon Sep 17 00:00:00 2001
+From: Yong Gan <yong.gan@nxp.com>
+Date: Thu, 1 Sep 2016 09:36:33 +0800
+Subject: [PATCH] MGS-2221 [#imx-171] Fix weston build failed
+
+Expose more variale to G2d compositor, because it is not easy to get the physical address
+in G2d compositor.
+
+Upstream Status: Inappropriate [i.MX specific]
+
+Date: Aug 31, 2016
+Signed-off-by: Yong Gan <yong.gan@nxp.com>
+---
+ src/g2d-renderer.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/src/g2d-renderer.c b/src/g2d-renderer.c
+index 30bf1a5..1009115 100644
+--- a/src/g2d-renderer.c
++++ b/src/g2d-renderer.c
+@@ -48,6 +48,20 @@
+ #define BUFFER_DAMAGE_COUNT 2
+ #define ALIGN_WIDTH(a) (((a) + 15) & ~15)
+ 
++struct wl_viv_buffer
++{
++    struct wl_resource *resource;
++    gcoSURF  surface;
++    gctINT32 width;
++    gctINT32 height;
++    gctINT32 format;
++    gctUINT alignedWidth;
++    gctUINT alignedHeight;
++    gctUINT32 physical[3];
++    gctUINT32 gpuBaseAddr;
++    gceTILING tiling;
++};
++
+ typedef struct _g2dRECT
+ {
+ 	int left;
+@@ -316,7 +330,7 @@ static void printG2dSurfaceInfo(struct g2d_surfaceEx* g2dSurface, const char* ms
+ }
+ 
+ static void
+-get_g2dSurface(gcsWL_VIV_BUFFER *buffer, struct g2d_surfaceEx *g2dSurface)
++get_g2dSurface(struct wl_viv_buffer *buffer, struct g2d_surfaceEx *g2dSurface)
+ {
+ 	if(buffer->width < 0 || buffer->height < 0)
+ 	{
+@@ -687,7 +701,7 @@ g2d_renderer_repaint_output(struct weston_output *output,
+ static void
+ g2d_renderer_attach_egl(struct weston_surface *es, struct weston_buffer *buffer)
+ {
+-	gcsWL_VIV_BUFFER *vivBuffer = wl_resource_get_user_data(buffer->resource);
++	struct wl_viv_buffer *vivBuffer = wl_resource_get_user_data(buffer->resource);
+ 	struct g2d_surface_state *gs = get_surface_state(es);
+ 	buffer->width = vivBuffer->width;
+ 	buffer->height = vivBuffer->height;
+-- 
+1.9.1
+
