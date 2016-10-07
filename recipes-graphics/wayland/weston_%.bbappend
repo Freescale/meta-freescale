@@ -10,6 +10,7 @@ SRC_URI_append_imxgpu2d = " \
     file://0009-MGS-1284-xwld-Re-implement-weston-2d-renderer-with-p.patch \
     file://0010-MGS-1284-1-xwld-Re-implement-weston-2d-renderer-with.patch \
     file://0011-MGS-1724-xwld-G2D-compositor-build-failed-in-slevk-b.patch \
+    file://0012-MGS-1783-xwld-Add-clone-mode-support-for-multi-displ.patch \
 "
 
 PACKAGECONFIG_IMX_TO_APPEND = ""
