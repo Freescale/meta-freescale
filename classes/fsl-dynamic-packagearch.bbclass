@@ -53,6 +53,17 @@ python __anonymous () {
     machine_socarch = (d.getVar("MACHINE_SOCARCH", True) or "")
     if not machine_socarch in cur_package_archs:
         d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % machine_socarch)
+
+    if d.getVar("TUNE_ARCH", True) == "arm":
+        # For ARM we have two possible machine_socarch values, one for the arm and one for the thumb instruction set
+        # add the other value to extra archs also, so that a image recipe searches both for packages.
+        if  d.getVar("ARM_INSTRUCTION_SET", True) == "thumb":
+            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("ARM_EXTRA_SOCARCH", True))
+        else:
+            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("THUMB_EXTRA_SOCARCH", True))
 }
 
 MACHINE_SOCARCH = "${TUNE_PKGARCH}${MACHINE_SOCARCH_SUFFIX}"
+
+ARM_EXTRA_SOCARCH = "${ARMPKGARCH}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
+THUMB_EXTRA_SOCARCH = "${ARMPKGARCH}${ARM_THUMB_SUFFIX}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
