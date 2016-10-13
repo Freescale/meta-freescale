@@ -1,0 +1,168 @@
+From 5b4e2d726602b0c92b789fce0dc85a1f0c860bbc Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Wed, 20 Apr 2016 16:38:31 +0800
+Subject: [PATCH 3/6] [glplugin] glcolorconvert: fix MRT cannot work in GLES3.0
+
+1. Add #ifdefine Marco to avoid redefinition of GL_COLOR_ATTACHMENT(1,2).
+2. Change to use glBlitFramebuffer for textures copy. glCopyTexImage2D
+   cannot work because we cannot get texture internal format.
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+---
+ gst-libs/gst/gl/glprototypes/fbo.h               |  6 +--
+ gst-libs/gst/gl/glprototypes/gstgl_gles2compat.h |  7 +--
+ gst-libs/gst/gl/gstglcolorconvert.c              |  2 +-
+ gst-libs/gst/gl/gstglmemory.c                    | 54 +++++++++++++++++++++---
+ 4 files changed, 55 insertions(+), 14 deletions(-)
+
+diff --git a/gst-libs/gst/gl/glprototypes/fbo.h b/gst-libs/gst/gl/glprototypes/fbo.h
+index d142483..789f289 100644
+--- a/gst-libs/gst/gl/glprototypes/fbo.h
++++ b/gst-libs/gst/gl/glprototypes/fbo.h
+@@ -102,9 +102,9 @@ GST_GL_EXT_FUNCTION (GLboolean, IsFramebuffer,
+ GST_GL_EXT_END ()
+ 
+ GST_GL_EXT_BEGIN (offscreen_blit,
+-                  GST_GL_API_NONE,
+-                  255, 255,
+-                  255, 255, /* not in either GLES */
++		  GST_GL_API_OPENGL3 | GST_GL_API_GLES2,
++		  3, 0,
++		  3, 0,/* enable to avoid using glCopyTexImage2D for texture copying */
+                   "EXT\0ANGLE\0",
+                   "framebuffer_blit\0")
+ GST_GL_EXT_FUNCTION (void, BlitFramebuffer,
+diff --git a/gst-libs/gst/gl/glprototypes/gstgl_gles2compat.h b/gst-libs/gst/gl/glprototypes/gstgl_gles2compat.h
+index d282990..1980476 100644
+--- a/gst-libs/gst/gl/glprototypes/gstgl_gles2compat.h
++++ b/gst-libs/gst/gl/glprototypes/gstgl_gles2compat.h
+@@ -34,9 +34,10 @@ G_BEGIN_DECLS
+ //END FIXME
+ 
+ /* UNSUPPORTED */
+-
+-#define GL_COLOR_ATTACHMENT1 0
+-#define GL_COLOR_ATTACHMENT2 0
++#ifndef GL_COLOR_ATTACHMENT1
++#define GL_COLOR_ATTACHMENT1 0x8CE1
++#define GL_COLOR_ATTACHMENT2 0x8CE2
++#endif
+ #ifndef GL_TEXTURE_ENV
+ #define GL_TEXTURE_ENV 0
+ #endif
+diff --git a/gst-libs/gst/gl/gstglcolorconvert.c b/gst-libs/gst/gl/gstglcolorconvert.c
+index 4ed947e..490ec54 100644
+--- a/gst-libs/gst/gl/gstglcolorconvert.c
++++ b/gst-libs/gst/gl/gstglcolorconvert.c
+@@ -2075,7 +2075,7 @@ _init_convert (GstGLColorConvert * convert)
+   }
+ 
+   /* Requires reading from a RG/LA framebuffer... */
+-  if (USING_GLES2 (convert->context) &&
++  if (!USING_GLES3 (convert->context) &&
+       (GST_VIDEO_INFO_FORMAT (&convert->out_info) == GST_VIDEO_FORMAT_YUY2 ||
+           GST_VIDEO_INFO_FORMAT (&convert->out_info) ==
+           GST_VIDEO_FORMAT_UYVY)) {
+diff --git a/gst-libs/gst/gl/gstglmemory.c b/gst-libs/gst/gl/gstglmemory.c
+index 402fd4d..f2706ea 100644
+--- a/gst-libs/gst/gl/gstglmemory.c
++++ b/gst-libs/gst/gl/gstglmemory.c
+@@ -69,6 +69,12 @@ GST_DEBUG_CATEGORY_STATIC (GST_CAT_GL_MEMORY);
+ #ifndef GL_TEXTURE_EXTERNAL_OES
+ #define GL_TEXTURE_EXTERNAL_OES 0x8D65
+ #endif
++#ifndef GL_READ_FRAMEBUFFER
++#define GL_READ_FRAMEBUFFER 0x8CA8
++#endif
++#ifndef GL_DRAW_FRAMEBUFFER
++#define GL_DRAW_FRAMEBUFFER 0x8CA9
++#endif
+ 
+ G_DEFINE_TYPE (GstGLMemoryAllocator, gst_gl_memory_allocator,
+     GST_TYPE_GL_BASE_MEMORY_ALLOCATOR);
+@@ -608,7 +614,7 @@ gst_gl_memory_copy_teximage (GstGLMemory * src, guint tex_id,
+   guint out_gl_format, out_tex_target;
+   GstMapInfo sinfo;
+   guint src_tex_id;
+-  guint fbo;
++  guint fbo[2];
+ 
+   gl = src->mem.context->gl_vtable;
+   out_tex_target = gst_gl_texture_target_to_gl (out_target);
+@@ -632,31 +638,65 @@ gst_gl_memory_copy_teximage (GstGLMemory * src, guint tex_id,
+ 
+   /* FIXME: try and avoid creating and destroying fbo's every copy... */
+   /* create a framebuffer object */
+-  gl->GenFramebuffers (1, &fbo);
+-  gl->BindFramebuffer (GL_FRAMEBUFFER, fbo);
++  gl->GenFramebuffers (2, &fbo[0]);
++  gl->BindFramebuffer (GL_READ_FRAMEBUFFER, fbo[0]);
+ 
+-  gl->FramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
++  gl->FramebufferTexture2D (GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+       gst_gl_texture_target_to_gl (src->tex_target), src_tex_id, 0);
+ 
+-//  if (!gst_gl_context_check_framebuffer_status (src->context))
+-//    goto fbo_error;
++  if (!gst_gl_context_check_framebuffer_status (src->mem.context))
++    goto fbo_error;
++
++  gl->BindFramebuffer (GL_DRAW_FRAMEBUFFER, fbo[1]);
++
++  gl->FramebufferTexture2D (GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
++      gst_gl_texture_target_to_gl (src->tex_target), tex_id, 0);
+ 
++  if (!gst_gl_context_check_framebuffer_status (src->mem.context))
++    goto fbo_error;
++
++  /*
+   gl->BindTexture (out_tex_target, tex_id);
+   gst_gl_query_start_log (GST_GL_BASE_MEMORY_CAST (src)->query,
+       GST_CAT_GL_MEMORY, GST_LEVEL_LOG, NULL, "%s", "CopyTexImage2D took");
+   gl->CopyTexImage2D (out_tex_target, 0, out_gl_format, 0, 0, out_width,
+       out_height, 0);
+   gst_gl_query_end (GST_GL_BASE_MEMORY_CAST (src)->query);
++   */
++
++  /* 
++   * glCopyTexImage2D cannot work without internal_format
++   * we cannot get the internal_format in this function
++   * so use glBlitFramebuffer for texture copy
++   */
++  GST_CAT_LOG(GST_CAT_GL_MEMORY,"Use BlitFramebuffer copy texture %d into %d",
++      src_tex_id, tex_id);
++  gl->ReadBuffer ( GL_COLOR_ATTACHMENT0 );
++  gl->BlitFramebuffer ( 0, 0, out_width, out_height,
++		        0, 0, out_width, out_height,
++		        GL_COLOR_BUFFER_BIT, GL_LINEAR );
+ 
+   gl->BindTexture (out_tex_target, 0);
+   gl->BindFramebuffer (GL_FRAMEBUFFER, 0);
+ 
+-  gl->DeleteFramebuffers (1, &fbo);
++  gl->DeleteFramebuffers (2, &fbo[0]);
+ 
+   gst_memory_unmap (GST_MEMORY_CAST (src), &sinfo);
+ 
+   return TRUE;
+ 
++fbo_error:
++  {
++    gl->BindTexture (out_tex_target, 0);
++    gl->BindFramebuffer (GL_FRAMEBUFFER, 0);
++
++    gl->DeleteFramebuffers (2, &fbo[0]);
++
++    gst_memory_unmap (GST_MEMORY_CAST (src), &sinfo);
++    
++    return FALSE;
++  }
++
+ error:
+   return FALSE;
+ }
+-- 
+1.9.1
+
