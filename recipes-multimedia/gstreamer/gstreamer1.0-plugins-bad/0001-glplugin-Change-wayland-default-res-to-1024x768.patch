@@ -1,0 +1,42 @@
+From bb2db3bb88e1f72b611c1ae1cc4854bf570daac8 Mon Sep 17 00:00:00 2001
+From: Jian <Jian.Li@freescale.com>
+Date: Tue, 17 Nov 2015 14:39:07 +0800
+Subject: [PATCH 10/18] [glplugin] Change wayland default res to 1024x768
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Change wayland backend default window resolution
+from 320x240 to 1024x768
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Jian <Jian.Li@freescale.com>
+Signed-off-by: Lyon Wang <lyon.wang@freescale.com>
+---
+ gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c
+index 6e1f0c5..48b37a2 100644
+--- a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c
++++ b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c
+@@ -305,13 +305,13 @@ create_surfaces (GstGLWindowWaylandEGL * window_egl)
+   if (window_egl->window.window_width > 0)
+     width = window_egl->window.window_width;
+   else
+-    width = 320;
++    width = 1024;
+   window_egl->window.window_width = width;
+ 
+   if (window_egl->window.window_height > 0)
+     height = window_egl->window.window_height;
+   else
+-    height = 240;
++    height = 768;
+   window_egl->window.window_height = height;
+ 
+   if (!window_egl->window.native) {
+-- 
+1.9.1
+
