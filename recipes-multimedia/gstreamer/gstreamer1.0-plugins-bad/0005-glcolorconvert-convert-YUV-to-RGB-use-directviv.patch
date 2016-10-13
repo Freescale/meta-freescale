@@ -1,0 +1,170 @@
+From 67d11594e693b60797c2bae1bcfa4e8bafcf4c9a Mon Sep 17 00:00:00 2001
+From: Haihua Hu <b55597@freescale.com>
+Date: Thu, 25 Feb 2016 13:53:20 +0800
+Subject: [PATCH 17/18] glcolorconvert: convert YUV to RGB use directviv
+
+Add a property "disable_passthrough" in glcolorconvert for enable/disable passthrough.
+When need convert YUV to RGB with directviv, set it to be TRUE.
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <b55597@freescale.com>
+
+Conflicts:
+	gst-libs/gst/gl/gstglcolorconvert.c
+
+Signed-off-by: Lyon Wang <lyon.wang@freescale.com>
+---
+ ext/gl/gstglcolorconvertelement.c   | 70 +++++++++++++++++++++++++++++++++++++
+ ext/gl/gstglcolorconvertelement.h   |  1 +
+ gst-libs/gst/gl/gstglcolorconvert.c |  6 +++-
+ 3 files changed, 76 insertions(+), 1 deletion(-)
+
+diff --git a/ext/gl/gstglcolorconvertelement.c b/ext/gl/gstglcolorconvertelement.c
+index bd4fbeb..9108b0a 100644
+--- a/ext/gl/gstglcolorconvertelement.c
++++ b/ext/gl/gstglcolorconvertelement.c
+@@ -35,6 +35,14 @@ G_DEFINE_TYPE_WITH_CODE (GstGLColorConvertElement, gst_gl_color_convert_element,
+         "glconvertelement", 0, "convert");
+     );
+ 
++enum
++{
++  GL_COLOR_CONVERT_PROP_0,
++  GL_COLOR_CONVERT_PROP_DISABLE_PASSTHROUGH
++};
++
++#define DISABLE_PASSTHROUGH_DAFAULT FALSE
++
+ static gboolean gst_gl_color_convert_element_set_caps (GstBaseTransform * bt,
+     GstCaps * in_caps, GstCaps * out_caps);
+ static GstCaps *gst_gl_color_convert_element_transform_caps (GstBaseTransform *
+@@ -54,6 +62,15 @@ static GstFlowReturn gst_gl_color_convert_element_transform (GstBaseTransform *
+ static GstCaps *gst_gl_color_convert_element_fixate_caps (GstBaseTransform *
+     bt, GstPadDirection direction, GstCaps * caps, GstCaps * othercaps);
+ 
++static void gst_gl_color_convert_set_property (GObject *object,
++    guint prop_id,
++    const GValue *value,
++    GParamSpec *pspec);
++static void gst_gl_color_convert_get_property (GObject *object,
++    guint prop_id,
++    GValue *value,
++    GParamSpec *pspec);
++
+ static GstStaticPadTemplate gst_gl_color_convert_element_src_pad_template =
+ GST_STATIC_PAD_TEMPLATE ("src",
+     GST_PAD_SRC,
+@@ -89,6 +106,10 @@ gst_gl_color_convert_element_class_init (GstGLColorConvertElementClass * klass)
+ {
+   GstBaseTransformClass *bt_class = GST_BASE_TRANSFORM_CLASS (klass);
+   GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
++  GObjectClass *object_class = G_OBJECT_CLASS (klass);
++
++  object_class->set_property = gst_gl_color_convert_set_property;
++  object_class->get_property = gst_gl_color_convert_get_property;
+ 
+   bt_class->transform_caps = gst_gl_color_convert_element_transform_caps;
+   bt_class->set_caps = gst_gl_color_convert_element_set_caps;
+@@ -110,6 +131,13 @@ gst_gl_color_convert_element_class_init (GstGLColorConvertElementClass * klass)
+       gst_static_pad_template_get
+       (&gst_gl_color_convert_element_sink_pad_template));
+ 
++  g_object_class_install_property (object_class, GL_COLOR_CONVERT_PROP_DISABLE_PASSTHROUGH,
++      g_param_spec_boolean ("disable_passthrough",
++          "Disable passthrough",
++          "Disable passthrough mode",
++          DISABLE_PASSTHROUGH_DAFAULT,
++          G_PARAM_READWRITE));
++
+   gst_element_class_set_metadata (element_class,
+       "OpenGL color converter", "Filter/Converter/Video",
+       "Converts between color spaces using OpenGL shaders",
+@@ -121,6 +149,41 @@ gst_gl_color_convert_element_init (GstGLColorConvertElement * convert)
+ {
+   gst_base_transform_set_prefer_passthrough (GST_BASE_TRANSFORM (convert),
+       TRUE);
++  convert->disable_passthrough = FALSE;
++}
++
++static void
++gst_gl_color_convert_set_property (GObject *object,
++    guint prop_id,
++    const GValue *value,
++    GParamSpec *pspec)
++{
++  GstGLColorConvertElement *convert = GST_GL_COLOR_CONVERT_ELEMENT (object);
++  switch (prop_id) {
++    case GL_COLOR_CONVERT_PROP_DISABLE_PASSTHROUGH:
++      convert->disable_passthrough = g_value_get_boolean (value);
++      break;
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++      break;
++  }
++}
++
++static void
++gst_gl_color_convert_get_property (GObject *object,
++    guint prop_id,
++    GValue *value,
++    GParamSpec *pspec)
++{
++  GstGLColorConvertElement *convert = GST_GL_COLOR_CONVERT_ELEMENT (object);
++  switch (prop_id) {
++    case GL_COLOR_CONVERT_PROP_DISABLE_PASSTHROUGH:
++      g_value_set_boolean (value, convert->disable_passthrough);
++      break;
++    default:
++      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++      break;
++  }
+ }
+ 
+ static gboolean
+@@ -135,6 +198,13 @@ gst_gl_color_convert_element_set_caps (GstBaseTransform * bt,
+   if (convert->convert)
+     gst_gl_color_convert_set_caps (convert->convert, in_caps, out_caps);
+ 
++  if(gst_base_transform_is_passthrough (bt) && convert->disable_passthrough){
++    /* if in passthrough mode and disable_passthrough is set to true, 
++     * set passthrough to FALSE*/
++    GST_DEBUG_OBJECT(convert, "Disable passthrough mode");
++    gst_base_transform_set_passthrough(bt, FALSE);
++  }
++
+   return TRUE;
+ }
+ 
+diff --git a/ext/gl/gstglcolorconvertelement.h b/ext/gl/gstglcolorconvertelement.h
+index 2a0dd1d..5cdbd3a 100644
+--- a/ext/gl/gstglcolorconvertelement.h
++++ b/ext/gl/gstglcolorconvertelement.h
+@@ -47,6 +47,7 @@ struct _GstGLColorConvertElement
+   GstGLColorConvert *convert;
+   GstCaps *in_caps;
+   GstCaps *out_caps;
++  gboolean disable_passthrough;
+ };
+ 
+ struct _GstGLColorConvertElementClass
+diff --git a/gst-libs/gst/gl/gstglcolorconvert.c b/gst-libs/gst/gl/gstglcolorconvert.c
+index eb3b4a8..4ed947e 100644
+--- a/gst-libs/gst/gl/gstglcolorconvert.c
++++ b/gst-libs/gst/gl/gstglcolorconvert.c
+@@ -700,7 +700,11 @@ _gst_gl_color_convert_set_caps_unlocked (GstGLColorConvert * convert,
+   convert->priv->to_texture_target = to_target;
+   convert->initted = FALSE;
+ 
+-  convert->passthrough = passthrough;
++  /* We may disable passthrough via an external property
++   * By the way, when glconvertelement is in passthrough mode, 
++   * the plugin will not call gst_gl_color_convert_perform().*/
++
++  //convert->passthrough = passthrough;
+ #ifndef GST_DISABLE_GST_DEBUG
+   if (G_UNLIKELY (convert->passthrough))
+     GST_DEBUG_OBJECT (convert,
+-- 
+1.9.1
+
