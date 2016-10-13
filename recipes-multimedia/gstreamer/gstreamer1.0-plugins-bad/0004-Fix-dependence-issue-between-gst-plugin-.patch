@@ -1,0 +1,74 @@
+From 4f73ba8dde190b0e2d3a7a16b394762f7459ca31 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Fri, 5 Aug 2016 17:04:02 +0800
+Subject: [PATCH] [MMFMWK-7259]Fix dependence issue between gst-plugin-bad and
+ imx-gst1.0-plugin
+
+Change dependence to gst-plugin-base since we have move physical memory allocator
+to gst-plugin-base
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+---
+ gst-libs/gst/gl/Makefile.am             | 2 +-
+ gst-libs/gst/gl/gstglphymemory.c        | 2 +-
+ gst-libs/gst/gl/gstglphymemory.h        | 2 +-
+ gst-libs/gst/gl/gstglvivdirecttexture.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/gst-libs/gst/gl/Makefile.am b/gst-libs/gst/gl/Makefile.am
+index 5c05230..55f8a20 100644
+--- a/gst-libs/gst/gl/Makefile.am
++++ b/gst-libs/gst/gl/Makefile.am
+@@ -86,7 +86,7 @@ libgstgl_@GST_API_VERSION@_la_LIBADD = \
+ 	$(GST_LIBS) \
+ 	$(GL_LIBS)
+ 
+-libgstgl_@GST_API_VERSION@_la_LIBADD += -lgstfsl-$(GST_API_VERSION)
++libgstgl_@GST_API_VERSION@_la_LIBADD += -lg2d
+ 
+ if HAVE_WINDOW_WIN32
+ SUBDIRS += win32
+diff --git a/gst-libs/gst/gl/gstglphymemory.c b/gst-libs/gst/gl/gstglphymemory.c
+index 52ae41f..e28546c 100644
+--- a/gst-libs/gst/gl/gstglphymemory.c
++++ b/gst-libs/gst/gl/gstglphymemory.c
+@@ -24,7 +24,7 @@
+ 
+ #include "gstglvivdirecttexture.h"
+ #include "gstglphymemory.h"
+-#include "g2d.h"
++#include <g2d.h>
+ 
+ GST_DEBUG_CATEGORY_STATIC (GST_CAT_GL_PHY_MEMORY);
+ #define GST_CAT_DEFAULT GST_CAT_GL_PHY_MEMORY
+diff --git a/gst-libs/gst/gl/gstglphymemory.h b/gst-libs/gst/gl/gstglphymemory.h
+index b1a69e7..ebb9911 100644
+--- a/gst-libs/gst/gl/gstglphymemory.h
++++ b/gst-libs/gst/gl/gstglphymemory.h
+@@ -24,7 +24,7 @@
+ #include <gst/gst.h>
+ #include <gst/gstmemory.h>
+ #include <gst/video/video.h>
+-#include <gst/imx-mm/gstallocatorphymem.h>
++#include <gst/allocators/gstallocatorphymem.h>
+ 
+ #include <gst/gl/gl.h>
+ 
+diff --git a/gst-libs/gst/gl/gstglvivdirecttexture.c b/gst-libs/gst/gl/gstglvivdirecttexture.c
+index e8e0b82..242b7c0 100644
+--- a/gst-libs/gst/gl/gstglvivdirecttexture.c
++++ b/gst-libs/gst/gl/gstglvivdirecttexture.c
+@@ -22,7 +22,7 @@
+ #include "config.h"
+ #endif
+ 
+-#include <gst/imx-mm/gstallocatorphymem.h>
++#include <gst/allocators/gstallocatorphymem.h>
+ #include "gl.h"
+ 
+ GST_DEBUG_CATEGORY_EXTERN (gst_gl_upload_debug);
+-- 
+1.9.1
+

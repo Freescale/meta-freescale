@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 IMX_PATCHES = " file://gstplaybin-remove-flag-deinterlace.patch \
                 file://0001-MMFMWK-7030-Linux_MX6QP_ARD-IMXCameraApp-When-Enable.patch \
+                file://0002-Remove-dependence-on-imx-plugin-git.patch \
 "
 
 SRC_URI_append_mx6 = "${IMX_PATCHES}"
