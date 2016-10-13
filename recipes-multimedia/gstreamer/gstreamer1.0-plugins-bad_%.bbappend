@@ -11,6 +11,7 @@ PACKAGECONFIG_GL_mx6sl = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', \
                                     'opengl', '', d), '', d)}"
 
 SRC_URI_append = " file://0001-glplugin-Change-wayland-default-res-to-1024x768.patch \
+                   file://0002-Add-directviv-to-glimagesink-to-improve-playback-per.patch \
 "
 
 
