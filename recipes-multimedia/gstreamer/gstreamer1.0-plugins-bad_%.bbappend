@@ -15,6 +15,7 @@ SRC_URI_append = " file://0001-glplugin-Change-wayland-default-res-to-1024x768.p
                    file://0003-MMFMWK-6930-glplugin-Accelerate-gldownload-with-dire.patch \
                    file://0004-Fix-dependence-issue-between-gst-plugin-.patch \
                    file://0005-glcolorconvert-convert-YUV-to-RGB-use-directviv.patch \
+                   file://0006-glwindow-work-around-for-no-frame-when-imxplayer-use.patch \
 "
 
 
