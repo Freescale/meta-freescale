@@ -14,7 +14,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://only-set-vmpic_msi_feature-if-CONFIG_EPAPR_PARAVIRT-.patch \
     file://powerpc-fsl-Fix-build-of-the-dtb-embedded-kernel-images.patch \
 "
-SRCREV = "bd51baffc04ecc73f933aee1c3a37c8b44b889a7"
+SRCREV = "667e6ba9ca2150b3cabdd0c07b57d1b88ef3b86a"
 
 S = "${WORKDIR}/git"
 
