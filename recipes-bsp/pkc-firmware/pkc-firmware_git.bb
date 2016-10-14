@@ -11,7 +11,7 @@ inherit deploy
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/pkc-firmware.git;branch=sdk-v2.0.x"
-SRCREV = "ed90f156389e7f0fc848f70ef015434a3f9b89ef"
+SRCREV = "f75d281d83e74758f54d85bacfa74b7c07514413"
 
 S = "${WORKDIR}/git"
 
