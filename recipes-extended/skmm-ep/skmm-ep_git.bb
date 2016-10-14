@@ -12,7 +12,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;branch=sdk-v2.0.x \
     file://skmm-ep-fix-the-inline-function-definition-with-gcc-.patch \
     file://skmm-ep-remove-duplicated-pa_to_va-and-va_to_pa.patch \
 "
-SRCREV = "bbf1ba00fcf407252a4c2e56783e63861088f9cb"
+SRCREV = "fc43230ac3044917c9df12e9e4f6a38a4d9b80aa"
 
 S = "${WORKDIR}/git"
 
