@@ -139,6 +139,12 @@ _generate_boot_image() {
 			fi
 		done
 	fi
+
+	# Copy extlinux.conf to images that have U-Boot Extlinux support.
+	if [ "${UBOOT_EXTLINUX}" = "1" ]; then
+		mmd -i ${WORKDIR}/boot.img ::/extlinux
+		mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/extlinux.conf ::/extlinux/extlinux.conf
+	fi
 }
 
 #
