@@ -5,14 +5,13 @@
 # It uses barebox
 #
 # The disk layout used is:
-#  - --------- ------------ --------- --------------
-# | | barebox | bareboxenv |  /boot  |    rootfs    |
-#  - --------- ------------ --------- --------------
-# ^ ^         ^            ^         ^              ^
-# | |         |            |         |              |
-# 0 512B      512kiB       4MiB   4MiB + 8MiB    4MiB + 8Mib + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
+#  - --------- ------------ --------------
+# | | barebox | bareboxenv |    rootfs    |
+#  - --------- ------------ --------------
+# ^ ^         ^            ^              ^
+# | |         |            |              |
+# 0 512B      512kiB     4MiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
 #
 part barebox --source rawcopy --sourceparams="file=barebox.bin,skip=512" --ondisk mmcblk --no-table
 part bareboxenv --source rawcopy --sourceparams="file=bareboxenv.bin" --ondisk mmcblk --no-table --align 512
-part /boot --source bootimg-partition --ondisk mmcblk --fstype=vfat --label boot --active --align 4096 --size 8M --extra-space 0
 part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096
