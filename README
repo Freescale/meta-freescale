@@ -31,7 +31,7 @@ Source code:
 
 When creating patches, please use something like:
 
-    git format-patch -s --subject-prefix='meta-freescale][PATCH' origin
+    git format-patch -s origin
 
 When sending patches, please use something like:
 
