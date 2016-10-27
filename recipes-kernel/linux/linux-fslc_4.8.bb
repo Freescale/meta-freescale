@@ -9,7 +9,7 @@ upstreaming."
 
 include linux-fslc.inc
 
-+PV = "4.8+git${SRCPV}"
+PV = "4.8+git${SRCPV}"
 
 SRCBRANCH = "4.8.x+fslc"
 SRCREV = "6a4464c7a4cfcab719eab54a98e34f7c61efc5e6"
