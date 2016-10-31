@@ -13,6 +13,8 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://fix-the-compile-issue-under-gcc6.patch \
     file://only-set-vmpic_msi_feature-if-CONFIG_EPAPR_PARAVIRT-.patch \
     file://powerpc-fsl-Fix-build-of-the-dtb-embedded-kernel-images.patch \
+    file://CVE-2016-5696-limiting-of-all-challenge.patch \
+    file://CVE-2016-5696-make-challenge-acks-less-predictable.patch \
 "
 SRCREV = "667e6ba9ca2150b3cabdd0c07b57d1b88ef3b86a"
 
