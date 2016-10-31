@@ -12,7 +12,7 @@ DEPENDS_append_mx6dl = " imx-lib imx-vpu imx-vpuwrap"
 DEPENDS_append_mx6sl = " imx-lib"
 DEPENDS_append_mx6sx = " imx-lib"
 DEPENDS_append_mx6ul = " imx-lib"
-DEPENDS_append_mx7 = " imx-lib"
+DEPENDS_append_mx7d = " imx-lib"
 
 # For backwards compatibility
 RREPLACES_${PN} = "gst1.0-fsl-plugin"
@@ -37,11 +37,13 @@ inherit autotools pkgconfig
 # Make sure kernel sources are available
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
-PLATFORM_mx6 = "MX6"
+PLATFORM_mx6dl = "MX6DL"
+PLATFORM_mx6q = "MX6Q"
 PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx6sx = "MX6SX"
 PLATFORM_mx6ul = "MX6UL"
-PLATFORM_mx7= "MX7D"
+PLATFORM_mx6ull = "MX6ULL"
+PLATFORM_mx7d = "MX7D"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
@@ -56,7 +58,10 @@ BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
 RDEPENDS_${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_mx6 = "overlaysink"
+PACKAGECONFIG_mx6dl = "overlaysink"
+PACKAGECONFIG_mx6q = "overlaysink"
+PACKAGECONFIG_mx6sl = "overlaysink"
+PACKAGECONFIG_mx6sx = "overlaysink"
 
 
 # FIXME: Add all features
@@ -82,4 +87,4 @@ FILES_${PN}-grecorder = "${bindir}/grecorder-1.0"
 FILES_${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
 FILES_${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
 
-COMPATIBLE_MACHINE = "(mx6|mx6ul|mx7)"
+COMPATIBLE_MACHINE = "(mx6dl|mx6q|mx6sl|mx6sx|mx6ul|mx6ull|mx7d)"
