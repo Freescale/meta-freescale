@@ -1,0 +1,454 @@
+From 506dd50401d4f702d92540db9cb90a752e6817aa Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Mon, 31 Oct 2016 15:22:01 +0800
+Subject: [PATCH] [MMFMWK-7308] Fix build issue on non-GPU soc.
+
+1.Add directviv and g2d check in configure.ac
+2.Add compile marcos in glupload and gldownload
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+---
+ configure.ac                      | 27 +++++++++++++++-
+ ext/gl/gstgldownloadelement.c     | 21 ++++++++++---
+ gst-libs/gst/gl/Makefile.am       | 22 ++++++++++---
+ gst-libs/gst/gl/gstglbufferpool.c |  4 ++-
+ gst-libs/gst/gl/gstglupload.c     | 66 ++++++++++++++++++++++-----------------
+ 5 files changed, 100 insertions(+), 40 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 9d007f1..655e019 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -682,7 +682,9 @@ save_LIBS="$LIBS"
+ HAVE_GL=no
+ HAVE_GLES2=no
+ HAVE_WAYLAND_EGL=no
+-HAV_FB_EGL=no
++HAVE_FB_EGL=no
++HAVE_DIRECTVIV=no
++HAVE_G2D=no
+ 
+ HAVE_EGL_RPI=no
+ 
+@@ -722,6 +724,10 @@ case $host in
+     dnl check for imx fbbackend support
+     AC_CHECK_LIB(EGL, fbGetDisplay, HAVE_FB_EGL=yes, HAVE_FB_EGL=no)
+ 
++    dnl specific check for imx soc
++    AC_CHECK_LIB(GLESv2, glTexDirectVIV, HAVE_DIRECTVIV=yes, HAVE_DIRECTVIV=no)
++    AC_CHECK_HEADER(g2d.h, HAVE_G2D=yes, HAVE_G2D=no)
++
+     dnl FIXME: Mali EGL depends on GLESv1 or GLESv2
+     AC_CHECK_HEADER([EGL/fbdev_window.h],
+       [
+@@ -820,6 +826,18 @@ if test "x$HAVE_GLES2" = "xno"; then
+   fi
+ fi
+ 
++dnl specific for imx soc
++GST_GL_HAVE_DIRECTVIV=0
++GST_GL_HAVE_PHYMEM=0
++if test "x$HAVE_DIRECTVIV" = "xyes"; then
++  GST_GL_HAVE_DIRECTVIV=1
++  if test "x$HAVE_G2D" = "xyes"; then
++    GST_GL_HAVE_PHYMEM=1
++  else
++    AC_MSG_WARN([Physical memory do not support])
++  fi
++fi
++
+ dnl X, GLX and OpenGL
+ if test "x$HAVE_X" = "xno"; then
+   if test "x$NEED_GLX" = "xyes"; then
+@@ -1265,6 +1283,8 @@ GL_CONFIG_DEFINES="$GL_CONFIG_DEFINES
+ 
+ GL_CONFIG_DEFINES="$GL_CONFIG_DEFINES
+ #define GST_GL_HAVE_DMABUF $GST_GL_HAVE_DMABUF
++#define GST_GL_HAVE_DIRECTVIV $GST_GL_HAVE_DIRECTVIV
++#define GST_GL_HAVE_PHYMEM $GST_GL_HAVE_PHYMEM
+ "
+ 
+ dnl Check for no platforms/window systems
+@@ -1300,6 +1320,9 @@ if test "x$GL_APIS" = "x" -o "x$GL_PLATFORMS" = "x" -o "x$GL_WINDOWS" = "x"; the
+   HAVE_WINDOW_COCOA=no
+   HAVE_WINDOW_EAGL=no
+   HAVE_WINDOW_FB=no
++
++  HAVE_DIRECTVIV=no
++  HAVE_G2D=no
+ fi
+ 
+ AC_SUBST(GL_LIBS)
+@@ -1316,6 +1339,8 @@ AM_CONDITIONAL(HAVE_WINDOW_WAYLAND, test "x$HAVE_WINDOW_WAYLAND" = "xyes")
+ AM_CONDITIONAL(HAVE_WINDOW_ANDROID, test "x$HAVE_WINDOW_ANDROID" = "xyes")
+ AM_CONDITIONAL(HAVE_WINDOW_EAGL, test "x$HAVE_WINDOW_EAGL" = "xyes")
+ AM_CONDITIONAL(HAVE_WINDOW_FB, test "x$HAVE_WINDOW_FB" = "xyes")
++AM_CONDITIONAL(HAVE_DIRECTVIV, test "x$HAVE_DIRECTVIV" = "xyes")
++AM_CONDITIONAL(HAVE_PHYMEM, test "x$HAVE_DIRECTVIV" = "xyes" -a "x$HAVE_G2D" = "xyes")
+ 
+ AM_CONDITIONAL(USE_OPENGL, test "x$USE_OPENGL" = "xyes")
+ AM_CONDITIONAL(USE_GLES2, test "x$USE_GLES2" = "xyes")
+diff --git a/ext/gl/gstgldownloadelement.c b/ext/gl/gstgldownloadelement.c
+index 9ea0146..e89c36e 100644
+--- a/ext/gl/gstgldownloadelement.c
++++ b/ext/gl/gstgldownloadelement.c
+@@ -23,9 +23,12 @@
+ #endif
+ 
+ #include <gst/gl/gl.h>
+-#include <gst/gl/gstglphymemory.h>
+ #include "gstgldownloadelement.h"
+ 
++#if GST_GL_HAVE_PHYMEM
++#include <gst/gl/gstglphymemory.h>
++#endif
++
+ GST_DEBUG_CATEGORY_STATIC (gst_gl_download_element_debug);
+ #define GST_CAT_DEFAULT gst_gl_download_element_debug
+ 
+@@ -33,7 +36,8 @@ GST_DEBUG_CATEGORY_STATIC (gst_gl_download_element_debug);
+ G_DEFINE_TYPE_WITH_CODE (GstGLDownloadElement, gst_gl_download_element,
+     GST_TYPE_GL_BASE_FILTER,
+     GST_DEBUG_CATEGORY_INIT (gst_gl_download_element_debug, "gldownloadelement",
+-        0, "download element"););
++        0, "download element");
++    );
+ 
+ static gboolean gst_gl_download_element_get_unit_size (GstBaseTransform * trans,
+     GstCaps * caps, gsize * size);
+@@ -170,6 +174,7 @@ gst_gl_download_element_prepare_output_buffer (GstBaseTransform * bt,
+   gint i, n;
+   GstGLMemory *glmem;
+ 
++#if GST_GL_HAVE_PHYMEM
+   glmem = gst_buffer_peek_memory (inbuf, 0);
+   if (gst_is_gl_physical_memory (glmem)) {
+     GstGLContext *context = GST_GL_BASE_FILTER (bt)->context;
+@@ -182,6 +187,7 @@ gst_gl_download_element_prepare_output_buffer (GstBaseTransform * bt,
+ 
+     return GST_FLOW_OK;
+   }
++#endif /* GST_GL_HAVE_PHYMEM */
+ 
+   *outbuf = inbuf;
+ 
+@@ -235,19 +241,23 @@ gst_gl_download_element_propose_allocation (GstBaseTransform * bt,
+     return FALSE;
+   }
+ 
+-  GST_DEBUG_OBJECT (bt, "video format is %s", gst_video_format_to_string (GST_VIDEO_INFO_FORMAT (&info)));
++  GST_DEBUG_OBJECT (bt, "video format is %s",
++      gst_video_format_to_string (GST_VIDEO_INFO_FORMAT (&info)));
+ 
+   gst_allocation_params_init (&params);
++
++#if GST_GL_HAVE_PHYMEM
+   if (gst_is_gl_physical_memory_supported_fmt (&info)) {
+     allocator = gst_phy_mem_allocator_obtain ();
+     GST_DEBUG_OBJECT (bt, "obtain physical memory allocator %p.", allocator);
+   }
++#endif /* GST_GL_HAVE_PHYMEM */
+ 
+   if (!allocator)
+     allocator = gst_allocator_find (GST_GL_MEMORY_ALLOCATOR_NAME);
+ 
+   if (!allocator) {
+-    GST_ERROR_OBJECT (bt, "Can't obtain physical memory allocator.");
++    GST_ERROR_OBJECT (bt, "Can't obtain gl memory allocator.");
+     return FALSE;
+   }
+ 
+@@ -268,7 +278,8 @@ gst_gl_download_element_propose_allocation (GstBaseTransform * bt,
+   /* the normal size of a frame */
+   size = info.size;
+   gst_buffer_pool_config_set_params (config, caps, size, 0, 0);
+-  gst_buffer_pool_config_add_option (config, GST_BUFFER_POOL_OPTION_GL_SYNC_META);
++  gst_buffer_pool_config_add_option (config,
++      GST_BUFFER_POOL_OPTION_GL_SYNC_META);
+ 
+   if (!gst_buffer_pool_set_config (pool, config)) {
+     gst_object_unref (pool);
+diff --git a/gst-libs/gst/gl/Makefile.am b/gst-libs/gst/gl/Makefile.am
+index 55f8a20..c52bba5 100644
+--- a/gst-libs/gst/gl/Makefile.am
++++ b/gst-libs/gst/gl/Makefile.am
+@@ -33,10 +33,16 @@ libgstgl_@GST_API_VERSION@_la_SOURCES = \
+ 	gstglviewconvert.c \
+ 	gstgloverlaycompositor.c \
+ 	gstglquery.c \
+-	gstglvivdirecttexture.c \
+-	gstglphymemory.c \
+ 	gstglcontrolbindingproxy.c
+ 
++if HAVE_DIRECTVIV
++libgstgl_@GST_API_VERSION@_la_SOURCES += gstglvivdirecttexture.c
++endif
++
++if HAVE_PHYMEM
++libgstgl_@GST_API_VERSION@_la_SOURCES += gstglphymemory.c
++endif
++
+ libgstgl_@GST_API_VERSION@includedir = $(includedir)/gstreamer-@GST_API_VERSION@/gst/gl
+ libgstgl_@GST_API_VERSION@include_HEADERS = \
+ 	gstglwindow.h \
+@@ -68,10 +74,16 @@ libgstgl_@GST_API_VERSION@include_HEADERS = \
+ 	gstglcontrolbindingproxy.h \
+ 	gstgl_fwd.h \
+ 	gstgl_enums.h \
+-	gstglvivdirecttexture.h \
+-	gstglphymemory.h \
+ 	gl.h
+ 
++if HAVE_DIRECTVIV
++libgstgl_@GST_API_VERSION@include_HEADERS += gstglvivdirecttexture.h
++endif
++
++if HAVE_PHYMEM
++libgstgl_@GST_API_VERSION@include_HEADERS += gstglphymemory.h
++endif
++
+ noinst_HEADERS = \
+ 	gstglsl_private.h \
+ 	utils/opengl_versions.h \
+@@ -86,7 +98,9 @@ libgstgl_@GST_API_VERSION@_la_LIBADD = \
+ 	$(GST_LIBS) \
+ 	$(GL_LIBS)
+ 
++if HAVE_PHYMEM
+ libgstgl_@GST_API_VERSION@_la_LIBADD += -lg2d
++endif
+ 
+ if HAVE_WINDOW_WIN32
+ SUBDIRS += win32
+diff --git a/gst-libs/gst/gl/gstglbufferpool.c b/gst-libs/gst/gl/gstglbufferpool.c
+index 71c726a..77452be 100644
+--- a/gst-libs/gst/gl/gstglbufferpool.c
++++ b/gst-libs/gst/gl/gstglbufferpool.c
+@@ -292,8 +292,9 @@ gst_gl_buffer_pool_alloc (GstBufferPool * pool, GstBuffer ** buffer,
+   }
+ #endif
+ 
++#if GST_GL_HAVE_PHYMEM
+   if ((g_strcmp0 (priv->allocator->mem_type, GST_GL_PHY_MEM_ALLOCATOR) == 0)) {
+-    GstAllocator* allocator = (GstAllocator*) gst_phy_mem_allocator_obtain ();
++    GstAllocator *allocator = (GstAllocator *) gst_phy_mem_allocator_obtain ();
+     if (!gst_gl_physical_memory_setup_buffer (allocator, buf, priv->gl_params)) {
+       GST_ERROR_OBJECT (pool, "Can't create physcial buffer.");
+       return GST_FLOW_ERROR;
+@@ -301,6 +302,7 @@ gst_gl_buffer_pool_alloc (GstBufferPool * pool, GstBuffer ** buffer,
+     *buffer = buf;
+     return GST_FLOW_OK;
+   }
++#endif
+ 
+   alloc = GST_GL_MEMORY_ALLOCATOR (priv->allocator);
+   if (!gst_gl_memory_setup_buffer (alloc, buf, priv->gl_params))
+diff --git a/gst-libs/gst/gl/gstglupload.c b/gst-libs/gst/gl/gstglupload.c
+index 99cc68a..d17fab3 100644
+--- a/gst-libs/gst/gl/gstglupload.c
++++ b/gst-libs/gst/gl/gstglupload.c
+@@ -23,7 +23,6 @@
+ #endif
+ 
+ #include <stdio.h>
+-#include <gst/gl/gstglvivdirecttexture.h>
+ 
+ #include "gl.h"
+ #include "gstglupload.h"
+@@ -36,6 +35,9 @@
+ #include <gst/allocators/gstdmabuf.h>
+ #endif
+ 
++#if GST_GL_HAVE_DIRECTVIV
++#include <gst/gl/gstglvivdirecttexture.h>
++#endif
+ /**
+  * SECTION:gstglupload
+  * @short_description: an object that uploads to GL textures
+@@ -316,8 +318,8 @@ _gl_memory_upload_propose_allocation (gpointer impl, GstQuery * decide_query,
+     gst_allocation_params_init (&params);
+ 
+     allocator =
+-        GST_ALLOCATOR (gst_gl_memory_allocator_get_default (upload->
+-            upload->context));
++        GST_ALLOCATOR (gst_gl_memory_allocator_get_default (upload->upload->
++            context));
+     gst_query_add_allocation_param (query, allocator, &params);
+     gst_object_unref (allocator);
+   }
+@@ -603,8 +605,8 @@ _egl_image_upload_perform_gl_thread (GstGLContext * context,
+   }
+ 
+   if (GST_IS_GL_BUFFER_POOL (image->buffer->pool))
+-    gst_gl_buffer_pool_replace_last_buffer (GST_GL_BUFFER_POOL (image->
+-            buffer->pool), image->buffer);
++    gst_gl_buffer_pool_replace_last_buffer (GST_GL_BUFFER_POOL (image->buffer->
++            pool), image->buffer);
+ }
+ 
+ static GstGLUploadReturn
+@@ -1045,11 +1047,11 @@ _upload_meta_upload_propose_allocation (gpointer impl, GstQuery * decide_query,
+   gpointer handle;
+ 
+   gl_apis =
+-      gst_gl_api_to_string (gst_gl_context_get_gl_api (upload->upload->
+-          context));
+-  platform =
+-      gst_gl_platform_to_string (gst_gl_context_get_gl_platform (upload->
++      gst_gl_api_to_string (gst_gl_context_get_gl_api (upload->
+           upload->context));
++  platform =
++      gst_gl_platform_to_string (gst_gl_context_get_gl_platform
++      (upload->upload->context));
+   handle = (gpointer) gst_gl_context_get_gl_context (upload->upload->context);
+ 
+   gl_context =
+@@ -1170,6 +1172,7 @@ static const UploadMethod _upload_meta_upload = {
+   &_upload_meta_upload_free
+ };
+ 
++#if GST_GL_HAVE_DIRECTVIV
+ struct PhyBufferUpload
+ {
+   GstGLUpload *upload;
+@@ -1177,7 +1180,7 @@ struct PhyBufferUpload
+ };
+ 
+ static gpointer
+-_physical_buffer_upload_new(GstGLUpload *upload)
++_physical_buffer_upload_new (GstGLUpload * upload)
+ {
+   struct PhyBufferUpload *phybuffer = g_new0 (struct PhyBufferUpload, 1);
+ 
+@@ -1187,8 +1190,8 @@ _physical_buffer_upload_new(GstGLUpload *upload)
+ }
+ 
+ static GstCaps *
+-_physical_buffer_upload_transform_caps(GstGLContext *context,
+-    GstPadDirection direction, GstCaps *caps)
++_physical_buffer_upload_transform_caps (GstGLContext * context,
++    GstPadDirection direction, GstCaps * caps)
+ {
+   GstCapsFeatures *passthrough =
+       gst_caps_features_from_string
+@@ -1208,7 +1211,7 @@ _physical_buffer_upload_transform_caps(GstGLContext *context,
+     ret = tmp;
+   } else {
+     ret = gst_caps_from_string (GST_VIDEO_CAPS_MAKE_WITH_FEATURES
+-            (GST_CAPS_FEATURE_MEMORY_SYSTEM_MEMORY,GST_GL_DIRECTVIV_FORMAT));
++        (GST_CAPS_FEATURE_MEMORY_SYSTEM_MEMORY, GST_GL_DIRECTVIV_FORMAT));
+   }
+ 
+   gst_caps_features_free (passthrough);
+@@ -1216,16 +1219,16 @@ _physical_buffer_upload_transform_caps(GstGLContext *context,
+ }
+ 
+ static gboolean
+-_physical_buffer_upload_accept(gpointer impl, GstBuffer *buffer, 
+-    GstCaps *in_caps, GstCaps *out_caps)
++_physical_buffer_upload_accept (gpointer impl, GstBuffer * buffer,
++    GstCaps * in_caps, GstCaps * out_caps)
+ {
+-  struct PhyBufferUpload *upload = impl;  
++  struct PhyBufferUpload *upload = impl;
+   GstCapsFeatures *features;
+ 
+   features = gst_caps_get_features (out_caps, 0);
+   if (!gst_caps_features_contains (features, GST_CAPS_FEATURE_MEMORY_GL_MEMORY))
+     return FALSE;
+-  
++
+   if (upload->params)
+     gst_gl_allocation_params_free ((GstGLAllocationParams *) upload->params);
+   if (!(upload->params =
+@@ -1234,18 +1237,19 @@ _physical_buffer_upload_accept(gpointer impl, GstBuffer *buffer,
+               GST_GL_TEXTURE_TARGET_2D)))
+     return FALSE;
+ 
+-  return gst_is_physical_buffer(buffer);
++  return gst_is_physical_buffer (buffer);
+ }
+ 
+ static void
+-_physical_buffer_upload_propose_allocation(gpointer impl, GstQuery *decide_query,
+-    GstQuery *query)
++_physical_buffer_upload_propose_allocation (gpointer impl,
++    GstQuery * decide_query, GstQuery * query)
+ {
+   gst_query_add_allocation_meta (query, GST_VIDEO_META_API_TYPE, 0);
+ }
+ 
+ static GstGLUploadReturn
+-_physical_buffer_upload_perform(gpointer impl, GstBuffer *buffer, GstBuffer **outbuf)
++_physical_buffer_upload_perform (gpointer impl, GstBuffer * buffer,
++    GstBuffer ** outbuf)
+ {
+   struct PhyBufferUpload *phyBuffer = impl;
+   GstGLMemoryAllocator *allocator;
+@@ -1255,7 +1259,7 @@ _physical_buffer_upload_perform(gpointer impl, GstBuffer *buffer, GstBuffer **ou
+   info = &phyBuffer->upload->priv->out_info;
+   n_mem = GST_VIDEO_INFO_N_PLANES (info);
+   GST_LOG_OBJECT (phyBuffer->upload, "Attempting viv direct upload");
+-  
++
+   allocator =
+       GST_GL_MEMORY_ALLOCATOR (gst_allocator_find
+       (GST_GL_MEMORY_PBO_ALLOCATOR_NAME));
+@@ -1265,11 +1269,10 @@ _physical_buffer_upload_perform(gpointer impl, GstBuffer *buffer, GstBuffer **ou
+   gst_gl_memory_setup_buffer (allocator, *outbuf, phyBuffer->params);
+   gst_object_unref (allocator);
+ 
+-  GstGLMemory *out_gl_mem =
+-      (GstGLMemory *) gst_buffer_peek_memory (*outbuf, 0);
++  GstGLMemory *out_gl_mem = (GstGLMemory *) gst_buffer_peek_memory (*outbuf, 0);
+ 
+-  gst_gl_viv_direct_bind_gstbuffer(phyBuffer->upload->context, out_gl_mem->tex_id,
+-      &phyBuffer->upload->priv->in_info, buffer);
++  gst_gl_viv_direct_bind_gstbuffer (phyBuffer->upload->context,
++      out_gl_mem->tex_id, &phyBuffer->upload->priv->in_info, buffer);
+ 
+   gst_buffer_add_video_meta_full (*outbuf, 0,
+       GST_VIDEO_INFO_FORMAT (info), GST_VIDEO_INFO_WIDTH (info),
+@@ -1279,14 +1282,14 @@ _physical_buffer_upload_perform(gpointer impl, GstBuffer *buffer, GstBuffer **ou
+ }
+ 
+ static void
+-_physical_buffer_upload_free(gpointer impl)
++_physical_buffer_upload_free (gpointer impl)
+ {
+   struct PhyBufferUpload *phyBuffer = impl;
+ 
+   if (phyBuffer->params)
+     gst_gl_allocation_params_free ((GstGLAllocationParams *) phyBuffer->params);
+ 
+-  g_free(phyBuffer);
++  g_free (phyBuffer);
+ }
+ 
+ static GstStaticCaps _physical_buffer_upload_caps =
+@@ -1303,6 +1306,7 @@ static const UploadMethod _physical_buffer_upload = {
+   &_physical_buffer_upload_perform,
+   &_physical_buffer_upload_free
+ };
++#endif /* GST_GL_HAVE_DIRECTVIV */
+ 
+ struct RawUploadFrame
+ {
+@@ -1526,7 +1530,11 @@ static const UploadMethod *upload_methods[] = { &_gl_memory_upload,
+ #if GST_GL_HAVE_DMABUF
+   &_dma_buf_upload,
+ #endif
+-  &_upload_meta_upload, &_physical_buffer_upload, &_raw_data_upload
++  &_upload_meta_upload,
++#if GST_GL_HAVE_DIRECTVIV
++  &_physical_buffer_upload,
++#endif
++  &_raw_data_upload
+ };
+ 
+ static GMutex upload_global_lock;
+-- 
+1.9.1
+
