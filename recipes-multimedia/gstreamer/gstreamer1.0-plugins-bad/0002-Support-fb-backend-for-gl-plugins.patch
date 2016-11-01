@@ -1,0 +1,758 @@
+From 230873df6cfd43ce70d9dc763d6f47415f846059 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <b55597@freescale.com>
+Date: Mon, 16 Nov 2015 17:41:57 +0800
+Subject: [PATCH] Support fb backend for gl plugins
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+1.Add fb support in glimagesink
+2.override set_render_rectangle() to support resize
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <b55597@freescale.com>
+---
+ configure.ac                            |  25 ++-
+ gst-libs/gst/gl/Makefile.am             |   5 +
+ gst-libs/gst/gl/fb/Makefile.am          |  25 +++
+ gst-libs/gst/gl/fb/gstgldisplay_fb.c    | 109 +++++++++++++
+ gst-libs/gst/gl/fb/gstgldisplay_fb.h    |  67 ++++++++
+ gst-libs/gst/gl/fb/gstglwindow_fb_egl.c | 265 ++++++++++++++++++++++++++++++++
+ gst-libs/gst/gl/fb/gstglwindow_fb_egl.h |  65 ++++++++
+ gst-libs/gst/gl/gstgldisplay.c          |   8 +
+ gst-libs/gst/gl/gstgldisplay.h          |   1 +
+ gst-libs/gst/gl/gstglwindow.c           |   5 +
+ 10 files changed, 574 insertions(+), 1 deletion(-)
+ create mode 100644 gst-libs/gst/gl/fb/Makefile.am
+ create mode 100644 gst-libs/gst/gl/fb/gstgldisplay_fb.c
+ create mode 100644 gst-libs/gst/gl/fb/gstgldisplay_fb.h
+ create mode 100644 gst-libs/gst/gl/fb/gstglwindow_fb_egl.c
+ create mode 100644 gst-libs/gst/gl/fb/gstglwindow_fb_egl.h
+
+diff --git a/configure.ac b/configure.ac
+index 8d82850..537ee33 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -682,6 +682,7 @@ save_LIBS="$LIBS"
+ HAVE_GL=no
+ HAVE_GLES2=no
+ HAVE_WAYLAND_EGL=no
++HAV_FB_EGL=no
+ 
+ HAVE_EGL_RPI=no
+ 
+@@ -718,6 +719,9 @@ case $host in
+     old_LIBS=$LIBS
+     old_CFLAGS=$CFLAGS
+ 
++    dnl check for imx fbbackend support
++    AC_CHECK_LIB(EGL, fbGetDisplay, HAVE_FB_EGL=yes, HAVE_FB_EGL=no)
++
+     dnl FIXME: Mali EGL depends on GLESv1 or GLESv2
+     AC_CHECK_HEADER([EGL/fbdev_window.h],
+       [
+@@ -1003,6 +1007,16 @@ case $host in
+       fi
+     fi
+ 
++    if test "x$HAVE_FB_EGL" = "xyes"; then
++      if test "x$NEED_EGL" = "xno" -o "x$HAVE_EGL" = "xno"; then
++        AC_MSG_WARN([EGL is required by the fb backend for OpenGL support])
++      else
++        HAVE_WINDOW_FB=yes
++        GL_LIBS="$GL_LIBS"
++        GL_CFLAGS="$GL_CFLAGS"
++      fi
++    fi
++
+     if test "x$HAVE_EGL_RPI" = "xyes"; then
+       if test "x$NEED_DISPMANX" != "xno"; then
+         HAVE_WINDOW_DISPMANX=yes
+@@ -1017,7 +1031,7 @@ case $host in
+       fi
+     else
+       if test "x$NEED_EGL" != "xno"; then
+-        if test "x$HAVE_WINDOW_WAYLAND" = "xyes" -o "x$HAVE_WINDOW_X11" = "xyes" -o "x$HAVE_WINDOW_DISPMANX" = "xyes"; then
++        if test "x$HAVE_WINDOW_WAYLAND" = "xyes" -o "x$HAVE_WINDOW_X11" = "xyes" -o "x$HAVE_WINDOW_DISPMANX" = "xyes" -o "x$HAVE_WINDOW_FB" = "xyes"; then
+           GL_LIBS="$GL_LIBS -lEGL $EGL_LIBS"
+           GL_CFLAGS="$GL_CFLAGS $EGL_CFLAGS"
+           USE_EGL=yes
+@@ -1166,6 +1180,7 @@ GST_GL_HAVE_WINDOW_WAYLAND=0
+ GST_GL_HAVE_WINDOW_ANDROID=0
+ GST_GL_HAVE_WINDOW_DISPMANX=0
+ GST_GL_HAVE_WINDOW_EAGL=0
++GST_GL_HAVE_WINDOW_FB=0
+ 
+ if test "x$HAVE_WINDOW_X11" = "xyes"; then
+   GL_WINDOWS="x11 $GL_WINDOWS"
+@@ -1195,6 +1210,10 @@ if test "x$HAVE_WINDOW_EAGL" = "xyes"; then
+   GL_WINDOWS="eagl $GL_WINDOWS"
+   GST_GL_HAVE_WINDOW_EAGL=1
+ fi
++if test "x$HAVE_WINDOW_FB" = "xyes"; then
++  GL_WINDOWS="fb $GL_WINDOWS"
++  GST_GL_HAVE_WINDOW_FB=1
++fi
+ 
+ GL_CONFIG_DEFINES="$GL_CONFIG_DEFINES
+ #define GST_GL_HAVE_WINDOW_X11 $GST_GL_HAVE_WINDOW_X11
+@@ -1204,6 +1223,7 @@ GL_CONFIG_DEFINES="$GL_CONFIG_DEFINES
+ #define GST_GL_HAVE_WINDOW_ANDROID $GST_GL_HAVE_WINDOW_ANDROID
+ #define GST_GL_HAVE_WINDOW_DISPMANX $GST_GL_HAVE_WINDOW_DISPMANX
+ #define GST_GL_HAVE_WINDOW_EAGL $GST_GL_HAVE_WINDOW_EAGL
++#define GST_GL_HAVE_WINDOW_FB $GST_GL_HAVE_WINDOW_FB
+ "
+ 
+ dnl PLATFORM's
+@@ -1279,6 +1299,7 @@ if test "x$GL_APIS" = "x" -o "x$GL_PLATFORMS" = "x" -o "x$GL_WINDOWS" = "x"; the
+   HAVE_WINDOW_ANDROID=no
+   HAVE_WINDOW_COCOA=no
+   HAVE_WINDOW_EAGL=no
++  HAVE_WINDOW_FB=no
+ fi
+ 
+ AC_SUBST(GL_LIBS)
+@@ -1294,6 +1315,7 @@ AM_CONDITIONAL(HAVE_WINDOW_DISPMANX, test "x$HAVE_WINDOW_DISPMANX" = "xyes")
+ AM_CONDITIONAL(HAVE_WINDOW_WAYLAND, test "x$HAVE_WINDOW_WAYLAND" = "xyes")
+ AM_CONDITIONAL(HAVE_WINDOW_ANDROID, test "x$HAVE_WINDOW_ANDROID" = "xyes")
+ AM_CONDITIONAL(HAVE_WINDOW_EAGL, test "x$HAVE_WINDOW_EAGL" = "xyes")
++AM_CONDITIONAL(HAVE_WINDOW_FB, test "x$HAVE_WINDOW_FB" = "xyes")
+ 
+ AM_CONDITIONAL(USE_OPENGL, test "x$USE_OPENGL" = "xyes")
+ AM_CONDITIONAL(USE_GLES2, test "x$USE_GLES2" = "xyes")
+@@ -3580,6 +3602,7 @@ gst-libs/gst/gl/egl/Makefile
+ gst-libs/gst/gl/wayland/Makefile
+ gst-libs/gst/gl/win32/Makefile
+ gst-libs/gst/gl/x11/Makefile
++gst-libs/gst/gl/fb/Makefile
+ gst-libs/gst/insertbin/Makefile
+ gst-libs/gst/interfaces/Makefile
+ gst-libs/gst/codecparsers/Makefile
+diff --git a/gst-libs/gst/gl/Makefile.am b/gst-libs/gst/gl/Makefile.am
+index f1cb9e1..4bd6511 100644
+--- a/gst-libs/gst/gl/Makefile.am
++++ b/gst-libs/gst/gl/Makefile.am
+@@ -117,6 +117,11 @@ SUBDIRS += eagl
+ libgstgl_@GST_API_VERSION@_la_LIBADD += eagl/libgstgl-eagl.la
+ endif
+ 
++if HAVE_WINDOW_FB
++SUBDIRS += fb
++libgstgl_@GST_API_VERSION@_la_LIBADD += fb/libgstgl-fb.la
++endif
++
+ if USE_EGL
+ SUBDIRS += egl
+ libgstgl_@GST_API_VERSION@_la_LIBADD += egl/libgstgl-egl.la
+diff --git a/gst-libs/gst/gl/fb/Makefile.am b/gst-libs/gst/gl/fb/Makefile.am
+new file mode 100644
+index 0000000..8e4656c
+--- /dev/null
++++ b/gst-libs/gst/gl/fb/Makefile.am
+@@ -0,0 +1,25 @@
++## Process this file with automake to produce Makefile.in
++
++noinst_LTLIBRARIES = libgstgl-fb.la
++
++libgstgl_fb_la_SOURCES = \
++	gstgldisplay_fb.c \
++	gstglwindow_fb_egl.c 
++
++noinst_HEADERS = \
++	gstgldisplay_fb.h \
++	gstglwindow_fb_egl.h
++
++libgstgl_fbincludedir = $(includedir)/gstreamer-@GST_API_VERSION@/gst/gl/fb
++
++libgstgl_fb_la_CFLAGS = \
++	-I$(top_srcdir)/gst-libs \
++	-I$(top_builddir)/gst-libs \
++	$(GL_CFLAGS) \
++	$(GST_PLUGINS_BASE_CFLAGS) \
++	$(GST_BASE_CFLAGS) \
++	$(GST_CFLAGS)
++
++libgstgl_fb_la_LDFLAGS = \
++	$(GST_LIB_LDFLAGS) \
++	$(GST_ALL_LDFLAGS)
+diff --git a/gst-libs/gst/gl/fb/gstgldisplay_fb.c b/gst-libs/gst/gl/fb/gstgldisplay_fb.c
+new file mode 100644
+index 0000000..3be9756
+--- /dev/null
++++ b/gst-libs/gst/gl/fb/gstgldisplay_fb.c
+@@ -0,0 +1,109 @@
++/*
++ * GStreamer
++ * Copyright (C) 2014 Matthew Waters <ystreet00@gmail.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
++ * Boston, MA 02110-1301, USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include <gst/gl/fb/gstgldisplay_fb.h>
++
++GST_DEBUG_CATEGORY_STATIC (gst_gl_display_debug);
++#define GST_CAT_DEFAULT gst_gl_display_debug
++
++G_DEFINE_TYPE (GstGLDisplayFB, gst_gl_display_fb, GST_TYPE_GL_DISPLAY);
++
++static void gst_gl_display_fb_finalize (GObject * object);
++static guintptr gst_gl_display_fb_get_handle (GstGLDisplay * display);
++
++static void
++gst_gl_display_fb_class_init (GstGLDisplayFBClass * klass)
++{
++  GST_GL_DISPLAY_CLASS (klass)->get_handle =
++      GST_DEBUG_FUNCPTR (gst_gl_display_fb_get_handle);
++
++  G_OBJECT_CLASS (klass)->finalize = gst_gl_display_fb_finalize;
++}
++
++static void
++gst_gl_display_fb_init (GstGLDisplayFB * display_fb)
++{
++  GstGLDisplay *display = (GstGLDisplay *) display_fb;
++
++  display->type = GST_GL_DISPLAY_TYPE_FB;
++  display_fb->name = NULL;
++  display_fb->disp_idx = 0;
++  display_fb->display = NULL;
++}
++
++static void
++gst_gl_display_fb_finalize (GObject * object)
++{
++  GstGLDisplayFB *display_fb = GST_GL_DISPLAY_FB (object);
++
++  if (display_fb->name)
++    g_free (display_fb->name);
++
++  if (display_fb->display)
++    fbDestroyDisplay (display_fb->display);
++
++  G_OBJECT_CLASS (gst_gl_display_fb_parent_class)->finalize (object);
++}
++
++/**
++ * gst_gl_display_fb_new:
++ * @name: (allow-none): a display name
++ *
++ * Create a new #GstGLDisplayFB from the x11 display name.  See XOpenDisplay()
++ * for details on what is a valid name.
++ *
++ * Returns: (transfer full): a new #GstGLDisplayFB or %NULL
++ */
++GstGLDisplayFB *
++gst_gl_display_fb_new (gchar *name)
++{
++  GstGLDisplayFB *display;
++  const gchar *fb_name = NULL;
++
++  GST_DEBUG_CATEGORY_GET (gst_gl_display_debug, "gldisplay");
++  GST_DEBUG ("creating Fb EGL display");
++
++  fb_name = name;
++  if (!fb_name) fb_name = "fb0";
++
++  display = g_object_new (GST_TYPE_GL_DISPLAY_FB, NULL);
++  display->name = g_strdup (fb_name);
++  sscanf (display->name, "fb%d", &display->disp_idx);
++  display->display = fbGetDisplayByIndex (display->disp_idx);
++  if (!display->display) {
++    GST_ERROR ("Failed to open FB display, \'%s\'", fb_name);
++    return NULL;
++  }
++
++  GST_DEBUG ("Created fb EGL display %d", display->display);
++
++  return display;
++}
++
++static guintptr
++gst_gl_display_fb_get_handle (GstGLDisplay * display)
++{
++  GST_DEBUG ("Get fb EGL display %d", GST_GL_DISPLAY_FB (display)->display);
++  return (guintptr) GST_GL_DISPLAY_FB (display)->display;
++}
+diff --git a/gst-libs/gst/gl/fb/gstgldisplay_fb.h b/gst-libs/gst/gl/fb/gstgldisplay_fb.h
+new file mode 100644
+index 0000000..62987c1
+--- /dev/null
++++ b/gst-libs/gst/gl/fb/gstgldisplay_fb.h
+@@ -0,0 +1,67 @@
++/*
++ * GStreamer
++ * Copyright (C) 2014 Matthew Waters <ystreet00@gmail.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
++ * Boston, MA 02110-1301, USA.
++ */
++
++#ifndef __GST_GL_DISPLAY_FB_H__
++#define __GST_GL_DISPLAY_FB_H__
++
++#include <EGL/egl.h>
++#include <gst/gst.h>
++#include <gst/gl/gstgldisplay.h>
++
++G_BEGIN_DECLS
++
++GType gst_gl_display_fb_get_type (void);
++
++#define GST_TYPE_GL_DISPLAY_FB             (gst_gl_display_fb_get_type())
++#define GST_GL_DISPLAY_FB(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_GL_DISPLAY_FB,GstGLDisplayFB))
++#define GST_GL_DISPLAY_FB_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST((klass), GST_TYPE_GL_DISPLAY_FB,GstGLDisplayFBClass))
++#define GST_IS_GL_DISPLAY_FB(obj)          (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_GL_DISPLAY_FB))
++#define GST_IS_GL_DISPLAY_FB_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE((klass), GST_TYPE_GL_DISPLAY_FB))
++#define GST_GL_DISPLAY_FB_CAST(obj)        ((GstGLDisplayFB*)(obj))
++
++typedef struct _GstGLDisplayFB GstGLDisplayFB;
++typedef struct _GstGLDisplayFBClass GstGLDisplayFBClass;
++
++/**
++ * GstGLDisplayFB:
++ *
++ * the contents of a #GstGLDisplayFB are private and should only be accessed
++ * through the provided API
++ */
++struct _GstGLDisplayFB
++{
++  GstGLDisplay          parent;
++
++  /* <private> */
++  gchar *name;
++  gint disp_idx;
++  EGLNativeDisplayType display;
++};
++
++struct _GstGLDisplayFBClass
++{
++  GstGLDisplayClass object_class;
++};
++
++GstGLDisplayFB *gst_gl_display_fb_new (gchar *name);
++
++G_END_DECLS
++
++#endif /* __GST_GL_DISPLAY_FB_H__ */
+diff --git a/gst-libs/gst/gl/fb/gstglwindow_fb_egl.c b/gst-libs/gst/gl/fb/gstglwindow_fb_egl.c
+new file mode 100644
+index 0000000..a068e30
+--- /dev/null
++++ b/gst-libs/gst/gl/fb/gstglwindow_fb_egl.c
+@@ -0,0 +1,265 @@
++/*
++ * GStreamer
++ * Copyright (C) 2008 Julien Isorce <julien.isorce@gmail.com>
++ * Copyright (C) 2012 Matthew Waters <ystreet00@gmail.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
++ * Boston, MA 02110-1301, USA.
++ */
++
++#include "../gstgl_fwd.h"
++#include <gst/gl/gstglcontext.h>
++
++#include "gstglwindow_fb_egl.h"
++
++#define GST_CAT_DEFAULT gst_gl_window_debug
++
++#define gst_gl_window_fb_egl_parent_class parent_class
++G_DEFINE_TYPE (GstGLWindowFbEGL, gst_gl_window_fb_egl,
++    GST_GL_TYPE_WINDOW);
++
++static guintptr gst_gl_window_fb_egl_get_window_handle (GstGLWindow *
++    window);
++static void gst_gl_window_fb_egl_set_window_handle (GstGLWindow * window,
++    guintptr handle);
++static void gst_gl_window_fb_egl_draw (GstGLWindow * window);
++static void gst_gl_window_fb_egl_close (GstGLWindow * window);
++static gboolean gst_gl_window_fb_egl_open (GstGLWindow * window,
++    GError ** error);
++static gboolean
++gst_gl_window_fb_egl_set_render_rectangle(GstGLWindow * window,
++    guint x, guint y, guint width, guint height);
++
++static void
++gst_gl_window_fb_egl_class_init (GstGLWindowFbEGLClass * klass)
++{
++  GstGLWindowClass *window_class = (GstGLWindowClass *) klass;
++
++  window_class->get_window_handle =
++      GST_DEBUG_FUNCPTR (gst_gl_window_fb_egl_get_window_handle);
++  window_class->set_window_handle =
++      GST_DEBUG_FUNCPTR (gst_gl_window_fb_egl_set_window_handle);
++  window_class->draw = GST_DEBUG_FUNCPTR (gst_gl_window_fb_egl_draw);
++  window_class->close = GST_DEBUG_FUNCPTR (gst_gl_window_fb_egl_close);
++  window_class->open = GST_DEBUG_FUNCPTR (gst_gl_window_fb_egl_open);
++  window_class->set_render_rectangle =
++      GST_DEBUG_FUNCPTR (gst_gl_window_fb_egl_set_render_rectangle);
++}
++
++static void
++gst_gl_window_fb_egl_init (GstGLWindowFbEGL * window)
++{
++  GstGLWindowFbEGL *window_egl;
++
++  window_egl = GST_GL_WINDOW_FB_EGL (window);
++
++  window_egl->width = 0;
++  window_egl->height = 0;
++  window_egl->default_fullscreen = TRUE;
++  window_egl->display = 0;
++}
++
++/* Must be called in the gl thread */
++GstGLWindowFbEGL *
++gst_gl_window_fb_egl_new (GstGLDisplay * display)
++{
++  GstGLWindowFbEGL *window;
++  const gchar *fb_name = NULL;
++
++  if (!display)
++    return NULL;
++
++  window = g_object_new (GST_GL_TYPE_WINDOW_FB_EGL, NULL);
++  window->display = gst_gl_display_get_handle (display);
++  if (!window->display) {
++    GST_ERROR ("failed to get display for egl window");
++    return NULL;
++  }
++
++  return window;
++}
++
++static void
++gst_gl_window_fb_egl_close (GstGLWindow * window)
++{
++  GstGLWindowFbEGL *window_egl;
++
++  window_egl = GST_GL_WINDOW_FB_EGL (window);
++
++  if (window_egl->win_id) {
++    fbDestroyWindow (window_egl->win_id);
++  }
++
++  GST_GL_WINDOW_CLASS (parent_class)->close (window);
++}
++
++static gboolean
++gst_gl_window_fb_egl_open (GstGLWindow * window, GError ** error)
++{
++  GstGLWindowFbEGL *window_egl;
++
++  window_egl = GST_GL_WINDOW_FB_EGL (window);
++
++  if (!window_egl->display) {
++    GST_ERROR ("No display for window_egl.");
++    return FALSE;
++  }
++
++  window_egl->win_id = fbCreateWindow (window_egl->display, -1, -1, 0, 0);
++  if (!window_egl->win_id) {
++    GST_ERROR ("Failed to create window_egl");
++    return FALSE;
++  }
++
++  fbGetDisplayGeometry (window_egl->display, &window_egl->width, &window_egl->height);
++  window_egl->req_width = window_egl->width;
++  window_egl->req_height = window_egl->height;
++  GST_DEBUG ("Open FB display succesfully, resolution is (%dx%d),display %d, window %d.", 
++       window_egl->width, window_egl->height, window_egl->display, window_egl->win_id);
++  
++  if (!GST_GL_WINDOW_CLASS (parent_class)->open (window, error))
++    return FALSE;
++
++  return TRUE;
++}
++static guintptr
++gst_gl_window_fb_egl_get_window_handle (GstGLWindow * window)
++{
++  GST_DEBUG ("fb egl get window: %d", GST_GL_WINDOW_FB_EGL (window)->win_id);
++  return (guintptr) GST_GL_WINDOW_FB_EGL (window)->win_id;
++}
++
++static void
++gst_gl_window_fb_egl_set_window_handle (GstGLWindow * window,
++    guintptr handle)
++{
++}
++
++static void
++draw_cb (gpointer data)
++{
++  GstGLWindowFbEGL *window_egl = (GstGLWindowFbEGL *)data;
++  GstGLWindow *window = GST_GL_WINDOW (window_egl);
++  GstGLContext *context = gst_gl_window_get_context (window);
++  GstGLContextClass *context_class = GST_GL_CONTEXT_GET_CLASS (context);
++
++  /* default full screen */
++  if (window_egl->default_fullscreen && window->resize) {
++    window->resize (window->resize_data, window_egl->width, window_egl->height);
++    window_egl->default_fullscreen = FALSE;
++  }
++
++  if (window->draw)
++    window->draw (window->draw_data);
++
++  GST_DEBUG ("####### draw data");
++  context_class->swap_buffers (context);
++
++  gst_object_unref (context);
++}
++
++static void
++gst_gl_window_fb_egl_draw (GstGLWindow * window)
++{
++  gst_gl_window_send_message (window, (GstGLWindowCB) draw_cb, window);
++}
++
++static gboolean
++_calculate_viewport_coordinates(GstVideoRectangle *req, GstVideoRectangle *result,
++    guint display_width, guint display_height)
++{
++  if(!req || !result || req->w < 1 || req->h < 1)
++    return FALSE;
++
++  result->x = req->x;
++  result->y = display_height - (req->y + req->h);
++  result->w = req->w;
++  result->h = req->h;
++
++  return TRUE;
++}
++
++struct SetRenderRectangle
++{
++  GstGLWindowFbEGL *window_egl;
++  GstVideoRectangle rect;
++};
++
++static void
++_free_set_render_rectangle (struct SetRenderRectangle *render)
++{
++  if (render) {
++    if (render->window_egl)
++      gst_object_unref (render->window_egl);
++    g_free (render);
++  }
++}
++
++static void
++_set_render_rectangle (gpointer data)
++{
++  const GstGLFuncs *gl;
++  GstGLContext *context;
++  GstVideoRectangle result, video_rect, tmp_res;
++  struct SetRenderRectangle *render = data;
++  GstGLWindow *window = GST_GL_WINDOW (render->window_egl);
++
++  context = gst_gl_window_get_context(window);
++  gl = context->gl_vtable;
++
++  GST_LOG_OBJECT (render->window_egl, "setting render rectangle %i,%i+%ix%i",
++      render->rect.x, render->rect.y, render->rect.w, render->rect.h);
++
++  video_rect.x = render->rect.x;
++  video_rect.y = render->rect.y;
++  video_rect.w = GST_VIDEO_SINK_WIDTH(window->resize_data);
++  video_rect.h = GST_VIDEO_SINK_HEIGHT(window->resize_data);
++
++  gst_video_sink_center_rect(video_rect, render->rect, &tmp_res, TRUE);
++
++  GST_LOG_OBJECT (render->window_egl, "set center render rectangle %i,%i+%ix%i",
++      tmp_res.x, tmp_res.y, tmp_res.w, tmp_res.h);
++
++  /* need to transform screen coordinate to viewport coordinate */
++  if( _calculate_viewport_coordinates(&tmp_res, &result,
++        render->window_egl->width, render->window_egl->height)){
++    GST_LOG_OBJECT (render->window_egl, "viewport render rectangle %i,%i+%ix%i",
++        result.x, result.y, result.w, result.h);
++    gl->Viewport(result.x, result.y, result.w, result.h);
++  }
++
++  if(context)
++    gst_object_unref(context);
++}
++
++static gboolean
++gst_gl_window_fb_egl_set_render_rectangle(GstGLWindow * window,
++    guint x, guint y, guint width, guint height)
++{
++  GstGLWindowFbEGL *window_egl = GST_GL_WINDOW_FB_EGL (window);
++  struct SetRenderRectangle *render;
++
++  render = g_new0 (struct SetRenderRectangle, 1);
++  render->window_egl = gst_object_ref (window_egl);
++  render->rect.x = x;
++  render->rect.y = y;
++  render->rect.w = width;
++  render->rect.h = height;
++
++  gst_gl_window_send_message_async (window,
++      (GstGLWindowCB) _set_render_rectangle, render,
++      (GDestroyNotify) _free_set_render_rectangle);
++  return TRUE;
++}
+diff --git a/gst-libs/gst/gl/fb/gstglwindow_fb_egl.h b/gst-libs/gst/gl/fb/gstglwindow_fb_egl.h
+new file mode 100644
+index 0000000..216e421
+--- /dev/null
++++ b/gst-libs/gst/gl/fb/gstglwindow_fb_egl.h
+@@ -0,0 +1,65 @@
++/*
++ * GStreamer
++ * Copyright (C) 2012 Matthew Waters <ystreet00@gmail.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
++ * Boston, MA 02110-1301, USA.
++ */
++
++#ifndef __GST_GL_WINDOW_FB_EGL_H__
++#define __GST_GL_WINDOW_FB_EGL_H__
++
++#include <gst/gl/gl.h>
++#include "EGL/eglplatform.h"
++
++G_BEGIN_DECLS
++
++#define GST_GL_TYPE_WINDOW_FB_EGL         (gst_gl_window_fb_egl_get_type())
++#define GST_GL_WINDOW_FB_EGL(o)           (G_TYPE_CHECK_INSTANCE_CAST((o), GST_GL_TYPE_WINDOW_FB_EGL, GstGLWindowFbEGL))
++#define GST_GL_WINDOW_FB_EGL_CLASS(k)     (G_TYPE_CHECK_CLASS((k), GST_GL_TYPE_WINDOW_FB_EGL, GstGLWindowFbEGLClass))
++#define GST_GL_IS_WINDOW_FB_EGL(o)        (G_TYPE_CHECK_INSTANCE_TYPE((o), GST_GL_TYPE_WINDOW_FB_EGL))
++#define GST_GL_IS_WINDOW_FB_EGL_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE((k), GST_GL_TYPE_WINDOW_FB_EGL))
++#define GST_GL_WINDOW_FB_EGL_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS((o), GST_GL_TYPE_WINDOW_FB_EGL, GstGLWindowFbEGL_Class))
++
++typedef struct _GstGLWindowFbEGL        GstGLWindowFbEGL;
++typedef struct _GstGLWindowFbEGLClass   GstGLWindowFbEGLClass;
++
++struct _GstGLWindowFbEGL {
++  /*< private >*/
++  GstGLWindow parent;
++
++  /* <private> */
++  gint width, req_width;
++  gint height, req_height;
++  gboolean default_fullscreen;
++  EGLNativeDisplayType display;
++  EGLNativeWindowType win_id;
++};
++
++struct _GstGLWindowFbEGLClass {
++  /*< private >*/
++  GstGLWindowClass parent_class;
++
++  /*< private >*/
++  gpointer _reserved[GST_PADDING];
++};
++
++GType gst_gl_window_fb_egl_get_type     (void);
++
++GstGLWindowFbEGL * gst_gl_window_fb_egl_new  (GstGLDisplay * display);
++
++G_END_DECLS
++
++#endif /* __GST_GL_WINDOW_FB_EGL_H__ */
+diff --git a/gst-libs/gst/gl/gstgldisplay.c b/gst-libs/gst/gl/gstgldisplay.c
+index 5cae2f4..0213d60 100644
+--- a/gst-libs/gst/gl/gstgldisplay.c
++++ b/gst-libs/gst/gl/gstgldisplay.c
+@@ -205,6 +205,14 @@ gst_gl_display_new (void)
+   if (!display && (!user_choice || g_strstr_len (user_choice, 7, "wayland")))
+     display = GST_GL_DISPLAY (gst_gl_display_wayland_new (NULL));
+ #endif
++#if GST_GL_HAVE_WINDOW_FB
++  if (!display && (!user_choice || g_strstr_len (user_choice, 2, "fb"))) {
++    const gchar *fb_name = NULL;
++    fb_name = g_getenv ("GST_GL_FB");
++    if (!fb_name) fb_name = "fb0";
++    display = GST_GL_DISPLAY (gst_gl_display_fb_new (fb_name));
++  }
++#endif
+ #if GST_GL_HAVE_PLATFORM_EGL
+   if (!display && (!platform_choice
+           || g_strstr_len (platform_choice, 3, "egl")))
+diff --git a/gst-libs/gst/gl/gstgldisplay.h b/gst-libs/gst/gl/gstgldisplay.h
+index 7f49a44..c5bc985 100644
+--- a/gst-libs/gst/gl/gstgldisplay.h
++++ b/gst-libs/gst/gl/gstgldisplay.h
+@@ -60,6 +60,7 @@ typedef enum
+   GST_GL_DISPLAY_TYPE_WIN32 = (1 << 3),
+   GST_GL_DISPLAY_TYPE_DISPMANX = (1 << 4),
+   GST_GL_DISPLAY_TYPE_EGL = (1 << 5),
++  GST_GL_DISPLAY_TYPE_FB = (1 << 6),
+ 
+   GST_GL_DISPLAY_TYPE_ANY = G_MAXUINT32
+ } GstGLDisplayType;
+diff --git a/gst-libs/gst/gl/gstglwindow.c b/gst-libs/gst/gl/gstglwindow.c
+index 695f4c4..7b20ff4 100644
+--- a/gst-libs/gst/gl/gstglwindow.c
++++ b/gst-libs/gst/gl/gstglwindow.c
+@@ -302,6 +302,11 @@ gst_gl_window_new (GstGLDisplay * display)
+   if (!window && (!user_choice || g_strstr_len (user_choice, 4, "eagl")))
+     window = GST_GL_WINDOW (gst_gl_window_eagl_new (display));
+ #endif
++#if GST_GL_HAVE_WINDOW_FB
++  if (!window && (!user_choice || g_strstr_len (user_choice, 2, "fb")))
++    window = GST_GL_WINDOW (gst_gl_window_fb_egl_new (display));
++#endif
++
+   if (!window) {
+     /* subclass returned a NULL window */
+     GST_WARNING ("Could not create window. user specified %s, creating dummy"
+-- 
+1.9.1
+
