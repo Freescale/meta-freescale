@@ -42,6 +42,14 @@ python () {
 
     from oe.classextend import ClassExtender
 
+    # We need to expand KERNEL_VERSION at runtime, not at parse time
+    # The class extension code can expand variables early so remove
+    # the variable from the datastore temporarily and then restore
+    kernver = d.getVar("KERNEL_VERSION", False)
+    kernverpkgname = d.getVar("KERNEL_VERSION_PKG_NAME", False)
+    d.delVar("KERNEL_VERSION")
+    d.delVar("KERNEL_VERSION_PKG_NAME")
+
     class LinuxMfgToolExtender(ClassExtender):
         def extend_name(self, name):
             if name.startswith("rtld"):
@@ -63,6 +71,9 @@ python () {
 
     clsextend.map_packagevars()
     clsextend.map_regexp_variable("PACKAGES_DYNAMIC")
+
+    d.setVar("KERNEL_VERSION", kernver)
+    d.setVar("KERNEL_VERSION_PKG_NAME", kernverpkgname)
 }
 
 addhandler mfgtool_recipe_handler
