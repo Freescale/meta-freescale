@@ -36,13 +36,12 @@ inherit autotools pkgconfig
 
 # Make sure kernel sources are available
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
-
-PLATFORM_mx6dl = "MX6DL"
-PLATFORM_mx6q = "MX6Q"
+PLATFORM_mx6dl = "MX6"
+PLATFORM_mx6q = "MX6"
 PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx6sx = "MX6SX"
 PLATFORM_mx6ul = "MX6UL"
-PLATFORM_mx6ull = "MX6ULL"
+PLATFORM_mx6ull = "MX6UL"
 PLATFORM_mx7d = "MX7D"
 
 # Todo add a mechanism to map possible build targets
