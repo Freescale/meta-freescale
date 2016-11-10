@@ -21,12 +21,12 @@ python () {
 
 do_install () {
        install -d ${D}/boot
-       install -m 644 ${QE_UCODE} ${D}/boot
+       install -m 644 ${B}/${QE_UCODE} ${D}/boot
 }
 
 do_deploy () {
        install -d ${DEPLOYDIR}/boot
-       install -m 644 ${QE_UCODE} ${DEPLOYDIR}/boot
+       install -m 644 ${B}/${QE_UCODE} ${DEPLOYDIR}/boot
 }
 addtask deploy before do_build after do_install
 
