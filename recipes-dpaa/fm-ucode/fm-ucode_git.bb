@@ -23,13 +23,13 @@ REGLEX_ls1043ardb = "t2080"
 do_install () {
     UCODE=`echo ${REGLEX} | sed -e 's,-.*$,,' -e 's,[a-zA-Z]*$,,'`
     install -d ${D}/boot
-    install -m 644 fsl_fman_ucode_${UCODE}*.bin ${D}/boot/
+    install -m 644 ${B}/fsl_fman_ucode_${UCODE}*.bin ${D}/boot/
 }
 
 do_deploy () {
     UCODE=`echo ${REGLEX} | sed -e 's,-.*$,,' -e 's,[a-zA-Z]*$,,'`
     install -d ${DEPLOYDIR}/
-    install -m 644 fsl_fman_ucode_${UCODE}*.bin ${DEPLOYDIR}/
+    install -m 644 ${B}/fsl_fman_ucode_${UCODE}*.bin ${DEPLOYDIR}
 }
 addtask deploy before do_build after do_install
 
