@@ -33,7 +33,7 @@ EOF
         fi
     else
         cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
-IMX6_CFLAGS             = -DLINUX=1 -DEGL_API_FB=1
+IMX6_CFLAGS             = -DLINUX=1
 EOF
     fi
     cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
