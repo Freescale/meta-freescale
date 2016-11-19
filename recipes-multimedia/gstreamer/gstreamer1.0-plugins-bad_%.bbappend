@@ -2,9 +2,6 @@
 # defines to be set for each platform
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-CFLAGS_append_imxgpu2d = " -DLINUX ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', \
-                            bb.utils.contains('DISTRO_FEATURES', 'wayland', '-DEGL_API_FB -DWL_EGL_PLATFORM', '-DEGL_API_FB', d), d)}"
-
 PACKAGECONFIG_GL_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl x11', 'opengl', '', d)}"
 
 PACKAGECONFIG_GL_imxgpu3d = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2', '', d)}"
