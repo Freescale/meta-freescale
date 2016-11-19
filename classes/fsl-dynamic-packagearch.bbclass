@@ -46,7 +46,7 @@ python __anonymous () {
                 raise bb.parse.SkipPackage("You must set MACHINE_SOCARCH_SUFFIX as MACHINE_SOCARCH_FILTER is set for this SoC.")
 
         if package_arch:
-            bb.debug(1, "Use '%s' as package archictecture for '%s'" % (package_arch, PN))
+            bb.debug(1, "Use '%s' as package architecture for '%s'" % (package_arch, PN))
             d.setVar("PACKAGE_ARCH", package_arch)
 
     cur_package_archs = (d.getVar("PACKAGE_ARCHS", True) or "").split()
