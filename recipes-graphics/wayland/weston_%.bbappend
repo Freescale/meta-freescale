@@ -27,14 +27,16 @@ PACKAGECONFIG_append = " ${PACKAGECONFIG_IMX_TO_APPEND}"
 PACKAGECONFIG_remove = " ${PACKAGECONFIG_IMX_TO_REMOVE}"
 
 
-EXTRA_OECONF_IMX = " \
+EXTRA_OECONF_IMX_COMMON = " \
     --disable-libunwind \
     --disable-xwayland-test \
     WESTON_NATIVE_BACKEND=fbdev-backend.so \
 "
+EXTRA_OECONF_IMX          = ""
+EXTRA_OECONF_IMX_imxpxp   = "${EXTRA_OECONF_IMX_COMMON}"
+EXTRA_OECONF_IMX_imxgpu2d = "${EXTRA_OECONF_IMX_COMMON}"
 
-EXTRA_OECONF_append_imxpxp   = " ${EXTRA_OECONF_IMX}"
-EXTRA_OECONF_append_imxgpu2d = " ${EXTRA_OECONF_IMX}"
+EXTRA_OECONF_append = " ${EXTRA_OECONF_IMX}"
 
 # Use a intermediate step to configure the linking flags
 IMXGPU_LIBS = ""
