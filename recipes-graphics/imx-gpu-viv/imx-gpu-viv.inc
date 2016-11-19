@@ -7,10 +7,12 @@ SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://gpu-core/usr/include/gc_vdk.h;beginline=5;endline=11;md5=12c028cbbbedb4b8770267131500592c"
 
-DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
-                             bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
-                                           '', d), d)} \
-            libpng"
+DEPENDS += " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+       bb.utils.contains('DISTRO_FEATURES',     'x11', 'virtual/libx11 libxdamage libxext libxfixes mesa', \
+                                                       '', d), d)} \
+    libpng \
+"
 
 EXTRA_PROVIDES = ""
 EXTRA_PROVIDES_imxgpu3d = " virtual/libgl virtual/libgles1 virtual/libgles2"
