@@ -1,0 +1,12 @@
+Index: weston-1.11.1/configure.ac
+===================================================================
+--- weston-1.11.1.orig/configure.ac	2016-11-08 17:26:14.266564760 -0600
++++ weston-1.11.1/configure.ac	2016-11-09 19:38:58.000000000 -0600
+@@ -93,6 +93,7 @@
+ 	PKG_CHECK_MODULES(EGL, [egl glesv2])
+         PKG_CHECK_MODULES([EGL_TESTS], [egl glesv2 wayland-client wayland-egl])
+ 	PKG_CHECK_MODULES([GL_RENDERER], [libdrm])
++	COMPOSITOR_MODULES="$COMPOSITOR_MODULES egl"
+ fi
+ 
+ AC_ARG_ENABLE(xkbcommon,
