@@ -36,9 +36,10 @@ EXTRA_OECONF = "--kernel-headers=${STAGING_KERNEL_DIR}/include ${PACKAGECONFIG_C
 
 EGLVIVSINK_DEPENDS = " \
     virtual/egl virtual/libgles2 \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', \
-       bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
-       '', d),d)}"
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+       bb.utils.contains('DISTRO_FEATURES', 'x11', 'virtual/libx11', \
+       '', d), d)} \
+"
 
 PACKAGECONFIG ?= "uniaudiodec mp3encoder v4l2src"
 PACKAGECONFIG_append_imxgpu3d = " eglvivsink"
