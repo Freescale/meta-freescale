@@ -1,0 +1,31 @@
+From 2460dd985b0cf477f74396de92d1bc5df496abdc Mon Sep 17 00:00:00 2001
+From: Julio Cruz <jcsistemas2001@gmail.com>
+Date: Wed, 20 Jan 2016 19:26:44 +0800
+Subject: [PATCH] Export symbols for iMX-GPU-VIV module
+
+---
+ kernel/sched/wait-simple.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/sched/wait-simple.c b/kernel/sched/wait-simple.c
+index 7dfa86d..a3776ee 100644
+--- a/kernel/sched/wait-simple.c
++++ b/kernel/sched/wait-simple.c
+@@ -40,6 +40,7 @@ void swait_prepare_locked(struct swait_head *head, struct swaiter *w)
+ 	if (list_empty(&w->node))
+ 		__swait_enqueue(head, w);
+ }
++EXPORT_SYMBOL(swait_prepare_locked);
+ 
+ void swait_prepare(struct swait_head *head, struct swaiter *w, int state)
+ {
+@@ -58,6 +59,7 @@ void swait_finish_locked(struct swait_head *head, struct swaiter *w)
+ 	if (w->task)
+ 		__swait_dequeue(w);
+ }
++EXPORT_SYMBOL(swait_finish_locked);
+ 
+ void swait_finish(struct swait_head *head, struct swaiter *w)
+ {
+-- 
+2.1.0

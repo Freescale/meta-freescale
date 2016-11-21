@@ -16,16 +16,11 @@ SRC_URI += " \
     file://0001-fix-build.patch \
     file://0002-no-split-ptlocks.patch \
     file://0003-Work-around-CPU-stalls-in-the-imx-sdma-driver.patch \
+    file://0004-export-swait-locked-functions.patch \
 "
 
 SRC_URI[rt-patch.md5sum] = "6dd1193203cdf6a1a4758fc8baf07a4a"
 SRC_URI[rt-patch.sha256sum] = "427e736022e59f83c9489eda889559fcd4fe4abb5646570ade32f2128f2fa725"
-
-python () {
-    using_builtin_driver = (d.getVar("MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE", True) or "") != "1"
-    if not using_builtin_driver:
-        raise bb.parse.SkipPackage('You must use the builtin driver with the Linux RT patch as the external module does not yet include support for it. Set "MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE" accordingly.')
-}
 
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
