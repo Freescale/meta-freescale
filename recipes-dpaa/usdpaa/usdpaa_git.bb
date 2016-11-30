@@ -5,8 +5,6 @@ PR = "r4"
 
 inherit pkgconfig
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 DEPENDS += "flib"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git;branch=sdk-v2.0.x"
@@ -23,4 +21,7 @@ do_install () {
 }
 
 PARALLEL_MAKE_pn-${PN} = ""
+
 COMPATIBLE_MACHINE = "(qoriq-ppc|ls1043a)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
