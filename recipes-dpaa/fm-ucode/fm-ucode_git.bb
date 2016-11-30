@@ -18,7 +18,7 @@ REGLEX_t1040 = "t1040"
 REGLEX_t1042 = "t1040"
 REGLEX_b4420 = "b4860"
 REGLEX_t4160 = "t4240"
-REGLEX_ls1043ardb = "t2080"
+REGLEX_ls1043a = "t2080"
 
 do_install () {
     UCODE=`echo ${REGLEX} | sed -e 's,-.*$,,' -e 's,[a-zA-Z]*$,,'`
