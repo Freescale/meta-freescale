@@ -27,3 +27,5 @@ do_install() {
 }
 
 COMPATIBLE_MACHINE = "(qoriq)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
