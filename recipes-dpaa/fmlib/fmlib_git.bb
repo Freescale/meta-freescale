@@ -5,8 +5,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
 
 PR = "r1"
 
-DEPENDS_virtclass-native = ""
-
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;branch=sdk-v2.0.x"
 SRCREV = "43fa98fdbf0c697167e415c3f060896d5b482791"
 
@@ -26,25 +24,13 @@ do_compile () {
     oe_runmake ${FMLIB_TARGET}.a
 }
 
-do_compile_virtclass-native () {
-}
-
 do_install () {
     oe_runmake install-${FMLIB_TARGET}
-}
-
-do_install_virtclass-native () {
-    install -d ${D}/${includedir}
-    cp -rf ${S}/include/* ${D}/${includedir}
 }
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 
 ALLOW_EMPTY_${PN} = "1"
-
-BBCLASSEXTEND = "native"
-COMPATIBLE_HOST_qoriq = ".*"
-COMPATIBLE_HOST ?= "(none)"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
