@@ -38,3 +38,5 @@ FILES_${PN} = "${bindir}/cli \
 "
 
 COMPATIBLE_MACHINE = "(qoriq-ppc)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
