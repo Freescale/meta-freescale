@@ -35,3 +35,5 @@ do_install(){
 FILES_${PN} += "${libexecdir}"
 
 COMPATIBLE_MACHINE = "(qoriq)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
