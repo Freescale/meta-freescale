@@ -15,6 +15,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://powerpc-fsl-Fix-build-of-the-dtb-embedded-kernel-images.patch \
     file://CVE-2016-5696-limiting-of-all-challenge.patch \
     file://CVE-2016-5696-make-challenge-acks-less-predictable.patch \
+    file://CVE-2016-2053.patch \
 "
 SRCREV = "667e6ba9ca2150b3cabdd0c07b57d1b88ef3b86a"
 
