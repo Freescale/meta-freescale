@@ -16,4 +16,7 @@ do_install(){
 
 FILES_${PN} += "${libdir}/tc"
 INHIBIT_PACKAGE_STRIP = "1"
+
 COMPATIBLE_MACHINE = "(b4|t1|t2|t4|ls1043a)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
