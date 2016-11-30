@@ -7,8 +7,6 @@ DEPENDS += "change-file-endianess-native tcl-native"
 
 inherit deploy
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;branch=sdk-v2.0.x"
 SRCREV = "6ae9086528019ab55968da05c25bd319737c8e62"
 
@@ -32,4 +30,7 @@ addtask deploy after do_install
 
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
+
 COMPATIBLE_MACHINE = "(qoriq-ppc|ls1021a|ls1043a)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
