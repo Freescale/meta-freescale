@@ -6,8 +6,6 @@ PR = "r2"
 
 DEPENDS = "libxml2 fmlib tclap"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;branch=sdk-v1.9.x"
 SRCREV = "a079d2c844edd85dff85a317a63198e7988bcd09"
 
@@ -46,3 +44,6 @@ do_install () {
 }
 
 PARALLEL_MAKE = ""
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
