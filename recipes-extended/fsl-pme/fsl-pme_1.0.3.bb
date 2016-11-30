@@ -23,4 +23,7 @@ do_install() {
 
 FILES_${PN} += "${datadir}/*"
 INSANE_SKIP_${PN} += "ldflags"
+
 COMPATIBLE_MACHINE = "(e500v2)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
