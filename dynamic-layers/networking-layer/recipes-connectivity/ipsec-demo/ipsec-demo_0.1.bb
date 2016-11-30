@@ -20,4 +20,7 @@ do_install(){
 }
 
 FILES_${PN} = "${datadir}/*"
+
 COMPATIBLE_MACHINE = "(qoriq)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
