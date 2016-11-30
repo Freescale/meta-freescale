@@ -32,4 +32,7 @@ FILES_${PN} += "/"
 
 INITSCRIPT_NAME = "web-sysmon.sh"
 INITSCRIPT_PARAMS = "defaults 99 20"
+
 COMPATIBLE_MACHINE  = "(qoriq-ppc)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
