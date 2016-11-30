@@ -4,8 +4,6 @@ LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=d2a5d894118910d49993347f3f6e0
 
 inherit pkgconfig
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 DEPENDS = "libxml2 libedit ncurses readline fmc usdpaa dpa-offload libnl"
 DEPENDS_append_b4860qds = " ipc-ust"
 DEPENDS_append_b4420qds = " ipc-ust"
@@ -61,4 +59,7 @@ do_install () {
 
 PARALLEL_MAKE_pn-${PN} = ""
 FILES_${PN} += "/root/SOURCE_THIS /usr/etc/"
+
 COMPATIBLE_MACHINE = "(qoriq-ppc|ls1043a)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
