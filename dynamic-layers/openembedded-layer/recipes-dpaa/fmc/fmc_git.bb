@@ -46,6 +46,3 @@ do_install () {
 }
 
 PARALLEL_MAKE = ""
-BBCLASSEXTEND = "native"
-COMPATIBLE_HOST ?= "(none)"
-COMPATIBLE_HOST_qoriq = ".*"
