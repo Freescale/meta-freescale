@@ -4,8 +4,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c03ebb7a330b209986517466c74da72c"
 
 inherit pkgconfig
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 DEPENDS = "usdpaa fmlib"
 DEPENDS_append_b4860qds = " ipc-ust"
 DEPENDS_append_b4420qds = " ipc-ust"
@@ -44,4 +42,7 @@ do_install () {
 
 ALLOW_EMPTY_${PN} = "1"
 PARALLEL_MAKE_pn-${PN} = ""
+
 COMPATIBLE_MACHINE = "(qoriq-ppc|ls1043a)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
