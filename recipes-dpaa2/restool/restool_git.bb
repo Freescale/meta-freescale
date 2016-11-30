@@ -16,3 +16,5 @@ do_install () {
 }
 
 COMPATIBLE_MACHINE = "(ls2080ardb)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
