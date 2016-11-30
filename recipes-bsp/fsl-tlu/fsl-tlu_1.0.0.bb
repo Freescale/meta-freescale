@@ -16,3 +16,5 @@ do_install() {
 }
 
 COMPATIBLE_MACHINE = "(e500mc)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
