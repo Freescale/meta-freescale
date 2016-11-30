@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
 
 PR = "r1"
 
-DEPENDS += "virtual/kernel"
 DEPENDS_virtclass-native = ""
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;branch=sdk-v2.0.x"
@@ -38,6 +37,8 @@ do_install_virtclass-native () {
     install -d ${D}/${includedir}
     cp -rf ${S}/include/* ${D}/${includedir}
 }
+
+do_compile[depends] += "virtual/kernel:do_shared_workdir"
 
 ALLOW_EMPTY_${PN} = "1"
 
