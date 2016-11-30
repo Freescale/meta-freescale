@@ -45,3 +45,6 @@ ALLOW_EMPTY_${PN} = "1"
 BBCLASSEXTEND = "native"
 COMPATIBLE_HOST_qoriq = ".*"
 COMPATIBLE_HOST ?= "(none)"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
