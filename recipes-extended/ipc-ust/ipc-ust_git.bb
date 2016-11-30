@@ -48,3 +48,5 @@ INSANE_SKIP_${PN} += "file-rdeps"
 INSANE_SKIP_${PN}-dev += "dev-elf"
 
 COMPATIBLE_MACHINE = "(b4860qds|b4420qds)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
