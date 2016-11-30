@@ -32,4 +32,7 @@ addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot/*"
+
 COMPATIBLE_MACHINE = "(ls1021a|ls1043a|t1)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
