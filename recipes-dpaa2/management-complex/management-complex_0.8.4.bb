@@ -30,4 +30,7 @@ PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 
 INHIBIT_PACKAGE_STRIP = "1"
+
 COMPATIBLE_MACHINE = "(ls2080ardb)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
