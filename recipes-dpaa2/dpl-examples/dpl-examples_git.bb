@@ -26,3 +26,5 @@ PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 
 COMPATIBLE_MACHINE = "(ls2080ardb)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
