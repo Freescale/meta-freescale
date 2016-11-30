@@ -14,7 +14,7 @@ RULE_e6500 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1024 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1023 = "72-fsl-dpaa-persistent-networking.rules"
-RULE_ls1043ardb = "73-fsl-dpaa-persistent-networking.rules"
+RULE_ls1043a = "73-fsl-dpaa-persistent-networking.rules"
 RULE_ls2080ardb = ""
 
 do_install () {
