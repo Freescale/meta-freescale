@@ -1,9 +1,7 @@
 PACKAGECONFIG_remove_mx6 = "egl gles"
 
 PROVIDES_remove_mx6 = "virtual/libgles1 virtual/libgles2 virtual/libopenvg virtual/egl"
-PROVIDES_remove_mx6q = "virtual/libgl"
-PROVIDES_remove_mx6dl = "virtual/libgl"
-PROVIDES_remove_mx6sx = "virtual/libgl"
+PROVIDES_remove_imxgpu3d = "virtual/libgl"
 
 USE_VIV_LIBGL = "yes"
 USE_VIV_LIBGL_mx6sl = "no"
