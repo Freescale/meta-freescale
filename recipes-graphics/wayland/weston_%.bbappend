@@ -17,10 +17,18 @@ SRC_URI_append_imxgpu3d = " \
     file://0016-Link-compositor-to-egl.patch                               \
 "
 
+# The 'egl' configuration of weston requires gles support, and consideration
+# must be taken for the different SoC capabilities:
+# - For SoCs with 3d support, imx-gpu-viv provides hardware-accelerated
+#   egl and gles, so weston egl configuration is enabled.
+# - For SoCs with VG2D, like i.MX 6SoloLite, imx-gpu-viv provides
+#   hardware-accelerated egl but does not provide a compatible software
+#   version of gles, so weston egl configuration is disabled.
+# - For SoCs with no GPU, mesa provides software implementations of egl
+#   and gles, so weston egl configuration is enabled.
 PACKAGECONFIG_IMX_TO_APPEND = ""
 PACKAGECONFIG_IMX_TO_APPEND_imxgpu3d = "cairo-glesv2"
 PACKAGECONFIG_IMX_TO_REMOVE = ""
-PACKAGECONFIG_IMX_TO_REMOVE_imxpxp   = "egl"
 PACKAGECONFIG_IMX_TO_REMOVE_imxgpu2d = "egl"
 PACKAGECONFIG_IMX_TO_REMOVE_imxgpu3d = ""
 
