@@ -194,7 +194,7 @@ do_install () {
                \
                ${D}${libdir}/libGL* ${D}${includedir}/GL* \
                \
-               ${D}${libdir}/libGLES* \
+               ${D}${libdir}/libGLES* ${D}${libdir}/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv2.pc \
                \
                ${D}${libdir}/libOpenCL* ${D}${includedir}/CL \
                \
