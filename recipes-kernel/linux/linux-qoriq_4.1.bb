@@ -18,7 +18,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://CVE-2016-2053.patch \
     file://CVE-2016-0758.patch \
 "
-SRCREV = "667e6ba9ca2150b3cabdd0c07b57d1b88ef3b86a"
+SRCREV = "4004071c129a776136e71f6a85383fea87f5db75"
 
 S = "${WORKDIR}/git"
 
@@ -36,8 +36,7 @@ ZIMAGE_BASE_NAME[vardepsexclude] = "DATETIME"
 SCMVERSION ?= "y"
 LOCALVERSION = ""
 DELTA_KERNEL_DEFCONFIG ?= ""
-DELTA_KERNEL_DEFCONFIG_prepend_ls1043ardb = "freescale.config "
-DELTA_KERNEL_DEFCONFIG_prepend_ls2080ardb = "freescale.config "
+DELTA_KERNEL_DEFCONFIG_prepend_qoriq-arm64 = "freescale.config "
 
 do_merge_delta_config() {
     # copy desired defconfig so we pick it up for the real kernel_do_configure
@@ -57,6 +56,15 @@ do_merge_delta_config() {
     cp .config ${WORKDIR}/defconfig
 }
 addtask merge_delta_config before do_preconfigure after do_patch
+
+# The link of dts folder is needed for 32b compile of aarch64 targets(e.g. ls1043ardb-32b)
+do_compile_prepend_fsl-lsch2-32b() {
+    ln -sfT ${STAGING_KERNEL_DIR}/arch/arm64/boot/dts/freescale ${STAGING_KERNEL_DIR}/arch/arm/boot/dts/freescale
+}
+
+do_install_prepend_fsl-lsch2-32b() {
+    rm -f ${STAGING_KERNEL_DIR}/arch/arm/boot/dts/freescale
+}
 
 do_install_append_qoriq-arm() {
     install -m 0644 arch/${ARCH}/boot/zImage ${D}/boot/zImage-${KERNEL_VERSION}
