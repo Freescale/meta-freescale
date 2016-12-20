@@ -13,12 +13,12 @@ RDEPENDS_${PN}_append_b4860qds = " ipc-ust"
 RDEPENDS_${PN}_append_b4420qds = " ipc-ust"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa/dpa-offload.git;branch=sdk-v2.0.x"
-SRCREV = "fed08b0667172fbe47d256b7d08be955e3333fdf"
+SRCREV = "68faa6a64745151fcfef73c9ddc612d9728c2f07"
 
 S = "${WORKDIR}/git"
 
 WRAP_ARCH ?= "${TARGET_ARCH}"
-WRAP_ARCH_ls1043ardb = "arm64"
+WRAP_ARCH_fsl-lsch2 = "arm64"
 EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" ARCH="${WRAP_ARCH}"'
 
 FMAN_VARIANT ?= "P4080"
@@ -43,6 +43,6 @@ do_install () {
 ALLOW_EMPTY_${PN} = "1"
 PARALLEL_MAKE_pn-${PN} = ""
 
-COMPATIBLE_MACHINE = "(qoriq-ppc|ls1043a)"
+COMPATIBLE_MACHINE = "(qoriq-ppc|fsl-lsch2)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
