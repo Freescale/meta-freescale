@@ -13,12 +13,12 @@ RDEPENDS_${PN}_append_b4860qds = " ipc-ust"
 RDEPENDS_${PN}_append_b4420qds = " ipc-ust"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa/usdpaa-apps.git;branch=sdk-v2.0.x"
-SRCREV = "835cbceb4f76de1b493fea5dbe43a90f516b6f35"
+SRCREV = "8fe2e9669650d2f7ed26b43d860228ca0f7211a9"
 
 S = "${WORKDIR}/git"
 
 WRAP_ARCH ?= "${TARGET_ARCH}"
-WRAP_ARCH_ls1043a = "arm64"
+WRAP_ARCH_fsl-lsch2 = "arm64"
 EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}" ARCH="${WRAP_ARCH}" EXTRA_LDFLAGS="${LDFLAGS}"'
 
 SOC ?= "P4080"
@@ -27,6 +27,7 @@ SOC_t1 = "T1040"
 SOC_t2 = "T2080"
 SOC_t4 = "T4240"
 SOC_ls1043a = "LS1043"
+SOC_ls1046a = "LS1043"
 
 FMAN_VARIANT ?= "P4080"
 FMAN_VARIANT_b4 = "FMAN_V3H"
@@ -34,6 +35,7 @@ FMAN_VARIANT_t1 = "FMAN_V3L"
 FMAN_VARIANT_t2 = "FMAN_V3H"
 FMAN_VARIANT_t4 = "FMAN_V3H"
 FMAN_VARIANT_ls1043a = "LS1043"
+FMAN_VARIANT_ls1046a = "LS1043"
 
 do_compile_prepend () {
     export SOC=${SOC}
@@ -60,6 +62,6 @@ do_install () {
 PARALLEL_MAKE_pn-${PN} = ""
 FILES_${PN} += "/root/SOURCE_THIS /usr/etc/"
 
-COMPATIBLE_MACHINE = "(qoriq-ppc|ls1043a)"
+COMPATIBLE_MACHINE = "(qoriq-ppc|fsl-lsch2)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
