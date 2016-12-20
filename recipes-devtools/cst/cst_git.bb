@@ -11,7 +11,7 @@ RDEPENDS_${PN} = "bash"
 inherit kernel-arch
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;branch=sdk-v2.0.x"
-SRCREV = "d1c6c28ee78f8ed2aa92dbd6c0c00e6defe1242b"
+SRCREV = "67ee75303916fc60dfd68ba1920932f57a8b9e94"
 
 S = "${WORKDIR}/git"
 
