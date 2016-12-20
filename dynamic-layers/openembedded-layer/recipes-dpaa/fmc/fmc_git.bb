@@ -6,8 +6,8 @@ PR = "r2"
 
 DEPENDS = "libxml2 fmlib tclap"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;branch=sdk-v1.9.x"
-SRCREV = "a079d2c844edd85dff85a317a63198e7988bcd09"
+SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;branch=sdk-v2.0.x"
+SRCREV = "81e4796fd22e32fe7ab77f075c1879d7bb75c02e"
 
 S = "${WORKDIR}/git"
 
@@ -24,6 +24,7 @@ EXTRA_OEMAKE_PLATFORM_t2 = "b4860qds"
 EXTRA_OEMAKE_PLATFORM_t4 = "b4860qds"
 EXTRA_OEMAKE_PLATFORM_t1 = "t1040qds"
 EXTRA_OEMAKE_PLATFORM_ls1043a = "ls1043"
+EXTRA_OEMAKE_PLATFORM_ls1046a = "ls1046"
 
 do_compile () {
     oe_runmake MACHINE=${EXTRA_OEMAKE_PLATFORM} -C source
