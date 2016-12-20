@@ -39,6 +39,7 @@ S = "${WORKDIR}/git"
 QEMU_TARGETS_qoriq-ppc = "ppc"
 QEMU_TARGETS_qoriq-arm = "arm"
 QEMU_TARGETS_qoriq_arm64 = "aarch64"
+QEMU_TARGETS_fsl-lsch2-32b = "arm"
 PPC_OECONF = '${SDL} --cross-prefix=${TARGET_PREFIX} --disable-werror --disable-vnc --disable-bluez --disable-curl'
 EXTRA_OECONF_e5500-64b = "--target-list=ppc64-softmmu ${PPC_OECONF}"
 EXTRA_OECONF_e6500-64b = "--target-list=ppc64-softmmu ${PPC_OECONF}"
