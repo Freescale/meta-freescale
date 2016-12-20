@@ -8,12 +8,12 @@ inherit pkgconfig
 DEPENDS += "flib"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git;branch=sdk-v2.0.x"
-SRCREV = "940d8f7f989c567b8c554ddba7bc4f0f4f21eb11"
+SRCREV = "a21c62ec9ac015f6c37f89d595e892852055b0fb"
 
 S = "${WORKDIR}/git"
 
 WRAP_ARCH ?= "${TARGET_ARCH}"
-WRAP_ARCH_ls1043ardb = "arm64"
+WRAP_ARCH_fsl-lsch2 = "arm64"
 EXTRA_OEMAKE = 'CC="${CC}" LD="${LD}" AR="${AR}" ARCH="${WRAP_ARCH}"'
 
 do_install () {
@@ -22,6 +22,6 @@ do_install () {
 
 PARALLEL_MAKE_pn-${PN} = ""
 
-COMPATIBLE_MACHINE = "(qoriq-ppc|ls1043a)"
+COMPATIBLE_MACHINE = "(qoriq-ppc|fsl-lsch2)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
