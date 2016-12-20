@@ -19,6 +19,7 @@ REGLEX_t1042 = "t1040"
 REGLEX_b4420 = "b4860"
 REGLEX_t4160 = "t4240"
 REGLEX_ls1043a = "t2080"
+REGLEX_ls1046a = "t2080"
 
 do_install () {
     UCODE=`echo ${REGLEX} | sed -e 's,-.*$,,' -e 's,[a-zA-Z]*$,,'`
@@ -37,6 +38,6 @@ PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 ALLOW_EMPTY_${PN} = "1"
 
-COMPATIBLE_MACHINE = "(e500mc|e5500|e5500-64b|e6500|e6500-64b|ls1043a)"
+COMPATIBLE_MACHINE = "(e500mc|e5500|e5500-64b|e6500|e6500-64b|fsl-lsch2)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
