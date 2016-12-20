@@ -21,7 +21,7 @@ DEPENDS_append_qoriq-ppc = " boot-format-native"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1 \
     file://fix-build-error-under-gcc6.patch \
 "
-SRCREV = "7b0fea8ada90cc8a0605bce012c2b0c82d3673d9"
+SRCREV = "199df35d12857a68d5c8ee999dbdd167c3888d62"
 
 S = "${WORKDIR}/git"
 
@@ -40,6 +40,14 @@ python () {
         d.setVar('PATH_append', ':' + d.getVar('STAGING_BINDIR_NATIVE', False) + '/' + sys_multilib)
         d.setVar('TOOLCHAIN_OPTIONS_append', '/../lib32-' + d.getVar("MACHINE", False))
         d.setVar("WRAP_TARGET_PREFIX", sys_multilib + '-')
+    elif "fsl-lsch2-32b:" in arch:
+        if not "lib64" in ml:
+            raise bb.parse.SkipPackage("Building the u-boot for this arch requires multilib to be enabled")
+        sys_multilib = 'aarch64' + d.getVar('TARGET_VENDOR') + 'mllib64-linux'
+        d.setVar('DEPENDS_append', ' lib64-gcc-cross-aarch64 lib64-libgcc')
+        d.setVar('PATH_append', ':' + d.getVar('STAGING_BINDIR_NATIVE') + '/' + sys_multilib)
+        d.setVar('TOOLCHAIN_OPTIONS_append', '/../lib64-' + d.getVar("MACHINE"))
+        d.setVar("WRAP_TARGET_PREFIX", sys_multilib + '-')
 }
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
@@ -49,32 +57,32 @@ EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CFLAGS} ${BUILD_LDFLAGS}"'
 inherit fsl-u-boot-localversion
 LOCALVERSION = "+fsl"
 
-do_compile_append_qoriq () {
-    unset i j
-    if [ -n "${UBOOT_CONFIG}" ];then
-        for config in ${UBOOT_MACHINE}; do
-            i=`expr $i + 1`;
-            for type in ${UBOOT_CONFIG}; do
-                j=`expr $j + 1`;
-                if [ $j -eq $i ]; then
+do_compile_append_qoriq() {
+    unset i j k
+    for config in ${UBOOT_MACHINE}; do
+        i=`expr $i + 1`;
+        for type in ${UBOOT_CONFIG}; do
+            j=`expr $j + 1`;
+            for binary in ${UBOOT_BINARIES}; do
+                k=`expr $k + 1`
+                if [ $j -eq $i ] && [ $k -eq $i ]; then
                     if [ -n "${BOOTFORMAT_CONFIG}" ] && echo "${type}" |grep -q spi;then
                         # regenerate spi binary if BOOTFORMAT_CONFIG is set
                         boot_format ${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
                             ${config}/u-boot-${type}.${UBOOT_SUFFIX} -spi ${config}/u-boot.format.bin
                         cp ${config}/u-boot.format.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX}
                     elif [ "qspi" = "${type}" ];then
-                        # change qspi binary endianess
-                        tclsh ${STAGING_BINDIR_NATIVE}/byte_swap.tcl \
-                            ${config}/u-boot-${type}.${UBOOT_SUFFIX} ${config}/u-boot.swap.bin 8
-                        cp ${config}/u-boot.swap.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX}
+                        cp ${config}/${binary} ${config}/u-boot-${type}-${PV}-${PR}.${UBOOT_SUFFIX}
                     fi
                 fi
             done
-            unset j
+            unset k
         done
-        unset i
-    fi
+        unset j
+    done
+    unset i
 }
+
 
 PACKAGES += "${PN}-images"
 FILES_${PN}-images += "/boot"
