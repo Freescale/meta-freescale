@@ -11,6 +11,7 @@ SRC_URI_append_imxgpu2d = " \
     file://0001-glplugin-Change-wayland-default-res-to-1024x768.patch \
     file://0002-Support-fb-backend-for-gl-plugins.patch \
     file://0003-Add-directviv-to-glimagesink-to-improve-playback-per.patch \
+    file://0004-MMFMWK-6930-glplugin-Accelerate-gldownload-with.patch \
 "
 
 
