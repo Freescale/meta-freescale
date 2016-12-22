@@ -9,6 +9,7 @@ PACKAGECONFIG_GL_imxgpu3d = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', '
 
 SRC_URI_append_imxgpu2d = " \
     file://0001-glplugin-Change-wayland-default-res-to-1024x768.patch \
+    file://0002-Support-fb-backend-for-gl-plugins.patch \
 "
 
 
