@@ -1,0 +1,132 @@
+From f705c7bbc8274b6824a9063161263cb16af9d15d Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Mon, 14 Nov 2016 10:53:27 +0800
+Subject: [PATCH 18/26] glcolorconvert: fix MRT cannot work in GLES3.0
+
+use glBlitFramebuffer for textures copy if it is available
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+---
+ gst-libs/gst/gl/glprototypes/fbo.h |  6 ++---
+ gst-libs/gst/gl/gstglmemory.c      | 54 ++++++++++++++++++++++++++++++++------
+ 2 files changed, 49 insertions(+), 11 deletions(-)
+
+diff --git a/gst-libs/gst/gl/glprototypes/fbo.h b/gst-libs/gst/gl/glprototypes/fbo.h
+index d142483..789f289 100644
+--- a/gst-libs/gst/gl/glprototypes/fbo.h
++++ b/gst-libs/gst/gl/glprototypes/fbo.h
+@@ -102,9 +102,9 @@ GST_GL_EXT_FUNCTION (GLboolean, IsFramebuffer,
+ GST_GL_EXT_END ()
+ 
+ GST_GL_EXT_BEGIN (offscreen_blit,
+-                  GST_GL_API_NONE,
+-                  255, 255,
+-                  255, 255, /* not in either GLES */
++		  GST_GL_API_OPENGL3 | GST_GL_API_GLES2,
++		  3, 0,
++		  3, 0,/* enable to avoid using glCopyTexImage2D for texture copying */
+                   "EXT\0ANGLE\0",
+                   "framebuffer_blit\0")
+ GST_GL_EXT_FUNCTION (void, BlitFramebuffer,
+diff --git a/gst-libs/gst/gl/gstglmemory.c b/gst-libs/gst/gl/gstglmemory.c
+index 73c3b59..6f9794f 100644
+--- a/gst-libs/gst/gl/gstglmemory.c
++++ b/gst-libs/gst/gl/gstglmemory.c
+@@ -69,6 +69,12 @@ GST_DEBUG_CATEGORY_STATIC (GST_CAT_GL_MEMORY);
+ #ifndef GL_TEXTURE_EXTERNAL_OES
+ #define GL_TEXTURE_EXTERNAL_OES 0x8D65
+ #endif
++#ifndef GL_READ_FRAMEBUFFER
++#define GL_READ_FRAMEBUFFER 0x8CA8
++#endif
++#ifndef GL_DRAW_FRAMEBUFFER
++#define GL_DRAW_FRAMEBUFFER 0x8CA9
++#endif
+ 
+ G_DEFINE_TYPE (GstGLMemoryAllocator, gst_gl_memory_allocator,
+     GST_TYPE_GL_BASE_MEMORY_ALLOCATOR);
+@@ -626,7 +632,7 @@ gst_gl_memory_copy_teximage (GstGLMemory * src, guint tex_id,
+   guint out_gl_format, out_tex_target;
+   GstMapInfo sinfo;
+   guint src_tex_id;
+-  guint fbo;
++  guint fbo[2];
+ 
+   gl = src->mem.context->gl_vtable;
+   out_tex_target = gst_gl_texture_target_to_gl (out_target);
+@@ -659,31 +665,63 @@ gst_gl_memory_copy_teximage (GstGLMemory * src, guint tex_id,
+ 
+   /* FIXME: try and avoid creating and destroying fbo's every copy... */
+   /* create a framebuffer object */
+-  gl->GenFramebuffers (1, &fbo);
+-  gl->BindFramebuffer (GL_FRAMEBUFFER, fbo);
++  gl->GenFramebuffers (2, &fbo[0]);
++  gl->BindFramebuffer (GL_READ_FRAMEBUFFER, fbo[0]);
+ 
+-  gl->FramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
++  gl->FramebufferTexture2D (GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+       gst_gl_texture_target_to_gl (src->tex_target), src_tex_id, 0);
+ 
+-//  if (!gst_gl_context_check_framebuffer_status (src->context))
+-//    goto fbo_error;
++  if (!gst_gl_context_check_framebuffer_status (src->mem.context))
++    goto fbo_error;
++
++  gl->BindFramebuffer (GL_DRAW_FRAMEBUFFER, fbo[1]);
++
++  gl->FramebufferTexture2D (GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
++      gst_gl_texture_target_to_gl (src->tex_target), tex_id, 0);
+ 
++  if (!gst_gl_context_check_framebuffer_status (src->mem.context))
++    goto fbo_error;
++
++  /*
+   gl->BindTexture (out_tex_target, tex_id);
+   gst_gl_query_start_log (GST_GL_BASE_MEMORY_CAST (src)->query,
+       GST_CAT_GL_MEMORY, GST_LEVEL_LOG, NULL, "%s", "CopyTexImage2D took");
+   gl->CopyTexImage2D (out_tex_target, 0, out_gl_format, 0, 0, out_width,
+       out_height, 0);
+   gst_gl_query_end (GST_GL_BASE_MEMORY_CAST (src)->query);
+-
++   */
++
++  /*
++   * glCopyTexImage2D cannot work without internal_format
++   * we cannot get the internal_format in this function
++   * so use glBlitFramebuffer for texture copy
++   */
++  GST_CAT_LOG(GST_CAT_GL_MEMORY,"Use BlitFramebuffer copy texture %d into %d",
++      src_tex_id, tex_id);
++  gl->ReadBuffer ( GL_COLOR_ATTACHMENT0 );
++  gl->BlitFramebuffer ( 0, 0, out_width, out_height,
++		        0, 0, out_width, out_height,
++		        GL_COLOR_BUFFER_BIT, GL_LINEAR );
+   gl->BindTexture (out_tex_target, 0);
+   gl->BindFramebuffer (GL_FRAMEBUFFER, 0);
+ 
+-  gl->DeleteFramebuffers (1, &fbo);
++  gl->DeleteFramebuffers (2, &fbo[0]);
+ 
+   gst_memory_unmap (GST_MEMORY_CAST (src), &sinfo);
+ 
+   return TRUE;
+ 
++fbo_error:
++  {
++    gl->BindTexture (out_tex_target, 0);
++    gl->BindFramebuffer (GL_FRAMEBUFFER, 0);
++
++    gl->DeleteFramebuffers (2, &fbo[0]);
++
++    gst_memory_unmap (GST_MEMORY_CAST (src), &sinfo);
++
++    return FALSE;
++  }
+ error:
+   return FALSE;
+ }
+-- 
+1.9.1
+
