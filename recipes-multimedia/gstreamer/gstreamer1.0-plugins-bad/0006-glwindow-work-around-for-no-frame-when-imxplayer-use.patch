@@ -1,0 +1,62 @@
+From 99b8b8f92e3785ff05f30c9c1e4a722593dfc492 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <b55597@freescale.com>
+Date: Wed, 9 Mar 2016 13:00:39 +0800
+Subject: [PATCH 17/26] glwindow: work around for no frame when imxplayer use
+ glimagesink
+
+change parent window of internal_window in window_show function.
+
+Upstream Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <b55597@freescale.com>
+---
+ gst-libs/gst/gl/x11/gstglwindow_x11.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/gst-libs/gst/gl/x11/gstglwindow_x11.c b/gst-libs/gst/gl/x11/gstglwindow_x11.c
+index d08b757..bc7b9c0 100644
+--- a/gst-libs/gst/gl/x11/gstglwindow_x11.c
++++ b/gst-libs/gst/gl/x11/gstglwindow_x11.c
+@@ -322,13 +322,13 @@ gst_gl_window_x11_set_window_handle (GstGLWindow * window, guintptr id)
+         g_main_context_get_thread_default ());
+   }
+ 
+-  XGetWindowAttributes (window_x11->device, window_x11->parent_win, &attr);
++  /*XGetWindowAttributes (window_x11->device, window_x11->parent_win, &attr);
+ 
+   XResizeWindow (window_x11->device, window_x11->internal_win_id,
+       attr.width, attr.height);
+ 
+   XReparentWindow (window_x11->device, window_x11->internal_win_id,
+-      window_x11->parent_win, 0, 0);
++      window_x11->parent_win, 0, 0);*/
+ 
+   XSync (window_x11->device, FALSE);
+ }
+@@ -359,7 +359,7 @@ _show_window (GstGLWindow * window)
+   GstGLWindowX11 *window_x11 = GST_GL_WINDOW_X11 (window);
+   guint width = window_x11->priv->preferred_width;
+   guint height = window_x11->priv->preferred_height;
+-  XWindowAttributes attr;
++  XWindowAttributes attr, parent_attr;
+ 
+   XGetWindowAttributes (window_x11->device, window_x11->internal_win_id, &attr);
+ 
+@@ -371,6 +371,14 @@ _show_window (GstGLWindow * window)
+       XResizeWindow (window_x11->device, window_x11->internal_win_id,
+           attr.width, attr.height);
+       XSync (window_x11->device, FALSE);
++    }else{
++      XGetWindowAttributes (window_x11->device, window_x11->parent_win, &parent_attr);
++
++      XResizeWindow (window_x11->device, window_x11->internal_win_id,
++	  parent_attr.width, parent_attr.height);
++
++      XReparentWindow (window_x11->device, window_x11->internal_win_id,
++	  window_x11->parent_win, 0, 0);
+     }
+ 
+     XMapWindow (window_x11->device, window_x11->internal_win_id);
+-- 
+1.9.1
+
