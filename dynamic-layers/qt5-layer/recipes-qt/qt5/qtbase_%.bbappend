@@ -21,29 +21,15 @@ do_configure_prepend_mx6() {
     sed -i 's!load(qt_config)!!' ${S}/mkspecs/linux-oe-g++/qmake.conf
     if test ${HAS_X11} -eq 0; then
         if [ "${IMXGPU}" = "3d" ]; then
-    
             cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
-IMX6_CFLAGS             = -DLINUX=1 -DEGL_API_FB=1
 EGLFS_DEVICE_INTEGRATION = eglfs_viv
 EOF
-        else
-            cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
-IMX6_CFLAGS             = -DLINUX=1
-EOF
         fi
-    else
-        cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
-IMX6_CFLAGS             = -DLINUX=1
-EOF
     fi
     cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
 QMAKE_LIBS_EGL         += -lEGL
 QMAKE_LIBS_OPENGL_ES2  += -lGLESv2 -lEGL -lGAL
 QMAKE_LIBS_OPENVG      += -lOpenVG -lEGL -lGAL
-QMAKE_CFLAGS_RELEASE   += \$\$IMX6_CFLAGS
-QMAKE_CXXFLAGS_RELEASE += \$\$IMX6_CFLAGS
-QMAKE_CFLAGS_DEBUG   += \$\$IMX6_CFLAGS
-QMAKE_CXXFLAGS_DEBUG += \$\$IMX6_CFLAGS
 
 load(qt_config)
 
