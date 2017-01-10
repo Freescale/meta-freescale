@@ -1,12 +1,15 @@
 # Copyright (C) 2013 Eric Bénard - Eukréa Electromatique
 # Copyright (C) 2016 O.S. Systems Software LTDA.
 # Copyright (C) 2016 Freescale Semiconductor
+# Copyright 2017 NXP
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI_append_imxgpu2d = "file://0014-Add-IMX-GPU-support.patch"
 SRC_URI_append_imxgpu3d = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'file://0015-Add-eglfs-to-IMX-GPU.patch', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', \
+                                                   'file://0015-Add-eglfs-to-IMX-GPU.patch \
+                                                    file://0016-Configure-eglfs-with-egl-pkg-config.patch', d)} \
 "
 
 PACKAGECONFIG_GL_imxpxp   = "gles2"

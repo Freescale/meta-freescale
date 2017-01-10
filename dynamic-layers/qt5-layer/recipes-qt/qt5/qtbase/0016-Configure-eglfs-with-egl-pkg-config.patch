@@ -1,0 +1,13 @@
+Index: git/src/plugins/platforms/eglfs/eglfs-plugin.pro
+===================================================================
+--- git.orig/src/plugins/platforms/eglfs/eglfs-plugin.pro	2017-01-04 16:54:05.000000000 -0600
++++ git/src/plugins/platforms/eglfs/eglfs-plugin.pro	2017-01-04 16:56:25.000000000 -0600
+@@ -2,6 +2,8 @@
+ 
+ QT += platformsupport-private eglfs_device_lib-private
+ 
++CONFIG += egl
++
+ SOURCES += $$PWD/qeglfsmain.cpp
+ 
+ OTHER_FILES += $$PWD/eglfs.json
