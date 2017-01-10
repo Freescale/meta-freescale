@@ -28,8 +28,8 @@ EOF
     fi
     cat >> ${S}/mkspecs/linux-oe-g++/qmake.conf <<EOF
 QMAKE_LIBS_EGL         += -lEGL
-QMAKE_LIBS_OPENGL_ES2  += -lGLESv2 -lEGL -lGAL
-QMAKE_LIBS_OPENVG      += -lOpenVG -lEGL -lGAL
+QMAKE_LIBS_OPENGL_ES2  += -lGLESv2 -lEGL
+QMAKE_LIBS_OPENVG      += -lOpenVG -lEGL
 
 load(qt_config)
 
