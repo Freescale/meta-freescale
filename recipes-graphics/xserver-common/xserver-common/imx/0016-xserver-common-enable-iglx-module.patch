@@ -1,0 +1,30 @@
+From 8ad045e5e664fe2d1bd9f88616d5bf83437aab4e Mon Sep 17 00:00:00 2001
+From: Yang Dong <b56112@freescale.com>
+Date: Wed, 9 Sep 2015 13:08:57 +0800
+Subject: [PATCH] xserver-common: enable iglx module
+
+Enable iglx module to pass indirect glx rendering test case.
+
+Upstream-Status: Inappropriate [imx specific]
+
+Date: Sep 9, 2015
+Signed-off-by Yang Dong <b56112@freescale.com>
+---
+ X11/xserver-common | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/X11/xserver-common b/X11/xserver-common
+index 4dc48c4..d19b858 100644
+--- a/X11/xserver-common
++++ b/X11/xserver-common
+@@ -44,6 +44,7 @@ SCREEN_SIZE=`fallback_screen_arg`
+ export USER=root
+ export XSERVER_DEFAULT_ORIENTATION=normal
+ 
++INPUT_EXTRA_ARGS="+iglx"
+ ARGS="-br -pn -nolisten tcp $INPUT_EXTRA_ARGS"
+ DPI="100"
+ MOUSE=""
+-- 
+1.9.1
+
