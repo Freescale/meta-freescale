@@ -15,7 +15,7 @@ FEATURE_PACKAGES_f2fs = "packagegroup-fsl-mfgtool-f2fs"
 IMAGE_FSTYPES = "cpio.gz.u-boot"
 IMAGE_FSTYPES_mxs = "cpio.gz.u-boot"
 IMAGE_ROOTFS_SIZE ?= "8192"
-IMAGE_CLASSES = "image_types_uboot"
+IMAGE_CLASSES += "image_types_uboot"
 
 # Filesystems enabled by default
 DEFAULT_FS_SUPPORT = " \
