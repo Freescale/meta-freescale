@@ -19,10 +19,10 @@ Signed-off-by: Yong Gan <yong.gan@nxp.com>
  src/g2d-renderer.h     |   4 +-
  3 files changed, 167 insertions(+), 41 deletions(-)
 
-Index: weston-1.11.0/src/compositor-fbdev.c
+Index: weston-1.11.1/src/compositor-fbdev.c
 ===================================================================
---- weston-1.11.0.orig/src/compositor-fbdev.c	2016-10-06 13:17:41.738142236 -0500
-+++ weston-1.11.0/src/compositor-fbdev.c	2016-10-06 13:28:22.000000000 -0500
+--- weston-1.11.1.orig/src/compositor-fbdev.c	2017-01-16 13:23:48.925264352 -0600
++++ weston-1.11.1/src/compositor-fbdev.c	2017-01-16 13:23:49.013264789 -0600
 @@ -61,6 +61,8 @@
  	struct udev_input input;
  	int use_pixman;
@@ -88,10 +88,10 @@ Index: weston-1.11.0/src/compositor-fbdev.c
  #ifdef ENABLE_EGL
  		gl_renderer = weston_load_module("gl-renderer.so",
  						 "gl_renderer_interface");
-Index: weston-1.11.0/src/g2d-renderer.c
+Index: weston-1.11.1/src/g2d-renderer.c
 ===================================================================
---- weston-1.11.0.orig/src/g2d-renderer.c	2016-10-06 13:17:41.738142236 -0500
-+++ weston-1.11.0/src/g2d-renderer.c	2016-10-06 13:17:41.734142216 -0500
+--- weston-1.11.1.orig/src/g2d-renderer.c	2017-01-16 13:23:48.925264352 -0600
++++ weston-1.11.1/src/g2d-renderer.c	2017-01-16 13:26:17.000000000 -0600
 @@ -37,15 +37,16 @@
  #include <sys/ioctl.h>
  #include <fcntl.h>
@@ -373,10 +373,10 @@ Index: weston-1.11.0/src/g2d-renderer.c
  		pixman_region32_init(&go->buffer_damage[i]);
      return 0;
   }
-Index: weston-1.11.0/src/g2d-renderer.h
+Index: weston-1.11.1/src/g2d-renderer.h
 ===================================================================
---- weston-1.11.0.orig/src/g2d-renderer.h	2016-10-06 13:17:41.738142236 -0500
-+++ weston-1.11.0/src/g2d-renderer.h	2016-10-06 13:17:41.734142216 -0500
+--- weston-1.11.1.orig/src/g2d-renderer.h	2017-01-16 13:23:48.757263519 -0600
++++ weston-1.11.1/src/g2d-renderer.h	2017-01-16 13:26:17.000000000 -0600
 @@ -27,13 +27,11 @@
  #define __g2d_renderer_h_
  
@@ -392,29 +392,29 @@ Index: weston-1.11.0/src/g2d-renderer.h
  struct g2d_renderer_interface {
  
  	int (*create)(struct weston_compositor *ec);
-Index: weston-1.11.0/src/main.c
+Index: weston-1.11.1/src/main.c
 ===================================================================
---- weston-1.11.0.orig/src/main.c	2016-10-06 13:39:13.000000000 -0500
-+++ weston-1.11.0/src/main.c	2016-10-06 13:39:39.000000000 -0500
+--- weston-1.11.1.orig/src/main.c	2017-01-16 13:23:48.929264372 -0600
++++ weston-1.11.1/src/main.c	2017-01-16 13:32:49.000000000 -0600
 @@ -287,11 +287,12 @@
  		"  --device=DEVICE\tThe framebuffer device to use\n"
  #if defined ENABLE_EGL
- 		"  --no-use-gl\t\tDo not use the GL renderer\n"
--		"  --use-g2d\t\tUse the G2D renderer\n\n");
-+		"  --use-g2d\t\tUse the G2D renderer\n"
+ 		"  --use-gl=1\t\tUse the GL renderer (default is 1)\n"
+-		"  --use-g2d=1\t\tUse the G2D renderer (default is 0)\n\n");
++		"  --use-g2d=1\t\tUse the G2D renderer (default is 0)\n"
  #else
- 		"  --use-gl\t\tUse the GL renderer\n"
--		"  --no-use-g2d\t\tDo not use the G2D renderer\n\n");
-+		"  --no-use-g2d\t\tDo not use the G2D renderer\n"
+ 		"  --use-gl=1\t\tUse the GL renderer (default is 0)\n"
+-		"  --use-g2d=1\t\tUse the G2D renderer (default is 1)\n\n");
++		"  --use-g2d=1\t\tUse the G2D renderer (default is 1)\n"
  #endif
 +		"  --clone-mode\t\tClone display to multiple devices\n\n");
  #endif
  
  #if defined(BUILD_HEADLESS_COMPOSITOR)
-@@ -888,6 +889,7 @@
- 		{ WESTON_OPTION_BOOLEAN, "use-gl", 0, &config.use_gl },
- 		{ WESTON_OPTION_BOOLEAN, "no-use-g2d", 0, &no_use_g2d },
- #endif
+@@ -886,6 +887,7 @@
+ 		{ WESTON_OPTION_STRING, "device", 0, &config.device },
+ 		{ WESTON_OPTION_INTEGER, "use-gl", 0, &config.use_gl },
+ 		{ WESTON_OPTION_INTEGER, "use-g2d", 0, &config.use_g2d },
 +		{ WESTON_OPTION_BOOLEAN, "clone-mode", 0, &config.clone_mode },
  	};
  
