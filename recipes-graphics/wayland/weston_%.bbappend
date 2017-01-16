@@ -19,6 +19,10 @@ SRC_URI_append_imxgpu3d = " \
     file://0018-MGS-2397-ccc-Enable-double-buffer-with-fb_pan_displa.patch \
 "
 
+SRC_URI_append = " \
+    file://0019-xwayland-Fix-crash-when-run-with-no-input-device.patch     \
+"
+
 # The 'egl' configuration of weston requires gles support, and consideration
 # must be taken for the different SoC capabilities:
 # - For SoCs with 3d support, imx-gpu-viv provides hardware-accelerated
