@@ -15,10 +15,10 @@ Signed-off-by: Prabhu <prabhu.sundararaj@freescale.com>
  create mode 100644 src/gal2d-renderer.c
  create mode 100644 src/gal2d-renderer.h
 
-Index: weston-1.11.0/Makefile.am
+Index: weston-1.11.1/Makefile.am
 ===================================================================
---- weston-1.11.0.orig/Makefile.am	2016-05-19 16:36:04.000000000 -0500
-+++ weston-1.11.0/Makefile.am	2016-09-20 15:28:46.634190725 -0500
+--- weston-1.11.1.orig/Makefile.am	2016-09-20 19:35:22.000000000 -0500
++++ weston-1.11.1/Makefile.am	2017-01-14 08:35:10.000000000 -0600
 @@ -247,6 +247,18 @@
  	src/vertex-clipping.h			\
  	shared/helpers.h
@@ -38,10 +38,10 @@ Index: weston-1.11.0/Makefile.am
  
  if ENABLE_X11_COMPOSITOR
  module_LTLIBRARIES += x11-backend.la
-Index: weston-1.11.0/src/compositor-fbdev.c
+Index: weston-1.11.1/src/compositor-fbdev.c
 ===================================================================
---- weston-1.11.0.orig/src/compositor-fbdev.c	2016-05-19 16:36:04.000000000 -0500
-+++ weston-1.11.0/src/compositor-fbdev.c	2016-09-20 17:05:27.000000000 -0500
+--- weston-1.11.1.orig/src/compositor-fbdev.c	2016-09-20 19:35:22.000000000 -0500
++++ weston-1.11.1/src/compositor-fbdev.c	2017-01-14 08:35:11.000000000 -0600
 @@ -50,6 +50,7 @@
  #include "libinput-seat.h"
  #include "gl-renderer.h"
@@ -263,10 +263,10 @@ Index: weston-1.11.0/src/compositor-fbdev.c
  	config->output_transform = WL_OUTPUT_TRANSFORM_NORMAL;
  }
  
-Index: weston-1.11.0/src/gal2d-renderer.c
+Index: weston-1.11.1/src/gal2d-renderer.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ weston-1.11.0/src/gal2d-renderer.c	2016-09-20 16:58:24.000000000 -0500
++++ weston-1.11.1/src/gal2d-renderer.c	2017-01-14 08:35:10.000000000 -0600
 @@ -0,0 +1,1342 @@
 +/*
 + * Copyright (c) 2015 Freescale Semiconductor, Inc.
@@ -1610,10 +1610,10 @@ Index: weston-1.11.0/src/gal2d-renderer.c
 +	.output_create = gal2d_renderer_output_create,
 +	.output_destroy = gal2d_renderer_output_destroy,
 +};
-Index: weston-1.11.0/src/gal2d-renderer.h
+Index: weston-1.11.1/src/gal2d-renderer.h
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ weston-1.11.0/src/gal2d-renderer.h	2016-09-20 15:28:46.638190745 -0500
++++ weston-1.11.1/src/gal2d-renderer.h	2017-01-14 08:35:10.000000000 -0600
 @@ -0,0 +1,50 @@
 +/*
 + * Copyright (c) 2015 Freescale Semiconductor, Inc.
@@ -1665,10 +1665,10 @@ Index: weston-1.11.0/src/gal2d-renderer.h
 +};
 +
 +#endif
-Index: weston-1.11.0/src/compositor-fbdev.h
+Index: weston-1.11.1/src/compositor-fbdev.h
 ===================================================================
---- weston-1.11.0.orig/src/compositor-fbdev.h	2016-05-19 16:36:04.000000000 -0500
-+++ weston-1.11.0/src/compositor-fbdev.h	2016-09-20 17:03:37.000000000 -0500
+--- weston-1.11.1.orig/src/compositor-fbdev.h	2016-09-20 19:35:22.000000000 -0500
++++ weston-1.11.1/src/compositor-fbdev.h	2017-01-14 08:35:10.000000000 -0600
 @@ -40,6 +40,7 @@
  	int tty;
  	char *device;
@@ -1677,59 +1677,32 @@ Index: weston-1.11.0/src/compositor-fbdev.h
  
  	uint32_t output_transform;
  };
-Index: weston-1.11.0/src/main.c
+Index: weston-1.11.1/src/main.c
 ===================================================================
---- weston-1.11.0.orig/src/main.c	2016-05-19 16:36:04.000000000 -0500
-+++ weston-1.11.0/src/main.c	2016-09-20 17:29:12.000000000 -0500
+--- weston-1.11.1.orig/src/main.c	2017-01-14 08:34:10.030218137 -0600
++++ weston-1.11.1/src/main.c	2017-01-14 08:54:45.000000000 -0600
 @@ -285,7 +285,13 @@
  		"Options for fbdev-backend.so:\n\n"
  		"  --tty=TTY\t\tThe tty to use\n"
  		"  --device=DEVICE\tThe framebuffer device to use\n"
 -		"  --use-gl\t\tUse the GL renderer\n\n");
 +#if defined ENABLE_EGL
-+		"  --no-use-gl\t\tDo not use the GL renderer\n"
-+		"  --use-gal2d\t\tUse the GAL2D renderer\n\n");
++		"  --use-gl=1\t\tUse the GL renderer (default is 1)\n"
++		"  --use-gal2d=1\t\tUse the GAL2D renderer (default is 0)\n\n");
 +#else
-+		"  --use-gl\t\tUse the GL renderer\n"
-+		"  --no-use-gal2d\t\tDo not use the GAL2D renderer\n\n");
++		"  --use-gl=1\t\tUse the GL renderer (default is 0)\n"
++		"  --use-gal2d=1\t\tUse the GAL2D renderer (default is 1)\n\n");
 +#endif
  #endif
  
  #if defined(BUILD_HEADLESS_COMPOSITOR)
-@@ -864,18 +870,35 @@
- 	struct weston_config_section *section;
- 	char *s = NULL;
- 	int ret = 0;
-+#ifdef ENABLE_EGL
-+    /* GL rendering is default, so user options are --no-use-gl and --use-gal2d */
-+    int no_use_gl = 0;
-+#else
-+    /* GAL2D rendering is default, so user options are --use-gl and --no-use-gal2d */
-+    int no_use_gal2d = 0;
-+#endif
- 
+@@ -868,7 +874,8 @@
  	const struct weston_option fbdev_options[] = {
  		{ WESTON_OPTION_INTEGER, "tty", 0, &config.tty },
  		{ WESTON_OPTION_STRING, "device", 0, &config.device },
-+#ifdef ENABLE_EGL
-+		{ WESTON_OPTION_BOOLEAN, "no-use-gl", 0, &no_use_gl },
-+		{ WESTON_OPTION_BOOLEAN, "use-gal2d", 0, &config.use_gal2d },
-+#else
- 		{ WESTON_OPTION_BOOLEAN, "use-gl", 0, &config.use_gl },
-+		{ WESTON_OPTION_BOOLEAN, "no-use-gal2d", 0, &no_use_gal2d },
-+#endif
+-		{ WESTON_OPTION_BOOLEAN, "use-gl", 0, &config.use_gl },
++		{ WESTON_OPTION_INTEGER, "use-gl", 0, &config.use_gl },
++		{ WESTON_OPTION_INTEGER, "use-gal2d", 0, &config.use_gal2d },
  	};
  
  	parse_options(fbdev_options, ARRAY_LENGTH(fbdev_options), argc, argv);
- 
- 	if (!config.device)
- 		config.device = strdup("/dev/fb0");
--
-+#ifdef ENABLE_EGL
-+    config.use_gl = !no_use_gl;
-+#else
-+    config.use_gal2d = !no_use_gal2d;
-+#endif
- 	section = weston_config_get_section(wc, "output", "name", "fbdev");
- 	weston_config_section_get_string(section, "transform", &s, "normal");
- 	if (weston_parse_transform(s, &config.output_transform) < 0)
