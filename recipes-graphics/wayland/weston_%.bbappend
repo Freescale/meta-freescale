@@ -16,6 +16,7 @@ SRC_URI_append_imxgpu3d = " \
     file://0015-MGS-2221-imx-171-Fix-weston-build-failed.patch             \
     file://0016-Link-compositor-to-egl.patch                               \
     file://0017-MGS-2343-ccc-XWLD-T3DStressTest_Wayland-displays-abn.patch \
+    file://0018-MGS-2397-ccc-Enable-double-buffer-with-fb_pan_displa.patch \
 "
 
 # The 'egl' configuration of weston requires gles support, and consideration
