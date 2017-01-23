@@ -1,4 +1,4 @@
-# Copyright (C) 2015, 2016 O.S. Systems Software LTDA.
+# Copyright (C) 2015, 2017 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "FSL Community BSP i.MX Linux kernel with backported features and fixes"
@@ -11,6 +11,6 @@ include linux-fslc.inc
 PV .= "+git${SRCPV}"
 
 SRCBRANCH = "4.1-2.0.x-imx"
-SRCREV = "80e3b3c3c85a3a8b70ef6403bc806901628c7446"
+SRCREV = "ee67fc7e072df596577e3a4e4fce7b51816d4b0a"
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
