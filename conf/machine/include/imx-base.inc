@@ -79,7 +79,7 @@ MACHINE_SOCARCH_FILTER_append_imxpxp = " imx-codec imx-parser"
 
 INHERIT += "fsl-dynamic-packagearch"
 
-SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS_append_mx6 = " \
+SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS_append = " \
     imx-gpu-viv->kernel-module-imx-gpu-viv \
     libimxvpuapi->imx-vpu \
     imx-vpuwrap->imx-vpu \
