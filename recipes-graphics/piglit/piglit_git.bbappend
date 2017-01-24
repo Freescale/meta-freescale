@@ -1,1 +1,1 @@
-DEPENDS_append_mx6 = " virtual/egl"
+DEPENDS_append_imxgpu2d = " virtual/egl"
