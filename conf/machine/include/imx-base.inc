@@ -28,7 +28,7 @@ UBOOT_ENTRYPOINT_vf = "0x80008000"
 
 PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
 XSERVER_DRIVER = "xf86-video-fbdev"
-XSERVER_DRIVER_mx6 = "xf86-video-imxfb-vivante"
+XSERVER_DRIVER_imxgpu2d = "xf86-video-imxfb-vivante"
 XSERVER_DRIVER_vf = "xf86-video-modesetting"
 XSERVER = "xserver-xorg \
            xf86-input-evdev \
@@ -73,12 +73,9 @@ MACHINE_SOCARCH_SUFFIX_mx6ul  = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_mx6ull = "-mx6ul"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER_append_mx6 = " imx-vpu libimxvpuapi imx-codec imx-vpuwrap imx-parser"
-MACHINE_SOCARCH_FILTER_append_mx6 = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d"
-MACHINE_SOCARCH_FILTER_append_mx6 = " cairo pango"
-MACHINE_SOCARCH_FILTER_append_mx6ul = " imx-codec imx-parser"
-MACHINE_SOCARCH_FILTER_append_mx6ull = " imx-codec imx-parser"
-MACHINE_SOCARCH_FILTER_append_mx7 =  " imx-codec imx-parser"
+MACHINE_SOCARCH_FILTER_append_imxvpu = " imx-vpu libimxvpuapi imx-codec imx-vpuwrap imx-parser"
+MACHINE_SOCARCH_FILTER_append_imxgpu2d = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango"
+MACHINE_SOCARCH_FILTER_append_imxpxp = " imx-codec imx-parser"
 
 INHERIT += "fsl-dynamic-packagearch"
 
