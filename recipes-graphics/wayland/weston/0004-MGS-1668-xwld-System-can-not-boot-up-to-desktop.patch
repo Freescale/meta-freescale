@@ -1,12 +1,12 @@
-From d3bc23ef2031e2749362bb0b90e5d164ef5d5942 Mon Sep 17 00:00:00 2001
+From 2e5260168b59c96688b10912cff3d95ec1fbb3d8 Mon Sep 17 00:00:00 2001
 From: Meng Mingming <mingming.meng@nxp.com>
-Date: Mon, 9 Jan 2017 15:08:51 +0800
-Subject: [PATCH 4/6] MGS-1668: xwld: System can not boot up to desktop
+Date: Mon, 16 Jan 2017 10:25:29 +0800
+Subject: [PATCH 4/5] MGS-1668: xwld: System can not boot up to desktop
 
 System can not boot up to desktop if press touch panel continuously during booting up.
 The weston view was not initialed completely, so add a protection to the pointer.
 
-Upstream Status: Inappropriate [i.MX specific]
+Upstream Status: Denied [Could not reproduce]
 
 Date: MAR 08, 2016
 Signed-off-by: Yong Gan <yong.gan@nxp.com>

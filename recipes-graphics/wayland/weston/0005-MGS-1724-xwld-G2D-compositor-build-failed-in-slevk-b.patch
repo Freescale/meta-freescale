@@ -1,0 +1,146 @@
+From 3c11ac3c4b8416752c0e147ccde067070005597e Mon Sep 17 00:00:00 2001
+From: Meng Mingming <mingming.meng@nxp.com>
+Date: Mon, 16 Jan 2017 10:28:28 +0800
+Subject: [PATCH 5/5] MGS-1724: xwld: G2D compositor build failed in slevk
+ board
+
+Add macro ENABLE_EGL to make sure the EGL was not built in slevk board.
+
+Upstream Status: Inappropriate [i.MX specific]
+
+Date: Jan 16, 2017
+Signed-off-by: Meng Mingming <mingming.meng@nxp.com>
+---
+ src/compositor-fbdev.c | 18 ++++++++++++------
+ src/main.c             | 22 +++++++++++++++++++---
+ 2 files changed, 31 insertions(+), 9 deletions(-)
+
+diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
+index 0a05e7d..22d349b 100644
+--- a/src/compositor-fbdev.c
++++ b/src/compositor-fbdev.c
+@@ -65,7 +65,9 @@ struct fbdev_backend {
+ 	char *clone_device;
+ 	uint32_t output_transform;
+ 	struct wl_listener session_listener;
++#ifdef ENABLE_EGL
+ 	NativeDisplayType display;
++#endif
+ };
+ 
+ struct fbdev_screeninfo {
+@@ -99,8 +101,10 @@ struct fbdev_output {
+ 	pixman_image_t *hw_surface;
+ 	uint8_t depth;
+ 
++#ifdef ENABLE_EGL
+ 	NativeDisplayType display;
+ 	NativeWindowType  window;
++#endif
+ };
+ 
+ struct gl_renderer_interface *gl_renderer;
+@@ -452,10 +456,13 @@ fbdev_frame_buffer_destroy(struct fbdev_output *output)
+ 		           strerror(errno));
+ 
+ 	output->fb = NULL;
++
++#ifdef ENABLE_EGL
+ 	if(output->window)
+ 		fbDestroyWindow(output->window);
+ 	if(output->display)
+ 		fbDestroyDisplay(output->display);
++#endif
+ }
+ 
+ static void fbdev_output_destroy(struct weston_output *base);
+@@ -532,6 +539,7 @@ fbdev_output_create(struct fbdev_backend *backend,
+ 				goto out_hw_surface;
+ 		}
+ 	} else {
++#ifdef ENABLE_EGL
+ 		setenv("HYBRIS_EGLPLATFORM", "wayland", 1);
+ 		output->window = fbCreateWindow(backend->display, -1, -1, 0, 0);
+ 		if (output->window == NULL) {
+@@ -545,6 +553,7 @@ fbdev_output_create(struct fbdev_backend *backend,
+ 			weston_log("gl_renderer_output_create failed.\n");
+ 			goto out_hw_surface;
+ 		}
++#endif
+ 	}
+ 
+ 	loop = wl_display_get_event_loop(backend->compositor->wl_display);
+@@ -856,6 +865,7 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+ 			}
+ 		}
+ 	} else {
++#ifdef ENABLE_EGL
+ 		gl_renderer = weston_load_module("gl-renderer.so",
+ 						 "gl_renderer_interface");
+ 		if (!gl_renderer) {
+@@ -875,7 +885,9 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+ 			weston_log("gl_renderer_create failed.\n");
+ 			goto out_launcher;
+ 		}
++#endif
+ 	}
++
+ 	if(!backend->use_g2d)
+ 		if (fbdev_output_create(backend, 0, 0, param->device) < 0)
+ 			goto out_launcher;
+@@ -929,12 +941,6 @@ backend_init(struct weston_compositor *compositor, int *argc, char *argv[],
+ 	config_init_to_defaults(&config);
+ 	memcpy(&config, config_base, config_base->struct_size);
+ 
+-	if(config.use_g2d) {
+-		config.use_gl = 0;
+-	} else {
+-		config.use_gl = 1;
+-	}
+-
+ 	b = fbdev_backend_create(compositor, argc, argv, wc, &config);
+ 	if (b == NULL)
+ 		return -1;
+diff --git a/src/main.c b/src/main.c
+index 18fe5e0..a0a5471 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -285,8 +285,14 @@ usage(int error_code)
+ 		"Options for fbdev-backend.so:\n\n"
+ 		"  --tty=TTY\t\tThe tty to use\n"
+ 		"  --device=DEVICE\tThe framebuffer device to use\n"
+-		"  --use-gl=1\t\tUse the GL renderer\n"
+-		"  --use-g2d=1\t\tUse the g2d renderer\n\n");
++#if defined(ENABLE_EGL)
++		"  --use-gl=1\t\tUse the GL renderer (default is 1)\n"
++		"  --use-g2d=1\t\tUse the G2D renderer (default is 0)\n"
++#else
++		"  --use-gl=1\t\tUse the GL renderer (default is 0)\n"
++		"  --use-g2d=1\t\tUse the G2D renderer (default is 1)\n"
++#endif
++		"  --clone-mode\t\tClone display to multiple devices\n\n");
+ #endif
+ 
+ #if defined(BUILD_HEADLESS_COMPOSITOR)
+@@ -861,7 +867,17 @@ static int
+ load_fbdev_backend(struct weston_compositor *c, char const * backend,
+ 		      int *argc, char **argv, struct weston_config *wc)
+ {
+-	struct weston_fbdev_backend_config config = {{ 0, }};
++	struct weston_fbdev_backend_config config = {
++		.base = {0},
++#ifdef ENABLE_EGL
++		.use_gl = 1,
++		.use_g2d = 0,
++#else
++		.use_gl = 0,
++		.use_g2d = 1,
++#endif
++		.clone_mode = 0,
++	};
+ 	struct weston_config_section *section;
+ 	char *s = NULL;
+ 	int ret = 0;
+-- 
+2.7.4
+
