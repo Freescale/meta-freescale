@@ -1,0 +1,135 @@
+From dfad4d734412e4ec53bfff29c7c503479857f66c Mon Sep 17 00:00:00 2001
+From: Meng Mingming <mingming.meng@nxp.com>
+Date: Mon, 9 Jan 2017 15:04:27 +0800
+Subject: [PATCH 1/5] MGS-2352 [#ccc] Add GPU-VIV support for weston 1.11
+
+Add GPU-VIV support for weston 1.11
+
+Upstream Status: Inappropriate [i.MX specific]
+
+Date: Jan 09, 2017
+Signed-off-by: Meng Mingming <mingming.meng@nxp.com>
+---
+ src/compositor-fbdev.c | 37 ++++++++++++++++++++++++++++---------
+ 1 file changed, 28 insertions(+), 9 deletions(-)
+
+diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
+index ee762e3..06f4696 100644
+--- a/src/compositor-fbdev.c
++++ b/src/compositor-fbdev.c
+@@ -61,6 +61,7 @@ struct fbdev_backend {
+ 	int use_pixman;
+ 	uint32_t output_transform;
+ 	struct wl_listener session_listener;
++	NativeDisplayType display;
+ };
+ 
+ struct fbdev_screeninfo {
+@@ -93,6 +94,9 @@ struct fbdev_output {
+ 	/* pixman details. */
+ 	pixman_image_t *hw_surface;
+ 	uint8_t depth;
++
++	NativeDisplayType display;
++	NativeWindowType  window;
+ };
+ 
+ struct gl_renderer_interface *gl_renderer;
+@@ -443,6 +447,10 @@ fbdev_frame_buffer_destroy(struct fbdev_output *output)
+ 		           strerror(errno));
+ 
+ 	output->fb = NULL;
++	if(output->window)
++		fbDestroyWindow(output->window);
++	if(output->display)
++		fbDestroyDisplay(output->display);
+ }
+ 
+ static void fbdev_output_destroy(struct weston_output *base);
+@@ -450,13 +458,13 @@ static void fbdev_output_disable(struct weston_output *base);
+ 
+ static int
+ fbdev_output_create(struct fbdev_backend *backend,
+-                    const char *device)
++                   int x, int y, const char *device)
+ {
+ 	struct fbdev_output *output;
+ 	int fb_fd;
+ 	struct wl_event_loop *loop;
+ 
+-	weston_log("Creating fbdev output.\n");
++	weston_log("Creating fbdev output. %s x=%d y=%d\n", device, x, y);
+ 
+ 	output = zalloc(sizeof *output);
+ 	if (output == NULL)
+@@ -500,7 +508,7 @@ fbdev_output_create(struct fbdev_backend *backend,
+ 	output->base.name = strdup("fbdev");
+ 
+ 	weston_output_init(&output->base, backend->compositor,
+-	                   0, 0, output->fb_info.width_mm,
++	                   x, y, output->fb_info.width_mm,
+ 	                   output->fb_info.height_mm,
+ 	                   backend->output_transform,
+ 			   1);
+@@ -510,8 +518,13 @@ fbdev_output_create(struct fbdev_backend *backend,
+ 			goto out_hw_surface;
+ 	} else {
+ 		setenv("HYBRIS_EGLPLATFORM", "wayland", 1);
++		output->window = fbCreateWindow(backend->display, -1, -1, 0, 0);
++		if (output->window == NULL) {
++			fprintf(stderr, "failed to create window\n");
++			return 0;
++		}
+ 		if (gl_renderer->output_create(&output->base,
+-					       (EGLNativeWindowType)NULL, NULL,
++					       (EGLNativeWindowType)output->window, NULL,
+ 					       gl_renderer->opaque_attribs,
+ 					       NULL, 0) < 0) {
+ 			weston_log("gl_renderer_output_create failed.\n");
+@@ -622,7 +635,7 @@ fbdev_output_reenable(struct fbdev_backend *backend,
+ 		 * are re-initialised. */
+ 		device = strdup(output->device);
+ 		fbdev_output_destroy(&output->base);
+-		fbdev_output_create(backend, device);
++		fbdev_output_create(backend, 0, 0, device);
+ 		free(device);
+ 
+ 		return 0;
+@@ -785,17 +798,21 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+ 			goto out_launcher;
+ 		}
+ 
++		backend->display = fbGetDisplay(backend->compositor->wl_display);
++		if (backend->display == NULL) {
++			weston_log("fbGetDisplay failed.\n");
++			goto out_launcher;
++		}
+ 		if (gl_renderer->create(compositor, NO_EGL_PLATFORM,
+-					EGL_DEFAULT_DISPLAY,
++					backend->display,
+ 					gl_renderer->opaque_attribs,
+ 					NULL, 0) < 0) {
+ 			weston_log("gl_renderer_create failed.\n");
+ 			goto out_launcher;
+ 		}
+ 	}
+-
+-	if (fbdev_output_create(backend, param->device) < 0)
+-		goto out_launcher;
++	if (fbdev_output_create(backend, 0, 0, param->device) < 0)
++			goto out_launcher;
+ 
+ 	udev_input_init(&backend->input, compositor, backend->udev, seat_id);
+ 
+@@ -844,6 +861,8 @@ backend_init(struct weston_compositor *compositor, int *argc, char *argv[],
+ 	config_init_to_defaults(&config);
+ 	memcpy(&config, config_base, config_base->struct_size);
+ 
++	config.use_gl = 1;
++
+ 	b = fbdev_backend_create(compositor, argc, argv, wc, &config);
+ 	if (b == NULL)
+ 		return -1;
+-- 
+2.7.4
+

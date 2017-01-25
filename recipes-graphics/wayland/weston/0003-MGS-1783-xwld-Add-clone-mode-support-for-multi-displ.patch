@@ -1,0 +1,104 @@
+From d22509cd41f9d44d9e66522307e30ad4ae4bace0 Mon Sep 17 00:00:00 2001
+From: Meng Mingming <mingming.meng@nxp.com>
+Date: Mon, 16 Jan 2017 10:23:13 +0800
+Subject: [PATCH 3/5] MGS-1783: xwld: Add clone mode support for multi display
+
+Support more than two displays to show the same contents
+
+Upstream Status: Inappropriate [i.MX specific]
+
+Date: May 16, 2016
+Signed-off-by: Yong Gan <yong.gan@nxp.com>
+---
+ src/compositor-fbdev.c | 18 +++++++++++++++---
+ src/compositor-fbdev.h |  1 +
+ src/main.c             |  1 +
+ 3 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/src/compositor-fbdev.c b/src/compositor-fbdev.c
+index cff9513..0a05e7d 100644
+--- a/src/compositor-fbdev.c
++++ b/src/compositor-fbdev.c
+@@ -61,6 +61,8 @@ struct fbdev_backend {
+ 	struct udev_input input;
+ 	int use_pixman;
+ 	int use_g2d;
++	int clone_mode;
++	char *clone_device;
+ 	uint32_t output_transform;
+ 	struct wl_listener session_listener;
+ 	NativeDisplayType display;
+@@ -521,6 +523,8 @@ fbdev_output_create(struct fbdev_backend *backend,
+ 			goto out_hw_surface;
+ 	} else if(backend->use_g2d) {
+ 		const char *g2d_device = device;
++		if (backend->clone_mode)
++			g2d_device = backend->clone_device;
+ 
+ 		if (g2d_renderer->output_create(&output->base,
+ 							backend->compositor->wl_display, g2d_device) < 0) {
+@@ -797,6 +801,8 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+ 	backend->prev_state = WESTON_COMPOSITOR_ACTIVE;
+ 	backend->use_pixman = !(param->use_gl || param->use_g2d);
+ 	backend->use_g2d = param->use_g2d;
++	backend->clone_mode = param->clone_mode;
++	backend->clone_device = param->device;
+ 	backend->output_transform = param->output_transform;
+ 
+ 	weston_setup_vt_switch_bindings(compositor);
+@@ -837,12 +843,17 @@ fbdev_backend_create(struct weston_compositor *compositor, int *argc, char *argv
+ 		displays[dispCount][k] = '\0';
+ 		dispCount++;
+ 
+-		for(i= 0; i < dispCount; i++){
+-			if (fbdev_output_create(backend, x, y, displays[i]) < 0)
++		if(backend->clone_mode){
++			if (fbdev_output_create(backend, x, y, displays[0]) < 0)
+ 				goto out_launcher;
+-			x += container_of(backend->compositor->output_list.prev,
++		} else {
++			for(i= 0; i < dispCount; i++){
++				if (fbdev_output_create(backend, x, y, displays[i]) < 0)
++					goto out_launcher;
++				x += container_of(backend->compositor->output_list.prev,
+ 							struct weston_output,
+ 							link)->width;
++			}
+ 		}
+ 	} else {
+ 		gl_renderer = weston_load_module("gl-renderer.so",
+@@ -896,6 +907,7 @@ config_init_to_defaults(struct weston_fbdev_backend_config *config)
+ 	config->device = "/dev/fb0"; /* default frame buffer */
+ 	config->use_gl = 0;
+ 	config->use_g2d = 0;
++	config->clone_mode = 0;
+ 	config->output_transform = WL_OUTPUT_TRANSFORM_NORMAL;
+ }
+ 
+diff --git a/src/compositor-fbdev.h b/src/compositor-fbdev.h
+index 32a8598..a28ef3b 100644
+--- a/src/compositor-fbdev.h
++++ b/src/compositor-fbdev.h
+@@ -41,6 +41,7 @@ struct weston_fbdev_backend_config {
+ 	char *device;
+ 	int use_gl;
+ 	int use_g2d;
++	int clone_mode;
+ 
+ 	uint32_t output_transform;
+ };
+diff --git a/src/main.c b/src/main.c
+index 5d0bdc4..18fe5e0 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -871,6 +871,7 @@ load_fbdev_backend(struct weston_compositor *c, char const * backend,
+ 		{ WESTON_OPTION_STRING, "device", 0, &config.device },
+ 		{ WESTON_OPTION_INTEGER, "use-gl", 0, &config.use_gl },
+ 		{ WESTON_OPTION_INTEGER, "use-g2d", 0, &config.use_g2d },
++		{ WESTON_OPTION_BOOLEAN, "clone-mode", 0, &config.clone_mode },
+ 	};
+ 
+ 	parse_options(fbdev_options, ARRAY_LENGTH(fbdev_options), argc, argv);
+-- 
+2.7.4
+
