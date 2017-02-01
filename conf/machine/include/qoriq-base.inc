@@ -12,7 +12,7 @@ PREFERRED_VERSION_testfloat = "2a"
 IMAGE_CLASSES += "image_types_uboot"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz ext2.gz.u-boot ext2.gz"
-IMAGE_FSTYPES ??= "${SOC_DEFAULT_IMAGE_FSTYPES}"
+IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
 MACHINE_FEATURES ?= "pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf udev-rules-qoriq kernel-modules"
