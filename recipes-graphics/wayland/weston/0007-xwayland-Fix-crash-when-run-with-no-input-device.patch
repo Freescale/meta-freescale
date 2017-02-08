@@ -7,6 +7,8 @@ Starting an xterm with no input device led to a crash
 because weston_wm_pick_seat() was returning garbage and
 weston_wm_selection_init() was trying to use the garbage.
 
+Upstream-Status: Accepted [https://cgit.freedesktop.org/wayland/weston/commit/?id=e7fff215ada3fd3d1b2af664888f960c082f9065]
+
 Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
 ---
  xwayland/selection.c      | 10 +++++++---
@@ -21,7 +23,7 @@ Index: weston-1.11.0/xwayland/selection.c
  					  wm->atom.clipboard, mask);
  
  	seat = weston_wm_pick_seat(wm);
-+	if (seat != NULL)
++	if (seat == NULL)
 +		return;
  	wm->selection_listener.notify = weston_wm_set_selection;
  	wl_signal_add(&seat->selection_signal, &wm->selection_listener);
