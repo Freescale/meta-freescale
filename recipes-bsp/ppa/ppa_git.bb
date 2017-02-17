@@ -2,7 +2,7 @@ SUMMARY = "Primary Protected Application"
 LICENSE = "Freescale-EULA"
 LIC_FILES_CHKSUM = "file://ppa/EULA.txt;md5=60037ccba533a5995e8d1a838d85799c"
 
-DEPENDS += "u-boot-mkimage-native"
+DEPENDS += "u-boot-mkimage-native dtc-native"
 
 inherit deploy
 
