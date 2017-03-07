@@ -19,7 +19,7 @@ INITSCRIPT_PACKAGES = "xserver-xorg-extension-viv-autohdmi"
 INITSCRIPT_NAME = "rc.autohdmi"
 INITSCRIPT_PARAMS = "start 99 2 3 4 5 ."
 
-EXTRA_OEMAKE += "-C ${S} -f Makefile prefix=${D}/usr \
+EXTRA_OEMAKE += "prefix=${D}/usr \
                  sysroot=${STAGING_DIR_TARGET} \
                  LFLAGS="${LDFLAGS}" \
                  BUSID_HAS_NUMBER=1 \
@@ -40,13 +40,6 @@ PACKAGES =+ "xserver-xorg-extension-viv-autohdmi"
 do_configure_prepend () {
     sed -i 's,$(sysroot)/usr/include,${STAGING_INCDIR},g' \
             ${S}EXA/src/makefile.linux
-}
-
-# FIXME: This is need as Freescale didn't use standard Makefile filename
-#        thus oe_runmame thinks nothing is need to be done, use ln to
-#        workaround it.
-base_do_compile () {
-    oe_runmake || die "make failed"
 }
 
 do_install_append () {
