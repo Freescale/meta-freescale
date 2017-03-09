@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2016 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2017 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "FSL Community BSP Linux mainline based kernel with backported features and fixes"
@@ -9,9 +9,9 @@ upstreaming."
 
 include linux-fslc.inc
 
-PV = "4.8+git${SRCPV}"
+PV = "4.9+git${SRCPV}"
 
-SRCBRANCH = "4.8.x+fslc"
-SRCREV = "35ef7950aaf7caa28afae35160bda0734ecfeba7"
+SRCBRANCH = "4.9.x+fslc"
+SRCREV = "3737a5f7223464efed3b0a9da2b045dae28d3a53"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf)"
