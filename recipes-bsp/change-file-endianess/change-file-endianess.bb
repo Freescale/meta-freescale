@@ -5,10 +5,6 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=4d92cd373abda3937c2bc47fbc49d
 
 SRC_URI = "file://byte_swap.tcl"
 
-RDEPENDS += "tcl-native"
-
-inherit native deploy
-
 S = "${WORKDIR}"
 
 do_configure[noexec] = "1"
@@ -19,14 +15,6 @@ do_install () {
     install -m 755 ${WORKDIR}/byte_swap.tcl ${D}/${bindir}
 }
 
-do_deploy () {
-    :
-}
-
-do_deploy_class-native () {
-    install -d ${DEPLOYDIR}
-    cp -f ${S}/byte_swap.tcl ${DEPLOYDIR}/
-}
-addtask deploy before do_build after do_populate_sysroot
+RDEPENDS_${PN} += "tcl"
 
 BBCLASSEXTEND = "native nativesdk"
