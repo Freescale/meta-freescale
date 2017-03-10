@@ -12,6 +12,6 @@ include linux-fslc.inc
 PV = "4.9+git${SRCPV}"
 
 SRCBRANCH = "4.9.x+fslc"
-SRCREV = "3737a5f7223464efed3b0a9da2b045dae28d3a53"
+SRCREV = "c3825da143fc419e2639e602f62d793ed0de4657"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf)"
