@@ -16,4 +16,6 @@ do_install () {
 	oe_runmake DESTDIR=${D} install
 }
 
+inherit pkgconfig
+
 BBCLASSEXTEND = "native nativesdk"
