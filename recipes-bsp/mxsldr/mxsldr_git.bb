@@ -13,6 +13,6 @@ PV = "0.0.0+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 
-inherit autotools-brokensep
+inherit autotools-brokensep pkgconfig
 
 BBCLASSEXTEND = "native nativesdk"
