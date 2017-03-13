@@ -19,8 +19,8 @@ SRC_URI += " \
     file://0004-export-swait-locked-functions.patch \
 "
 
-SRC_URI[rt-patch.md5sum] = "bd36ab7ac2fcc65d198b60c013acba23"
-SRC_URI[rt-patch.sha256sum] = "7b2e9f5ec78f508fda1f439fef08e1ee2d81e137b82cf40e62c40def781c7d41"
+SRC_URI[rt-patch.md5sum] = "6e86714997e190a45fb5b9c951d2c179"
+SRC_URI[rt-patch.sha256sum] = "12aa4947ee656fa724e17d8971dcb3634a058c18afe59a472adfcd6f11d17f67"
 
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
