@@ -15,7 +15,8 @@ RULE_e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1024 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1023 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_ls1043a = "73-fsl-dpaa-persistent-networking.rules"
-RULE_ls2080ardb = ""
+RULE_ls1012a = ""
+RULE_ls2080a = ""
 
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d/
