@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1af2000", NAME="fm1-mac10"
