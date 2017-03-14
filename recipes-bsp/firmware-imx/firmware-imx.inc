@@ -12,7 +12,7 @@ SRCBRANCH ?= "master"
 SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
            git://git.freescale.com/imx/imx-firmware.git;branch=${SRCBRANCH};destsuffix=${S}/git "
 
-inherit fsl-eula-unpack
+inherit fsl-eula-unpack allarch
 
 do_install() {
     install -d ${D}${base_libdir}/firmware/imx
@@ -79,5 +79,3 @@ PACKAGES =+ "${PN}-epdc ${PN}-brcm"
 
 FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
 FILES_${PN}-brcm = "${base_libdir}/firmware/bcm/*/*.bin ${base_libdir}/firmware/bcm/*/*.cal ${sysconfdir}/firmware/"
-
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
