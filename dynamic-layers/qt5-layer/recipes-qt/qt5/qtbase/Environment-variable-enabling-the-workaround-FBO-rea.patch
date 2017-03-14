@@ -1,0 +1,134 @@
+From 068c13d7f561f3bd88facb14093cdc88fe1b50f2 Mon Sep 17 00:00:00 2001
+From: Marco Martin <mart@kde.org>
+Date: Fri, 10 Feb 2017 15:00:23 +0100
+Subject: [PATCH] Environment variable enabling the workaround FBO readback bug
+Organization: O.S. Systems Software LTDA.
+
+On some ARM devices the font glyph generation is broken
+Add an environment variable to enable workaround_brokenFBOReadBack
+in QOpenGLContext, to fix font rendering on such devices as
+Mali and Adreno
+
+Change-Id: I9cc99ecb8b71a35bc369ec9dd11b877016b1179e
+---
+ src/gui/kernel/qopenglcontext.cpp                  | 34 ++++++++++++++++++++++
+ .../android/qandroidplatformopenglcontext.cpp      | 31 --------------------
+ .../android/qandroidplatformopenglcontext.h        |  1 -
+ 3 files changed, 34 insertions(+), 32 deletions(-)
+
+diff --git a/src/gui/kernel/qopenglcontext.cpp b/src/gui/kernel/qopenglcontext.cpp
+index 0f7bbfd2e1..2b0b1f7ff1 100644
+--- a/src/gui/kernel/qopenglcontext.cpp
++++ b/src/gui/kernel/qopenglcontext.cpp
+@@ -951,6 +951,7 @@ GLuint QOpenGLContext::defaultFramebufferObject() const
+ bool QOpenGLContext::makeCurrent(QSurface *surface)
+ {
+     Q_D(QOpenGLContext);
++
+     if (!isValid())
+         return false;
+ 
+@@ -972,6 +973,39 @@ bool QOpenGLContext::makeCurrent(QSurface *surface)
+     QOpenGLContext *previous = QOpenGLContextPrivate::setCurrentContext(this);
+ 
+     if (d->platformGLContext->makeCurrent(surface->surfaceHandle())) {
++        static bool needsWorkaroundSet = false;
++        static bool needsWorkaround = false;
++
++        if (!needsWorkaroundSet) {
++#ifdef Q_OS_ANDROID
++            const QByteArray env = qgetenv("QT_ANDROID_DISABLE_GLYPH_CACHE_WORKAROUND");
++            needsWorkaround = env.isEmpty() || env == "0" || env == "false";
++#endif
++            QByteArray env = qgetenv("QT_ENABLE_GLYPH_CACHE_WORKAROUND");
++            if (env == "1" || env == "true")
++                needsWorkaround = true;
++
++            if (!needsWorkaround) {
++                const char *rendererString = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
++                if (rendererString)
++                    needsWorkaround =
++                            qstrncmp(rendererString, "Mali-4xx", 6) == 0 // Mali-400, Mali-450
++                            || qstrncmp(rendererString, "Adreno (TM) 2xx", 13) == 0 // Adreno 200, 203, 205
++                            || qstrncmp(rendererString, "Adreno 2xx", 8) == 0 // Same as above but without the '(TM)'
++                            || qstrncmp(rendererString, "Adreno (TM) 30x", 14) == 0 // Adreno 302, 305
++                            || qstrncmp(rendererString, "Adreno 30x", 9) == 0 // Same as above but without the '(TM)'
++                            || qstrncmp(rendererString, "Adreno (TM) 4xx", 13) == 0 // Adreno 405, 418, 420, 430
++                            || qstrncmp(rendererString, "Adreno 4xx", 8) == 0 // Same as above but without the '(TM)'
++                            || qstrcmp(rendererString, "GC800 core") == 0
++                            || qstrcmp(rendererString, "GC1000 core") == 0
++                            || qstrcmp(rendererString, "Immersion.16") == 0;
++            }
++            needsWorkaroundSet = true;
++        }
++
++        if (needsWorkaround)
++            d->workaround_brokenFBOReadBack = true;
++
+         d->surface = surface;
+ 
+         d->shareGroup->d_func()->deletePendingResources(this);
+diff --git a/src/plugins/platforms/android/qandroidplatformopenglcontext.cpp b/src/plugins/platforms/android/qandroidplatformopenglcontext.cpp
+index 80693acf88..3edfd34f9a 100644
+--- a/src/plugins/platforms/android/qandroidplatformopenglcontext.cpp
++++ b/src/plugins/platforms/android/qandroidplatformopenglcontext.cpp
+@@ -64,34 +64,6 @@ void QAndroidPlatformOpenGLContext::swapBuffers(QPlatformSurface *surface)
+     QEGLPlatformContext::swapBuffers(surface);
+ }
+ 
+-bool QAndroidPlatformOpenGLContext::needsFBOReadBackWorkaround()
+-{
+-    static bool set = false;
+-    static bool needsWorkaround = false;
+-
+-    if (!set) {
+-        QByteArray env = qgetenv("QT_ANDROID_DISABLE_GLYPH_CACHE_WORKAROUND");
+-        needsWorkaround = env.isEmpty() || env == "0" || env == "false";
+-
+-        if (!needsWorkaround) {
+-            const char *rendererString = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+-            needsWorkaround =
+-                    qstrncmp(rendererString, "Mali-4xx", 6) == 0 // Mali-400, Mali-450
+-                    || qstrncmp(rendererString, "Adreno (TM) 2xx", 13) == 0 // Adreno 200, 203, 205
+-                    || qstrncmp(rendererString, "Adreno 2xx", 8) == 0 // Same as above but without the '(TM)'
+-                    || qstrncmp(rendererString, "Adreno (TM) 30x", 14) == 0 // Adreno 302, 305
+-                    || qstrncmp(rendererString, "Adreno 30x", 9) == 0 // Same as above but without the '(TM)'
+-                    || qstrcmp(rendererString, "GC800 core") == 0
+-                    || qstrcmp(rendererString, "GC1000 core") == 0
+-                    || qstrcmp(rendererString, "Immersion.16") == 0;
+-        }
+-
+-        set = true;
+-    }
+-
+-    return needsWorkaround;
+-}
+-
+ bool QAndroidPlatformOpenGLContext::makeCurrent(QPlatformSurface *surface)
+ {
+     bool ret = QEGLPlatformContext::makeCurrent(surface);
+@@ -101,9 +73,6 @@ bool QAndroidPlatformOpenGLContext::makeCurrent(QPlatformSurface *surface)
+     if (rendererString != 0 && qstrncmp(rendererString, "Android Emulator", 16) == 0)
+         ctx_d->workaround_missingPrecisionQualifiers = true;
+ 
+-    if (!ctx_d->workaround_brokenFBOReadBack && needsFBOReadBackWorkaround())
+-        ctx_d->workaround_brokenFBOReadBack = true;
+-
+     return ret;
+ }
+ 
+diff --git a/src/plugins/platforms/android/qandroidplatformopenglcontext.h b/src/plugins/platforms/android/qandroidplatformopenglcontext.h
+index c88dbf327b..e0eaae6b16 100644
+--- a/src/plugins/platforms/android/qandroidplatformopenglcontext.h
++++ b/src/plugins/platforms/android/qandroidplatformopenglcontext.h
+@@ -55,7 +55,6 @@ public:
+ private:
+     virtual EGLSurface eglSurfaceForPlatformSurface(QPlatformSurface *surface);
+ 
+-    static bool needsFBOReadBackWorkaround();
+ };
+ 
+ QT_END_NAMESPACE
+-- 
+2.12.0
+
