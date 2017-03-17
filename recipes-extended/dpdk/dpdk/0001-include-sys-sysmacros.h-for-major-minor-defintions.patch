@@ -1,0 +1,38 @@
+Subject: [PATCH] include <sys/sysmacros.h> for major/minor defintions
+
+glibc 2.25 is warning about it if applications depend on
+sys/types.h for these macros, it expects to be included
+from <sys/sysmacros.h>
+
+Fixes
+| Grow.c:3534:13: error: In the GNU C Library, "minor" is defined
+|  by <sys/sysmacros.h>. For historical compatibility, it is
+|  currently defined by <sys/types.h> as well, but we plan to
+|  remove this soon. To use "minor", include <sys/sysmacros.h>
+|  directly. If you did not intend to use a system-defined macro
+|  "minor", you should undefine it after including <sys/types.h>. [-Werror]
+| Query.c: In function 'Query':
+| Query.c:105:13: error: In the GNU C Library, "makedev" is defined
+|  by <sys/sysmacros.h>. For historical compatibility, it is
+|  currently defined by <sys/types.h> as well, but we plan to
+|  remove this soon. To use "makedev", include <sys/sysmacros.h>
+|  directly. If you did not intend to use a system-defined macro
+|  "makedev", you should undefine it after including <sys/types.h>. [-Werror]
+|           makedev((unsigned)disc.major,(unsigned)disc.minor) == stb.st_rdev)
+|              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Signed-off-by: Chunrong Guo <chunrong.guo@nxp.com>
+---
+Upstream-Status: Pending
+
+
+--- a/lib/librte_eal/linuxapp/eal/eal_pci_uio.cold	2017-02-27 17:36:15.984931159 +0800
++++ b/lib/librte_eal/linuxapp/eal/eal_pci_uio.c	2017-02-27 17:36:57.520929721 +0800
+@@ -39,6 +39,7 @@
+ #include <sys/stat.h>
+ #include <sys/mman.h>
+ #include <linux/pci_regs.h>
++#include <sys/sysmacros.h>
+ 
+ #if defined(RTE_ARCH_X86)
+ #include <sys/io.h>
