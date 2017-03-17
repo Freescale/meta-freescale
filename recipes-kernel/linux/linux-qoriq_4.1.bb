@@ -13,12 +13,10 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://fix-the-compile-issue-under-gcc6.patch \
     file://only-set-vmpic_msi_feature-if-CONFIG_EPAPR_PARAVIRT-.patch \
     file://powerpc-fsl-Fix-build-of-the-dtb-embedded-kernel-images.patch \
-    file://CVE-2016-5696-limiting-of-all-challenge.patch \
-    file://CVE-2016-5696-make-challenge-acks-less-predictable.patch \
     file://CVE-2016-2053.patch \
     file://CVE-2016-0758.patch \
 "
-SRCREV = "4004071c129a776136e71f6a85383fea87f5db75"
+SRCREV = "b14540ee315f79f6a5dfc621e7f4217c8fac7d1c"
 
 S = "${WORKDIR}/git"
 
@@ -37,6 +35,7 @@ SCMVERSION ?= "y"
 LOCALVERSION = ""
 DELTA_KERNEL_DEFCONFIG ?= ""
 DELTA_KERNEL_DEFCONFIG_prepend_qoriq-arm64 = "freescale.config "
+DELTA_KERNEL_DEFCONFIG_prepend_fsl-lsch2-32b = "freescale_aarch32.config "
 
 do_merge_delta_config() {
     # copy desired defconfig so we pick it up for the real kernel_do_configure
