@@ -11,7 +11,7 @@ inherit module
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/dpdk.git;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
-    file://a.patch \
+    file://0001-include-sys-sysmacros.h-for-major-minor-defintions.patch \
 "
 SRCREV = "34b69f9ab1af11db43df2d616be1c1f20feef70b"
 
