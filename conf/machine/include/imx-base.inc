@@ -60,6 +60,19 @@ MACHINEOVERRIDES_EXTENDER_mx6ul = "imxpxp"
 MACHINEOVERRIDES_EXTENDER_mx6ull = "imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx7d  = "imxpxp:imxepdc"
 
+MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
+    mx6 \
+    mx6q \
+    mx6dl \
+    mx6sx \
+    mx6sl \
+    mx6ul \
+    mx6ull \
+    \
+    mx7 \
+    mx7d \
+"
+
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
 MACHINE_SOCARCH_SUFFIX_mx6q = "-mx6qdl"
@@ -71,11 +84,16 @@ MACHINE_SOCARCH_SUFFIX_vf60 = "-vf60"
 MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
 MACHINE_SOCARCH_SUFFIX_mx6ul  = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_mx6ull = "-mx6ul"
+MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER_append_imxvpu = " imx-vpu libimxvpuapi imx-codec imx-vpuwrap imx-parser"
 MACHINE_SOCARCH_FILTER_append_imxgpu2d = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango"
 MACHINE_SOCARCH_FILTER_append_imxpxp = " imx-codec imx-parser"
+MACHINE_SOCARCH_FILTER_append_use-mainline-bsp = " \
+    qtbase \
+    virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango \
+"
 
 INHERIT += "fsl-dynamic-packagearch"
 
@@ -96,6 +114,7 @@ MACHINE_FIRMWARE_append_mx6sl = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6ull = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx53 = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_append_mx51 = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
+MACHINE_FIRMWARE_append_use-mainline-bsp = " firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 # FIXME: Needs addition of firmware-imx of official BSPs
 #MACHINE_FIRMWARE_append_mx27 = " firmware-imx-vpu-imx27"
@@ -179,6 +198,7 @@ IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-imx"
 IMX_DEFAULT_KERNEL_mx7 = "linux-fslc-imx"
 IMX_DEFAULT_KERNEL_mx6ul = "linux-fslc-imx"
 IMX_DEFAULT_KERNEL_mx6ull = "linux-fslc-imx"
+IMX_DEFAULT_KERNEL_use-mainline-bsp = "linux-fslc"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
