@@ -12,6 +12,8 @@ SRCREV = "7bd43d920065171a8d805a3d02fa4c0b39885664"
 
 S = "${WORKDIR}/git"
 
+export PYTHON = "${USRBINPATH}/python2"
+
 EXTRA_OEMAKE = "BOARDS=${@d.getVar('MACHINE', True).replace('-64b','').replace('-32b','')} DESTDIR=${D}/boot/rcw/"
 
 do_install () {
