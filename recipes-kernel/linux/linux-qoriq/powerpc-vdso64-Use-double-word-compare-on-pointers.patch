@@ -1,0 +1,67 @@
+From 5045ea37377ce8cca6890d32b127ad6770e6dce5 Mon Sep 17 00:00:00 2001
+From: Anton Blanchard <anton@samba.org>
+Date: Sun, 25 Sep 2016 17:16:53 +1000
+Subject: [PATCH] powerpc/vdso64: Use double word compare on pointers
+
+__kernel_get_syscall_map() and __kernel_clock_getres() use cmpli to
+check if the passed in pointer is non zero. cmpli maps to a 32 bit
+compare on binutils, so we ignore the top 32 bits.
+
+A simple test case can be created by passing in a bogus pointer with
+the bottom 32 bits clear. Using a clk_id that is handled by the VDSO,
+then one that is handled by the kernel shows the problem:
+
+  printf("%d\n", clock_getres(CLOCK_REALTIME, (void *)0x100000000));
+  printf("%d\n", clock_getres(CLOCK_BOOTTIME, (void *)0x100000000));
+
+And we get:
+
+  0
+  -1
+
+The bigger issue is if we pass a valid pointer with the bottom 32 bits
+clear, in this case we will return success but won't write any data
+to the pointer.
+
+I stumbled across this issue because the LLVM integrated assembler
+doesn't accept cmpli with 3 arguments. Fix this by converting them to
+cmpldi.
+
+Fixes: a7f290dad32e ("[PATCH] powerpc: Merge vdso's and add vdso support to 32 bits kernel")
+Cc: stable@vger.kernel.org # v2.6.15+
+Signed-off-by: Anton Blanchard <anton@samba.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+---
+ arch/powerpc/kernel/vdso64/datapage.S     | 2 +-
+ arch/powerpc/kernel/vdso64/gettimeofday.S | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/powerpc/kernel/vdso64/datapage.S b/arch/powerpc/kernel/vdso64/datapage.S
+index 184a6ba..abf17fe 100644
+--- a/arch/powerpc/kernel/vdso64/datapage.S
++++ b/arch/powerpc/kernel/vdso64/datapage.S
+@@ -59,7 +59,7 @@ V_FUNCTION_BEGIN(__kernel_get_syscall_map)
+ 	bl	V_LOCAL_FUNC(__get_datapage)
+ 	mtlr	r12
+ 	addi	r3,r3,CFG_SYSCALL_MAP64
+-	cmpli	cr0,r4,0
++	cmpldi	cr0,r4,0
+ 	crclr	cr0*4+so
+ 	beqlr
+ 	li	r0,NR_syscalls
+diff --git a/arch/powerpc/kernel/vdso64/gettimeofday.S b/arch/powerpc/kernel/vdso64/gettimeofday.S
+index a76b4af..3820213 100644
+--- a/arch/powerpc/kernel/vdso64/gettimeofday.S
++++ b/arch/powerpc/kernel/vdso64/gettimeofday.S
+@@ -145,7 +145,7 @@ V_FUNCTION_BEGIN(__kernel_clock_getres)
+ 	bne	cr0,99f
+ 
+ 	li	r3,0
+-	cmpli	cr0,r4,0
++	cmpldi	cr0,r4,0
+ 	crclr	cr0*4+so
+ 	beqlr
+ 	lis	r5,CLOCK_REALTIME_RES@h
+-- 
+2.7.4
+

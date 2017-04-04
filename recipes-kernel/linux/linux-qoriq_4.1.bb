@@ -15,6 +15,8 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://powerpc-fsl-Fix-build-of-the-dtb-embedded-kernel-images.patch \
     file://CVE-2016-2053.patch \
     file://CVE-2016-0758.patch \
+    file://powerpc-64e-Convert-cmpi-to-cmpwi-in-head_64.S.patch \
+    file://powerpc-vdso64-Use-double-word-compare-on-pointers.patch \
 "
 SRCREV = "b14540ee315f79f6a5dfc621e7f4217c8fac7d1c"
 
