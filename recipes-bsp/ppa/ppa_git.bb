@@ -6,8 +6,8 @@ DEPENDS += "u-boot-mkimage-native dtc-native"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/ppa-generic.git;branch=sdk-v2.0.x"
-SRCREV = "cb683b7cab76f2d685f54393d3b51dd1d02dac9d"
+SRC_URI = "git://git.freescale.com/ppc/sdk/ppa-generic.git;nobranch=1"
+SRCREV = "9fcb080dd7415927aa3fbabfcba8982bcb1466d3"
 
 S = "${WORKDIR}/git"
 
