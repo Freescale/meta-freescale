@@ -13,7 +13,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/dpdk.git;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
     file://0001-include-sys-sysmacros.h-for-major-minor-defintions.patch \
 "
-SRCREV = "34b69f9ab1af11db43df2d616be1c1f20feef70b"
+SRCREV = "a3395d24774a8a7a2ce0d56a92a8ad2895b2ae8c"
 
 S = "${WORKDIR}/git"
 
@@ -40,7 +40,7 @@ do_install() {
     oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu" T="${RTE_TARGET}" DESTDIR="${D}" install
 
     # Build and install the DPDK examples
-    for APP in examples/l2fwd examples/l3fwd examples/l2fwd-crypto examples/ipsec-secgw examples/kni; do
+    for APP in examples/l2fwd examples/l3fwd examples/l2fwd-crypto examples/ipsec-secgw examples/kni examples/ip_fragmentation examples/ip_reassembly; do
         oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C ${APP}
 
         [ ! -d ${D}/${bindir}/dpdk-example ] && install -d 0644 ${D}/${bindir}/dpdk-example
@@ -75,6 +75,10 @@ FILES_${PN}-dbg += "${bindir}/dpdk-example/.debug \
     ${datadir}/examples/l3fwd/build/app/.debug \
     ${datadir}/examples/ipsec-secgw/build/.debug \
     ${datadir}/examples/ipsec-secgw/build/app/.debug \
+    ${datadir}/examples/ip_fragmentation/build/.debug \
+    ${datadir}/examples/ip_fragmentation/build/app/.debug \
+    ${datadir}/examples/ip_reassembly/build/.debug \
+    ${datadir}/examples/ip_reassembly/build/app/.debug \
 "
 FILES_${PN}-dev += "${datadir}/mk ${datadir}/scripts \
     ${datadir}/${RTE_TARGET} \
