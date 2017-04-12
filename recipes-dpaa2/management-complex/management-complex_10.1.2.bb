@@ -1,13 +1,13 @@
 SUMMARY = "DPAA2 Management Complex Firmware"
 LICENSE = "Freescale-Binary-EULA"
-LIC_FILES_CHKSUM = "file://Freescale-Binary-EULA;md5=da89ad557c4a497fb005e76c2600cda3"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=0ef9ba7621bd36f5fef5009fbeb56b00"
 
 inherit deploy
 
 INHIBIT_DEFAULT_DEPS = "1"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/mc-binary.git;branch=sdk-v2.0.x"
-SRCREV = "40e7cc7bfc9b35488394450605d649cb7073051a"
+SRC_URI = "git://git.freescale.com/ppc/sdk/mc-binary.git;nobranch=1"
+SRCREV = "10db0dfa51c8aa6308d7986355bb8b1a3a34d298"
 
 S = "${WORKDIR}/git"
 
@@ -31,6 +31,6 @@ FILES_${PN}-image += "/boot"
 
 INHIBIT_PACKAGE_STRIP = "1"
 
-COMPATIBLE_MACHINE = "(ls2080ardb)"
+COMPATIBLE_MACHINE = "(ls2080ardb|ls2088a)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
