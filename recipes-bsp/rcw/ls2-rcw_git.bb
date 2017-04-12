@@ -9,7 +9,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://git.freescale.com/ppc/sdk/ls2-rcw.git;nobranch=1"
-SRCREV = "83a7a661404b760874759073c9f14c8c2c8a9af3"
+SRCREV = "5d4624f74ad2744160060a006b7b5a6359d69142"
 
 S = "${WORKDIR}/git"
 
