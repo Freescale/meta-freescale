@@ -21,7 +21,7 @@ DEPENDS_append_qoriq-ppc = " boot-format-native"
 SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1 \
     file://fix-build-error-under-gcc6.patch \
 "
-SRCREV = "2735535eeb666cc440c0aeb46493eca9c4f8ab93"
+SRCREV = "a06b20925c02ba3fa888a1f915ea7935084d8600"
 
 S = "${WORKDIR}/git"
 
