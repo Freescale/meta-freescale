@@ -6,8 +6,8 @@ DEPENDS = "dtc-native"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/dpl-examples.git;branch=sdk-v2.0.x"
-SRCREV = "2f8a6c2c0607b663afd69aa0477c2047f25031ca"
+SRC_URI = "git://git.freescale.com/ppc/sdk/dpl-examples.git;nobranch=1"
+SRCREV = "cea280fd06b9c43fa73f3d9ef629b171cccd0fcd"
 
 S = "${WORKDIR}/git"
 
