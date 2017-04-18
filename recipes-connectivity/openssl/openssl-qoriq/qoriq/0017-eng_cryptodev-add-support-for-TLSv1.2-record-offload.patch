@@ -1,4 +1,4 @@
-From 4c1531a088076118ce3c06cb0af15998f0796cb3 Mon Sep 17 00:00:00 2001
+From 0103fb8e6fc412462968224ec9315609c54eccc1 Mon Sep 17 00:00:00 2001
 From: Tudor Ambarus <tudor.ambarus@freescale.com>
 Date: Tue, 31 Mar 2015 16:32:35 +0300
 Subject: [PATCH 17/48] eng_cryptodev: add support for TLSv1.2 record offload
@@ -25,10 +25,10 @@ Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
  6 files changed, 216 insertions(+), 3 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index e37a661..e6f9f16 100644
+index 80b20e5..455868e 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -139,6 +139,11 @@ const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
+@@ -140,6 +140,11 @@ const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_tls11_3des_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_tls11_aes_128_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_tls11_aes_256_cbc_hmac_sha1;
@@ -40,7 +40,7 @@ index e37a661..e6f9f16 100644
  
  inline int spcf_bn2bin(BIGNUM *bn, unsigned char **bin, int *bin_len)
  {
-@@ -310,6 +315,26 @@ static struct {
+@@ -311,6 +316,26 @@ static struct {
          20
      },
      {
@@ -67,7 +67,7 @@ index e37a661..e6f9f16 100644
          CRYPTO_AES_GCM, NID_aes_128_gcm, 16, 16, 0
      },
      {
-@@ -551,6 +576,21 @@ static int cryptodev_usable_ciphers(const int **nids)
+@@ -552,6 +577,21 @@ static int cryptodev_usable_ciphers(const int **nids)
          case NID_tls11_aes_256_cbc_hmac_sha1:
              EVP_add_cipher(&cryptodev_tls11_aes_256_cbc_hmac_sha1);
              break;
@@ -89,7 +89,7 @@ index e37a661..e6f9f16 100644
          }
      }
      return count;
-@@ -659,6 +699,11 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+@@ -660,6 +700,11 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
      case NID_tls11_des_ede3_cbc_hmac_sha1:
      case NID_tls11_aes_128_cbc_hmac_sha1:
      case NID_tls11_aes_256_cbc_hmac_sha1:
@@ -101,7 +101,7 @@ index e37a661..e6f9f16 100644
          cryp.flags = COP_FLAG_AEAD_TLS_TYPE;
      }
      cryp.ses = sess->ses;
-@@ -856,9 +901,17 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
+@@ -857,9 +902,17 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
              case NID_tls11_des_ede3_cbc_hmac_sha1:
              case NID_tls11_aes_128_cbc_hmac_sha1:
              case NID_tls11_aes_256_cbc_hmac_sha1:
@@ -119,7 +119,7 @@ index e37a661..e6f9f16 100644
              }
  
              /* Correct length for AAD Length field */
-@@ -1270,6 +1323,76 @@ const EVP_CIPHER cryptodev_tls11_aes_256_cbc_hmac_sha1 = {
+@@ -1271,6 +1324,76 @@ const EVP_CIPHER cryptodev_tls11_aes_256_cbc_hmac_sha1 = {
      NULL
  };
  
@@ -196,7 +196,7 @@ index e37a661..e6f9f16 100644
  const EVP_CIPHER cryptodev_aes_128_gcm = {
      NID_aes_128_gcm,
      1, 16, 12,
-@@ -1395,6 +1518,21 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
+@@ -1396,6 +1519,21 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
      case NID_aes_128_gcm:
          *cipher = &cryptodev_aes_128_gcm;
          break;
@@ -337,7 +337,7 @@ index cda81da..68a8da8 100644
  ISO-US 10046 2 1	: dhpublicnumber		: X9.42 DH
  
 diff --git a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
-index e3d73ac..4698528 100644
+index b4af7dc..359cb5d 100644
 --- a/ssl/ssl_ciph.c
 +++ b/ssl/ssl_ciph.c
 @@ -690,6 +690,31 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
@@ -373,5 +373,5 @@ index e3d73ac..4698528 100644
      } else
          return (0);
 -- 
-2.7.0
+2.7.3
 

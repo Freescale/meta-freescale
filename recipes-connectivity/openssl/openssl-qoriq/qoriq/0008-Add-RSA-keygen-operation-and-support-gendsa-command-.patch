@@ -1,4 +1,4 @@
-From 94a3fc9f437c20726209cea19256c419837055a2 Mon Sep 17 00:00:00 2001
+From 73629969c6fe54529441530674b061ce31a41d93 Mon Sep 17 00:00:00 2001
 From: Hou Zhiqiang <B48286@freescale.com>
 Date: Wed, 2 Apr 2014 16:10:43 +0800
 Subject: [PATCH 08/48] Add RSA keygen operation and support gendsa command
@@ -13,10 +13,10 @@ Tested-by: Cristian Stoica <cristian.stoica@freescale.com>
  1 file changed, 120 insertions(+)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 8303630..44017a3 100644
+index 90fe9b8..8c9ad5c 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -2009,6 +2009,124 @@ cryptodev_dsa_verify(const unsigned char *dgst, int dlen,
+@@ -2022,6 +2022,124 @@ cryptodev_dsa_verify(const unsigned char *dgst, int dlen,
      }
  }
  
@@ -141,7 +141,7 @@ index 8303630..44017a3 100644
  /* Cryptodev DSA Key Gen routine */
  static int cryptodev_dsa_keygen(DSA *dsa)
  {
-@@ -4035,6 +4153,8 @@ void ENGINE_load_cryptodev(void)
+@@ -4048,6 +4166,8 @@ void ENGINE_load_cryptodev(void)
                  cryptodev_rsa.rsa_mod_exp_async =
                      cryptodev_rsa_nocrt_mod_exp_async;
              }
@@ -151,5 +151,5 @@ index 8303630..44017a3 100644
      }
  
 -- 
-2.7.0
+2.7.3
 

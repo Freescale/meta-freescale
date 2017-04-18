@@ -1,4 +1,4 @@
-From e28df2a5c63dc6195a6065bfd7de9fc860129f56 Mon Sep 17 00:00:00 2001
+From aff25bbf6b5b833931a5281d30a6f26fda9f0a52 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 11 Mar 2014 06:29:52 +0545
 Subject: [PATCH 05/48] Initial support for PKC in cryptodev engine
@@ -11,10 +11,10 @@ Signed-off-by: Yashpal Dutta <yashpal.dutta@freescale.com>
  1 file changed, 1202 insertions(+), 163 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 3b6515e..0b41bb2 100644
+index 49ed638..cc9b63b 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -58,6 +58,10 @@ void ENGINE_load_cryptodev(void)
+@@ -59,6 +59,10 @@ void ENGINE_load_cryptodev(void)
  # include <openssl/dsa.h>
  # include <openssl/err.h>
  # include <openssl/rsa.h>
@@ -25,7 +25,7 @@ index 3b6515e..0b41bb2 100644
  # include <sys/ioctl.h>
  # include <errno.h>
  # include <stdio.h>
-@@ -67,6 +71,7 @@ void ENGINE_load_cryptodev(void)
+@@ -68,6 +72,7 @@ void ENGINE_load_cryptodev(void)
  # include <syslog.h>
  # include <errno.h>
  # include <string.h>
@@ -33,7 +33,7 @@ index 3b6515e..0b41bb2 100644
  
  struct dev_crypto_state {
      struct session_op d_sess;
-@@ -115,20 +120,10 @@ static int cryptodev_rsa_nocrt_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa,
+@@ -116,20 +121,10 @@ static int cryptodev_rsa_nocrt_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa,
                                         BN_CTX *ctx);
  static int cryptodev_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa,
                                   BN_CTX *ctx);
@@ -54,7 +54,7 @@ index 3b6515e..0b41bb2 100644
  static int cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key,
                                      DH *dh);
  static int cryptodev_ctrl(ENGINE *e, int cmd, long i, void *p,
-@@ -137,6 +132,105 @@ void ENGINE_load_cryptodev(void);
+@@ -138,6 +133,105 @@ void ENGINE_load_cryptodev(void);
  const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
  
@@ -160,7 +160,7 @@ index 3b6515e..0b41bb2 100644
  static const ENGINE_CMD_DEFN cryptodev_defns[] = {
      {0, NULL, NULL, 0}
  };
-@@ -1225,7 +1319,6 @@ cryptodev_engine_digests(ENGINE *e, const EVP_MD **digest,
+@@ -1230,7 +1324,6 @@ cryptodev_engine_digests(ENGINE *e, const EVP_MD **digest,
   */
  static int bn2crparam(const BIGNUM *a, struct crparam *crp)
  {
@@ -168,7 +168,7 @@ index 3b6515e..0b41bb2 100644
      ssize_t bytes, bits;
      u_char *b;
  
-@@ -1243,36 +1336,21 @@ static int bn2crparam(const BIGNUM *a, struct crparam *crp)
+@@ -1248,36 +1341,21 @@ static int bn2crparam(const BIGNUM *a, struct crparam *crp)
      crp->crp_p = (caddr_t) b;
      crp->crp_nbits = bits;
  
@@ -208,8 +208,8 @@ index 3b6515e..0b41bb2 100644
  
      return (0);
  }
-@@ -1321,6 +1399,32 @@ cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
-     return (ret);
+@@ -1334,6 +1412,32 @@ cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+     return ret;
  }
  
 +/* Close an opened instance of cryptodev engine */
@@ -241,7 +241,7 @@ index 3b6515e..0b41bb2 100644
  static int
  cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
                       const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
-@@ -1337,8 +1441,9 @@ cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
+@@ -1350,8 +1454,9 @@ cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
          return (ret);
      }
  
@@ -252,7 +252,7 @@ index 3b6515e..0b41bb2 100644
  
      /* inputs: a^p % m */
      if (bn2crparam(a, &kop.crk_param[0]))
-@@ -1381,28 +1486,39 @@ static int
+@@ -1394,28 +1499,39 @@ static int
  cryptodev_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
  {
      struct crypt_kop kop;
@@ -306,7 +306,7 @@ index 3b6515e..0b41bb2 100644
      kop.crk_iparams = 6;
  
      if (cryptodev_asym(&kop, BN_num_bytes(rsa->n), r0, 0, NULL)) {
-@@ -1438,93 +1554,120 @@ static RSA_METHOD cryptodev_rsa = {
+@@ -1451,93 +1567,120 @@ static RSA_METHOD cryptodev_rsa = {
      NULL                        /* rsa_verify */
  };
  
@@ -491,7 +491,7 @@ index 3b6515e..0b41bb2 100644
  }
  
  static int
-@@ -1532,43 +1675,175 @@ cryptodev_dsa_verify(const unsigned char *dgst, int dlen,
+@@ -1545,43 +1688,175 @@ cryptodev_dsa_verify(const unsigned char *dgst, int dlen,
                       DSA_SIG *sig, DSA *dsa)
  {
      struct crypt_kop kop;
@@ -516,7 +516,8 @@ index 3b6515e..0b41bb2 100644
 +    /* Get Order of field of private keys */
 +    if (spcf_bn2bin(dsa->q, &r, &r_len)) {
 +        DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
-+        goto err;
+         goto err;
+-    if (bn2crparam(dsa->q, &kop.crk_param[2]))
 +    }
 +
 +    g_len = q_len;
@@ -526,8 +527,7 @@ index 3b6515e..0b41bb2 100644
 +         */
 +    if (spcf_bn2bin_ex(dsa->g, &g, &g_len)) {
 +        DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_MALLOC_FAILURE);
-         goto err;
--    if (bn2crparam(dsa->q, &kop.crk_param[2]))
++        goto err;
 +    }
 +    w_len = q_len;
 +        /**
@@ -688,7 +688,7 @@ index 3b6515e..0b41bb2 100644
  }
  
  static DSA_METHOD cryptodev_dsa = {
-@@ -1584,12 +1859,558 @@ static DSA_METHOD cryptodev_dsa = {
+@@ -1597,12 +1872,558 @@ static DSA_METHOD cryptodev_dsa = {
      NULL                        /* app_data */
  };
  
@@ -1252,7 +1252,7 @@ index 3b6515e..0b41bb2 100644
  }
  
  static int
-@@ -1597,41 +2418,236 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+@@ -1610,41 +2431,236 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
  {
      struct crypt_kop kop;
      int dhret = 1;
@@ -1416,7 +1416,7 @@ index 3b6515e..0b41bb2 100644
 +            ECDSAerr(ECDSA_F_ECDSA_DO_SIGN, ERR_R_EC_LIB);
 +            goto err;
 +        }
-+    }
+     }
 +
 +    /* irreducible polynomial that creates the field */
 +    if (spcf_bn2bin((BIGNUM *)&group->order, &r, &r_len)) {
@@ -1477,7 +1477,7 @@ index 3b6515e..0b41bb2 100644
 +    if (len > buflen || q_len < buflen) {
 +        ECDHerr(ECDH_F_ECDH_COMPUTE_KEY, ERR_R_INTERNAL_ERROR);
 +        goto err;
-     }
++    }
 +
 +    kop.crk_op = CRK_DH_COMPUTE_KEY;
 +    kop.crk_param[0].crp_p = (void *)s;
@@ -1507,7 +1507,7 @@ index 3b6515e..0b41bb2 100644
  }
  
  static DH_METHOD cryptodev_dh = {
-@@ -1645,6 +2661,14 @@ static DH_METHOD cryptodev_dh = {
+@@ -1658,6 +2674,14 @@ static DH_METHOD cryptodev_dh = {
      NULL                        /* app_data */
  };
  
@@ -1522,7 +1522,7 @@ index 3b6515e..0b41bb2 100644
  /*
   * ctrl right now is just a wrapper that doesn't do much
   * but I expect we'll want some options soon.
-@@ -1724,24 +2748,39 @@ void ENGINE_load_cryptodev(void)
+@@ -1737,24 +2761,39 @@ void ENGINE_load_cryptodev(void)
          memcpy(&cryptodev_dsa, meth, sizeof(DSA_METHOD));
          if (cryptodev_asymfeat & CRF_DSA_SIGN)
              cryptodev_dsa.dsa_do_sign = cryptodev_dsa_do_sign;
@@ -1574,5 +1574,5 @@ index 3b6515e..0b41bb2 100644
      }
  
 -- 
-2.7.0
+2.7.3
 

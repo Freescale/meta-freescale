@@ -1,4 +1,4 @@
-From 42a1c45091ab7996c4411f3dd74539c908c63208 Mon Sep 17 00:00:00 2001
+From 0901ff383524e896424921f4e8a1ba7020e7613d Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@nxp.com>
 Date: Tue, 9 Feb 2016 11:53:33 +0200
 Subject: [PATCH 44/48] cryptodev: check for errors inside
@@ -10,10 +10,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
  1 file changed, 21 insertions(+), 8 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 55b2047..e0f9d4b 100644
+index 753e326..b9c7ff3 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -4095,19 +4095,28 @@ static int
+@@ -4108,19 +4108,28 @@ static int
  cryptodev_dh_compute_key_async(unsigned char *key, const BIGNUM *pub_key,
                                 DH *dh, struct pkc_cookie_s *cookie)
  {
@@ -47,7 +47,7 @@ index 55b2047..e0f9d4b 100644
      kop->crk_param[1].crp_p = padded_pub_key;
      kop->crk_param[1].crp_nbits = p_len * 8;
      kop->crk_param[2].crp_p = p;
-@@ -4119,16 +4128,20 @@ cryptodev_dh_compute_key_async(unsigned char *key, const BIGNUM *pub_key,
+@@ -4132,16 +4141,20 @@ cryptodev_dh_compute_key_async(unsigned char *key, const BIGNUM *pub_key,
      kop->crk_param[3].crp_nbits = p_len * 8;
      kop->crk_oparams = 1;
  
@@ -72,5 +72,5 @@ index 55b2047..e0f9d4b 100644
          /* Call user cookie handler */
          cookie->pkc_callback(cookie, 0);
 -- 
-2.7.0
+2.7.3
 

@@ -1,4 +1,4 @@
-From 8cd09ffdfd7d9c25605401f1c0947b1b4acc6e57 Mon Sep 17 00:00:00 2001
+From 9faaca759390bba5aeeb049d31f74806e78137e1 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@nxp.com>
 Date: Mon, 8 Feb 2016 16:00:22 +0200
 Subject: [PATCH 31/48] cryptodev: remove not used local variables
@@ -9,10 +9,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
  1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 30713e5..2734500 100644
+index 163a37d..b13bf8c 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -1634,7 +1634,6 @@ static int cryptodev_digest_final(EVP_MD_CTX *ctx, unsigned char *md)
+@@ -1635,7 +1635,6 @@ static int cryptodev_digest_final(EVP_MD_CTX *ctx, unsigned char *md)
  static int cryptodev_digest_cleanup(EVP_MD_CTX *ctx)
  {
      struct dev_crypto_state *state = ctx->md_data;
@@ -20,7 +20,7 @@ index 30713e5..2734500 100644
  
      if (state == NULL) {
          return 0;
-@@ -3939,7 +3938,6 @@ static int cryptodev_dh_keygen(DH *dh)
+@@ -3952,7 +3951,6 @@ static int cryptodev_dh_keygen(DH *dh)
      int ret = 1, q_len = 0;
      unsigned char *q = NULL, *g = NULL, *s = NULL, *w = NULL;
      BIGNUM *pub_key = NULL, *priv_key = NULL;
@@ -28,7 +28,7 @@ index 30713e5..2734500 100644
  
      if (dh->priv_key)
          priv_key = dh->priv_key;
-@@ -4061,11 +4059,9 @@ cryptodev_dh_compute_key_async(unsigned char *key, const BIGNUM *pub_key,
+@@ -4074,11 +4072,9 @@ cryptodev_dh_compute_key_async(unsigned char *key, const BIGNUM *pub_key,
  {
      struct crypt_kop *kop = malloc(sizeof(struct crypt_kop));
      int ret = 1;
@@ -42,5 +42,5 @@ index 30713e5..2734500 100644
      kop->crk_op = CRK_DH_COMPUTE_KEY;
      /* inputs: dh->priv_key pub_key dh->p key */
 -- 
-2.7.0
+2.7.3
 

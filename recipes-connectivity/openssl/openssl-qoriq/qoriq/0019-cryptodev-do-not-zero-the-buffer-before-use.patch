@@ -1,4 +1,4 @@
-From 1f7ef531a010a3a86c9c16f801044b5f01652eb2 Mon Sep 17 00:00:00 2001
+From 413ef57790244fc521d40ade62358abaf0a55d10 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@freescale.com>
 Date: Tue, 17 Feb 2015 13:12:53 +0200
 Subject: [PATCH 19/48] cryptodev: do not zero the buffer before use
@@ -14,10 +14,10 @@ Reviewed-on: http://git.am.freescale.net:8181/34217
  1 file changed, 4 insertions(+), 10 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 4cffaf1..bbc903b 100644
+index d229f61..4d370ad 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -1801,21 +1801,15 @@ cryptodev_engine_digests(ENGINE *e, const EVP_MD **digest,
+@@ -1806,21 +1806,15 @@ cryptodev_engine_digests(ENGINE *e, const EVP_MD **digest,
  static int bn2crparam(const BIGNUM *a, struct crparam *crp)
  {
      ssize_t bytes, bits;
@@ -44,5 +44,5 @@ index 4cffaf1..bbc903b 100644
      BN_bn2bin(a, crp->crp_p);
      return (0);
 -- 
-2.7.0
+2.7.3
 

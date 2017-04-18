@@ -1,4 +1,7 @@
-Upstream-Status: Backport
+From ac052c0b383dd6db4cb514a193ba44647504687f Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 5 May 2016 11:55:46 +0300
+Subject: [PATCH] use 64bit integers on x32 systems
 
 When building on x32 systems where the default type is 32bit, make sure
 we can transparently represent 64bit integers.  Otherwise we end up with
@@ -15,21 +18,27 @@ We don't enable this globally as there are some cases where we'd get
 Reported-by: Bertrand Jacquin <bertrand@jacquin.bzh>
 URL: https://bugs.gentoo.org/542618
 
-Signed-off-by: Armin Kuster <akuster@mvista.com>
+Signed-off-By: Armin Kuster <akuster@mvista.com>
+---
+ crypto/perlasm/x86_64-xlate.pl | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Index: openssl-1.0.2a/crypto/perlasm/x86_64-xlate.pl
-===================================================================
---- openssl-1.0.2a.orig/crypto/perlasm/x86_64-xlate.pl
-+++ openssl-1.0.2a/crypto/perlasm/x86_64-xlate.pl
-@@ -194,7 +194,10 @@ my %globals;
-     }
+diff --git a/crypto/perlasm/x86_64-xlate.pl b/crypto/perlasm/x86_64-xlate.pl
+index 7a3dd04..fc6105d 100755
+--- a/crypto/perlasm/x86_64-xlate.pl
++++ b/crypto/perlasm/x86_64-xlate.pl
+@@ -195,6 +195,11 @@ my %globals;
      sub out {
      	my $self = shift;
--
+ 
 +	# When building on x32 ABIs, the expanded hex value might be too
 +	# big to fit into 32bits. Enable transparent 64bit support here
 +	# so we can safely print it out.
 +	use bigint;
++
+ 	$self->{value} =~ s/\b(0b[0-1]+)/oct($1)/eig;
  	if ($gas) {
  	    # Solaris /usr/ccs/bin/as can't handle multiplications
- 	    # in $self->{value}
+-- 
+2.7.0
+

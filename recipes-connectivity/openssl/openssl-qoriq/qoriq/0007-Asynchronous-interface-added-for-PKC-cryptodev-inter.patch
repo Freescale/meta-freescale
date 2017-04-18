@@ -1,4 +1,4 @@
-From 45cfc01ade9eeb43fdb5950d3db152cae1b41059 Mon Sep 17 00:00:00 2001
+From ea28474ed5e1e21a6efba7570bf0d27d02923bce Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 11 Mar 2014 07:14:30 +0545
 Subject: [PATCH 07/48] Asynchronous interface added for PKC cryptodev
@@ -116,10 +116,10 @@ index d3a5efc..9b28c04 100644
      int (*init) (EC_KEY *eckey);
      int (*finish) (EC_KEY *eckey);
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 0b41bb2..8303630 100644
+index cc9b63b..90fe9b8 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -1367,6 +1367,60 @@ static void zapparams(struct crypt_kop *kop)
+@@ -1371,6 +1371,60 @@ static void zapparams(struct crypt_kop *kop)
      }
  }
  
@@ -180,7 +180,7 @@ index 0b41bb2..8303630 100644
  static int
  cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
                 BIGNUM *s)
-@@ -1425,6 +1479,44 @@ void *cryptodev_init_instance(void)
+@@ -1438,6 +1492,44 @@ void *cryptodev_init_instance(void)
      return fd;
  }
  
@@ -225,7 +225,7 @@ index 0b41bb2..8303630 100644
  static int
  cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
                       const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
-@@ -1472,6 +1564,66 @@ cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
+@@ -1485,6 +1577,66 @@ cryptodev_bn_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
  }
  
  static int
@@ -292,7 +292,7 @@ index 0b41bb2..8303630 100644
  cryptodev_rsa_nocrt_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa,
                              BN_CTX *ctx)
  {
-@@ -1538,6 +1690,63 @@ cryptodev_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
+@@ -1551,6 +1703,63 @@ cryptodev_rsa_mod_exp(BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx)
      return (ret);
  }
  
@@ -356,7 +356,7 @@ index 0b41bb2..8303630 100644
  static RSA_METHOD cryptodev_rsa = {
      "cryptodev RSA method",
      NULL,                       /* rsa_pub_enc */
-@@ -1546,6 +1755,12 @@ static RSA_METHOD cryptodev_rsa = {
+@@ -1559,6 +1768,12 @@ static RSA_METHOD cryptodev_rsa = {
      NULL,                       /* rsa_priv_dec */
      NULL,
      NULL,
@@ -369,7 +369,7 @@ index 0b41bb2..8303630 100644
      NULL,                       /* init */
      NULL,                       /* finish */
      0,                          /* flags */
-@@ -1846,128 +2061,428 @@ static int cryptodev_dsa_keygen(DSA *dsa)
+@@ -1859,128 +2074,428 @@ static int cryptodev_dsa_keygen(DSA *dsa)
      return ret;
  }
  
@@ -892,7 +892,7 @@ index 0b41bb2..8303630 100644
              goto err;
          }
      } else if (EC_METHOD_get_field_type(EC_GROUP_method_of(group)) ==
-@@ -2312,54 +2827,588 @@ static int cryptodev_ecdsa_verify(const unsigned char *dgst, int dgst_len,
+@@ -2325,54 +2840,588 @@ static int cryptodev_ecdsa_verify(const unsigned char *dgst, int dgst_len,
          goto err;
      }
  
@@ -1523,7 +1523,7 @@ index 0b41bb2..8303630 100644
      return ret;
  }
  
-@@ -2468,6 +3517,54 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+@@ -2481,6 +3530,54 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
      return (dhret);
  }
  
@@ -1578,7 +1578,7 @@ index 0b41bb2..8303630 100644
  int cryptodev_ecdh_compute_key(void *out, size_t outlen,
                                 const EC_POINT *pub_key, EC_KEY *ecdh,
                                 void *(*KDF) (const void *in, size_t inlen,
-@@ -2650,6 +3747,197 @@ int cryptodev_ecdh_compute_key(void *out, size_t outlen,
+@@ -2663,6 +3760,197 @@ int cryptodev_ecdh_compute_key(void *out, size_t outlen,
      return ret;
  }
  
@@ -1776,7 +1776,7 @@ index 0b41bb2..8303630 100644
  static DH_METHOD cryptodev_dh = {
      "cryptodev DH method",
      NULL,                       /* cryptodev_dh_generate_key */
-@@ -2657,6 +3945,8 @@ static DH_METHOD cryptodev_dh = {
+@@ -2670,6 +3958,8 @@ static DH_METHOD cryptodev_dh = {
      NULL,
      NULL,
      NULL,
@@ -1785,7 +1785,7 @@ index 0b41bb2..8303630 100644
      0,                          /* flags */
      NULL                        /* app_data */
  };
-@@ -2665,6 +3955,7 @@ static ECDH_METHOD cryptodev_ecdh = {
+@@ -2678,6 +3968,7 @@ static ECDH_METHOD cryptodev_ecdh = {
      "cryptodev ECDH method",
      NULL,                       /* cryptodev_ecdh_compute_key */
      NULL,
@@ -1793,7 +1793,7 @@ index 0b41bb2..8303630 100644
      0,                          /* flags */
      NULL                        /* app_data */
  };
-@@ -2735,10 +4026,15 @@ void ENGINE_load_cryptodev(void)
+@@ -2748,10 +4039,15 @@ void ENGINE_load_cryptodev(void)
          cryptodev_rsa.rsa_priv_dec = rsa_meth->rsa_priv_dec;
          if (cryptodev_asymfeat & CRF_MOD_EXP) {
              cryptodev_rsa.bn_mod_exp = cryptodev_bn_mod_exp;
@@ -1811,7 +1811,7 @@ index 0b41bb2..8303630 100644
          }
      }
  
-@@ -2746,12 +4042,18 @@ void ENGINE_load_cryptodev(void)
+@@ -2759,12 +4055,18 @@ void ENGINE_load_cryptodev(void)
          const DSA_METHOD *meth = DSA_OpenSSL();
  
          memcpy(&cryptodev_dsa, meth, sizeof(DSA_METHOD));
@@ -1833,7 +1833,7 @@ index 0b41bb2..8303630 100644
      }
  
      if (ENGINE_set_DH(engine, &cryptodev_dh)) {
-@@ -2759,9 +4061,12 @@ void ENGINE_load_cryptodev(void)
+@@ -2772,9 +4074,12 @@ void ENGINE_load_cryptodev(void)
          memcpy(&cryptodev_dh, dh_meth, sizeof(DH_METHOD));
          if (cryptodev_asymfeat & CRF_DH_COMPUTE_KEY) {
              cryptodev_dh.compute_key = cryptodev_dh_compute_key;
@@ -1846,7 +1846,7 @@ index 0b41bb2..8303630 100644
          }
      }
  
-@@ -2770,9 +4075,13 @@ void ENGINE_load_cryptodev(void)
+@@ -2783,9 +4088,13 @@ void ENGINE_load_cryptodev(void)
          memcpy(&cryptodev_ecdsa, meth, sizeof(ECDSA_METHOD));
          if (cryptodev_asymfeat & CRF_DSA_SIGN) {
              cryptodev_ecdsa.ecdsa_do_sign = cryptodev_ecdsa_do_sign;
@@ -1860,7 +1860,7 @@ index 0b41bb2..8303630 100644
          }
      }
  
-@@ -2781,9 +4090,16 @@ void ENGINE_load_cryptodev(void)
+@@ -2794,9 +4103,16 @@ void ENGINE_load_cryptodev(void)
          memcpy(&cryptodev_ecdh, ecdh_meth, sizeof(ECDH_METHOD));
          if (cryptodev_asymfeat & CRF_DH_COMPUTE_KEY) {
              cryptodev_ecdh.compute_key = cryptodev_ecdh_compute_key;
@@ -2046,5 +2046,5 @@ index d2ee374..7c539fc 100644
      int (*init) (RSA *rsa);
      /* called at free */
 -- 
-2.7.0
+2.7.3
 

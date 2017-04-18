@@ -1,4 +1,4 @@
-From 3f34089ab0a3b31ec6b31a6cbf308ca20c6ef597 Mon Sep 17 00:00:00 2001
+From 4a229203e276283cb894b08b2607204a647d7594 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@nxp.com>
 Date: Fri, 22 Jan 2016 11:58:34 +0200
 Subject: [PATCH 16/48] eng_cryptodev: add support for TLSv1.1 record offload
@@ -23,10 +23,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
  6 files changed, 151 insertions(+), 9 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 8f73a18..e37a661 100644
+index ae644b9..80b20e5 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -66,6 +66,7 @@ void ENGINE_load_cryptodev(void)
+@@ -67,6 +67,7 @@ void ENGINE_load_cryptodev(void)
  # include <sys/ioctl.h>
  # include <errno.h>
  # include <stdio.h>
@@ -34,7 +34,7 @@ index 8f73a18..e37a661 100644
  # include <unistd.h>
  # include <fcntl.h>
  # include <stdarg.h>
-@@ -135,6 +136,9 @@ void ENGINE_load_cryptodev(void);
+@@ -136,6 +137,9 @@ void ENGINE_load_cryptodev(void);
  const EVP_CIPHER cryptodev_3des_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
@@ -44,7 +44,7 @@ index 8f73a18..e37a661 100644
  
  inline int spcf_bn2bin(BIGNUM *bn, unsigned char **bin, int *bin_len)
  {
-@@ -294,6 +298,18 @@ static struct {
+@@ -295,6 +299,18 @@ static struct {
          CRYPTO_TLS10_AES_CBC_HMAC_SHA1, NID_aes_256_cbc_hmac_sha1, 16, 32, 20
      },
      {
@@ -63,7 +63,7 @@ index 8f73a18..e37a661 100644
          CRYPTO_AES_GCM, NID_aes_128_gcm, 16, 16, 0
      },
      {
-@@ -526,6 +542,15 @@ static int cryptodev_usable_ciphers(const int **nids)
+@@ -527,6 +543,15 @@ static int cryptodev_usable_ciphers(const int **nids)
          case NID_des_ede3_cbc_hmac_sha1:
              EVP_add_cipher(&cryptodev_3des_cbc_hmac_sha1);
              break;
@@ -79,7 +79,7 @@ index 8f73a18..e37a661 100644
          }
      }
      return count;
-@@ -631,6 +656,9 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+@@ -632,6 +657,9 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
      case NID_aes_128_cbc_hmac_sha1:
      case NID_aes_256_cbc_hmac_sha1:
      case NID_des_ede3_cbc_hmac_sha1:
@@ -89,7 +89,7 @@ index 8f73a18..e37a661 100644
          cryp.flags = COP_FLAG_AEAD_TLS_TYPE;
      }
      cryp.ses = sess->ses;
-@@ -810,8 +838,9 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
+@@ -811,8 +839,9 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
              struct dev_crypto_state *state = ctx->cipher_data;
              unsigned char *p = ptr;
              unsigned int cryptlen = p[arg - 2] << 8 | p[arg - 1];
@@ -100,7 +100,7 @@ index 8f73a18..e37a661 100644
  
              state->aad = ptr;
              state->aad_len = arg;
-@@ -823,6 +852,20 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
+@@ -824,6 +853,20 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
              case NID_aes_256_cbc_hmac_sha1:
              case NID_des_ede3_cbc_hmac_sha1:
                  maclen = SHA_DIGEST_LENGTH;
@@ -121,7 +121,7 @@ index 8f73a18..e37a661 100644
              }
  
              /* space required for encryption (not only TLS padding) */
-@@ -1185,6 +1228,48 @@ const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1 = {
+@@ -1186,6 +1229,48 @@ const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1 = {
      NULL
  };
  
@@ -170,7 +170,7 @@ index 8f73a18..e37a661 100644
  const EVP_CIPHER cryptodev_aes_128_gcm = {
      NID_aes_128_gcm,
      1, 16, 12,
-@@ -1298,6 +1383,15 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
+@@ -1299,6 +1384,15 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
      case NID_aes_256_cbc_hmac_sha1:
          *cipher = &cryptodev_aes_256_cbc_hmac_sha1;
          break;
@@ -285,7 +285,7 @@ index 4e1ff18..cda81da 100644
  ISO-US 10046 2 1	: dhpublicnumber		: X9.42 DH
  
 diff --git a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
-index a379273..e3d73ac 100644
+index fdf6be9..b4af7dc 100644
 --- a/ssl/ssl_ciph.c
 +++ b/ssl/ssl_ciph.c
 @@ -652,11 +652,13 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
@@ -334,5 +334,5 @@ index a379273..e3d73ac 100644
          return (1);
      } else
 -- 
-2.7.0
+2.7.3
 

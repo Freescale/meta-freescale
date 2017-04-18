@@ -1,4 +1,4 @@
-From 03bdddf1495707119e4fa0eda385ecdccf66cbd8 Mon Sep 17 00:00:00 2001
+From 6d335627ec5bdf89c89ced9d2fa7610e6dc50e31 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@nxp.com>
 Date: Mon, 8 Feb 2016 16:08:25 +0200
 Subject: [PATCH 33/48] cryptodev: fix function declaration typo
@@ -22,5 +22,5 @@ index f83ee73..c8efbe1 100644
  void ENGINE_set_check_pkc_availability(ENGINE *e,
  	int (*check_pkc_availability)(int fd));
 -- 
-2.7.0
+2.7.3
 

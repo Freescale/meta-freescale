@@ -1,4 +1,4 @@
-From 7dd6b35c35b027be8ef0ef2e29a949bc4ce96bbd Mon Sep 17 00:00:00 2001
+From 6094ec91a5b8dde4bc3a7928b7cb6c81cac8a169 Mon Sep 17 00:00:00 2001
 From: Tudor Ambarus <tudor.ambarus@freescale.com>
 Date: Fri, 9 May 2014 17:54:06 +0300
 Subject: [PATCH 15/48] eng_cryptodev: extend TLS offload with
@@ -23,10 +23,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
  6 files changed, 43 insertions(+), 3 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index d2cdca0..8f73a18 100644
+index 1754917..ae644b9 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -132,6 +132,7 @@ static int cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key,
+@@ -133,6 +133,7 @@ static int cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key,
  static int cryptodev_ctrl(ENGINE *e, int cmd, long i, void *p,
                            void (*f) (void));
  void ENGINE_load_cryptodev(void);
@@ -34,7 +34,7 @@ index d2cdca0..8f73a18 100644
  const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1;
  const EVP_CIPHER cryptodev_aes_256_cbc_hmac_sha1;
  
-@@ -284,6 +285,9 @@ static struct {
+@@ -285,6 +286,9 @@ static struct {
          CRYPTO_SKIPJACK_CBC, NID_undef, 0, 0, 0
      },
      {
@@ -44,7 +44,7 @@ index d2cdca0..8f73a18 100644
          CRYPTO_TLS10_AES_CBC_HMAC_SHA1, NID_aes_128_cbc_hmac_sha1, 16, 16, 20
      },
      {
-@@ -519,6 +523,9 @@ static int cryptodev_usable_ciphers(const int **nids)
+@@ -520,6 +524,9 @@ static int cryptodev_usable_ciphers(const int **nids)
          case NID_aes_256_cbc_hmac_sha1:
              EVP_add_cipher(&cryptodev_aes_256_cbc_hmac_sha1);
              break;
@@ -54,7 +54,7 @@ index d2cdca0..8f73a18 100644
          }
      }
      return count;
-@@ -623,6 +630,7 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+@@ -624,6 +631,7 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
      switch (ctx->cipher->nid) {
      case NID_aes_128_cbc_hmac_sha1:
      case NID_aes_256_cbc_hmac_sha1:
@@ -62,7 +62,7 @@ index d2cdca0..8f73a18 100644
          cryp.flags = COP_FLAG_AEAD_TLS_TYPE;
      }
      cryp.ses = sess->ses;
-@@ -813,6 +821,7 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
+@@ -814,6 +822,7 @@ static int cryptodev_cbc_hmac_sha1_ctrl(EVP_CIPHER_CTX *ctx, int type,
              switch (ctx->cipher->nid) {
              case NID_aes_128_cbc_hmac_sha1:
              case NID_aes_256_cbc_hmac_sha1:
@@ -70,7 +70,7 @@ index d2cdca0..8f73a18 100644
                  maclen = SHA_DIGEST_LENGTH;
              }
  
-@@ -1134,6 +1143,20 @@ const EVP_CIPHER cryptodev_aes_256_cbc = {
+@@ -1135,6 +1144,20 @@ const EVP_CIPHER cryptodev_aes_256_cbc = {
      NULL
  };
  
@@ -91,7 +91,7 @@ index d2cdca0..8f73a18 100644
  const EVP_CIPHER cryptodev_aes_128_cbc_hmac_sha1 = {
      NID_aes_128_cbc_hmac_sha1,
      16, 16, 16,
-@@ -1255,6 +1278,9 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
+@@ -1256,6 +1279,9 @@ cryptodev_engine_ciphers(ENGINE *e, const EVP_CIPHER **cipher,
      case NID_aes_256_cbc:
          *cipher = &cryptodev_aes_256_cbc;
          break;
@@ -180,7 +180,7 @@ index b57aabb..4e1ff18 100644
  ISO-US 10046 2 1	: dhpublicnumber		: X9.42 DH
  
 diff --git a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
-index 302464e..a379273 100644
+index 2ad8f43..fdf6be9 100644
 --- a/ssl/ssl_ciph.c
 +++ b/ssl/ssl_ciph.c
 @@ -668,6 +668,10 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
@@ -195,5 +195,5 @@ index 302464e..a379273 100644
      } else
          return (0);
 -- 
-2.7.0
+2.7.3
 

@@ -1,4 +1,4 @@
-From 453c617b10fb2c4e748b5799ab4b00c184470c60 Mon Sep 17 00:00:00 2001
+From ac3dfaf10125f08454d51e8fc4b3a77d33fd96d0 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@freescale.com>
 Date: Wed, 18 Feb 2015 10:39:46 +0200
 Subject: [PATCH 20/48] cryptodev: clean-up code layout
@@ -11,10 +11,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
  1 file changed, 21 insertions(+), 24 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index bbc903b..14dcddf 100644
+index 4d370ad..487a2c9 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -1865,32 +1865,29 @@ cryptodev_asym_async(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+@@ -1869,32 +1869,29 @@ cryptodev_asym_async(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
      fd = *(int *)cookie->eng_handle;
  
      eng_cookie = malloc(sizeof(struct cryptodev_cookie_s));
@@ -69,5 +69,5 @@ index bbc903b..14dcddf 100644
      cookie->eng_cookie = eng_cookie;
      return ioctl(fd, CIOCASYMASYNCRYPT, kop);
 -- 
-2.7.0
+2.7.3
 

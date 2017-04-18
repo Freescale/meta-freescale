@@ -1,4 +1,4 @@
-From 45429e5ea075867f9219a6fcb233677d062a4451 Mon Sep 17 00:00:00 2001
+From f256bb9574f77206b289b265d1d46bb53e54c71c Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@nxp.com>
 Date: Tue, 9 Feb 2016 11:28:23 +0200
 Subject: [PATCH 40/48] cryptodev: replace caddr_t with void *
@@ -12,10 +12,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
  1 file changed, 11 insertions(+), 11 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 2791ca3..f172173 100644
+index f8619b0..aac2740 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -460,8 +460,8 @@ static int get_cryptodev_ciphers(const int **cnids)
+@@ -461,8 +461,8 @@ static int get_cryptodev_ciphers(const int **cnids)
          return (0);
      }
      memset(&sess, 0, sizeof(sess));
@@ -26,7 +26,7 @@ index 2791ca3..f172173 100644
  
      for (i = 0; ciphers[i].id && count < CRYPTO_ALGORITHM_MAX; i++) {
          if (ciphers[i].nid == NID_undef)
-@@ -501,7 +501,7 @@ static int get_cryptodev_digests(const int **cnids)
+@@ -502,7 +502,7 @@ static int get_cryptodev_digests(const int **cnids)
          return (0);
      }
      memset(&sess, 0, sizeof(sess));
@@ -35,7 +35,7 @@ index 2791ca3..f172173 100644
      for (i = 0; digests[i].id && count < CRYPTO_ALGORITHM_MAX; i++) {
          if (digests[i].nid == NID_undef)
              continue;
-@@ -633,14 +633,14 @@ cryptodev_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+@@ -634,14 +634,14 @@ cryptodev_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
      cryp.ses = sess->ses;
      cryp.flags = 0;
      cryp.len = inl;
@@ -53,7 +53,7 @@ index 2791ca3..f172173 100644
          if (!ctx->encrypt) {
              iiv = in + inl - ctx->cipher->iv_len;
              memcpy(save_iv, iiv, ctx->cipher->iv_len);
-@@ -701,15 +701,15 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+@@ -702,15 +702,15 @@ static int cryptodev_aead_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
      }
      cryp.ses = sess->ses;
      cryp.len = state->len;
@@ -72,7 +72,7 @@ index 2791ca3..f172173 100644
          if (!ctx->encrypt) {
              iiv = in + len - ctx->cipher->iv_len;
              memcpy(save_iv, iiv, ctx->cipher->iv_len);
-@@ -761,7 +761,7 @@ cryptodev_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+@@ -762,7 +762,7 @@ cryptodev_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
      if ((state->d_fd = get_dev_crypto()) < 0)
          return (0);
  
@@ -81,7 +81,7 @@ index 2791ca3..f172173 100644
      sess->keylen = ctx->key_len;
      sess->cipher = cipher;
  
-@@ -804,7 +804,7 @@ static int cryptodev_init_aead_key(EVP_CIPHER_CTX *ctx,
+@@ -805,7 +805,7 @@ static int cryptodev_init_aead_key(EVP_CIPHER_CTX *ctx,
  
      memset(sess, 0, sizeof(struct session_op));
  
@@ -91,5 +91,5 @@ index 2791ca3..f172173 100644
      sess->cipher = cipher;
  
 -- 
-2.7.0
+2.7.3
 

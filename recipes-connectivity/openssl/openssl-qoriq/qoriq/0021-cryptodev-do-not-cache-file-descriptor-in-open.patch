@@ -1,4 +1,4 @@
-From d9395f7d876f7dfaaae25867c88d1e1f684589de Mon Sep 17 00:00:00 2001
+From b96074f4e44b2147d4d771dd086463c9cb7d42a3 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@freescale.com>
 Date: Thu, 19 Feb 2015 16:43:29 +0200
 Subject: [PATCH 21/48] cryptodev: do not cache file descriptor in 'open'
@@ -18,10 +18,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@freescale.com>
  1 file changed, 21 insertions(+), 22 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 14dcddf..75fca7f 100644
+index 487a2c9..d7188a6 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -391,45 +391,44 @@ static void ctr64_inc(unsigned char *counter)
+@@ -392,45 +392,44 @@ static void ctr64_inc(unsigned char *counter)
      } while (n);
  }
  
@@ -89,5 +89,5 @@ index 14dcddf..75fca7f 100644
  
  static void put_dev_crypto(int fd)
 -- 
-2.7.0
+2.7.3
 

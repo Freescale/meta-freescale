@@ -1,4 +1,4 @@
-From f99682e0ccaeadb7446d211dfad6dbf8fcd5675f Mon Sep 17 00:00:00 2001
+From b706132a33555162e6dbf26d9fde4bcb1136d553 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@freescale.com>
 Date: Thu, 19 Feb 2015 13:39:52 +0200
 Subject: [PATCH 23/48] cryptodev: simplify cryptodev pkc support code
@@ -29,10 +29,10 @@ index 2b4ec59..ddb9b69 100644
  
  #ifdef  __cplusplus
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index b162646..1910c89 100644
+index 7b3dbd1..34c8d18 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -433,10 +433,10 @@ static int get_dev_crypto(void)
+@@ -434,10 +434,10 @@ static int get_dev_crypto(void)
  
  static int put_dev_crypto(int fd)
  {
@@ -47,7 +47,7 @@ index b162646..1910c89 100644
  # endif
  }
  
-@@ -1863,7 +1863,7 @@ cryptodev_asym_async(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+@@ -1867,7 +1867,7 @@ cryptodev_asym_async(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
      struct pkc_cookie_s *cookie = kop->cookie;
      struct cryptodev_cookie_s *eng_cookie;
  
@@ -56,8 +56,8 @@ index b162646..1910c89 100644
  
      eng_cookie = malloc(sizeof(struct cryptodev_cookie_s));
      if (!eng_cookie)
-@@ -1926,38 +1926,11 @@ cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
-     return (ret);
+@@ -1939,38 +1939,11 @@ cryptodev_asym(struct crypt_kop *kop, int rlen, BIGNUM *r, int slen,
+     return ret;
  }
  
 -/* Close an opened instance of cryptodev engine */
@@ -96,7 +96,7 @@ index b162646..1910c89 100644
      struct pkc_cookie_list_s cookie_list;
      struct pkc_cookie_s *cookie;
      int i;
-@@ -4706,8 +4679,8 @@ void ENGINE_load_cryptodev(void)
+@@ -4719,8 +4692,8 @@ void ENGINE_load_cryptodev(void)
      }
  
      ENGINE_set_check_pkc_availability(engine, cryptodev_check_availability);
@@ -256,5 +256,5 @@ index 4527aa1..f83ee73 100644
  int ENGINE_set_RSA(ENGINE *e, const RSA_METHOD *rsa_meth);
  int ENGINE_set_DSA(ENGINE *e, const DSA_METHOD *dsa_meth);
 -- 
-2.7.0
+2.7.3
 

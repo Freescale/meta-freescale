@@ -1,4 +1,4 @@
-From c3b1f595607fe4e431dab12b7d8ceda6742547d5 Mon Sep 17 00:00:00 2001
+From e9981377fe8e2081fcd5b4e43a5ef4d8f1cc1e67 Mon Sep 17 00:00:00 2001
 From: Yashpal Dutta <yashpal.dutta@freescale.com>
 Date: Tue, 11 Mar 2014 06:42:59 +0545
 Subject: [PATCH 06/48] Added hwrng dev file as source of RNG
@@ -24,5 +24,5 @@ index 1fa36c1..6c0917b 100644
  # ifndef DEVRANDOM_EGD
  /*
 -- 
-2.7.0
+2.7.3
 

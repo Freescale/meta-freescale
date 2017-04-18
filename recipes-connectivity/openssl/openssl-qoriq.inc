@@ -47,8 +47,9 @@ PACKAGES =+ "libcrypto libssl ${PN}-misc ${PN}-conf"
 FILES_libcrypto = "${libdir}/libcrypto${SOLIBS}"
 FILES_libssl = "${libdir}/libssl${SOLIBS}"
 FILES_${PN} =+ " ${libdir}/ssl/*"
-FILES_${PN}-misc = "${libdir}/ssl/misc"
+FILES_${PN}-misc = "${libdir}/ssl/misc ${bindir}/c_rehash"
 RDEPENDS_${PN}-misc = "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'perl', '', d)}"
+FILES_${PN}-dev += "${base_libdir}/libcrypto${SOLIBSDEV}"
 
 # Add the openssl.cnf file to the openssl-conf package.  Make the libcrypto
 # package RRECOMMENDS on this package.  This will enable the configuration
@@ -180,18 +181,26 @@ do_install () {
 	oe_libinstall -so libcrypto ${D}${libdir}
 	oe_libinstall -so libssl ${D}${libdir}
 
+        # Moving libcrypto to /lib
+        if [ ! ${D}${libdir} -ef ${D}${base_libdir} ]; then
+                mkdir -p ${D}/${base_libdir}/
+                mv ${D}${libdir}/libcrypto* ${D}${base_libdir}/
+                sed -i s#libdir=\$\{exec_prefix\}\/lib#libdir=${base_libdir}# ${D}/${libdir}/pkgconfig/libcrypto.pc
+        fi
+
 	install -d ${D}${includedir}
 	cp --dereference -R include/openssl ${D}${includedir}
 
-	install -Dm 0755 ${WORKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
-	sed -i -e 's,/etc/openssl,${sysconfdir}/ssl,g' ${D}${bindir}/c_rehash
-
 	oe_multilib_header openssl/opensslconf.h
 	if [ "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'perl', '', d)}" = "perl" ]; then
+                install -m 0755 ${S}/tools/c_rehash ${D}${bindir}
+                sed -i -e '1s,.*,#!${bindir}/env perl,' ${D}${bindir}/c_rehash
 		sed -i -e '1s,.*,#!${bindir}/env perl,' ${D}${libdir}/ssl/misc/CA.pl
 		sed -i -e '1s,.*,#!${bindir}/env perl,' ${D}${libdir}/ssl/misc/tsget
-	else
-		rm -f ${D}${libdir}/ssl/misc/CA.pl ${D}${libdir}/ssl/misc/tsget
+        # The c_rehash utility isn't installed by the normal installation process.
+        else
+                rm -f ${D}${bindir}/c_rehash
+                rm -f ${D}${libdir}/ssl/misc/CA.pl ${D}${libdir}/ssl/misc/tsget
 	fi
 
 	# Create SSL structure
@@ -210,7 +219,7 @@ do_install_ptest () {
 	cp -r -L Makefile.org Makefile test ${D}${PTEST_PATH}
 	cp Configure config e_os.h ${D}${PTEST_PATH}
 	cp -r -L include ${D}${PTEST_PATH}
-	ln -sf ${libdir}/libcrypto.a ${D}${PTEST_PATH}
+	ln -sf ${base_libdir}/libcrypto.a ${D}${PTEST_PATH}
 	ln -sf ${libdir}/libssl.a ${D}${PTEST_PATH}
 	mkdir -p ${D}${PTEST_PATH}/crypto
 	cp crypto/constant_time_locl.h ${D}${PTEST_PATH}/crypto

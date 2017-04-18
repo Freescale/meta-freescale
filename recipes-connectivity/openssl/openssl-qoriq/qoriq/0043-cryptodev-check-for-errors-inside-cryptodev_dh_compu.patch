@@ -1,4 +1,4 @@
-From c8a5f714d35c3bd63d2511ad69e0661a7d1d5dcd Mon Sep 17 00:00:00 2001
+From 73115f243f0a65326888537f125e31f28c9f570d Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@nxp.com>
 Date: Tue, 9 Feb 2016 11:53:22 +0200
 Subject: [PATCH 43/48] cryptodev: check for errors inside
@@ -10,10 +10,10 @@ Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
  1 file changed, 11 insertions(+), 4 deletions(-)
 
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index 8e84972..55b2047 100644
+index 7c391d6..753e326 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -4043,11 +4043,15 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+@@ -4056,11 +4056,15 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
      memset(&kop, 0, sizeof kop);
      kop.crk_op = CRK_DH_COMPUTE_KEY;
      /* inputs: dh->priv_key pub_key dh->p key */
@@ -33,7 +33,7 @@ index 8e84972..55b2047 100644
      kop.crk_param[1].crp_p = padded_pub_key;
      kop.crk_param[1].crp_nbits = p_len * 8;
      kop.crk_param[2].crp_p = p;
-@@ -4074,10 +4078,13 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
+@@ -4087,10 +4091,13 @@ cryptodev_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
      kop.crk_param[3].crp_p = NULL;
      zapparams(&kop);
      return (dhret);
@@ -48,5 +48,5 @@ index 8e84972..55b2047 100644
      }
      return (dhret);
 -- 
-2.7.0
+2.7.3
 

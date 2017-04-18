@@ -1,4 +1,4 @@
-From 82612e3c4161ed6e10379841b953a0f56e557be4 Mon Sep 17 00:00:00 2001
+From 6ed8710043b5dc947afab8fffa80ea97f4c84ad6 Mon Sep 17 00:00:00 2001
 From: Cristian Stoica <cristian.stoica@nxp.com>
 Date: Mon, 8 Feb 2016 16:21:46 +0200
 Subject: [PATCH 35/48] cryptodev: fix warnings on excess elements in struct
@@ -61,10 +61,10 @@ index 8584731..ab52add 100644
  
  struct dsa_st {
 diff --git a/crypto/engine/eng_cryptodev.c b/crypto/engine/eng_cryptodev.c
-index cec6938..407ea62 100644
+index 1c71bc7..20e1ec3 100644
 --- a/crypto/engine/eng_cryptodev.c
 +++ b/crypto/engine/eng_cryptodev.c
-@@ -2892,11 +2892,13 @@ static DSA_METHOD cryptodev_dsa = {
+@@ -2905,11 +2905,13 @@ static DSA_METHOD cryptodev_dsa = {
      NULL,
      NULL,
      NULL,
@@ -80,7 +80,7 @@ index cec6938..407ea62 100644
  };
  
  static ECDSA_METHOD cryptodev_ecdsa = {
-@@ -2906,7 +2908,6 @@ static ECDSA_METHOD cryptodev_ecdsa = {
+@@ -2919,7 +2921,6 @@ static ECDSA_METHOD cryptodev_ecdsa = {
      NULL,
      NULL,
      NULL,
@@ -88,7 +88,7 @@ index cec6938..407ea62 100644
      0,                          /* flags */
      NULL                        /* app_data */
  };
-@@ -4483,14 +4484,14 @@ static DH_METHOD cryptodev_dh = {
+@@ -4496,14 +4497,14 @@ static DH_METHOD cryptodev_dh = {
      NULL,
      NULL,
      0,                          /* flags */
@@ -106,5 +106,5 @@ index cec6938..407ea62 100644
      NULL                        /* app_data */
  };
 -- 
-2.7.0
+2.7.3
 
