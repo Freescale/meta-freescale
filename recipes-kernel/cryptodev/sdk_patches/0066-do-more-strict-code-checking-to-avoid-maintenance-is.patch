@@ -1,0 +1,25 @@
+From af792c280ec5d76f473487cd1ed9335a6ec534de Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 10:49:36 +0300
+Subject: [PATCH 066/104] do more strict code checking to avoid maintenance
+ issues
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 14ae2c7..a27cf9b 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,5 +1,5 @@
+ KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
+-CRYPTODEV_CFLAGS += -DENABLE_ASYNC -Wimplicit-function-declaration
++CRYPTODEV_CFLAGS += -DENABLE_ASYNC -Wall -Werror
+ KBUILD_CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ 
+-- 
+2.10.2
+

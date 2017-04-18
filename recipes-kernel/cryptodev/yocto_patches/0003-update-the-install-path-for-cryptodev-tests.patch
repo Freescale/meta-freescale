@@ -1,0 +1,28 @@
+From 5b0d2cf5abaaa3bffb4a9e874dba88bdab15b69d Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@nxp.com>
+Date: Mon, 20 Feb 2017 22:43:00 +0800
+Subject: [PATCH] update the install path for cryptodev tests
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+---
+ tests/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index dd7d5ff..e1c5039 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -37,8 +37,8 @@ install:
+ 	for prog in $(hostprogs); do \
+ 		install -m 755 $$prog $(DESTDIR)/$(bindir)/tests_cryptodev/; \
+ 	done
+-	install -m 755 speed_multi.sh  $(DESTDIR)/$(bindir)
+-	install -m 755 run_crypto_tests.sh  $(DESTDIR)/$(bindir)
++	install -m 755 speed_multi.sh  $(DESTDIR)/$(bindir)/tests_cryptodev/
++	install -m 755 run_crypto_tests.sh  $(DESTDIR)/$(bindir)/tests_cryptodev/
+ 
+ clean:
+ 	rm -f *.o *~ $(hostprogs)
+-- 
+1.9.2
+

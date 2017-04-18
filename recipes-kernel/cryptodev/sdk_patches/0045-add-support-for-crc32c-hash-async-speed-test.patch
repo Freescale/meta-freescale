@@ -1,0 +1,92 @@
+From aa329106f586f8d055ceaa919e327ebc99bdd6e3 Mon Sep 17 00:00:00 2001
+From: Alexe Radu <radu.alexe@nxp.com>
+Date: Tue, 25 Oct 2016 11:15:37 +0300
+Subject: [PATCH 045/104] add support for crc32c hash async speed test
+
+Signed-off-by: Alexe Radu <radu.alexe@nxp.com>
+---
+ crypto/cryptodev.h  |  1 +
+ ioctl.c             |  4 ++++
+ tests/async_speed.c | 25 +++++++++++++++++++++++++
+ 3 files changed, 30 insertions(+)
+
+diff --git a/crypto/cryptodev.h b/crypto/cryptodev.h
+index 9ade102..05221a4 100644
+--- a/crypto/cryptodev.h
++++ b/crypto/cryptodev.h
+@@ -46,6 +46,7 @@ enum cryptodev_crypto_op_t {
+ 	CRYPTO_AES_XTS = 22,
+ 	CRYPTO_AES_ECB = 23,
+ 	CRYPTO_AES_GCM = 50,
++	CRYPTO_CRC32C,
+ 
+ 	CRYPTO_CAMELLIA_CBC = 101,
+ 	CRYPTO_RIPEMD160,
+diff --git a/ioctl.c b/ioctl.c
+index ca3c5ac..2e2bdeb 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -286,6 +286,10 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 		hash_name = "sha512";
+ 		hmac_mode = 0;
+ 		break;
++	case CRYPTO_CRC32C:
++		hash_name = "crc32c";
++		hmac_mode = 0;
++		break;
+ 	default:
+ 		ddebug(1, "bad mac: %d", sop->mac);
+ 		return -EINVAL;
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index 39a3d23..8978b4b 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -65,6 +65,7 @@ int encrypt_data(struct session_op *sess, int fdc, int chunksize, int alignmask)
+ {
+ 	struct crypt_op cop;
+ 	char *buffer[64], iv[32];
++	char mac[64][HASH_MAX_LEN];
+ 	static int val = 23;
+ 	struct timeval start, end;
+ 	double total = 0;
+@@ -114,6 +115,7 @@ int encrypt_data(struct session_op *sess, int fdc, int chunksize, int alignmask)
+ 			cop.iv = (unsigned char *)iv;
+ 			cop.op = COP_ENCRYPT;
+ 			cop.src = cop.dst = (unsigned char *)buffer[bufidx];
++			cop.mac = mac[bufidx];
+ 			bufidx = (bufidx + 1) % 64;
+ 
+ 			if (ioctl(fdc, CIOCASYNCCRYPT, &cop)) {
+@@ -235,6 +237,29 @@ int main(void)
+ 			break;
+ 	}
+ 
++	fprintf(stderr, "\nTesting CRC32C hash: \n");
++	memset(&sess, 0, sizeof(sess));
++	sess.mac = CRYPTO_CRC32C;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++#ifdef CIOCGSESSINFO
++	siop.ses = sess.ses;
++	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++	printf("requested hash CRYPTO_CRC32C, got %s with driver %s\n",
++			siop.hash_info.cra_name, siop.hash_info.cra_driver_name);
++	alignmask = siop.alignmask;
++#endif
++
++	for (i = 256; i <= (64 * 1024); i *= 2) {
++		if (encrypt_data(&sess, fdc, i, alignmask))
++			break;
++	}
++
+ end:
+ 	close(fdc);
+ 	close(fd);
+-- 
+2.10.2
+

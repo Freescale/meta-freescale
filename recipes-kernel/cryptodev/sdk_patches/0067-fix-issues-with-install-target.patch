@@ -1,0 +1,52 @@
+From bd36f9cda9fb5eeebec23cc966a81e93b4fa8bf7 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 12:53:11 +0300
+Subject: [PATCH 067/104] fix issues with install target
+
+Aparently, on some setups, 'sudo make' will clear the $PWD variable
+on the first Makefile expansion. This leads to failures of "sudo make
+install" or other issues when trying to preserve the environment with
+sudo -E.
+
+There are two solutions to this problem:
+1) Use $$PWD instead of $(PWD) to render `$PWD` as the actual string to
+be used on the secondary Makefile expansion.
+This is used (albeit inconsistently) in the Linux kernel guide for
+external modules:
+kernel https://www.kernel.org/doc/Documentation/kbuild/modules.txt
+
+2) A second solution is based on GNU make which sets CURDIR to the
+pathname of current working directory. This variable is never touched
+again by make.
+This solution is choosen for it is just as clear as the PWD one would
+have been had it worked in the first place.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+
+
+
+--- a/Makefileold	2017-04-18 13:55:30.740561749 +0800
++++ b/Makefile	2017-04-18 13:58:04.348556431 +0800
+@@ -15,7 +15,7 @@
+ 
+ obj-m += cryptodev.o
+ 
+-KERNEL_MAKE_OPTS := -C $(KERNEL_DIR) M=$(PWD)
++KERNEL_MAKE_OPTS := -C $(KERNEL_DIR) M=$(CURDIR)
+ ifneq ($(ARCH),)
+ KERNEL_MAKE_OPTS += ARCH=$(ARCH)
+ endif
+@@ -32,11 +32,11 @@
+ install: modules_install
+ 
+ modules_install:
+-	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) modules_install
++	$(MAKE) $(KERNEL_MAKE_OPTS) modules_install
+ 	install -m 644 -D crypto/cryptodev.h $(DESTDIR)/$(includedir)/crypto/cryptodev.h
+ 
+ clean:
+-	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) clean
++	$(MAKE) $(KERNEL_MAKE_OPTS) clean
+ 	rm -f $(hostprogs) *~
+ 	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests clean
+ 

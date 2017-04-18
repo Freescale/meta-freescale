@@ -1,0 +1,24 @@
+From 39f0c5ae656f4b487a0950235e2371e4dd840594 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 13:11:11 +0300
+Subject: [PATCH 068/104] setting KERNEL_DIR is not necessary to build tests
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index a27cf9b..e7a60cb 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,6 +1,4 @@
+-KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
+ CRYPTODEV_CFLAGS += -DENABLE_ASYNC -Wall -Werror
+-KBUILD_CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ 
+ comp_progs := cipher_comp hash_comp hmac_comp
+-- 
+2.10.2
+

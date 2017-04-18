@@ -1,0 +1,27 @@
+From fbf88220797a95281457680a18e9241b3af1f3fb Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 27 Oct 2016 10:27:16 +0300
+Subject: [PATCH 075/104] fix incorrect handling of error cases...
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index b509c25..862f39d 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -117,7 +117,8 @@ function control_c
+ 
+ function main
+ {
+-	[ ! -e "/dev/crypto" ] && sudo modprobe cryptodev || modprobe cryptodev || exit 1
++	[ ! -e "/dev/crypto" ] &&
++		(sudo modprobe cryptodev || modprobe cryptodev || exit 1)
+ 
+ 	rm -f ${OUT_BASENAME}_*
+ 	rm -f ${MPSTAT_OUT}
+-- 
+2.10.2
+

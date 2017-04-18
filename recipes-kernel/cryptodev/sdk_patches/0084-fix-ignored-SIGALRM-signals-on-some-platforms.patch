@@ -1,0 +1,44 @@
+From 1bcef054cfc094e51c9c3cb1048b8bf909326082 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 28 Oct 2016 17:41:09 +0300
+Subject: [PATCH 084/104] fix ignored SIGALRM signals on some platforms
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed.c | 4 ++--
+ tests/sync_speed.c  | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index d843c02..eb8468d 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -76,8 +76,8 @@ static double udifftimeval(struct timeval start, struct timeval end)
+ 	       (double)(end.tv_sec - start.tv_sec) * 1000 * 1000;
+ }
+ 
+-static int must_finish = 0;
+-static int must_exit = 0;
++static volatile int must_finish;
++static volatile int must_exit;
+ static struct pollfd pfd;
+ 
+ static void alarm_handler(int signo)
+diff --git a/tests/sync_speed.c b/tests/sync_speed.c
+index 56cd3aa..ba1d170 100644
+--- a/tests/sync_speed.c
++++ b/tests/sync_speed.c
+@@ -71,8 +71,8 @@ static double udifftimeval(struct timeval start, struct timeval end)
+ 	       (double)(end.tv_sec - start.tv_sec) * 1000 * 1000;
+ }
+ 
+-static int must_finish = 0;
+-static int must_exit = 0;
++static volatile int must_finish;
++static volatile int must_exit;
+ 
+ static void alarm_handler(int signo)
+ {
+-- 
+2.10.2
+

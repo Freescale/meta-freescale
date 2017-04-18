@@ -1,0 +1,26 @@
+From a2894f645e972b7dfc97b59ea1c1e91e741c04d1 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 28 Oct 2016 19:07:29 +0300
+Subject: [PATCH 087/104] add % to cpu idle for convenience
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index f83e362..90f9b72 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -112,7 +112,7 @@ function run_parallel
+ 	echo -e "algorithm\t""threads\t""run time\t"\
+ 	     "buffer size\t""GB/s\t""%cpu idle"
+ 	echo -e "${alg_name}\t${mvalue}\t${runtime}\t"\
+-	     "${nvalue}\t${avg_speed}\t${cpu_idle}"
++	     "${nvalue}\t${avg_speed}\t${cpu_idle}%"
+     fi
+ }
+ 
+-- 
+2.10.2
+

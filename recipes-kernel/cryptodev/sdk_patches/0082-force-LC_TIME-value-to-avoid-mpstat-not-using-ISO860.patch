@@ -1,0 +1,31 @@
+From eee8668c6f0e558e77533edb80c1ca7d4dc486e2 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 28 Oct 2016 17:00:29 +0300
+Subject: [PATCH 082/104] force LC_TIME value to avoid mpstat not using ISO8601
+ format
+
+(not everybody has this locale - silent warnings on some systems)
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index f2a8ba6..1901620 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -24,6 +24,10 @@ CMD_BIN="async_speed"
+ OUT_BASENAME="async_speed"
+ MPSTAT_OUT="mpstat_out"
+ 
++# A bigger hammer for mpstat to use ISO8601 time format (fixed in 11.2.2)
++export LC_TIME=en_GB.UTF-8 &> /dev/null
++
++
+ function usage
+ {
+ cat << EOF
+-- 
+2.10.2
+

@@ -1,0 +1,137 @@
+From 9aae91f24b42a9a812cd0518c0c4ef3f548d64d1 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 25 Oct 2016 17:02:29 +0300
+Subject: [PATCH 053/104] honor the -m flag in async_speed
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed.c | 36 ++++++++++++++++++++++++------------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
+
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index 1941750..73ec9d2 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -29,6 +29,8 @@
+ #include <crypto/cryptodev.h>
+ #include <stdbool.h>
+ #include <unistd.h>
++#include <stdint.h>
++#include <inttypes.h>
+ 
+ #ifdef ENABLE_ASYNC
+ 
+@@ -85,7 +87,7 @@ static void alarm_handler(int signo)
+ 
+ static char *units[] = { "", "Ki", "Mi", "Gi", "Ti", 0};
+ 
+-static void value2human(double bytes, double time, double* data, double* speed,char* metric)
++static void value2human(uint64_t bytes, double time, double* data, double* speed,char* metric)
+ {
+ 	int unit = 0;
+ 
+@@ -98,6 +100,11 @@ static void value2human(double bytes, double time, double* data, double* speed,c
+ 	sprintf(metric, "%sB", units[unit]);
+ }
+ 
++static void value2machine(uint64_t bytes, double time, double* speed)
++{
++	*speed = bytes / time;
++}
++
+ 
+ int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+ {
+@@ -106,7 +113,7 @@ int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+ 	char mac[64][HASH_MAX_LEN];
+ 	static int val = 23;
+ 	struct timeval start, end;
+-	double total = 0;
++	uint64_t total = 0;
+ 	double secs, ddata, dspeed;
+ 	char metric[16];
+ 	int rc, wqueue = 0, bufidx = 0;
+@@ -114,8 +121,10 @@ int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+ 
+ 	memset(iv, 0x23, 32);
+ 
+-	printf("\tEncrypting in chunks of %d bytes: ", tp.nvalue);
+-	fflush(stdout);
++	if (!tp.mflag) {
++		printf("\tBuffer size %d bytes: ", tp.nvalue);
++		fflush(stdout);
++	}
+ 
+ 	alignmask = get_alignmask(fdc, sess);
+ 	for (rc = 0; rc < 64; rc++) {
+@@ -177,9 +186,14 @@ int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+ 
+ 	secs = udifftimeval(start, end)/ 1000000.0;
+ 
+-	value2human(total, secs, &ddata, &dspeed, metric);
+-	printf ("done. %.2f %s in %.2f secs: ", ddata, metric, secs);
+-	printf ("%.2f %s/sec\n", dspeed, metric);
++	if (tp.mflag) {
++		value2machine(total, secs, &dspeed);
++		printf("%" PRIu64 "\t%.2f\t%.2f\n", total, secs, dspeed);
++	} else {
++		value2human(total, secs, &ddata, &dspeed, metric);
++		printf ("done. %.2f %s in %.2f secs: ", ddata, metric, secs);
++		printf ("%.2f %s/sec\n", dspeed, metric);
++	}
+ 
+ 	for (rc = 0; rc < 64; rc++)
+ 		free(buffer[rc]);
+@@ -206,6 +220,9 @@ int run_test(int id, struct test_params tp)
+ 		return -EINVAL;
+ 	}
+ 
++	if (!tp.mflag) {
++		fprintf(stderr, "Testing %s:\n", ciphers[id].name);
++	}
+ 	ciphers[id].func(fdc, tp);
+ 
+ 	close(fdc);
+@@ -277,7 +294,6 @@ int run_aes_cbc(int fdc, struct test_params tp)
+ 	int alignmask;
+ 	int i;
+ 
+-	fprintf(stderr, "\nTesting AES-128-CBC cipher: \n");
+ 	memset(&sess, 0, sizeof(sess));
+ 	sess.cipher = CRYPTO_AES_CBC;
+ 	sess.keylen = 16;
+@@ -297,7 +313,6 @@ int run_aes_xts(int fdc, struct test_params tp)
+ 	struct session_op sess;
+ 	char keybuf[32];
+ 
+-	fprintf(stderr, "\nTesting AES-256-XTS cipher: \n");
+ 	memset(&sess, 0, sizeof(sess));
+ 	sess.cipher = CRYPTO_AES_XTS;
+ 	sess.keylen = 32;
+@@ -316,7 +331,6 @@ int run_crc32c(int fdc, struct test_params tp)
+ {
+ 	struct session_op sess;
+ 
+-	fprintf(stderr, "\nTesting CRC32C hash: \n");
+ 	memset(&sess, 0, sizeof(sess));
+ 	sess.mac = CRYPTO_CRC32C;
+ 	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+@@ -332,7 +346,6 @@ int run_sha1(int fdc, struct test_params tp)
+ {
+ 	struct session_op sess;
+ 
+-	fprintf(stderr, "\nTesting SHA-1 hash: \n");
+ 	memset(&sess, 0, sizeof(sess));
+ 	sess.mac = CRYPTO_SHA1;
+ 	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+@@ -348,7 +361,6 @@ int run_sha256(int fdc, struct test_params tp)
+ {
+ 	struct session_op sess;
+ 
+-	fprintf(stderr, "\nTesting SHA2-256 hash: \n");
+ 	memset(&sess, 0, sizeof(sess));
+ 	sess.mac = CRYPTO_SHA2_256;
+ 	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-- 
+2.10.2
+

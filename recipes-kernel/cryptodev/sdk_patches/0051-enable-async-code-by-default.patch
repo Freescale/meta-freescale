@@ -1,0 +1,37 @@
+From 6b31215e77b89fd7bd4dcfb6e4e3a9ee53e7731d Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 25 Oct 2016 15:03:19 +0300
+Subject: [PATCH 051/104] enable async code by default
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ Makefile       | 2 +-
+ tests/Makefile | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 9871a8e..3934e1f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@
+ # disabled by default. To re-enable it uncomment the
+ # corresponding CFLAG.
+ #
+-CRYPTODEV_CFLAGS ?= #-DENABLE_ASYNC
++CRYPTODEV_CFLAGS += -DENABLE_ASYNC
+ KBUILD_CFLAGS += -I$(src) $(CRYPTODEV_CFLAGS)
+ KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
+ VERSION = 1.8
+diff --git a/tests/Makefile b/tests/Makefile
+index 5e3111d..683f40b 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,4 +1,5 @@
+ KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
++CRYPTODEV_CFLAGS += -DENABLE_ASYNC
+ KBUILD_CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ 
+-- 
+2.10.2
+

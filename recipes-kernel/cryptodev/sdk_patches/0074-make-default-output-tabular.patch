@@ -1,0 +1,83 @@
+From 826f2feb22f5391e985930af40782b2fb980e028 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 27 Oct 2016 10:12:25 +0300
+Subject: [PATCH 074/104] make default output tabular
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 22a12cb..b509c25 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -31,6 +31,7 @@ Usage: `basename $0` [OPTIONS] <alg_name>
+   -m <threads>    number of threads to run with (defaults to number of cores)
+   -t <secs>       time to run each test (default 10 secs)
+   -n <bytes>      size of the test buffer (default 256 bytes)
++  -v              make output more verbose (default tabular)
+   -h              show this help
+ 
+ alg_name: null, aes-128-cbc, aes-256-xts, sha1, sha256, crc32c
+@@ -57,9 +58,12 @@ function run_parallel
+     OPTIONS="-t $tvalue -n $nvalue -m"
+     CMD="async_speed $OPTIONS $alg_name"
+ 
+-    echo
+-    echo "Running $tvalue seconds $mvalue threads in parallel:"
+-    echo "    $CMD"
++    if [ ! -z "$vvalue" ]
++    then
++       echo
++       echo "Running $tvalue seconds $mvalue threads in parallel:"
++       echo "    $CMD"
++    fi
+ 
+     (sleep 1; S_TIME_FORMAT=ISO mpstat 1 $(($tvalue-2))) &> $MPSTAT_OUT &
+     MPSTAT_PID=$!
+@@ -89,12 +93,20 @@ function run_parallel
+     avg_speed=$(echo "scale=2; $total_data / $runtime / 1000000000" | bc -l)
+     cpu_idle=$(get_cpu_idle)
+ 
+-    echo
+-    echo "buffer size  :   $nvalue"
+-    echo "running time :   $runtime"
+-    echo "avg_speed    :   $avg_speed GB/s"
+-    echo "all_cpu idle :   $cpu_idle %"
+-    echo
++    if [ ! -z "$vvalue" ]
++    then
++	echo
++	echo "buffer size  :   $nvalue"
++	echo "running time :   $runtime"
++	echo "avg_speed    :   $avg_speed GB/s"
++	echo "all_cpu idle :   $cpu_idle %"
++	echo
++    else
++	echo -e "algorithm\t""threads\t""runtime\t"\
++	     "buf_size\t""GB/s\t""%cpu_idle"
++	echo -e "${alg_name}\t${mvalue}\t${runtime}\t"\
++	     "${nvalue}\t${avg_speed}\t${cpu_idle}"
++    fi
+ }
+ 
+ function control_c
+@@ -110,12 +122,13 @@ function main
+ 	rm -f ${OUT_BASENAME}_*
+ 	rm -f ${MPSTAT_OUT}
+ 
+-	while getopts hm:t:n: option
++	while getopts vhm:t:n: option
+ 	do
+ 		case "$option" in
+ 			m) mvalue="$OPTARG";;
+ 			t) tvalue="$OPTARG";;
+ 			n) nvalue="$OPTARG";;
++			v) vvalue="verbose";;
+ 			*) usage $0; exit 1;;
+ 		esac
+ 	done
+-- 
+2.10.2
+

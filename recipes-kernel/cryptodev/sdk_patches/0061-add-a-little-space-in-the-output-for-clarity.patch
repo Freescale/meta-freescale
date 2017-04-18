@@ -1,0 +1,27 @@
+From 3bfdd0d1991a37c1adc82cc7e1938e2d9d175bd7 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 10:01:57 +0300
+Subject: [PATCH 061/104] add a little space in the output for clarity
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 5268c86..331158b 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -58,7 +58,8 @@ function run_parallel
+     OPTIONS="-t $tvalue -n $nvalue -m"
+     CMD="async_speed $OPTIONS $alg_name"
+ 
+-    echo "Running $mvalue threads in parallel:"
++    echo
++    echo "Running $tvalue seconds $mvalue threads in parallel:"
+     echo "    $CMD"
+ 
+     (sleep 1; mpstat 1 $(($tvalue-2))) &> $MPSTAT_OUT &
+-- 
+2.10.2
+

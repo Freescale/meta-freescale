@@ -1,0 +1,25 @@
+From badd002fe5bdcaf7a7d856f174e2abb10b939467 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 29 Nov 2016 13:37:24 +0200
+Subject: [PATCH 098/104] reduce tests/Makefile distance with upstream
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 88f5040..5a09414 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,5 +1,5 @@
+-CRYPTODEV_CFLAGS += -DENABLE_ASYNC -std=gnu90 -Wall -Werror
+-CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
++CRYPTODEV_CFLAGS += -DENABLE_ASYNC -std=gnu90
++CFLAGS += -I.. $(CRYPTODEV_CFLAGS) -Wall -Werror
+ 
+ comp_progs := cipher_comp hash_comp hmac_comp
+ 
+-- 
+2.10.2
+

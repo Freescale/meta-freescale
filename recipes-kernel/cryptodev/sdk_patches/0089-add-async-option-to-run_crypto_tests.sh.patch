@@ -1,0 +1,62 @@
+From bccc3add64bfd4a048bf7e5a2935b2fc719d8e13 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 1 Nov 2016 13:28:40 +0200
+Subject: [PATCH 089/104] add -async option to run_crypto_tests.sh
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/run_crypto_tests.sh | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/tests/run_crypto_tests.sh b/tests/run_crypto_tests.sh
+index e128637..321b013 100644
+--- a/tests/run_crypto_tests.sh
++++ b/tests/run_crypto_tests.sh
+@@ -4,6 +4,31 @@
+ BUF_SIZE="8192 16384 65536 131072 262144"
+ THREAD_CNT="1 8 12"
+ ALG_NAMES="aes-128-cbc aes-256-xts sha1 sha256 crc32c"
++TIME=10
++
++############################
++
++function usage
++{
++cat << EOF
++Usage: `basename $0` [OPTIONS]
++
++  -a              run async version of the benchmark (default sync)
++  -h              show this help
++
++Run in sequence benchmarks for several crypto algorithms:
++$ALG_NAMES
++EOF
++}
++
++while getopts ah option
++do
++    case "$option" in
++	a) aflag="-a";;
++	*) usage $0; exit 1;;
++    esac
++done
++
+ 
+ #restool dpseci create --num-queues=8 --priorities=1,2,3,4,5,6,7,8
+ #restool dprc assign dprc.1 --object=dpseci.0 --plugged=1
+@@ -16,7 +41,11 @@ do
+ 	do
+ 		for bsize in ${BUF_SIZE}
+ 		do
+-			speed_multi.sh -t 10 -n $bsize -m ${multi} ${alg_name} |
++			speed_multi.sh -t ${TIME}\
++				-n ${bsize}\
++				-m ${multi}\
++				${aflag}\
++				${alg_name} |
+ 			tail -n 1
+ 		done
+ 	done
+-- 
+2.10.2
+

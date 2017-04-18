@@ -1,0 +1,32 @@
+From 0bd3dada58288792f587712c95a1f125a7655535 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 28 Oct 2016 09:05:26 +0300
+Subject: [PATCH 078/104] remove output line because it does not add clarity to
+ the results
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 62c4759..991e190 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -59,13 +59,6 @@ function run_parallel
+     OPTIONS="-t $tvalue -n $nvalue -m"
+     CMD="$CMD_BIN $OPTIONS $alg_name"
+ 
+-    if [ ! -z "$vvalue" ]
+-    then
+-       echo
+-       echo "Running $tvalue seconds $mvalue threads in parallel:"
+-       echo "    $CMD"
+-    fi
+-
+     (sleep 1; S_TIME_FORMAT=ISO mpstat 1 $(($tvalue-2))) &> $MPSTAT_OUT &
+     MPSTAT_PID=$!
+ 
+-- 
+2.10.2
+

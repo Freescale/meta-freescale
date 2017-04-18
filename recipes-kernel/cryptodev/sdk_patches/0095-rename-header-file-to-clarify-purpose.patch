@@ -1,0 +1,173 @@
+From 1fff269afd1925f4e4c7e37cc8c52187c407bc56 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 29 Nov 2016 13:37:21 +0200
+Subject: [PATCH 095/104] rename header file to clarify purpose
+
+testhelper.h suggests a common repository of utility functions but
+current content targets only async tests. If we include it in non-async
+tests we are forced to include <poll.h> as well.
+
+Rename this header file to clarify that it targets only async tests
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_cipher.c |  2 +-
+ tests/async_hmac.c   |  2 +-
+ tests/asynchelper.h  | 54 +++++++++++++++++++++++++++++++++++++++++++++++++
+ tests/testhelper.h   | 57 ----------------------------------------------------
+ 4 files changed, 56 insertions(+), 59 deletions(-)
+ create mode 100644 tests/asynchelper.h
+ delete mode 100644 tests/testhelper.h
+
+diff --git a/tests/async_cipher.c b/tests/async_cipher.c
+index dd08403..db6fb06 100644
+--- a/tests/async_cipher.c
++++ b/tests/async_cipher.c
+@@ -13,7 +13,7 @@
+ #include <sys/ioctl.h>
+ #include <crypto/cryptodev.h>
+ 
+-#include "testhelper.h"
++#include "asynchelper.h"
+ 
+ #ifdef ENABLE_ASYNC
+ 
+diff --git a/tests/async_hmac.c b/tests/async_hmac.c
+index 85d19c6..1bdaad3 100644
+--- a/tests/async_hmac.c
++++ b/tests/async_hmac.c
+@@ -14,7 +14,7 @@
+ #include <sys/ioctl.h>
+ #include <crypto/cryptodev.h>
+ 
+-#include "testhelper.h"
++#include "asynchelper.h"
+ 
+ #ifdef ENABLE_ASYNC
+ 
+diff --git a/tests/asynchelper.h b/tests/asynchelper.h
+new file mode 100644
+index 0000000..b5ab16c
+--- /dev/null
++++ b/tests/asynchelper.h
+@@ -0,0 +1,54 @@
++#ifndef __ASYNCHELPER_H
++#define __ASYNCHELPER_H
++
++/* poll until POLLOUT, then call CIOCASYNCCRYPT */
++inline int do_async_crypt(int cfd, struct crypt_op *cryp)
++{
++	struct pollfd pfd;
++
++	pfd.fd = cfd;
++	pfd.events = POLLOUT;
++
++	if (poll(&pfd, 1, -1) < 1) {
++		perror("poll()");
++		return 1;
++	}
++
++	if (ioctl(cfd, CIOCASYNCCRYPT, cryp)) {
++		perror("ioctl(CIOCCRYPT)");
++		return 1;
++	}
++	return 0;
++}
++
++/* poll until POLLIN, then call CIOCASYNCFETCH */
++inline int do_async_fetch(int cfd, struct crypt_op *cryp)
++{
++	struct pollfd pfd;
++
++	pfd.fd = cfd;
++	pfd.events = POLLIN;
++
++	if (poll(&pfd, 1, -1) < 1) {
++		perror("poll()");
++		return 1;
++	}
++
++	if (ioctl(cfd, CIOCASYNCFETCH, cryp)) {
++		perror("ioctl(CIOCCRYPT)");
++		return 1;
++	}
++	return 0;
++}
++
++/* Check return value of stmt for identity with goodval. If they
++ * don't match, call return with the value of stmt. */
++#define DO_OR_DIE(stmt, goodval) {                           \
++	int __rc_val;                                        \
++	if ((__rc_val = stmt) != goodval) {                  \
++		perror("DO_OR_DIE(" #stmt "," #goodval ")"); \
++		return __rc_val;                             \
++	}                                                    \
++}
++
++#endif /* __ASYNCHELPER_H */
+diff --git a/tests/testhelper.h b/tests/testhelper.h
+deleted file mode 100644
+index ea0b100..0000000
+--- a/tests/testhelper.h
++++ /dev/null
+@@ -1,57 +0,0 @@
+-/*
+- * Some helper stuff shared between the sample programs.
+- */
+-#ifndef _TESTHELPER_H
+-#define _TESTHELPER_H
+-
+-/* poll until POLLOUT, then call CIOCASYNCCRYPT */
+-inline int do_async_crypt(int cfd, struct crypt_op *cryp)
+-{
+-	struct pollfd pfd;
+-
+-	pfd.fd = cfd;
+-	pfd.events = POLLOUT;
+-
+-	if (poll(&pfd, 1, -1) < 1) {
+-		perror("poll()");
+-		return 1;
+-	}
+-
+-	if (ioctl(cfd, CIOCASYNCCRYPT, cryp)) {
+-		perror("ioctl(CIOCCRYPT)");
+-		return 1;
+-	}
+-	return 0;
+-}
+-
+-/* poll until POLLIN, then call CIOCASYNCFETCH */
+-inline int do_async_fetch(int cfd, struct crypt_op *cryp)
+-{
+-	struct pollfd pfd;
+-
+-	pfd.fd = cfd;
+-	pfd.events = POLLIN;
+-
+-	if (poll(&pfd, 1, -1) < 1) {
+-		perror("poll()");
+-		return 1;
+-	}
+-
+-	if (ioctl(cfd, CIOCASYNCFETCH, cryp)) {
+-		perror("ioctl(CIOCCRYPT)");
+-		return 1;
+-	}
+-	return 0;
+-}
+-
+-/* Check return value of stmt for identity with goodval. If they
+- * don't match, call return with the value of stmt. */
+-#define DO_OR_DIE(stmt, goodval) {                           \
+-	int __rc_val;                                        \
+-	if ((__rc_val = stmt) != goodval) {                  \
+-		perror("DO_OR_DIE(" #stmt "," #goodval ")"); \
+-		return __rc_val;                             \
+-	}                                                    \
+-}
+-
+-#endif /* _TESTHELPER_H */
+-- 
+2.10.2
+

@@ -1,0 +1,129 @@
+From 0fd37b5225bd26182b20588b200a4fc0a3f415e5 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 10:10:47 +0300
+Subject: [PATCH 062/104] fix build warnings on implicit function declarations
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile          |  2 +-
+ tests/async_speed.c     | 47 +++++++++++++++++++++++------------------------
+ tests/hashcrypt_speed.c |  1 +
+ tests/sha_speed.c       |  1 +
+ tests/speed.c           |  1 +
+ 5 files changed, 27 insertions(+), 25 deletions(-)
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 6424c11..14ae2c7 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,5 +1,5 @@
+ KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
+-CRYPTODEV_CFLAGS += -DENABLE_ASYNC
++CRYPTODEV_CFLAGS += -DENABLE_ASYNC -Wimplicit-function-declaration
+ KBUILD_CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ 
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index e6bbeed..a1a1b7e 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -112,6 +112,29 @@ static void value2machine(uint64_t bytes, double time, double* speed)
+ 	*speed = bytes / time;
+ }
+ 
++int get_alignmask(int fdc, struct session_op *sess)
++{
++	int alignmask;
++	int min_alignmask = sizeof(void*) - 1;
++
++#ifdef CIOCGSESSINFO
++	struct session_info_op siop;
++
++	siop.ses = sess->ses;
++	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
++		perror("ioctl(CIOCGSESSINFO)");
++		return -EINVAL;
++	}
++	alignmask = siop.alignmask;
++	if (alignmask < min_alignmask) {
++		alignmask = min_alignmask;
++	}
++#else
++	alignmask = 0;
++#endif
++
++	return alignmask;
++}
+ 
+ int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+ {
+@@ -236,30 +259,6 @@ int run_test(int id, struct test_params tp)
+ 	close(fd);
+ }
+ 
+-int get_alignmask(int fdc, struct session_op *sess)
+-{
+-	int alignmask;
+-	int min_alignmask = sizeof(void*) - 1;
+-
+-#ifdef CIOCGSESSINFO
+-	struct session_info_op siop;
+-
+-	siop.ses = sess->ses;
+-	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
+-		perror("ioctl(CIOCGSESSINFO)");
+-		return -EINVAL;
+-	}
+-	alignmask = siop.alignmask;
+-	if (alignmask < min_alignmask) {
+-		alignmask = min_alignmask;
+-	}
+-#else
+-	alignmask = 0;
+-#endif
+-
+-	return alignmask;
+-}
+-
+ void do_test_vectors(int fdc, struct test_params tp, struct session_op *sess)
+ {
+ 	int i;
+diff --git a/tests/hashcrypt_speed.c b/tests/hashcrypt_speed.c
+index e60b73d..045bf8e 100644
+--- a/tests/hashcrypt_speed.c
++++ b/tests/hashcrypt_speed.c
+@@ -25,6 +25,7 @@
+ #include <sys/time.h>
+ #include <sys/types.h>
+ #include <signal.h>
++#include <unistd.h>
+ #include <crypto/cryptodev.h>
+ 
+ #define MAX(x,y) ((x)>(y)?(x):(y))
+diff --git a/tests/sha_speed.c b/tests/sha_speed.c
+index 75d0f42..e5c6efe 100644
+--- a/tests/sha_speed.c
++++ b/tests/sha_speed.c
+@@ -25,6 +25,7 @@
+ #include <sys/time.h>
+ #include <sys/types.h>
+ #include <signal.h>
++#include <unistd.h>
+ 
+ #include <crypto/cryptodev.h>
+ 
+diff --git a/tests/speed.c b/tests/speed.c
+index 0b14c88..d2e1aed 100644
+--- a/tests/speed.c
++++ b/tests/speed.c
+@@ -24,6 +24,7 @@
+ #include <sys/time.h>
+ #include <sys/types.h>
+ #include <signal.h>
++#include <unistd.h>
+ 
+ #include <crypto/cryptodev.h>
+ 
+-- 
+2.10.2
+

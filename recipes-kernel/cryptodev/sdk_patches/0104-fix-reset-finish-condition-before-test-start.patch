@@ -1,0 +1,29 @@
+From a4b33ea30c86fb727c1d3ac3531c5548b6c194ba Mon Sep 17 00:00:00 2001
+From: Radu Alexe <radu.alexe@nxp.com>
+Date: Tue, 14 Feb 2017 12:52:33 +0200
+Subject: [PATCH 104/104] fix: reset finish condition before test start
+
+Typo from previous commit: ba494703
+"add support for authenc(hmac(sha1), cbc(aes)) speed tests"
+
+Signed-off-by: Radu Alexe <radu.alexe@nxp.com>
+---
+ tests/speed.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/speed.c b/tests/speed.c
+index b52938c..ae0b658 100644
+--- a/tests/speed.c
++++ b/tests/speed.c
+@@ -276,7 +276,7 @@ static int encrypt_sync(int fdc, struct test_params tp, struct session_op *sess)
+ 	}
+ 	memset(buffer, val++, tp.nvalue);
+ 
+-	must_finish = 1;
++	must_finish = 0;
+ 	alarm(tp.tvalue);
+ 
+ 	gettimeofday(&start, NULL);
+-- 
+2.10.2
+

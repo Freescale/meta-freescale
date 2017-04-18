@@ -1,0 +1,64 @@
+From f7e3566382bf22fc73c5a0edfde5c5349a92f8ea Mon Sep 17 00:00:00 2001
+From: Alexe Radu <radu.alexe@nxp.com>
+Date: Tue, 25 Oct 2016 18:35:13 +0300
+Subject: [PATCH 057/104] gracefull stop for async speed tests
+
+Signed-off-by: Alexe Radu <radu.alexe@nxp.com>
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index b895a85..e6bbeed 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -77,6 +77,7 @@ static double udifftimeval(struct timeval start, struct timeval end)
+ }
+ 
+ static int must_finish = 0;
++static int must_exit = 0;
+ static struct pollfd pfd;
+ 
+ static void alarm_handler(int signo)
+@@ -85,6 +86,12 @@ static void alarm_handler(int signo)
+ 	pfd.events = POLLIN;
+ }
+ 
++static void exit_handler(int signo)
++{
++	must_exit = 1;
++	printf("\nexit requested by user through ctrl+c \n");
++}
++
+ static char *units[] = { "", "Ki", "Mi", "Gi", "Ti", 0};
+ 
+ static void value2human(uint64_t bytes, double time, double* data, double* speed,char* metric)
+@@ -261,6 +268,10 @@ void do_test_vectors(int fdc, struct test_params tp, struct session_op *sess)
+ 		encrypt_data(fdc, tp, sess);
+ 	} else {
+ 		for (i = 256; i <= (64 * 1024); i *= 2) {
++			if (must_exit) {
++				break;
++			}
++
+ 			tp.nvalue = i;
+ 			if (encrypt_data(fdc, tp, sess)) {
+ 				break;
+@@ -422,8 +433,13 @@ int main(int argc, char **argv)
+ 	}
+ 
+ 	signal(SIGALRM, alarm_handler);
++	signal(SIGINT, exit_handler);
+ 
+ 	for (i = 0; i < ALG_COUNT; i++) {
++		if (must_exit) {
++			break;
++		}
++
+ 		if (alg_flag) {
+ 			if (strcmp(alg_name, ciphers[i].name) == 0) {
+ 				run_test(i, tp);
+-- 
+2.10.2
+

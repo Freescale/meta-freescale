@@ -1,0 +1,173 @@
+From 789d3c5ecda60a6dc5d5b3597047ad65c412f10d Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 25 Oct 2016 15:30:59 +0300
+Subject: [PATCH 055/104] add multithreaded wrapper for async speed test
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile             |   1 +
+ tests/async_speed_multi.sh | 140 +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 141 insertions(+)
+ create mode 100755 tests/async_speed_multi.sh
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 683f40b..6424c11 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -40,6 +40,7 @@ install:
+ 	for prog in $(hostprogs); do \
+ 		install -m 755 $$prog $(DESTDIR)/$(bindir)/tests_cryptodev/; \
+ 	done
++	install -m 755 async_speed_multi.sh  $(DESTDIR)/$(bindir)
+ 
+ clean:
+ 	rm -f *.o *~ $(hostprogs)
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+new file mode 100755
+index 0000000..761c0cb
+--- /dev/null
++++ b/tests/async_speed_multi.sh
+@@ -0,0 +1,140 @@
++#!/bin/bash
++#
++#    Copyright 2016 NXP Semiconductors
++#
++#    This program is free software: you can redistribute it and/or modify
++#    it under the terms of the GNU General Public License as published by
++#    the Free Software Foundation, either version 2 of the License, or
++#    (at your option) any later version.
++#
++#    This program is distributed in the hope that it will be useful,
++#    but WITHOUT ANY WARRANTY; without even the implied warranty of
++#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++#    GNU General Public License for more details.
++#
++#    You should have received a copy of the GNU General Public License
++#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
++
++
++
++# no user-configurable options below this line
++
++NUM_CORES=`nproc`
++OUT_BASENAME="async_speed"
++MPSTAT="mpstat"
++MPSTAT_OUT="mpstat_out"
++
++function usage
++{
++cat << EOF
++Usage: `basename $0` [OPTIONS] <alg_name>
++
++  -m <threads>    number of threads to run with (defaults to number of cores)
++  -t <secs>       time to run each test (default 10 secs)
++  -n <bytes>      size of the test buffer (default 256 bytes)
++  -h              show this help
++
++alg_name: null, aes-128-cbc, aes-256-xts, sha1, sha256, crc32c
++EOF
++}
++
++function SUM {
++	paste -sd+ - | bc -l
++}
++
++function get_cpu_idle
++{
++    header_line=`grep %idle ${MPSTAT_OUT} | head -n 1 | sed 's/\s\+/ /g'`
++    idle_column=`echo $header_line | wc -w`
++
++    all_cpu_idle=`grep all ${MPSTAT_OUT} | tail -n +2 | sed 's/\s\+/ /g' | cut -d' ' -f ${idle_column} | SUM`
++    mpstat_lines=`grep all ${MPSTAT_OUT} | tail -n +2 | wc -l`
++    
++    average_idle=`echo "scale=2; $all_cpu_idle / $mpstat_lines" | bc -l`
++    echo $average_idle
++}
++
++function run_parallel
++{
++    trap control_c SIGINT
++
++    OPTIONS="-t $tvalue -n $nvalue -m"
++    CMD="async_speed $OPTIONS $alg_name"
++
++    echo "Running $mvalue threads in parallel:"
++    echo "    $CMD"
++
++    $MPSTAT 1 $(($tvalue-1)) &> $MPSTAT_OUT &
++    MPSTAT_PID=$!
++
++    PIDS=""
++    start=`date +%s.%N`
++
++    for i in `seq 0 $(($mvalue-1))`
++    do
++	CMD_OUT="${OUT_BASENAME}_${i}"
++
++	$CMD &> $CMD_OUT &
++	PID=$!
++	AFFINITY=$(($i % $NUM_CORES))
++	taskset -pc $AFFINITY $PID > /dev/null
++
++	PIDS="$PID $PIDS"
++    done
++
++    wait $PIDS
++    end=`date +%s.%N`
++
++    wait $MPSTAT_PID
++
++    runtime=$(echo "scale=2; $end - $start" | bc -l )
++    total_data=`cat ${OUT_BASENAME}_* | cut -f 1 | SUM`
++    avg_speed=$(echo "scale=2; $total_data / $runtime / 1000000000" | bc -l)
++    cpu_idle=`get_cpu_idle`
++
++    echo
++    echo "buffer size  :   $nvalue"
++    echo "running time :   $runtime"
++    echo "avg_speed    :   $avg_speed GiB/s"
++    echo "all_cpu idle :   $cpu_idle %"
++    echo
++}
++
++function control_c
++{
++    killall async_speed > /dev/null
++    killall mpstat > /dev/null
++}
++
++function main
++{
++	while getopts hm:t:n: option
++	do
++		case "$option" in
++			m) mvalue="$OPTARG";;
++			t) tvalue="$OPTARG";;
++			n) nvalue="$OPTARG";;
++			*) usage $0; exit 1;;
++		esac
++	done
++
++	shift $((OPTIND-1))
++	alg_name=$1
++
++	[ -z "$tvalue" ] && tvalue=10      # 10 seconds per test by default
++	[ -z "$mvalue" ] && mvalue=`nproc` # thread count defaults to nproc
++	[ -z "$nvalue" ] && nvalue=256     # 256 bytes default buffer size
++
++	case "$alg_name" in
++	    "null"    |\
++	    "aes-128-cbc" |\
++	    "aes-256-xts" |\
++	    "sha1"    |\
++	    "sha256"  |\
++	    "crc32c"  ) run_parallel;;
++	    * ) usage && exit 1;;
++	esac
++}
++
++main "$@"
++
+-- 
+2.10.2
+

@@ -1,0 +1,42 @@
+From 28c87b3dd5ed2ac90185b09bdc7233648d5d89b5 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 09:14:28 +0300
+Subject: [PATCH 059/104] fix some issues with parsing mpstat output
+
+- mpstat with 'count' parameter will average the results for us on the
+  last line so we don't need to do this ourselves.
+- set time format to ISO to avoid incorrect parsing of the header line
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 94c2312..a28f72d 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -21,6 +21,7 @@
+ 
+ NUM_CORES=`nproc`
+ OUT_BASENAME="async_speed"
++S_TIME_FORMAT=ISO
+ MPSTAT="mpstat"
+ MPSTAT_OUT="mpstat_out"
+ 
+@@ -47,10 +48,8 @@ function get_cpu_idle
+     header_line=`grep %idle ${MPSTAT_OUT} | head -n 1 | sed 's/\s\+/ /g'`
+     idle_column=`echo $header_line | wc -w`
+ 
+-    all_cpu_idle=`grep all ${MPSTAT_OUT} | tail -n +2 | sed 's/\s\+/ /g' | cut -d' ' -f ${idle_column} | SUM`
+-    mpstat_lines=`grep all ${MPSTAT_OUT} | tail -n +2 | wc -l`
+-    
+-    average_idle=`echo "scale=2; $all_cpu_idle / $mpstat_lines" | bc -l`
++    average_idle=`grep Average ${MPSTAT_OUT} | sed 's/\s\+/ /g' | cut -d' ' -f ${idle_column} | tail -n 1`
++
+     echo $average_idle
+ }
+ 
+-- 
+2.10.2
+

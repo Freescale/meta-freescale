@@ -1,0 +1,48 @@
+From 87214642cbfc6dbd43948940b5d1ce9528f451bd Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 27 Oct 2016 10:46:01 +0300
+Subject: [PATCH 076/104] exit early if cryptodev tests are not installed
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 862f39d..62c4759 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -20,6 +20,7 @@
+ # no user-configurable options below this line
+ 
+ NUM_CORES=$(nproc)
++CMD_BIN="async_speed"
+ OUT_BASENAME="async_speed"
+ MPSTAT_OUT="mpstat_out"
+ 
+@@ -56,7 +57,7 @@ function run_parallel
+     trap control_c SIGINT
+ 
+     OPTIONS="-t $tvalue -n $nvalue -m"
+-    CMD="async_speed $OPTIONS $alg_name"
++    CMD="$CMD_BIN $OPTIONS $alg_name"
+ 
+     if [ ! -z "$vvalue" ]
+     then
+@@ -120,6 +121,13 @@ function main
+ 	[ ! -e "/dev/crypto" ] &&
+ 		(sudo modprobe cryptodev || modprobe cryptodev || exit 1)
+ 
++	$(which ${CMD_BIN} &> /dev/null)
++	if (($? != 0))
++	then
++		echo "${CMD_BIN} test is not installed"
++		exit 1
++	fi
++
+ 	rm -f ${OUT_BASENAME}_*
+ 	rm -f ${MPSTAT_OUT}
+ 
+-- 
+2.10.2
+

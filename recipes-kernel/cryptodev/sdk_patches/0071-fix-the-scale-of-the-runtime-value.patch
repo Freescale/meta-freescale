@@ -1,0 +1,29 @@
+From d9de6a0f342b2291e2f2d82b594fbb3b8ed7f468 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 27 Oct 2016 09:29:24 +0300
+Subject: [PATCH 071/104] fix the scale of the runtime value
+
+Subtraction operation does not honor the scale variable. Only
+division does.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 10b2348..659be0e 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -85,7 +85,7 @@ function run_parallel
+ 
+     wait $MPSTAT_PID
+ 
+-    runtime=$(echo "scale=2; $end - $start" | bc -l )
++    runtime=$(echo "scale=2; ($end - $start) / 1" | bc -l )
+     total_data=`cat ${OUT_BASENAME}_* | cut -f 1 | SUM`
+     avg_speed=$(echo "scale=2; $total_data / $runtime / 1000000000" | bc -l)
+     cpu_idle=`get_cpu_idle`
+-- 
+2.10.2
+

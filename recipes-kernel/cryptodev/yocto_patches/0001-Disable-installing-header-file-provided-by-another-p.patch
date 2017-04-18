@@ -8,22 +8,15 @@ Subject: [PATCH 1/2] Disable installing header file provided by another
 Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
 
 Upstream-Status: Inappropriate [ OE specific ]
----
- Makefile | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/Makefile b/Makefile
-index 9871a8e..06202bd 100644
---- a/Makefile
-+++ b/Makefile
-@@ -33,7 +33,6 @@ install: modules_install
+
+--- a/Makefileold	2017-04-18 14:54:40.588438842 +0800
++++ b/Makefile	2017-04-18 14:55:40.308436774 +0800
+@@ -33,7 +33,6 @@
  
  modules_install:
- 	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) modules_install
+ 	$(MAKE) $(KERNEL_MAKE_OPTS) modules_install
 -	install -m 644 -D crypto/cryptodev.h $(DESTDIR)/$(includedir)/crypto/cryptodev.h
  
  clean:
- 	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) clean
--- 
-2.7.0
-
+ 	$(MAKE) $(KERNEL_MAKE_OPTS) clean

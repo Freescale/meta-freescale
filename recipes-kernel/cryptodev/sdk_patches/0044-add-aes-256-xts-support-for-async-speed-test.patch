@@ -1,0 +1,64 @@
+From 6a89ac4c49068d4225f4c1cc94a1d20b3d174b3f Mon Sep 17 00:00:00 2001
+From: Radu Alexe <raduandrei.alexe@freescale.com>
+Date: Sat, 22 Oct 2016 21:55:25 +0300
+Subject: [PATCH 044/104] add aes-256-xts support for async speed test
+
+Signed-off-by: Radu Alexe <raduandrei.alexe@freescale.com>
+---
+ ioctl.c             |  3 +++
+ tests/async_speed.c | 25 +++++++++++++++++++++++++
+ 2 files changed, 28 insertions(+)
+
+diff --git a/ioctl.c b/ioctl.c
+index 8d81b56..ca3c5ac 100644
+--- a/ioctl.c
++++ b/ioctl.c
+@@ -172,6 +172,9 @@ crypto_create_session(struct fcrypt *fcr, struct session_op *sop)
+ 	case CRYPTO_AES_ECB:
+ 		alg_name = "ecb(aes)";
+ 		break;
++	case CRYPTO_AES_XTS:
++		alg_name = "xts(aes)";
++		break;
+ 	case CRYPTO_CAMELLIA_CBC:
+ 		alg_name = "cbc(camellia)";
+ 		break;
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index 1188599..39a3d23 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -211,6 +211,31 @@ int main(void)
+ 			break;
+ 	}
+ 
++	fprintf(stderr, "\nTesting AES-256-XTS cipher: \n");
++	memset(&sess, 0, sizeof(sess));
++	sess.cipher = CRYPTO_AES_XTS;
++	sess.keylen = 32;
++	memset(keybuf, 0x42, sess.keylen);
++	sess.key = (unsigned char *)keybuf;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++#ifdef CIOCGSESSINFO
++	siop.ses = sess.ses;
++	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++	alignmask = siop.alignmask;
++#endif
++
++	for (i = 256; i <= (64 * 1024); i *= 2) {
++		if (encrypt_data(&sess, fdc, i, alignmask))
++			break;
++	}
++
++end:
+ 	close(fdc);
+ 	close(fd);
+ 	return 0;
+-- 
+2.10.2
+

@@ -1,0 +1,58 @@
+From ad7fee26da24fca57efee5ba10756e001769b2ce Mon Sep 17 00:00:00 2001
+From: Alexe Radu <radu.alexe@nxp.com>
+Date: Tue, 25 Oct 2016 16:46:11 +0300
+Subject: [PATCH 056/104] fix: set min value when allocating alligned memory
+ buffers
+
+The function "posix_memalign()" requires that the alignment be at least
+sizeof(void*). In some situations the alignmask for some crypto algorithms
+is smaller then the minimum required. For ex. on 64-bit platforms where
+the alignment may be 4 bytes.
+
+Signed-off-by: Alexe Radu <radu.alexe@nxp.com>
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed.c | 4 ++++
+ tests/speed.c       | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index 263ead7..b895a85 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -232,6 +232,7 @@ int run_test(int id, struct test_params tp)
+ int get_alignmask(int fdc, struct session_op *sess)
+ {
+ 	int alignmask;
++	int min_alignmask = sizeof(void*) - 1;
+ 
+ #ifdef CIOCGSESSINFO
+ 	struct session_info_op siop;
+@@ -242,6 +243,9 @@ int get_alignmask(int fdc, struct session_op *sess)
+ 		return -EINVAL;
+ 	}
+ 	alignmask = siop.alignmask;
++	if (alignmask < min_alignmask) {
++		alignmask = min_alignmask;
++	}
+ #else
+ 	alignmask = 0;
+ #endif
+diff --git a/tests/speed.c b/tests/speed.c
+index bd6d2b2..0b14c88 100644
+--- a/tests/speed.c
++++ b/tests/speed.c
+@@ -80,8 +80,10 @@ int encrypt_data(struct session_op *sess, int fdc, int chunksize, int alignmask)
+ 	double total = 0;
+ 	double secs, ddata, dspeed;
+ 	char metric[16];
++	int min_alignmask = sizeof(void*) - 1;
+ 
+ 	if (alignmask) {
++		alignmask = ((alignmask < min_alignmask) ? min_alignmask : alignmask);
+ 		if (posix_memalign((void **)&buffer, MAX(alignmask + 1, sizeof(void*)), chunksize)) {
+ 			printf("posix_memalign() failed! (mask %x, size: %d)\n", alignmask+1, chunksize);
+ 			return 1;
+-- 
+2.10.2
+

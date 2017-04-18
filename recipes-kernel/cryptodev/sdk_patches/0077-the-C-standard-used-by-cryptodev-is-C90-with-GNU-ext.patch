@@ -1,0 +1,66 @@
+From 76de6db1bc69b2239d8fb91fd65b74610cb8e22f Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 27 Oct 2016 16:41:10 +0300
+Subject: [PATCH 077/104] the C standard used by cryptodev is C90 with GNU
+ extensions
+
+This avoids some problems with gcc>=5.0 which chaged the default to C11.
+The choice for gnu90 is based on the C standard used by Linux kernel which
+is gnu90 as well.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ Makefile       | 6 +++---
+ lib/Makefile   | 2 +-
+ tests/Makefile | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 90e86d9..80439f6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@
+ # disabled by default. To re-enable it uncomment the
+ # corresponding CFLAG.
+ #
+-CRYPTODEV_CFLAGS += -DENABLE_ASYNC
++CRYPTODEV_CFLAGS += -DENABLE_ASYNC -std=gnu90
+ KBUILD_CFLAGS += -I$(src) $(CRYPTODEV_CFLAGS)
+ KERNEL_DIR ?= /lib/modules/$(shell uname -r)/build
+ VERSION = 1.8
+@@ -38,10 +38,10 @@ modules_install:
+ clean:
+ 	$(MAKE) $(KERNEL_MAKE_OPTS) clean
+ 	rm -f $(hostprogs) *~
+-	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests clean
++	CFLAGS="$(CRYPTODEV_CFLAGS)" KERNEL_DIR="$(KERNEL_DIR)" $(MAKE) -C tests clean
+ 
+ check:
+-	CFLAGS=$(CRYPTODEV_CFLAGS) KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests check
++	CFLAGS="$(CRYPTODEV_CFLAGS)" KERNEL_DIR="$(KERNEL_DIR)" $(MAKE) -C tests check
+ 
+ testprogs:
+ 	KERNEL_DIR=$(KERNEL_DIR) $(MAKE) -C tests all
+diff --git a/lib/Makefile b/lib/Makefile
+index 3bedc34..0044613 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -1,4 +1,4 @@
+-CFLAGS=-g -O2 -Wall
++CFLAGS=-g -O2 -Wall -std=gnu90
+ 
+ all: benchmark
+ 
+diff --git a/tests/Makefile b/tests/Makefile
+index e7a60cb..23d67f9 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,4 +1,4 @@
+-CRYPTODEV_CFLAGS += -DENABLE_ASYNC -Wall -Werror
++CRYPTODEV_CFLAGS += -DENABLE_ASYNC -std=gnu90 -Wall -Werror
+ CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ 
+ comp_progs := cipher_comp hash_comp hmac_comp
+-- 
+2.10.2
+

@@ -1,0 +1,28 @@
+From 9c8d7ce749931de6c7604b3b8be44d4a17bcd7d1 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 28 Oct 2016 09:11:13 +0300
+Subject: [PATCH 079/104] fix typo, use consistent spacing
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 991e190..125d45c 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -96,8 +96,8 @@ function run_parallel
+ 	echo "all_cpu idle :   $cpu_idle %"
+ 	echo
+     else
+-	echo -e "algorithm\t""threads\t""runtime\t"\
+-	     "buf_size\t""GB/s\t""%cpu_idle"
++	echo -e "algorithm\t""threads\t""run time\t"\
++	     "buffer size\t""GB/s\t""%cpu idle"
+ 	echo -e "${alg_name}\t${mvalue}\t${runtime}\t"\
+ 	     "${nvalue}\t${avg_speed}\t${cpu_idle}"
+     fi
+-- 
+2.10.2
+

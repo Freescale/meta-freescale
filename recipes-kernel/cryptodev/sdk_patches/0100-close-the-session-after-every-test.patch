@@ -1,0 +1,108 @@
+From 3ca93181fbcaa0acac01588738eb50270cf4999a Mon Sep 17 00:00:00 2001
+From: Alexe Radu <radu.alexe@nxp.com>
+Date: Fri, 9 Dec 2016 16:05:56 +0200
+Subject: [PATCH 100/104] close the session after every test
+
+Signed-off-by: Alexe Radu <radu.alexe@nxp.com>
+---
+ tests/speed.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+diff --git a/tests/speed.c b/tests/speed.c
+index 61259b9..99ef75b 100644
+--- a/tests/speed.c
++++ b/tests/speed.c
+@@ -488,6 +488,12 @@ int run_null(int fdc, struct test_params tp)
+ 	}
+ 
+ 	do_test_vectors(fdc, tp, &sess);
++
++	if (ioctl(fdc, CIOCFSESSION, &sess)) {
++		perror("ioctl(CIOCFSESSION)");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -507,6 +513,12 @@ int run_aes_128_cbc(int fdc, struct test_params tp)
+ 	}
+ 
+ 	do_test_vectors(fdc, tp, &sess);
++
++	if (ioctl(fdc, CIOCFSESSION, &sess)) {
++		perror("ioctl(CIOCFSESSION)");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -526,6 +538,12 @@ int run_aes_256_xts(int fdc, struct test_params tp)
+ 	}
+ 
+ 	do_test_vectors(fdc, tp, &sess);
++
++	if (ioctl(fdc, CIOCFSESSION, &sess)) {
++		perror("ioctl(CIOCFSESSION)");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -541,6 +559,12 @@ int run_crc32c(int fdc, struct test_params tp)
+ 	}
+ 
+ 	do_test_vectors(fdc, tp, &sess);
++
++	if (ioctl(fdc, CIOCFSESSION, &sess)) {
++		perror("ioctl(CIOCFSESSION)");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -556,6 +580,12 @@ int run_sha1(int fdc, struct test_params tp)
+ 	}
+ 
+ 	do_test_vectors(fdc, tp, &sess);
++
++	if (ioctl(fdc, CIOCFSESSION, &sess)) {
++		perror("ioctl(CIOCFSESSION)");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -571,6 +601,12 @@ int run_sha256(int fdc, struct test_params tp)
+ 	}
+ 
+ 	do_test_vectors(fdc, tp, &sess);
++
++	if (ioctl(fdc, CIOCFSESSION, &sess)) {
++		perror("ioctl(CIOCFSESSION)");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -595,6 +631,12 @@ int run_authenc(int fdc, struct test_params tp)
+ 	}
+ 
+ 	do_test_vectors(fdc, tp, &sess);
++
++	if (ioctl(fdc, CIOCFSESSION, &sess)) {
++		perror("ioctl(CIOCFSESSION)");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+-- 
+2.10.2
+

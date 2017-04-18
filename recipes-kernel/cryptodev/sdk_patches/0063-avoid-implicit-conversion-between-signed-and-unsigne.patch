@@ -1,0 +1,698 @@
+From 5f3a9153f7685f6dde29f7cd2d58534126c5b9af Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 10:45:40 +0300
+Subject: [PATCH 063/104] avoid implicit conversion between signed and unsigned
+ char
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_cipher.c     | 36 ++++++++++++++--------------
+ tests/async_hmac.c       |  8 +++----
+ tests/async_speed.c      |  2 +-
+ tests/cipher-aead-srtp.c | 50 +++++++++++++++++++-------------------
+ tests/cipher-aead.c      | 48 ++++++++++++++++++-------------------
+ tests/cipher-gcm.c       | 62 ++++++++++++++++++++++++------------------------
+ tests/cipher.c           | 35 ++++++++++++++-------------
+ tests/cipher_comp.c      | 12 +++++-----
+ tests/fullspeed.c        |  3 ++-
+ tests/hash_comp.c        |  8 +++----
+ tests/hmac.c             |  8 +++----
+ tests/speed.c            |  3 ++-
+ 12 files changed, 138 insertions(+), 137 deletions(-)
+
+diff --git a/tests/async_cipher.c b/tests/async_cipher.c
+index 162a695..dd08403 100644
+--- a/tests/async_cipher.c
++++ b/tests/async_cipher.c
+@@ -9,7 +9,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <fcntl.h>
+-
++#include <stdint.h>
+ #include <sys/ioctl.h>
+ #include <crypto/cryptodev.h>
+ 
+@@ -26,10 +26,10 @@ static int debug = 0;
+ static int
+ test_crypto(int cfd)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
+ 
+ 	struct session_op sess;
+ #ifdef CIOCGSESSINFO
+@@ -62,8 +62,8 @@ test_crypto(int cfd)
+ 		perror("ioctl(CIOCGSESSINFO)");
+ 		return 1;
+ 	}
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ #else
+ 	plaintext = plaintext_raw;
+ 	ciphertext = ciphertext_raw;
+@@ -127,15 +127,15 @@ test_crypto(int cfd)
+ 
+ static int test_aes(int cfd)
+ {
+-	char plaintext1_raw[BLOCK_SIZE + 63], *plaintext1;
+-	char ciphertext1[BLOCK_SIZE] = { 0xdf, 0x55, 0x6a, 0x33, 0x43, 0x8d, 0xb8, 0x7b, 0xc4, 0x1b, 0x17, 0x52, 0xc5, 0x5e, 0x5e, 0x49 };
+-	char iv1[BLOCK_SIZE];
+-	char key1[KEY_SIZE] = { 0xff, 0xff, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+-	char plaintext2_data[BLOCK_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00 };
+-	char plaintext2_raw[BLOCK_SIZE + 63], *plaintext2;
+-	char ciphertext2[BLOCK_SIZE] = { 0xb7, 0x97, 0x2b, 0x39, 0x41, 0xc4, 0x4b, 0x90, 0xaf, 0xa7, 0xb2, 0x64, 0xbf, 0xba, 0x73, 0x87 };
+-	char iv2[BLOCK_SIZE];
+-	char key2[KEY_SIZE];
++	uint8_t plaintext1_raw[BLOCK_SIZE + 63], *plaintext1;
++	uint8_t ciphertext1[BLOCK_SIZE] = { 0xdf, 0x55, 0x6a, 0x33, 0x43, 0x8d, 0xb8, 0x7b, 0xc4, 0x1b, 0x17, 0x52, 0xc5, 0x5e, 0x5e, 0x49 };
++	uint8_t iv1[BLOCK_SIZE];
++	uint8_t key1[KEY_SIZE] = { 0xff, 0xff, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
++	uint8_t plaintext2_data[BLOCK_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00 };
++	uint8_t plaintext2_raw[BLOCK_SIZE + 63], *plaintext2;
++	uint8_t ciphertext2[BLOCK_SIZE] = { 0xb7, 0x97, 0x2b, 0x39, 0x41, 0xc4, 0x4b, 0x90, 0xaf, 0xa7, 0xb2, 0x64, 0xbf, 0xba, 0x73, 0x87 };
++	uint8_t iv2[BLOCK_SIZE];
++	uint8_t key2[KEY_SIZE];
+ 
+ 	struct session_op sess1, sess2;
+ #ifdef CIOCGSESSINFO
+@@ -162,7 +162,7 @@ static int test_aes(int cfd)
+ 		perror("ioctl(CIOCGSESSINFO)");
+ 		return 1;
+ 	}
+-	plaintext1 = (char *)(((unsigned long)plaintext1_raw + siop1.alignmask) & ~siop1.alignmask);
++	plaintext1 = (uint8_t *)(((unsigned long)plaintext1_raw + siop1.alignmask) & ~siop1.alignmask);
+ #else
+ 	plaintext1 = plaintext1_raw;
+ #endif
+@@ -185,7 +185,7 @@ static int test_aes(int cfd)
+ 		perror("ioctl(CIOCGSESSINFO)");
+ 		return 1;
+ 	}
+-	plaintext2 = (char *)(((unsigned long)plaintext2_raw + siop2.alignmask) & ~siop2.alignmask);
++	plaintext2 = (uint8_t *)(((unsigned long)plaintext2_raw + siop2.alignmask) & ~siop2.alignmask);
+ #else
+ 	plaintext2 = plaintext2_raw;
+ #endif
+diff --git a/tests/async_hmac.c b/tests/async_hmac.c
+index 97fd0c5..94a02c0 100644
+--- a/tests/async_hmac.c
++++ b/tests/async_hmac.c
+@@ -61,7 +61,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = "what do ya want for nothing?";
++	cryp.src = (uint8_t*)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 
+@@ -98,7 +98,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = "what do ya want for nothing?";
++	cryp.src = (uint8_t*)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 
+@@ -208,7 +208,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do")-1;
+-	cryp.src = "what do";
++	cryp.src = (uint8_t*)"what do";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_UPDATE;
+@@ -218,7 +218,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof(" ya want for nothing?")-1;
+-	cryp.src = " ya want for nothing?";
++	cryp.src = (uint8_t*)" ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_FINAL;
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index a1a1b7e..dabbbc1 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -140,7 +140,7 @@ int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+ {
+ 	struct crypt_op cop;
+ 	char *buffer[64], iv[32];
+-	char mac[64][HASH_MAX_LEN];
++	uint8_t mac[64][HASH_MAX_LEN];
+ 	static int val = 23;
+ 	struct timeval start, end;
+ 	uint64_t total = 0;
+diff --git a/tests/cipher-aead-srtp.c b/tests/cipher-aead-srtp.c
+index fae04e7..c44877d 100644
+--- a/tests/cipher-aead-srtp.c
++++ b/tests/cipher-aead-srtp.c
+@@ -77,13 +77,13 @@ int i;
+ static int
+ test_crypto(int cfd)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	unsigned char sha1mac[20];
+-	unsigned char tag[20];
+-	unsigned char mackey[] = "\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t sha1mac[20];
++	uint8_t tag[20];
++	uint8_t mackey[] = "\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 	int mackey_len = 16;
+ 
+ 	struct session_op sess;
+@@ -122,8 +122,8 @@ test_crypto(int cfd)
+ 		printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ 			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, HEADER_SIZE); /* header */
+ 	memset(&plaintext[HEADER_SIZE], 0x17, PLAINTEXT_SIZE); /* payload */
+@@ -225,12 +225,12 @@ test_crypto(int cfd)
+ static int
+ test_encrypt_decrypt(int cfd)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	unsigned char tag[20];
+-	unsigned char mackey[] = "\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t tag[20];
++	uint8_t mackey[] = "\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 	int mackey_len = 16;
+ 
+ 	struct session_op sess;
+@@ -265,8 +265,8 @@ test_encrypt_decrypt(int cfd)
+ //	printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ //			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, HEADER_SIZE); /* header */
+ 	memset(&plaintext[HEADER_SIZE], 0x17, PLAINTEXT_SIZE); /* payload */
+@@ -367,12 +367,12 @@ test_encrypt_decrypt(int cfd)
+ static int
+ test_encrypt_decrypt_error(int cfd, int err)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	unsigned char tag[20];
+-	unsigned char mackey[] = "\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t tag[20];
++	uint8_t mackey[] = "\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 	int mackey_len = 16;
+ 
+ 	struct session_op sess;
+@@ -407,8 +407,8 @@ test_encrypt_decrypt_error(int cfd, int err)
+ //	printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ //			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, HEADER_SIZE); /* header */
+ 	memset(&plaintext[HEADER_SIZE], 0x17, PLAINTEXT_SIZE); /* payload */
+diff --git a/tests/cipher-aead.c b/tests/cipher-aead.c
+index 164327f..da43aa6 100644
+--- a/tests/cipher-aead.c
++++ b/tests/cipher-aead.c
+@@ -89,12 +89,12 @@ int i;
+ static int
+ test_crypto(int cfd)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	char auth[AUTH_SIZE];
+-	unsigned char sha1mac[20];
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t auth[AUTH_SIZE];
++	uint8_t sha1mac[20];
+ 	int pad, i;
+ 
+ 	struct session_op sess;
+@@ -133,8 +133,8 @@ test_crypto(int cfd)
+ 		printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ 			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ 	memset(plaintext, 0x15, DATA_SIZE);
+ 
+ 	if (get_sha1_hmac(cfd, sess.mackey, sess.mackeylen, auth, sizeof(auth), plaintext, DATA_SIZE, sha1mac) != 0) {
+@@ -242,12 +242,12 @@ test_crypto(int cfd)
+ static int
+ test_encrypt_decrypt(int cfd)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	char auth[AUTH_SIZE];
+-	unsigned char sha1mac[20];
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t auth[AUTH_SIZE];
++	uint8_t sha1mac[20];
+ 	int enc_len;
+ 
+ 	struct session_op sess;
+@@ -285,8 +285,8 @@ test_encrypt_decrypt(int cfd)
+ //	printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ //			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, DATA_SIZE);
+ 
+@@ -391,12 +391,12 @@ test_encrypt_decrypt(int cfd)
+ static int
+ test_encrypt_decrypt_error(int cfd, int err)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	char auth[AUTH_SIZE];
+-	unsigned char sha1mac[20];
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t auth[AUTH_SIZE];
++	uint8_t sha1mac[20];
+ 	int enc_len;
+ 
+ 	struct session_op sess;
+@@ -434,8 +434,8 @@ test_encrypt_decrypt_error(int cfd, int err)
+ //	printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ //			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ 	memset(plaintext, 0x15, DATA_SIZE);
+ 
+ 	if (get_sha1_hmac(cfd, sess.mackey, sess.mackeylen, auth, sizeof(auth), plaintext, DATA_SIZE, sha1mac) != 0) {
+diff --git a/tests/cipher-gcm.c b/tests/cipher-gcm.c
+index dfc3d84..3f6cc7b 100644
+--- a/tests/cipher-gcm.c
++++ b/tests/cipher-gcm.c
+@@ -45,45 +45,45 @@ struct aes_gcm_vectors_st {
+ 
+ struct aes_gcm_vectors_st aes_gcm_vectors[] = {
+ 	{
+-	 .key =
++	 .key = (uint8_t*)
+ 	 "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+ 	 .auth = NULL,
+ 	 .auth_size = 0,
+-	 .plaintext =
++	 .plaintext = (uint8_t*)
+ 	 "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+ 	 .plaintext_size = 16,
+-	 .ciphertext =
++	 .ciphertext = (uint8_t*)
+ 	 "\x03\x88\xda\xce\x60\xb6\xa3\x92\xf3\x28\xc2\xb9\x71\xb2\xfe\x78",
+-	 .iv = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+-	 .tag =
++	 .iv = (uint8_t*)"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
++	 .tag = (uint8_t*)
+ 	 "\xab\x6e\x47\xd4\x2c\xec\x13\xbd\xf5\x3a\x67\xb2\x12\x57\xbd\xdf"
+ 	},
+ 	{
+-	 .key =
++	 .key = (uint8_t*)
+ 	 "\xfe\xff\xe9\x92\x86\x65\x73\x1c\x6d\x6a\x8f\x94\x67\x30\x83\x08",
+ 	 .auth = NULL,
+ 	 .auth_size = 0,
+-	 .plaintext =
++	 .plaintext = (uint8_t*)
+ 	 "\xd9\x31\x32\x25\xf8\x84\x06\xe5\xa5\x59\x09\xc5\xaf\xf5\x26\x9a\x86\xa7\xa9\x53\x15\x34\xf7\xda\x2e\x4c\x30\x3d\x8a\x31\x8a\x72\x1c\x3c\x0c\x95\x95\x68\x09\x53\x2f\xcf\x0e\x24\x49\xa6\xb5\x25\xb1\x6a\xed\xf5\xaa\x0d\xe6\x57\xba\x63\x7b\x39\x1a\xaf\xd2\x55",
+ 	 .plaintext_size = 64,
+-	 .ciphertext =
++	 .ciphertext = (uint8_t*)
+ 	 "\x42\x83\x1e\xc2\x21\x77\x74\x24\x4b\x72\x21\xb7\x84\xd0\xd4\x9c\xe3\xaa\x21\x2f\x2c\x02\xa4\xe0\x35\xc1\x7e\x23\x29\xac\xa1\x2e\x21\xd5\x14\xb2\x54\x66\x93\x1c\x7d\x8f\x6a\x5a\xac\x84\xaa\x05\x1b\xa3\x0b\x39\x6a\x0a\xac\x97\x3d\x58\xe0\x91\x47\x3f\x59\x85",
+-	 .iv = "\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
+-	 .tag = "\x4d\x5c\x2a\xf3\x27\xcd\x64\xa6\x2c\xf3\x5a\xbd\x2b\xa6\xfa\xb4"
++	 .iv = (uint8_t*)"\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
++	 .tag = (uint8_t*)"\x4d\x5c\x2a\xf3\x27\xcd\x64\xa6\x2c\xf3\x5a\xbd\x2b\xa6\xfa\xb4"
+ 	},
+ 	{
+-	 .key =
++	 .key = (uint8_t*)
+ 	 "\xfe\xff\xe9\x92\x86\x65\x73\x1c\x6d\x6a\x8f\x94\x67\x30\x83\x08",
+-	 .auth =
++	 .auth = (uint8_t*)
+ 	 "\xfe\xed\xfa\xce\xde\xad\xbe\xef\xfe\xed\xfa\xce\xde\xad\xbe\xef\xab\xad\xda\xd2",
+ 	 .auth_size = 20,
+-	 .plaintext =
++	 .plaintext = (uint8_t*)
+ 	 "\xd9\x31\x32\x25\xf8\x84\x06\xe5\xa5\x59\x09\xc5\xaf\xf5\x26\x9a\x86\xa7\xa9\x53\x15\x34\xf7\xda\x2e\x4c\x30\x3d\x8a\x31\x8a\x72\x1c\x3c\x0c\x95\x95\x68\x09\x53\x2f\xcf\x0e\x24\x49\xa6\xb5\x25\xb1\x6a\xed\xf5\xaa\x0d\xe6\x57\xba\x63\x7b\x39",
+ 	 .plaintext_size = 60,
+-	 .ciphertext =
++	 .ciphertext = (uint8_t*)
+ 	 "\x42\x83\x1e\xc2\x21\x77\x74\x24\x4b\x72\x21\xb7\x84\xd0\xd4\x9c\xe3\xaa\x21\x2f\x2c\x02\xa4\xe0\x35\xc1\x7e\x23\x29\xac\xa1\x2e\x21\xd5\x14\xb2\x54\x66\x93\x1c\x7d\x8f\x6a\x5a\xac\x84\xaa\x05\x1b\xa3\x0b\x39\x6a\x0a\xac\x97\x3d\x58\xe0\x91",
+-	 .iv = "\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
+-	 .tag =
++	 .iv = (uint8_t*)"\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
++	 .tag = (uint8_t*)
+ 	 "\x5b\xc9\x4f\xbc\x32\x21\xa5\xdb\x94\xfa\xe9\x5a\xe7\x12\x1a\x47"
+ 	}
+ };
+@@ -94,7 +94,7 @@ struct aes_gcm_vectors_st aes_gcm_vectors[] = {
+ static int test_crypto(int cfd)
+ {
+ 	int i;
+-	int8_t tmp[128];
++	uint8_t tmp[128];
+ 
+ 	struct session_op sess;
+ 	struct crypt_auth_op cao;
+@@ -191,11 +191,11 @@ static int test_crypto(int cfd)
+  */
+ static int test_encrypt_decrypt(int cfd)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	char auth[AUTH_SIZE];
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t auth[AUTH_SIZE];
+ 	int enc_len;
+ 
+ 	struct session_op sess;
+@@ -233,10 +233,10 @@ static int test_encrypt_decrypt(int cfd)
+ //                      siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+ 	plaintext =
+-	    (char *) (((unsigned long) plaintext_raw + siop.alignmask) &
++	    (uint8_t *) (((unsigned long) plaintext_raw + siop.alignmask) &
+ 		      ~siop.alignmask);
+ 	ciphertext =
+-	    (char *) (((unsigned long) ciphertext_raw + siop.alignmask) &
++	    (uint8_t *) (((unsigned long) ciphertext_raw + siop.alignmask) &
+ 		      ~siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, DATA_SIZE);
+@@ -336,11 +336,11 @@ static int test_encrypt_decrypt(int cfd)
+ 
+ static int test_encrypt_decrypt_error(int cfd, int err)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
+-	char auth[AUTH_SIZE];
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
++	uint8_t auth[AUTH_SIZE];
+ 	int enc_len;
+ 
+ 	struct session_op sess;
+@@ -386,10 +386,10 @@ static int test_encrypt_decrypt_error(int cfd, int err)
+ //                      siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+ 	plaintext =
+-	    (char *) (((unsigned long) plaintext_raw + siop.alignmask) &
++	    (uint8_t *) (((unsigned long) plaintext_raw + siop.alignmask) &
+ 		      ~siop.alignmask);
+ 	ciphertext =
+-	    (char *) (((unsigned long) ciphertext_raw + siop.alignmask) &
++	    (uint8_t *) (((unsigned long) ciphertext_raw + siop.alignmask) &
+ 		      ~siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, DATA_SIZE);
+diff --git a/tests/cipher.c b/tests/cipher.c
+index 07144f2..f3ca2f0 100644
+--- a/tests/cipher.c
++++ b/tests/cipher.c
+@@ -8,6 +8,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <fcntl.h>
++#include <stdint.h>
+ 
+ #include <sys/ioctl.h>
+ #include <crypto/cryptodev.h>
+@@ -21,10 +22,10 @@ static int debug = 0;
+ static int
+ test_crypto(int cfd)
+ {
+-	char plaintext_raw[DATA_SIZE + 63], *plaintext;
+-	char ciphertext_raw[DATA_SIZE + 63], *ciphertext;
+-	char iv[BLOCK_SIZE];
+-	char key[KEY_SIZE];
++	uint8_t plaintext_raw[DATA_SIZE + 63], *plaintext;
++	uint8_t ciphertext_raw[DATA_SIZE + 63], *ciphertext;
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t key[KEY_SIZE];
+ 
+ 	struct session_op sess;
+ #ifdef CIOCGSESSINFO
+@@ -57,8 +58,8 @@ test_crypto(int cfd)
+ 		printf("requested cipher CRYPTO_AES_CBC, got %s with driver %s\n",
+ 			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (char *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
+-	ciphertext = (char *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext = (uint8_t *)(((unsigned long)plaintext_raw + siop.alignmask) & ~siop.alignmask);
++	ciphertext = (uint8_t *)(((unsigned long)ciphertext_raw + siop.alignmask) & ~siop.alignmask);
+ #else
+ 	plaintext = plaintext_raw;
+ 	ciphertext = ciphertext_raw;
+@@ -143,15 +144,15 @@ test_crypto(int cfd)
+ 
+ static int test_aes(int cfd)
+ {
+-	char plaintext1_raw[BLOCK_SIZE + 63], *plaintext1;
+-	char ciphertext1[BLOCK_SIZE] = { 0xdf, 0x55, 0x6a, 0x33, 0x43, 0x8d, 0xb8, 0x7b, 0xc4, 0x1b, 0x17, 0x52, 0xc5, 0x5e, 0x5e, 0x49 };
+-	char iv1[BLOCK_SIZE];
+-	char key1[KEY_SIZE] = { 0xff, 0xff, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+-	char plaintext2_data[BLOCK_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00 };
+-	char plaintext2_raw[BLOCK_SIZE + 63], *plaintext2;
+-	char ciphertext2[BLOCK_SIZE] = { 0xb7, 0x97, 0x2b, 0x39, 0x41, 0xc4, 0x4b, 0x90, 0xaf, 0xa7, 0xb2, 0x64, 0xbf, 0xba, 0x73, 0x87 };
+-	char iv2[BLOCK_SIZE];
+-	char key2[KEY_SIZE];
++	uint8_t plaintext1_raw[BLOCK_SIZE + 63], *plaintext1;
++	uint8_t ciphertext1[BLOCK_SIZE] = { 0xdf, 0x55, 0x6a, 0x33, 0x43, 0x8d, 0xb8, 0x7b, 0xc4, 0x1b, 0x17, 0x52, 0xc5, 0x5e, 0x5e, 0x49 };
++	uint8_t iv1[BLOCK_SIZE];
++	uint8_t key1[KEY_SIZE] = { 0xff, 0xff, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
++	uint8_t plaintext2_data[BLOCK_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00 };
++	uint8_t plaintext2_raw[BLOCK_SIZE + 63], *plaintext2;
++	uint8_t ciphertext2[BLOCK_SIZE] = { 0xb7, 0x97, 0x2b, 0x39, 0x41, 0xc4, 0x4b, 0x90, 0xaf, 0xa7, 0xb2, 0x64, 0xbf, 0xba, 0x73, 0x87 };
++	uint8_t iv2[BLOCK_SIZE];
++	uint8_t key2[KEY_SIZE];
+ 
+ 	struct session_op sess;
+ #ifdef CIOCGSESSINFO
+@@ -176,7 +177,7 @@ static int test_aes(int cfd)
+ 		perror("ioctl(CIOCGSESSINFO)");
+ 		return 1;
+ 	}
+-	plaintext1 = (char *)(((unsigned long)plaintext1_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext1 = (uint8_t *)(((unsigned long)plaintext1_raw + siop.alignmask) & ~siop.alignmask);
+ #else
+ 	plaintext1 = plaintext1_raw;
+ #endif
+@@ -226,7 +227,7 @@ static int test_aes(int cfd)
+ 		printf("requested cipher CRYPTO_AES_CBC, got %s with driver %s\n",
+ 			siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext2 = (char *)(((unsigned long)plaintext2_raw + siop.alignmask) & ~siop.alignmask);
++	plaintext2 = (uint8_t *)(((unsigned long)plaintext2_raw + siop.alignmask) & ~siop.alignmask);
+ #else
+ 	plaintext2 = plaintext2_raw;
+ #endif
+diff --git a/tests/cipher_comp.c b/tests/cipher_comp.c
+index b2bc5af..03f67bf 100644
+--- a/tests/cipher_comp.c
++++ b/tests/cipher_comp.c
+@@ -24,12 +24,12 @@
+ static int
+ test_crypto(int cfd, struct session_op *sess, int datalen)
+ {
+-	char *data, *encrypted;
+-	char *encrypted_comp;
++	uint8_t *data, *encrypted;
++	uint8_t *encrypted_comp;
+ 
+-	char iv_in[BLOCK_SIZE];
+-	char iv[BLOCK_SIZE];
+-	char iv_comp[BLOCK_SIZE];
++	uint8_t iv_in[BLOCK_SIZE];
++	uint8_t iv[BLOCK_SIZE];
++	uint8_t iv_comp[BLOCK_SIZE];
+ 
+ 	struct crypt_op cryp;
+ 
+@@ -90,7 +90,7 @@ main(int argc, char **argv)
+ {
+ 	int fd;
+ 	struct session_op sess;
+-	unsigned char key[KEY_SIZE];
++	uint8_t key[KEY_SIZE];
+ 	int datalen = BLOCK_SIZE;
+ 	int datalen_end = MAX_DATALEN;
+ 	int i;
+diff --git a/tests/fullspeed.c b/tests/fullspeed.c
+index 611859d..c025130 100644
+--- a/tests/fullspeed.c
++++ b/tests/fullspeed.c
+@@ -25,6 +25,7 @@
+ #include <sys/types.h>
+ #include <signal.h>
+ #include <unistd.h>
++#include <stdint.h>
+ 
+ #include <crypto/cryptodev.h>
+ 
+@@ -74,7 +75,7 @@ static void value2human(int si, double bytes, double time, double* data, double*
+ int encrypt_data(int algo, void* keybuf, int key_size, int fdc, int chunksize)
+ {
+ 	struct crypt_op cop;
+-	char *buffer, iv[32];
++	uint8_t *buffer, iv[32];
+ 	static int val = 23;
+ 	struct timeval start, end;
+ 	double total = 0;
+diff --git a/tests/hash_comp.c b/tests/hash_comp.c
+index 9e700a1..e6a4346 100644
+--- a/tests/hash_comp.c
++++ b/tests/hash_comp.c
+@@ -30,11 +30,9 @@ static void printhex(unsigned char *buf, int buflen)
+ static int
+ test_crypto(int cfd, struct session_op *sess, int datalen)
+ {
+-	unsigned char *data;
+-
+-	unsigned char mac[AALG_MAX_RESULT_LEN];
+-
+-	unsigned char mac_comp[AALG_MAX_RESULT_LEN];
++	uint8_t *data;
++	uint8_t mac[AALG_MAX_RESULT_LEN];
++	uint8_t mac_comp[AALG_MAX_RESULT_LEN];
+ 
+ 	struct crypt_op cryp;
+ 
+diff --git a/tests/hmac.c b/tests/hmac.c
+index 1d9349e..80a2c42 100644
+--- a/tests/hmac.c
++++ b/tests/hmac.c
+@@ -69,7 +69,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = "what do ya want for nothing?";
++	cryp.src = (uint8_t*)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	if (ioctl(cfd, CIOCCRYPT, &cryp)) {
+@@ -113,7 +113,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = "what do ya want for nothing?";
++	cryp.src = (uint8_t*)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	if (ioctl(cfd, CIOCCRYPT, &cryp)) {
+@@ -246,7 +246,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do")-1;
+-	cryp.src = "what do";
++	cryp.src = (uint8_t*)"what do";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_UPDATE;
+@@ -257,7 +257,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof(" ya want for nothing?")-1;
+-	cryp.src = " ya want for nothing?";
++	cryp.src = (uint8_t*)" ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_FINAL;
+diff --git a/tests/speed.c b/tests/speed.c
+index d2e1aed..0e2bbc3 100644
+--- a/tests/speed.c
++++ b/tests/speed.c
+@@ -25,6 +25,7 @@
+ #include <sys/types.h>
+ #include <signal.h>
+ #include <unistd.h>
++#include <stdint.h>
+ 
+ #include <crypto/cryptodev.h>
+ 
+@@ -75,7 +76,7 @@ int encrypt_data(struct session_op *sess, int fdc, int chunksize, int alignmask)
+ {
+ 	struct crypt_op cop;
+ 	char *buffer, iv[32];
+-	char mac[HASH_MAX_LEN];
++	uint8_t mac[HASH_MAX_LEN];
+ 	static int val = 23;
+ 	struct timeval start, end;
+ 	double total = 0;
+-- 
+2.10.2
+

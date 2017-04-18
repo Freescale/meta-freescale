@@ -1,0 +1,58 @@
+From fc04b5a05fd4ab1fc0f581b52d52db7c709dfc6a Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 28 Oct 2016 18:55:09 +0300
+Subject: [PATCH 086/104] add a wrapper script for running all tests
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile            |  1 +
+ tests/run_crypto_tests.sh | 25 +++++++++++++++++++++++++
+ 2 files changed, 26 insertions(+)
+ create mode 100644 tests/run_crypto_tests.sh
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 400fb7a..51469e8 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -39,6 +39,7 @@ install:
+ 		install -m 755 $$prog $(DESTDIR)/$(bindir)/tests_cryptodev/; \
+ 	done
+ 	install -m 755 async_speed_multi.sh  $(DESTDIR)/$(bindir)
++	install -m 755 run_crypto_tests.sh  $(DESTDIR)/$(bindir)
+ 
+ clean:
+ 	rm -f *.o *~ $(hostprogs)
+diff --git a/tests/run_crypto_tests.sh b/tests/run_crypto_tests.sh
+new file mode 100644
+index 0000000..32ab8e2
+--- /dev/null
++++ b/tests/run_crypto_tests.sh
+@@ -0,0 +1,25 @@
++#!/bin/bash
++
++
++BUF_SIZE="8192 16384 65536 131072 262144"
++THREAD_CNT="1 8 12"
++ALG_NAMES="aes-128-cbc aes-256-xts sha1 sha256 crc32c"
++
++#restool dpseci create --num-queues=8 --priorities=1,2,3,4,5,6,7,8
++#restool dprc assign dprc.1 --object=dpseci.0 --plugged=1
++
++
++#grep DPIO /proc/interrupts
++for alg_name in ${ALG_NAMES}
++do
++	for multi in ${THREAD_CNT}
++	do
++		for bsize in ${BUF_SIZE}
++		do
++			async_speed_multi.sh -t 10 -n $bsize -m ${multi} ${alg_name} |
++			tail -n 1
++		done
++	done
++done
++
++#grep DPIO /proc/interrupts
+-- 
+2.10.2
+

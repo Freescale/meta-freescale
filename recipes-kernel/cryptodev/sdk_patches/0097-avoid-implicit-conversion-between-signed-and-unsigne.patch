@@ -1,0 +1,304 @@
+From 4843f76a74558b85944dbf923cf699bfd5b354eb Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 29 Nov 2016 13:37:23 +0200
+Subject: [PATCH 097/104] avoid implicit conversion between signed and unsigned
+ char
+
+Use uint8_t type for all variables with this problem and avoid casting
+from char in assignments. With uint8_t we also convey the information
+that we're using small numbers rather than strings.
+
+Although cryptodev.h uses the synonym type __u8, we use uint8_t
+for consistency with other files in tests directory and also because it
+is a standard POSIX type.
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_hmac.c  | 12 ++++++------
+ tests/cipher-aead.c | 10 +++++-----
+ tests/cipher-gcm.c  | 40 ++++++++++++++++++++--------------------
+ tests/cipher.c      |  1 -
+ tests/fullspeed.c   |  1 +
+ tests/hmac.c        | 12 ++++++------
+ 6 files changed, 38 insertions(+), 38 deletions(-)
+
+diff --git a/tests/async_hmac.c b/tests/async_hmac.c
+index 1bdaad3..014b8ed 100644
+--- a/tests/async_hmac.c
++++ b/tests/async_hmac.c
+@@ -61,7 +61,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = (uint8_t*)"what do ya want for nothing?";
++	cryp.src = (uint8_t *)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 
+@@ -88,7 +88,7 @@ test_crypto(int cfd)
+ 	memset(mac, 0, sizeof(mac));
+ 
+ 	sess.cipher = 0;
+-	sess.mackey = (uint8_t*)"Jefe";
++	sess.mackey = (uint8_t *)"Jefe";
+ 	sess.mackeylen = 4;
+ 	sess.mac = CRYPTO_MD5_HMAC;
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+@@ -98,7 +98,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = (uint8_t*)"what do ya want for nothing?";
++	cryp.src = (uint8_t *)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 
+@@ -127,7 +127,7 @@ test_crypto(int cfd)
+ 	sess.keylen = KEY_SIZE;
+ 	sess.key = data.key;
+ 	sess.mackeylen = 16;
+-	sess.mackey = (uint8_t*)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	sess.mackey = (uint8_t *)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+ 		return 1;
+@@ -206,7 +206,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do")-1;
+-	cryp.src = (uint8_t*)"what do";
++	cryp.src = (uint8_t *)"what do";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_UPDATE;
+@@ -216,7 +216,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof(" ya want for nothing?")-1;
+-	cryp.src = (uint8_t*)" ya want for nothing?";
++	cryp.src = (uint8_t *)" ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_FINAL;
+diff --git a/tests/cipher-aead.c b/tests/cipher-aead.c
+index b329d12..305b720 100644
+--- a/tests/cipher-aead.c
++++ b/tests/cipher-aead.c
+@@ -118,7 +118,7 @@ test_crypto(int cfd)
+ 
+ 	sess.mac = CRYPTO_SHA1_HMAC;
+ 	sess.mackeylen = 16;
+-	sess.mackey = (uint8_t*)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	sess.mackey = (uint8_t *)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+@@ -271,7 +271,7 @@ test_encrypt_decrypt(int cfd)
+ 
+ 	sess.mac = CRYPTO_SHA1_HMAC;
+ 	sess.mackeylen = 16;
+-	sess.mackey = (uint8_t*)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	sess.mackey = (uint8_t *)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+@@ -329,7 +329,7 @@ test_encrypt_decrypt(int cfd)
+ 	sess.key = key;
+ 	sess.mac = CRYPTO_SHA1_HMAC;
+ 	sess.mackeylen = 16;
+-	sess.mackey = (uint8_t*)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	sess.mackey = (uint8_t *)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+@@ -420,7 +420,7 @@ test_encrypt_decrypt_error(int cfd, int err)
+ 
+ 	sess.mac = CRYPTO_SHA1_HMAC;
+ 	sess.mackeylen = 16;
+-	sess.mackey = (uint8_t*)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	sess.mackey = (uint8_t *)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+@@ -477,7 +477,7 @@ test_encrypt_decrypt_error(int cfd, int err)
+ 	sess.key = key;
+ 	sess.mac = CRYPTO_SHA1_HMAC;
+ 	sess.mackeylen = 16;
+-	sess.mackey = (uint8_t*)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	sess.mackey = (uint8_t *)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+diff --git a/tests/cipher-gcm.c b/tests/cipher-gcm.c
+index d5f8486..36c827a 100644
+--- a/tests/cipher-gcm.c
++++ b/tests/cipher-gcm.c
+@@ -46,45 +46,45 @@ struct aes_gcm_vectors_st {
+ 
+ struct aes_gcm_vectors_st aes_gcm_vectors[] = {
+ 	{
+-	 .key = (uint8_t*)
++	 .key = (uint8_t *)
+ 	 "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+ 	 .auth = NULL,
+ 	 .auth_size = 0,
+-	 .plaintext = (uint8_t*)
++	 .plaintext = (uint8_t *)
+ 	 "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+ 	 .plaintext_size = 16,
+-	 .ciphertext = (uint8_t*)
++	 .ciphertext = (uint8_t *)
+ 	 "\x03\x88\xda\xce\x60\xb6\xa3\x92\xf3\x28\xc2\xb9\x71\xb2\xfe\x78",
+-	 .iv = (uint8_t*)"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+-	 .tag = (uint8_t*)
++	 .iv = (uint8_t *)"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
++	 .tag = (uint8_t *)
+ 	 "\xab\x6e\x47\xd4\x2c\xec\x13\xbd\xf5\x3a\x67\xb2\x12\x57\xbd\xdf"
+ 	},
+ 	{
+-	 .key = (uint8_t*)
++	 .key = (uint8_t *)
+ 	 "\xfe\xff\xe9\x92\x86\x65\x73\x1c\x6d\x6a\x8f\x94\x67\x30\x83\x08",
+ 	 .auth = NULL,
+ 	 .auth_size = 0,
+-	 .plaintext = (uint8_t*)
++	 .plaintext = (uint8_t *)
+ 	 "\xd9\x31\x32\x25\xf8\x84\x06\xe5\xa5\x59\x09\xc5\xaf\xf5\x26\x9a\x86\xa7\xa9\x53\x15\x34\xf7\xda\x2e\x4c\x30\x3d\x8a\x31\x8a\x72\x1c\x3c\x0c\x95\x95\x68\x09\x53\x2f\xcf\x0e\x24\x49\xa6\xb5\x25\xb1\x6a\xed\xf5\xaa\x0d\xe6\x57\xba\x63\x7b\x39\x1a\xaf\xd2\x55",
+ 	 .plaintext_size = 64,
+-	 .ciphertext = (uint8_t*)
++	 .ciphertext = (uint8_t *)
+ 	 "\x42\x83\x1e\xc2\x21\x77\x74\x24\x4b\x72\x21\xb7\x84\xd0\xd4\x9c\xe3\xaa\x21\x2f\x2c\x02\xa4\xe0\x35\xc1\x7e\x23\x29\xac\xa1\x2e\x21\xd5\x14\xb2\x54\x66\x93\x1c\x7d\x8f\x6a\x5a\xac\x84\xaa\x05\x1b\xa3\x0b\x39\x6a\x0a\xac\x97\x3d\x58\xe0\x91\x47\x3f\x59\x85",
+-	 .iv = (uint8_t*)"\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
+-	 .tag = (uint8_t*)"\x4d\x5c\x2a\xf3\x27\xcd\x64\xa6\x2c\xf3\x5a\xbd\x2b\xa6\xfa\xb4"
++	 .iv = (uint8_t *)"\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
++	 .tag = (uint8_t *)"\x4d\x5c\x2a\xf3\x27\xcd\x64\xa6\x2c\xf3\x5a\xbd\x2b\xa6\xfa\xb4"
+ 	},
+ 	{
+-	 .key = (uint8_t*)
++	 .key = (uint8_t *)
+ 	 "\xfe\xff\xe9\x92\x86\x65\x73\x1c\x6d\x6a\x8f\x94\x67\x30\x83\x08",
+-	 .auth = (uint8_t*)
++	 .auth = (uint8_t *)
+ 	 "\xfe\xed\xfa\xce\xde\xad\xbe\xef\xfe\xed\xfa\xce\xde\xad\xbe\xef\xab\xad\xda\xd2",
+ 	 .auth_size = 20,
+-	 .plaintext = (uint8_t*)
++	 .plaintext = (uint8_t *)
+ 	 "\xd9\x31\x32\x25\xf8\x84\x06\xe5\xa5\x59\x09\xc5\xaf\xf5\x26\x9a\x86\xa7\xa9\x53\x15\x34\xf7\xda\x2e\x4c\x30\x3d\x8a\x31\x8a\x72\x1c\x3c\x0c\x95\x95\x68\x09\x53\x2f\xcf\x0e\x24\x49\xa6\xb5\x25\xb1\x6a\xed\xf5\xaa\x0d\xe6\x57\xba\x63\x7b\x39",
+ 	 .plaintext_size = 60,
+-	 .ciphertext = (uint8_t*)
++	 .ciphertext = (uint8_t *)
+ 	 "\x42\x83\x1e\xc2\x21\x77\x74\x24\x4b\x72\x21\xb7\x84\xd0\xd4\x9c\xe3\xaa\x21\x2f\x2c\x02\xa4\xe0\x35\xc1\x7e\x23\x29\xac\xa1\x2e\x21\xd5\x14\xb2\x54\x66\x93\x1c\x7d\x8f\x6a\x5a\xac\x84\xaa\x05\x1b\xa3\x0b\x39\x6a\x0a\xac\x97\x3d\x58\xe0\x91",
+-	 .iv = (uint8_t*)"\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
+-	 .tag = (uint8_t*)
++	 .iv = (uint8_t *)"\xca\xfe\xba\xbe\xfa\xce\xdb\xad\xde\xca\xf8\x88",
++	 .tag = (uint8_t *)
+ 	 "\x5b\xc9\x4f\xbc\x32\x21\xa5\xdb\x94\xfa\xe9\x5a\xe7\x12\x1a\x47"
+ 	}
+ };
+@@ -233,8 +233,8 @@ static int test_encrypt_decrypt(int cfd)
+ //      printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ //                      siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (__u8 *)buf_align(plaintext_raw, siop.alignmask);
+-	ciphertext = (__u8 *)buf_align(ciphertext_raw, siop.alignmask);
++	plaintext = (uint8_t *)buf_align(plaintext_raw, siop.alignmask);
++	ciphertext = (uint8_t *)buf_align(ciphertext_raw, siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, DATA_SIZE);
+ 
+@@ -382,8 +382,8 @@ static int test_encrypt_decrypt_error(int cfd, int err)
+ //      printf("requested cipher CRYPTO_AES_CBC/HMAC-SHA1, got %s with driver %s\n",
+ //                      siop.cipher_info.cra_name, siop.cipher_info.cra_driver_name);
+ 
+-	plaintext = (__u8 *)buf_align(plaintext_raw, siop.alignmask);
+-	ciphertext = (__u8 *)buf_align(ciphertext_raw, siop.alignmask);
++	plaintext = (uint8_t *)buf_align(plaintext_raw, siop.alignmask);
++	ciphertext = (uint8_t *)buf_align(ciphertext_raw, siop.alignmask);
+ 
+ 	memset(plaintext, 0x15, DATA_SIZE);
+ 	memcpy(ciphertext, plaintext, DATA_SIZE);
+diff --git a/tests/cipher.c b/tests/cipher.c
+index 222f095..fab3de6 100644
+--- a/tests/cipher.c
++++ b/tests/cipher.c
+@@ -9,7 +9,6 @@
+ #include <unistd.h>
+ #include <fcntl.h>
+ #include <stdint.h>
+-
+ #include <sys/ioctl.h>
+ #include <crypto/cryptodev.h>
+ #include "testhelper.h"
+diff --git a/tests/fullspeed.c b/tests/fullspeed.c
+index c025130..ae873e2 100644
+--- a/tests/fullspeed.c
++++ b/tests/fullspeed.c
+@@ -24,6 +24,7 @@
+ #include <sys/time.h>
+ #include <sys/types.h>
+ #include <signal.h>
++#include <stdint.h>
+ #include <unistd.h>
+ #include <stdint.h>
+ 
+diff --git a/tests/hmac.c b/tests/hmac.c
+index 3b248f3..8d6492e 100644
+--- a/tests/hmac.c
++++ b/tests/hmac.c
+@@ -69,7 +69,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = (uint8_t*)"what do ya want for nothing?";
++	cryp.src = (uint8_t *)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	if (ioctl(cfd, CIOCCRYPT, &cryp)) {
+@@ -92,7 +92,7 @@ test_crypto(int cfd)
+ 	memset(mac, 0, sizeof(mac));
+ 
+ 	sess.cipher = 0;
+-	sess.mackey = (uint8_t*)"Jefe";
++	sess.mackey = (uint8_t *)"Jefe";
+ 	sess.mackeylen = 4;
+ 	sess.mac = CRYPTO_MD5_HMAC;
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+@@ -113,7 +113,7 @@ test_crypto(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do ya want for nothing?")-1;
+-	cryp.src = (uint8_t*)"what do ya want for nothing?";
++	cryp.src = (uint8_t *)"what do ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	if (ioctl(cfd, CIOCCRYPT, &cryp)) {
+@@ -138,7 +138,7 @@ test_crypto(int cfd)
+ 	sess.keylen = KEY_SIZE;
+ 	sess.key = data.key;
+ 	sess.mackeylen = 16;
+-	sess.mackey = (uint8_t*)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
++	sess.mackey = (uint8_t *)"\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b";
+ 	if (ioctl(cfd, CIOCGSESSION, &sess)) {
+ 		perror("ioctl(CIOCGSESSION)");
+ 		return 1;
+@@ -244,7 +244,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof("what do")-1;
+-	cryp.src = (uint8_t*)"what do";
++	cryp.src = (uint8_t *)"what do";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_UPDATE;
+@@ -255,7 +255,7 @@ test_extras(int cfd)
+ 
+ 	cryp.ses = sess.ses;
+ 	cryp.len = sizeof(" ya want for nothing?")-1;
+-	cryp.src = (uint8_t*)" ya want for nothing?";
++	cryp.src = (uint8_t *)" ya want for nothing?";
+ 	cryp.mac = mac;
+ 	cryp.op = COP_ENCRYPT;
+ 	cryp.flags = COP_FLAG_FINAL;
+-- 
+2.10.2
+

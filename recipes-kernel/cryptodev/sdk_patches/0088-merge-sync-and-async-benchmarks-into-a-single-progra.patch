@@ -1,0 +1,1858 @@
+From a7e42a9c9a2cd4b4ffd369ae57dfbd207536766a Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 1 Nov 2016 12:01:33 +0200
+Subject: [PATCH 088/104] merge sync and async benchmarks into a single program
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/Makefile             |   9 +-
+ tests/async_speed.c        | 463 --------------------------------------
+ tests/async_speed_multi.sh | 172 --------------
+ tests/run_crypto_tests.sh  |   2 +-
+ tests/speed.c              | 546 +++++++++++++++++++++++++++++++++++++++++++++
+ tests/speed_multi.sh       | 174 +++++++++++++++
+ tests/sync_speed.c         | 400 ---------------------------------
+ 7 files changed, 725 insertions(+), 1041 deletions(-)
+ delete mode 100644 tests/async_speed.c
+ delete mode 100755 tests/async_speed_multi.sh
+ create mode 100644 tests/speed.c
+ create mode 100755 tests/speed_multi.sh
+ delete mode 100644 tests/sync_speed.c
+
+diff --git a/tests/Makefile b/tests/Makefile
+index 51469e8..88f5040 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -3,19 +3,18 @@ CFLAGS += -I.. $(CRYPTODEV_CFLAGS)
+ 
+ comp_progs := cipher_comp hash_comp hmac_comp
+ 
+-hostprogs := cipher cipher-aead hmac sync_speed async_cipher async_hmac \
+-	async_speed sha_speed hashcrypt_speed fullspeed cipher-gcm \
++hostprogs := cipher cipher-aead hmac async_cipher async_hmac \
++	speed sha_speed hashcrypt_speed fullspeed cipher-gcm \
+ 	cipher-aead-srtp $(comp_progs)
+ 
+ example-cipher-objs := cipher.o
+ example-cipher-aead-objs := cipher-aead.o
+ example-hmac-objs := hmac.o
+-example-speed-objs := sync_speed.o
+ example-fullspeed-objs := fullspeed.c
+ example-sha-speed-objs := sha_speed.c
+ example-async-cipher-objs := async_cipher.o
+ example-async-hmac-objs := async_hmac.o
+-example-async-speed-objs := async_speed.o
++example-async-speed-objs := speed.o
+ example-hashcrypt-speed-objs := hashcrypt_speed.c
+ 
+ prefix ?= /usr/local
+@@ -38,7 +37,7 @@ install:
+ 	for prog in $(hostprogs); do \
+ 		install -m 755 $$prog $(DESTDIR)/$(bindir)/tests_cryptodev/; \
+ 	done
+-	install -m 755 async_speed_multi.sh  $(DESTDIR)/$(bindir)
++	install -m 755 speed_multi.sh  $(DESTDIR)/$(bindir)
+ 	install -m 755 run_crypto_tests.sh  $(DESTDIR)/$(bindir)
+ 
+ clean:
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+deleted file mode 100644
+index d16d17e..0000000
+--- a/tests/async_speed.c
++++ /dev/null
+@@ -1,463 +0,0 @@
+-/*  cryptodev_test - simple benchmark tool for cryptodev
+- *
+- *    Copyright (C) 2010 by Phil Sutter <phil.sutter@viprinet.com>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License as published by
+- *  the Free Software Foundation; either version 2 of the License, or
+- *  (at your option) any later version.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program; if not, write to the Free Software
+- *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+- */
+-#include <errno.h>
+-#include <fcntl.h>
+-#include <poll.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <sys/ioctl.h>
+-#include <sys/time.h>
+-#include <sys/types.h>
+-#include <signal.h>
+-#include <crypto/cryptodev.h>
+-#include <stdbool.h>
+-#include <unistd.h>
+-#include <stdint.h>
+-#include <inttypes.h>
+-
+-#ifdef ENABLE_ASYNC
+-
+-struct test_params {
+-	bool tflag;
+-	bool nflag;
+-	bool mflag;
+-	int tvalue;
+-	int nvalue;
+-};
+-
+-const char usage_str[] = "Usage: %s [OPTION]... <cipher>|<hash>\n"
+-	"Run benchmark test for cipher or hash\n\n"
+-	"  -t <secs>\t" "time to run each test (default 10 secs)\n"
+-	"  -n <bytes>\t" "size of the test buffer\n"
+-	"  -m\t\t" "output in a machine readable format\n"
+-	"  -h\t\t" "show this help\n\n"
+-	"Note: SEC driver is configured to support buffers smaller than 512K\n"
+-;
+-
+-int run_null(int fdc, struct test_params tp);
+-int run_aes_128_cbc(int fdc, struct test_params tp);
+-int run_aes_256_xts(int fdc, struct test_params tp);
+-int run_crc32c(int fdc, struct test_params tp);
+-int run_sha1(int fdc, struct test_params tp);
+-int run_sha256(int fdc, struct test_params tp);
+-
+-#define ALG_COUNT	6
+-struct {
+-	char *name;
+-	int (*func)(int, struct test_params);
+-} ciphers[ALG_COUNT] = {
+-	{"null",	run_null},
+-	{"aes-128-cbc",	run_aes_128_cbc},
+-	{"aes-256-xts",	run_aes_256_xts},
+-	{"crc32c",	run_crc32c},
+-	{"sha1",	run_sha1},
+-	{"sha256",	run_sha256},
+-};
+-
+-static double udifftimeval(struct timeval start, struct timeval end)
+-{
+-	return (double)(end.tv_usec - start.tv_usec) +
+-	       (double)(end.tv_sec - start.tv_sec) * 1000 * 1000;
+-}
+-
+-static volatile int must_finish;
+-static volatile int must_exit;
+-static struct pollfd pfd;
+-
+-static void alarm_handler(int signo)
+-{
+-        must_finish = 1;
+-	pfd.events = POLLIN;
+-}
+-
+-static void exit_handler(int signo)
+-{
+-	must_exit = 1;
+-	printf("\nexit requested by user through ctrl+c \n");
+-}
+-
+-static char *units[] = { "", "Ki", "Mi", "Gi", "Ti", 0};
+-
+-static void value2human(uint64_t bytes, double time, double* data, double* speed,char* metric)
+-{
+-	int unit = 0;
+-
+-	*data = bytes;
+-	while (*data > 1024 && units[unit + 1]) {
+-		*data /= 1024;
+-		unit++;
+-	}
+-	*speed = *data / time;
+-	sprintf(metric, "%sB", units[unit]);
+-}
+-
+-static void value2machine(uint64_t bytes, double time, double* speed)
+-{
+-	*speed = bytes / time;
+-}
+-
+-int get_alignmask(int fdc, struct session_op *sess)
+-{
+-	int alignmask;
+-	int min_alignmask = sizeof(void*) - 1;
+-
+-#ifdef CIOCGSESSINFO
+-	struct session_info_op siop;
+-
+-	siop.ses = sess->ses;
+-	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
+-		perror("ioctl(CIOCGSESSINFO)");
+-		return -EINVAL;
+-	}
+-	alignmask = siop.alignmask;
+-	if (alignmask < min_alignmask) {
+-		alignmask = min_alignmask;
+-	}
+-#else
+-	alignmask = 0;
+-#endif
+-
+-	return alignmask;
+-}
+-
+-int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+-{
+-	struct crypt_op cop;
+-	char *buffer[64], iv[32];
+-	uint8_t mac[64][HASH_MAX_LEN];
+-	static int val = 23;
+-	struct timeval start, end;
+-	uint64_t total = 0;
+-	double secs, ddata, dspeed;
+-	char metric[16];
+-	int rc, wqueue = 0, bufidx = 0;
+-	int alignmask;
+-
+-	memset(iv, 0x23, 32);
+-
+-	if (!tp.mflag) {
+-		printf("\tBuffer size %d bytes: ", tp.nvalue);
+-		fflush(stdout);
+-	}
+-
+-	alignmask = get_alignmask(fdc, sess);
+-	for (rc = 0; rc < 64; rc++) {
+-		if (alignmask) {
+-			if (posix_memalign((void **)(buffer + rc), alignmask + 1, tp.nvalue)) {
+-				printf("posix_memalign() failed!\n");
+-				return 1;
+-			}
+-		} else {
+-			if (!(buffer[rc] = malloc(tp.nvalue))) {
+-				perror("malloc()");
+-				return 1;
+-			}
+-		}
+-		memset(buffer[rc], val++, tp.nvalue);
+-	}
+-	pfd.fd = fdc;
+-	pfd.events = POLLOUT | POLLIN;
+-
+-	must_finish = 0;
+-	alarm(tp.tvalue);
+-
+-	gettimeofday(&start, NULL);
+-	do {
+-		if ((rc = poll(&pfd, 1, 100)) < 0) {
+-			if (errno & (ERESTART | EINTR))
+-				continue;
+-			fprintf(stderr, "errno = %d ", errno);
+-			perror("poll()");
+-			return 1;
+-		}
+-
+-		if (pfd.revents & POLLOUT) {
+-			memset(&cop, 0, sizeof(cop));
+-			cop.ses = sess->ses;
+-			cop.len = tp.nvalue;
+-			cop.iv = (unsigned char *)iv;
+-			cop.op = COP_ENCRYPT;
+-			cop.src = cop.dst = (unsigned char *)buffer[bufidx];
+-			cop.mac = mac[bufidx];
+-			bufidx = (bufidx + 1) % 64;
+-
+-			if (ioctl(fdc, CIOCASYNCCRYPT, &cop)) {
+-				perror("ioctl(CIOCASYNCCRYPT)");
+-				return 1;
+-			}
+-			wqueue++;
+-		}
+-		if (pfd.revents & POLLIN) {
+-			if (ioctl(fdc, CIOCASYNCFETCH, &cop)) {
+-				perror("ioctl(CIOCASYNCFETCH)");
+-				return 1;
+-			}
+-			wqueue--;
+-			total += cop.len;
+-		}
+-	} while(!must_finish || wqueue);
+-	gettimeofday(&end, NULL);
+-
+-	secs = udifftimeval(start, end)/ 1000000.0;
+-
+-	if (tp.mflag) {
+-		value2machine(total, secs, &dspeed);
+-		printf("%" PRIu64 "\t%.2f\t%.2f\n", total, secs, dspeed);
+-	} else {
+-		value2human(total, secs, &ddata, &dspeed, metric);
+-		printf ("done. %.2f %s in %.2f secs: ", ddata, metric, secs);
+-		printf ("%.2f %s/sec\n", dspeed, metric);
+-	}
+-
+-	for (rc = 0; rc < 64; rc++)
+-		free(buffer[rc]);
+-	return 0;
+-}
+-
+-void usage(char *cmd_name)
+-{
+-	printf(usage_str, cmd_name);
+-}
+-
+-int run_test(int id, struct test_params tp)
+-{
+-	int fd;
+-	int fdc;
+-	int err;
+-
+-	fd = open("/dev/crypto", O_RDWR, 0);
+-	if (fd < 0) {
+-		perror("open()");
+-		return fd;
+-	}
+-	if (ioctl(fd, CRIOGET, &fdc)) {
+-		perror("ioctl(CRIOGET)");
+-		return -EINVAL;
+-	}
+-
+-	if (!tp.mflag) {
+-		fprintf(stderr, "Testing %s:\n", ciphers[id].name);
+-	}
+-	err = ciphers[id].func(fdc, tp);
+-
+-	close(fdc);
+-	close(fd);
+-
+-	return err;
+-}
+-
+-void do_test_vectors(int fdc, struct test_params tp, struct session_op *sess)
+-{
+-	int i;
+-
+-	if (tp.nflag) {
+-		encrypt_data(fdc, tp, sess);
+-	} else {
+-		for (i = 256; i <= (64 * 1024); i *= 2) {
+-			if (must_exit) {
+-				break;
+-			}
+-
+-			tp.nvalue = i;
+-			if (encrypt_data(fdc, tp, sess)) {
+-				break;
+-			}
+-		}
+-	}
+-}
+-
+-
+-int run_null(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-	char keybuf[32];
+-
+-	fprintf(stderr, "Testing NULL cipher: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.cipher = CRYPTO_NULL;
+-	sess.keylen = 0;
+-	sess.key = (unsigned char *)keybuf;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return -EINVAL;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_aes_128_cbc(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-	char keybuf[32];
+-
+-	memset(&sess, 0, sizeof(sess));
+-	sess.cipher = CRYPTO_AES_CBC;
+-	sess.keylen = 16;
+-	memset(keybuf, 0x42, 16);
+-	sess.key = (unsigned char *)keybuf;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return -EINVAL;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_aes_256_xts(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-	char keybuf[32];
+-
+-	memset(&sess, 0, sizeof(sess));
+-	sess.cipher = CRYPTO_AES_XTS;
+-	sess.keylen = 32;
+-	memset(keybuf, 0x42, sess.keylen);
+-	sess.key = (unsigned char *)keybuf;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return -EINVAL;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_crc32c(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_CRC32C;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return 1;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_sha1(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_SHA1;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return 1;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_sha256(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_SHA2_256;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return 1;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int main(int argc, char **argv)
+-{
+-	int err = 0;
+-	int i;
+-	int c;
+-	bool alg_flag;
+-	char *alg_name;
+-	struct test_params tp;
+-
+-	tp.tflag = false;
+-	tp.nflag = false;
+-	tp.mflag = false;
+-	alg_flag = false;
+-	opterr = 0;
+-	while ((c = getopt(argc, argv, "hn:t:m")) != -1) {
+-		switch (c) {
+-		case 'n':
+-			tp.nvalue = atoi(optarg);
+-			tp.nflag = true;
+-			break;
+-		case 't':
+-			tp.tvalue = atoi(optarg);
+-			tp.tflag = true;
+-			break;
+-		case 'm':
+-			tp.mflag = true;
+-			break;
+-		case 'h': /* no break */
+-		default:
+-			usage(argv[0]);
+-			exit(1);
+-		}
+-	}
+-
+-	/* the name of a specific test asked on the command line */
+-	if (optind < argc) {
+-		alg_name = argv[optind];
+-		alg_flag = true;
+-	}
+-
+-	/* default test time */
+-	if (!tp.tflag) {
+-		tp.tvalue = 5;
+-	}
+-
+-	signal(SIGALRM, alarm_handler);
+-	signal(SIGINT, exit_handler);
+-
+-	for (i = 0; i < ALG_COUNT; i++) {
+-		if (must_exit) {
+-			break;
+-		}
+-
+-		if (alg_flag) {
+-			if (strcmp(alg_name, ciphers[i].name) == 0) {
+-				err = run_test(i, tp);
+-			}
+-		} else {
+-			err = run_test(i, tp);
+-			if (err != 0) {
+-				break;
+-			}
+-		}
+-	}
+-
+-	return err;
+-}
+-
+-#else
+-int
+-main(int argc, char** argv)
+-{
+-	return (0);
+-}
+-#endif
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+deleted file mode 100755
+index 90f9b72..0000000
+--- a/tests/async_speed_multi.sh
++++ /dev/null
+@@ -1,172 +0,0 @@
+-#!/bin/bash
+-#
+-#    Copyright 2016 NXP Semiconductors
+-#
+-#    This program is free software: you can redistribute it and/or modify
+-#    it under the terms of the GNU General Public License as published by
+-#    the Free Software Foundation, either version 2 of the License, or
+-#    (at your option) any later version.
+-#
+-#    This program is distributed in the hope that it will be useful,
+-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#    GNU General Public License for more details.
+-#
+-#    You should have received a copy of the GNU General Public License
+-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-
+-
+-
+-# no user-configurable options below this line
+-
+-NUM_CORES=$(nproc)
+-CMD_BIN="async_speed"
+-OUT_BASENAME="async_speed"
+-MPSTAT_OUT="mpstat_out"
+-
+-# A bigger hammer for mpstat to use ISO8601 time format (fixed in 11.2.2)
+-export LC_TIME=en_GB.UTF-8 &> /dev/null
+-
+-
+-function usage
+-{
+-cat << EOF
+-Usage: `basename $0` [OPTIONS] <alg_name>
+-
+-  -m <threads>    number of threads to run with (defaults to number of cores)
+-  -t <secs>       time to run each test (default 10 secs)
+-  -n <bytes>      size of the test buffer (default 256 bytes)
+-  -v              make output more verbose (default tabular)
+-  -h              show this help
+-
+-alg_name: null, aes-128-cbc, aes-256-xts, sha1, sha256, crc32c
+-
+-Note: SEC driver is configured to support buffers smaller than 512K
+-EOF
+-}
+-
+-function SUM {
+-	paste -sd+ - | bc -l
+-}
+-
+-function get_cpu_idle
+-{
+-    header_line=$(grep %idle ${MPSTAT_OUT} | head -n 1 | sed 's/\s\+/ /g')
+-    idle_column=$(echo $header_line | wc -w)
+-    average_idle=$(grep Average ${MPSTAT_OUT} | sed 's/\s\+/ /g' | cut -d' ' -f ${idle_column} | tail -n 1)
+-
+-    echo $average_idle
+-}
+-
+-function run_parallel
+-{
+-    trap control_c SIGINT
+-
+-    OPTIONS="-t $tvalue -n $nvalue -m"
+-    CMD="$CMD_BIN $OPTIONS $alg_name"
+-
+-    (sleep 1; S_TIME_FORMAT=ISO mpstat 1 $(($tvalue-2))) &> $MPSTAT_OUT &
+-    MPSTAT_PID=$!
+-
+-    PIDS=""
+-    start=$(date +%s.%N)
+-
+-    for i in $(seq 0 $(($mvalue-1)))
+-    do
+-	CMD_OUT="${OUT_BASENAME}_${i}"
+-
+-	$CMD &> $CMD_OUT &
+-	PID=$!
+-	AFFINITY=$(($i % $NUM_CORES))
+-	taskset -pc $AFFINITY $PID > /dev/null
+-
+-	PIDS="$PID $PIDS"
+-    done
+-
+-    wait $PIDS
+-    end=$(date +%s.%N)
+-
+-    wait $MPSTAT_PID
+-
+-    grep "ioctl" ${OUT_BASENAME}_* &> /dev/null
+-    if (($? == 0))
+-    then
+-	echo "cryptodev is not built with -DENABLE_ASYNC flag"
+-	exit 1
+-    fi
+-
+-    runtime=$(echo "scale=2; ($end - $start) / 1" | bc -l )
+-    total_data=$(cat ${OUT_BASENAME}_* | cut -f 1 | SUM)
+-    avg_speed=$(echo "scale=2; $total_data / $runtime / 1000000000" | bc -l)
+-    cpu_idle=$(get_cpu_idle)
+-
+-    if [ ! -z "$vvalue" ]
+-    then
+-	echo
+-	echo "buffer size  :   $nvalue"
+-	echo "running time :   $runtime"
+-	echo "avg_speed    :   $avg_speed GB/s"
+-	echo "all_cpu idle :   $cpu_idle %"
+-	echo
+-    else
+-	echo -e "algorithm\t""threads\t""run time\t"\
+-	     "buffer size\t""GB/s\t""%cpu idle"
+-	echo -e "${alg_name}\t${mvalue}\t${runtime}\t"\
+-	     "${nvalue}\t${avg_speed}\t${cpu_idle}%"
+-    fi
+-}
+-
+-function control_c
+-{
+-    killall async_speed > /dev/null
+-    killall mpstat > /dev/null
+-}
+-
+-function main
+-{
+-	[ ! -e "/dev/crypto" ] &&
+-		(sudo modprobe cryptodev || modprobe cryptodev || exit 1)
+-
+-	$(which ${CMD_BIN} &> /dev/null)
+-	if (($? != 0))
+-	then
+-		echo "${CMD_BIN} test is not installed"
+-		exit 1
+-	fi
+-
+-	rm -f ${OUT_BASENAME}_*
+-	rm -f ${MPSTAT_OUT}
+-
+-	while getopts vhm:t:n: option
+-	do
+-		case "$option" in
+-			m) mvalue="$OPTARG";;
+-			t) tvalue="$OPTARG";;
+-			n) nvalue="$OPTARG";;
+-			v) vvalue="verbose";;
+-			*) usage $0; exit 1;;
+-		esac
+-	done
+-
+-	shift $((OPTIND-1))
+-	alg_name=$1
+-
+-	[ -z "$tvalue" ] && tvalue=10         # 10 seconds per test by default
+-	[ -z "$mvalue" ] && mvalue=$NUM_CORES # thread count defaults to nproc
+-	[ -z "$nvalue" ] && nvalue=256        # 256 bytes default buffer size
+-
+-	[ "$tvalue" -lt 5 ] && tvalue=5
+-
+-	case "$alg_name" in
+-	    "null"    |\
+-	    "aes-128-cbc" |\
+-	    "aes-256-xts" |\
+-	    "sha1"    |\
+-	    "sha256"  |\
+-	    "crc32c"  ) run_parallel;;
+-	    * ) usage && exit 1;;
+-	esac
+-}
+-
+-main "$@"
+-
+diff --git a/tests/run_crypto_tests.sh b/tests/run_crypto_tests.sh
+index 32ab8e2..e128637 100644
+--- a/tests/run_crypto_tests.sh
++++ b/tests/run_crypto_tests.sh
+@@ -16,7 +16,7 @@ do
+ 	do
+ 		for bsize in ${BUF_SIZE}
+ 		do
+-			async_speed_multi.sh -t 10 -n $bsize -m ${multi} ${alg_name} |
++			speed_multi.sh -t 10 -n $bsize -m ${multi} ${alg_name} |
+ 			tail -n 1
+ 		done
+ 	done
+diff --git a/tests/speed.c b/tests/speed.c
+new file mode 100644
+index 0000000..3b36db1
+--- /dev/null
++++ b/tests/speed.c
+@@ -0,0 +1,546 @@
++/*  cryptodev_test - simple benchmark tool for cryptodev
++ *
++ *    Copyright (C) 2010 by Phil Sutter <phil.sutter@viprinet.com>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to the Free Software
++ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++ */
++#include <errno.h>
++#include <fcntl.h>
++#include <poll.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/ioctl.h>
++#include <sys/time.h>
++#include <sys/types.h>
++#include <signal.h>
++#include <crypto/cryptodev.h>
++#include <stdbool.h>
++#include <unistd.h>
++#include <stdint.h>
++#include <inttypes.h>
++
++
++struct test_params {
++	bool tflag;
++	bool nflag;
++	bool mflag;
++	bool aflag;
++	int tvalue;
++	int nvalue;
++};
++
++const char usage_str[] = "Usage: %s [OPTION]... <cipher>|<hash>\n"
++	"Run benchmark test for cipher or hash\n\n"
++	"  -t <secs>\t" "time to run each test (default 10 secs)\n"
++	"  -n <bytes>\t" "size of the test buffer\n"
++	"  -m\t\t" "output in a machine readable format\n"
++	"  -a\t\t" "run the async tests (default sync)\n"
++	"  -h\t\t" "show this help\n\n"
++	"Note: SEC driver is configured to support buffers smaller than 512K\n"
++;
++
++int run_null(int fdc, struct test_params tp);
++int run_aes_128_cbc(int fdc, struct test_params tp);
++int run_aes_256_xts(int fdc, struct test_params tp);
++int run_crc32c(int fdc, struct test_params tp);
++int run_sha1(int fdc, struct test_params tp);
++int run_sha256(int fdc, struct test_params tp);
++
++#define ALG_COUNT	6
++struct {
++	char *name;
++	int (*func)(int, struct test_params);
++} ciphers[ALG_COUNT] = {
++	{"null",	run_null},
++	{"aes-128-cbc",	run_aes_128_cbc},
++	{"aes-256-xts",	run_aes_256_xts},
++	{"crc32c",	run_crc32c},
++	{"sha1",	run_sha1},
++	{"sha256",	run_sha256},
++};
++
++static double udifftimeval(struct timeval start, struct timeval end)
++{
++	return (double)(end.tv_usec - start.tv_usec) +
++	       (double)(end.tv_sec - start.tv_sec) * 1000 * 1000;
++}
++
++static volatile int must_finish;
++static volatile int must_exit;
++static struct pollfd pfd;
++
++static void alarm_handler(int signo)
++{
++        must_finish = 1;
++	pfd.events = POLLIN;
++}
++
++static void exit_handler(int signo)
++{
++	must_exit = 1;
++	printf("\nexit requested by user through ctrl+c \n");
++}
++
++static char *units[] = { "", "Ki", "Mi", "Gi", "Ti", 0};
++
++static void value2human(uint64_t bytes, double time, double* data, double* speed,char* metric)
++{
++	int unit = 0;
++
++	*data = bytes;
++	while (*data > 1024 && units[unit + 1]) {
++		*data /= 1024;
++		unit++;
++	}
++	*speed = *data / time;
++	sprintf(metric, "%sB", units[unit]);
++}
++
++static void value2machine(uint64_t bytes, double time, double* speed)
++{
++	*speed = bytes / time;
++}
++
++int get_alignmask(int fdc, struct session_op *sess)
++{
++	int alignmask;
++	int min_alignmask = sizeof(void*) - 1;
++
++#ifdef CIOCGSESSINFO
++	struct session_info_op siop;
++
++	siop.ses = sess->ses;
++	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
++		perror("ioctl(CIOCGSESSINFO)");
++		return -EINVAL;
++	}
++	alignmask = siop.alignmask;
++	if (alignmask < min_alignmask) {
++		alignmask = min_alignmask;
++	}
++#else
++	alignmask = 0;
++#endif
++
++	return alignmask;
++}
++
++int encrypt_async(int fdc, struct test_params tp, struct session_op *sess)
++{
++	struct crypt_op cop;
++	char *buffer[64], iv[32];
++	uint8_t mac[64][HASH_MAX_LEN];
++	static int val = 23;
++	struct timeval start, end;
++	uint64_t total = 0;
++	double secs, ddata, dspeed;
++	char metric[16];
++	int rc, wqueue = 0, bufidx = 0;
++	int alignmask;
++
++	memset(iv, 0x23, 32);
++
++	if (!tp.mflag) {
++		printf("\tBuffer size %d bytes: ", tp.nvalue);
++		fflush(stdout);
++	}
++
++	alignmask = get_alignmask(fdc, sess);
++	for (rc = 0; rc < 64; rc++) {
++		if (alignmask) {
++			if (posix_memalign((void **)(buffer + rc), alignmask + 1, tp.nvalue)) {
++				printf("posix_memalign() failed!\n");
++				return 1;
++			}
++		} else {
++			if (!(buffer[rc] = malloc(tp.nvalue))) {
++				perror("malloc()");
++				return 1;
++			}
++		}
++		memset(buffer[rc], val++, tp.nvalue);
++	}
++	pfd.fd = fdc;
++	pfd.events = POLLOUT | POLLIN;
++
++	must_finish = 0;
++	alarm(tp.tvalue);
++
++	gettimeofday(&start, NULL);
++	do {
++		if ((rc = poll(&pfd, 1, 100)) < 0) {
++			if (errno & (ERESTART | EINTR))
++				continue;
++			fprintf(stderr, "errno = %d ", errno);
++			perror("poll()");
++			return 1;
++		}
++
++		if (pfd.revents & POLLOUT) {
++			memset(&cop, 0, sizeof(cop));
++			cop.ses = sess->ses;
++			cop.len = tp.nvalue;
++			cop.iv = (unsigned char *)iv;
++			cop.op = COP_ENCRYPT;
++			cop.src = cop.dst = (unsigned char *)buffer[bufidx];
++			cop.mac = mac[bufidx];
++			bufidx = (bufidx + 1) % 64;
++
++			if (ioctl(fdc, CIOCASYNCCRYPT, &cop)) {
++				perror("ioctl(CIOCASYNCCRYPT)");
++				return 1;
++			}
++			wqueue++;
++		}
++		if (pfd.revents & POLLIN) {
++			if (ioctl(fdc, CIOCASYNCFETCH, &cop)) {
++				perror("ioctl(CIOCASYNCFETCH)");
++				return 1;
++			}
++			wqueue--;
++			total += cop.len;
++		}
++	} while(!must_finish || wqueue);
++	gettimeofday(&end, NULL);
++
++	secs = udifftimeval(start, end)/ 1000000.0;
++
++	if (tp.mflag) {
++		value2machine(total, secs, &dspeed);
++		printf("%" PRIu64 "\t%.2f\t%.2f\n", total, secs, dspeed);
++	} else {
++		value2human(total, secs, &ddata, &dspeed, metric);
++		printf ("done. %.2f %s in %.2f secs: ", ddata, metric, secs);
++		printf ("%.2f %s/sec\n", dspeed, metric);
++	}
++
++	for (rc = 0; rc < 64; rc++)
++		free(buffer[rc]);
++	return 0;
++}
++
++
++static int encrypt_sync(int fdc, struct test_params tp, struct session_op *sess)
++{
++	struct crypt_op cop;
++	char *buffer, iv[32];
++	char mac[HASH_MAX_LEN];
++	static int val = 23;
++	struct timeval start, end;
++	uint64_t total = 0;
++	double secs, ddata, dspeed;
++	char metric[16];
++	int alignmask;
++	int min_alignmask = sizeof(void*) - 1;
++
++	memset(iv, 0x23, 32);
++
++	if (!tp.mflag) {
++		printf("\tBuffer size %d bytes: ", tp.nvalue);
++		fflush(stdout);
++	}
++
++	alignmask = get_alignmask(fdc, sess);
++	if (alignmask) {
++		alignmask = ((alignmask < min_alignmask) ? min_alignmask : alignmask);
++		if (posix_memalign((void **)(&buffer), alignmask + 1, tp.nvalue)) {
++			printf("posix_memalign() failed!\n");
++			return 1;
++		}
++	} else {
++		if (!(buffer = malloc(tp.nvalue))) {
++			perror("malloc()");
++			return 1;
++		}
++	}
++	memset(buffer, val++, tp.nvalue);
++
++	must_finish = 0;
++	alarm(tp.tvalue);
++
++	gettimeofday(&start, NULL);
++	do {
++		memset(&cop, 0, sizeof(cop));
++		cop.ses = sess->ses;
++		cop.len = tp.nvalue;
++		cop.iv = (unsigned char *)iv;
++		cop.op = COP_ENCRYPT;
++		cop.src = cop.dst = (unsigned char *)buffer;
++		cop.mac = (unsigned char *)mac;
++
++		if (ioctl(fdc, CIOCCRYPT, &cop)) {
++			perror("ioctl(CIOCCRYPT)");
++			return 1;
++		}
++		total += cop.len;
++	} while(!must_finish);
++	gettimeofday(&end, NULL);
++
++	secs = udifftimeval(start, end)/ 1000000.0;
++
++	if (tp.mflag) {
++		value2machine(total, secs, &dspeed);
++		printf("%" PRIu64 "\t%.2f\t%.2f\n", total, secs, dspeed);
++	} else {
++		value2human(total, secs, &ddata, &dspeed, metric);
++		printf ("done. %.2f %s in %.2f secs: ", ddata, metric, secs);
++		printf ("%.2f %s/sec\n", dspeed, metric);
++	}
++
++	free(buffer);
++	return 0;
++}
++
++void usage(char *cmd_name)
++{
++	printf(usage_str, cmd_name);
++}
++
++int run_test(int id, struct test_params tp)
++{
++	int fd;
++	int fdc;
++	int err;
++
++	fd = open("/dev/crypto", O_RDWR, 0);
++	if (fd < 0) {
++		perror("open()");
++		return fd;
++	}
++	if (ioctl(fd, CRIOGET, &fdc)) {
++		perror("ioctl(CRIOGET)");
++		return -EINVAL;
++	}
++
++	if (!tp.mflag) {
++		char *type;
++		type = tp.aflag ? "async" : "sync";
++
++		fprintf(stderr, "Testing %s %s:\n", type, ciphers[id].name);
++	}
++	err = ciphers[id].func(fdc, tp);
++
++	close(fdc);
++	close(fd);
++
++	return err;
++}
++
++void do_test_vectors(int fdc, struct test_params tp, struct session_op *sess)
++{
++	int i;
++	int err;
++
++	if (tp.nflag) {
++		if (tp.aflag) {
++			encrypt_async(fdc, tp, sess);
++		} else {
++			encrypt_sync(fdc, tp, sess);
++		}
++	} else {
++		for (i = 256; i <= (64 * 1024); i *= 2) {
++			if (must_exit) {
++				break;
++			}
++
++			tp.nvalue = i;
++			if (tp.aflag) {
++				err = encrypt_async(fdc, tp, sess);
++			} else {
++				err = encrypt_sync(fdc, tp, sess);
++			}
++
++			if (err != 0) {
++				break;
++			}
++		}
++	}
++}
++
++
++int run_null(int fdc, struct test_params tp)
++{
++	struct session_op sess;
++	char keybuf[32];
++
++	fprintf(stderr, "Testing NULL cipher: \n");
++	memset(&sess, 0, sizeof(sess));
++	sess.cipher = CRYPTO_NULL;
++	sess.keylen = 0;
++	sess.key = (unsigned char *)keybuf;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return -EINVAL;
++	}
++
++	do_test_vectors(fdc, tp, &sess);
++	return 0;
++}
++
++int run_aes_128_cbc(int fdc, struct test_params tp)
++{
++	struct session_op sess;
++	char keybuf[32];
++
++	memset(&sess, 0, sizeof(sess));
++	sess.cipher = CRYPTO_AES_CBC;
++	sess.keylen = 16;
++	memset(keybuf, 0x42, 16);
++	sess.key = (unsigned char *)keybuf;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return -EINVAL;
++	}
++
++	do_test_vectors(fdc, tp, &sess);
++	return 0;
++}
++
++int run_aes_256_xts(int fdc, struct test_params tp)
++{
++	struct session_op sess;
++	char keybuf[32];
++
++	memset(&sess, 0, sizeof(sess));
++	sess.cipher = CRYPTO_AES_XTS;
++	sess.keylen = 32;
++	memset(keybuf, 0x42, sess.keylen);
++	sess.key = (unsigned char *)keybuf;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return -EINVAL;
++	}
++
++	do_test_vectors(fdc, tp, &sess);
++	return 0;
++}
++
++int run_crc32c(int fdc, struct test_params tp)
++{
++	struct session_op sess;
++
++	memset(&sess, 0, sizeof(sess));
++	sess.mac = CRYPTO_CRC32C;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++
++	do_test_vectors(fdc, tp, &sess);
++	return 0;
++}
++
++int run_sha1(int fdc, struct test_params tp)
++{
++	struct session_op sess;
++
++	memset(&sess, 0, sizeof(sess));
++	sess.mac = CRYPTO_SHA1;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++
++	do_test_vectors(fdc, tp, &sess);
++	return 0;
++}
++
++int run_sha256(int fdc, struct test_params tp)
++{
++	struct session_op sess;
++
++	memset(&sess, 0, sizeof(sess));
++	sess.mac = CRYPTO_SHA2_256;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++
++	do_test_vectors(fdc, tp, &sess);
++	return 0;
++}
++
++int main(int argc, char **argv)
++{
++	int err = 0;
++	int i;
++	int c;
++	bool alg_flag;
++	char *alg_name;
++	struct test_params tp;
++
++	tp.tflag = false;
++	tp.nflag = false;
++	tp.mflag = false;
++	tp.aflag = false;
++	alg_flag = false;
++	opterr = 0;
++	while ((c = getopt(argc, argv, "ahn:t:m")) != -1) {
++		switch (c) {
++		case 'n':
++			tp.nvalue = atoi(optarg);
++			tp.nflag = true;
++			break;
++		case 't':
++			tp.tvalue = atoi(optarg);
++			tp.tflag = true;
++			break;
++		case 'm':
++			tp.mflag = true;
++			break;
++		case 'a':
++			tp.aflag = true;
++			break;
++		case 'h': /* no break */
++		default:
++			usage(argv[0]);
++			exit(1);
++		}
++	}
++
++	/* the name of a specific test asked on the command line */
++	if (optind < argc) {
++		alg_name = argv[optind];
++		alg_flag = true;
++	}
++
++	/* default test time */
++	if (!tp.tflag) {
++		tp.tvalue = 5;
++	}
++
++	signal(SIGALRM, alarm_handler);
++	signal(SIGINT, exit_handler);
++
++	for (i = 0; i < ALG_COUNT; i++) {
++		if (must_exit) {
++			break;
++		}
++
++		if (alg_flag) {
++			if (strcmp(alg_name, ciphers[i].name) == 0) {
++				err = run_test(i, tp);
++			}
++		} else {
++			err = run_test(i, tp);
++			if (err != 0) {
++				break;
++			}
++		}
++	}
++
++	return err;
++}
+diff --git a/tests/speed_multi.sh b/tests/speed_multi.sh
+new file mode 100755
+index 0000000..b116483
+--- /dev/null
++++ b/tests/speed_multi.sh
+@@ -0,0 +1,174 @@
++#!/bin/bash
++#
++#    Copyright 2016 NXP Semiconductors
++#
++#    This program is free software: you can redistribute it and/or modify
++#    it under the terms of the GNU General Public License as published by
++#    the Free Software Foundation, either version 2 of the License, or
++#    (at your option) any later version.
++#
++#    This program is distributed in the hope that it will be useful,
++#    but WITHOUT ANY WARRANTY; without even the implied warranty of
++#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++#    GNU General Public License for more details.
++#
++#    You should have received a copy of the GNU General Public License
++#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
++
++
++
++# no user-configurable options below this line
++
++NUM_CORES=$(nproc)
++CMD_BIN="speed"
++OUT_BASENAME="speed"
++MPSTAT_OUT="mpstat_out"
++
++# A bigger hammer for mpstat to use ISO8601 time format (fixed in 11.2.2)
++export LC_TIME=en_GB.UTF-8 &> /dev/null
++
++
++function usage
++{
++cat << EOF
++Usage: `basename $0` [OPTIONS] <alg_name>
++
++  -m <threads>    number of threads to run with (defaults to number of cores)
++  -t <secs>       time to run each test (default 10 secs)
++  -n <bytes>      size of the test buffer (default 256 bytes)
++  -v              make output more verbose (default tabular)
++  -a              run async version of the benchmark (default sync)
++  -h              show this help
++
++alg_name: null, aes-128-cbc, aes-256-xts, sha1, sha256, crc32c
++
++Note: SEC driver is configured to support buffers smaller than 512K
++EOF
++}
++
++function SUM {
++	paste -sd+ - | bc -l
++}
++
++function get_cpu_idle
++{
++    header_line=$(grep %idle ${MPSTAT_OUT} | head -n 1 | sed 's/\s\+/ /g')
++    idle_column=$(echo $header_line | wc -w)
++    average_idle=$(grep Average ${MPSTAT_OUT} | sed 's/\s\+/ /g' | cut -d' ' -f ${idle_column} | tail -n 1)
++
++    echo $average_idle
++}
++
++function run_parallel
++{
++    trap control_c SIGINT
++
++    OPTIONS="-t $tvalue -n $nvalue -m $aflag"
++    CMD="$CMD_BIN $OPTIONS $alg_name"
++
++    (sleep 1; S_TIME_FORMAT=ISO mpstat 1 $(($tvalue-2))) &> $MPSTAT_OUT &
++    MPSTAT_PID=$!
++
++    PIDS=""
++    start=$(date +%s.%N)
++
++    for i in $(seq 0 $(($mvalue-1)))
++    do
++	CMD_OUT="${OUT_BASENAME}_${i}"
++
++	$CMD &> $CMD_OUT &
++	PID=$!
++	AFFINITY=$(($i % $NUM_CORES))
++	taskset -pc $AFFINITY $PID > /dev/null
++
++	PIDS="$PID $PIDS"
++    done
++
++    wait $PIDS
++    end=$(date +%s.%N)
++
++    wait $MPSTAT_PID
++
++    grep "ioctl" ${OUT_BASENAME}_* &> /dev/null
++    if (($? == 0))
++    then
++	echo "cryptodev is not built with -DENABLE_ASYNC flag"
++	exit 1
++    fi
++
++    runtime=$(echo "scale=2; ($end - $start) / 1" | bc -l )
++    total_data=$(cat ${OUT_BASENAME}_* | cut -f 1 | SUM)
++    avg_speed=$(echo "scale=2; $total_data / $runtime / 1000000000" | bc -l)
++    cpu_idle=$(get_cpu_idle)
++
++    if [ ! -z "$vflag" ]
++    then
++	echo
++	echo "buffer size  :   $nvalue"
++	echo "running time :   $runtime"
++	echo "avg_speed    :   $avg_speed GB/s"
++	echo "all_cpu idle :   $cpu_idle %"
++	echo
++    else
++	echo -e "algorithm\t""threads\t""run time\t"\
++	     "buffer size\t""GB/s\t""%cpu idle"
++	echo -e "${alg_name}\t${mvalue}\t${runtime}\t"\
++	     "${nvalue}\t${avg_speed}\t${cpu_idle}%"
++    fi
++}
++
++function control_c
++{
++    killall $CMD_BIN > /dev/null
++    killall mpstat > /dev/null
++}
++
++function main
++{
++	[ ! -e "/dev/crypto" ] &&
++		(sudo modprobe cryptodev || modprobe cryptodev || exit 1)
++
++	$(which ${CMD_BIN} &> /dev/null)
++	if (($? != 0))
++	then
++		echo "${CMD_BIN} test is not installed"
++		exit 1
++	fi
++
++	rm -f ${OUT_BASENAME}_*
++	rm -f ${MPSTAT_OUT}
++
++	while getopts avhm:t:n: option
++	do
++		case "$option" in
++			m) mvalue="$OPTARG";;
++			t) tvalue="$OPTARG";;
++			n) nvalue="$OPTARG";;
++			v) vflag="verbose";;
++			a) aflag="-a";;
++			*) usage $0; exit 1;;
++		esac
++	done
++
++	shift $((OPTIND-1))
++	alg_name=$1
++
++	[ -z "$tvalue" ] && tvalue=10         # 10 seconds per test by default
++	[ -z "$mvalue" ] && mvalue=$NUM_CORES # thread count defaults to nproc
++	[ -z "$nvalue" ] && nvalue=256        # 256 bytes default buffer size
++
++	[ "$tvalue" -lt 5 ] && tvalue=5
++
++	case "$alg_name" in
++	    "null"    |\
++	    "aes-128-cbc" |\
++	    "aes-256-xts" |\
++	    "sha1"    |\
++	    "sha256"  |\
++	    "crc32c"  ) run_parallel;;
++	    * ) usage && exit 1;;
++	esac
++}
++
++main "$@"
++
+diff --git a/tests/sync_speed.c b/tests/sync_speed.c
+deleted file mode 100644
+index ceae645..0000000
+--- a/tests/sync_speed.c
++++ /dev/null
+@@ -1,400 +0,0 @@
+-/*  cryptodev_test - simple benchmark tool for cryptodev
+- *
+- *    Copyright (C) 2010 by Phil Sutter <phil.sutter@viprinet.com>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License as published by
+- *  the Free Software Foundation; either version 2 of the License, or
+- *  (at your option) any later version.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program; if not, write to the Free Software
+- *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+- */
+-#include <errno.h>
+-#include <fcntl.h>
+-#include <poll.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <sys/ioctl.h>
+-#include <sys/time.h>
+-#include <sys/types.h>
+-#include <signal.h>
+-#include <crypto/cryptodev.h>
+-#include <stdbool.h>
+-#include <unistd.h>
+-
+-struct test_params {
+-	bool tflag;
+-	bool nflag;
+-	int tvalue;
+-	int nvalue;
+-};
+-
+-const char usage_str[] = "Usage: %s [OPTION]... <cipher>|<hash>\n"
+-	"Run benchmark test for cipher or hash\n\n"
+-	"  -t <secs>\t" "time to run each test (default 10 secs)\n"
+-	"  -n <bytes>\t" "size of the test buffer\n"
+-	"  -h\t\t" "show this help\n\n"
+-	"Note: SEC driver is configured to support buffers smaller than 512K\n"
+-;
+-
+-int run_null(int fdc, struct test_params tp);
+-int run_aes_128_cbc(int fdc, struct test_params tp);
+-int run_aes_256_xts(int fdc, struct test_params tp);
+-int run_crc32c(int fdc, struct test_params tp);
+-int run_sha1(int fdc, struct test_params tp);
+-int run_sha256(int fdc, struct test_params tp);
+-int get_alignmask(int fdc, struct session_op *sess);
+-
+-#define ALG_COUNT	6
+-struct {
+-	char *name;
+-	int (*func)(int, struct test_params);
+-} ciphers[ALG_COUNT] = {
+-	{"null",	run_null},
+-	{"aes-128-cbc",	run_aes_128_cbc},
+-	{"aes-256-xts",	run_aes_256_xts},
+-	{"crc32c",	run_crc32c},
+-	{"sha1",	run_sha1},
+-	{"sha256",	run_sha256},
+-};
+-
+-static double udifftimeval(struct timeval start, struct timeval end)
+-{
+-	return (double)(end.tv_usec - start.tv_usec) +
+-	       (double)(end.tv_sec - start.tv_sec) * 1000 * 1000;
+-}
+-
+-static volatile int must_finish;
+-static volatile int must_exit;
+-
+-static void alarm_handler(int signo)
+-{
+-        must_finish = 1;
+-}
+-
+-static void exit_handler(int signo)
+-{
+-	must_exit = 1;
+-	printf("\nexit requested by user through ctrl+c \n");
+-}
+-
+-static char *units[] = { "", "Ki", "Mi", "Gi", "Ti", 0};
+-
+-static void value2human(double bytes, double time, double* data, double* speed,char* metric)
+-{
+-	int unit = 0;
+-
+-	*data = bytes;
+-	while (*data > 1024 && units[unit + 1]) {
+-		*data /= 1024;
+-		unit++;
+-	}
+-	*speed = *data / time;
+-	sprintf(metric, "%sB", units[unit]);
+-}
+-
+-static int encrypt_data(int fdc, struct test_params tp, struct session_op *sess)
+-{
+-	struct crypt_op cop;
+-	char *buffer, iv[32];
+-	char mac[HASH_MAX_LEN];
+-	static int val = 23;
+-	struct timeval start, end;
+-	double total = 0;
+-	double secs, ddata, dspeed;
+-	char metric[16];
+-	int alignmask;
+-	int min_alignmask = sizeof(void*) - 1;
+-
+-	memset(iv, 0x23, 32);
+-
+-	printf("\tEncrypting in chunks of %d bytes: ", tp.nvalue);
+-	fflush(stdout);
+-
+-	alignmask = get_alignmask(fdc, sess);
+-	if (alignmask) {
+-		alignmask = ((alignmask < min_alignmask) ? min_alignmask : alignmask);
+-		if (posix_memalign((void **)(&buffer), alignmask + 1, tp.nvalue)) {
+-			printf("posix_memalign() failed!\n");
+-			return 1;
+-		}
+-	} else {
+-		if (!(buffer = malloc(tp.nvalue))) {
+-			perror("malloc()");
+-			return 1;
+-		}
+-	}
+-	memset(buffer, val++, tp.nvalue);
+-	
+-	must_finish = 0;
+-	alarm(tp.tvalue);
+-
+-	gettimeofday(&start, NULL);
+-	do {
+-		memset(&cop, 0, sizeof(cop));
+-		cop.ses = sess->ses;
+-		cop.len = tp.nvalue;
+-		cop.iv = (unsigned char *)iv;
+-		cop.op = COP_ENCRYPT;
+-		cop.src = cop.dst = (unsigned char *)buffer;
+-		cop.mac = (unsigned char *)mac;
+-
+-		if (ioctl(fdc, CIOCCRYPT, &cop)) {
+-			perror("ioctl(CIOCCRYPT)");
+-			return 1;
+-		}
+-		total += cop.len;
+-	} while(!must_finish);
+-	gettimeofday(&end, NULL);
+-
+-	secs = udifftimeval(start, end)/ 1000000.0;
+-
+-	value2human(total, secs, &ddata, &dspeed, metric);
+-	printf ("done. %.2f %s in %.2f secs: ", ddata, metric, secs);
+-	printf ("%.2f %s/sec\n", dspeed, metric);
+-
+-	free(buffer);
+-	return 0;
+-}
+-
+-void usage(char *cmd_name)
+-{
+-	printf(usage_str, cmd_name);
+-}
+-
+-int run_test(int id, struct test_params tp)
+-{
+-	int fd;
+-	int fdc;
+-
+-	fd = open("/dev/crypto", O_RDWR, 0);
+-	if (fd < 0) {
+-		perror("open()");
+-		return fd;
+-	}
+-	if (ioctl(fd, CRIOGET, &fdc)) {
+-		perror("ioctl(CRIOGET)");
+-		return -EINVAL;
+-	}
+-
+-	ciphers[id].func(fdc, tp);
+-
+-	close(fdc);
+-	close(fd);
+-
+-	return 0;
+-}
+-
+-int get_alignmask(int fdc, struct session_op *sess)
+-{
+-	int alignmask;
+-
+-#ifdef CIOCGSESSINFO
+-	struct session_info_op siop;
+-
+-	siop.ses = sess->ses;
+-	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
+-		perror("ioctl(CIOCGSESSINFO)");
+-		return -EINVAL;
+-	}
+-	alignmask = siop.alignmask;
+-#else
+-	alignmask = 0;
+-#endif
+-
+-	return alignmask;
+-}
+-
+-void do_test_vectors(int fdc, struct test_params tp, struct session_op *sess)
+-{
+-	int i;
+-
+-	if (tp.nflag) {
+-		encrypt_data(fdc, tp, sess);
+-	} else {
+-		for (i = 256; i <= (64 * 1024); i *= 2) {
+-			if (must_exit)
+-				break;
+-
+-			tp.nvalue = i;
+-			if (encrypt_data(fdc, tp, sess)) {
+-				break;
+-			}
+-		}
+-	}
+-}
+-
+-
+-int run_null(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-	char keybuf[32];
+-
+-	fprintf(stderr, "Testing NULL cipher: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.cipher = CRYPTO_NULL;
+-	sess.keylen = 0;
+-	sess.key = (unsigned char *)keybuf;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return -EINVAL;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_aes_128_cbc(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-	char keybuf[32];
+-
+-	fprintf(stderr, "\nTesting AES-128-CBC cipher: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.cipher = CRYPTO_AES_CBC;
+-	sess.keylen = 16;
+-	memset(keybuf, 0x42, 16);
+-	sess.key = (unsigned char *)keybuf;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return -EINVAL;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_aes_256_xts(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-	char keybuf[32];
+-
+-	fprintf(stderr, "\nTesting AES-256-XTS cipher: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.cipher = CRYPTO_AES_XTS;
+-	sess.keylen = 32;
+-	memset(keybuf, 0x42, sess.keylen);
+-	sess.key = (unsigned char *)keybuf;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return -EINVAL;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_crc32c(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-
+-	fprintf(stderr, "\nTesting CRC32C hash: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_CRC32C;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return 1;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_sha1(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-
+-	fprintf(stderr, "\nTesting SHA-1 hash: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_SHA1;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return 1;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int run_sha256(int fdc, struct test_params tp)
+-{
+-	struct session_op sess;
+-
+-	fprintf(stderr, "\nTesting SHA2-256 hash: \n");
+-	memset(&sess, 0, sizeof(sess));
+-	sess.mac = CRYPTO_SHA2_256;
+-	if (ioctl(fdc, CIOCGSESSION, &sess)) {
+-		perror("ioctl(CIOCGSESSION)");
+-		return 1;
+-	}
+-
+-	do_test_vectors(fdc, tp, &sess);
+-	return 0;
+-}
+-
+-int main(int argc, char **argv)
+-{
+-	int i;
+-	int c;
+-	bool alg_flag;
+-	char *alg_name;
+-	struct test_params tp;
+-
+-	tp.tflag = false;
+-	tp.nflag = false;
+-	alg_flag = false;
+-	opterr = 0;
+-	while ((c = getopt(argc, argv, "hn:t:")) != -1) {
+-		switch (c) {
+-		case 'n':
+-			tp.nvalue = atoi(optarg);
+-			tp.nflag = true;
+-			break;
+-		case 't':
+-			tp.tvalue = atoi(optarg);
+-			tp.tflag = true;
+-			break;
+-		case 'h': /* no break */
+-		default:
+-			usage(argv[0]);
+-			exit(1);
+-		}
+-	}
+-
+-	/* the name of a specific test asked on the command line */
+-	if (optind < argc) {
+-		alg_name = argv[optind];
+-		alg_flag = true;
+-	}
+-
+-	/* default test time */
+-	if (!tp.tflag) {
+-		tp.tvalue = 5;
+-	}
+-
+-	signal(SIGALRM, alarm_handler);
+-	signal(SIGINT, exit_handler);
+-
+-	for (i = 0; i < ALG_COUNT; i++) {
+-		if (must_exit)
+-			break;
+-
+-		if (alg_flag) {
+-			if (strcmp(alg_name, ciphers[i].name) == 0) {
+-				run_test(i, tp);
+-			}
+-		} else {
+-			run_test(i, tp);
+-		}
+-	}
+-
+-	return 0;
+-}
+-- 
+2.10.2
+

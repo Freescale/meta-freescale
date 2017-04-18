@@ -1,0 +1,47 @@
+From c2fed59ef63a1b9da26e8a5452004b07aad39261 Mon Sep 17 00:00:00 2001
+From: Alexe Radu <radu.alexe@nxp.com>
+Date: Tue, 25 Oct 2016 11:21:47 +0300
+Subject: [PATCH 046/104] add support for sha1 hash async speed test
+
+Signed-off-by: Alexe Radu <radu.alexe@nxp.com>
+---
+ tests/async_speed.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/tests/async_speed.c b/tests/async_speed.c
+index 8978b4b..64d5603 100644
+--- a/tests/async_speed.c
++++ b/tests/async_speed.c
+@@ -260,6 +260,29 @@ int main(void)
+ 			break;
+ 	}
+ 
++	fprintf(stderr, "\nTesting SHA-1 hash: \n");
++	memset(&sess, 0, sizeof(sess));
++	sess.mac = CRYPTO_SHA1;
++	if (ioctl(fdc, CIOCGSESSION, &sess)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++#ifdef CIOCGSESSINFO
++	siop.ses = sess.ses;
++	if (ioctl(fdc, CIOCGSESSINFO, &siop)) {
++		perror("ioctl(CIOCGSESSION)");
++		return 1;
++	}
++	printf("requested hash CRYPTO_SHA1, got %s with driver %s\n",
++			siop.hash_info.cra_name, siop.hash_info.cra_driver_name);
++	alignmask = siop.alignmask;
++#endif
++
++	for (i = 256; i <= (64 * 1024); i *= 2) {
++		if (encrypt_data(&sess, fdc, i, alignmask))
++			break;
++	}
++
+ end:
+ 	close(fdc);
+ 	close(fd);
+-- 
+2.10.2
+

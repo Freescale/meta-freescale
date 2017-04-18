@@ -1,0 +1,29 @@
+From 99ce54741ccbbe8581ab83b73ab11d2dae4f01b1 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Wed, 26 Oct 2016 14:55:28 +0300
+Subject: [PATCH 069/104] fix the reported unit
+
+1GiB = 1024*1024*1024
+1GB  = 1000000000
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 331158b..bf5f1c6 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -93,7 +93,7 @@ function run_parallel
+     echo
+     echo "buffer size  :   $nvalue"
+     echo "running time :   $runtime"
+-    echo "avg_speed    :   $avg_speed GiB/s"
++    echo "avg_speed    :   $avg_speed GB/s"
+     echo "all_cpu idle :   $cpu_idle %"
+     echo
+ }
+-- 
+2.10.2
+

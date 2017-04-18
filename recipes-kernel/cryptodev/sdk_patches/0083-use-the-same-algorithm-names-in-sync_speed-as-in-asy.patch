@@ -1,0 +1,58 @@
+From a6e777aba434533f726bc9d34b074b7f36429126 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Fri, 28 Oct 2016 17:23:27 +0300
+Subject: [PATCH 083/104] use the same algorithm names in sync_speed as in
+ async_speed
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/sync_speed.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/tests/sync_speed.c b/tests/sync_speed.c
+index b0cb9ad..56cd3aa 100644
+--- a/tests/sync_speed.c
++++ b/tests/sync_speed.c
+@@ -45,8 +45,8 @@ const char usage_str[] = "Usage: %s [OPTION]... <cipher>|<hash>\n"
+ ;
+ 
+ int run_null(int fdc, struct test_params tp);
+-int run_aes_cbc(int fdc, struct test_params tp);
+-int run_aes_xts(int fdc, struct test_params tp);
++int run_aes_128_cbc(int fdc, struct test_params tp);
++int run_aes_256_xts(int fdc, struct test_params tp);
+ int run_crc32c(int fdc, struct test_params tp);
+ int run_sha1(int fdc, struct test_params tp);
+ int run_sha256(int fdc, struct test_params tp);
+@@ -58,8 +58,8 @@ struct {
+ 	int (*func)(int, struct test_params);
+ } ciphers[ALG_COUNT] = {
+ 	{"null",	run_null},
+-	{"aes-cbc",	run_aes_cbc},
+-	{"aes-xts",	run_aes_xts},
++	{"aes-128-cbc",	run_aes_128_cbc},
++	{"aes-256-xts",	run_aes_256_xts},
+ 	{"crc32c",	run_crc32c},
+ 	{"sha1",	run_sha1},
+ 	{"sha256",	run_sha256},
+@@ -251,7 +251,7 @@ int run_null(int fdc, struct test_params tp)
+ 	return 0;
+ }
+ 
+-int run_aes_cbc(int fdc, struct test_params tp)
++int run_aes_128_cbc(int fdc, struct test_params tp)
+ {
+ 	struct session_op sess;
+ 	char keybuf[32];
+@@ -271,7 +271,7 @@ int run_aes_cbc(int fdc, struct test_params tp)
+ 	return 0;
+ }
+ 
+-int run_aes_xts(int fdc, struct test_params tp)
++int run_aes_256_xts(int fdc, struct test_params tp)
+ {
+ 	struct session_op sess;
+ 	char keybuf[32];
+-- 
+2.10.2
+

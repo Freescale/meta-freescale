@@ -1,0 +1,82 @@
+From abcf5983f6d69c5ff35e77fb79ea7afe2149411a Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Thu, 27 Oct 2016 09:33:11 +0300
+Subject: [PATCH 072/104] use $(...) instead of `...` for consistency
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/async_speed_multi.sh | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/tests/async_speed_multi.sh b/tests/async_speed_multi.sh
+index 659be0e..e10dc0d 100755
+--- a/tests/async_speed_multi.sh
++++ b/tests/async_speed_multi.sh
+@@ -19,7 +19,7 @@
+ 
+ # no user-configurable options below this line
+ 
+-NUM_CORES=`nproc`
++NUM_CORES=$(nproc)
+ OUT_BASENAME="async_speed"
+ S_TIME_FORMAT=ISO
+ MPSTAT_OUT="mpstat_out"
+@@ -44,9 +44,9 @@ function SUM {
+ 
+ function get_cpu_idle
+ {
+-    header_line=`grep %idle ${MPSTAT_OUT} | head -n 1 | sed 's/\s\+/ /g'`
+-    idle_column=`echo $header_line | wc -w`
+-    average_idle=`grep Average ${MPSTAT_OUT} | sed 's/\s\+/ /g' | cut -d' ' -f ${idle_column} | tail -n 1`
++    header_line=$(grep %idle ${MPSTAT_OUT} | head -n 1 | sed 's/\s\+/ /g')
++    idle_column=$(echo $header_line | wc -w)
++    average_idle=$(grep Average ${MPSTAT_OUT} | sed 's/\s\+/ /g' | cut -d' ' -f ${idle_column} | tail -n 1)
+ 
+     echo $average_idle
+ }
+@@ -66,9 +66,9 @@ function run_parallel
+     MPSTAT_PID=$!
+ 
+     PIDS=""
+-    start=`date +%s.%N`
++    start=$(date +%s.%N)
+ 
+-    for i in `seq 0 $(($mvalue-1))`
++    for i in $(seq 0 $(($mvalue-1)))
+     do
+ 	CMD_OUT="${OUT_BASENAME}_${i}"
+ 
+@@ -81,14 +81,14 @@ function run_parallel
+     done
+ 
+     wait $PIDS
+-    end=`date +%s.%N`
++    end=$(date +%s.%N)
+ 
+     wait $MPSTAT_PID
+ 
+     runtime=$(echo "scale=2; ($end - $start) / 1" | bc -l )
+-    total_data=`cat ${OUT_BASENAME}_* | cut -f 1 | SUM`
++    total_data=$(cat ${OUT_BASENAME}_* | cut -f 1 | SUM)
+     avg_speed=$(echo "scale=2; $total_data / $runtime / 1000000000" | bc -l)
+-    cpu_idle=`get_cpu_idle`
++    cpu_idle=$(get_cpu_idle)
+ 
+     echo
+     echo "buffer size  :   $nvalue"
+@@ -124,9 +124,9 @@ function main
+ 	shift $((OPTIND-1))
+ 	alg_name=$1
+ 
+-	[ -z "$tvalue" ] && tvalue=10      # 10 seconds per test by default
+-	[ -z "$mvalue" ] && mvalue=`nproc` # thread count defaults to nproc
+-	[ -z "$nvalue" ] && nvalue=256     # 256 bytes default buffer size
++	[ -z "$tvalue" ] && tvalue=10         # 10 seconds per test by default
++	[ -z "$mvalue" ] && mvalue=$NUM_CORES # thread count defaults to nproc
++	[ -z "$nvalue" ] && nvalue=256        # 256 bytes default buffer size
+ 
+ 	[ "$tvalue" -lt 5 ] && tvalue=5
+ 
+-- 
+2.10.2
+

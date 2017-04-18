@@ -1,0 +1,77 @@
+From 6c2b61c17681d0e6ddc44b0438c9712fb2810ba6 Mon Sep 17 00:00:00 2001
+From: Cristian Stoica <cristian.stoica@nxp.com>
+Date: Tue, 28 Mar 2017 13:16:14 +0300
+Subject: [PATCH] update copyright notes
+
+Signed-off-by: Cristian Stoica <cristian.stoica@nxp.com>
+---
+ tests/run_crypto_tests.sh | 16 ++++++++++++++++
+ tests/sha_speed.c         |  1 +
+ tests/speed.c             |  1 +
+ zc.c                      |  1 +
+ 4 files changed, 19 insertions(+)
+
+diff --git a/tests/run_crypto_tests.sh b/tests/run_crypto_tests.sh
+index 321b013..225ad7a 100644
+--- a/tests/run_crypto_tests.sh
++++ b/tests/run_crypto_tests.sh
+@@ -1,4 +1,20 @@
+ #!/bin/bash
++#
++#    Copyright 2016 NXP Semiconductors
++#
++#    This program is free software: you can redistribute it and/or modify
++#    it under the terms of the GNU General Public License as published by
++#    the Free Software Foundation, either version 2 of the License, or
++#    (at your option) any later version.
++#
++#    This program is distributed in the hope that it will be useful,
++#    but WITHOUT ANY WARRANTY; without even the implied warranty of
++#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++#    GNU General Public License for more details.
++#
++#    You should have received a copy of the GNU General Public License
++#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
++
+ 
+ 
+ BUF_SIZE="8192 16384 65536 131072 262144"
+diff --git a/tests/sha_speed.c b/tests/sha_speed.c
+index 30b40f5..e6a2ac5 100644
+--- a/tests/sha_speed.c
++++ b/tests/sha_speed.c
+@@ -1,6 +1,7 @@
+ /*  sha_speed - simple SHA benchmark tool for cryptodev
+  *
+  *    Copyright (C) 2011 by Phil Sutter <phil.sutter@viprinet.com>
++ *    Copyright 2016 NXP
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+diff --git a/tests/speed.c b/tests/speed.c
+index ae0b658..6e18960 100644
+--- a/tests/speed.c
++++ b/tests/speed.c
+@@ -1,6 +1,7 @@
+ /*  cryptodev_test - simple benchmark tool for cryptodev
+  *
+  *    Copyright (C) 2010 by Phil Sutter <phil.sutter@viprinet.com>
++ *    Copyright 2016-2017 NXP
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+diff --git a/zc.c b/zc.c
+index ae464ff..63e7c23 100644
+--- a/zc.c
++++ b/zc.c
+@@ -4,6 +4,7 @@
+  * Copyright (c) 2009-2013 Nikos Mavrogiannopoulos <nmav@gnutls.org>
+  * Copyright (c) 2010 Phil Sutter
+  * Copyright (c) 2011, 2012 OpenSSL Software Foundation, Inc.
++ * Copyright 2017 NXP
+  *
+  * This file is part of linux cryptodev.
+  *
+-- 
+1.9.2
+
