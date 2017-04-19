@@ -1,0 +1,27 @@
+Subject: [PATCH] Makefile:Obey LDFLAGS in Makefile
+
+This avoids a "QA Issue: No GNU_HASH in the elf binary"
+
+Upstream-Status: Pending
+
+Signed-off-by:Chunrong Guo <chunrong.guo@nxp.com>
+
+--- a/Makefileold	2017-04-19 15:32:36.512525035 +0800
++++ b/Makefile	2017-04-19 15:34:29.560521121 +0800
+@@ -46,13 +46,13 @@
+ all: basic_dce_test basic_dce_perf basic_dce_sanity
+ 
+ basic_dce_test: tests/basic_dce_test.o libdce.a
+-	$(CC) $(CFLAGS) $^ -o $@
++	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+ 
+ basic_dce_perf: tests/basic_dce_perf.o libdce.a
+-	$(CC) $(CFLAGS) $^ -o $@
++	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+ 
+ basic_dce_sanity: tests/basic_dce_sanity.o libdce.a
+-	$(CC) $(CFLAGS) $^ -o $@
++	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+ 
+ libdce.a: $(OBJS)
+ 	$(AR) rcs $@ $(OBJS)
