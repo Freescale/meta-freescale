@@ -7,8 +7,8 @@ PR = "r1"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fm-ucode.git;branch=sdk-v2.0.x"
-SRCREV = "b19c645821941493fbef32e616b5a16404259976"
+SRC_URI = "git://git.freescale.com/ppc/sdk/fm-ucode.git;nobranch=1"
+SRCREV = "c275e91392e2adab1ed22f3867b8269ca3c54014"
 
 S = "${WORKDIR}/git"
 
@@ -18,8 +18,8 @@ REGLEX_t1040 = "t1040"
 REGLEX_t1042 = "t1040"
 REGLEX_b4420 = "b4860"
 REGLEX_t4160 = "t4240"
-REGLEX_ls1043a = "t2080"
-REGLEX_ls1046a = "t2080"
+REGLEX_ls1043a = "ls1043"
+REGLEX_ls1046a = "ls1046"
 
 do_install () {
     UCODE=`echo ${REGLEX} | sed -e 's,-.*$,,' -e 's,[a-zA-Z]*$,,'`
