@@ -1,0 +1,19 @@
+Patch to disable the Werror flag.
+
+Werror flag is causing the code compilaton error when
+ubuntu toolchain is used to compile the code in Dash.
+This patch disables the Werror flag to avoid such errors.
+
+Signed-off-by: Sandeep Malik <Sandeep.Malik@nxp.com>
+
+--- a/configure.acold	2017-04-19 17:40:58.312258373 +0800
++++ b/configure.ac	2017-04-19 17:41:22.820257525 +0800
+@@ -249,7 +249,7 @@
+ ##########################################################################
+ # Default warning setup
+ ##########################################################################
+-ODP_CFLAGS="$ODP_CFLAGS -W -Wall -Werror -Wstrict-prototypes -Wmissing-prototypes"
++ODP_CFLAGS="$ODP_CFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
+ ODP_CFLAGS="$ODP_CFLAGS -Wmissing-declarations -Wold-style-definition -Wpointer-arith"
+ ODP_CFLAGS="$ODP_CFLAGS -Wcast-align -Wnested-externs -Wcast-qual -Wformat-nonliteral"
+ ODP_CFLAGS="$ODP_CFLAGS -Wformat-security -Wundef -Wwrite-strings"
