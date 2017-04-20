@@ -1,0 +1,166 @@
+From 82691546d6125f1d07c4f9faa06475dff94ba567 Mon Sep 17 00:00:00 2001
+From: Nikhil Agarwal <nikhil.agarwal@linaro.org>
+Date: Wed, 11 Jan 2017 00:24:07 +0530
+Subject: [PATCH] Patch to install ofp example applications.
+
+Signed-off-by: Nikhil Agarwal <nikhil.agarwal@linaro.org>
+---
+ example/classifier/Makefile.am     | 3 ++-
+ example/fpm/Makefile.am            | 3 ++-
+ example/fpm_burstmode/Makefile.am  | 3 ++-
+ example/ioctl_test/Makefile.am     | 3 ++-
+ example/multicast/Makefile.am      | 3 ++-
+ example/socket/Makefile.am         | 3 ++-
+ example/sysctl/Makefile.am         | 3 ++-
+ example/udp_fwd_socket/Makefile.am | 3 ++-
+ example/udpecho/Makefile.am        | 3 ++-
+ example/webserver/Makefile.am      | 3 ++-
+ example/webserver2/Makefile.am     | 3 ++-
+ 11 files changed, 22 insertions(+), 11 deletions(-)
+
+diff --git a/example/classifier/Makefile.am b/example/classifier/Makefile.am
+index c54542c..cb4eb31 100644
+--- a/example/classifier/Makefile.am
++++ b/example/classifier/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = classifier 
++inst_PROGRAMS = classifier
++instdir=${exec_prefix}/ofp/bin
+ classifier_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+ dist_classifier_SOURCES = classifier_main.c
+diff --git a/example/fpm/Makefile.am b/example/fpm/Makefile.am
+index d04916c..2b459d7 100644
+--- a/example/fpm/Makefile.am
++++ b/example/fpm/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = fpm
++inst_PROGRAMS = fpm
++instdir=${exec_prefix}/ofp/bin
+ fpm_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+ dist_fpm_SOURCES = app_main.c \
+diff --git a/example/fpm_burstmode/Makefile.am b/example/fpm_burstmode/Makefile.am
+index 6b7b024..fc8cdfe 100644
+--- a/example/fpm_burstmode/Makefile.am
++++ b/example/fpm_burstmode/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = fpm_burstmode
++inst_PROGRAMS = fpm_burstmode
++instdir=${exec_prefix}/ofp/bin
+ fpm_burstmode_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+ dist_fpm_burstmode_SOURCES = app_main.c
+diff --git a/example/ioctl_test/Makefile.am b/example/ioctl_test/Makefile.am
+index d45c4c4..98fd573 100644
+--- a/example/ioctl_test/Makefile.am
++++ b/example/ioctl_test/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = ioctl_test
++inst_PROGRAMS = ioctl_test
++instdir=${exec_prefix}/ofp/bin
+ 
+ ioctl_test_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+diff --git a/example/multicast/Makefile.am b/example/multicast/Makefile.am
+index 378aaf3..8476123 100644
+--- a/example/multicast/Makefile.am
++++ b/example/multicast/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = mcast
++inst_PROGRAMS = mcast
++instdir=${exec_prefix}/ofp/bin
+ 
+ mcast_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+diff --git a/example/socket/Makefile.am b/example/socket/Makefile.am
+index 9fa2b7d..c296fc2 100644
+--- a/example/socket/Makefile.am
++++ b/example/socket/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = socket
++inst_PROGRAMS = socket
++instdir=${exec_prefix}/ofp/bin
+ socket_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+ dist_socket_SOURCES = \
+diff --git a/example/sysctl/Makefile.am b/example/sysctl/Makefile.am
+index 42f3a27..7ef0227 100644
+--- a/example/sysctl/Makefile.am
++++ b/example/sysctl/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = sysctl
++inst_PROGRAMS = sysctl
++instdir=${exec_prefix}/ofp/bin
+ 
+ sysctl_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+diff --git a/example/udp_fwd_socket/Makefile.am b/example/udp_fwd_socket/Makefile.am
+index 653fd21..c8ce9ca 100644
+--- a/example/udp_fwd_socket/Makefile.am
++++ b/example/udp_fwd_socket/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = udp_fwd_socket
++inst_PROGRAMS = udp_fwd_socket
++instdir=${exec_prefix}/ofp/bin
+ 
+ udp_fwd_socket_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+diff --git a/example/udpecho/Makefile.am b/example/udpecho/Makefile.am
+index e64f2c0..a0c1085 100644
+--- a/example/udpecho/Makefile.am
++++ b/example/udpecho/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = udpecho
++inst_PROGRAMS = udpecho
++instdir=${exec_prefix}/ofp/bin
+ 
+ udpecho_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+diff --git a/example/webserver/Makefile.am b/example/webserver/Makefile.am
+index 1dad1b6..230515e 100644
+--- a/example/webserver/Makefile.am
++++ b/example/webserver/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = webserver
++inst_PROGRAMS = webserver
++instdir=${exec_prefix}/ofp/bin
+ 
+ webserver_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+diff --git a/example/webserver2/Makefile.am b/example/webserver2/Makefile.am
+index d9f4767..c53a9d2 100644
+--- a/example/webserver2/Makefile.am
++++ b/example/webserver2/Makefile.am
+@@ -1,6 +1,7 @@
+ include $(top_srcdir)/example/Makefile.inc
+ 
+-noinst_PROGRAMS = webserver2
++inst_PROGRAMS = webserver2
++instdir=${exec_prefix}/ofp/bin
+ 
+ webserver2_LDFLAGS = $(AM_LDFLAGS) -static
+ 
+-- 
+2.9.3
+
