@@ -2,7 +2,7 @@ DESCRIPTION = "OVS DPDK"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=17b2c9d4c70853a09c0e143137754b35"
 
-DEPENDS = "dpdk python-six-native"
+DEPENDS = "dpdk python-six-native coreutils-native"
 RDEPENDS_${PN} = "bash libcrypto libssl python"
 
 inherit pythonnative
