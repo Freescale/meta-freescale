@@ -18,7 +18,7 @@ SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
     file://powerpc-64e-Convert-cmpi-to-cmpwi-in-head_64.S.patch \
     file://powerpc-vdso64-Use-double-word-compare-on-pointers.patch \
 "
-SRCREV = "b14540ee315f79f6a5dfc621e7f4217c8fac7d1c"
+SRCREV = "1ae843c08261402b2c35d83422e4fa1e313611f4"
 
 S = "${WORKDIR}/git"
 
