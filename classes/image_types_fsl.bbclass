@@ -39,31 +39,31 @@ IMAGE_CMD_linux.sb () {
 }
 
 # IMX Bootlets barebox bootstream
-IMAGE_DEPENDS_barebox.mxsboot-sdcard = "elftosb-native:do_populate_sysroot \
+IMAGE_DEPENDS_barebox-mxsboot-sdcard = "elftosb-native:do_populate_sysroot \
                                         u-boot-mxsboot-native:do_populate_sysroot \
                                         imx-bootlets:do_deploy \
                                         barebox:do_deploy"
-IMAGE_CMD_barebox.mxsboot-sdcard () {
+IMAGE_CMD_barebox-mxsboot-sdcard () {
 	barebox_bd_file=imx-bootlets-barebox_ivt.bd-${MACHINE}
 
 	# Ensure the files are generated
-	(cd ${DEPLOY_DIR_IMAGE}; rm -f ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard; \
+	(cd ${DEPLOY_DIR_IMAGE}; rm -f ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox-mxsboot-sdcard; \
 	 elftosb -f mx28 -z -c $barebox_bd_file -o ${IMAGE_NAME}.barebox.sb; \
-	 mxsboot sd ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox.mxsboot-sdcard)
+	 mxsboot sd ${IMAGE_NAME}.barebox.sb ${IMAGE_NAME}.barebox-mxsboot-sdcard)
 }
 
 # U-Boot mxsboot generation to SD-Card
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
-IMAGE_DEPENDS_uboot.mxsboot-sdcard = "u-boot-mxsboot-native:do_populate_sysroot \
+IMAGE_DEPENDS_uboot-mxsboot-sdcard = "u-boot-mxsboot-native:do_populate_sysroot \
                                       u-boot:do_deploy"
-IMAGE_CMD_uboot.mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
-                                             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot.mxsboot-sdcard"
+IMAGE_CMD_uboot-mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
+                                             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard"
 
-IMAGE_DEPENDS_uboot.mxsboot-nand = "u-boot-mxsboot-native:do_populate_sysroot \
+IMAGE_DEPENDS_uboot-mxsboot-nand = "u-boot-mxsboot-native:do_populate_sysroot \
                                       u-boot:do_deploy"
-IMAGE_CMD_uboot.mxsboot-nand = "mxsboot ${MXSBOOT_NAND_ARGS} nand \
+IMAGE_CMD_uboot-mxsboot-nand = "mxsboot ${MXSBOOT_NAND_ARGS} nand \
                                              ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
-                                             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot.mxsboot-nand"
+                                             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-nand"
 
 # Boot partition volume id
 BOOTDD_VOLUME_ID ?= "Boot ${MACHINE}"
@@ -280,7 +280,7 @@ generate_mxs_sdcard () {
 		parted -s ${SDCARD} unit KiB mkpart primary 2048 $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
 		parted -s ${SDCARD} unit KiB mkpart primary $(expr  ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
 
-		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot.mxsboot-sdcard of=${SDCARD} conv=notrunc seek=1 bs=$(expr 1024 \* 1024)
+		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard of=${SDCARD} conv=notrunc seek=1 bs=$(expr 1024 \* 1024)
 
 		_generate_boot_image 2
 
@@ -292,7 +292,7 @@ generate_mxs_sdcard () {
 		parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} - ${BAREBOX_ENV_SPACE}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED})
 		parted -s ${SDCARD} unit KiB mkpart primary $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED}) $(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} \+ $ROOTFS_SIZE)
 
-		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.barebox.mxsboot-sdcard of=${SDCARD} conv=notrunc seek=1 bs=$(expr 1024 \* 1024)
+		dd if=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.barebox-mxsboot-sdcard of=${SDCARD} conv=notrunc seek=1 bs=$(expr 1024 \* 1024)
 		dd if=${DEPLOY_DIR_IMAGE}/bareboxenv-${MACHINE}.bin of=${SDCARD} conv=notrunc seek=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \+ ${BOOT_SPACE_ALIGNED} - ${BAREBOX_ENV_SPACE}) bs=1024
 		;;
 		*)
@@ -334,6 +334,6 @@ IMAGE_TYPEDEP_sdcard += "${@d.getVar('SDCARD_ROOTFS', 1).split('.')[-1]}"
 # In case we are building for i.MX23 or i.MX28 we need to have the
 # image stream built before the sdcard generation
 IMAGE_TYPEDEP_sdcard += " \
-    ${@bb.utils.contains('IMAGE_FSTYPES', 'uboot.mxsboot-sdcard', 'uboot.mxsboot-sdcard', '', d)} \
-    ${@bb.utils.contains('IMAGE_FSTYPES', 'barebox.mxsboot-sdcard', 'barebox.mxsboot-sdcard', '', d)} \
+    ${@bb.utils.contains('IMAGE_FSTYPES', 'uboot-mxsboot-sdcard', 'uboot-mxsboot-sdcard', '', d)} \
+    ${@bb.utils.contains('IMAGE_FSTYPES', 'barebox-mxsboot-sdcard', 'barebox-mxsboot-sdcard', '', d)} \
 "
