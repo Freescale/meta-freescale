@@ -203,7 +203,7 @@ IMX_DEFAULT_KERNEL_use-mainline-bsp = "linux-fslc"
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "sdcard.gz"
-SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot.mxsboot-sdcard sdcard.gz"
+SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot-mxsboot-sdcard sdcard.gz"
 
 SDCARD_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}.rootfs.ext4"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
