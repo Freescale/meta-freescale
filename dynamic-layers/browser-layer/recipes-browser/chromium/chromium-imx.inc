@@ -25,9 +25,8 @@ do_patch[prefuncs] =+ "add_chromium_imx_patches"
 
 # * Lost context problems are not known to happen with Vivante GPUs,
 #   so it is safe to use ignore-lost-context
-# * EGL is on by default due to the GPU on the i.MX6
 # * Proprietary codecs need to be enabled for h.264 and MP4 support
-PACKAGECONFIG_append = " use-egl ignore-lost-context proprietary-codecs"
+PACKAGECONFIG_append = " ignore-lost-context proprietary-codecs"
 
 copy_chromium_imx_files() {
 	# sources in src/ are already organized in a manner
