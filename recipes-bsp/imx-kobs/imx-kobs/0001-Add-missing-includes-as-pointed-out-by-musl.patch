@@ -1,0 +1,33 @@
+From c183a648958ab4454247cfd88d01da7730a53d19 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Thu, 11 May 2017 00:59:07 -0700
+Subject: [PATCH] Add missing includes as pointed out by musl
+
+These headers are indrectly included when building with
+glibc, this is exposed when compiling with musl systems
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ src/mtd.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/mtd.h b/src/mtd.h
+index 6cb0ca2..0eaea48 100644
+--- a/src/mtd.h
++++ b/src/mtd.h
+@@ -25,9 +25,12 @@
+ #ifndef MTD_H
+ #define MTD_H
+ 
++#define _GNU_SOURCE
++#include <fcntl.h>
+ #include <mtd/mtd-user.h>
+ #include <endian.h>
+ #include <stdint.h>
++#include <stddef.h>
+ 
+ #include "BootControlBlocks.h"
+ #include "rom_nand_hamming_code_ecc.h"
+-- 
+2.12.2
+
