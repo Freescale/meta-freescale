@@ -88,7 +88,7 @@ MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER_append_imxvpu = " imx-vpu libimxvpuapi imx-codec imx-vpuwrap imx-parser"
-MACHINE_SOCARCH_FILTER_append_imxgpu2d = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango"
+MACHINE_SOCARCH_FILTER_append_imxgpu2d = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango weston"
 MACHINE_SOCARCH_FILTER_append_imxpxp = " imx-codec imx-parser"
 MACHINE_SOCARCH_FILTER_append_use-mainline-bsp = " \
     qtbase \
@@ -214,6 +214,10 @@ SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
 KERNEL_IMAGETYPE = "zImage"
 
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
+
+# Use weston 1.11.1 for mx6 and mx7 machines
+PREFERRED_VERSION_weston_mx6 = "1.11.1"
+PREFERRED_VERSION_weston_mx7 = "1.11.1"
 
 # Add the ability to specify _imx machines
 MACHINEOVERRIDES =. "imx:"
