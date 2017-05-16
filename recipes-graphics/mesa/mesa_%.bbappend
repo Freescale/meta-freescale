@@ -9,9 +9,8 @@ python () {
     if "imxgpu2d" not in overrides:
         return
 
-    extra_oeconf = d.getVar("EXTRA_OECONF", True)
-    extra_oeconf = extra_oeconf.replace("--enable-glx-tls", "--enable-glx")
-    d.setVar("EXTRA_OECONF", extra_oeconf)
+    x11flag = d.getVarFlag("PACKAGECONFIG", "x11", False)
+    d.setVarFlag("PACKAGECONFIG", "x11", x11flag.replace("--enable-glx-tls", "--enable-glx"))
 }
 
 # Enable Etnaviv support
