@@ -27,8 +27,8 @@ SRC_URI = " \
     ${FSL_MIRROR}/imx-gst1.0-plugin-${PV}.tar.gz \
 "
 
-SRC_URI[md5sum] = "427c2db85f1eb70d003380c248fb9b41"
-SRC_URI[sha256sum] = "b71a5800aad72e7fa3b9e19b3473ea6870c426412baa5030e2f9817c294db820"
+SRC_URI[md5sum] = "8c939f68b7d7ce8659618bd34b93a508"
+SRC_URI[sha256sum] = "fcd5b8536758c50491c80ed26e86770fe17f29744ab4ccba1e5ca1c475a209c3"
 
 S = "${WORKDIR}/imx-gst1.0-plugin-${PV}"
 
@@ -36,8 +36,7 @@ inherit autotools pkgconfig
 
 # Make sure kernel sources are available
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
-PLATFORM_mx6dl = "MX6"
-PLATFORM_mx6q = "MX6"
+PLATFORM_mx6 = "MX6"
 PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx6sx = "MX6SX"
 PLATFORM_mx6ul = "MX6UL"
@@ -57,10 +56,7 @@ BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
 RDEPENDS_${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_mx6dl = "overlaysink"
-PACKAGECONFIG_mx6q = "overlaysink"
-PACKAGECONFIG_mx6sl = "overlaysink"
-PACKAGECONFIG_mx6sx = "overlaysink"
+PACKAGECONFIG_mx6 = "overlaysink"
 
 
 # FIXME: Add all features
@@ -86,4 +82,4 @@ FILES_${PN}-grecorder = "${bindir}/grecorder-1.0"
 FILES_${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
 FILES_${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
 
-COMPATIBLE_MACHINE = "(mx6dl|mx6q|mx6sl|mx6sx|mx6ul|mx6ull|mx7d)"
+COMPATIBLE_MACHINE = "(mx6|mx6ul|mx6ull|mx7d)"
