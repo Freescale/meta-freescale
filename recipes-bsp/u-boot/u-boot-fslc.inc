@@ -13,6 +13,7 @@ LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=a2c678cfd4a4d97135585cad908541c6"
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|mx7|vf)"
 
+DEPENDS_append = " dtc-native"
 DEPENDS_mxs += "elftosb-native openssl-native"
 
 PROVIDES += "u-boot"
