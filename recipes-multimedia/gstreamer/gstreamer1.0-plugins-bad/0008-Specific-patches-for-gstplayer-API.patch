@@ -1,0 +1,292 @@
+From 3d789943c1f0568014ff2399a097b5dfa5d7a92e Mon Sep 17 00:00:00 2001
+From: Lyon Wang <lyon.wang@nxp.com>
+Date: Fri, 30 Dec 2016 15:53:21 +0800
+Subject: [PATCH 3/5] Specific patches for gstplayer API
+
+player: Add get_rotate, set_rotate API
+
+- Add gstplayer get_rotate() and set_rotate() API
+
+player: Add force-aspect-ratio config
+
+- Add get/set force-aspect-ratio config API
+
+player: Add set audio / text sink API
+
+- Add set audio / text sink API
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Lyon Wang <lyon.wang@nxp.com>
+---
+ gst-libs/gst/player/gstplayer.c | 214 ++++++++++++++++++++++++++++++++++++++++
+ gst-libs/gst/player/gstplayer.h |  10 ++
+ 2 files changed, 224 insertions(+)
+
+diff --git a/gst-libs/gst/player/gstplayer.c b/gst-libs/gst/player/gstplayer.c
+index d9ff524..960e7a2 100644
+--- a/gst-libs/gst/player/gstplayer.c
++++ b/gst-libs/gst/player/gstplayer.c
+@@ -86,6 +86,7 @@ typedef enum
+   CONFIG_QUARK_USER_AGENT = 0,
+   CONFIG_QUARK_POSITION_INTERVAL_UPDATE,
+   CONFIG_QUARK_ACCURATE_SEEK,
++  CONFIG_QUARK_FORCE_ASPECT_RATIO,
+ 
+   CONFIG_QUARK_MAX
+ } ConfigQuarkId;
+@@ -94,6 +95,7 @@ static const gchar *_config_quark_strings[] = {
+   "user-agent",
+   "position-interval-update",
+   "accurate-seek",
++  "force-aspect-ratio",
+ };
+ 
+ GQuark _config_quark_table[CONFIG_QUARK_MAX];
+@@ -269,6 +271,7 @@ gst_player_init (GstPlayer * self)
+   self->config = gst_structure_new_id (QUARK_CONFIG,
+       CONFIG_QUARK (POSITION_INTERVAL_UPDATE), G_TYPE_UINT, DEFAULT_POSITION_UPDATE_INTERVAL_MS,
+       CONFIG_QUARK (ACCURATE_SEEK), G_TYPE_BOOLEAN, FALSE,
++      CONFIG_QUARK (FORCE_ASPECT_RATIO), G_TYPE_BOOLEAN, TRUE,
+       NULL);
+   /* *INDENT-ON* */
+ 
+@@ -4259,3 +4262,214 @@ gst_player_config_get_seek_accurate (const GstStructure * config)
+ 
+   return accurate;
+ }
++
++/**
++ * gst_player_get_video_sink:
++ * @player: #GstPlayer instance
++ *
++ * Returns: actual video sink element
++ */
++GstElement *
++gst_player_get_video_sink (GstPlayer * self)
++{
++  GstElement *sink = NULL;
++  GstElement *actual_sink = NULL;
++  GstIteratorResult rc;
++  GstIterator *it;
++  GValue item = { 0, };
++  g_return_val_if_fail (GST_IS_PLAYER (self), NULL);
++
++  g_object_get (G_OBJECT (self->playbin), "video-sink", &sink, NULL);
++  if (NULL == sink) {
++    GST_WARNING_OBJECT (self, "No video-sink found");
++    return NULL;
++  }
++  it = gst_bin_iterate_sinks ((GstBin *) sink);
++  do {
++    rc = gst_iterator_next (it, &item);
++    if (rc == GST_ITERATOR_OK) {
++      break;
++    }
++  } while (rc != GST_ITERATOR_DONE);
++
++  g_object_unref (sink);
++  actual_sink = g_value_get_object (&item);
++  g_value_unset (&item);
++  gst_iterator_free (it);
++
++  if (NULL == actual_sink) {
++    GST_WARNING_OBJECT (self, "No video-sink found");
++    return NULL;
++  }
++
++  return actual_sink;
++}
++
++/**
++ * gst_palyer_set_rotate:
++ * @player: #GstPlayer instance
++ * @rotation: rotation degree value
++ *
++ * Returns: %TRUE or %FALSE
++ *
++ * Set the rotation vaule
++ */
++gboolean
++gst_player_set_rotate (GstPlayer * self, gint rotation)
++{
++  GstElement *video_sink = NULL;
++  GObjectClass *gobjclass = NULL;
++  g_return_val_if_fail (GST_IS_PLAYER (self), FALSE);
++
++  video_sink = gst_player_get_video_sink (self);
++  if (NULL == video_sink) {
++    GST_WARNING_OBJECT (self, " cannot get  video sink ");
++    return FALSE;
++  }
++  GST_DEBUG_OBJECT (self, "set rotation degree '%d'", rotation);
++
++  gobjclass = G_OBJECT_GET_CLASS (G_OBJECT (video_sink));
++  if (g_object_class_find_property (gobjclass, "rotate")
++      && g_object_class_find_property (gobjclass, "reconfig")) {
++    g_object_set (G_OBJECT (video_sink), "rotate", rotation / 90, NULL);
++    g_object_set (G_OBJECT (video_sink), "reconfig", 1, NULL);
++  } else if (g_object_class_find_property (gobjclass, "rotate-method")) {
++    g_object_set (G_OBJECT (video_sink), "rotate-method", rotation / 90, NULL);
++  } else {
++    GST_INFO_OBJECT (self, "can't set rotation for current video sink %s'",
++        gst_element_get_name (video_sink));
++    return FALSE;
++  }
++
++  return TRUE;
++}
++
++/**
++ * gst_player_get_rotate:
++ * @player: #GstPlayer instance
++ *
++ * Returns: the rotation degree value
++ */
++gint
++gst_player_get_rotate (GstPlayer * self)
++{
++  GstElement *video_sink = NULL;
++  GObjectClass *gobjclass = NULL;
++  gint rotation = 0;
++  g_return_val_if_fail (GST_IS_PLAYER (self), 0);
++
++  video_sink = gst_player_get_video_sink (self);
++  if (NULL == video_sink) {
++    GST_WARNING_OBJECT (self, " cannot get  video sink ");
++    return 0;
++  }
++
++  /* check if the element has "rotate" property */
++  gobjclass = G_OBJECT_GET_CLASS (video_sink);
++  if (g_object_class_find_property (gobjclass, "rotate")) {
++    g_object_get (G_OBJECT (video_sink), "rotate", &rotation, NULL);
++    rotation = rotation * 90;
++  } else if (g_object_class_find_property (gobjclass, "rotate-method")) {
++    g_object_get (G_OBJECT (video_sink), "rotate-method", &rotation, NULL);
++    rotation = rotation * 90;
++  }
++
++  GST_DEBUG_OBJECT (self, "get rotation degree '%d'", rotation);
++
++  return rotation;
++}
++
++/**
++ * gst_player_config_set_force_aspect_ratio:
++ * @player: #GstPlayer instance
++ * @force_aspect_ratio: keey original aspect ratio or not
++ *
++ * Enable or disable force aspect ratio
++ * force_aspect_ratio seeking is TRUE by default.
++ *
++ * Since: 1.12
++ */
++void
++gst_player_config_set_force_aspect_ratio (GstPlayer * self, gboolean force_aspect_ratio)
++{
++  GstStructure *config = self->config;
++  g_return_if_fail (config != NULL);
++
++  gst_structure_id_set (config,
++      CONFIG_QUARK (FORCE_ASPECT_RATIO), G_TYPE_BOOLEAN, force_aspect_ratio, NULL);
++
++  g_object_set(self->playbin, "force-aspect-ratio", force_aspect_ratio, NULL);
++}
++
++/**
++ * gst_player_config_get_force_aspect_ratio:
++ * @config: a #GstPlayer configuration
++ *
++ * Returns: %TRUE if force-aspect-ratio is enabled
++ *
++ * Since 1.12
++ */
++gboolean
++gst_player_config_get_force_aspect_ratio (const GstStructure * config)
++{
++  gboolean force_aspect_ratio = TRUE;
++
++  g_return_val_if_fail (config != NULL, FALSE);
++
++  gst_structure_id_get (config,
++      CONFIG_QUARK (FORCE_ASPECT_RATIO), G_TYPE_BOOLEAN, &force_aspect_ratio, NULL);
++
++  return force_aspect_ratio;
++}
++
++/**
++ * gst_player_set_audio_sink:
++ * @player: #GstPlayer instance
++ * @sink_name: the sink name to set
++ *
++ * Returns: %TRUE or %FALSE
++ *
++ * Set the customize audio sink
++ */
++gboolean
++gst_player_set_audio_sink (GstPlayer * self, const gchar * sink_name)
++{
++  GstElement *audio_sink = NULL;
++  g_return_val_if_fail (GST_IS_PLAYER (self), FALSE);
++
++  audio_sink = gst_parse_bin_from_description (sink_name, TRUE, NULL);
++  if (!audio_sink) {
++    GST_ERROR_OBJECT (self, "invalid audio sink %s", sink_name);
++    return FALSE;
++  }
++
++  g_object_set (G_OBJECT (self->playbin), "audio-sink", audio_sink, NULL);
++  GST_DEBUG_OBJECT (self, "set audio sink '%s'", sink_name);
++  return TRUE;
++}
++
++/**
++ * gst_player_set_text_sink:
++ * @player: #GstPlayer instance
++ * @sink_name: the sink name to set
++ *
++ * Returns: %TRUE or %FALSE
++ *
++ * Set the customize video sink
++ */
++gboolean
++gst_player_set_text_sink (GstPlayer * self, const gchar * sink_name)
++{
++  GstElement *text_sink = NULL;
++  g_return_val_if_fail (GST_IS_PLAYER (self), FALSE);
++
++  text_sink = gst_parse_bin_from_description (sink_name, TRUE, NULL);
++  if (!text_sink) {
++    GST_ERROR_OBJECT (self, "invalid text sink %s", sink_name);
++    return FALSE;
++  }
++
++  g_object_set (G_OBJECT (self->playbin), "text-sink", text_sink, NULL);
++  GST_DEBUG_OBJECT (self, "set text sink '%s'", sink_name);
++  return TRUE;
++}
+diff --git a/gst-libs/gst/player/gstplayer.h b/gst-libs/gst/player/gstplayer.h
+index 8426be5..bfc12b2 100644
+--- a/gst-libs/gst/player/gstplayer.h
++++ b/gst-libs/gst/player/gstplayer.h
+@@ -205,6 +205,16 @@ guint          gst_player_config_get_position_update_interval  (const GstStructu
+ void           gst_player_config_set_seek_accurate (GstPlayer * player, gboolean accurate);
+ gboolean       gst_player_config_get_seek_accurate (const GstStructure * config);
+ 
++/* Custom gstplayer API */
++gboolean    gst_player_set_rotate (GstPlayer * player, gint rotation);
++gint        gst_player_get_rotate (GstPlayer * player);
++
++void        gst_player_config_set_force_aspect_ratio (GstPlayer * self, gboolean force_aspect_ratio);
++gboolean    gst_player_config_get_force_aspect_ratio (const GstStructure * config);
++
++gboolean    gst_player_set_audio_sink (GstPlayer * player, const gchar * sink_name);
++gboolean    gst_player_set_text_sink (GstPlayer * player, const gchar * sink_name);
++
+ G_END_DECLS
+ 
+ #endif /* __GST_PLAYER_H__ */
+-- 
+1.9.1
+
