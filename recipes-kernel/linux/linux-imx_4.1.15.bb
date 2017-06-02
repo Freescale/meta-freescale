@@ -1,4 +1,5 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
+# Copyright 2017 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "Linux Kernel provided and supported by Freescale"
@@ -11,8 +12,8 @@ require recipes-kernel/linux/linux-dtb.inc
 DEPENDS += "lzop-native bc-native"
 
 SRCBRANCH = "imx_4.1.15_2.0.0_ga"
-LOCALVERSION = "-2.0.0"
-SRCREV = "b63f3f52cb393e3287352cf63f0caef31a33ab63"
+LOCALVERSION = "-2.1.0"
+SRCREV = "30278abfe0977b1d2f065271ce1ea23c0e2d1b6e"
 
 DEFAULT_PREFERENCE = "1"
 
