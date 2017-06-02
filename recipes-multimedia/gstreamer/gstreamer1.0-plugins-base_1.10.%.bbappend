@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 GST_IMX_PATCHES = " file://gstplaybin-remove-flag-deinterlace.patch \
                     file://0001-MMFMWK-7030-Linux_MX6QP_ARD-IMXCameraApp-When-Enable.patch \
                     file://0002-Remove-dependence-on-imx-plugin-git.patch \
+                    file://0003-gstplaysink-don-t-set-async-of-custom-text-sink-to-f.patch \
 "
 
 GST_IMX_PATCHES_TO_APPEND = ""
