@@ -1,4 +1,4 @@
-From e99c36dfdce3e0f393eeaca6c2790b566f72d6a8 Mon Sep 17 00:00:00 2001
+From cc06048dcd722049f92ab17958760bd798fb4781 Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <b02247@freescale.com>
 Date: Thu, 5 Jun 2014 17:37:47 +0800
 Subject: [PATCH] add conf for multichannel support in imx
@@ -189,10 +189,10 @@ index 0000000..a51509e
 +
 +# vim: ft=alsaconf
 diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
-index ee7991b..b08acae 100644
+index 00999f0..fbf0697 100644
 --- a/src/conf/cards/Makefile.am
 +++ b/src/conf/cards/Makefile.am
-@@ -54,7 +54,9 @@ cfg_files = aliases.conf \
+@@ -58,7 +58,9 @@ cfg_files = aliases.conf \
  	VIA8237.conf \
  	VX222.conf \
  	VXPocket.conf \
@@ -204,18 +204,18 @@ index ee7991b..b08acae 100644
  if BUILD_ALISP
  cfg_files += aliases.alisp
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index 4a92fb2..46430c2 100644
+index 18a920f..2c422ee 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
-@@ -55,6 +55,8 @@ AV100 cards.CMI8788
- AV200 cards.CMI8788
- CMI8786 cards.CMI8788
+@@ -57,6 +57,8 @@ CMI8786 cards.CMI8788
  CMI8787 cards.CMI8788
+ pistachio cards.pistachio-card
+ VC4-HDMI cards.vc4-hdmi
 +cs42888-audio cards.CS42888
 +imx-hdmi-soc cards.IMX-HDMI
  
  <confdir:pcm/default.conf>
  <confdir:pcm/dmix.conf>
 -- 
-1.8.0
+2.7.4
 
