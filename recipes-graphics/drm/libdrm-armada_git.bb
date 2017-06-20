@@ -1,6 +1,6 @@
 SUMMARY = "Userspace interface to kernel DRM services"
 SECTION = "x11/base"
-LICENSE = "GPL2 & BSD"
+LICENSE = "GPLv2 & BSD"
 
 LIC_FILES_CHKSUM = "file://libdrm_lists.h;beginline=1;endline=25;md5=2af1df1026ba1d24c8e7c370e68ed198"
 
