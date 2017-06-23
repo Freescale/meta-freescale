@@ -15,7 +15,6 @@ SRC_URI_append_imxgpu2d = " \
     file://0005-glcolorconvert-convert-YUV-to-RGB-use-directviv.patch \
     file://0006-glwindow-work-around-for-no-frame-when-imxplayer-use.patch \
     file://0007-glcolorconvert-fix-MRT-cannot-work-in-GLES3.0.patch \
-    file://0008-Specific-patches-for-gstplayer-API.patch \
 "
 
 
