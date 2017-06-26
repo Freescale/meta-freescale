@@ -1,8 +1,8 @@
 Index: git/mkspecs/linux-oe-g++/qmake.conf
 ===================================================================
---- git.orig/mkspecs/linux-oe-g++/qmake.conf	2016-12-14 16:51:48.468955533 -0600
-+++ git/mkspecs/linux-oe-g++/qmake.conf	2016-12-14 17:03:17.000000000 -0600
-@@ -39,4 +39,8 @@
+--- git.orig/mkspecs/linux-oe-g++/qmake.conf	2017-06-26 10:20:57.139653321 -0500
++++ git/mkspecs/linux-oe-g++/qmake.conf	2017-06-26 10:30:12.000000000 -0500
+@@ -39,5 +39,9 @@
  
  include(../oe-device-extra.pri)
  
@@ -10,4 +10,5 @@ Index: git/mkspecs/linux-oe-g++/qmake.conf
 +QMAKE_LIBS_OPENGL_ES2 += -lEGL -lGLESv2
 +QMAKE_LIBS_OPENVG     += -lEGL -lOpenVG
 +
+ load(device_config)
  load(qt_config)
