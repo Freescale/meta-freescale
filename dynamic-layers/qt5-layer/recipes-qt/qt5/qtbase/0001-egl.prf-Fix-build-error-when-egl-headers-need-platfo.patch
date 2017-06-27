@@ -1,0 +1,32 @@
+From 3f9703fecd670b36030e1093466f6d11b370c19f Mon Sep 17 00:00:00 2001
+From: Yuqing Zhu <carol.zhu@nxp.com>
+Date: Mon, 27 Mar 2017 15:33:35 +0800
+Subject: [PATCH] egl.prf: Fix build error when egl headers need platform
+ definition
+
+Gain the value through pkg-config and pass it through QMAKE_CFLAGS_EGL.
+
+Upstream-Status: Pending
+
+Signed-off-by: Yuqing Zhu <carol.zhu@nxp.com>
+---
+ mkspecs/features/egl.prf | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/mkspecs/features/egl.prf b/mkspecs/features/egl.prf
+index 9fa0c9e..85d5852 100644
+--- a/mkspecs/features/egl.prf
++++ b/mkspecs/features/egl.prf
+@@ -1,3 +1,9 @@
++# egl headers need a definition
++PKG_CONFIG = $$pkgConfigExecutable()
++PKGCONFIG_CFLAGS = $$system($$PKG_CONFIG --cflags egl)
++PKGCONFIG_CFLAGS = $$find(PKGCONFIG_CFLAGS, ^-D.*)
++QMAKE_CFLAGS_EGL = $$PKGCONFIG_CFLAGS
++
+ INCLUDEPATH += $$QMAKE_INCDIR_EGL
+ LIBS_PRIVATE += $$QMAKE_LIBS_EGL
+ QMAKE_CFLAGS += $$QMAKE_CFLAGS_EGL
+-- 
+1.9.1
+
