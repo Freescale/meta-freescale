@@ -93,7 +93,7 @@ MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER_append_imx = " alsa-lib"
 MACHINE_SOCARCH_FILTER_append_imxvpu = " imx-vpu libimxvpuapi imx-codec imx-vpuwrap imx-parser"
-MACHINE_SOCARCH_FILTER_append_imxgpu2d = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango weston"
+MACHINE_SOCARCH_FILTER_append_imxgpu2d = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango weston gstreamer1.0-plugins-bad"
 MACHINE_SOCARCH_FILTER_append_imxpxp = " imx-codec imx-parser"
 MACHINE_SOCARCH_FILTER_append_use-mainline-bsp = " \
     qtbase \
