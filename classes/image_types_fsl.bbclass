@@ -12,9 +12,9 @@ UBOOT_SUFFIX_SDCARD ?= "${UBOOT_SUFFIX}"
 MXSBOOT_NAND_ARGS ?= ""
 
 # IMX Bootlets Linux bootstream
-IMAGE_DEPENDS_linux.sb = "elftosb-native:do_populate_sysroot \
-                          imx-bootlets:do_deploy \
-                          virtual/kernel:do_deploy"
+do_image_linux.sb[depends] += "elftosb-native:do_populate_sysroot \
+                               imx-bootlets:do_deploy \
+                               virtual/kernel:do_deploy"
 IMAGE_LINK_NAME_linux.sb = ""
 IMAGE_CMD_linux.sb () {
 	kernel_bin="`readlink ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin`"
@@ -39,10 +39,10 @@ IMAGE_CMD_linux.sb () {
 }
 
 # IMX Bootlets barebox bootstream
-IMAGE_DEPENDS_barebox-mxsboot-sdcard = "elftosb-native:do_populate_sysroot \
-                                        u-boot-mxsboot-native:do_populate_sysroot \
-                                        imx-bootlets:do_deploy \
-                                        barebox:do_deploy"
+do_image_barebox-mxsboot-sdcard[depends] += "elftosb-native:do_populate_sysroot \
+                                             u-boot-mxsboot-native:do_populate_sysroot \
+                                             imx-bootlets:do_deploy \
+                                             barebox:do_deploy"
 IMAGE_CMD_barebox-mxsboot-sdcard () {
 	barebox_bd_file=imx-bootlets-barebox_ivt.bd-${MACHINE}
 
@@ -54,13 +54,13 @@ IMAGE_CMD_barebox-mxsboot-sdcard () {
 
 # U-Boot mxsboot generation to SD-Card
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
-IMAGE_DEPENDS_uboot-mxsboot-sdcard = "u-boot-mxsboot-native:do_populate_sysroot \
-                                      u-boot:do_deploy"
+do_image_uboot-mxsboot-sdcard[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
+                                           u-boot:do_deploy"
 IMAGE_CMD_uboot-mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
                                              ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard"
 
-IMAGE_DEPENDS_uboot-mxsboot-nand = "u-boot-mxsboot-native:do_populate_sysroot \
-                                      u-boot:do_deploy"
+do_image_uboot-mxsboot-nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
+                                         u-boot:do_deploy"
 IMAGE_CMD_uboot-mxsboot-nand = "mxsboot ${MXSBOOT_NAND_ARGS} nand \
                                              ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
                                              ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-nand"
