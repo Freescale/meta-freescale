@@ -12,6 +12,7 @@ inherit module
 SRC_URI = "git://git.freescale.com/ppc/sdk/dpdk.git;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
     file://0001-include-sys-sysmacros.h-for-major-minor-defintions.patch \
+    file://0001-fix-build-with-gcc-7.1.patch \
 "
 SRCREV = "a3395d24774a8a7a2ce0d56a92a8ad2895b2ae8c"
 
@@ -20,6 +21,8 @@ S = "${WORKDIR}/git"
 DPAA_VER ?= "dpaa2"
 DPAA_VER_fsl-lsch2 = "dpaa"
 export RTE_TARGET = "${ARCH}-${DPAA_VER}-linuxapp-gcc"
+export ETHTOOL_LIB_PATH = "${S}/examples/ethtool/lib/${RTE_TARGET}/"
+
 
 EXTRA_OEMAKE += 'ARCH="${ARCH}" CROSS="${TARGET_PREFIX}" \
     CPU_CFLAGS="--sysroot=${STAGING_DIR_HOST}" RTE_SDK="${S}" \
@@ -37,7 +40,7 @@ do_compile() {
 do_install() {
     unset LDFLAGS TARGET_LDFLAGS BUILD_LDFLAGS
 
-    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu" T="${RTE_TARGET}" DESTDIR="${D}" install
+    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu" WERROR_FLAGS="-w" V=1  T="${RTE_TARGET}" DESTDIR="${D}" install
 
     # Build and install the DPDK examples
     for APP in examples/l2fwd examples/l3fwd examples/l2fwd-crypto examples/ipsec-secgw examples/kni examples/ip_fragmentation examples/ip_reassembly; do
