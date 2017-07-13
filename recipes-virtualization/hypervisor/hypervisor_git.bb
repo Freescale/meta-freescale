@@ -17,6 +17,7 @@ SRC_URI = " \
 	git://git.kernel.org/pub/scm/utils/dtc/dtc.git;name=dtc;destsuffix=dtc \
 	git://git.freescale.com/ppc/sdk/hypertrk.git;name=hypertrk;destsuffix=git/hypertrk;branch=sdk-v2.0.x \
 	file://81-fsl-embedded-hv.rules \
+        file://0001-fix-build-error-gcc7.patch \
 	  "
 
 SRCREV_FORMAT="hypervisor"
