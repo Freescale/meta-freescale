@@ -1,15 +1,15 @@
 SUMMARY = "Reset Configuration Word"
 DESCRIPTION = "Reset Configuration Word - hardware boot-time parameters for the QorIQ targets"
-LICENSE = "Freescale-Binary-EULA"
-LIC_FILES_CHKSUM = "file://Freescale-Binary-EULA;md5=8835a59e50213e1b21243dd00c933e47"
+LICENSE = "BSD"
+LIC_FILES_CHKSUM = "file://BSD-LICENSE;md5=627727dce58484c4bd5f9b19665d81b3"
 
 inherit deploy siteinfo
 
 INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/ls2-rcw.git;nobranch=1"
-SRCREV = "5d4624f74ad2744160060a006b7b5a6359d69142"
+SRC_URI = "git://github.com/qoriq-open-source/rcw.git;nobranch=1"
+SRCREV = "bfe8c5eb72cbae387af1c8662957caa801c2309f"
 
 S = "${WORKDIR}/git"
 
