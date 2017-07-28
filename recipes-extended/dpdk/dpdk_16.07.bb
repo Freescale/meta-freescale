@@ -9,12 +9,12 @@ RDEPENDS_${PN}-examples = "bash python-core"
 
 inherit module
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/dpdk.git;nobranch=1 \
+SRC_URI = "git://github.com/qoriq-open-source/dpdk.git;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
     file://0001-include-sys-sysmacros.h-for-major-minor-defintions.patch \
     file://0001-fix-build-with-gcc-7.1.patch \
 "
-SRCREV = "a3395d24774a8a7a2ce0d56a92a8ad2895b2ae8c"
+SRCREV = "98f548c36b3c805a04d9963b8eb02e09340aa089"
 
 S = "${WORKDIR}/git"
 
@@ -40,7 +40,7 @@ do_compile() {
 do_install() {
     unset LDFLAGS TARGET_LDFLAGS BUILD_LDFLAGS
 
-    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu" WERROR_FLAGS="-w" V=1  T="${RTE_TARGET}" DESTDIR="${D}" install
+    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  WERROR_FLAGS="-w" V=1  T="${RTE_TARGET}" DESTDIR="${D}" install
 
     # Build and install the DPDK examples
     for APP in examples/l2fwd examples/l3fwd examples/l2fwd-crypto examples/ipsec-secgw examples/kni examples/ip_fragmentation examples/ip_reassembly; do
@@ -89,4 +89,4 @@ FILES_${PN}-dev += "${datadir}/mk ${datadir}/scripts \
 "
 FILES_${PN}-examples += "${datadir}/examples"
 
-COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a)"
+COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a|ls1088a)"
