@@ -18,10 +18,10 @@ DEPENDS_append_qoriq-arm64 = " change-file-endianess-native dtc-native tcl-nativ
 DEPENDS_append_qoriq-arm = " change-file-endianess-native dtc-native tcl-native"
 DEPENDS_append_qoriq-ppc = " boot-format-native"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/u-boot.git;nobranch=1 \
+SRC_URI = "git://github.com/qoriq-open-source/u-boot.git;nobranch=1 \
     file://fix-build-error-under-gcc6.patch \
 "
-SRCREV = "a06b20925c02ba3fa888a1f915ea7935084d8600"
+SRCREV = "6fc2946a7b1973a8221cdfeccd1666f2d8eec467"
 
 S = "${WORKDIR}/git"
 
