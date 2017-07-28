@@ -1,12 +1,12 @@
 DESCRIPTION = "Data Plane Development Kit Extended utilities"
 HOMEPAGE = "http://dpdk.org"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://COPYING;md5=d65993a77975d92d8125471e44ab0b21"
+LIC_FILES_CHKSUM = "file://COPYING;md5=4ac6ab4e4bcf4c79cb9257f3c61934f6"
 
 RDEPENDS_${PN} = "dpdk"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/dpdk-extras.git;nobranch=1"
-SRCREV = "47ee260f878d83154aeb69d9f84819ce76cc1567"
+SRC_URI = "git://github.com/qoriq-open-source/dpdk-extras.git;nobranch=1"
+SRCREV = "d17f3e065474a41e314ff73b9035e5b3dc021a28"
 
 S = "${WORKDIR}/git"
 
@@ -24,4 +24,4 @@ do_install() {
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a)"
+COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a|ls1088a)"
