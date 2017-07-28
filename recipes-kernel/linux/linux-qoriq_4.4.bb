@@ -7,18 +7,9 @@ SECTION = "kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
-    file://modify-defconfig-t1040-nr-cpus.patch \
-    file://0003-use-static-inline-in-ARM-lifeboot.h.patch \
-    file://fix-the-compile-issue-under-gcc6.patch \
-    file://only-set-vmpic_msi_feature-if-CONFIG_EPAPR_PARAVIRT-.patch \
-    file://powerpc-fsl-Fix-build-of-the-dtb-embedded-kernel-images.patch \
-    file://CVE-2016-2053.patch \
-    file://CVE-2016-0758.patch \
-    file://powerpc-64e-Convert-cmpi-to-cmpwi-in-head_64.S.patch \
-    file://powerpc-vdso64-Use-double-word-compare-on-pointers.patch \
+SRC_URI = "git://github.com/qoriq-open-source/linux.git;nobranch=1 \
 "
-SRCREV = "1ae843c08261402b2c35d83422e4fa1e313611f4"
+SRCREV = "ec61f521be6a22b100aabc0e2726c670aec3c845"
 
 S = "${WORKDIR}/git"
 
