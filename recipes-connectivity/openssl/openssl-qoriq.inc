@@ -175,6 +175,9 @@ do_compile () {
 
 do_compile_ptest () {
 	# build dependencies for test directory too
+        rm  -rf test/ssltest_old
+        rm  -rf test/x509aux
+        rm  -rf test/v3ext
 	export DIRS="$DIRS test"
 	oe_runmake depend
 	oe_runmake buildtest
