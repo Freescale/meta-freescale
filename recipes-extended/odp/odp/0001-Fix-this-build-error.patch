@@ -1,0 +1,28 @@
+From 9fb1642b38053de6e8098f6b608ad86ff45bf7f7 Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Fri, 28 Jul 2017 14:59:22 +0800
+Subject: [PATCH] Fix this build error
+
+fix the below error:
+|error: 'SIGEV_THREAD' undeclared (first use in this function); did you mean 'CLONE_THREAD'?
+
+Signed-off-by: Chunrong Guo <B40290@freescale.com>
+---
+ example/lpm-ipfwd/app/odp_lpmfwd.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/example/lpm-ipfwd/app/odp_lpmfwd.c b/example/lpm-ipfwd/app/odp_lpmfwd.c
+index 57c5e82..f8507be 100644
+--- a/example/lpm-ipfwd/app/odp_lpmfwd.c
++++ b/example/lpm-ipfwd/app/odp_lpmfwd.c
+@@ -23,6 +23,7 @@
+ #include <errno.h>
+ #include <error.h>
+ #include <mqueue.h>
++#include <signal.h>
+ 
+ #include <example_debug.h>
+ 
+-- 
+1.8.3.2
+

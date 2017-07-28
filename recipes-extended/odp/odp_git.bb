@@ -18,6 +18,7 @@ ODP_BUILD_TYPE ?= "ls2088"
 ODP_BUILD_TYPE_ls1043ardb = "ls1043"
 ODP_BUILD_TYPE_ls1046ardb = "ls1046"
 ODP_BUILD_TYPE_ls2080ardb = "ls2080"
+ODP_BUILD_TYPE_ls1088ardb = "ls1088"
 
 EXTRA_OECONF = "--with-platform=${ODP_PLATFORM} \
                 --with-sdk-install-path=${STAGING_DIR_TARGET} \
@@ -53,7 +54,6 @@ do_install_append () {
     cp -rf ${S}/platform/linux-dpaa2/kni/*.h ${D}${includedir}/odp/kni/
     cp -rf ${S}/kern/*.h ${D}${includedir}/odp/kern/
     cp -rf ${S}/platform/linux-dpaa2/flib/mc/*.h ${D}${includedir}/odp/flib/mc/
-    cp -rf ${S}/platform/linux-dpaa2/flib/qbman/include/drivers/*.h ${D}${includedir}/odp/flib/qbman/include/drivers
 
     sed -i -e 's#platform/linux-dpaa2/##g' ${D}${includedir}/odp/kern/*.h
 }
