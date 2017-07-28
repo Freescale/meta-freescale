@@ -3,8 +3,8 @@ SECTION = "flib"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=75d2f6a74299640c05ae6c69ed7a4ad6"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/flib.git;branch=sdk-v2.0.x"
-SRCREV = "08e2aeb7d5c72ebbef30277ab4e73ab147c4c0c7"
+SRC_URI = "git://github.com/qoriq-open-source/flib.git;nobranch=1"
+SRCREV = "2c9b9dc22699f7c00f24a2134c42901932a6a0b9"
 
 S = "${WORKDIR}/git"
 
