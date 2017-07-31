@@ -9,8 +9,6 @@ PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
 PREFERRED_PROVIDER_qemu = "qemu-qoriq"
 PREFERRED_VERSION_testfloat = "2a"
 
-IMAGE_CLASSES += "image_types_uboot"
-
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz ext2.gz.u-boot ext2.gz"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
