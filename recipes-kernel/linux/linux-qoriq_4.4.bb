@@ -27,8 +27,9 @@ ZIMAGE_BASE_NAME[vardepsexclude] = "DATETIME"
 SCMVERSION ?= "y"
 LOCALVERSION = ""
 DELTA_KERNEL_DEFCONFIG ?= ""
-DELTA_KERNEL_DEFCONFIG_prepend_qoriq-arm64 = "freescale.config "
-DELTA_KERNEL_DEFCONFIG_prepend_fsl-lsch2-32b = "freescale_aarch32.config "
+DELTA_KERNEL_DEFCONFIG_prepend_qoriq-arm64 = "lsdk.config "
+DELTA_KERNEL_DEFCONFIG_prepend_fsl-lsch2-32b = "multi_v7_lpae.config lsdk.config multi_v8.config "
+DELTA_KERNEL_DEFCONFIG_prepend_ls102xa = "multi_v7_lpae.config lsdk.config "
 
 do_merge_delta_config() {
     # copy desired defconfig so we pick it up for the real kernel_do_configure
