@@ -54,12 +54,12 @@ IMAGE_CMD_barebox-mxsboot-sdcard () {
 
 # U-Boot mxsboot generation to SD-Card
 UBOOT_SUFFIX_SDCARD_mxs ?= "mxsboot-sdcard"
-do_image_uboot-mxsboot-sdcard[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
+do_image_uboot_mxsboot_sdcard[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                            u-boot:do_deploy"
 IMAGE_CMD_uboot-mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
                                              ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard"
 
-do_image_uboot-mxsboot-nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
+do_image_uboot_mxsboot_nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                          u-boot:do_deploy"
 IMAGE_CMD_uboot-mxsboot-nand = "mxsboot ${MXSBOOT_NAND_ARGS} nand \
                                              ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
