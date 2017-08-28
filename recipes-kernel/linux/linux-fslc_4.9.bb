@@ -7,11 +7,13 @@ provide support for some backported features and fixes, or because it was applie
 and takes some time to become part of a stable version, or because it is not applicable for \
 upstreaming."
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}-4.9:"
+
 include linux-fslc.inc
 
 PV = "4.9+git${SRCPV}"
 
 SRCBRANCH = "4.9.x+fslc"
-SRCREV = "836377e3825c9001cc8fee2f8bc2aacae003f1ca"
+SRCREV = "8f876e153b255daeb60833296d5ab213537f36a1"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
