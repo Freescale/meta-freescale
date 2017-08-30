@@ -6,7 +6,6 @@ PREFERRED_PROVIDER_openssl = "openssl-qoriq"
 PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
-PREFERRED_PROVIDER_qemu = "qemu-qoriq"
 PREFERRED_VERSION_testfloat = "2a"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz ext2.gz.u-boot ext2.gz"
