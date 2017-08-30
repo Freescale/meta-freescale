@@ -16,4 +16,4 @@ do_install () {
     oe_runmake install DESTDIR=${D}
 }
 
-COMPATIBLE_MACHINE = "(ls2080a|ls2088a)"
+COMPATIBLE_MACHINE = "(ls2080a|ls2088a|ls1088a)"
