@@ -1,6 +1,5 @@
 inherit kernel qoriq_build_64bit_kernel
 inherit fsl-kernel-localversion
-require recipes-kernel/linux/linux-dtb.inc
 
 SUMMARY = "Linux Kernel for Freescale QorIQ platforms"
 SECTION = "kernel"
