@@ -1,10 +1,11 @@
 # Copyright (C) 2012-2014, 2016 O.S. Systems Software LTDA.
 # Copyright (C) 2012-2016 Freescale Semiconductor
+# Copyright 2017 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia parser libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=be67a88e9e6c841043b005ad7bcf8309"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6b552f505eedab4a11ab538cf3db743a"
 
 # For backwards compatibility
 PROVIDES += "libfslparser"
