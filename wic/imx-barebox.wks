@@ -15,3 +15,5 @@
 part barebox --source rawcopy --sourceparams="file=barebox.bin,skip=512" --ondisk mmcblk --no-table
 part bareboxenv --source rawcopy --sourceparams="file=bareboxenv.bin" --ondisk mmcblk --no-table --align 512
 part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096
+
+bootloader --ptable msdos
