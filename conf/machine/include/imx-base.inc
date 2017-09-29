@@ -54,6 +54,7 @@ DEFAULTTUNE_vf ?= "cortexa5thf-neon"
 
 INHERIT += "machine-overrides-extender"
 
+MACHINEOVERRIDES_EXTENDER_mx25  = "use-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER_mx6q  = "imxipu:imxvpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx6dl = "imxpxp:imxipu:imxvpu:imxgpu2d:imxgpu3d:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx6sx = "imxpxp:imxgpu2d:imxgpu3d"
@@ -116,6 +117,7 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS_append = " \
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
+MACHINE_FIRMWARE_append_mx25 = " firmware-imx-sdma-imx25"
 MACHINE_FIRMWARE_append_mx7 = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6q = " firmware-imx-vpu-imx6q"
 MACHINE_FIRMWARE_append_mx6dl = " firmware-imx-vpu-imx6d firmware-imx-epdc"
@@ -128,7 +130,6 @@ MACHINE_FIRMWARE_append_use-mainline-bsp = " firmware-imx-vpu-imx6q firmware-imx
 
 # FIXME: Needs addition of firmware-imx of official BSPs
 #MACHINE_FIRMWARE_append_mx27 = " firmware-imx-vpu-imx27"
-#MACHINE_FIRMWARE_append_mx25 = " firmware-imx-sdma-imx25"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
