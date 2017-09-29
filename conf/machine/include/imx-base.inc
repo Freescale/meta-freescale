@@ -226,6 +226,16 @@ SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot-mxsboot-sdcard sdcard.gz"
 SDCARD_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}.rootfs.ext4"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
+### wic default support
+WKS_FILE_DEPENDS ?= " \
+    virtual/bootloader \
+    \
+    e2fsprogs-native \
+    bmap-tools-native \
+"
+
+SOC_DEFAULT_IMAGE_FSTYPES_mx25 = "wic.gz"
+
 SERIAL_CONSOLE = "115200 ttymxc0"
 SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
 
