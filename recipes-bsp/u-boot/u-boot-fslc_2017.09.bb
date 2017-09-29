@@ -2,5 +2,5 @@ include u-boot-fslc.inc
 
 PV = "v2017.09+git${SRCPV}"
 
-SRCREV = "ed4d1d98113f3ce7c0203f266bf57cabad3412cf"
+SRCREV = "9f164a1a01fceb53fc88ad474a5cda70f1c486c2"
 SRCBRANCH = "2017.09+fslc"
