@@ -1,3 +1,22 @@
+# -*- python -*-
+# Linux kernel with DCD headers
+#
+# This new image type adds support to generate a Linux kernel with DCD
+# headers. Essentially it adds support to directly boot a Linux kernel
+# without a bootloader.
+#
+# As the Linux kernel will be boot directly, it required that the Device
+# Tree is appended to the kernel image. To have the Linux kernel
+# generated with the DCD headers, following steps must be followed:
+#
+#  - Linux kernel recipe must inherit kernel-imximage class;
+#  - Device Tree appended Linux kernel must be used
+#    (KERNEL_DEVICETREE_BUNDLE = "1");
+#  - DCD header configuration must be provided (dcd.cfg or
+#    dcd-<devicetree>.cfg);
+#
+# Copyright 2017 (C) O.S. Systems Software LTDA.
+
 DEPENDS_append = ' u-boot-mkimage-native'
 
 IMXIMAGE_ENTRYPOINT ?= "${UBOOT_ENTRYPOINT}"
