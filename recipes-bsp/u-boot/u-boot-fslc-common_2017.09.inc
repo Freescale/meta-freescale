@@ -18,7 +18,7 @@ DEPENDS_mxs += "elftosb-native openssl-native"
 
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
 
-SRCREV = "9f164a1a01fceb53fc88ad474a5cda70f1c486c2"
+SRCREV = "0edf2007c62a664d5f6b641e4499d44134ee5085"
 SRCBRANCH = "2017.09+fslc"
 
 PV = "v2017.09+git${SRCPV}"
