@@ -3,6 +3,8 @@
 include conf/machine/include/fsl-default-settings.inc
 include conf/machine/include/fsl-default-versions.inc
 
+require conf/machine/include/utilities.inc
+
 # Set specific make target and binary suffix
 PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
 PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
@@ -225,6 +227,11 @@ SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot-mxsboot-sdcard sdcard.gz"
 
 SDCARD_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}.rootfs.ext4"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
+
+IMAGE_BOOT_FILES ?= " \
+    ${KERNEL_IMAGETYPE} \
+    ${@make_dtb_boot_files(d)} \
+"
 
 ### wic default support
 WKS_FILE_DEPENDS ?= " \
