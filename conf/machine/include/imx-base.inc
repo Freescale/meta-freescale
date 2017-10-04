@@ -222,8 +222,8 @@ IMX_DEFAULT_KERNEL_use-mainline-bsp = "linux-fslc"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
-SOC_DEFAULT_IMAGE_FSTYPES = "sdcard.gz"
-SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot-mxsboot-sdcard sdcard.gz"
+SOC_DEFAULT_IMAGE_FSTYPES = "wic.gz"
+SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot-mxsboot-sdcard wic.gz"
 
 SDCARD_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}.rootfs.ext4"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
@@ -240,8 +240,7 @@ WKS_FILE_DEPENDS ?= " \
     e2fsprogs-native \
     bmap-tools-native \
 "
-
-SOC_DEFAULT_IMAGE_FSTYPES_mx25 = "wic.gz"
+WKS_FILE ?= "imx-uboot-bootpart.wks"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
