@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2016 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2017 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require recipes-bsp/u-boot/u-boot.inc
@@ -16,19 +16,13 @@ COMPATIBLE_MACHINE = "(mxs|mx5|mx6|mx7|vf|use-mainline-bsp)"
 DEPENDS_append = " dtc-native"
 DEPENDS_mxs += "elftosb-native openssl-native"
 
-PROVIDES += "u-boot"
-
-SRCBRANCH ??= "master"
-
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
 
-S = "${WORKDIR}/git"
+SRCREV = "9f164a1a01fceb53fc88ad474a5cda70f1c486c2"
+SRCBRANCH = "2017.09+fslc"
 
-# FIXME: Allow linking of 'tools' binaries with native libraries
-#        used for generating the boot logo and other tools used
-#        during the build process.
-EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
-                 HOSTLDFLAGS="${BUILD_LDFLAGS}" \
-                 HOSTSTRIP=true'
+PV = "v2017.09+git${SRCPV}"
+
+S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

@@ -1,20 +1,11 @@
+require u-boot-fslc-common_${PV}.inc
+
 DESCRIPTION = "U-boot bootloader mxsboot tool"
-LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://Licenses/README;md5=a2c678cfd4a4d97135585cad908541c6"
 SECTION = "bootloader"
-DEPENDS = "openssl"
+
+DEPENDS_append = " openssl"
+
 PROVIDES = "u-boot-mxsboot"
-
-PV = "v2017.09+git${SRCPV}"
-
-SRCREV = "9f164a1a01fceb53fc88ad474a5cda70f1c486c2"
-SRCBRANCH = "2017.09+fslc"
-
-SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
-
-S = "${WORKDIR}/git"
-
-inherit fsl-u-boot-localversion
 
 EXTRA_OEMAKE = 'HOSTCC="${CC} ${CPPFLAGS}" HOSTLDFLAGS="-L${libdir} -L${base_libdir}" HOSTSTRIP=true CONFIG_MX28=y'
 

@@ -1,6 +1,10 @@
-include u-boot-fslc.inc
+require u-boot-fslc-common_${PV}.inc
 
-PV = "v2017.09+git${SRCPV}"
+PROVIDES += "u-boot"
 
-SRCREV = "9f164a1a01fceb53fc88ad474a5cda70f1c486c2"
-SRCBRANCH = "2017.09+fslc"
+# FIXME: Allow linking of 'tools' binaries with native libraries
+#        used for generating the boot logo and other tools used
+#        during the build process.
+EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
+                 HOSTLDFLAGS="${BUILD_LDFLAGS}" \
+                 HOSTSTRIP=true'
