@@ -10,9 +10,8 @@ inherit autotools-brokensep
 
 PV = "0.5.1+git${SRCPV}"
 
-SRC_URI = "git://github.com/NXPmicro/imx-uuc.git;protocol=https \
-           file://0001-Fix-missing-build-flags-leading-to-yocto-QA-issues.patch "
-SRCREV = "1de598e7b36d95596435902106c9a746697b9afc"
+SRC_URI = "git://github.com/NXPmicro/imx-uuc.git;protocol=https"
+SRCREV = "2ae634281a39c82b6a8ee0fdcfbfbe42183ceb53"
 
 S = "${WORKDIR}/git"
 
