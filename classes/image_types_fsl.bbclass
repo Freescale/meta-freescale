@@ -311,6 +311,8 @@ generate_mxs_sdcard () {
 }
 
 IMAGE_CMD_sdcard () {
+	bbwarn "The '${MACHINE}' is using the i.MX 'sdcard' image format which is deprecated. This image type is going to be removed in next release so please convert this machine to use the wic tool"
+
 	if [ -z "${SDCARD_ROOTFS}" ]; then
 		bberror "SDCARD_ROOTFS is undefined. To use sdcard image from Freescale's BSP it needs to be defined."
 		exit 1
