@@ -1,3 +1,4 @@
+require recipes-bsp/u-boot/u-boot.inc
 require u-boot-fslc-common_${PV}.inc
 
 SUMMARY = "U-Boot bootloader fw_printenv/setenv utilities"
