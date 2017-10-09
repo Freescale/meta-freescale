@@ -250,7 +250,10 @@ WKS_FILE_DEPENDS ?= " \
     e2fsprogs-native \
     bmap-tools-native \
 "
-WKS_FILE ?= "imx-uboot-bootpart.wks"
+
+SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks"
+
+WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
