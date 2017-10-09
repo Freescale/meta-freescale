@@ -65,6 +65,7 @@ MACHINEOVERRIDES_EXTENDER_mx6sll  = "imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx6ul = "imxpxp"
 MACHINEOVERRIDES_EXTENDER_mx6ull = "imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx7d  = "imxpxp:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx7ulp  = "imxpxp:imxgpu2d:imxgpu3d"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx6 \
@@ -91,6 +92,7 @@ MACHINE_SOCARCH_SUFFIX_mx6sx = "-mx6sx"
 MACHINE_SOCARCH_SUFFIX_mx6sl = "-mx6sl"
 MACHINE_SOCARCH_SUFFIX_mx6sll= "-mx6sll"
 MACHINE_SOCARCH_SUFFIX_mx7d = "-mx7d"
+MACHINE_SOCARCH_SUFFIX_mx7ulp = "-mx7ulp"
 MACHINE_SOCARCH_SUFFIX_vf60 = "-vf60"
 MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
 MACHINE_SOCARCH_SUFFIX_mx6ul  = "-mx6ul"
@@ -120,7 +122,7 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS_append = " \
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE_append_mx25 = " firmware-imx-sdma-imx25"
-MACHINE_FIRMWARE_append_mx7 = " firmware-imx-epdc"
+MACHINE_FIRMWARE_append_mx7d = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6q = " firmware-imx-vpu-imx6q"
 MACHINE_FIRMWARE_append_mx6dl = " firmware-imx-vpu-imx6d firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6sl = " firmware-imx-epdc"
@@ -145,6 +147,7 @@ MACHINE_EXTRA_RRECOMMENDS_append_mx6sx = " ${@bb.utils.contains('DISTRO_FEATURES
 MACHINE_EXTRA_RRECOMMENDS_append_mx6ul = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
 MACHINE_EXTRA_RRECOMMENDS_append_mx6ull = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
 MACHINE_EXTRA_RRECOMMENDS_append_mx7d = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
+MACHINE_EXTRA_RRECOMMENDS_append_mx7ulp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
 
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
@@ -165,6 +168,7 @@ SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6q  = "1"
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6dl = "1"
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6sx = "1"
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6sl = "1"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx7ulp = "1"
 
 # Handle Vivante kernel driver setting:
 #   0 - machine does not have Vivante GPU driver support
@@ -179,6 +183,7 @@ PREFERRED_PROVIDER_virtual/egl_mx6sl ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/egl_mx6sll ?= "mesa"
 PREFERRED_PROVIDER_virtual/egl_mx6ul ?= "mesa"
 PREFERRED_PROVIDER_virtual/egl_mx6ull ?= "mesa"
+PREFERRED_PROVIDER_virtual/egl_mx7ulp ?= "imx-gpu-viv"
 
 PREFERRED_PROVIDER_virtual/libgles1_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles1_mx6dl ?= "imx-gpu-viv"
@@ -187,6 +192,7 @@ PREFERRED_PROVIDER_virtual/libgles1_mx6sl ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles1_mx6sll ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles1_mx6ul ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles1_mx6ull ?= "mesa"
+PREFERRED_PROVIDER_virtual/libgles1_mx7ulp ?= "imx-gpu-viv"
 
 PREFERRED_PROVIDER_virtual/libgles2_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles2_mx6dl ?= "imx-gpu-viv"
@@ -195,6 +201,7 @@ PREFERRED_PROVIDER_virtual/libgles2_mx6sl ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles2_mx6sll ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles2_mx6ul ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles2_mx6ull ?= "mesa"
+PREFERRED_PROVIDER_virtual/libgles2_mx7ulp ?= "imx-gpu-viv"
 
 PREFERRED_PROVIDER_virtual/libgl_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl_mx6dl ?= "imx-gpu-viv"
@@ -203,11 +210,13 @@ PREFERRED_PROVIDER_virtual/libgl_mx6sl ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgl_mx6sll ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgl_mx6ul ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgl_mx6ull ?= "mesa"
+PREFERRED_PROVIDER_virtual/libgl_mx7ulp ?= "imx-gpu-viv"
 
 PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d_mx6sll ?= ""
 PREFERRED_PROVIDER_virtual/libg2d_mx6ul = ""
 PREFERRED_PROVIDER_virtual/libg2d_mx6ull = ""
+PREFERRED_PROVIDER_virtual/libg2d_mx7ulp ?= "imx-gpu-viv"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
@@ -215,6 +224,7 @@ IMX_DEFAULT_KERNEL_mxs = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx5 = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-imx"
 IMX_DEFAULT_KERNEL_mx7 = "linux-fslc-imx"
+IMX_DEFAULT_KERNEL_mx7ulp = "linux-imx"
 IMX_DEFAULT_KERNEL_mx6sll = "linux-imx"
 IMX_DEFAULT_KERNEL_mx6ul = "linux-fslc-imx"
 IMX_DEFAULT_KERNEL_mx6ull = "linux-fslc-imx"
