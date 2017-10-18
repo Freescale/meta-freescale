@@ -6,8 +6,8 @@ PR = "r2"
 
 DEPENDS = "libxml2 fmlib tclap"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;branch=sdk-v2.0.x"
-SRCREV = "81e4796fd22e32fe7ab77f075c1879d7bb75c02e"
+SRC_URI = "git://github.com/qoriq-open-source/fmc.git;nobranch=1"
+SRCREV = "4377bfc24626a0db3bedb6e1cbb201f6f6df964c"
 
 S = "${WORKDIR}/git"
 
@@ -19,10 +19,6 @@ EXTRA_OEMAKE_virtclass-native = 'FMCHOSTMODE=1 FMD_USPACE_HEADER_PATH="${STAGING
     TCLAP_HEADER_PATH="${STAGING_INCDIR}" '
 
 EXTRA_OEMAKE_PLATFORM ?= ""
-EXTRA_OEMAKE_PLATFORM_b4 = "b4860qds"
-EXTRA_OEMAKE_PLATFORM_t2 = "b4860qds"
-EXTRA_OEMAKE_PLATFORM_t4 = "b4860qds"
-EXTRA_OEMAKE_PLATFORM_t1 = "t1040qds"
 EXTRA_OEMAKE_PLATFORM_ls1043a = "ls1043"
 EXTRA_OEMAKE_PLATFORM_ls1046a = "ls1046"
 
