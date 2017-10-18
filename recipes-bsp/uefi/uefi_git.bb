@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 inherit deploy
 
 SRC_URI = "git://github.com/qoriq-open-source/uefi-binary.git;nobranch=1"
-SRCREV= "d0974b734d0c50c99baebf54957ce32433905e40"
+SRCREV= "a812f178646464f316032249cdb104265141dfa2"
 
 S = "${WORKDIR}/git"
 
