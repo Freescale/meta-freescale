@@ -7,7 +7,7 @@ DEPENDS = "dtc-native"
 inherit deploy
 
 SRC_URI = "git://github.com/qoriq-open-source/dpl-examples.git;nobranch=1"
-SRCREV = "592fc2fd1f13107c8a4ae8070fed11a5f8d10471"
+SRCREV = "a6c83759c0d9c02822eec89e86357a0998ef51d4"
 
 S = "${WORKDIR}/git"
 
