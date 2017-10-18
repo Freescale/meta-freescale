@@ -5,8 +5,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
 
 PR = "r1"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;branch=sdk-v2.0.x"
-SRCREV = "caec18a71ed702a176892efaf946281b9160e220"
+SRC_URI = "git://github.com/qoriq-open-source/fmlib.git;nobranch=1"
+SRCREV = "9f20cab379212e8fab907b17910e31a6a86380dd"
 
 S = "${WORKDIR}/git"
 
