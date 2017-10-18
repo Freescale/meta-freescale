@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://Freescale-Binary-EULA;md5=f4719d59382b5ee2a2ebe4db784
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/qe-ucode.git;branch=sdk-v2.0.x"
+SRC_URI = "git://github.com/qoriq-open-source/qe-ucode.git;nobranch=1"
 SRCREV= "adb1560b76090a11f61a46b7a6b3b33b1436ed4d"
 
 S = "${WORKDIR}/git"
