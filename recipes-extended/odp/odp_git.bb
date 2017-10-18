@@ -12,8 +12,6 @@ ODP_SOC ?= ""
 ODP_SOC_ls1043ardb = "LS1043"
 ODP_SOC_ls1046ardb = "LS1046"
 ODP_PLATFORM ?= "linux-dpaa2"
-ODP_PLATFORM_ls1043ardb = "linux-dpaa1"
-ODP_PLATFORM_ls1046ardb = "linux-dpaa1"
 ODP_BUILD_TYPE ?= "ls2088"
 ODP_BUILD_TYPE_ls1043ardb = "ls1043"
 ODP_BUILD_TYPE_ls1046ardb = "ls1046"
@@ -21,8 +19,6 @@ ODP_BUILD_TYPE_ls2080ardb = "ls2080"
 ODP_BUILD_TYPE_ls1088ardb = "ls1088"
 
 EXTRA_OECONF = "--with-platform=${ODP_PLATFORM} \
-                --with-sdk-install-path=${STAGING_DIR_TARGET} \
-                --enable-build-type=${ODP_BUILD_TYPE} \
                 --enable-test-vald \
                 --enable-test-perf \
                 --enable-test-cpp \
@@ -31,6 +27,8 @@ EXTRA_OECONF = "--with-platform=${ODP_PLATFORM} \
 EXTRA_OEMAKE = "CROSS_COMPILE="${TARGET_PREFIX}" \
                 SYSROOT="${STAGING_DIR_TARGET}" \
 "
+
+CFLAGS += "-Wno-format-truncation -Wno-maybe-uninitialized -Wno-implicit-fallthrough"
 
 PACKAGECONFIG[perf] = "--enable-test-perf,,,"
 

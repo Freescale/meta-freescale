@@ -4,7 +4,7 @@ DESCRIPTION = "OpenDataPlane (ODP) provides a data plane application programming
 HOMEPAGE = "http://www.opendataplane.org"
 SECTION = "console/network"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=472053b942339f200d9e1d2dcb947e9d"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=ca6103dc75397fb6bec596187d6b7829"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/odp:"
 
@@ -16,9 +16,10 @@ git://github.com/qoriq-open-source/flib.git;nobranch=1;name=rta;destsuffix=git/p
 
 SRC_URI += "file://0001-Fix-this-build-error.patch"
 
-SRCREV = "fdb26cb5c751afadf2299da2a1376e6ca0e61cc7"
+SRCREV = "bef6398a09db4a6b909aa0c6accc7c15621ce5ef"
+
 SRCREV_qbman = "097595befc2bb60b733027e94ad2ed16a0e9cae0"
-SRCREV_rta = "2c9b9dc22699f7c00f24a2134c42901932a6a0b9"
+SRCREV_rta = "bbab28b03ae21c52ce913f8b052acf53bd24ff5d"
 
 S = "${WORKDIR}/git"
 
