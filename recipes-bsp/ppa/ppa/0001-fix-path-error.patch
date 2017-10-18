@@ -1,0 +1,79 @@
+From aa3b419876af9c2a9265fba7c7264130e1bc4926 Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Wed, 27 Sep 2017 10:45:04 +0800
+Subject: [PATCH] fix path error
+
+fix the below error:
+|Makefile:58: ../armv8/gic.mk: No such file or directory
+
+Upstream-Status: Submitted
+
+Signed-off-by: Chunrong Guo <chunrong.guo@nxp.com>
+---
+ ppa/soc-ls1046/Makefile | 4 ++--
+ ppa/soc-ls1088/Makefile | 4 ++--
+ ppa/soc-ls2088/Makefile | 5 +++--
+ 3 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/ppa/soc-ls1046/Makefile b/ppa/soc-ls1046/Makefile
+index 34ffe2d..6a06514 100644
+--- a/ppa/soc-ls1046/Makefile
++++ b/ppa/soc-ls1046/Makefile
+@@ -55,12 +55,12 @@ include $(PRE_PATH)soc.def
+ # -----------------------------------------------------------------------------
+ 
+  # include the gic architecture file
+-include ../armv8/gic.mk
++include $(PRE_PATH)../armv8/gic.mk
+ 
+ # -----------------------------------------------------------------------------
+ 
+  # include the interconnect architecture file
+-include ../armv8/inter.mk
++include $(PRE_PATH)../armv8/inter.mk
+ 
+ # -----------------------------------------------------------------------------
+ 
+diff --git a/ppa/soc-ls1088/Makefile b/ppa/soc-ls1088/Makefile
+index 7fc5db9..6472408 100644
+--- a/ppa/soc-ls1088/Makefile
++++ b/ppa/soc-ls1088/Makefile
+@@ -55,12 +55,12 @@ include $(PRE_PATH)soc.def
+ # -----------------------------------------------------------------------------
+ 
+  # include the gic architecture file
+-include ../armv8/gic.mk
++include $(PRE_PATH)../armv8/gic.mk
+ 
+ # -----------------------------------------------------------------------------
+ 
+  # include the interconnect architecture file
+-include ../armv8/inter.mk
++include $(PRE_PATH)../armv8/inter.mk
+ 
+ # -----------------------------------------------------------------------------
+ 
+diff --git a/ppa/soc-ls2088/Makefile b/ppa/soc-ls2088/Makefile
+index de3a06c..2fe23e2 100644
+--- a/ppa/soc-ls2088/Makefile
++++ b/ppa/soc-ls2088/Makefile
+@@ -54,13 +54,14 @@ include $(PRE_PATH)soc.def
+ 
+ # -----------------------------------------------------------------------------
+ 
++include $(PRE_PATH)../armv8/gic.mk
+  # include the gic architecture file
+-include ../armv8/gic.mk
++include $(PRE_PATH)../armv8/gic.mk
+ 
+ # -----------------------------------------------------------------------------
+ 
+  # include the interconnect architecture file
+-include ../armv8/inter.mk
++include $(PRE_PATH)../armv8/inter.mk
+ 
+ # -----------------------------------------------------------------------------
+ 
+-- 
+2.7.4
+
