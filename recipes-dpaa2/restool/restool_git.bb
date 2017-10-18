@@ -17,6 +17,6 @@ do_install () {
     oe_runmake install DESTDIR=${D}
 }
 
-COMPATIBLE_MACHINE = "(ls2080ardb|ls2088ardb|ls1088ardb)"
+COMPATIBLE_MACHINE = "(ls2080ardb|ls2088ardb|ls1088ardb|ls1043ardb|ls1046ardb)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
