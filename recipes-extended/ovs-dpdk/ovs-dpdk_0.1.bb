@@ -7,8 +7,8 @@ RDEPENDS_${PN} = "bash libcrypto libssl python"
 
 inherit pythonnative
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/ovs-dpdk.git;nobranch=1"
-SRCREV = "84599fad4a10597fb4377174abdeb84b871cb4b0"
+SRC_URI = "git://github.com/qoriq-open-source/ovs-dpdk.git;nobranch=1"
+SRCREV = "626a2600f093d84608a1bde29336f523ac74ae99"
 
 S = "${WORKDIR}/git"
 
@@ -46,4 +46,4 @@ do_install() {
 ALLOW_EMPTY_${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a)"
+COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a|ls1088a)"
