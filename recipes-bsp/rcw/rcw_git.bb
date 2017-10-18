@@ -1,23 +1,29 @@
 SUMMARY = "Reset Configuration Word"
 DESCRIPTION = "Reset Configuration Word - hardware boot-time parameters for the QorIQ targets"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://BSD-LICENSE;md5=627727dce58484c4bd5f9b19665d81b3"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=be7e0b2ce5a7a1f4f25a6d82cec1f47d"
 
 DEPENDS += "change-file-endianess-native tcl-native"
 
-inherit deploy
+inherit deploy siteinfo
 
 SRC_URI = "git://github.com/qoriq-open-source/rcw.git;nobranch=1"
-SRCREV = "bfe8c5eb72cbae387af1c8662957caa801c2309f"
+SRCREV = "1a6236a34166219de324a105971eb9de05cde76e"
 
 S = "${WORKDIR}/git"
 
 export PYTHON = "${USRBINPATH}/python2"
 
-EXTRA_OEMAKE = "BOARDS=${@d.getVar('MACHINE', True).replace('-64b','').replace('-32b','')} DESTDIR=${D}/boot/rcw/"
+M="${@d.getVar('MACHINE', True).replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
 do_install () {
-    oe_runmake install
+    if [ -f ${S}/${M}/Makefile ]; then
+        oe_runmake BOARDS=${M} DESTDIR=${D}/boot/rcw/ install
+    else
+        install -d ${D}/boot/rcw
+        cp -a ${S}/${M} ${D}/boot/rcw/
+        chown -R root:root ${D}
+    fi
     for f in `find ${D}/boot/rcw/ -name "*qspiboot*"`;do
         if echo $f |grep -q "qspiboot_sben"; then
             continue
