@@ -12,9 +12,8 @@ inherit module
 SRC_URI = "git://github.com/qoriq-open-source/dpdk.git;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
     file://0001-include-sys-sysmacros.h-for-major-minor-defintions.patch \
-    file://0001-fix-build-with-gcc-7.1.patch \
 "
-SRCREV = "98f548c36b3c805a04d9963b8eb02e09340aa089"
+SRCREV = "3d7a6ae1745a2f60f76afd3ad3ca57329388168c"
 
 S = "${WORKDIR}/git"
 
@@ -22,7 +21,6 @@ DPAA_VER ?= "dpaa2"
 DPAA_VER_fsl-lsch2 = "dpaa"
 export RTE_TARGET = "${ARCH}-${DPAA_VER}-linuxapp-gcc"
 export ETHTOOL_LIB_PATH = "${S}/examples/ethtool/lib/${RTE_TARGET}/"
-
 
 EXTRA_OEMAKE += 'ARCH="${ARCH}" CROSS="${TARGET_PREFIX}" \
     CPU_CFLAGS="--sysroot=${STAGING_DIR_HOST}" RTE_SDK="${S}" \
@@ -55,8 +53,6 @@ do_install() {
     install -d ${D}/lib/modules/${KERNEL_VERSION}/dpdk
     install -m 0755 ${S}/${RTE_TARGET}/kmod/rte_kni.ko ${D}/lib/modules/${KERNEL_VERSION}/dpdk/
 
-    sed -i 's#/bin/echo#/bin/bash#' ${D}/${datadir}/scripts/load-devel-config.sh
-   # rm ${S}/${RTE_TARGET}/app/dpdk-pmdinfogen
     rm ${D}/${datadir}/${RTE_TARGET}/app/dpdk-pmdinfogen
 
     chown root:root -R ${D}
@@ -66,7 +62,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PACKAGES += "${PN}-examples"
 
-FILES_${PN} += "${datadir}/tools /usr/bin/* /usr/sbin/*"
+FILES_${PN} += "${datadir}/* ${bindir}/* ${sbindir}/*"
 FILES_${PN}-dbg += "${bindir}/dpdk-example/.debug \
     ${datadir}/examples/kni/build/.debug \
     ${datadir}/examples/kni/build/app/.debug \
