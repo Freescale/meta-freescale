@@ -17,11 +17,13 @@ REGLEX_ls1088a = "ls1088a"
 do_install () {
     install -d ${D}/boot
     install -m 644 ${S}/${REGLEX}/RDB/*.dtb ${D}/boot
+    install -m 644 ${S}/${REGLEX}/RDB/custom/*.dtb ${D}/boot
 }
 
 do_deploy () {
     install -d ${DEPLOYDIR}/dpl-examples
     install -m 644 ${S}/${REGLEX}/RDB/*.dtb ${DEPLOYDIR}/dpl-examples
+    install -m 644 ${S}/${REGLEX}/RDB/custom/*.dtb ${DEPLOYDIR}/dpl-examples
 }
 addtask deploy before do_build after do_install
 
