@@ -135,7 +135,7 @@ fitimage_emit_section_dtb() {
                         type = "flat_dt";
                         arch = "${UBOOT_ARCH}";
                         compression = "none";
-                        load = <0x90000000>;
+                        load = <${DTB_LOAD}>;
                         hash@1 {
                                 algo = "${dtb_csum}";
                         };
