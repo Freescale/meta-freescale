@@ -23,14 +23,13 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
                     file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
+SRCBRANCH = "nxp/MM_04.02.01_1705_L4.9.11_CONSOLIDATED_GA"
+
 SRC_URI = " \
-    ${FSL_MIRROR}/imx-gst1.0-plugin-${PV}.tar.gz \
+    git://source.codeaurora.org/external/imx/gst1.0-plugins-fsl.git;protocol=https;branch=${SRCBRANCH} \
 "
 
-SRC_URI[md5sum] = "8c939f68b7d7ce8659618bd34b93a508"
-SRC_URI[sha256sum] = "fcd5b8536758c50491c80ed26e86770fe17f29744ab4ccba1e5ca1c475a209c3"
-
-S = "${WORKDIR}/imx-gst1.0-plugin-${PV}"
+S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
 
