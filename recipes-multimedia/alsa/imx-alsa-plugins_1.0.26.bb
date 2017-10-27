@@ -19,9 +19,11 @@ LIC_FILES_CHKSUM = "file://COPYING.GPL;md5=94d55d512a9ba36caa9b7df079bae19f"
 
 inherit autotools pkgconfig
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.tar.gz"
-SRC_URI[md5sum] = "8fe4bcfddeca82dd01a9c4c6ce9471df"
-SRC_URI[sha256sum] = "0a7e8d90fdde2f6780605ecfee674e6e13523915a7bcd64078bc507ac1a8deb8"
+SRCBRANCH = "nxp/master"
+SRC_URI = "git://source.codeaurora.org/external/imx/imx-alsa-plugins.git;protocol=https;branch=${SRCBRANCH}"
+SRCREV = "9a63071e7734bd164017f3761b8d1944c017611f"
+
+S = "${WORKDIR}/git"
 
 INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include"
 
