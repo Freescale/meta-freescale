@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
 PR = "r1"
 
 SRC_URI = "git://github.com/qoriq-open-source/fmlib.git;nobranch=1"
-SRCREV = "9f20cab379212e8fab907b17910e31a6a86380dd"
+SRCREV = "95f34b1fe585ba0eced11433c88a593a16baf281"
 
 S = "${WORKDIR}/git"
 
