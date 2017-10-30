@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 SRC_URI = "git://github.com/qoriq-open-source/linux.git;nobranch=1 \
 "
-SRCREV = "1e65b659831680691ffcfca687f568367122873e"
+SRCREV = "b226445f42e0acc83db095a267bc003fcc56653b"
 
 S = "${WORKDIR}/git"
 
