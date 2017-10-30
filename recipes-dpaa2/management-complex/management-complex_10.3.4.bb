@@ -7,7 +7,7 @@ inherit deploy
 INHIBIT_DEFAULT_DEPS = "1"
 
 SRC_URI = "git://github.com/qoriq-open-source/mc-binary.git;nobranch=1"
-SRCREV = "5e4a0d854def8cc4090cb86b26ac4ac18e7e4143"
+SRCREV = "824745fe1580b281bebb808321c3f41353a3140a"
 
 S = "${WORKDIR}/git"
 
