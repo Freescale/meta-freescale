@@ -7,7 +7,7 @@ PR = "r2"
 DEPENDS = "libxml2 fmlib tclap"
 
 SRC_URI = "git://github.com/qoriq-open-source/fmc.git;nobranch=1"
-SRCREV = "4377bfc24626a0db3bedb6e1cbb201f6f6df964c"
+SRCREV = "8c9f127138dc803bf58bef75e9fc092dc60f9c53"
 
 S = "${WORKDIR}/git"
 
