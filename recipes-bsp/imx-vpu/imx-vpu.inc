@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2016 O.S. Systems Software LTDA.
+# Copyright (C) 2013-2017 O.S. Systems Software LTDA.
 # Copyright (C) 2013 Freescale Semiconductor
 # Copyright 2017 NXP
 
@@ -8,7 +8,6 @@ LIC_FILES_CHKSUM = "file://vpu/EULA.txt;md5=b063366b066c9f10037c59756a9ced54"
 DEPENDS = "virtual/kernel"
 
 PROVIDES = "virtual/imxvpu"
-RPROVIDES_${PN} = "virtual/imxvpu"
 
 inherit fsl-eula-unpack
 
