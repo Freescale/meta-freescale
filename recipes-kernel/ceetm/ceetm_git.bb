@@ -1,22 +1,24 @@
 DESCRIPTION = "CEETM TC QDISC"
 LICENSE = "GPLv2 & BSD"
-LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
+LIC_FILES_CHKSUM = "file://COPYING;md5=dde0931a586dd5b30076639e29ba3a7b"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/ceetm.git;branch=sdk-v2.0.x"
-SRCREV = "a237e094c3316a55727b855d15480e664545316a"
+SRC_URI = "git://github.com/qoriq-open-source/ceetm.git;nobranch=1"
+SRCREV = "f58304d7e2185003d0f4ff604bc8e4316d463a03"
+
+DEPENDS = "iproute2"
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX} SYSROOT=${STAGING_DIR_TARGET}"
+EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}" IPROUTE2_DIR="{STAGING_DIR_TARGET}"'
 
 do_install(){
     mkdir -p ${D}/${libdir}/tc
-    cp ${S}/bin/q_ceetm.so ${D}/${libdir}/tc/
+    cp ${S}/q_ceetm.so ${D}/${libdir}/tc/
 }
 
 FILES_${PN} += "${libdir}/tc"
 INHIBIT_PACKAGE_STRIP = "1"
 
-COMPATIBLE_MACHINE = "(b4|t1|t2|t4|ls1043a|ls1046a)"
+COMPATIBLE_MACHINE = "(b4|t1|t2|t4|ls1043a|ls1046a|ls2088a|ls1088a)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
