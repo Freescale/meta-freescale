@@ -30,19 +30,20 @@ DELTA_KERNEL_DEFCONFIG_prepend_qoriq-arm64 = "lsdk.config "
 DELTA_KERNEL_DEFCONFIG_prepend_fsl-lsch2-32b = "multi_v7_lpae.config lsdk.config multi_v8.config "
 DELTA_KERNEL_DEFCONFIG_prepend_ls102xa = "multi_v7_lpae.config lsdk.config "
 
+do_merge_delta_config[dirs] = "${B}" 
+
 do_merge_delta_config() {
-    # copy desired defconfig so we pick it up for the real kernel_do_configure
-    cp ${KERNEL_DEFCONFIG} .config
-    
+    # create .config with make config
+    oe_runmake  -C ${S} O=${B} ${KERNEL_DEFCONFIG}
+
     # add config fragments
     for deltacfg in ${DELTA_KERNEL_DEFCONFIG}; do
-        if [ -f "${deltacfg}" ]; then
-            ${S}/scripts/kconfig/merge_config.sh -m .config ${deltacfg}
+        if [ -f ${S}/arch/${ARCH}/configs/${deltacfg} ]; then
+            oe_runmake  -C ${S} O=${B} ${deltacfg}
         elif [ -f "${WORKDIR}/${deltacfg}" ]; then
             ${S}/scripts/kconfig/merge_config.sh -m .config ${WORKDIR}/${deltacfg}
-        elif [ -f "${S}/arch/${ARCH}/configs/${deltacfg}" ]; then
-            ${S}/scripts/kconfig/merge_config.sh -m .config \
-                ${S}/arch/${ARCH}/configs/${deltacfg}
+        elif [ -f "${deltacfg}" ]; then
+            ${S}/scripts/kconfig/merge_config.sh -m .config ${deltacfg}
         fi
     done
     cp .config ${WORKDIR}/defconfig
