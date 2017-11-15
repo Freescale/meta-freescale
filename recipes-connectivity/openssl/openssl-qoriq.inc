@@ -22,9 +22,9 @@ python() {
             d.appendVar("RREPLACES_%s" % p, p.replace('openssl-qoriq', 'openssl'))
 }
 
-SRC_URI = "http://www.openssl.org/source/openssl-${PV}.tar.gz \
-          "
-S = "${WORKDIR}/openssl-${PV}"
+SRC_URI = "git://github.com/qoriq-open-source/openssl.git;nobranch=1"
+
+S = "${WORKDIR}/git"
 
 PACKAGECONFIG[perl] = ",,,"
 

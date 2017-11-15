@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=057d9218c6180e1d9ee407572b2dd225"
 export DIRS = "crypto ssl apps engines"
 export OE_LDFLAGS="${LDFLAGS}"
 
-SRC_URI += "file://find.pl;subdir=${BP}/util \
+SRC_URI += "file://find.pl;subdir=git/util \
             file://run-ptest \
             file://openssl-c_rehash.sh \
             file://configure-targets.patch \
@@ -44,14 +44,7 @@ SRC_URI += "file://find.pl;subdir=${BP}/util \
             file://Use-SHA256-not-MD5-as-default-digest.patch \
             file://0001-Fix-build-with-clang-using-external-assembler.patch \
             "
-SRC_URI[md5sum] = "f85123cd390e864dfbe517e7616e6566"
-SRC_URI[sha256sum] = "ce07195b659e75f4e1db43552860070061f156a98bb37b672b101ba6e3ddf30c"
-
-SRC_URI += " \
-    file://find.pl;subdir=openssl-${PV}/util/ \
-    file://0001-remove-double-initialization-of-cryptodev-engine.patch \
-    file://0002-eng_cryptodev-add-support-for-TLS-algorithms-offload.patch \
-"
+SRCREV = "b9e6572a0dcbaaf84a8925cabd1a86bd594ca69f"
 
 PACKAGES =+ "${PN}-engines"
 FILES_${PN}-engines = "${libdir}/ssl/engines/*.so ${libdir}/engines"
