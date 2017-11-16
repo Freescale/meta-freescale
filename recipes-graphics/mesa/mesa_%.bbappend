@@ -23,3 +23,7 @@ do_install_append_imxgpu3d () {
           ${D}${includedir}/GL/gl.h \
           ${D}${includedir}/GL/glext.h
 }
+
+do_install_append_imxgpu2d () {
+    rm -f ${D}${libdir}/pkgconfig/wayland-egl.pc
+}
