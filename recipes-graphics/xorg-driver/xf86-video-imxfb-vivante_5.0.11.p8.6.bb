@@ -6,5 +6,5 @@ require xf86-video-imxfb-vivante.inc
 
 SRC_URI += "file://Stop-using-Git-to-write-local-version.patch"
 
-SRCBRANCH = "nxp/imx_4.9.11_1.0.0_ga"
-SRCREV = "07ef065dfe09f1c05a1a188c371577faa3677a17"
+SRC_URI[md5sum] = "8acbdddd51c9b1b0fd25137eeabd786d"
+SRC_URI[sha256sum] = "3eed38193e31bb5ba8d2c817bd9b4f6e2fe7540d2cab36de9098cb4f11946a9f"
