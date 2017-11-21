@@ -14,7 +14,7 @@ RDEPENDS_gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audiopar
 RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 SRCBRANCH ?= "master"
-SRCREV = "50ddcd9f2b6ecc3d94d0d2f71b6de841d8a8fb7b"
+SRCREV = "048d596dfc657f16d235029c39221b0a118e5c87"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
@@ -41,19 +41,21 @@ EGLVIVSINK_DEPENDS = " \
        '', d), d)} \
 "
 
-PACKAGECONFIG ?= "uniaudiodec mp3encoder v4l2src"
+PACKAGECONFIG ?= "uniaudiodec mp3encoder v4l2src v4l2sink"
 PACKAGECONFIG_append_imxgpu3d = " eglvivsink"
-PACKAGECONFIG_append_imxgpu2d = " g2d"
+PACKAGECONFIG_append_imxgpu2d = " g2d g2dpango"
 PACKAGECONFIG_append_imxipu   = " ipu"
 PACKAGECONFIG_append_imxvpu   = " vpu"
 PACKAGECONFIG_append_imxpxp   = " pxp"
 
 PACKAGECONFIG[g2d] = ",--disable-g2d,imx-gpu-viv"
+PACKAGECONFIG[g2dpango] = ",--disable-g2dpango,imx-gpu-viv pango"
 PACKAGECONFIG[pxp] = ",--disable-pxp,"
 PACKAGECONFIG[ipu] = ",--disable-ipu,"
 PACKAGECONFIG[vpu] = ",--disable-vpu,libimxvpuapi"
 PACKAGECONFIG[eglvivsink] = "${EGL_PLATFORM_CONF},--disable-eglvivsink,${EGLVIVSINK_DEPENDS}"
-PACKAGECONFIG[v4l2src] = ",--disable-v4l2src,"
+PACKAGECONFIG[v4l2src] = ",--disable-imxv4l2videosrc,"
+PACKAGECONFIG[v4l2sink] = ",--disable-imxv4l2videosink,"
 PACKAGECONFIG[uniaudiodec] = ",--disable-uniaudiodec,imx-codec"
 PACKAGECONFIG[mp3encoder] = ",--disable-mp3encoder,imx-codec"
 
