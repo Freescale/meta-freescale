@@ -21,7 +21,7 @@ LIC_FILES_CHKSUM = " \
     file://../etna_viv/LICENSE;md5=9d4853905d85f044ed013e75def30a76 \
     "
 
-SRCREV_armada = "a4306d971717a2d3ea855d08c5667e02403b84fe"
+SRCREV_armada = "04748ff4fb30370086cc97b9487a32951c5600ba"
 SRCREV_etna = "f64d77abbb54433bd5de955c20afddc6eb4f4cb1"
 SRCREV_FORMAT = "armada_etna"
 
