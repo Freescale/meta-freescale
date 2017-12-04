@@ -22,6 +22,14 @@ python __anonymous () {
         image = d.getVar('INITRAMFS_IMAGE')
         if image:
             d.appendVarFlag('do_assemble_fitimage_initramfs', 'depends', ' ${INITRAMFS_IMAGE}:do_image_complete')
+            def extraimage_getdepends(task):
+                deps = ""
+                for dep in (d.getVar('EXTRA_IMAGEDEPENDS') or "").split():
+                    deps += " %s:%s" % (dep, task)
+                return deps
+
+            d.appendVarFlag('do_image', 'depends', extraimage_getdepends('do_populate_lic'))
+            d.appendVarFlag('do_image_complete', 'depends', extraimage_getdepends('do_populate_sysroot'))
 
         # Verified boot will sign the fitImage and append the public key to
         # U-Boot dtb. We ensure the U-Boot dtb is deployed before assembling
