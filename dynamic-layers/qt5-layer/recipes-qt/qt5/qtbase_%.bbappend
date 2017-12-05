@@ -5,7 +5,6 @@
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI_append_use-mainline-bsp = " file://Environment-variable-enabling-the-workaround-FBO-rea.patch"
 SRC_URI_append_imxgpu2d = "file://0014-Add-IMX-GPU-support.patch \
                            file://0001-egl.prf-Fix-build-error-when-egl-headers-need-platfo.patch \
 "
