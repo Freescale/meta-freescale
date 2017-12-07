@@ -8,12 +8,14 @@ PE = "3"
 
 inherit autotools-brokensep update-rc.d pkgconfig
 
-DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv pixman"
+DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv virtual/libg2d pixman"
 
 LIC_FILES_CHKSUM = "file://COPYING-MIT;md5=b5e9d9f5c02ea831ab3ecf802bb7c4f3"
 
-SRC_URI = "${FSL_MIRROR}/xserver-xorg-video-imx-viv-${PV}.tar.gz \
-            file://rc.autohdmi"
+SRC_URI = "git://source.codeaurora.org/external/imx/xf86-video-imx-vivante.git;protocol=https;branch=${SRCBRANCH} \
+           file://rc.autohdmi"
+
+S = "${WORKDIR}/git/"
 
 INITSCRIPT_PACKAGES = "xserver-xorg-extension-viv-autohdmi"
 INITSCRIPT_NAME = "rc.autohdmi"
@@ -29,8 +31,6 @@ EXTRA_OEMAKE += "prefix=${D}/usr \
 CFLAGS += "-I${STAGING_INCDIR}/xorg \
            -I${STAGING_INCDIR}/drm \
            -I../../DRI_1.10.4/src"
-
-S = "${WORKDIR}/xserver-xorg-video-imx-viv-${PV}/"
 
 PACKAGES =+ "xserver-xorg-extension-viv-autohdmi"
 
@@ -53,7 +53,7 @@ do_install_append () {
 	find ${D}${includedir} -type f -exec chmod 660 {} \;
 }
 
-RDEPENDS_${PN} += "libvivante-dri-mx6 \
+RDEPENDS_${PN} += "libvivante-dri-imx \
                    xserver-xorg-module-exa \
                    mesa-driver-swrast \
                    xserver-xorg-extension-dri \
@@ -70,4 +70,4 @@ FILES_${PN}-dbg = "${libdir}/*/*/*/.debug ${libdir}/.debug/libfsl_x11_ext${SOLIB
 FILES_xserver-xorg-extension-viv-autohdmi = " ${libdir}/libfsl_x11_ext${SOLIBS} ${exec_prefix}/bin/autohdmi ${sysconfdir}/init.d/rc.autohdmi"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-COMPATIBLE_MACHINE = "(mx6)"
+COMPATIBLE_MACHINE = "(mx6|mx7ulp)"
