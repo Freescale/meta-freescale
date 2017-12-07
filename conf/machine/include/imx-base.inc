@@ -218,6 +218,8 @@ PREFERRED_PROVIDER_virtual/libg2d_mx6ul = ""
 PREFERRED_PROVIDER_virtual/libg2d_mx6ull = ""
 PREFERRED_PROVIDER_virtual/libg2d_mx7ulp ?= "imx-gpu-viv"
 
+PREFERRED_VERSION_weston_imxgpu2d = "2.0.0"
+
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
 IMX_DEFAULT_KERNEL_mxs = "linux-fslc"
@@ -262,10 +264,6 @@ SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
 KERNEL_IMAGETYPE = "zImage"
 
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
-
-# Use weston 1.11.1 for mx6 and mx7 machines
-PREFERRED_VERSION_weston_mx6 = "1.11.1"
-PREFERRED_VERSION_weston_mx7 = "1.11.1"
 
 # Add the ability to specify _imx machines
 MACHINEOVERRIDES =. "imx:"
