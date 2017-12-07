@@ -212,7 +212,7 @@ PREFERRED_PROVIDER_virtual/libgl_mx6ul ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgl_mx6ull ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgl_mx7ulp ?= "imx-gpu-viv"
 
-PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d_mx6sll ?= ""
 PREFERRED_PROVIDER_virtual/libg2d_mx6ul = ""
 PREFERRED_PROVIDER_virtual/libg2d_mx6ull = ""
