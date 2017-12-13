@@ -27,7 +27,8 @@ PE = "1"
 
 inherit fsl-eula-unpack
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
+           file://egl-Add-EGL_PLATFORM_X11_KHR-alias-to-EGL_PLATFORM_X.patch"
 
 PACKAGES =+ "libclc-mx6 libclc-mx6-dev \
 	libgl-mx6 libgl-mx6-dev \
