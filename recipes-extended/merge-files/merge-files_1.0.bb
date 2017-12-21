@@ -14,8 +14,6 @@ do_install () {
     -exec cp -fr '{}' ${D}/${MERGED_DST}/ \;
     find ${WORKDIR}/merge/ -maxdepth 1 -mindepth 1 -exec rm -fr '{}' \;
 }
-do_unpack[nostamp] = "1"
-do_install[nostamp] = "1"
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
