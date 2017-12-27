@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=386a6287daa6504b7e7e5014ddfb3987"
 
 SRC_URI = "git://github.com/qoriq-open-source/gpp-aioptool.git;nobranch=1 \
 "
-SRCREV = "43b842b493482385b93e34fa7cab09bd96802af2"
+SRCREV = "6ead470dde043f3ca67f1ba19b313dd64ec199e1"
 
 S = "${WORKDIR}/git"
 
