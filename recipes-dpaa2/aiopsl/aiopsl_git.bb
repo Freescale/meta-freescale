@@ -8,7 +8,7 @@ BASEDEPENDS = ""
 S = "${WORKDIR}/git"
 
 SRC_URI = "git://github.com/qoriq-open-source/aiopsl.git;nobranch=1"
-SRCREV = "2b7284f0020b7f42bf8eae1a4094df9f3140575e"
+SRCREV = "48b5c0b6509472bbdcef13a3721b03f884b28500"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
