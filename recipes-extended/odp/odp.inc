@@ -18,7 +18,7 @@ SRC_URI += "file://0001-Fix-this-build-error.patch"
 
 SRCREV = "55abe6d74255d0de09c9fc013ce2a3d85cac526e"
 
-SRCREV_qbman = "097595befc2bb60b733027e94ad2ed16a0e9cae0"
+SRCREV_qbman = "75ff61a7ca6acdbdbb780161b053cbcbc990f1be"
 SRCREV_rta = "bbab28b03ae21c52ce913f8b052acf53bd24ff5d"
 
 S = "${WORKDIR}/git"
