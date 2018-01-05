@@ -14,7 +14,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS_append = " libgcc"
 # not put Images into /boot of rootfs, install kernel-image if needed
-RDEPENDS_kernel-base = ""
+RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
 KERNEL_CC_append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD_append = " ${TOOLCHAIN_OPTIONS}"
@@ -60,5 +60,5 @@ do_install_append_qoriq-arm() {
     ln -sf zImage-${KERNEL_VERSION} ${D}/boot/zImage
 }
 
-FILES_kernel-image += "/boot/zImage*"
+FILES_${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
 COMPATIBLE_MACHINE = "(qoriq)"
