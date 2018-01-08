@@ -2,12 +2,12 @@ Index: git/mkspecs/linux-oe-g++/qmake.conf
 ===================================================================
 --- git.orig/mkspecs/linux-oe-g++/qmake.conf	2016-12-14 17:03:17.000000000 -0600
 +++ git/mkspecs/linux-oe-g++/qmake.conf	2016-12-14 17:06:23.000000000 -0600
-@@ -39,6 +39,8 @@
- 
- include(../oe-device-extra.pri)
+@@ -37,6 +37,8 @@ QMAKE_LINK_C_SHLIB = $$(OE_QMAKE_LINK)
+ # for the SDK
+ isEmpty(QMAKE_QT_CONFIG):QMAKE_QT_CONFIG = $$(OE_QMAKE_QT_CONFIG)
  
 +EGLFS_DEVICE_INTEGRATION = eglfs_viv
 +
+ include(../oe-device-extra.pri)
+ 
  QMAKE_LIBS_EGL        += -lEGL
- QMAKE_LIBS_OPENGL_ES2 += -lEGL -lGLESv2
- QMAKE_LIBS_OPENVG     += -lEGL -lOpenVG
