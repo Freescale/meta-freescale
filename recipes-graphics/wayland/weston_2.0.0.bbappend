@@ -31,5 +31,3 @@ EXTRA_OECONF_append = "${IMX_EXTRA_OECONF_OPENGL}"
 PACKAGECONFIG_append_imxgpu3d = " cairo-glesv2"
 
 RDEPENDS_${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'pam-plugin-loginuid', '', d)}"
-
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
