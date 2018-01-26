@@ -43,7 +43,7 @@ python () {
         d.setVar("WRAP_TARGET_PREFIX", 'powerpc' + sys_multilib + '-')
     elif "fsl-lsch2-32b:" in arch:
         if not "lib64" in ml:
-            raise bb.parse.SkipPackage("Building the u-boot for this arch requires multilib to be enabled")
+            raise bb.parse.SkipRecipe("Building the u-boot for this arch requires multilib to be enabled")
         sys_multilib = d.getVar('TARGET_VENDOR') + 'mllib64-linux'
         sys_original = d.getVar('TARGET_VENDOR') + '-' + d.getVar('TARGET_OS')
         workdir = d.getVar('WORKDIR').replace(sys_original,sys_multilib)

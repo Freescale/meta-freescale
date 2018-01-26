@@ -16,7 +16,7 @@ python () {
 		FILE = os.path.basename(d.getVar("FILE", True))
 		bb.debug(1, "To build %s, see %s for instructions on \
 			     setting up your qe-ucode" % (PN, FILE))
-		raise bb.parse.SkipPackage("because QE_UCODE is not set")
+		raise bb.parse.SkipRecipe("because QE_UCODE is not set")
 }
 
 do_install () {
