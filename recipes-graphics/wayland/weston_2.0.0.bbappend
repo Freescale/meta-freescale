@@ -30,4 +30,7 @@ EXTRA_OECONF_append = "${IMX_EXTRA_OECONF_OPENGL}"
 
 PACKAGECONFIG_append_imxgpu3d = " cairo-glesv2"
 
+# Append EGL_CFLAGS to CFLAGS for imxgpu2d
+CFLAGS_append_imxgpu2d = "-DLINUX -DEGL_API_FB -DWL_EGL_PLATFORM"
+
 RDEPENDS_${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'pam-plugin-loginuid', '', d)}"
