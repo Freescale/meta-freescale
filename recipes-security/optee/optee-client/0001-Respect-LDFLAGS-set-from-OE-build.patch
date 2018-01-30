@@ -1,0 +1,67 @@
+From 73cb675c16bd63ee0e760a4067ffda4b050d19fa Mon Sep 17 00:00:00 2001
+From: Martin Jansa <Martin.Jansa@gmail.com>
+Date: Thu, 15 Jun 2017 17:20:35 -0700
+Subject: [PATCH] Respect LDFLAGS set from OE build
+
+* Unify LFLAGS/LDFLAGS variable names (only tee-supplicant was using LDFLAGS).
+* Fixes:
+  ERROR: optee-client-2.4.0+gitAUTOINC+1df4046bd7-r0 do_package_qa: QA Issue: No GNU_HASH in the elf binary: 'optee-client/2.4.0+gitAUTOINC+1df4046bd7-r0/packages-split/optee-client/usr/bin/tee-supplicant'
+  No GNU_HASH in the elf binary: 'optee-client/2.4.0+gitAUTOINC+1df4046bd7-r0/packages-split/optee-client/usr/lib/libteec.so.1.0' [ldflags]
+  ERROR: optee-client-2.4.0+gitAUTOINC+1df4046bd7-r0 do_package_qa: QA run found fatal errors. Please consider fixing them.
+  ERROR: optee-client-2.4.0+gitAUTOINC+1df4046bd7-r0 do_package_qa: Function failed: do_package_qa
+  ERROR: Logfile of failure stored in: optee-client/2.4.0+gitAUTOINC+1df4046bd7-r0/temp/log.do_package_qa.31246
+
+Upstream-Status: Pending
+Signed-off-by: Martin Jansa <Martin.Jansa@gmail.com>
+
+---
+ libteec/Makefile        | 2 +-
+ tee-supplicant/Makefile | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/libteec/Makefile b/libteec/Makefile
+index 568a2cd..a406237 100644
+--- a/libteec/Makefile
++++ b/libteec/Makefile
+@@ -36,7 +36,7 @@ ifeq ($(CFG_TEE_BENCHMARK),y)
+ TEEC_CFLAGS	+= -DCFG_TEE_BENCHMARK
+ endif
+ 
+-TEEC_LFLAGS    := -lpthread
++TEEC_LFLAGS    := $(LDFLAGS) -lpthread
+ TEEC_LIBRARY	:= $(OUT_DIR)/$(LIB_MAJ_MIN)
+ 
+ libteec: $(TEEC_LIBRARY)
+diff --git a/tee-supplicant/Makefile b/tee-supplicant/Makefile
+index 737d39a..4b423fb 100644
+--- a/tee-supplicant/Makefile
++++ b/tee-supplicant/Makefile
+@@ -55,21 +55,21 @@ ifeq ($(CFG_TA_TEST_PATH),y)
+ TEES_CFLAGS	+= -DCFG_TA_TEST_PATH=1
+ endif
+ TEES_FILE	:= $(OUT_DIR)/$(PACKAGE_NAME)
+-TEES_LDFLAGS    := -L$(OUT_DIR)/../libteec -lteec
++TEES_LFLAGS    := $(LDFLAGS) -L$(OUT_DIR)/../libteec -lteec
+ 
+ ifeq ($(CFG_TA_GPROF_SUPPORT),y)
+ TEES_CFLAGS	+= -DCFG_TA_GPROF_SUPPORT
+ endif
+ 
+-TEES_LDFLAGS	+= -lpthread
++TEES_LFLAGS	+= -lpthread
+ # Needed to get clock_gettime() for for glibc versions before 2.17
+-TEES_LDFLAGS	+= -lrt
++TEES_LFLAGS	+= -lrt
+ 
+ tee-supplicant: $(TEES_FILE)
+ 
+ $(TEES_FILE): $(TEES_OBJS)
+ 	@echo "  LINK    $@"
+-	$(VPREFIX)$(CC) -o $@ $+ $(TEES_LDFLAGS)
++	$(VPREFIX)$(CC) -o $@ $+ $(TEES_LFLAGS)
+ 	@echo ""
+ 
+ $(TEES_OBJ_DIR)/%.o: $(TEES_SRC_DIR)/%.c
+-- 
+2.15.0.rc2
+
