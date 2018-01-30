@@ -13,7 +13,7 @@ SRC_URI = "git://github.com/qoriq-open-source/dpdk.git;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
     file://0001-include-sys-sysmacros.h-for-major-minor-defintions.patch \
 "
-SRCREV = "3d7a6ae1745a2f60f76afd3ad3ca57329388168c"
+SRCREV = "076aa8e2f9a4ad7e0a020f5c574371d92afe4a60"
 
 S = "${WORKDIR}/git"
 
@@ -52,7 +52,8 @@ do_install() {
     rm -fr ${D}/lib/modules/*
     install -d ${D}/lib/modules/${KERNEL_VERSION}/dpdk
     install -m 0755 ${S}/${RTE_TARGET}/kmod/rte_kni.ko ${D}/lib/modules/${KERNEL_VERSION}/dpdk/
-
+    install -d ${D}/${bindir}/dpdk-example/extras
+    cp -rf  ${S}/nxp/* ${D}/${bindir}/dpdk-example/extras/
     rm ${D}/${datadir}/${RTE_TARGET}/app/dpdk-pmdinfogen
 
     chown root:root -R ${D}
