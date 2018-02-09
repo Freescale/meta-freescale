@@ -38,6 +38,7 @@ uboot_fw_utils_cross() {
     sysroot_stage_dir ${D}${bindir_cross} ${SYSROOT_DESTDIR}${bindir_cross}
 }
 
+PROVIDES += "u-boot-fw-utils"
 RPROVIDES_${PN} += "u-boot-fw-utils"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
