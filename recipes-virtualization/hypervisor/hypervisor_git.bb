@@ -11,9 +11,9 @@ inherit deploy
 
 # TODO: fix dtc to use the already built package
 SRC_URI = " \
-	git://git.freescale.com/ppc/sdk/hypervisor/hypervisor.git;name=hypervisor;branch=sdk-v2.0.x \
-	git://git.freescale.com/ppc/sdk/hypervisor/kconfig.git;name=kconfig;destsuffix=git/kconfig;branch=sdk-v2.0.x \
-	git://git.freescale.com/ppc/sdk/hypervisor/libos.git;name=libos;destsuffix=git/libos;branch=sdk-v2.0.x \
+	git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/hypervisor;name=hypervisor;branch=nxp/sdk-v2.0.x \
+	git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/kconfig;name=kconfig;destsuffix=git/kconfig;branch=nxp/sdk-v2.0.x \
+	git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/libos;name=libos;destsuffix=git/libos;branch=nxp/sdk-v2.0.x \
 	git://git.kernel.org/pub/scm/utils/dtc/dtc.git;name=dtc;destsuffix=dtc \
 	git://git.freescale.com/ppc/sdk/hypertrk.git;name=hypertrk;destsuffix=git/hypertrk;branch=sdk-v2.0.x \
 	file://81-fsl-embedded-hv.rules \
