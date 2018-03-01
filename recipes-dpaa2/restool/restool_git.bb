@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=ec8d84e9cd4de287e290275d09db27f0"
 
 RDEPENDS_${PN} += "bash"
 
-SRC_URI = "git://github.com/qoriq-open-source/restool.git;nobranch=1 \
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/restool;nobranch=1 \
     file://0001-restool-fix-build-error-with-gcc7.patch"
 
 SRCREV = "8f08b9d499e84f9057784c2036f0ddf75ae3fc70"
