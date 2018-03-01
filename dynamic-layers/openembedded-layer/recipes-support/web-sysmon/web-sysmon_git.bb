@@ -16,7 +16,7 @@ RDEPENDS_${PN} = "\
     rrdtool \
 "
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/web-sysmon-dev.git;nobranch=1"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/web-sysmon-dev;nobranch=1"
 SRCREV = "8d0c6eca1113832fabe917fd0cb25abe2d4d7157"
 
 inherit update-rc.d
