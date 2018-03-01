@@ -6,7 +6,7 @@ SECTION = "kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-SRC_URI = "git://github.com/qoriq-open-source/linux.git;nobranch=1 \
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nobranch=1 \
 "
 SRCREV = "e235023f9e3dee101ee31f3b1ddaa3c8aacd6d03"
 
