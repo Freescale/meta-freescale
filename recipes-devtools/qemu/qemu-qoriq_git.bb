@@ -25,7 +25,7 @@ PACKAGECONFIG[gcrypt] = ""
 PACKAGECONFIG[nettle] = ""
 PACKAGECONFIG[nss] = ""
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/qemu;branch=sdk-v2.0.x"
 SRCREV = "4b846e9b2b15660abace52dd27a406af08c4212d"
 
 # add ptest patches
