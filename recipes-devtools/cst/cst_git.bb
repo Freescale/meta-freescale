@@ -10,7 +10,7 @@ RDEPENDS_${PN} = "bash"
 
 inherit kernel-arch
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/cst.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/cst;branch=sdk-v2.0.x"
 SRCREV = "67ee75303916fc60dfd68ba1920932f57a8b9e94"
 
 S = "${WORKDIR}/git"
