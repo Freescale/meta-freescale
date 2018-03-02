@@ -8,7 +8,7 @@ DEPENDS = "optee-client optee-os python-pycrypto-native"
 
 inherit pythonnative
 
-SRC_URI = "git://github.com/qoriq-open-source/optee_test.git;nobranch=1 \
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_test;nobranch=1 \
           "
 S = "${WORKDIR}/git"
 
