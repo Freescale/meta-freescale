@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=8ed5eddbfbb84af5089ea94c382d423c"
 
 PR = "r2"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/eth-config.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/eth-config;branch=nxp/sdk-v2.0.x"
 SRCREV = "664ba136cfdb42116d9617176deda7c25ede9db9"
 
 S = "${WORKDIR}/git"
