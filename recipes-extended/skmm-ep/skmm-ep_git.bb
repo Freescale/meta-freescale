@@ -7,7 +7,7 @@ DEPENDS = "libedit openssl virtual/kernel"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/skmm-ep.git;branch=sdk-v2.0.x \
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/skmm-ep;branch=nxp/sdk-v2.0.x \
     file://add-two-missing-header-files.patch \
     file://skmm-ep-fix-the-inline-function-definition-with-gcc-.patch \
     file://skmm-ep-remove-duplicated-pa_to_va-and-va_to_pa.patch \
