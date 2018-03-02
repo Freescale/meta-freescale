@@ -12,7 +12,7 @@ RDEPENDS_${PN} = "libgcc bash"
 RDEPENDS_${PN}_append_b4860qds = " ipc-ust"
 RDEPENDS_${PN}_append_b4420qds = " ipc-ust"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa/usdpaa-apps.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/usdpaa-apps;branch=sdk-v2.0.x"
 SRCREV = "8fe2e9669650d2f7ed26b43d860228ca0f7211a9"
 
 S = "${WORKDIR}/git"
