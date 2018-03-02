@@ -7,7 +7,7 @@ DEPENDS += "change-file-endianess-native tcl-native"
 
 inherit deploy
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/rcw.git;nobranch=1"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/rcw;nobranch=1"
 SRCREV = "7bd43d920065171a8d805a3d02fa4c0b39885664"
 
 S = "${WORKDIR}/git"
