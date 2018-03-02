@@ -10,7 +10,7 @@ inherit deploy
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/pkc-firmware.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/pkc-firmware;branch=nxp/sdk-v2.0.x"
 SRCREV = "f75d281d83e74758f54d85bacfa74b7c07514413"
 
 S = "${WORKDIR}/git"
