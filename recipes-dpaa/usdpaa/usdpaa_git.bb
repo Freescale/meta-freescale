@@ -7,7 +7,7 @@ inherit pkgconfig
 
 DEPENDS += "flib"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/usdpaa.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/usdpaa;branch=sdk-v2.0.x"
 SRCREV = "a21c62ec9ac015f6c37f89d595e892852055b0fb"
 
 S = "${WORKDIR}/git"
