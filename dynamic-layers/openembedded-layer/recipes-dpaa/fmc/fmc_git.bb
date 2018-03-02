@@ -6,7 +6,7 @@ PR = "r2"
 
 DEPENDS = "libxml2 fmlib tclap"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fmc.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/fmc;branch=nxp/sdk-v2.0.x"
 SRCREV = "81e4796fd22e32fe7ab77f075c1879d7bb75c02e"
 
 S = "${WORKDIR}/git"
