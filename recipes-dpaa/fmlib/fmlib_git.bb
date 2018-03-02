@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3f16fa8e677e45af3127c5c4bafc3c00"
 
 PR = "r1"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/fmlib.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/fmlib;branch=nxp/sdk-v2.0.x"
 SRCREV = "caec18a71ed702a176892efaf946281b9160e220"
 
 S = "${WORKDIR}/git"
