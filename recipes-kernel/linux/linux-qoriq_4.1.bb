@@ -7,7 +7,7 @@ SECTION = "kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/linux.git;nobranch=1 \
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/linux;nobranch=1 \
     file://modify-defconfig-t1040-nr-cpus.patch \
     file://0003-use-static-inline-in-ARM-lifeboot.h.patch \
     file://fix-the-compile-issue-under-gcc6.patch \
