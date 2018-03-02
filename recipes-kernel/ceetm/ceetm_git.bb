@@ -2,7 +2,7 @@ DESCRIPTION = "CEETM TC QDISC"
 LICENSE = "GPLv2 & BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/ceetm.git;branch=sdk-v2.0.x"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/ceetm;branch=nxp/sdk-v2.0.x"
 SRCREV = "a237e094c3316a55727b855d15480e664545316a"
 
 S = "${WORKDIR}/git"
