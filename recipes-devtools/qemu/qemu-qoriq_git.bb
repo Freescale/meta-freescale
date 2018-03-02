@@ -20,7 +20,7 @@ QorIQ machines. The poky version should be used for native/nativesdk build."
 LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
                     file://COPYING.LIB;endline=24;md5=c04def7ae38850e7d3ef548588159913"
 
-SRC_URI = "git://git.freescale.com/ppc/sdk/qemu.git;nobranch=1"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/qemu;nobranch=1"
 SRCREV = "ef54fffcee4324c9a32bf6e260c8141b4e6c542e"
 
 # add ptest patches
