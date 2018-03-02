@@ -9,9 +9,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=4ccfa994aa96974cfcd39a59faee20a2"
 FILESEXTRAPATHS_prepend := "${THISDIR}/odp:"
 
 SRC_URI = " \
-git://git.freescale.com/ppc/sdk/odp.git;nobranch=1 \
-git://git.freescale.com/ppc/sdk/qbman_userspace.git;nobranch=1;name=qbman;destsuffix=git/platform/linux-dpaa2/flib/qbman \
-git://git.freescale.com/ppc/sdk/flib.git;nobranch=1;name=rta;destsuffix=git/platform/linux-dpaa2/flib/rta \
+git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/odp;nobranch=1 \
+git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/qbman_userspace;nobranch=1;name=qbman;destsuffix=git/platform/linux-dpaa2/flib/qbman \
+git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/flib;nobranch=1;name=rta;destsuffix=git/platform/linux-dpaa2/flib/rta \
 "
 SRC_URI += "file://disable-the-Werror-flag.patch"
 
