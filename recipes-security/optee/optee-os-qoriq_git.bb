@@ -8,8 +8,8 @@ DEPENDS = "python-pycrypto-native"
 
 inherit deploy pythonnative
 
-SRCREV = "ced7d32072c2b350c2090803f6dcfa006057efda"
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;nobranch=1 \
+SRCREV = "4886ddbd44665589215df4ef010958cba55dc8ba"
+SRC_URI = "git://bitbucket.sw.nxp.com/scm/dash/optee_os.git;nobranch=1 \
            file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
           "
 
@@ -18,10 +18,10 @@ S = "${WORKDIR}/git"
 OPTEEMACHINE ?= "${MACHINE}"
 
 EXTRA_OEMAKE = "PLATFORM=ls-${OPTEEMACHINE} CFG_ARM64_core=y \
+                ARCH=arm \
                 CROSS_COMPILE_core=${HOST_PREFIX} \
                 CROSS_COMPILE_ta_arm64=${HOST_PREFIX} \
                 NOWERROR=1 \
-                ta-targets=ta_arm64 \
                 LDFLAGS= \
                 LIBGCC_LOCATE_CFLAGS=--sysroot=${STAGING_DIR_HOST} \
         "
