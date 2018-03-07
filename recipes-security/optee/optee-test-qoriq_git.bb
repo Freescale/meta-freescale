@@ -4,11 +4,11 @@ HOMEPAGE = "https://github.com/qoriq-open-source/optee_test"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
-DEPENDS = "optee-client optee-os python-pycrypto-native"
+DEPENDS = "optee-client-qoriq optee-os-qoriq python-pycrypto-native"
 
 inherit pythonnative
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_test;nobranch=1 \
+SRC_URI = "git://github.com/qoriq-open-source/optee_test.git;nobranch=1 \
           "
 S = "${WORKDIR}/git"
 
