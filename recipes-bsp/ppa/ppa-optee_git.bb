@@ -1,6 +1,6 @@
 require ppa.inc
 
-DEPENDS += "optee-os"
+DEPENDS += "optee-os-qoriq"
 
 PPA_PATH_ls1046a = "ls1046"
 PPA_PATH_ls1043a = "ls2088"
