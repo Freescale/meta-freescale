@@ -1,7 +1,7 @@
 DESCRIPTION = "Data Plane Development Kit"
 HOMEPAGE = "http://dpdk.org"
-LICENSE = "BSD & LGPLv2 & GPLv2"
-LIC_FILES_CHKSUM = "file://LICENSE.GPL;md5=751419260aa954499f7abaabaa882bbe"
+LICENSE = "BSD-3-Clause & LGPLv2 & GPLv2"
+LIC_FILES_CHKSUM = "file://license/README;md5=3383def2d4c82237df281174e981a492"
 
 DEPENDS += "virtual/kernel openssl"
 RDEPENDS_${PN} = "bash python"
@@ -11,9 +11,8 @@ inherit module
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
-    file://0001-include-sys-sysmacros.h-for-major-minor-defintions.patch \
 "
-SRCREV = "076aa8e2f9a4ad7e0a020f5c574371d92afe4a60"
+SRCREV = "11d461d88390eb77bbf695eeddaad8e6f6cc25ce"
 
 S = "${WORKDIR}/git"
 
@@ -38,16 +37,31 @@ do_compile() {
 do_install() {
     unset LDFLAGS TARGET_LDFLAGS BUILD_LDFLAGS
 
-    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  WERROR_FLAGS="-w" V=1  T="${RTE_TARGET}" DESTDIR="${D}" install
+    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  WERROR_FLAGS="-w" V=1  T="${RTE_TARGET}" DESTDIR="${D}" install CONFIG_RTE_EAL_IGB_UIO=n CONFIG_RTE_KNI_KMOD=y CONFIG_RTE_LIBRTE_PMD_OPENSSL=y 
 
     # Build and install the DPDK examples
     for APP in examples/l2fwd examples/l3fwd examples/l2fwd-crypto examples/ipsec-secgw examples/kni examples/ip_fragmentation examples/ip_reassembly; do
-        oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C ${APP}
+        temp=`basename ${APP}` 
+        if [ ${temp} = "ipsec-secgw" ] || [ ${temp} = "l2fwd-crypto" ]; then 
+            oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C ${APP} CONFIG_RTE_LIBRTE_PMD_OPENSSL=y
+        else 
+            oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C ${APP}
+        fi
 
         [ ! -d ${D}/${bindir}/dpdk-example ] && install -d 0644 ${D}/${bindir}/dpdk-example
         install -m 0755 ${S}/examples/`basename ${APP}`/build/`basename ${APP}` \
             ${D}/${bindir}/dpdk-example/
     done
+    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C examples/vhost
+    install -m 0755 ${S}/examples/vhost/build/vhost-switch ${D}/${bindir}/dpdk-example/
+    oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C examples/cmdif
+    
+    install -d 0644 ${D}/usr/share/dpdk/cmdif/include
+    install -d 0644 ${D}/usr/share/dpdk/cmdif/lib
+    cp examples/cmdif/lib/client/fsl_cmdif_client.h examples/cmdif/lib/server/fsl_cmdif_server.h \
+        examples/cmdif/lib/shbp/fsl_shbp.h      ${D}/usr/share/dpdk/cmdif/include 
+    cp examples/cmdif/lib/${RTE_TARGET}/librte_cmdif.a ${D}/usr/share/dpdk/cmdif/lib
+
     install -m 0755 ${S}/${RTE_TARGET}/app/testpmd ${D}/${bindir}/dpdk-example/
     rm -fr ${D}/lib/modules/*
     install -d ${D}/lib/modules/${KERNEL_VERSION}/dpdk
@@ -63,7 +77,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PACKAGES += "${PN}-examples"
 
-FILES_${PN} += "${datadir}/* ${bindir}/* ${sbindir}/*"
+FILES_${PN} += "${datadir}/* ${bindir}/* ${sbindir}/* /usr/share/dpdk/cmdif/include/*"
 FILES_${PN}-dbg += "${bindir}/dpdk-example/.debug \
     ${datadir}/examples/kni/build/.debug \
     ${datadir}/examples/kni/build/app/.debug \
@@ -86,4 +100,5 @@ FILES_${PN}-dev += "${datadir}/mk ${datadir}/scripts \
 "
 FILES_${PN}-examples += "${datadir}/examples"
 
+FILES_${PN}-staticdev += "/usr/share/dpdk/cmdif/lib/*.a"
 COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a|ls1088a)"
