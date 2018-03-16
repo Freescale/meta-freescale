@@ -194,6 +194,7 @@ do_install () {
 
 	install -d ${D}${includedir}
 	cp --dereference -R include/openssl ${D}${includedir}
+        cp --dereference -R crypto  ${D}${includedir}
 
 	install -Dm 0755 ${WORKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
 	sed -i -e 's,/etc/openssl,${sysconfdir}/ssl,g' ${D}${bindir}/c_rehash
