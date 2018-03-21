@@ -1,10 +1,10 @@
 DESCRIPTION = "Foundation Library"
 SECTION = "flib"
 LICENSE = "BSD & GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=75d2f6a74299640c05ae6c69ed7a4ad6"
+LIC_FILES_CHKSUM = "file://COPYING;md5=9f6d1afdf6b0f6b3ba65c25ba589ee53"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/flib;nobranch=1"
-SRCREV = "14489ee2207650ddc89890df4b9f600da9ad665c"
+SRCREV = "cbb31427466649c07d2ac2739a41bb42f5f6be7c"
 
 S = "${WORKDIR}/git"
 
