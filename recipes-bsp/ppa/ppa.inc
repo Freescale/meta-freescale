@@ -8,7 +8,7 @@ inherit deploy
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/ppa-generic;nobranch=1 \
 "
-SRCREV = "e5641434f00d75634a285341d810df4261daf5de"
+SRCREV = "f00e7ef29a0e14d9ab0ce31606e768c52e35609d"
 
 S = "${WORKDIR}/git"
 
