@@ -1,20 +1,21 @@
 SUMMARY = "PPFE Linux firmware"
-LICENSE = "Freescale-Binary-EULA"
-LIC_FILES_CHKSUM = "file://Freescale-Binary-EULA;md5=f1c407c0fccab5cd0bf9b92565f6f19b"
+LICENSE = "NXP-Binary-EULA"
+LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=92723670f432558b9e2494ed177d2a85"
+
 
 INHIBIT_DEFAULT_DEPS = "1"
 
 inherit deploy
 
-SRC_URI = "git://github.com/qoriq-open-source/engine-pfe-bin.git;nobranch=1"
-SRCREV = "97cd13d3070d7199e62881bc495b332194b67edd"
+SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;nobranch=1"
+SRCREV = "848002fe4e0e3efb8d13a813e5c123bbc87aa95b"
 
 S = "${WORKDIR}/git"
 
 do_install () {
     install -d ${D}/lib/firmware
     install -d ${D}/boot/engine-pfe-bin
-    install -m 644 ${S}/Freescale-Binary-EULA ${D}/lib/firmware
+    install -m 644 ${S}/NXP-Binary-EULA.txt ${D}/lib/firmware
     install -m 755 ${S}/ls1012a/slow_path/*.elf ${D}/lib/firmware
     install -m 755 ${S}/ls1012a/u-boot/* ${D}/boot/engine-pfe-bin
 }
