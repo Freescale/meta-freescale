@@ -1,9 +1,9 @@
 DESCRIPTION = "CEETM TC QDISC"
 LICENSE = "GPLv2 & BSD"
-LIC_FILES_CHKSUM = "file://COPYING;md5=dde0931a586dd5b30076639e29ba3a7b"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bac620b9883d38a84dfb73ca7122d915"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/ceetm;nobranch=1"
-SRCREV = "f58304d7e2185003d0f4ff604bc8e4316d463a03"
+SRCREV = "889c527b84d5ab0744b0483e03905abf5518e237"
 
 DEPENDS = "iproute2"
 
