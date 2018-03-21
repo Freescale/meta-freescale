@@ -1,12 +1,12 @@
 DESCRIPTION = "Ethernet Configuration Files"
 SECTION = "eth-config"
 LICENSE = "BSD & GPLv2+"
-LIC_FILES_CHKSUM = "file://COPYING;md5=8ed5eddbfbb84af5089ea94c382d423c"
+LIC_FILES_CHKSUM = "file://COPYING;md5=47716bd5b656aa5e298a132a64d2d1e4"
 
 PR = "r2"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/eth-config;nobranch=1"
-SRCREV = "e3dcd110638dab004bcc759f6f51a0994bdfd8d5"
+SRCREV = "eefb06353c8c3db34d22c26825b66e921bce617d"
 
 S = "${WORKDIR}/git"
 
