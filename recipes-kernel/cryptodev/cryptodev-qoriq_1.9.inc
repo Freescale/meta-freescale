@@ -15,7 +15,7 @@ python() {
 FILESEXTRAPATHS_prepend := "${THISDIR}/yocto_patches:"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cryptodev-linux;nobranch=1"
-SRCREV = "f365c69d7852d6579952825c9f90a27129f92d22"
+SRCREV = "d0e1f0a9ff8ad39df1b45345d69b00aa28a19ca1"
 
 # NOTE: remove this patch and all traces of DISTRO_FEATURE c29x_pkc
 # if pkc-host does not need customized cryptodev patches anymore
