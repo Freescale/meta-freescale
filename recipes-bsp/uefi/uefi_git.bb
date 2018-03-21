@@ -1,12 +1,12 @@
 DESCRIPTION = "Unified Extensible Firmware Interface"
 SECTION = "bootloaders"
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+LICENSE = "NXP-Binary-EULA"
+LIC_FILES_CHKSUM = "file://NXP-Binary-EULA;md5=343ec8f06efc37467a6de53686fa6315"
 
 inherit deploy
 
-SRC_URI = "git://github.com/qoriq-open-source/uefi-binary.git;nobranch=1"
-SRCREV= "a812f178646464f316032249cdb104265141dfa2"
+SRC_URI = "git://github.com/NXP/qoriq-uefi-binary.git;nobranch=1"
+SRCREV= "100cdac2d760be7aead1dfb24a4fa6317db9d6f7"
 
 S = "${WORKDIR}/git"
 
