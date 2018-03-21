@@ -1,12 +1,12 @@
 DESCRIPTION = "qe microcode binary"
 SECTION = "qe-ucode"
-LICENSE = "Freescale-Binary-EULA"
-LIC_FILES_CHKSUM = "file://Freescale-Binary-EULA;md5=f4719d59382b5ee2a2ebe4db784843a6"
+LICENSE = "NXP-Binary-EULA"
+LIC_FILES_CHKSUM = "file://NXP-Binary-EULA;md5=c62f8109b4df15ca37ceeb5e4943626c"
 
 inherit deploy
 
-SRC_URI = "git://github.com/qoriq-open-source/qe-ucode.git;nobranch=1"
-SRCREV= "adb1560b76090a11f61a46b7a6b3b33b1436ed4d"
+SRC_URI = "git://github.com/NXP/qoriq-qe-ucode.git;nobranch=1"
+SRCREV= "57401f6dff6507055558eaa6838116baa8a2fd46"
 
 S = "${WORKDIR}/git"
 
