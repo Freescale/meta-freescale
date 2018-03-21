@@ -1,11 +1,11 @@
 SUMMARY = "Firmwares and Standalone Applications"
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+LICENSE = "NXP-Binary-EULA"
+LIC_FILES_CHKSUM = "file://NXP-EULA;md5=d969f2c93b3905d4b628787ce5f8df4b"
 
 inherit deploy
 
-SRC_URI = "git://github.com/qoriq-open-source/firmware-cortina.git;nobranch=1"
-SRCREV = "6036a20ddbf796ac494da172f2588e5de4d833fc"
+SRC_URI = "git://github.com/nxp/qoriq-firmware-cortina.git;nobranch=1"
+SRCREV = "d5b5263eb42f8897eb679a6a30793f4df6df038d"
 
 S = "${WORKDIR}/git"
 
