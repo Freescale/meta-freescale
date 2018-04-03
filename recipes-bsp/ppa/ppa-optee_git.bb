@@ -3,7 +3,7 @@ require ppa.inc
 DEPENDS += "optee-os-qoriq"
 
 PPA_PATH_ls1046a = "ls1046"
-PPA_PATH_ls1043a = "ls2088"
+PPA_PATH_ls1043a = "ls1043"
 PPA_PATH_ls1012a = "ls1012"
 
 do_compile() {
