@@ -19,4 +19,4 @@ do_compile () {
     cd ${S}
 }
 
-COMPATIBLE_MACHINE = "(ls1043a|ls1046a|ls2088a|ls1012afrdm|ls1088a)"
+COMPATIBLE_MACHINE = "(ls1043a|ls1046a|ls2088a|ls1012a|ls1088a)"
