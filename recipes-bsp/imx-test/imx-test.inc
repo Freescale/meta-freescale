@@ -37,12 +37,6 @@ PLATFORM_mx7ulp  = "IMX7D"
 PACKAGECONFIG ?= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 
-# Required so the fixdep binary is generated
-addtask make_scripts after do_patch before do_compile
-do_make_scripts[lockfiles] = "${TMPDIR}/kernel-scripts.lock"
-do_make_scripts[deptask] = "do_populate_sysroot"
-do_make_scripts[depends] += "virtual/kernel:do_install"
-
 do_compile() {
     CFLAGS="${TOOLCHAIN_OPTIONS}"
     oe_runmake V=1 VERBOSE='' \
