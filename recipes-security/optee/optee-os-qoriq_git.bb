@@ -8,8 +8,8 @@ DEPENDS = "python-pycrypto-native"
 
 inherit deploy pythonnative
 
-SRCREV = "4886ddbd44665589215df4ef010958cba55dc8ba"
-SRC_URI = "git://bitbucket.sw.nxp.com/scm/dash/optee_os.git;nobranch=1 \
+SRCREV = "1543820b3dd1294af2eb237559ee003981ff26f4"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;nobranch=1 \
            file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
           "
 
