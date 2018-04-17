@@ -1,4 +1,4 @@
-inherit kernel qoriq_build_64bit_kernel
+inherit kernel qoriq_build_64bit_kernel siteinfo
 inherit fsl-kernel-localversion
 
 SUMMARY = "Linux Kernel for Freescale QorIQ platforms"
@@ -35,6 +35,12 @@ do_merge_delta_config[dirs] = "${B}"
 do_merge_delta_config() {
     # create .config with make config
     oe_runmake  -C ${S} O=${B} ${KERNEL_DEFCONFIG}
+
+    # check if bigendian is enabled
+    if [ "${SITEINFO_ENDIANNESS}" = "be" ]; then
+        echo "CONFIG_CPU_BIG_ENDIAN=y" >> .config
+        echo "CONFIG_MTD_CFI_BE_BYTE_SWAP=y" >> .config
+    fi
 
     # add config fragments
     for deltacfg in ${DELTA_KERNEL_DEFCONFIG}; do
