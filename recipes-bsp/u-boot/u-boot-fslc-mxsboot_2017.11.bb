@@ -3,7 +3,7 @@ require u-boot-fslc-common_${PV}.inc
 DESCRIPTION = "U-boot bootloader mxsboot tool"
 SECTION = "bootloader"
 
-DEPENDS = "openssl"
+DEPENDS = "dtc openssl"
 
 PROVIDES = "u-boot-mxsboot"
 
