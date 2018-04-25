@@ -28,7 +28,9 @@ do_preconfigure() {
 	CONF_SED_SCRIPT=""
 
 	kernel_conf_variable LOCALVERSION "\"${LOCALVERSION}\""
-	kernel_conf_variable LOCALVERSION_AUTO y
+	if [ "${SCMVERSION}" = "y" ]; then
+		kernel_conf_variable LOCALVERSION_AUTO y
+	fi
 
 	sed -e "${CONF_SED_SCRIPT}" < '${WORKDIR}/defconfig' >> '${B}/.config'
 
