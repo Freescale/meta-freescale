@@ -312,3 +312,17 @@ IMAGE_TYPEDEP_sdcard_append = " \
     ${@bb.utils.contains('IMAGE_FSTYPES', 'uboot-mxsboot-sdcard', 'uboot-mxsboot-sdcard', '', d)} \
     ${@bb.utils.contains('IMAGE_FSTYPES', 'barebox-mxsboot-sdcard', 'barebox-mxsboot-sdcard', '', d)} \
 "
+
+# In case we are building for i.MX23 or i.MX28 we need to have the
+# image stream built before the wic generation
+do_image_wic[depends] += " \
+    ${@bb.utils.contains('IMAGE_FSTYPES', 'uboot-mxsboot-sdcard', \
+                                          '${IMAGE_BASENAME}:do_image_uboot_mxsboot_sdcard', '', d)} \
+"
+
+# We need to apply a fixup inside of the partition table
+IMAGE_CMD_wic_append_mxs() {
+	# Change partition type for mxs processor family
+	bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
+	echo -n S | dd of=$out${IMAGE_NAME_SUFFIX}.wic bs=1 count=1 seek=450 conv=notrunc
+}
