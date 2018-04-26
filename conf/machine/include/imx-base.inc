@@ -291,7 +291,7 @@ WKS_FILE_DEPENDS ?= " \
 "
 
 SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks"
-SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks"
+SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
