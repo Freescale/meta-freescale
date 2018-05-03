@@ -1,0 +1,11 @@
+--- a/MfgToolLib/CMakeLists.txt
++++ b/MfgToolLib/CMakeLists.txt
+@@ -178,7 +178,7 @@ if(TARGET MfgToolLib)
+     _WINDOWS
+   )
+ endif(TARGET MfgToolLib)
+-set (CMAKE_CXX_FLAGS "-std=c++11 -O0 -fpic -I/usr/lib/jvm/java-8-oracle/include -I/usr/lib/jvm/java-8-oracle/include/linux -fpermissive -g -Wno-write-strings")
++set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -Wno-write-strings")
+ set(SOURCES ${SOURCES_})
+ 
+ add_library( MfgToolLib SHARED ${SOURCES} )
