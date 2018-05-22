@@ -1,0 +1,24 @@
+From 3d1fa6e6097b98bcb0efb0ab2155dc2e6cd7dfde Mon Sep 17 00:00:00 2001
+From: Gianfranco Costamagna <costamagnagianfranco@yahoo.it>
+Date: Mon, 21 May 2018 23:44:49 +0200
+Subject: [PATCH 2/2] Exit is int
+
+---
+ TestPrgm/mfgtoolCLI.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/TestPrgm/mfgtoolCLI.cpp b/TestPrgm/mfgtoolCLI.cpp
+index 01a4a13..fafc070 100644
+--- a/TestPrgm/mfgtoolCLI.cpp
++++ b/TestPrgm/mfgtoolCLI.cpp
+@@ -58,7 +58,7 @@ std::string trim(std::string str)
+ 		last = 0.8 * (BAR_WIDTH);
+ 	return str.substr(first, (last-first+1));
+ }
+-void exitLibrary()
++int exitLibrary()
+ {
+ 	int ret;
+ 	std::cout << std::endl << std::endl;
+-- 
+2.14.1
