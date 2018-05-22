@@ -44,5 +44,5 @@ def machine_overrides_extender(d):
 python machine_overrides_extender_handler() {
     machine_overrides_extender(e.data)
 }
-machine_overrides_extender_handler[eventmask] = "bb.event.RecipeParsed"
+machine_overrides_extender_handler[eventmask] = "bb.event.ConfigParsed"
 addhandler machine_overrides_extender_handler
