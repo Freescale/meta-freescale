@@ -1,0 +1,19 @@
+--- a/makefile
++++ b/makefile
+@@ -1,10 +1,12 @@
+-CC=gcc
+-CFLAGS=-I. -Wall -O2
+-DEPS=
++CC ?= gcc
++CFLAGS ?= -I. -Wall -O2
++LDFLAGS ?=
++DEPS ?=
++
+ OBJ=utp_com.o
+ 
+ %.o: %.c $(DEPS)
+ 	$(CC) -c -o $@ $< $(CFLAGS)
+ 
+ utp_com: $(OBJ)
+-	gcc -o $@ $^ $(CFLAGS)
++	$(CC) -o $@ $^ $(LDFLAGS)
