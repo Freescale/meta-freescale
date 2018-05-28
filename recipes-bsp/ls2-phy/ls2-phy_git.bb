@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 inherit deploy
 
-SRC_URI = "git://github.com/qoriq-open-source/firmware-cortina.git;nobranch=1"
+SRC_URI = "git://github.com/NXP/qoriq-firmware-cortina.git;nobranch=1"
 SRCREV = "6036a20ddbf796ac494da172f2588e5de4d833fc"
 
 S = "${WORKDIR}/git"
