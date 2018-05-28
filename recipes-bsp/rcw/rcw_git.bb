@@ -17,12 +17,11 @@ export PYTHON = "${USRBINPATH}/python2"
 M="${@d.getVar('MACHINE', True).replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
 do_install () {
-    if [ -f ${S}/${M}/Makefile ]; then
+    if [ ${M} = ls2088ardb ]; then
         oe_runmake BOARDS=${M} DESTDIR=${D}/boot/rcw/ install
+        oe_runmake BOARDS=${M}_rev1.1  DESTDIR=${D}/boot/rcw/ install
     else
-        install -d ${D}/boot/rcw
-        cp -a ${S}/${M} ${D}/boot/rcw/
-        chown -R root:root ${D}
+        oe_runmake BOARDS=${M} DESTDIR=${D}/boot/rcw/ install
     fi
     for f in `find ${D}/boot/rcw/ -name "*qspiboot*"`;do
         if echo $f |grep -q "qspiboot_sben"; then
