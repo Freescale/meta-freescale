@@ -58,4 +58,5 @@ do_configure_prepend() {
 	fi
 }
 
+PARALLEL_MAKE = ""
 COMPATIBLE_MACHINE = "(qoriq)"
