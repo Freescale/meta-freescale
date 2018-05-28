@@ -15,6 +15,10 @@
 # Copyright 2016-2017 (C) O.S. Systems Software LTDA.
 
 def machine_overrides_extender(d):
+    variant = d.getVar("BBEXTENDVARIANT")
+    if variant:
+        return
+
     machine_overrides = (d.getVar('MACHINEOVERRIDES', True) or '').split(':')
 
     # Gather the list of overrides to filter out
@@ -44,5 +48,6 @@ def machine_overrides_extender(d):
 python machine_overrides_extender_handler() {
     machine_overrides_extender(e.data)
 }
-machine_overrides_extender_handler[eventmask] = "bb.event.ConfigParsed"
+
+machine_overrides_extender_handler[eventmask] = "bb.event.RecipePreFinalise"
 addhandler machine_overrides_extender_handler
