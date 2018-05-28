@@ -7,8 +7,6 @@ PPA_PATH_ls2088a = "ls2088"
 PPA_PATH_ls1088a = "ls1088"
 
 do_compile () {
-    export ARMV8_TOOLS_DIR="${STAGING_BINDIR_TOOLCHAIN}"
-    export ARMV8_TOOLS_PREFIX="${TARGET_PREFIX}"
     export CROSS_COMPILE="${WRAP_TARGET_PREFIX}"
     cd ${S}/ppa
     if [ ${MACHINE} = ls1012afrdm ];then
