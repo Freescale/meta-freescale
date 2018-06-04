@@ -136,6 +136,10 @@ fitimage_emit_section_dtb() {
 
 	dtb_csum="sha1"
 
+        if [ -n "${DTB_LOAD}" ]; then
+            dtb_loadline="load = <${DTB_LOAD}>;"
+        fi
+
 	cat << EOF >> ${1}
                 fdt@${2} {
                         description = "Flattened Device Tree blob";
@@ -143,7 +147,7 @@ fitimage_emit_section_dtb() {
                         type = "flat_dt";
                         arch = "${UBOOT_ARCH}";
                         compression = "none";
-                        load = <${DTB_LOAD}>;
+                        ${dtb_loadline}
                         hash@1 {
                                 algo = "${dtb_csum}";
                         };
