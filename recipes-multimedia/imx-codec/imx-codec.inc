@@ -48,7 +48,7 @@ python __set_insane_skip() {
         # the source we cannot fix it. Disable the insane check for now.
         if p == 'imx-codec-test-bin':
             # FIXME: includes the DUT .so files so we need to deploy those
-            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel libdir")
+            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel libdir file-rdeps")
         else:
             d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
 }
