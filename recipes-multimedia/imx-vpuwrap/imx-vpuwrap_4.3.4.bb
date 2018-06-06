@@ -15,8 +15,8 @@ RCONFLICTS_${PN} = "libfslvpuwrap"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "7ea5abc960ef587da4f89de05647a6da"
-SRC_URI[sha256sum] = "995354c2d0805f690cbcc3c007c90bad30db1570f526a8fc05d490fa42366d82"
+SRC_URI[md5sum] = "bd832f70ef90dbbdc5a24e2a1eefc71f"
+SRC_URI[sha256sum] = "cd49a4d9379c2d3ffd71a4c8e81dcb30097d43899d11ccaa77ec981dbdec596b"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
@@ -24,6 +24,8 @@ do_install_append() {
     # FIXME: Drop examples for now
     rm -r ${D}${datadir}
 }
+
+INSANE_SKIP_imx-vpuwrap = "file-rdeps"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6q|mx6dl)"
