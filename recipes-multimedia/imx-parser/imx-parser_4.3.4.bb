@@ -4,7 +4,7 @@
 
 require imx-parser.inc
 
-SRC_URI[md5sum] = "c69669d18ab77fa62fe1dc4fd0eea9e4"
-SRC_URI[sha256sum] = "2cab49758fb5b27e0735379ab98ac43787195c4d73aac440f24ba3fd1c252e32"
+SRC_URI[md5sum] = "f6ac916c8d6ccf66f9da58bc230f0d1d"
+SRC_URI[sha256sum] = "29a199c79a4a7e01e3c386018c854b6be5d839061b15f8519e19fea8bf77121d"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
