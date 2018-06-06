@@ -1,4 +1,5 @@
 # Copyright (C) 2014,2016 Freescale Semiconductor
+# Copyright 2017 NXP
 # Copyright (C) 2012-2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -7,27 +8,23 @@ LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 
 DEPENDS = "imx-codec imx-parser virtual/kernel gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
-DEPENDS_append_mx6q = " imx-lib imx-vpu imx-vpuwrap"
-DEPENDS_append_mx6dl = " imx-lib imx-vpu imx-vpuwrap"
-DEPENDS_append_mx6sl = " imx-lib"
-DEPENDS_append_mx6sx = " imx-lib"
-DEPENDS_append_mx6ul = " imx-lib"
-DEPENDS_append_mx7d = " imx-lib"
+DEPENDS_append_mx6 = " imx-lib"
+DEPENDS_append_mx7 = " imx-lib"
+DEPENDS_append_imxvpu = " imx-vpuwrap libdrm"
 
 # For backwards compatibility
 RREPLACES_${PN} = "gst1.0-fsl-plugin"
 RPROVIDES_${PN} = "gst1.0-fsl-plugin"
 RCONFLICTS_${PN} = "gst1.0-fsl-plugin"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
-                    file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
+LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
-SRCBRANCH = "nxp/MM_04.02.01_1705_L4.9.11_CONSOLIDATED_GA"
+IMXGST_SRC ?= "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https"
+SRCBRANCH = "MM_04.03.04_1801_L4.9.51_MX8M_GA"
 
-SRC_URI = " \
-    git://source.codeaurora.org/external/imx/gst1.0-plugins-fsl.git;protocol=https;branch=${SRCBRANCH} \
-"
+SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
+SRCREV = "bd40c49abd6494c6439f37c8c7ec5e275576c761"
 
 S = "${WORKDIR}/git"
 
@@ -35,12 +32,15 @@ inherit autotools pkgconfig
 
 # Make sure kernel sources are available
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
 PLATFORM_mx6 = "MX6"
 PLATFORM_mx6sl = "MX6SL"
 PLATFORM_mx6sx = "MX6SX"
 PLATFORM_mx6ul = "MX6UL"
-PLATFORM_mx6ull = "MX6UL"
-PLATFORM_mx7d = "MX7D"
+PLATFORM_mx6sll = "MX6SLL"
+PLATFORM_mx7= "MX7D"
+PLATFORM_mx7ulp= "MX7ULP"
+PLATFORM_mx8 = "MX8"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
@@ -54,8 +54,10 @@ PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN
 BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
 RDEPENDS_${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
+# overlaysink rely on G2D,
+# cannot be supported on i.MX6SLL & i.MX6UL & i.MX6ULL & i.MX7D
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_mx6 = "overlaysink"
+PACKAGECONFIG_imxgpu2d = "overlaysink"
 
 
 # FIXME: Add all features
@@ -81,4 +83,4 @@ FILES_${PN}-grecorder = "${bindir}/grecorder-1.0"
 FILES_${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
 FILES_${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
 
-COMPATIBLE_MACHINE = "(mx6|mx6ul|mx6ull|mx7d)"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
