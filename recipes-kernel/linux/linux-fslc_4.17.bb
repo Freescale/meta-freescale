@@ -9,9 +9,11 @@ upstreaming."
 
 include linux-fslc.inc
 
-PV = "4.14+git${SRCPV}"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-SRCBRANCH = "4.14.x+fslc"
-SRCREV = "a4f7f0ac8250ff10d6111df25e7d940a2f36801a"
+PV = "4.17+git${SRCPV}"
+
+SRCBRANCH = "4.17.x+fslc"
+SRCREV = "0a883adda1ba8bb1312136ce6d9cd7d54340bfbd"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
