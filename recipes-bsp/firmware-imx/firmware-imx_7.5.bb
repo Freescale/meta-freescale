@@ -1,16 +1,22 @@
+# Copyright (C) 2012-2016 Freescale Semiconductor
+# Copyright (C) 2018 O.S. Systems Software LTDA.
 SUMMARY = "Freescale IMX firmware"
 DESCRIPTION = "Freescale IMX firmware such as for the VPU"
 SECTION = "base"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=8cf95184c220e247b9917e7244124c5a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
 PE = "1"
 
-#BRCM firmware git
 SRCBRANCH ?= "master"
-
 SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
-           git://git.freescale.com/imx/imx-firmware.git;branch=${SRCBRANCH};destsuffix=${S}/git "
+           git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH};destsuffix=${S}/git"
+
+#BRCM firmware git
+SRCREV = "8ce9046f5058fdd2c5271f86ccfc61bc5a248ae3"
+
+SRC_URI[md5sum] = "3851bb89ff262e9322a631755215f538"
+SRC_URI[sha256sum] = "a8f099bdf786b2da1e8b43094950c033ccdbf93f1b8a93caffb912e1500cd735"
 
 inherit fsl-eula-unpack allarch
 
@@ -20,6 +26,11 @@ do_install() {
     install -d ${D}${sysconfdir}/firmware
 
     cp -rfv firmware/* ${D}${base_libdir}/firmware/
+
+    # FIXME: This need to be removed when iMX8 is integrated.
+    rm -rf ${D}${base_libdir}/firmware/ddr \
+           ${D}${base_libdir}/firmware/hdmi \
+           ${D}${base_libdir}/firmware/seco
 
     #1BW_BCM43340
     install -d ${D}${base_libdir}/firmware/bcm/1BW_BCM43340
