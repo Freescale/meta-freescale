@@ -1,5 +1,6 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2017 NXP
+# Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "Linux Kernel provided and supported by NXP"
@@ -10,9 +11,9 @@ require recipes-kernel/linux/linux-imx.inc
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_4.9.11_1.0.0_ga"
+SRCBRANCH = "imx_4.9.88_2.0.0_ga"
 LOCALVERSION = "-1.0.0"
-SRCREV = "c27010d99a3d91703ea2d1a3f9630a9dedc3f86f"
+SRCREV = "6507266728a7806d850ce22ec923d90cf4aa4318"
 
 DEFAULT_PREFERENCE = "1"
 
