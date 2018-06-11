@@ -1,17 +1,20 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright 2017 NXP
+# Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=08fd295cce89b0a9c74b9b83ed74f671"
+LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
 # Backward compatibility
 PROVIDES += "libfslcodec"
 
-inherit fsl-eula-unpack autotools pkgconfig
-
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+SRC_URI[md5sum] = "ea080472c3fe5f5ae4760ba16c8ea6c5"
+SRC_URI[sha256sum] = "6bb54f91c3ca18567e14d95d3858022dc9be00dc86e9edfdb544d1240a3b2b04"
+
+inherit fsl-eula-unpack autotools pkgconfig
 
 # Choose between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d)}"
@@ -112,3 +115,4 @@ FILES_${PN}-nb += "${libdir}/imx-mm/audio-codec/wrap/lib_nbamrd_wrap_arm*_elinux
 FILES_${PN}-wb += "${libdir}/imx-mm/audio-codec/wrap/lib_wbamrd_wrap_arm*_elinux.so.*"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
