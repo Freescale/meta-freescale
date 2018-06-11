@@ -1,11 +1,11 @@
-# Copyright (C) 2012-2014, 2016 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2018 O.S. Systems Software LTDA.
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright 2017 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia parser libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=08fd295cce89b0a9c74b9b83ed74f671"
+LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
 # For backwards compatibility
 PROVIDES += "libfslparser"
@@ -13,9 +13,11 @@ RREPLACES_${PN} = "libfslparser"
 RPROVIDES_${PN} = "libfslparser"
 RCONFLICTS_${PN} = "libfslparser"
 
-inherit fsl-eula-unpack autotools pkgconfig
-
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+SRC_URI[md5sum] = "54fcf59ec947955aceae51831d3ccb46"
+SRC_URI[sha256sum] = "9cd8c49a0bb1050afcfbcc7a677a348443fda4ecacb621cc6e38897619e27c67"
+
+inherit fsl-eula-unpack autotools pkgconfig
 
 # Choose between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '--enable-fsw', d)}"
@@ -39,3 +41,5 @@ FILES_${PN} += "${libdir}/imx-mm/*/*${SOLIBS} ${libdir}/imx-mm/*/*${SOLIBSDEV}"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 INHIBIT_SYSROOT_STRIP = "1"
+
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
