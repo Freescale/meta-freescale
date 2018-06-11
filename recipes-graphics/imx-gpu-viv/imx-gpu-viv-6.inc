@@ -1,11 +1,11 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright (C) 2012-2016 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2018 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=08fd295cce89b0a9c74b9b83ed74f671"
+LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -13,6 +13,10 @@ DEPENDS += " \
                                                        '', d), d)} \
 "
 DEPENDS += "libdrm"
+DEPENDS += " \
+    ${@bb.utils.contains('DISTRO_FEATURES',     'x11', 'libxcb libxshmfence libxxf86vm', \
+                                                       '', d)} \
+"
 
 # imx-gpu-viv does not provide everything it needs to for virtual/libgl
 # on x11 backend or on Wayland backend with XWayland support.
@@ -20,9 +24,23 @@ DEPENDS += "libdrm"
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'mesa', '', d)}"
 
 EXTRA_PROVIDES = ""
-EXTRA_PROVIDES_append_imxgpu3d = " virtual/libgl virtual/libgles1 virtual/libgles2"
-EXTRA_PROVIDES_append_mx6q     = " virtual/opencl-icd opencl-headers"
-PROVIDES += "imx-gpu-viv virtual/wayland-egl virtual/libgal-x11 virtual/egl virtual/libopenvg ${EXTRA_PROVIDES}"
+EXTRA_PROVIDES_append_imxgpu3d = " \
+    virtual/libgl \
+    virtual/libgles1 \
+    virtual/libgles2 \
+"
+"
+PROVIDES += " \
+    imx-gpu-viv \
+    virtual/libgal-x11 \
+    opencl-headers \
+    virtual/egl \
+    virtual/libopenvg \
+    virtual/opencl-headers \
+    virtual/opencl-icd \
+    virtual/wayland-egl \
+    ${EXTRA_PROVIDES} \
+"
 
 RPROVIDES_${PN}_imxgpu3d += "imx-gpu-viv"
 
@@ -73,16 +91,15 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 REALSOLIBS := "${SOLIBS}"
 SOLIBS = "${SOLIBSDEV}"
 
-# For the packages that make up the OpenGL interfaces, inject variables so that
-# they don't get Debian-renamed (which would remove the -imx suffix).
-#
-# FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
-# the source we cannot fix it. Disable the insane check for now.
 python __anonymous() {
+    # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
+    # the source we cannot fix it. Disable the insane check for now.
     packages = d.getVar('PACKAGES', True).split()
     for p in packages:
         d.appendVar("INSANE_SKIP_%s" % p, " ldflags")
 
+    # For the packages that make up the OpenGL interfaces, inject variables so that
+    # they don't get Debian-renamed (which would remove the -imx suffix).
     for p in (("libegl", "libegl1"), ("libgl", "libgl1"),
               ("libgles1", "libglesv1-cm1"), ("libgles2", "libglesv2-2"),
               ("libgles3",) , ("libvulkan",)):
@@ -105,6 +122,10 @@ python __anonymous() {
 IS_MX6SL = "0"
 IS_MX6SL_mx6sl = "1"
 
+PACKAGE_FP_TYPE = "hardfp"
+
+GLES3_HEADER_REMOVALS = "gl31.h gl32.h"
+
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
@@ -115,6 +136,8 @@ do_install () {
     cp -r ${S}/gpu-demos/opt ${D}
     cp -r ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
 
+    # Use vulkan header from vulkan recipe to support vkmark
+    rm -rf ${D}${includedir}/vulkan/vulkan.h
 
     install -d ${D}${libdir}/pkgconfig
 
@@ -127,10 +150,6 @@ do_install () {
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg.pc ${D}${libdir}/pkgconfig/vg.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gc_wayland_protocol.pc ${D}${libdir}/pkgconfig/gc_wayland_protocol.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-egl.pc ${D}${libdir}/pkgconfig/wayland-egl.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/wayland-viv.pc ${D}${libdir}/pkgconfig/wayland-viv.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gbm.pc ${D}${libdir}/pkgconfig/gbm.pc
 
        if [ "${USE_X11}" = "yes" ]; then
 
@@ -176,7 +195,16 @@ do_install () {
     ln -sf libEGL.so.1.0 ${D}${libdir}/libEGL.so.1
     ln -sf libEGL.so.1.0 ${D}${libdir}/libEGL.so
     mv ${D}${libdir}/libGAL-${backend}.so ${D}${libdir}/libGAL.so
-    mv ${D}${libdir}/libVDK-${backend}.so ${D}${libdir}/libVDK.so
+    if [ "${USE_WL}" = "yes" ]; then
+        # Special case for libVDK on Wayland backend, deliver fb library as well.
+        # Need to rename the libraries to avoid the code below that will remove
+        # *-fb.so and *-wl.so
+        mv ${D}${libdir}/libVDK-fb.so ${D}${libdir}/libVDK-framebuffer.so
+        mv ${D}${libdir}/libVDK-wl.so ${D}${libdir}/libVDK-wayland.so
+        ln -sf libVDK-wayland.so ${D}${libdir}/libVDK.so
+    else
+        mv ${D}${libdir}/libVDK-${backend}.so ${D}${libdir}/libVDK.so
+    fi
 
     # update libglesv2 as backend dependent
     rm -rf ${D}${libdir}/libGLESv2*
@@ -184,10 +212,14 @@ do_install () {
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so.2
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
+    for header in ${GLES3_HEADER_REMOVALS}; do
+        rm -f ${D}${includedir}/GLES3/${header}
+    done
+
     # skip packaging wayland libraries if no support is requested
     if [ "${USE_WL}" = "no" ]; then
-        rm ${D}${libdir}/libgc_wayland_protocol.*
-        rm ${D}${libdir}/libwayland-viv.*
+        find ${D}${libdir} -name "libgc_wayland_protocol.*" -exec rm '{}' ';'
+        find ${D}${libdir} -name "libwayland-viv.*" -exec rm '{}' ';'
     fi
 
     for i in wl x11 fb dri; do
@@ -234,7 +266,6 @@ FILES_libclc-imx-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 INSANE_SKIP_libegl-imx += "dev-so"
 FILES_libegl-imx = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
 FILES_libegl-imx-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
-RDEPENDS_libegl-imx += "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'libgc-wayland-protocol-imx libwayland-viv-imx libgc-wayland-protocol-imx', '', d)}"
 RDEPENDS_libegl-imx-dev += "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'libwayland-egl-imx-dev', '', d)}"
 
 FILES_libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
@@ -290,8 +321,9 @@ INSANE_SKIP_libopenvg-imx += "dev-so"
 FILES_libopenvg-imx = "${libdir}/libOpenVG*${SOLIBS}"
 FILES_libopenvg-imx-dev = "${includedir}/VG ${libdir}/libOpenVG*${SOLIBSDEV} ${libdir}/pkgconfig/vg.pc"
 
-FILES_libvdk-imx = "${libdir}/libVDK${SOLIBS}"
+FILES_libvdk-imx = "${libdir}/libVDK*${SOLIBS}"
 FILES_libvdk-imx-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
+INSANE_SKIP_libvdk-imx += "dev-so"
 
 FILES_libvivante-dri-imx = "${libdir}/dri/vivante_dri.so"
 RDEPENDS_libvivante-dri-imx = "libdrm"
