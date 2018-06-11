@@ -1,5 +1,5 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright (C) 2012-2016 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2018 O.S. Systems Software LTDA.
 # Copyright 2017 NXP
 
 DESCRIPTION = "Platform specific libraries for imx platform"
@@ -13,9 +13,9 @@ PE = "1"
 
 PV = "5.8+${SRCPV}"
 
-SRCBRANCH = "nxp/imx_4.9.11_1.0.0_ga"
+SRCBRANCH = "master"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "f5f14fc24581e5d6e689f42a56b5f2992f978ef4"
+SRCREV = "3f777974c0c146817e2ff5cb0340ca66a1f99e57"
 
 S = "${WORKDIR}/git"
 
