@@ -1,11 +1,12 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2017 NXP
+# Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia VPU wrapper"
 DEPENDS = "virtual/imxvpu"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=08fd295cce89b0a9c74b9b83ed74f671"
+LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
 # For backwards compatibility
 PROVIDES += "libfslvpuwrap"
@@ -15,8 +16,8 @@ RCONFLICTS_${PN} = "libfslvpuwrap"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "bd832f70ef90dbbdc5a24e2a1eefc71f"
-SRC_URI[sha256sum] = "cd49a4d9379c2d3ffd71a4c8e81dcb30097d43899d11ccaa77ec981dbdec596b"
+SRC_URI[md5sum] = "ebcafcd76ec7c5b7cb9ba084da2b5612"
+SRC_URI[sha256sum] = "5c08b4b7c771404c998779f0e27a75564b57958d463e2df152c910d76cca9e44"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
