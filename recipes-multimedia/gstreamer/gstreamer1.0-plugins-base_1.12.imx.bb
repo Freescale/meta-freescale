@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c54ce9345727175ff66d17b67ff51f58 \
                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.03.04_1801_L4.9.51_MX8M_GA"
+SRCBRANCH = "MM_04.03.05_1804_L4.9.88_MX7ULP_GA"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
@@ -16,7 +16,7 @@ SRC_URI = " \
     file://0003-riff-add-missing-include-directories-when-calling-in.patch \
     file://0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch \
 "
-SRCREV = "3a615cab2e22e133048157ba107dc6c24e08c7e0"
+SRCREV = "7b637f65e7ce2b03c5adb7624501e74c575ac0f2"
 
 DEFAULT_PREFERENCE = "-1"
 
