@@ -1,0 +1,17 @@
+Upstream-Status: Inappropriate [configuration]
+
+Index: git/Makefile
+===================================================================
+--- git.orig/Makefile
++++ git/Makefile
+@@ -168,8 +168,8 @@ install-bin: all $(SCRIPTS)
+ install-lib: all
+ 	@$(VECHO) INSTALL-LIB
+ 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)
+-	$(INSTALL) $(LIBFDT_lib) $(DESTDIR)$(LIBDIR)
+-	ln -sf $(notdir $(LIBFDT_lib)) $(DESTDIR)$(LIBDIR)/$(LIBFDT_soname)
++	$(INSTALL) $(LIBFDT_lib) $(DESTDIR)$(LIBDIR)/$(LIBFDT_soname)
++	ln -sf $(LIBFDT_soname) $(DESTDIR)$(LIBDIR)/$(notdir $(LIBFDT_lib))
+ 	ln -sf $(LIBFDT_soname) $(DESTDIR)$(LIBDIR)/libfdt.$(SHAREDLIB_EXT)
+ 	$(INSTALL) -m 644 $(LIBFDT_archive) $(DESTDIR)$(LIBDIR)
+ 
