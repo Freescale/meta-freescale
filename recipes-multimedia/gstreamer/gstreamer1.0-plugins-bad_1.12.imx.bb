@@ -27,14 +27,14 @@ EXTRA_OECONF_remove = " --disable-sdl --disable-nas --disable-libvisual --disabl
 "
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.03.04_1801_L4.9.51_MX8M_GA"
+SRCBRANCH = "MM_04.03.05_1804_L4.9.88_MX7ULP_GA"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
     file://0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch \
 "
 
-SRCREV = "a755b8a4570265a041ec0867629c6bade338b4d9"
+SRCREV = "3bf09ef9cda8220b53459b45fe5384a99a7b1c6b"
 
 DEFAULT_PREFERENCE = "-1"
 
