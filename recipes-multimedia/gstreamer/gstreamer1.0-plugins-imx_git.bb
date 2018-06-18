@@ -1,3 +1,4 @@
+# Copyright (C) 2018 O.S. Systems Software LTDA.
 DESCRIPTION = "GStreamer 1.0 plugins for i.MX platforms"
 LICENSE = "LGPLv2+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
@@ -13,8 +14,10 @@ RDEPENDS_gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-good"
 RDEPENDS_gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
 RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
+PV = "0.13.0+git${SRCPV}"
+
 SRCBRANCH ?= "master"
-SRCREV = "048d596dfc657f16d235029c39221b0a118e5c87"
+SRCREV = "963aea60b135d40236411357eb0b2de15eac9af5"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
