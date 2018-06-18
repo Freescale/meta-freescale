@@ -1,5 +1,6 @@
-# Copyright (C) 2012-2015 Freescale Semiconductor
-# Copyright (C) 2012-2016 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2016 Freescale Semiconductor
+# Copyright (C) 2012-2018 O.S. Systems Software LTDA.
+# Copyright 2017-2018 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require recipes-graphics/xorg-driver/xorg-driver-video.inc
@@ -12,6 +13,8 @@ DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv virtua
 
 LIC_FILES_CHKSUM = "file://COPYING-MIT;md5=b5e9d9f5c02ea831ab3ecf802bb7c4f3"
 
+SRCREV = "946e8603ed9a52f36d305405dbb2ab8ff90943d0"
+SRCBRANCH = "imx_exa_viv6_g2d"
 SRC_URI = "git://source.codeaurora.org/external/imx/xf86-video-imx-vivante.git;protocol=https;branch=${SRCBRANCH} \
            file://rc.autohdmi"
 
@@ -21,36 +24,25 @@ INITSCRIPT_PACKAGES = "xserver-xorg-extension-viv-autohdmi"
 INITSCRIPT_NAME = "rc.autohdmi"
 INITSCRIPT_PARAMS = "start 99 2 3 4 5 ."
 
-EXTRA_OEMAKE += "prefix=${D}/usr \
+EXTRA_OEMAKE += "prefix=${exec_prefix} \
                  sysroot=${STAGING_DIR_TARGET} \
+                 SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
                  LFLAGS="${LDFLAGS}" \
                  BUSID_HAS_NUMBER=1 \
                  BUILD_IN_YOCTO=1 \
                  XSERVER_GREATER_THAN_13=1"
 
-CFLAGS += "-I${STAGING_INCDIR}/xorg \
-           -I${STAGING_INCDIR}/drm \
-           -I../../DRI_1.10.4/src"
-
 PACKAGES =+ "xserver-xorg-extension-viv-autohdmi"
 
-# FIXME: The Freescale provided Makefile has hardcodec include paths
-#        and this does not work in case prefix is different than /usr,
-#        sed it.
-do_configure_prepend () {
-    sed -i 's,$(sysroot)/usr/include,${STAGING_INCDIR},g' \
-            ${S}EXA/src/makefile.linux
-}
-
 do_install_append () {
-	install -d ${D}${includedir}
-	cp -axr ${S}/EXA/src/vivante_gal/vivante_priv.h ${D}${includedir}
-	cp -axr ${S}/EXA/src/vivante_gal/vivante_gal.h ${D}${includedir}
+    install -d ${D}${includedir}
+    cp -axr ${S}/EXA/src/vivante_gal/vivante_priv.h ${D}${includedir}
+    cp -axr ${S}/EXA/src/vivante_gal/vivante_gal.h ${D}${includedir}
 
-	install -d ${D}/${sysconfdir}/init.d
-	install -m 755 ${WORKDIR}/rc.autohdmi ${D}/${sysconfdir}/init.d/rc.autohdmi
+    install -d ${D}/${sysconfdir}/init.d
+    install -m 755 ${WORKDIR}/rc.autohdmi ${D}/${sysconfdir}/init.d/rc.autohdmi
 
-	find ${D}${includedir} -type f -exec chmod 660 {} \;
+    find ${D}${includedir} -type f -exec chmod 660 {} \;
 }
 
 RDEPENDS_${PN} += "libvivante-dri-imx \
