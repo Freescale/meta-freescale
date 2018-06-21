@@ -56,16 +56,16 @@ DEFAULTTUNE_vf ?= "cortexa5thf-neon"
 
 INHERIT += "machine-overrides-extender"
 
-MACHINEOVERRIDES_EXTENDER_mx25  = "use-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER_mx6q  = "imxipu:imxvpu:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER_mx6dl = "imxpxp:imxipu:imxvpu:imxgpu2d:imxgpu3d:imxepdc"
-MACHINEOVERRIDES_EXTENDER_mx6sx = "imxpxp:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER_mx6sl = "imxpxp:imxgpu2d:imxepdc"
-MACHINEOVERRIDES_EXTENDER_mx6sll  = "imxpxp:imxepdc"
-MACHINEOVERRIDES_EXTENDER_mx6ul = "imxpxp"
+MACHINEOVERRIDES_EXTENDER_mx25   = "use-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER_mx6q   = "imxipu:imxvpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx6dl  = "imxpxp:imxipu:imxvpu:imxgpu2d:imxgpu3d:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx6sx  = "imxpxp:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx6sl  = "imxpxp:imxgpu2d:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx6sll = "imxpxp:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx6ul  = "imxpxp"
 MACHINEOVERRIDES_EXTENDER_mx6ull = "imxpxp:imxepdc"
-MACHINEOVERRIDES_EXTENDER_mx7d  = "imxpxp:imxepdc"
-MACHINEOVERRIDES_EXTENDER_mx7ulp  = "imxpxp:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx7d   = "imxpxp:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx7ulp = "imxpxp:imxgpu2d:imxgpu3d"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx6 \
@@ -100,13 +100,40 @@ MACHINE_SOCARCH_SUFFIX_mx6ull = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER_append_imx = " alsa-lib"
-MACHINE_SOCARCH_FILTER_append_imxvpu = " imx-vpu libimxvpuapi imx-codec imx-vpuwrap imx-parser"
-MACHINE_SOCARCH_FILTER_append_imxgpu2d = " virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango weston gstreamer1.0-plugins-bad"
-MACHINE_SOCARCH_FILTER_append_imxpxp = " imx-codec imx-parser"
+MACHINE_SOCARCH_FILTER_append_imx = " \
+    alsa-lib \
+"
+MACHINE_SOCARCH_FILTER_append_imxvpu = " \
+    imx-codec \
+    imx-parser \
+    imx-vpu \
+    imx-vpuwrap \
+    libimxvpuapi \
+"
+MACHINE_SOCARCH_FILTER_append_imxgpu2d = " \
+    virtual/egl \
+    virtual/mesa \
+    virtual/libg2d \
+    virtual/libgl \
+    virtual/libgles1 \
+    virtual/libgles2 \
+    virtual/libopenvg \
+    cairo \
+    gstreamer1.0-plugins-bad \
+    pango \
+    weston \
+"
 MACHINE_SOCARCH_FILTER_append_use-mainline-bsp = " \
+    virtual/egl \
+    virtual/libopenvg \
+    virtual/libg2d \
+    virtual/libgl \
+    virtual/libgles1 \
+    virtual/libgles2 \
+    virtual/mesa \
+    cairo \
+    pango \
     qtbase \
-    virtual/libopenvg virtual/libgles1 virtual/libgles2 virtual/egl virtual/mesa virtual/libgl virtual/libg2d cairo pango \
 "
 
 INHERIT += "fsl-dynamic-packagearch"
