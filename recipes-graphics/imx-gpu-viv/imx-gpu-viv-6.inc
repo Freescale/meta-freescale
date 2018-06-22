@@ -51,6 +51,8 @@ inherit fsl-eula-unpack
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
+IMX_PACKAGES_GBM     = ""
+IMX_PACKAGES_GBM_mx8 = "libgbm-imx libgbm-imx-dev"
 PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libgl-imx libgl-imx-dev \
 	libgles-imx libgles-imx-dev \
@@ -64,7 +66,7 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libgal-imx libgal-imx-dev \
 	libvivante-dri-imx \
 	libvsc-imx \
-	libgbm-imx libgbm-imx-dev \
+	${IMX_PACKAGES_GBM} \
 	libwayland-viv-imx libwayland-viv-imx-dev \
 	libgc-wayland-protocol-imx libgc-wayland-protocol-imx-dev \
 	libwayland-egl-imx-dev \
@@ -122,9 +124,16 @@ python __anonymous() {
 IS_MX6SL = "0"
 IS_MX6SL_mx6sl = "1"
 
+IS_MX8 = "0"
+IS_MX8_mx8 = "1"
+
 PACKAGE_FP_TYPE = "hardfp"
 
-GLES3_HEADER_REMOVALS = "gl31.h gl32.h"
+HAS_GBM     = "false"
+HAS_GBM_mx8 = "true"
+
+GLES3_HEADER_REMOVALS       = "gl31.h gl32.h"
+GLES3_HEADER_REMOVALS_mx8mq = "gl32.h"
 
 do_install () {
     install -d ${D}${libdir}
@@ -140,6 +149,9 @@ do_install () {
     rm -rf ${D}${includedir}/vulkan/
 
     install -d ${D}${libdir}/pkgconfig
+    if ${HAS_GBM}; then
+        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gbm.pc ${D}${libdir}/pkgconfig/gbm.pc
+    fi
 
     # The preference order, based in DISTRO_FEATURES, is Wayland (with or without X11), X11 and fb
     if [ "${USE_WL}" = "yes" ]; then
@@ -213,6 +225,14 @@ do_install () {
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so.2
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
+    if [ "${IS_MX8}" = "1" ]; then
+        # Install the vulkan driver in a sub-folder. When installed in the same
+        # folder as the vulkan loader layer library, an incorrect linkage is
+        # created from libvulkan.so.1 to our library instead of the loader
+        # layer library.
+        install -d ${D}${libdir}/vulkan
+        mv ${D}${libdir}/libvulkan-${backend}.so ${D}${libdir}/vulkan/libvulkan_VSI.so
+    fi
     for header in ${GLES3_HEADER_REMOVALS}; do
         rm -f ${D}${includedir}/GLES3/${header}
     done
@@ -277,9 +297,9 @@ INSANE_SKIP_libgal-imx += "build-deps"
 
 FILES_libvsc-imx = "${libdir}/libVSC${SOLIBS}"
 
-FILES_libgbm-imx = "${libdir}/libgbm${SOLIBS} ${libdir}/gbm_viv${SOLIBS}"
-FILES_libgbm-imx-dev = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h ${libdir}/libgbm${SOLIBSDEV}"
-RDEPENDS_libgbm-imx += "libdrm"
+FILES_libgbm-imx_mx8           = "${libdir}/libgbm${SOLIBS} ${libdir}/gbm_viv${SOLIBS}"
+FILES_libgbm-imx-dev_mx8       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h ${libdir}/libgbm${SOLIBSDEV}"
+RDEPENDS_libgbm-imx_append_mx8 = " libdrm"
 
 FILES_libvulkan-imx = "${libdir}/vulkan/libvulkan_VSI${SOLIBS}"
 FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/vulkan/libvulkan_VSI${SOLIBSDEV}"
@@ -345,4 +365,4 @@ FILES_imx-gpu-viv-tools = "${bindir}/gmem_info"
 FILES_imx-gpu-viv-demos = "/opt"
 INSANE_SKIP_imx-gpu-viv-demos += "rpaths dev-deps"
 
-# COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl)"
+# COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx8)"
