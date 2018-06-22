@@ -7,7 +7,7 @@ DESCRIPTION = "G2D graphics library and apps for i.MX 6 and i.MX 7 GPU"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
-DEPENDS += "virtual/libgal-x11"
+DEPENDS += "libgal-imx"
 PROVIDES += "virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
