@@ -6,7 +6,7 @@ DESCRIPTION = "G2D graphics library and apps for i.MX with DRM"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
-RDEPENDS_${PN} = "virtual/libgal-x11 libdrm"
+RDEPENDS_${PN} = "libgal-imx libdrm"
 
 PROVIDES += "virtual/libg2d"
 

@@ -120,6 +120,7 @@ MACHINE_SOCARCH_FILTER_append_imxgpu2d = " \
     virtual/libopenvg \
     cairo \
     gstreamer1.0-plugins-bad \
+    libgal-imx \
     pango \
     weston \
 "

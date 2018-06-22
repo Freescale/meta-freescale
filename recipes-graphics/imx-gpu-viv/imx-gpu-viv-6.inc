@@ -32,7 +32,7 @@ EXTRA_PROVIDES_append_imxgpu3d = " \
 "
 PROVIDES += " \
     imx-gpu-viv \
-    virtual/libgal-x11 \
+    libgal-imx \
     opencl-headers \
     virtual/egl \
     virtual/libopenvg \

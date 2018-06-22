@@ -9,7 +9,7 @@ PE = "3"
 
 inherit autotools-brokensep update-rc.d pkgconfig
 
-DEPENDS += "virtual/xserver virtual/libx11 virtual/libgal-x11 imx-gpu-viv virtual/libg2d pixman"
+DEPENDS += "virtual/xserver virtual/libx11 libgal-imx imx-gpu-viv virtual/libg2d pixman"
 
 LIC_FILES_CHKSUM = "file://COPYING-MIT;md5=b5e9d9f5c02ea831ab3ecf802bb7c4f3"
 
