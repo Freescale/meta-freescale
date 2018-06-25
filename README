@@ -31,7 +31,7 @@ Source code:
 
 When creating patches, please use something like:
 
-    git format-patch -s origin
+    git format-patch -s --subject-prefix='PATCH][sumo' -1
 
 When sending patches, please use something like:
 
