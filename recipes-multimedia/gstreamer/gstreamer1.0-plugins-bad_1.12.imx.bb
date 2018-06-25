@@ -36,6 +36,8 @@ SRC_URI = " \
 
 SRCREV = "a755b8a4570265a041ec0867629c6bade338b4d9"
 
+DEFAULT_PREFERENCE = "-1"
+
 # This remove "--exclude=autopoint" option from autoreconf argument to avoid
 # configure.ac:30: error: required file './ABOUT-NLS' not found
 EXTRA_AUTORECONF = ""
