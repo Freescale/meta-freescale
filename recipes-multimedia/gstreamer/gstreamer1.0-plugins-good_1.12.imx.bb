@@ -13,6 +13,8 @@ SRC_URI = " \
 "
 SRCREV = "b2c850f295a0fe49310fb60784ac6af4a29bceae"
 
+DEFAULT_PREFERENCE = "-1"
+
 EXTRA_AUTORECONF = ""
 
 S = "${WORKDIR}/git"
