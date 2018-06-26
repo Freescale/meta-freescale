@@ -49,6 +49,7 @@ PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev
 # drm is not supported on mx6/mx7
 PACKAGECONFIG_remove_mx6 = "kms"
 PACKAGECONFIG_remove_mx7 = "kms"
+PACKAGECONFIG_append_imxgpu2d = " imxg2d"
 #
 # Compositor choices
 #
@@ -84,6 +85,8 @@ PACKAGECONFIG[colord] = "--enable-colord,--disable-colord,colord"
 PACKAGECONFIG[clients] = "--enable-clients --enable-simple-clients --enable-demo-clients-install,--disable-clients --disable-simple-clients"
 # Weston with PAM support
 PACKAGECONFIG[pam] = "--with-pam,--without-pam,libpam"
+# Weston with i.MX G2D renderer
+PACKAGECONFIG[imxg2d] = "--enable-imxg2d,--disable-imxg2d,virtual/libg2d"
 
 do_install_append() {
 	# Weston doesn't need the .la files to load modules, so wipe them
