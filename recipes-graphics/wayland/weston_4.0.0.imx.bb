@@ -19,8 +19,10 @@ S = "${WORKDIR}/git"
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
 
 inherit autotools pkgconfig useradd distro_features_check
-# depends on virtual/egl
-REQUIRED_DISTRO_FEATURES = "opengl"
+# Disable OpenGL for parts with GPU support for 2D but not 3D
+REQUIRED_DISTRO_FEATURES          = "opengl"
+REQUIRED_DISTRO_FEATURES_imxgpu2d = ""
+REQUIRED_DISTRO_FEATURES_imxgpu3d = "opengl"
 
 DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 jpeg"
 DEPENDS += "wayland wayland-protocols libinput virtual/egl pango wayland-native"
@@ -44,7 +46,7 @@ EXTRA_OECONF_append_mx7 = "\
 		"
 PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev wayland egl', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
-                   ${@bb.utils.filter('DISTRO_FEATURES', 'pam systemd x11', d)} \
+                   ${@bb.utils.filter('DISTRO_FEATURES', 'opengl pam systemd x11', d)} \
                    clients launch"
 # drm is not supported on mx6/mx7
 PACKAGECONFIG_remove_mx6 = "kms"
@@ -88,6 +90,8 @@ PACKAGECONFIG[clients] = "--enable-clients --enable-simple-clients --enable-demo
 PACKAGECONFIG[pam] = "--with-pam,--without-pam,libpam"
 # Weston with i.MX G2D renderer
 PACKAGECONFIG[imxg2d] = "--enable-imxg2d,--disable-imxg2d,virtual/libg2d"
+# Weston with OpenGL support
+PACKAGECONFIG[opengl] = "--enable-opengl,--disable-opengl"
 
 do_install_append() {
 	# Weston doesn't need the .la files to load modules, so wipe them
