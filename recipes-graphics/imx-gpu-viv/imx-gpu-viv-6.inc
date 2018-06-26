@@ -12,11 +12,11 @@ DEPENDS += " \
        bb.utils.contains('DISTRO_FEATURES',     'x11', 'virtual/libx11 libxdamage libxext libxfixes', \
                                                        '', d), d)} \
 "
-DEPENDS += "libdrm"
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES',     'x11', 'libxcb libxshmfence libxxf86vm', \
                                                        '', d)} \
 "
+DEPENDS_append_imxdrm = " libdrm wayland"
 
 # imx-gpu-viv does not provide everything it needs to for virtual/libgl
 # on x11 backend or on Wayland backend with XWayland support.
