@@ -50,6 +50,7 @@ PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev
 PACKAGECONFIG_remove_mx6 = "kms"
 PACKAGECONFIG_remove_mx7 = "kms"
 PACKAGECONFIG_append_imxgpu2d = " imxg2d"
+PACKAGECONFIG_append_imxgpu3d = " cairo-glesv2"
 #
 # Compositor choices
 #
