@@ -36,10 +36,19 @@ EXTRA_OECONF_append_qemux86 = "\
 EXTRA_OECONF_append_qemux86-64 = "\
 		WESTON_NATIVE_BACKEND=fbdev-backend.so \
 		"
+EXTRA_OECONF_append_mx6 = "\
+		WESTON_NATIVE_BACKEND=fbdev-backend.so \
+		"
+EXTRA_OECONF_append_mx7 = "\
+		WESTON_NATIVE_BACKEND=fbdev-backend.so \
+		"
 PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev wayland egl', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
                    ${@bb.utils.filter('DISTRO_FEATURES', 'pam systemd x11', d)} \
                    clients launch"
+# drm is not supported on mx6/mx7
+PACKAGECONFIG_remove_mx6 = "kms"
+PACKAGECONFIG_remove_mx7 = "kms"
 #
 # Compositor choices
 #
