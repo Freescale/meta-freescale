@@ -15,5 +15,6 @@ PACKAGECONFIG_remove        = "${PACKAGECONFIG_IMX_TO_REMOVE}"
 PACKAGECONFIG_IMX_TO_APPEND               = ""
 PACKAGECONFIG_IMX_TO_APPEND_append_imxgpu = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland vg', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES',     'x11',       'glut', '', d)} \
 "
 PACKAGECONFIG_append = "${PACKAGECONFIG_IMX_TO_APPEND}"
