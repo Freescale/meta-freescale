@@ -20,7 +20,7 @@ DEPENDS_append_qoriq-ppc = " boot-format-native"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;nobranch=1 \
 "
-SRCREV = "00cde476c84275124a51cb55a53a253cd75fba6c"
+SRCREV = "11abda97baeb57109b20c99a1edad6f8205bedbc"
 
 S = "${WORKDIR}/git"
 
