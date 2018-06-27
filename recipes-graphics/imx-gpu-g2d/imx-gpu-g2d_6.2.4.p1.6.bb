@@ -35,4 +35,4 @@ FILES_${PN} = "${libdir}/libg2d* /opt"
 FILES_${PN}-dev = "${includedir}"
 INSANE_SKIP_${PN} = "ldflags"
 
-COMPATIBLE_MACHINE = "(mx6|mx7ulp)"
+COMPATIBLE_MACHINE = "(imxgpu2d)"
