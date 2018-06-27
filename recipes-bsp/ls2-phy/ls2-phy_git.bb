@@ -1,11 +1,11 @@
 SUMMARY = "Firmwares and Standalone Applications"
 LICENSE = "NXP-Binary-EULA"
-LIC_FILES_CHKSUM = "file://NXP-EULA;md5=d969f2c93b3905d4b628787ce5f8df4b"
+LIC_FILES_CHKSUM = "file://EULA.txt;md5=86d76166990962fa552f840ff08e5798"
 
 inherit deploy
 
 SRC_URI = "git://github.com/nxp/qoriq-firmware-cortina.git;nobranch=1"
-SRCREV = "d5b5263eb42f8897eb679a6a30793f4df6df038d"
+SRCREV = "9143c2a3adede595966583c00ca4edc99ec698cf"
 
 S = "${WORKDIR}/git"
 
