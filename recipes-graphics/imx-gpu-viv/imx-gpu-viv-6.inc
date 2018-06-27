@@ -29,7 +29,7 @@ EXTRA_PROVIDES_append_imxgpu3d = " \
     virtual/libgles1 \
     virtual/libgles2 \
 "
-"
+
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
