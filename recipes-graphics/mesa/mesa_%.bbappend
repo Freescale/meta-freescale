@@ -1,7 +1,7 @@
-PACKAGECONFIG_remove_imxgpu2d = "egl gles gbm"
-
-PROVIDES_remove_imxgpu2d = "virtual/libgles1 virtual/libgles2 virtual/libopenvg virtual/egl virtual/libgbm"
+PROVIDES_remove_imxgpu2d = "virtual/libgles1 virtual/libgles2 virtual/egl"
 PROVIDES_remove_imxgpu3d = "virtual/libgl"
+
+PACKAGECONFIG_remove_imxgpu2d = "egl gles gbm"
 
 # FIXME: mesa should support 'x11-no-tls' option
 python () {
