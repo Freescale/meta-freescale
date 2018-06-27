@@ -12,7 +12,7 @@ inherit kernel-arch
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cst;nobranch=1 \
     file://0001-gen_otpmk_drbg-fails-compilation-due-to-uninitialize.patch \
 "
-SRCREV = "20b9a6e3d454c37ed323bfcc4c87879760c90836"
+SRCREV = "e9abf79077fc8faf976e9a3c46a38111aa5b2e69"
 
 S = "${WORKDIR}/git"
 
