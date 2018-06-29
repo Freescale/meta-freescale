@@ -1,7 +1,8 @@
-PACKAGECONFIG_remove_imxgpu2d = "egl gles gbm"
+PROVIDES_remove_imxgpu   = "virtual/egl"
+PROVIDES_remove_imxgpu3d = "virtual/libgl virtual/libgles1 virtual/libgles2"
 
-PROVIDES_remove_imxgpu2d = "virtual/libgles1 virtual/libgles2 virtual/libopenvg virtual/egl virtual/libgbm"
-PROVIDES_remove_imxgpu3d = "virtual/libgl"
+PACKAGECONFIG_remove_imxgpu   = "egl gbm"
+PACKAGECONFIG_remove_imxgpu3d = "gles"
 
 # FIXME: mesa should support 'x11-no-tls' option
 python () {
@@ -34,10 +35,9 @@ do_install_append_imxgpu3d () {
     fi
 }
 
-do_install_append_imxgpu2d () {
-    rm -f ${D}${libdir}/pkgconfig/wayland-egl.pc
-}
-
-do_install_append_imxgpu2d () {
-    rm -f ${D}${libdir}/pkgconfig/wayland-egl.pc
+do_install_append_imxgpu () {
+    rm -f ${D}${includedir}/KHR
+    if [ "${BACKEND}" = "wayland" ]; then
+        rm -f ${D}${libdir}/pkgconfig/wayland-egl.pc
+    fi
 }

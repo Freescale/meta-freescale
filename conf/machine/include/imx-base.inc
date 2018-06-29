@@ -57,15 +57,15 @@ DEFAULTTUNE_vf ?= "cortexa5thf-neon"
 INHERIT += "machine-overrides-extender"
 
 MACHINEOVERRIDES_EXTENDER_mx25   = "use-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER_mx6q   = "imxipu:imxvpu:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER_mx6dl  = "imxpxp:imxipu:imxvpu:imxgpu2d:imxgpu3d:imxepdc"
-MACHINEOVERRIDES_EXTENDER_mx6sx  = "imxpxp:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER_mx6sl  = "imxpxp:imxgpu2d:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx6q   = "imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx6dl  = "imxpxp:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxepdc"
+MACHINEOVERRIDES_EXTENDER_mx6sx  = "imxpxp:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx6sl  = "imxpxp:imxgpu:imxgpu2d:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx6sll = "imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx6ul  = "imxpxp"
 MACHINEOVERRIDES_EXTENDER_mx6ull = "imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx7d   = "imxpxp:imxepdc"
-MACHINEOVERRIDES_EXTENDER_mx7ulp = "imxpxp:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx7ulp = "imxpxp:imxgpu:imxgpu2d:imxgpu3d"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx6 \
@@ -110,19 +110,24 @@ MACHINE_SOCARCH_FILTER_append_imxvpu = " \
     imx-vpuwrap \
     libimxvpuapi \
 "
-MACHINE_SOCARCH_FILTER_append_imxgpu2d = " \
+MACHINE_SOCARCH_FILTER_append_imxgpu = " \
     virtual/egl \
     virtual/mesa \
-    virtual/libg2d \
-    virtual/libgl \
-    virtual/libgles1 \
-    virtual/libgles2 \
     virtual/libopenvg \
+    libdrm \
     cairo \
     gstreamer1.0-plugins-bad \
     libgal-imx \
     pango \
     weston \
+"
+MACHINE_SOCARCH_FILTER_append_imxgpu2d = " \
+￼    virtual/libg2d \
+"
+MACHINE_SOCARCH_FILTER_append_imxgpu3d = " \
+    virtual/libgl \
+    virtual/libgles1 \
+    virtual/libgles2 \
 "
 MACHINE_SOCARCH_FILTER_append_use-mainline-bsp = " \
     virtual/egl \
@@ -191,19 +196,15 @@ MACHINE_GSTREAMER_1_0_PLUGIN_mx6ull ?= "gstreamer1.0-plugins-imx-meta"
 MACHINE_GSTREAMER_1_0_PLUGIN_mx7d ?= "gstreamer1.0-plugins-imx-meta"
 
 # Determines if the SoC has support for Vivante kernel driver
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT       = "0"
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6q  = "1"
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6dl = "1"
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6sx = "1"
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx6sl = "1"
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx7ulp = "1"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_imxgpu = "1"
 
 # Handle Vivante kernel driver setting:
 #   0 - machine does not have Vivante GPU driver support
 #   1 - machine has Vivante GPU driver support
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ?= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
 
-# mx6 GPU libraries
+# GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/egl_mx6dl ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/egl_mx6sx ?= "imx-gpu-viv"
@@ -248,6 +249,10 @@ PREFERRED_PROVIDER_virtual/libg2d_mx7ulp ?= "imx-gpu-viv"
 
 PREFERRED_VERSION_weston_mx6 ?= "2.0.0"
 PREFERRED_VERSION_weston_mx7 ?= "2.0.0"
+
+# Use i.MX libdrm Version
+PREFERRED_VERSION_libdrm_mx6 ?= "2.4.84.imx"
+PREFERRED_VERSION_libdrm_mx7 ?= "2.4.84.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
