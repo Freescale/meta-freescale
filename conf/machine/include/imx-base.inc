@@ -118,6 +118,7 @@ MACHINE_SOCARCH_FILTER_append_imxgpu2d = " \
     virtual/libgles1 \
     virtual/libgles2 \
     virtual/libopenvg \
+    libdrm \
     cairo \
     gstreamer1.0-plugins-bad \
     libgal-imx \
@@ -203,7 +204,7 @@ SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT_mx7ulp = "1"
 #   1 - machine has Vivante GPU driver support
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ?= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
 
-# mx6 GPU libraries
+# GPU libraries
 PREFERRED_PROVIDER_virtual/egl_mx6q ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/egl_mx6dl ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/egl_mx6sx ?= "imx-gpu-viv"
@@ -248,6 +249,10 @@ PREFERRED_PROVIDER_virtual/libg2d_mx7ulp ?= "imx-gpu-viv"
 
 PREFERRED_VERSION_weston_mx6 ?= "2.0.0"
 PREFERRED_VERSION_weston_mx7 ?= "2.0.0"
+
+# Use i.MX libdrm Version
+PREFERRED_VERSION_libdrm_mx6 ?= "2.4.84.imx"
+PREFERRED_VERSION_libdrm_mx7 ?= "2.4.84.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
