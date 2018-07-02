@@ -2,7 +2,7 @@ SUMMARY = "DPAA2 Management Complex Firmware"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=afcb1213054384820390d410ab62105f"
 
-nherit deploy
+inherit deploy
 
 INHIBIT_DEFAULT_DEPS = "1"
 
