@@ -49,7 +49,7 @@ python machine_overrides_extender_handler() {
     d.renameVar("MACHINEOVERRIDES", "PRISTINE_MACHINEOVERRIDES")
 
     # Now we add our own function intercept in instead
-    d.setVar("MACHINEOVERRIDES", "${@machine_overrides_extender(d)}:")
+    d.setVar("MACHINEOVERRIDES", "${@machine_overrides_extender(d)}")
 }
 
 machine_overrides_extender_handler[eventmask] = "bb.event.ConfigParsed"
