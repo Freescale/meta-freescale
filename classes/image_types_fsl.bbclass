@@ -11,15 +11,23 @@ MXSBOOT_NAND_ARGS ?= ""
 # U-Boot mxsboot generation for uSD
 do_image_uboot_mxsboot_sdcard[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                            u-boot:do_deploy"
-IMAGE_CMD_uboot-mxsboot-sdcard = "mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
-                                             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard"
+IMAGE_CMD_uboot-mxsboot-sdcard() {
+    mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
+               ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard
+    ln -sf ${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard \
+           ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.rootfs.uboot-mxsboot-sdcard
+}
 
 # U-Boot mxsboot generation for NAND
 do_image_uboot_mxsboot_nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                          u-boot:do_deploy"
-IMAGE_CMD_uboot-mxsboot-nand = "mxsboot ${MXSBOOT_NAND_ARGS} nand \
-                                             ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
-                                             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-nand"
+IMAGE_CMD_uboot-mxsboot-nand() {
+    mxsboot ${MXSBOOT_NAND_ARGS} nand \
+            ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
+            ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.uboot-mxsboot-nand
+    ln -sf ${IMAGE_NAME}.rootfs.uboot-mxsboot-nand \
+           ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.rootfs.uboot-mxsboot-nand
+}
 
 # In case we are building for i.MX23 or i.MX28 we need to have the
 # image stream built before the wic generation

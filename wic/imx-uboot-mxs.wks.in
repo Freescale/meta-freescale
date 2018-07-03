@@ -12,7 +12,7 @@
 # | |         |              |
 # 0 1kiB    4MiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
 #
-part u-boot --source rawcopy --sourceparams="file=${IMAGE_NAME}.rootfs.uboot-mxsboot-sdcard" --ondisk mmcblk --align 1024
+part u-boot --source rawcopy --sourceparams="file=${IMAGE_LINK_NAME}.rootfs.uboot-mxsboot-sdcard" --ondisk mmcblk --align 1024
 part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096
 
 bootloader --ptable msdos
