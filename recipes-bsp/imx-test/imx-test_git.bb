@@ -8,16 +8,7 @@ SECTION = "base"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
-DEPENDS_mx6q  = "virtual/kernel imx-lib"
-DEPENDS_mx6dl = "virtual/kernel imx-lib"
-DEPENDS_mx6sl = "virtual/kernel imx-lib"
-DEPENDS_mx6sll = "virtual/kernel imx-lib"
-DEPENDS_mx6sx = "virtual/kernel imx-lib"
-DEPENDS_mx6ul = "virtual/kernel imx-lib"
-DEPENDS_mx7d  = "virtual/kernel imx-lib"
-DEPENDS_mx7ulp = "virtual/kernel imx-lib"
-DEPENDS_append_imxvpu = " virtual/imxvpu"
-DEPENDS_append = " alsa-lib"
+DEPENDS  = "virtual/kernel imx-lib alsa-lib"
 
 PE = "1"
 PV = "7.0+${SRCPV}"
@@ -46,14 +37,14 @@ PLATFORM_mx6ul = "IMX6UL"
 PLATFORM_mx7d  = "IMX7D"
 PLATFORM_mx7ulp  = "IMX7D"
 
-PARALLEL_MAKE="-j 1"
+PARALLEL_MAKE = "-j 1"
+EXTRA_OEMAKE += "${PACKAGECONFIG_CONFARGS}"
 
-IMX_HAS_VPU         = "false"
-IMX_HAS_VPU_imxvpu  = "true"
-EXTRA_OEMAKE       += "HAS_VPU=${IMX_HAS_VPU}"
+PACKAGECONFIG = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
+PACKAGECONFIG_append_imxvpu = " vpu"
 
-PACKAGECONFIG ?= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
+PACKAGECONFIG[vpu] = "HAS_VPU=true,HAS_VPU=false,virtual/imxvpu"
 
 do_compile() {
     CFLAGS="${TOOLCHAIN_OPTIONS}"
