@@ -1,0 +1,25 @@
+From 7370e3004d56882652cb6d20b54c19b48b87f8a5 Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Thu, 5 Jul 2018 15:43:19 +0800
+Subject: [PATCH] fix gcc-8 build error
+
+Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
+---
+ Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Makefile b/Makefile
+index 7d06dba..fb763a5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -395,6 +395,7 @@ LINUXINCLUDE	+= $(filter-out $(LINUXINCLUDE),$(USERINCLUDE))
+ KBUILD_AFLAGS   := -D__ASSEMBLY__
+ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common \
++                   -Wno-packed-not-aligned -Wno-tautological-compare \
+ 		   -Werror-implicit-function-declaration \
+ 		   -Wno-format-security \
+ 		   -std=gnu89
+-- 
+1.8.3.1
+
