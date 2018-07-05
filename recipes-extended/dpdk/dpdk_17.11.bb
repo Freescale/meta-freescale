@@ -11,8 +11,9 @@ inherit module
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
+    file://0001-fix-gcc-8-build-error.patch \
 "
-SRCREV = "11d461d88390eb77bbf695eeddaad8e6f6cc25ce"
+SRCREV = "9448fe7ff3cf1367dbc92b05a9ae386b21ff7ad2"
 
 S = "${WORKDIR}/git"
 
@@ -40,12 +41,12 @@ do_install() {
     oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  WERROR_FLAGS="-w" V=1  T="${RTE_TARGET}" DESTDIR="${D}" install CONFIG_RTE_EAL_IGB_UIO=n CONFIG_RTE_KNI_KMOD=y CONFIG_RTE_LIBRTE_PMD_OPENSSL=y 
 
     # Build and install the DPDK examples
-    for APP in examples/l2fwd examples/l3fwd examples/l2fwd-crypto examples/ipsec-secgw examples/kni examples/ip_fragmentation examples/ip_reassembly; do
+    for APP in examples/l2fwd examples/l3fwd  examples/l2fwd-qdma examples/l2fwd-crypto examples/ipsec-secgw examples/kni examples/ip_fragmentation examples/ip_reassembly; do
         temp=`basename ${APP}` 
         if [ ${temp} = "ipsec-secgw" ] || [ ${temp} = "l2fwd-crypto" ]; then 
             oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C ${APP} CONFIG_RTE_LIBRTE_PMD_OPENSSL=y
         else 
-            oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu"  -C ${APP}
+            oe_runmake EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu" EXTRA_CFLAGS="--sysroot=${STAGING_DIR_HOST} -I${STAGING_INCDIR}" -C ${APP}
         fi
 
         [ ! -d ${D}/${bindir}/dpdk-example ] && install -d 0644 ${D}/${bindir}/dpdk-example

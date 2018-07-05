@@ -1,0 +1,51 @@
+From 7409d0b89f80a72d91e02dc9ec688a01723c3c66 Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Wed, 4 Jul 2018 17:12:39 +0800
+Subject: [PATCH] fix gcc-8 build error
+
+Signed-off-by: Chunrong Guo <chunrong.guo@nxp.com>
+---
+ examples/ipsec-secgw/parser.c | 6 ++----
+ mk/toolchain/gcc/rte.vars.mk  | 2 +-
+ 2 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/examples/ipsec-secgw/parser.c b/examples/ipsec-secgw/parser.c
+index 9d0ea46..b2b30e4 100644
+--- a/examples/ipsec-secgw/parser.c
++++ b/examples/ipsec-secgw/parser.c
+@@ -544,8 +544,7 @@ parse_cfg_file(const char *cfg_filename)
+ 				goto error_exit;
+ 			}
+ 
+-			strncpy(str + strlen(str), oneline,
+-				strlen(oneline));
++			strcpy(str + strlen(str), oneline);
+ 
+ 			continue;
+ 		}
+@@ -557,8 +556,7 @@ parse_cfg_file(const char *cfg_filename)
+ 				cfg_filename, line_num);
+ 			goto error_exit;
+ 		}
+-		strncpy(str + strlen(str), oneline,
+-			strlen(oneline));
++		strcpy(str + strlen(str), oneline);
+ 
+ 		str[strlen(str)] = '\n';
+ 		if (cmdline_parse(cl, str) < 0) {
+diff --git a/mk/toolchain/gcc/rte.vars.mk b/mk/toolchain/gcc/rte.vars.mk
+index 3b907e2..cc63da8 100644
+--- a/mk/toolchain/gcc/rte.vars.mk
++++ b/mk/toolchain/gcc/rte.vars.mk
+@@ -75,7 +75,7 @@ WERROR_FLAGS := -W -Wall -Wstrict-prototypes -Wmissing-prototypes
+ WERROR_FLAGS += -Wmissing-declarations -Wold-style-definition -Wpointer-arith
+ WERROR_FLAGS += -Wcast-align -Wnested-externs -Wcast-qual
+ WERROR_FLAGS += -Wformat-nonliteral -Wformat-security
+-WERROR_FLAGS += -Wundef -Wwrite-strings
++WERROR_FLAGS += -Wundef -Wwrite-strings -Wno-cast-function-type 
+ 
+ ifeq ($(RTE_DEVEL_BUILD),y)
+ WERROR_FLAGS += -Werror
+-- 
+2.7.4
+
