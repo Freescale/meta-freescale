@@ -7,7 +7,7 @@ RDEPENDS_${PN} += "bash dtc"
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/restool;nobranch=1 \
     file://0001-restool-fix-build-error-with-gcc7.patch"
 
-SRCREV = "263474672c9a16d2bbb2dfb80d3fb6ce01ad87fd"
+SRCREV = "2815572ab25029a8fb47f0dc6a0b56ae5ff76713"
 
 S = "${WORKDIR}/git"
 
