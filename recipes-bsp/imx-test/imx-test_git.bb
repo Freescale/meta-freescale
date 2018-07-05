@@ -48,6 +48,10 @@ PLATFORM_mx7ulp  = "IMX7D"
 
 PARALLEL_MAKE="-j 1"
 
+IMX_HAS_VPU         = "false"
+IMX_HAS_VPU_imxvpu  = "true"
+EXTRA_OEMAKE       += "HAS_VPU=${IMX_HAS_VPU}"
+
 PACKAGECONFIG ?= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 
