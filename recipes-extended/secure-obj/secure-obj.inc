@@ -12,7 +12,7 @@ LDFLAGS += "${TOOLCHAIN_OPTIONS}"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/secure_obj;nobranch=1 \
 "
-SRCREV = "74befe01bda41f1c27b197ef2ab66e475e9a81b3"
+SRCREV = "24d31333bd50f212ac692db83a4a2d88d0dadb52"
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 export SECURE_STORAGE_PATH = "${S}/secure_storage_ta/ta/"
@@ -24,4 +24,4 @@ ALLOW_EMPTY_${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 PARALLEL_MAKE = ""
 INSANE_SKIP_${PN} = "ldflags"
-COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a|ls1088a)"
+COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a|ls1088a|ls1012a)"

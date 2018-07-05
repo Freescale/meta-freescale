@@ -9,6 +9,8 @@ export SECURE_STORAGE_PATH = "${S}/secure_storage_ta/ta/"
 export OPTEE_CLIENT_EXPORT = "${RECIPE_SYSROOT}/usr"
 export CROSS_COMPILE_HOST = "${CROSS_COMPILE}"
 export CROSS_COMPILE_TA = "${CROSS_COMPILE}"
+ARCH_qoriq-arm64 = "aarch64"
+ARCH_qoriq-arm = "arm"
 
 do_compile() {
         unset LDFLAGS
@@ -23,15 +25,18 @@ do_compile() {
 }
 
 do_install() {
-	install -d ${D}${bindir}/secure_obj
-        install -d ${D}${libdir}/secure_obj
+	install -d ${D}${bindir}
         install -d ${D}${includedir}
-        cp ${S}/secure_storage_ta/ta/b05bcf48-9732-4efa-a9e0-141c7c888c34.ta ${D}${bindir}/secure_obj
-        cp ${S}/securekey_lib/out/export/lib/libsecure_obj.so ${D}${libdir}/secure_obj
-        cp ${S}/secure_obj-openssl-engine/libeng_secure_obj.so ${D}${libdir}/secure_obj
-        cp ${S}/securekey_lib/out/export/app/* ${D}${bindir}/secure_obj
+        install -d ${D}${base_libdir}/optee_armtz
+        install -d ${D}${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines
+        cp ${S}/secure_storage_ta/ta/b05bcf48-9732-4efa-a9e0-141c7c888c34.ta ${D}${base_libdir}/optee_armtz
+        cp ${S}/securekey_lib/out/export/lib/libsecure_obj.so ${D}${libdir}
+        cp ${S}/secure_obj-openssl-engine/libeng_secure_obj.so ${D}${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines
+        cp ${S}/securekey_lib/out/export/app/* ${D}${bindir}
+        cp ${S}/secure_obj-openssl-engine/app/sobj_eng_app ${D}${bindir}
         cp ${S}/securekey_lib/out/export/include/*  ${D}${includedir}
-        cp ${S}/secure_obj-openssl-engine/app/sobj_eng_app ${D}${bindir}/secure_obj
 }
 
-FILES_${PN} += "${libdir}/secure_obj"
+FILES_${PN} += "${base_libdir}/optee_armtz ${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines"
+INSANE_SKIP_${PN} = "dev-deps ldflags"
+INSANE_SKIP_${PN}-dev = "ldflags dev-elf"
