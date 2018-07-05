@@ -8,6 +8,7 @@ inherit pythonnative systemd
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_client;nobranch=1 \
            file://0001-Respect-LDFLAGS-set-from-OE-build.patch \
+           file://0001-GCC-8-format-truncation-error.patch \
 "
 S = "${WORKDIR}/git"
 
