@@ -7,8 +7,9 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nobranch=1 \
+    file://0001-fix-gcc-8-build-error-for-linux-4.9.patch \
 "
-SRCREV = "58c55688e1beaad66bd5c2565dc699cc9862e25a"
+SRCREV = "c4881840f02f6070dede14a698e6feedd586be9b"
 
 S = "${WORKDIR}/git"
 
