@@ -40,4 +40,9 @@ do_install_append_imxgpu () {
     if [ "${BACKEND}" = "wayland" ]; then
         rm -f ${D}${libdir}/pkgconfig/wayland-egl.pc
     fi
+
+    # libwayland-egl has been moved to wayland 1.15+
+    rm -f ${D}${libdir}/libwayland-egl*
+    rm -f ${D}${libdir}/pkgconfig/wayland-egl.pc
+    rmdir --ignore-fail-on-non-empty ${D}${libdir}/pkgconfig
 }
