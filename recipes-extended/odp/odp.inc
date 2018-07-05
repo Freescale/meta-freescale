@@ -16,7 +16,7 @@ git://source.codeaurora.org/external/qoriq/qoriq-components/flib;nobranch=1;name
 
 SRC_URI += "file://0001-Fix-this-build-error.patch"
 
-SRCREV = "55abe6d74255d0de09c9fc013ce2a3d85cac526e"
+SRCREV = "0bda2c9736a72ef41a411e193bc31487ecce6731"
 
 SRCREV_qbman = "75ff61a7ca6acdbdbb780161b053cbcbc990f1be"
 SRCREV_rta = "bbab28b03ae21c52ce913f8b052acf53bd24ff5d"

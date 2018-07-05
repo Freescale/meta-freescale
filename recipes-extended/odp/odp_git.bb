@@ -28,7 +28,9 @@ EXTRA_OEMAKE = "CROSS_COMPILE="${TARGET_PREFIX}" \
                 SYSROOT="${STAGING_DIR_TARGET}" \
 "
 
-CFLAGS += "-Wno-format-truncation -Wno-maybe-uninitialized -Wno-implicit-fallthrough"
+CFLAGS += "-Wno-format-truncation -Wno-maybe-uninitialized -Wno-implicit-fallthrough -Wno-cpp -Wno-cast-function-type \
+          -Wno-stringop-truncation \
+"
 
 PACKAGECONFIG[perf] = "--enable-test-perf,,,"
 
