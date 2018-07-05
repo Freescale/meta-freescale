@@ -1,0 +1,25 @@
+From 844ce11967bca7b7f68c6cb459e02c9a10f32574 Mon Sep 17 00:00:00 2001
+From: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
+Date: Tue, 3 Jul 2018 15:06:29 +0800
+Subject: [PATCH] fix gcc8 build error
+
+---
+ Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index d6db01a..85d9d6c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -422,6 +422,8 @@ LINUXINCLUDE    := \
+ KBUILD_AFLAGS   := -D__ASSEMBLY__
+ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common -fshort-wchar \
++                   -Wno-packed-not-aligned \
++                   -Wno-tautological-compare \
+ 		   -Werror-implicit-function-declaration \
+ 		   -Wno-format-security \
+ 		   -std=gnu89
+-- 
+1.8.3.1
+
