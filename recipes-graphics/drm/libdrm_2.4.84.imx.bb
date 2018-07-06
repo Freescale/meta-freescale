@@ -20,7 +20,7 @@ SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
 SRC_URI_remove_mx8 = "file://drm-update-arm.patch"
 SRCREV = "8c8c46d41839035de605291bc1c26902011a74ac"
 
-DEFAULT_PREFERRENCE = "-1"
+DEFAULT_PREFERENCE = "-1"
 
 # IMX: Remove manpages which is added in pyro
 #inherit autotools pkgconfig manpages
