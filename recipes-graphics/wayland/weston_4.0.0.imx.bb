@@ -5,6 +5,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
                     file://libweston/compositor.c;endline=26;md5=e342df749174a8ee11065583157c7a38"
 
+DEFAULT_PREFERENCE = "-1"
+
 SRCBRANCH = "weston-imx-4.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
            file://weston.png \
