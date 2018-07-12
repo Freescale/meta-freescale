@@ -19,8 +19,9 @@ SRC_URI[sha256sum] = "9cd8c49a0bb1050afcfbcc7a677a348443fda4ecacb621cc6e38897619
 
 inherit fsl-eula-unpack autotools pkgconfig
 
-# Choose between Soft Float-Point and Hard Float-Point
-EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '--enable-fsw', d)}"
+# Choose between 32-bit and 64-bit binaries and between Soft Float-Point and Hard Float-Point
+EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', \
+                  bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '--enable-fsw', d), d)}"
 
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
