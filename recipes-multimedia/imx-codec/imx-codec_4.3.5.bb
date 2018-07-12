@@ -16,13 +16,14 @@ SRC_URI[sha256sum] = "6bb54f91c3ca18567e14d95d3858022dc9be00dc86e9edfdb544d1240a
 
 inherit fsl-eula-unpack autotools pkgconfig
 
-# Choose between Soft Float-Point and Hard Float-Point
-EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d)}"
+# Choose between 32-bit and 64-bit binaries and between Soft Float-Point and Hard Float-Point
+EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', \
+                   bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d), d)}"
 
 PACKAGECONFIG ?= ""
 PACKAGECONFIG_imxvpu = "vpu"
 
-PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,imx-vpu"
+PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 
 do_install_append() {
     # FIXME: This link points to nowhere
