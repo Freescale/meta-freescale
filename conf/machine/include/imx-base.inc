@@ -112,9 +112,9 @@ MACHINE_SOCARCH_FILTER_append_imx = " \
 MACHINE_SOCARCH_FILTER_append_imxvpu = " \
     imx-codec \
     imx-parser \
-    imx-vpu \
     imx-vpuwrap \
     libimxvpuapi \
+    virtual/imxvpu \
 "
 MACHINE_SOCARCH_FILTER_append_imxgpu = " \
     virtual/egl \
@@ -151,10 +151,10 @@ INHERIT += "fsl-dynamic-packagearch"
 
 SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS_append = " \
     imx-gpu-viv->kernel-module-imx-gpu-viv \
-    libimxvpuapi->imx-vpu \
-    imx-vpuwrap->imx-vpu \
-    imx-codec->imx-vpu \
-    imx-test->imx-vpu \
+    libimxvpuapi->virtual/imxvpu \
+    imx-vpuwrap->virtual/imxvpu \
+    imx-codec->virtual/imxvpu \
+    imx-test->virtual/imxvpu \
 "
 
 # Firmware
