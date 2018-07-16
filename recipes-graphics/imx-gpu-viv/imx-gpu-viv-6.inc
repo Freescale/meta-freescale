@@ -310,8 +310,6 @@ FILES_libopenvx-imx-dev = "${includedir}/VX ${libdir}/libopenVX${SOLIBSDEV}"
 
 FILES_libgl-imx = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL"
-# Includes GL headers from mesa
-RDEPENDS_libgl-imx-dev += "libgl-mesa-dev"
 
 # libEGL needs to open libGLESv1.so
 INSANE_SKIP_libgles-imx += "dev-so"
