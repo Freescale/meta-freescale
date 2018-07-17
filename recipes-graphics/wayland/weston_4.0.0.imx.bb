@@ -15,7 +15,7 @@ SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=http
            file://xwayland.weston-start \
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
 "
-SRCREV = "bf74309dd16d86537ff07eabf8b499cb2d25277d"
+SRCREV = "642006cbd89e7ae51a7ce672c899614814dc4ef0"
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
@@ -48,6 +48,7 @@ PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev
                    ${@bb.utils.filter('DISTRO_FEATURES', 'opengl pam systemd x11', d)} \
                    clients launch"
 PACKAGECONFIG_remove_imxfbdev = "kms"
+PACKAGECONFIG_append_imxgpu   = " imxgpu"
 PACKAGECONFIG_append_imxgpu2d = " imxg2d"
 PACKAGECONFIG_append_imxgpu3d = " cairo-glesv2"
 #
@@ -85,6 +86,8 @@ PACKAGECONFIG[colord] = "--enable-colord,--disable-colord,colord"
 PACKAGECONFIG[clients] = "--enable-clients --enable-simple-clients --enable-demo-clients-install,--disable-clients --disable-simple-clients"
 # Weston with PAM support
 PACKAGECONFIG[pam] = "--with-pam,--without-pam,libpam"
+# Weston with i.MX GPU support
+PACKAGECONFIG[imxgpu] = "--enable-imxgpu,--disable-imxgpu"
 # Weston with i.MX G2D renderer
 PACKAGECONFIG[imxg2d] = "--enable-imxg2d,--disable-imxg2d,virtual/libg2d"
 # Weston with OpenGL support
