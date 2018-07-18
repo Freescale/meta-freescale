@@ -3,6 +3,8 @@
 include conf/machine/include/fsl-default-settings.inc
 include conf/machine/include/fsl-default-versions.inc
 
+require conf/machine/include/utilities.inc
+
 # Set specific make target and binary suffix
 PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
 PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
@@ -291,7 +293,7 @@ IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
 IMAGE_BOOT_FILES ?= " \
     ${KERNEL_IMAGETYPE} \
-    ${KERNEL_DEVICETREE} \
+    ${@make_dtb_boot_files(d)} \
 "
 
 ### wic default support
