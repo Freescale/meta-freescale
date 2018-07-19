@@ -226,6 +226,10 @@ PREFERRED_VERSION_weston_mx6 ?= "4.0.0.imx"
 PREFERRED_VERSION_weston_mx7 ?= "4.0.0.imx"
 PREFERRED_VERSION_weston_mx8 ?= "4.0.0.imx"
 
+PREFERRED_VERSION_wayland-protocols_mx6 ?= "1.13.imx"
+PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.13.imx"
+PREFERRED_VERSION_wayland-protocols_mx8 ?= "1.13.imx"
+
 # Use i.MX libdrm Version
 PREFERRED_VERSION_libdrm_mx6 ?= "2.4.84.imx"
 PREFERRED_VERSION_libdrm_mx7 ?= "2.4.84.imx"
