@@ -10,3 +10,9 @@ SRCREV = "22a65c5331c22979d416738eb756b9541672e00d"
 S = "${WORKDIR}/git"
 
 BBCLASSEXTEND = "native nativesdk"
+
+# only install the dtc binary renamed to dtc-145
+do_install () {
+    install -d ${D}/${bindir}
+    install -m 755 dtc ${D}/${bindir}/dtc-145
+}
