@@ -5,7 +5,7 @@
 
 DESCRIPTION = "G2D graphics library and apps for i.MX 6 and i.MX 7 GPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ab61cab9599935bfe9f700405ef00f28"
 
 DEPENDS += "libgal-imx"
 PROVIDES += "virtual/libg2d"
@@ -16,8 +16,8 @@ S="${WORKDIR}/${PN}-${PV}"
 
 inherit fsl-eula-unpack
 
-SRC_URI[md5sum] = "fd93eb85a64a18dac3b6c2ead86c8333"
-SRC_URI[sha256sum] = "5f2d2171d5cd57f37ab07184fc908a0f6ecb2a97f023f04c2f9f3b3d7fec8481"
+SRC_URI[md5sum] = "0829288a9b4fcc89066d1671aeb671b9"
+SRC_URI[sha256sum] = "5ded476226df9068ec8611b5e89d444de1e5d9a53374a7ea4fb47bc5c6ba20e0"
 
 do_install () {
 
