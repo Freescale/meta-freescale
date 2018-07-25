@@ -4,7 +4,7 @@
 
 DESCRIPTION = "G2D graphics library and apps for i.MX with DRM"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ab61cab9599935bfe9f700405ef00f28"
 
 RDEPENDS_${PN} = "libgal-imx libdrm"
 
@@ -16,8 +16,8 @@ S="${WORKDIR}/${PN}-${PV}"
 
 inherit fsl-eula-unpack
 
-SRC_URI[md5sum] = "9beeb2c66f1bad4e82a77487486a31c8"
-SRC_URI[sha256sum] = "905e797d7fb573b5fea616940b07dc15d817fe2f5e94668f883e9faaa516989a"
+SRC_URI[md5sum] = "c18c4bd215bac23b035b1e8a55cbaaf2"
+SRC_URI[sha256sum] = "dd111f3a9c76bd9c338407658af849c325b424541bb2166ffe1f6dd31c834100"
 
 do_install () {
 
