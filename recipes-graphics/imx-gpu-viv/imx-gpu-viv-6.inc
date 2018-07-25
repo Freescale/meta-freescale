@@ -46,7 +46,9 @@ RPROVIDES_${PN}_imxgpu3d += "imx-gpu-viv"
 
 PE = "1"
 
-inherit fsl-eula-unpack
+inherit fsl-eula-unpack distro_features_check
+
+REQUIRED_DISTRO_FEATURES_mx8 = "wayland"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
@@ -131,8 +133,10 @@ PACKAGE_FP_TYPE = "hardfp"
 HAS_GBM     = "false"
 HAS_GBM_mx8 = "true"
 
-GLES3_HEADER_REMOVALS       = "gl31.h gl32.h"
-GLES3_HEADER_REMOVALS_mx8mq = "gl32.h"
+GLES3_HEADER_REMOVALS        = "gl31.h gl32.h"
+GLES3_HEADER_REMOVALS_mx8mq  = "gl32.h"
+GLES3_HEADER_REMOVALS_mx8qxp = "gl32.h"
+GLES3_HEADER_REMOVALS_mx8qm  = ""
 
 do_install () {
     install -d ${D}${libdir}
