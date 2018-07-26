@@ -1,0 +1,29 @@
+From 4123893a8a4d93362a0a36f72134f75436fee457 Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Thu, 18 Oct 2018 18:03:46 -0500
+Subject: [PATCH] Allow BUILD_STRING to be set in .revision file.
+
+Upstream-Status: Pending
+
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index 57c4a90..ec49397 100644
+--- a/Makefile
++++ b/Makefile
+@@ -97,6 +97,9 @@ endif
+ 
+ # Default build string (git branch and commit)
+ ifeq (${BUILD_STRING},)
++        BUILD_STRING	:=	$(shell cat .revision 2> /dev/null)
++endif
++ifeq (${BUILD_STRING},)
+         BUILD_STRING	:=	$(shell git describe --long --always --dirty --tags 2> /dev/null)
+ endif
+ VERSION_STRING		:=	v${VERSION_MAJOR}.${VERSION_MINOR}(${BUILD_TYPE}):${BUILD_STRING}
+-- 
+2.7.4
+
