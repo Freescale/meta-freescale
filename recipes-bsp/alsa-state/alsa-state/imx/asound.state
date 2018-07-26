@@ -5544,3 +5544,1549 @@ state.sii902xaudio {
 	control {
 	}
 }
+state.ak4458audio {
+	control.1 {
+		iface MIXER
+		name '0 AK4458 L1ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.2 {
+		iface MIXER
+		name '0 AK4458 R1ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.3 {
+		iface MIXER
+		name '0 AK4458 L2ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.4 {
+		iface MIXER
+		name '0 AK4458 R2ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.5 {
+		iface MIXER
+		name '0 AK4458 L3ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.6 {
+		iface MIXER
+		name '0 AK4458 R3ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.7 {
+		iface MIXER
+		name '0 AK4458 L4ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.8 {
+		iface MIXER
+		name '0 AK4458 R4ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.9 {
+		iface MIXER
+		name '0 AK4458 De-emphasis Response DAC1'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.10 {
+		iface MIXER
+		name '0 AK4458 De-emphasis Response DAC2'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.11 {
+		iface MIXER
+		name '0 AK4458 De-emphasis Response DAC3'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.12 {
+		iface MIXER
+		name '0 AK4458 De-emphasis Response DAC4'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.13 {
+		iface MIXER
+		name '0 AK4458 Digital Filter Setting'
+		value 'Sharp Roll-Off Filter'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Sharp Roll-Off Filter'
+			item.1 'Slow Roll-Off Filter'
+			item.2 'Short delay Sharp Roll-Off Filter'
+			item.3 'Short delay Slow Roll-Off Filter'
+			item.4 'Super Slow Roll-Off Filter'
+		}
+	}
+	control.14 {
+		iface MIXER
+		name '0 AK4458 Inverting Enable of DZFB'
+		value H
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 H
+			item.1 L
+		}
+	}
+	control.15 {
+		iface MIXER
+		name '0 AK4458 Sound Mode'
+		value 'Sound Mode 0'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Sound Mode 0'
+			item.1 'Sound Mode 1'
+			item.2 'Sound Mode 2'
+		}
+	}
+	control.16 {
+		iface MIXER
+		name '0 AK4458 SDS Setting'
+		value 'Setting 0'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Setting 0'
+			item.1 'Setting 1'
+			item.2 'Setting 2'
+			item.3 'Setting 3'
+			item.4 'Setting 4'
+			item.5 'Setting 5'
+			item.6 'Setting 6'
+			item.7 'Setting 7'
+		}
+	}
+	control.17 {
+		iface MIXER
+		name '0 AK4458 FIR Filter Mode Setting'
+		value 'Mode 0'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Mode 0'
+			item.1 'Mode 1'
+			item.2 'Mode 2'
+			item.3 'Mode 3'
+			item.4 'Mode 4'
+			item.5 'Mode 5'
+			item.6 'Mode 6'
+			item.7 'Mode 7'
+		}
+	}
+	control.18 {
+		iface MIXER
+		name '0 AK4458 TDM Mode Setting'
+		value 'Normal Mode'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Normal Mode'
+			item.1 'TDM128 Mode'
+			item.2 'TDM256 Mode'
+			item.3 'TDM512 Mode'
+		}
+	}
+	control.19 {
+		iface MIXER
+		name '0 AK4458 DAC1 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.20 {
+		iface MIXER
+		name '0 AK4458 DAC2 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.21 {
+		iface MIXER
+		name '0 AK4458 DAC3 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.22 {
+		iface MIXER
+		name '0 AK4458 DAC4 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.23 {
+		iface MIXER
+		name '0 AK4458 Attenuation transition Time Settin'
+		value '4080/fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '4080/fs'
+			item.1 '2040/fs'
+			item.2 '510/fs'
+			item.3 '255/fs'
+		}
+	}
+	control.24 {
+		iface MIXER
+		name '0 AK4458 BICK fs Setting'
+		value '64fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '32fs,48fs'
+			item.1 '64fs'
+		}
+	}
+	control.25 {
+		iface MIXER
+		name '1 AK4458 L1ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.26 {
+		iface MIXER
+		name '1 AK4458 R1ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.27 {
+		iface MIXER
+		name '1 AK4458 L2ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.28 {
+		iface MIXER
+		name '1 AK4458 R2ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.29 {
+		iface MIXER
+		name '1 AK4458 L3ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.30 {
+		iface MIXER
+		name '1 AK4458 R3ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.31 {
+		iface MIXER
+		name '1 AK4458 L4ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.32 {
+		iface MIXER
+		name '1 AK4458 R4ch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -9999999
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.33 {
+		iface MIXER
+		name '1 AK4458 De-emphasis Response DAC1'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.34 {
+		iface MIXER
+		name '1 AK4458 De-emphasis Response DAC2'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.35 {
+		iface MIXER
+		name '1 AK4458 De-emphasis Response DAC3'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.36 {
+		iface MIXER
+		name '1 AK4458 De-emphasis Response DAC4'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.37 {
+		iface MIXER
+		name '1 AK4458 Digital Filter Setting'
+		value 'Sharp Roll-Off Filter'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Sharp Roll-Off Filter'
+			item.1 'Slow Roll-Off Filter'
+			item.2 'Short delay Sharp Roll-Off Filter'
+			item.3 'Short delay Slow Roll-Off Filter'
+			item.4 'Super Slow Roll-Off Filter'
+		}
+	}
+	control.38 {
+		iface MIXER
+		name '1 AK4458 Inverting Enable of DZFB'
+		value H
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 H
+			item.1 L
+		}
+	}
+	control.39 {
+		iface MIXER
+		name '1 AK4458 Sound Mode'
+		value 'Sound Mode 0'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Sound Mode 0'
+			item.1 'Sound Mode 1'
+			item.2 'Sound Mode 2'
+		}
+	}
+	control.40 {
+		iface MIXER
+		name '1 AK4458 SDS Setting'
+		value 'Setting 0'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Setting 0'
+			item.1 'Setting 1'
+			item.2 'Setting 2'
+			item.3 'Setting 3'
+			item.4 'Setting 4'
+			item.5 'Setting 5'
+			item.6 'Setting 6'
+			item.7 'Setting 7'
+		}
+	}
+	control.41 {
+		iface MIXER
+		name '1 AK4458 FIR Filter Mode Setting'
+		value 'Mode 0'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Mode 0'
+			item.1 'Mode 1'
+			item.2 'Mode 2'
+			item.3 'Mode 3'
+			item.4 'Mode 4'
+			item.5 'Mode 5'
+			item.6 'Mode 6'
+			item.7 'Mode 7'
+		}
+	}
+	control.42 {
+		iface MIXER
+		name '1 AK4458 TDM Mode Setting'
+		value 'Normal Mode'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Normal Mode'
+			item.1 'TDM128 Mode'
+			item.2 'TDM256 Mode'
+			item.3 'TDM512 Mode'
+		}
+	}
+	control.43 {
+		iface MIXER
+		name '1 AK4458 DAC1 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.44 {
+		iface MIXER
+		name '1 AK4458 DAC2 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.45 {
+		iface MIXER
+		name '1 AK4458 DAC3 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.46 {
+		iface MIXER
+		name '1 AK4458 DAC4 LRch Setting'
+		value 'Lch In, Rch In'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Lch In, Rch In'
+			item.1 'Lch In, Rch In Invert'
+			item.2 'Lch In Invert, Rch In'
+			item.3 'Lch In Invert, Rch In Invert'
+			item.4 'Rch In, Lch In'
+			item.5 'Rch In, Lch In Invert'
+			item.6 'Rch In Invert, Lch In'
+			item.7 'Rch In Invert, Lch In Invert'
+			item.8 'Lch In, Lch In'
+			item.9 'Lch In, Lch In Invert'
+			item.10 'Lch In Invert, Lch In'
+			item.11 'Lch In Invert, Lch In Invert'
+			item.12 'Rch In, Rch In'
+			item.13 'Rch In, Rch In Invert'
+			item.14 'Rch In Invert, Rch In'
+			item.15 'Rch In Invert, Rch In Invert'
+		}
+	}
+	control.47 {
+		iface MIXER
+		name '1 AK4458 Attenuation transition Time Settin'
+		value '4080/fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '4080/fs'
+			item.1 '2040/fs'
+			item.2 '510/fs'
+			item.3 '255/fs'
+		}
+	}
+	control.48 {
+		iface MIXER
+		name '1 AK4458 BICK fs Setting'
+		value '64fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '32fs,48fs'
+			item.1 '64fs'
+		}
+	}
+	control.49 {
+		iface MIXER
+		name '0 DAC1 to AOUTA'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+	control.50 {
+		iface MIXER
+		name '0 DAC2 to AOUTB'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+	control.51 {
+		iface MIXER
+		name '0 DAC3 to AOUTC'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+	control.52 {
+		iface MIXER
+		name '0 DAC4 to AOUTD'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+	control.53 {
+		iface MIXER
+		name '1 DAC1 to AOUTA'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+	control.54 {
+		iface MIXER
+		name '1 DAC2 to AOUTB'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+	control.55 {
+		iface MIXER
+		name '1 DAC3 to AOUTC'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+	control.56 {
+		iface MIXER
+		name '1 DAC4 to AOUTD'
+		value ON
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 OFF
+			item.1 ON
+		}
+	}
+}
+state.ak5558audio {
+	control.1 {
+		iface MIXER
+		name 'AK5558 Monaural Mode'
+		value '8 Slot'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '8 Slot'
+			item.1 '2 Slot'
+			item.2 '4 Slot'
+			item.3 '1 Slot'
+		}
+	}
+	control.2 {
+		iface MIXER
+		name 'AK5558 TDM mode'
+		value Off
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 TDM128
+			item.2 TDM256
+			item.3 TDM512
+		}
+	}
+	control.3 {
+		iface MIXER
+		name 'AK5558 Digital Filter'
+		value 'Sharp Roll-Off'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Sharp Roll-Off'
+			item.1 'Show Roll-Off'
+			item.2 'Short Delay Sharp Roll-Off'
+			item.3 'Short Delay Show Roll-Off'
+		}
+	}
+	control.4 {
+		iface MIXER
+		name 'AK5558 DSD Mode'
+		value PCM
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 PCM
+			item.1 DSD
+		}
+	}
+	control.5 {
+		iface MIXER
+		name 'AK5558 Frequency of DCLK'
+		value '64fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '64fs'
+			item.1 '128fs'
+			item.2 '256fs'
+		}
+	}
+	control.6 {
+		iface MIXER
+		name 'AK5558 Polarity of DCLK'
+		value Falling
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Falling
+			item.1 Rising
+		}
+	}
+	control.7 {
+		iface MIXER
+		name 'AK5558 Master Clock Frequency at DSD Mode'
+		value '512fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '512fs'
+			item.1 '768fs'
+		}
+	}
+	control.8 {
+		iface MIXER
+		name 'AK5558 DSD Phase Modulation'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.9 {
+		iface MIXER
+		name 'AK5558 Ch1 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+	control.10 {
+		iface MIXER
+		name 'AK5558 Ch2 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+	control.11 {
+		iface MIXER
+		name 'AK5558 Ch3 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+	control.12 {
+		iface MIXER
+		name 'AK5558 Ch4 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+	control.13 {
+		iface MIXER
+		name 'AK5558 Ch5 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+	control.14 {
+		iface MIXER
+		name 'AK5558 Ch6 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+	control.15 {
+		iface MIXER
+		name 'AK5558 Ch7 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+	control.16 {
+		iface MIXER
+		name 'AK5558 Ch8 Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+}
+state.ak4497audio {
+	control.1 {
+		iface MIXER
+		name 'AK4497 Lch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -12750
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.2 {
+		iface MIXER
+		name 'AK4497 Rch Digital Volume'
+		value 255
+		comment {
+			access 'read write'
+			type INTEGER
+			count 1
+			range '0 - 255'
+			dbmin -12750
+			dbmax 0
+			dbvalue.0 0
+		}
+	}
+	control.3 {
+		iface MIXER
+		name 'AK4497 EX DF I/F clock'
+		value '768kHz'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '768kHz'
+			item.1 '384kHz'
+		}
+	}
+	control.4 {
+		iface MIXER
+		name 'AK4497 De-emphasis Response'
+		value OFF
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '44.1kHz'
+			item.1 OFF
+			item.2 '48kHz'
+			item.3 '32kHz'
+		}
+	}
+	control.5 {
+		iface MIXER
+		name 'AK4497 Data Zero Detect Mode'
+		value Separated
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Separated
+			item.1 ANDed
+		}
+	}
+	control.6 {
+		iface MIXER
+		name 'AK4497 Data Selection at Mono Mode'
+		value Rch
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Rch
+			item.1 Lch
+		}
+	}
+	control.7 {
+		iface MIXER
+		name 'AK4497 Polarity of DCLK'
+		value Falling
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Falling
+			item.1 Rising
+		}
+	}
+	control.8 {
+		iface MIXER
+		name 'AK4497 DCKL Frequency'
+		value '512fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '512fs'
+			item.1 '768fs'
+		}
+	}
+	control.9 {
+		iface MIXER
+		name 'AK4497 DDSD Play Back Path'
+		value Normal
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Normal
+			item.1 'Volume Bypass'
+		}
+	}
+	control.10 {
+		iface MIXER
+		name 'AK4497 Sound control'
+		value 'Setting 1'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Setting 1'
+			item.1 'Setting 2'
+			item.2 'Setting 3'
+		}
+	}
+	control.11 {
+		iface MIXER
+		name 'AK4497 Cut Off of DSD Filter'
+		value '50kHz'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '50kHz'
+			item.1 '150kHz'
+		}
+	}
+	control.12 {
+		iface MIXER
+		name 'AK4497 DSD Data Stream'
+		value '64fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '64fs'
+			item.1 '128fs'
+			item.2 '256fs'
+			item.3 '512fs'
+		}
+	}
+	control.13 {
+		iface MIXER
+		name 'AK4497 BICK Frequency Select'
+		value '64fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '48fs'
+			item.1 '64fs'
+		}
+	}
+	control.14 {
+		iface MIXER
+		name 'AK4497 TDM Data Select'
+		value L1R1
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 L1R1
+			item.1 TDM128_L1R1
+			item.2 TDM128_L2R2
+			item.3 TDM256_L1R1
+			item.4 TDM256_L2R2
+			item.5 TDM256_L3R3
+			item.6 TDM256_L4R4
+			item.7 TDM512_L1R1
+			item.8 TDM512_L2R2
+			item.9 TDM512_L3R3
+			item.10 TDM512_L4R4
+			item.11 TDM512_L5R5
+			item.12 TDM512_L6R6
+			item.13 TDM512_L7R7
+			item.14 TDM512_L8R8
+		}
+	}
+	control.15 {
+		iface MIXER
+		name 'AK4497 External Digital Filter'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.16 {
+		iface MIXER
+		name 'AK4497 MCLK Frequency Auto Setting'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.17 {
+		iface MIXER
+		name 'AK4497 MCLK FS Auto Detect'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.18 {
+		iface MIXER
+		name 'AK4497 Soft Mute Control'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.19 {
+		iface MIXER
+		name 'AK4497 Short delay filter'
+		value true
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.20 {
+		iface MIXER
+		name 'AK4497 Data Zero Detect Enable'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.21 {
+		iface MIXER
+		name 'AK4497 Slow Roll-off Filter'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.22 {
+		iface MIXER
+		name 'AK4497 Invering Enable of DZF'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.23 {
+		iface MIXER
+		name 'AK4497 Mono Mode'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.24 {
+		iface MIXER
+		name 'AK4497 Super Slow Roll-off Filter'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.25 {
+		iface MIXER
+		name 'AK4497 AOUTR Phase Inverting'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.26 {
+		iface MIXER
+		name 'AK4497 AOUTL Phase Inverting'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.27 {
+		iface MIXER
+		name 'AK4497 DSD Mute Release'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.28 {
+		iface MIXER
+		name 'AK4497 DSD Mute Control Hold'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.29 {
+		iface MIXER
+		name 'AK4497 DSDR is detected'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.30 {
+		iface MIXER
+		name 'AK4497 DSDL is detected'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.31 {
+		iface MIXER
+		name 'AK4497 DSD Data Mute'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.32 {
+		iface MIXER
+		name 'AK4497 Synchronization Control'
+		value true
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.33 {
+		iface MIXER
+		name 'AK4497 Output Level'
+		value '2.8_2.8Vpp'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '2.8_2.8Vpp'
+			item.1 '2.8_2.5Vpp'
+			item.2 '2.5_2.5Vpp'
+			item.3 '3.75_3.75Vpp'
+			item.4 '3.75_2.5Vpp'
+		}
+	}
+	control.34 {
+		iface MIXER
+		name 'AK4497 High Sonud Quality Mode'
+		value true
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.35 {
+		iface MIXER
+		name 'AK4497 Heavy Load Mode'
+		value true
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.36 {
+		iface MIXER
+		name 'AK4497 DSD Data Input Pin'
+		value '3_4_5pin'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '16_17_19pin'
+			item.1 '3_4_5pin'
+		}
+	}
+	control.37 {
+		iface MIXER
+		name 'AK4497 Daisy Chain'
+		value false
+		comment {
+			access 'read write'
+			type BOOLEAN
+			count 1
+		}
+	}
+	control.38 {
+		iface MIXER
+		name 'AK4497 ATT Transit Time'
+		value '4080/fs'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 '4080/fs'
+			item.1 '2040/fs'
+			item.2 '510/fs'
+			item.3 '255/fs'
+		}
+	}
+	control.39 {
+		iface MIXER
+		name 'AK4497 Read FS Auto Detect Mode'
+		value 'Normal Speed Mode'
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 'Normal Speed Mode'
+			item.1 'Double Speed Mode'
+			item.2 'Quad Speed Mode'
+			item.3 'Quad Speed Mode'
+			item.4 'Oct Speed Mode'
+			item.5 'Hex Speed Mode'
+			item.6 'Oct Speed Mode'
+			item.7 'Hex Speed Mode'
+		}
+	}
+	control.40 {
+		iface MIXER
+		name 'AK4497 DAC Enable'
+		value On
+		comment {
+			access 'read write'
+			type ENUMERATED
+			count 1
+			item.0 Off
+			item.1 On
+		}
+	}
+}
