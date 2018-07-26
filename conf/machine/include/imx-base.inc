@@ -151,6 +151,17 @@ MACHINE_SOCARCH_FILTER_append_use-mainline-bsp = " \
     pango \
     qtbase \
 "
+MACHINE_SOCARCH_FILTER_append_mx6q = " \
+    virtual/opencl-icd \
+    opencl-headers \
+"
+MACHINE_SOCARCH_FILTER_append_mx8 = " \
+    virtual/opencl-icd \
+    opencl-headers \
+"
+MACHINE_SOCARCH_FILTER_append_mx8qm = " \
+    virtual/libopenvx \
+"
 
 INHERIT += "fsl-dynamic-packagearch"
 
