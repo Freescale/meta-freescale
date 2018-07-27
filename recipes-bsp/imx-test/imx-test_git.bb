@@ -8,34 +8,36 @@ SECTION = "base"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
-DEPENDS  = "virtual/kernel imx-lib alsa-lib"
+DEPENDS = "virtual/kernel alsa-lib libdrm"
+DEPENDS_append_mx6 = " imx-lib"
+DEPENDS_append_mx7 = " imx-lib"
 
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "imx_4.9.88_2.0.0_ga"
-SRCREV = "1f7da41b3a8d5dff8329d7b01b10d4d71144b43e"
+SRCBRANCH = "imx_4.9.88_imx8qxp_beta2"
 SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://0001-test-Makefile-Add-include-path-to-CC-command.patch \
+    file://memtool_profile \
 "
-
+SRCREV = "3a87347ae408ef0234314a279ee74d9b015f06be"
 S = "${WORKDIR}/git"
-
 
 inherit module-base
 
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
-PLATFORM_mx6q  = "IMX6Q"
-PLATFORM_mx6dl = "IMX6Q"
-PLATFORM_mx6sl = "IMX6SL"
+PLATFORM_mx6q   = "IMX6Q"
+PLATFORM_mx6dl  = "IMX6Q"
+PLATFORM_mx6sl  = "IMX6SL"
 PLATFORM_mx6sll = "IMX6SL"
-PLATFORM_mx6sx = "IMX6SX"
-PLATFORM_mx6ul = "IMX6UL"
-PLATFORM_mx7d  = "IMX7D"
-PLATFORM_mx7ulp  = "IMX7D"
+PLATFORM_mx6sx  = "IMX6SX"
+PLATFORM_mx6ul  = "IMX6UL"
+PLATFORM_mx7d   = "IMX7D"
+PLATFORM_mx7ulp = "IMX7D"
+PLATFORM_mx8    = "IMX8"
 
 PARALLEL_MAKE = "-j 1"
 EXTRA_OEMAKE += "${PACKAGECONFIG_CONFARGS}"
@@ -60,6 +62,7 @@ do_compile() {
                     -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
                     -I${STAGING_KERNEL_DIR}/drivers/mxc/security/sahara2/include" \
                CC="${CC} -L${STAGING_LIBDIR} ${LDFLAGS}" \
+               SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
                LINUXPATH=${STAGING_KERNEL_DIR} \
                KBUILD_OUTPUT=${STAGING_KERNEL_BUILDDIR} \
                PLATFORM=${PLATFORM}
@@ -73,10 +76,12 @@ do_install() {
     if [ -e ${WORKDIR}/clocks.sh ]; then
         install -m 755 ${WORKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
     fi
+    install -d -m 0755 ${D}/home/root/
+    install -m 0644 ${WORKDIR}/memtool_profile ${D}/home/root/.profile
 }
 
-FILES_${PN} += "/unit_tests"
+FILES_${PN} += "/unit_tests /home/root/.profile"
 RDEPENDS_${PN} = "bash"
 
 FILES_${PN}-dbg += "/unit_tests/.debug"
-COMPATIBLE_MACHINE = "(mx6|mx7)"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
