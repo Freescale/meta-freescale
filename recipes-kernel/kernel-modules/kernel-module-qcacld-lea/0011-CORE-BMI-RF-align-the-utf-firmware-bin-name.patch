@@ -1,0 +1,31 @@
+From bcddb095fb2ac2a4584705178d78c08d2d5ad583 Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Tue, 15 May 2018 14:03:02 +0800
+Subject: [PATCH 11/11] CORE: BMI: RF: align the utf firmware bin name
+
+Align the utf firmware bin with release's name.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/SERVICES/BMI/ol_fw.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/CORE/SERVICES/BMI/ol_fw.c b/CORE/SERVICES/BMI/ol_fw.c
+index e8d52a5..8f7d978 100644
+--- a/CORE/SERVICES/BMI/ol_fw.c
++++ b/CORE/SERVICES/BMI/ol_fw.c
+@@ -682,11 +682,7 @@ defined(CONFIG_NON_QC_PLATFORM_PCI)
+ 		}
+ #ifdef QCA_WIFI_FTM
+ 		if (vos_get_conparam() == VOS_FTM_MODE) {
+-#if defined(CONFIG_CNSS) || defined(HIF_SDIO)
+ 			filename = scn->fw_files.utf_file;
+-#else
+-			filename = QCA_UTF_FIRMWARE_FILE;
+-#endif
+ #ifdef QCA_SIGNED_SPLIT_BINARY_SUPPORT
+ 			bin_sign = TRUE;
+ #endif
+-- 
+1.9.1
+

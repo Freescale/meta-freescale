@@ -1,0 +1,176 @@
+From 1f285b2023fa97a140bf65e81a5778c96320a275 Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Mon, 14 May 2018 14:42:37 +0800
+Subject: [PATCH 04/11] CORE: remove the debug message in default
+
+Remove the debug message in default.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/CLD_TXRX/HTT/htt.c                            |  2 +-
+ CORE/CLD_TXRX/HTT/htt_t2h.c                        |  2 +-
+ CORE/CLD_TXRX/TXRX/ol_txrx.c                       |  2 +-
+ CORE/SERVICES/BMI/ol_fw.c                          | 10 +++++-----
+ CORE/SERVICES/HIF/sdio/linux/native_sdio/src/hif.c |  2 +-
+ CORE/SERVICES/WMA/wma_dfs_interface.c              |  2 +-
+ CORE/SERVICES/WMI/wmi_unified.c                    | 10 +++++-----
+ 7 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/CORE/CLD_TXRX/HTT/htt.c b/CORE/CLD_TXRX/HTT/htt.c
+index 3e91ceb..e3b97f5 100644
+--- a/CORE/CLD_TXRX/HTT/htt.c
++++ b/CORE/CLD_TXRX/HTT/htt.c
+@@ -217,7 +217,7 @@ htt_attach(
+ 
+     pdev->cfg.is_full_reorder_offload =
+          ol_cfg_is_full_reorder_offload(pdev->ctrl_pdev);
+-    adf_os_print("is_full_reorder_offloaded? %d\n",
++    pr_debug("is_full_reorder_offloaded? %d\n",
+                   (int)pdev->cfg.is_full_reorder_offload);
+     pdev->targetdef = htc_get_targetdef(htc_pdev);
+     /*
+diff --git a/CORE/CLD_TXRX/HTT/htt_t2h.c b/CORE/CLD_TXRX/HTT/htt_t2h.c
+index 78c7c4e..6ea740c 100644
+--- a/CORE/CLD_TXRX/HTT/htt_t2h.c
++++ b/CORE/CLD_TXRX/HTT/htt_t2h.c
+@@ -168,7 +168,7 @@ htt_t2h_lp_msg_handler(void *context, adf_nbuf_t htt_t2h_msg )
+             /* abort if the target is incompatible with the host */
+             adf_os_assert(pdev->tgt_ver.major == HTT_CURRENT_VERSION_MAJOR);
+             if (pdev->tgt_ver.minor != HTT_CURRENT_VERSION_MINOR) {
+-                adf_os_print(
++                pr_debug(
+                     "*** Warning: host/target HTT versions are different, "
+                     "though compatible!\n");
+             }
+diff --git a/CORE/CLD_TXRX/TXRX/ol_txrx.c b/CORE/CLD_TXRX/TXRX/ol_txrx.c
+index e251c79..f9ded71 100644
+--- a/CORE/CLD_TXRX/TXRX/ol_txrx.c
++++ b/CORE/CLD_TXRX/TXRX/ol_txrx.c
+@@ -486,7 +486,7 @@ ol_txrx_pdev_attach(
+         desc_per_page = desc_per_page >> 1;
+     }
+     pdev->tx_desc.page_divider = (sig_bit - 1);
+-    TXRX_PRINT(TXRX_PRINT_LEVEL_ERR,
++    TXRX_PRINT(TXRX_PRINT_LEVEL_INFO1,
+         "page_divider 0x%x, offset_filter 0x%x num elem %d, ol desc num page %d, ol desc per page %d",
+         pdev->tx_desc.page_divider, pdev->tx_desc.offset_filter,
+         desc_pool_size, pdev->tx_desc.desc_pages.num_pages,
+diff --git a/CORE/SERVICES/BMI/ol_fw.c b/CORE/SERVICES/BMI/ol_fw.c
+index 4f7dfbd..8e8f7cb 100644
+--- a/CORE/SERVICES/BMI/ol_fw.c
++++ b/CORE/SERVICES/BMI/ol_fw.c
+@@ -744,7 +744,7 @@ defined(CONFIG_NON_QC_PLATFORM_PCI)
+        status = request_firmware(&fw_entry, filename, scn->sc_osdev->device);
+ 	if (status)
+ 	{
+-		pr_err("%s: Failed to get %s:%d\n", __func__, filename, status);
++		pr_debug("%s: Failed to get %s:%d\n", __func__, filename, status);
+ 
+ 		if (file == ATH_OTP_FILE)
+ 			return -ENOENT;
+@@ -759,7 +759,7 @@ defined(CONFIG_NON_QC_PLATFORM_PCI)
+ 				return -1;
+ 			}
+ 
+-			pr_info("%s: Trying to load default %s\n",
++			pr_debug("%s: Trying to load default %s\n",
+ 							__func__, filename);
+ 
+ 			status = request_firmware(&fw_entry, filename,
+@@ -836,7 +836,7 @@ defined(CONFIG_NON_QC_PLATFORM_PCI)
+ 		BMIReadMemory(scn->hif_hdl,
+ 				HOST_INTEREST_ITEM_ADDRESS(scn->target_type, hi_board_ext_data),
+ 				(u_int8_t *)&board_ext_address, 4, scn);
+-		printk("Board extended Data download address: 0x%x\n", board_ext_address);
++		pr_debug("Board extended Data download address: 0x%x\n", board_ext_address);
+ 
+ 		/*
+ 		 * Check whether the target has allocated memory for extended board
+@@ -2240,7 +2240,7 @@ int ol_download_firmware(struct ol_softc *scn)
+ 	} else {
+ 		/* Transfer One Time Programmable data */
+ 		address = BMI_SEGMENTED_WRITE_ADDR;
+-		printk("%s: Using 0x%x for the remainder of init\n", __func__, address);
++		pr_debug("%s: Using 0x%x for the remainder of init\n", __func__, address);
+ 
+ 		if ( scn->enablesinglebinary == FALSE ) {
+ #ifdef HIF_PCI
+@@ -2258,7 +2258,7 @@ int ol_download_firmware(struct ol_softc *scn)
+ 				bdf_ret = param & 0xff;
+ 				if (!bdf_ret)
+ 					scn->board_id = (param >> 8) & 0xffff;
+-				pr_err("%s: chip_id:0x%0x board_id:0x%0x\n",
++				pr_debug("%s: chip_id:0x%0x board_id:0x%0x\n",
+ 						__func__, scn->target_version,
+ 							scn->board_id);
+ 			} else if (status < 0) {
+diff --git a/CORE/SERVICES/HIF/sdio/linux/native_sdio/src/hif.c b/CORE/SERVICES/HIF/sdio/linux/native_sdio/src/hif.c
+index 0174a60..51148ad 100644
+--- a/CORE/SERVICES/HIF/sdio/linux/native_sdio/src/hif.c
++++ b/CORE/SERVICES/HIF/sdio/linux/native_sdio/src/hif.c
+@@ -114,7 +114,7 @@ unsigned int forcecard = 0;
+ module_param(forcecard, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+ MODULE_PARM_DESC(forcecard, "Ignore card capabilities information to switch bus mode");
+ 
+-unsigned int debugcccr = 1;
++unsigned int debugcccr = 0;
+ module_param(debugcccr, uint, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+ MODULE_PARM_DESC(debugcccr, "Output this cccr values");
+ 
+diff --git a/CORE/SERVICES/WMA/wma_dfs_interface.c b/CORE/SERVICES/WMA/wma_dfs_interface.c
+index 61f161c..2f90886 100644
+--- a/CORE/SERVICES/WMA/wma_dfs_interface.c
++++ b/CORE/SERVICES/WMA/wma_dfs_interface.c
+@@ -65,7 +65,7 @@ ol_if_dfs_attach(struct ieee80211com *ic, void *ptr, void *radar_info)
+ {
+     struct ath_dfs_caps *pCap = (struct ath_dfs_caps *) ptr;
+ 
+-    adf_os_print("%s: called; ptr=%pK, radar_info=%pK\n",
++    pr_debug("%s: called; ptr=%pK, radar_info=%pK\n",
+                   __func__, ptr, radar_info);
+ 
+     pCap->ath_chip_is_bb_tlv = 1;
+diff --git a/CORE/SERVICES/WMI/wmi_unified.c b/CORE/SERVICES/WMI/wmi_unified.c
+index 386a3b7..0b9c1cd 100644
+--- a/CORE/SERVICES/WMI/wmi_unified.c
++++ b/CORE/SERVICES/WMI/wmi_unified.c
+@@ -1066,7 +1066,7 @@ int wmi_unified_unregister_event_handler(wmi_unified_t wmi_handle,
+ {
+     u_int32_t idx=0;
+     if ( (idx = wmi_unified_get_event_handler_ix( wmi_handle, event_id)) == -1) {
+-        printk("%s : event handler is not registered: event id 0x%x \n",
++        pr_debug("%s : event handler is not registered: event id 0x%x \n",
+                 __func__, event_id);
+         return -1;
+     }
+@@ -1237,7 +1237,7 @@ void __wmi_control_rx(struct wmi_unified *wmi_handle, wmi_buf_t evt_buf)
+ 
+ 		idx = wmi_unified_get_event_handler_ix(wmi_handle, id) ;
+ 		if (idx == -1) {
+-			pr_err("%s : event handler is not registered: event id 0x%x\n",
++			pr_debug("%s : event handler is not registered: event id 0x%x\n",
+ 			       __func__, id);
+ 			goto end;
+ 		}
+@@ -1256,15 +1256,15 @@ void __wmi_control_rx(struct wmi_unified *wmi_handle, wmi_buf_t evt_buf)
+ 
+ 	switch (id) {
+ 	default:
+-		pr_info("%s: Unhandled WMI event %d\n", __func__, id);
++		pr_debug("%s: Unhandled WMI event %d\n", __func__, id);
+ 		break;
+ 	case WMI_SERVICE_READY_EVENTID:
+-		pr_info("%s: WMI UNIFIED SERVICE READY event\n", __func__);
++		pr_debug("%s: WMI UNIFIED SERVICE READY event\n", __func__);
+ 		wma_rx_service_ready_event(wmi_handle->scn_handle,
+ 					   wmi_cmd_struct_ptr);
+ 		break;
+ 	case WMI_READY_EVENTID:
+-		pr_info("%s:  WMI UNIFIED READY event\n", __func__);
++		pr_debug("%s:  WMI UNIFIED READY event\n", __func__);
+ 		wma_rx_ready_event(wmi_handle->scn_handle, wmi_cmd_struct_ptr);
+ 		break;
+ 	}
+-- 
+1.9.1
+

@@ -1,0 +1,1367 @@
+From a2ba3705d738df2870ee58e7c65de0472428d5e4 Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Thu, 17 May 2018 19:03:22 +0800
+Subject: [PATCH 2/2] CORE: services: os: fix issue to avoid spin_lock_bh in
+ irq context
+
+Iusse fixes: to avoid spin_lock_bh calling in irq context.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/HDD/src/wlan_hdd_assoc.c        |  8 +++---
+ CORE/HDD/src/wlan_hdd_ftm.c          | 12 ++++-----
+ CORE/HDD/src/wlan_hdd_hostapd.c      | 30 +++++++++++-----------
+ CORE/HDD/src/wlan_hdd_ipa.c          | 50 ++++++++++++++++++------------------
+ CORE/HDD/src/wlan_hdd_main.c         | 34 ++++++++++++------------
+ CORE/HDD/src/wlan_hdd_softap_tx_rx.c | 28 ++++++++++----------
+ CORE/HDD/src/wlan_hdd_tx_rx.c        | 38 +++++++++++++--------------
+ CORE/HDD/src/wlan_hdd_wext.c         |  8 +++---
+ CORE/SERVICES/COMMON/adf/adf_trace.c | 24 +++++++++--------
+ CORE/SERVICES/COMMON/osapi_linux.h   |  4 +--
+ CORE/SERVICES/COMMON/osdep_adf.h     | 18 +++++++++++++
+ CORE/UTILS/FWLOG/dbglog_host.c       |  8 +++---
+ CORE/UTILS/PKTLOG/linux_ac.c         | 42 +++++++++++++++---------------
+ CORE/UTILS/PKTLOG/pktlog_ac.c        |  8 +++---
+ CORE/VOSS/src/vos_packet.c           |  8 +++---
+ CORE/VOSS/src/vos_sched.c            | 42 +++++++++++++++---------------
+ 16 files changed, 191 insertions(+), 171 deletions(-)
+
+diff --git a/CORE/HDD/src/wlan_hdd_assoc.c b/CORE/HDD/src/wlan_hdd_assoc.c
+index 1c16702..889ea95 100644
+--- a/CORE/HDD/src/wlan_hdd_assoc.c
++++ b/CORE/HDD/src/wlan_hdd_assoc.c
+@@ -1299,13 +1299,13 @@ static void hdd_SendAssociationEvent(struct net_device *dev,tCsrRoamInfo *pCsrRo
+ 
+ #ifdef FEATURE_BUS_BANDWIDTH
+         /* start timer in sta/p2p_cli */
+-        spin_lock_bh(&pHddCtx->bus_bw_lock);
++        SPIN_LOCK_BH(&pHddCtx->bus_bw_lock);
+         pAdapter->prev_tx_packets = pAdapter->stats.tx_packets;
+         pAdapter->prev_rx_packets = pAdapter->stats.rx_packets;
+         tlshim_get_intra_bss_fwd_pkts_count(pAdapter->sessionId,
+              &pAdapter->prev_fwd_tx_packets, &pAdapter->prev_fwd_rx_packets);
+         pAdapter->prev_tx_bytes = pAdapter->stats.tx_bytes;
+-        spin_unlock_bh(&pHddCtx->bus_bw_lock);
++        SPIN_UNLOCK_BH(&pHddCtx->bus_bw_lock);
+         hdd_start_bus_bw_compute_timer(pAdapter);
+ #endif
+         if (pHddCtx->cfg_ini->mon_on_sta_enable &&
+@@ -1364,13 +1364,13 @@ static void hdd_SendAssociationEvent(struct net_device *dev,tCsrRoamInfo *pCsrRo
+ 
+ #ifdef FEATURE_BUS_BANDWIDTH
+         /* stop timer in sta/p2p_cli */
+-        spin_lock_bh(&pHddCtx->bus_bw_lock);
++        SPIN_LOCK_BH(&pHddCtx->bus_bw_lock);
+         pAdapter->prev_tx_packets = 0;
+         pAdapter->prev_rx_packets = 0;
+         pAdapter->prev_fwd_tx_packets = 0;
+         pAdapter->prev_fwd_rx_packets = 0;
+         pAdapter->prev_tx_bytes = 0;
+-        spin_unlock_bh(&pHddCtx->bus_bw_lock);
++        SPIN_UNLOCK_BH(&pHddCtx->bus_bw_lock);
+         hdd_stop_bus_bw_compute_timer(pAdapter);
+ #endif
+         if (pHddCtx->cfg_ini->mon_on_sta_enable &&
+diff --git a/CORE/HDD/src/wlan_hdd_ftm.c b/CORE/HDD/src/wlan_hdd_ftm.c
+index acf8c77..2854eb2 100644
+--- a/CORE/HDD/src/wlan_hdd_ftm.c
++++ b/CORE/HDD/src/wlan_hdd_ftm.c
+@@ -834,7 +834,7 @@ int wlan_hdd_ftm_close(hdd_context_t *pHddCtx)
+     }
+ 
+ #if defined(QCA_WIFI_FTM) && defined(LINUX_QCMBR)
+-    spin_lock_bh(&qcmbr_queue_lock);
++    SPIN_LOCK_BH(&qcmbr_queue_lock);
+     if (!list_empty(&qcmbr_queue_head)) {
+         qcmbr_queue_t *msg_buf, *tmp_buf;
+         list_for_each_entry_safe(msg_buf, tmp_buf, &qcmbr_queue_head, list) {
+@@ -842,7 +842,7 @@ int wlan_hdd_ftm_close(hdd_context_t *pHddCtx)
+             kfree(msg_buf);
+         }
+     }
+-    spin_unlock_bh(&qcmbr_queue_lock);
++    SPIN_UNLOCK_BH(&qcmbr_queue_lock);
+ #endif
+ 
+     return 0;
+@@ -972,7 +972,7 @@ static int wlan_hdd_qcmbr_command(hdd_adapter_t *pAdapter, qcmbr_data_t *pqcmbr_
+         case ATH_XIOCTL_UNIFIED_UTF_RSP: {
+             pqcmbr_data->copy_to_user = 1;
+ 
+-            spin_lock_bh(&qcmbr_queue_lock);
++            SPIN_LOCK_BH(&qcmbr_queue_lock);
+             if (!list_empty(&qcmbr_queue_head)) {
+                 qcmbr_buf = list_first_entry(&qcmbr_queue_head,
+                                              qcmbr_queue_t, list);
+@@ -981,7 +981,7 @@ static int wlan_hdd_qcmbr_command(hdd_adapter_t *pAdapter, qcmbr_data_t *pqcmbr_
+             } else {
+                 ret = -1;
+             }
+-            spin_unlock_bh(&qcmbr_queue_lock);
++            SPIN_UNLOCK_BH(&qcmbr_queue_lock);
+ 
+             if (!ret) {
+                 memcpy(pqcmbr_data->buf, qcmbr_buf->utf_buf,
+@@ -1085,9 +1085,9 @@ static void WLANQCMBR_McProcessMsg(v_VOID_t *message)
+     qcmbr_buf = kzalloc(sizeof(qcmbr_queue_t), GFP_KERNEL);
+     if (qcmbr_buf != NULL) {
+         memcpy(qcmbr_buf->utf_buf, message, data_len);
+-        spin_lock_bh(&qcmbr_queue_lock);
++        SPIN_LOCK_BH(&qcmbr_queue_lock);
+         list_add_tail(&(qcmbr_buf->list), &qcmbr_queue_head);
+-        spin_unlock_bh(&qcmbr_queue_lock);
++        SPIN_UNLOCK_BH(&qcmbr_queue_lock);
+     }
+ }
+ #endif /*LINUX_QCMBR*/
+diff --git a/CORE/HDD/src/wlan_hdd_hostapd.c b/CORE/HDD/src/wlan_hdd_hostapd.c
+index 9519764..8bea288 100644
+--- a/CORE/HDD/src/wlan_hdd_hostapd.c
++++ b/CORE/HDD/src/wlan_hdd_hostapd.c
+@@ -2389,9 +2389,9 @@ VOS_STATUS hdd_hostapd_SAPEventCB( tpSap_Event pSapEvent, v_PVOID_t usrDataForCa
+                 }
+            }
+ 
+-            spin_lock_bh(&pHddCtx->dfs_lock);
++            SPIN_LOCK_BH(&pHddCtx->dfs_lock);
+             pHddCtx->dfs_radar_found = VOS_FALSE;
+-            spin_unlock_bh(&pHddCtx->dfs_lock);
++            SPIN_UNLOCK_BH(&pHddCtx->dfs_lock);
+             WLANSAP_Get_Dfs_Ignore_CAC(pHddCtx->hHal, &ignoreCAC);
+             if ((NV_CHANNEL_DFS !=
+                 vos_nv_getChannelEnabledState(pHddApCtx->operatingChannel))
+@@ -2723,7 +2723,7 @@ VOS_STATUS hdd_hostapd_SAPEventCB( tpSap_Event pSapEvent, v_PVOID_t usrDataForCa
+             /* start timer in sap/p2p_go */
+             if (pHddApCtx->bApActive == VOS_FALSE)
+             {
+-                spin_lock_bh(&pHddCtx->bus_bw_lock);
++                SPIN_LOCK_BH(&pHddCtx->bus_bw_lock);
+                 pHostapdAdapter->prev_tx_packets = pHostapdAdapter->stats.tx_packets;
+                 pHostapdAdapter->prev_rx_packets = pHostapdAdapter->stats.rx_packets;
+                 tlshim_get_intra_bss_fwd_pkts_count(
+@@ -2732,7 +2732,7 @@ VOS_STATUS hdd_hostapd_SAPEventCB( tpSap_Event pSapEvent, v_PVOID_t usrDataForCa
+                        &pHostapdAdapter->prev_fwd_rx_packets);
+                 pHostapdAdapter->prev_tx_bytes =
+                         pHostapdAdapter->stats.tx_bytes;
+-                spin_unlock_bh(&pHddCtx->bus_bw_lock);
++                SPIN_UNLOCK_BH(&pHddCtx->bus_bw_lock);
+                 hdd_start_bus_bw_compute_timer(pHostapdAdapter);
+             }
+ #endif
+@@ -2869,7 +2869,7 @@ VOS_STATUS hdd_hostapd_SAPEventCB( tpSap_Event pSapEvent, v_PVOID_t usrDataForCa
+             hdd_softap_DeregisterSTA(pHostapdAdapter, staId);
+ 
+             pHddApCtx->bApActive = VOS_FALSE;
+-            spin_lock_bh( &pHostapdAdapter->staInfo_lock );
++            SPIN_LOCK_BH( &pHostapdAdapter->staInfo_lock );
+             for (i = 0; i < WLAN_MAX_STA_COUNT; i++)
+             {
+                 if (pHostapdAdapter->aStaInfo[i].isUsed && i != (WLAN_HDD_GET_AP_CTX_PTR(pHostapdAdapter))->uBCStaId)
+@@ -2878,7 +2878,7 @@ VOS_STATUS hdd_hostapd_SAPEventCB( tpSap_Event pSapEvent, v_PVOID_t usrDataForCa
+                     break;
+                 }
+             }
+-            spin_unlock_bh( &pHostapdAdapter->staInfo_lock );
++            SPIN_UNLOCK_BH( &pHostapdAdapter->staInfo_lock );
+ 
+             // Start AP inactivity timer if no stations associated with it
+             if ((0 != (WLAN_HDD_GET_CTX(pHostapdAdapter))->cfg_ini->nAPAutoShutOff))
+@@ -2943,13 +2943,13 @@ VOS_STATUS hdd_hostapd_SAPEventCB( tpSap_Event pSapEvent, v_PVOID_t usrDataForCa
+             /*stop timer in sap/p2p_go */
+             if (pHddApCtx->bApActive == FALSE)
+             {
+-                spin_lock_bh(&pHddCtx->bus_bw_lock);
++                SPIN_LOCK_BH(&pHddCtx->bus_bw_lock);
+                 pHostapdAdapter->prev_tx_packets = 0;
+                 pHostapdAdapter->prev_rx_packets = 0;
+                 pHostapdAdapter->prev_fwd_tx_packets = 0;
+                 pHostapdAdapter->prev_fwd_rx_packets = 0;
+                 pHostapdAdapter->prev_tx_bytes = 0;
+-                spin_unlock_bh(&pHddCtx->bus_bw_lock);
++                SPIN_UNLOCK_BH(&pHddCtx->bus_bw_lock);
+                 hdd_stop_bus_bw_compute_timer(pHostapdAdapter);
+             }
+ #endif
+@@ -3359,10 +3359,10 @@ int hdd_softap_set_channel_change(struct net_device *dev, int target_channel)
+         }
+     }
+ 
+-    spin_lock_bh(&pHddCtx->dfs_lock);
++    SPIN_LOCK_BH(&pHddCtx->dfs_lock);
+     if (pHddCtx->dfs_radar_found == VOS_TRUE)
+     {
+-        spin_unlock_bh(&pHddCtx->dfs_lock);
++        SPIN_UNLOCK_BH(&pHddCtx->dfs_lock);
+         hddLog(VOS_TRACE_LEVEL_ERROR, "%s: Channel switch in progress!!",
+                __func__);
+         ret = -EBUSY;
+@@ -3379,7 +3379,7 @@ int hdd_softap_set_channel_change(struct net_device *dev, int target_channel)
+      */
+     pHddCtx->dfs_radar_found = VOS_TRUE;
+ 
+-    spin_unlock_bh(&pHddCtx->dfs_lock);
++    SPIN_UNLOCK_BH(&pHddCtx->dfs_lock);
+     /*
+      * Post the Channel Change request to SAP.
+      */
+@@ -3402,9 +3402,9 @@ int hdd_softap_set_channel_change(struct net_device *dev, int target_channel)
+          * queues.
+          */
+ 
+-        spin_lock_bh(&pHddCtx->dfs_lock);
++        SPIN_LOCK_BH(&pHddCtx->dfs_lock);
+         pHddCtx->dfs_radar_found = VOS_FALSE;
+-        spin_unlock_bh(&pHddCtx->dfs_lock);
++        SPIN_UNLOCK_BH(&pHddCtx->dfs_lock);
+ 
+         ret = -EINVAL;
+     }
+@@ -5278,7 +5278,7 @@ static __iw_softap_getassoc_stamacaddr(struct net_device *dev,
+     maclist_index = sizeof(maclist_index);
+     left = wrqu->data.length - maclist_index;
+ 
+-    spin_lock_bh(&pHostapdAdapter->staInfo_lock);
++    SPIN_LOCK_BH(&pHostapdAdapter->staInfo_lock);
+     while ((cnt < WLAN_MAX_STA_COUNT) && (left >= VOS_MAC_ADDR_SIZE)) {
+         if ((pStaInfo[cnt].isUsed) &&
+             (!IS_BROADCAST_MAC(pStaInfo[cnt].macAddrSTA.bytes))) {
+@@ -5289,7 +5289,7 @@ static __iw_softap_getassoc_stamacaddr(struct net_device *dev,
+         }
+         cnt++;
+     }
+-    spin_unlock_bh(&pHostapdAdapter->staInfo_lock);
++    SPIN_UNLOCK_BH(&pHostapdAdapter->staInfo_lock);
+ 
+     *((u32 *)buf) = maclist_index;
+     wrqu->data.length = maclist_index;
+diff --git a/CORE/HDD/src/wlan_hdd_ipa.c b/CORE/HDD/src/wlan_hdd_ipa.c
+index f169620..8837214 100644
+--- a/CORE/HDD/src/wlan_hdd_ipa.c
++++ b/CORE/HDD/src/wlan_hdd_ipa.c
+@@ -596,7 +596,7 @@ static struct ipa_tx_data_desc *hdd_ipa_alloc_data_desc(
+ {
+ 	struct ipa_tx_data_desc *desc = NULL;
+ 
+-	spin_lock_bh(&hdd_ipa->q_lock);
++	SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 
+ 	/* Keep the descriptors for priority alloc which can be used for
+ 	 * anchor nodes
+@@ -616,7 +616,7 @@ static struct ipa_tx_data_desc *hdd_ipa_alloc_data_desc(
+ 	}
+ 
+ end:
+-	spin_unlock_bh(&hdd_ipa->q_lock);
++	SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 
+ 	return desc;
+ }
+@@ -627,10 +627,10 @@ static void hdd_ipa_free_data_desc(struct hdd_ipa_priv *hdd_ipa,
+ 	desc->priv = NULL;
+ 	desc->pyld_buffer = NULL;
+ 	desc->pyld_len = 0;
+-	spin_lock_bh(&hdd_ipa->q_lock);
++	SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 	list_add_tail(&desc->link, &hdd_ipa->free_desc_head);
+ 	hdd_ipa->freeq_cnt++;
+-	spin_unlock_bh(&hdd_ipa->q_lock);
++	SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ }
+ 
+ static struct iphdr * hdd_ipa_get_ip_pkt(void *data, uint16_t *eth_type)
+@@ -2532,12 +2532,12 @@ static int hdd_ipa_rm_try_release(struct hdd_ipa_priv *hdd_ipa)
+ 		return -EAGAIN;
+ 
+ #ifndef IPA_UC_STA_OFFLOAD
+-	spin_lock_bh(&hdd_ipa->q_lock);
++	SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 	if (hdd_ipa->pending_hw_desc_cnt || hdd_ipa->pend_q_cnt) {
+-		spin_unlock_bh(&hdd_ipa->q_lock);
++		SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 		return -EAGAIN;
+ 	}
+-	spin_unlock_bh(&hdd_ipa->q_lock);
++	SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ #endif
+ 
+ 	adf_os_spin_lock_bh(&hdd_ipa->pm_lock);
+@@ -2613,11 +2613,11 @@ static void hdd_ipa_send_pkt_to_ipa(struct hdd_ipa_priv *hdd_ipa)
+ 
+ 	INIT_LIST_HEAD(&send_desc_head->link);
+ 
+-	spin_lock_bh(&hdd_ipa->q_lock);
++	SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 
+ 	if (hdd_ipa->pending_hw_desc_cnt >= hdd_ipa->hw_desc_cnt) {
+ 		hdd_ipa->stats.num_rx_ipa_hw_maxed_out++;
+-		spin_unlock_bh(&hdd_ipa->q_lock);
++		SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 		hdd_ipa_free_data_desc(hdd_ipa, send_desc_head);
+ 		return;
+ 	}
+@@ -2625,7 +2625,7 @@ static void hdd_ipa_send_pkt_to_ipa(struct hdd_ipa_priv *hdd_ipa)
+ 	pend_q_cnt = hdd_ipa->pend_q_cnt;
+ 
+ 	if (pend_q_cnt == 0) {
+-		spin_unlock_bh(&hdd_ipa->q_lock);
++		SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 		hdd_ipa_free_data_desc(hdd_ipa, send_desc_head);
+ 		return;
+ 	}
+@@ -2659,7 +2659,7 @@ static void hdd_ipa_send_pkt_to_ipa(struct hdd_ipa_priv *hdd_ipa)
+ 	}
+ 
+ 	hdd_ipa->pending_hw_desc_cnt += cur_send_cnt;
+-	spin_unlock_bh(&hdd_ipa->q_lock);
++	SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 
+ 	if (ipa_tx_dp_mul(hdd_ipa->prod_client, send_desc_head) != 0) {
+ 		HDD_IPA_LOG(VOS_TRACE_LEVEL_ERROR,
+@@ -2677,9 +2677,9 @@ static void hdd_ipa_send_pkt_to_ipa(struct hdd_ipa_priv *hdd_ipa)
+ 
+ ipa_tx_failed:
+ 
+-	spin_lock_bh(&hdd_ipa->q_lock);
++	SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 	hdd_ipa->pending_hw_desc_cnt -= cur_send_cnt;
+-	spin_unlock_bh(&hdd_ipa->q_lock);
++	SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 
+ 	list_for_each_entry_safe(desc, tmp, &send_desc_head->link, link) {
+ 		list_del(&desc->link);
+@@ -3126,10 +3126,10 @@ VOS_STATUS hdd_ipa_process_rxt(v_VOID_t *vosContext, adf_nbuf_t rx_buf_list,
+ 		send_desc->priv = buf;
+ 		send_desc->pyld_buffer = buf->data;
+ 		send_desc->pyld_len = buf->len;
+-		spin_lock_bh(&hdd_ipa->q_lock);
++		SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 		list_add_tail(&send_desc->link, &hdd_ipa->pend_desc_head);
+ 		hdd_ipa->pend_q_cnt++;
+-		spin_unlock_bh(&hdd_ipa->q_lock);
++		SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 		cur_cnt++;
+ 		buf = next_buf;
+ 	}
+@@ -3392,9 +3392,9 @@ static void hdd_ipa_w2i_cb(void *priv, enum ipa_dp_evt_type evt,
+ 			buf = done_desc->priv;
+ 			adf_nbuf_free(buf);
+ 			hdd_ipa_free_data_desc(hdd_ipa, done_desc);
+-			spin_lock_bh(&hdd_ipa->q_lock);
++			SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 			hdd_ipa->pending_hw_desc_cnt--;
+-			spin_unlock_bh(&hdd_ipa->q_lock);
++			SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 			hdd_ipa->stats.num_rx_ipa_write_done++;
+ 		}
+ 		/* add anchor node also back to free list */
+@@ -4751,24 +4751,24 @@ static void hdd_ipa_rx_pipe_desc_free(void)
+ 
+ 	max_desc_cnt = hdd_ipa->hw_desc_cnt * HDD_IPA_DESC_BUFFER_RATIO;
+ 
+-	spin_lock_bh(&hdd_ipa->q_lock);
++	SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 
+ 	list_for_each_entry_safe(desc, tmp, &hdd_ipa->pend_desc_head, link) {
+ 		list_del(&desc->link);
+ 		adf_nbuf_free(desc->priv);
+-		spin_unlock_bh(&hdd_ipa->q_lock);
++		SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 		hdd_ipa_free_data_desc(hdd_ipa, desc);
+-		spin_lock_bh(&hdd_ipa->q_lock);
++		SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 	}
+ 
+ 	list_for_each_entry_safe(desc, tmp, &hdd_ipa->free_desc_head, link) {
+ 		list_del(&desc->link);
+-		spin_unlock_bh(&hdd_ipa->q_lock);
++		SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 		adf_os_mem_free(desc);
+-		spin_lock_bh(&hdd_ipa->q_lock);
++		SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 		i++;
+ 	}
+-	spin_unlock_bh(&hdd_ipa->q_lock);
++	SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 
+ 	if (i != max_desc_cnt)
+ 		HDD_IPA_LOG(VOS_TRACE_LEVEL_FATAL, "free desc leak: %u, %u", i,
+@@ -4803,9 +4803,9 @@ static int hdd_ipa_rx_pipe_desc_alloc(void)
+ 					"Descriptor allocation failed");
+ 			goto fail;
+ 		}
+-		spin_lock_bh(&hdd_ipa->q_lock);
++		SPIN_LOCK_BH(&hdd_ipa->q_lock);
+ 		list_add_tail(&tmp_desc->link, &hdd_ipa->free_desc_head);
+-		spin_unlock_bh(&hdd_ipa->q_lock);
++		SPIN_UNLOCK_BH(&hdd_ipa->q_lock);
+ 	}
+ 
+ 
+diff --git a/CORE/HDD/src/wlan_hdd_main.c b/CORE/HDD/src/wlan_hdd_main.c
+old mode 100644
+new mode 100755
+index db42731..636ba5f
+--- a/CORE/HDD/src/wlan_hdd_main.c
++++ b/CORE/HDD/src/wlan_hdd_main.c
+@@ -9513,18 +9513,18 @@ bool hdd_dfs_indicate_radar(void *context, void *param)
+ 
+     if (VOS_TRUE == hdd_radar_event->dfs_radar_status)
+     {
+-        spin_lock_bh(&pHddCtx->dfs_lock);
++        SPIN_LOCK_BH(&pHddCtx->dfs_lock);
+         if (pHddCtx->dfs_radar_found)
+         {
+             /* Application already triggered channel switch
+              * on current channel, so return here
+              */
+-            spin_unlock_bh(&pHddCtx->dfs_lock);
++            SPIN_UNLOCK_BH(&pHddCtx->dfs_lock);
+             return false;
+         }
+ 
+         pHddCtx->dfs_radar_found = VOS_TRUE;
+-        spin_unlock_bh(&pHddCtx->dfs_lock);
++        SPIN_UNLOCK_BH(&pHddCtx->dfs_lock);
+ 
+         status = hdd_get_front_adapter ( pHddCtx, &pAdapterNode );
+         while ( NULL != pAdapterNode && VOS_STATUS_SUCCESS == status )
+@@ -13823,10 +13823,10 @@ VOS_STATUS hdd_get_front_adapter( hdd_context_t *pHddCtx,
+                                   hdd_adapter_list_node_t** ppAdapterNode)
+ {
+     VOS_STATUS status;
+-    spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_LOCK_BH(&pHddCtx->hddAdapters.lock);
+     status =  hdd_list_peek_front ( &pHddCtx->hddAdapters,
+                    (hdd_list_node_t**) ppAdapterNode );
+-    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_UNLOCK_BH(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+@@ -13835,12 +13835,12 @@ VOS_STATUS hdd_get_next_adapter( hdd_context_t *pHddCtx,
+                                  hdd_adapter_list_node_t** pNextAdapterNode)
+ {
+     VOS_STATUS status;
+-    spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_LOCK_BH(&pHddCtx->hddAdapters.lock);
+     status = hdd_list_peek_next ( &pHddCtx->hddAdapters,
+                                   (hdd_list_node_t*) pAdapterNode,
+                                   (hdd_list_node_t**)pNextAdapterNode );
+ 
+-    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_UNLOCK_BH(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+@@ -13848,10 +13848,10 @@ VOS_STATUS hdd_remove_adapter( hdd_context_t *pHddCtx,
+                                hdd_adapter_list_node_t* pAdapterNode)
+ {
+     VOS_STATUS status;
+-    spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_LOCK_BH(&pHddCtx->hddAdapters.lock);
+     status =  hdd_list_remove_node ( &pHddCtx->hddAdapters,
+                                      &pAdapterNode->node );
+-    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_UNLOCK_BH(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+@@ -13859,10 +13859,10 @@ VOS_STATUS hdd_remove_front_adapter( hdd_context_t *pHddCtx,
+                                      hdd_adapter_list_node_t** ppAdapterNode)
+ {
+     VOS_STATUS status;
+-    spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_LOCK_BH(&pHddCtx->hddAdapters.lock);
+     status =  hdd_list_remove_front( &pHddCtx->hddAdapters,
+                    (hdd_list_node_t**) ppAdapterNode );
+-    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_UNLOCK_BH(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+@@ -13870,10 +13870,10 @@ VOS_STATUS hdd_add_adapter_back( hdd_context_t *pHddCtx,
+                                  hdd_adapter_list_node_t* pAdapterNode)
+ {
+     VOS_STATUS status;
+-    spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_LOCK_BH(&pHddCtx->hddAdapters.lock);
+     status =  hdd_list_insert_back ( &pHddCtx->hddAdapters,
+                    (hdd_list_node_t*) pAdapterNode );
+-    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_UNLOCK_BH(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+@@ -13881,10 +13881,10 @@ VOS_STATUS hdd_add_adapter_front( hdd_context_t *pHddCtx,
+                                   hdd_adapter_list_node_t* pAdapterNode)
+ {
+     VOS_STATUS status;
+-    spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_LOCK_BH(&pHddCtx->hddAdapters.lock);
+     status =  hdd_list_insert_front ( &pHddCtx->hddAdapters,
+                    (hdd_list_node_t*) pAdapterNode );
+-    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    SPIN_UNLOCK_BH(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+@@ -15527,13 +15527,13 @@ static void hdd_bus_bw_compute_cbk(void *priv)
+         total_tx += pAdapter->stats.tx_packets;
+ 
+ 
+-        spin_lock_bh(&pHddCtx->bus_bw_lock);
++        SPIN_LOCK_BH(&pHddCtx->bus_bw_lock);
+         pAdapter->prev_tx_packets = pAdapter->stats.tx_packets;
+         pAdapter->prev_tx_bytes = pAdapter->stats.tx_bytes;
+         pAdapter->prev_rx_packets = pAdapter->stats.rx_packets;
+         pAdapter->prev_fwd_tx_packets = fwd_tx_packets;
+         pAdapter->prev_fwd_rx_packets = fwd_rx_packets;
+-        spin_unlock_bh(&pHddCtx->bus_bw_lock);
++        SPIN_UNLOCK_BH(&pHddCtx->bus_bw_lock);
+         connected = TRUE;
+     }
+ 
+diff --git a/CORE/HDD/src/wlan_hdd_softap_tx_rx.c b/CORE/HDD/src/wlan_hdd_softap_tx_rx.c
+index 501f073..c02e983 100644
+--- a/CORE/HDD/src/wlan_hdd_softap_tx_rx.c
++++ b/CORE/HDD/src/wlan_hdd_softap_tx_rx.c
+@@ -82,7 +82,7 @@ static VOS_STATUS hdd_softap_flush_tx_queues( hdd_adapter_t *pAdapter )
+    skb_list_node_t *pktNode = NULL;
+    struct sk_buff *skb = NULL;
+ 
+-   spin_lock_bh( &pAdapter->staInfo_lock );
++   SPIN_LOCK_BH( &pAdapter->staInfo_lock );
+    for (STAId = 0; STAId < WLAN_MAX_STA_COUNT; STAId++)
+    {
+       if (FALSE == pAdapter->aStaInfo[STAId].isUsed)
+@@ -92,7 +92,7 @@ static VOS_STATUS hdd_softap_flush_tx_queues( hdd_adapter_t *pAdapter )
+ 
+       for (i = 0; i < NUM_TX_QUEUES; i ++)
+       {
+-         spin_lock_bh(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
++         SPIN_LOCK_BH(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
+          while (true)
+          {
+             status = hdd_list_remove_front ( &pAdapter->aStaInfo[STAId].wmm_tx_queue[i], &anchor);
+@@ -111,12 +111,12 @@ static VOS_STATUS hdd_softap_flush_tx_queues( hdd_adapter_t *pAdapter )
+             break;
+          }
+          pAdapter->aStaInfo[STAId].txSuspended[i] = VOS_FALSE;
+-         spin_unlock_bh(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
++         SPIN_UNLOCK_BH(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
+       }
+       pAdapter->aStaInfo[STAId].vosLowResource = VOS_FALSE;
+    }
+ 
+-   spin_unlock_bh( &pAdapter->staInfo_lock );
++   SPIN_UNLOCK_BH( &pAdapter->staInfo_lock );
+ 
+    return status;
+ }
+@@ -680,7 +680,7 @@ static void hdd_softap_flush_tx_queues_sta( hdd_adapter_t *pAdapter, v_U8_t STAI
+ 
+    for (i = 0; i < NUM_TX_QUEUES; i ++)
+    {
+-      spin_lock_bh(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
++      SPIN_LOCK_BH(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
+       while (true)
+       {
+          if (VOS_STATUS_E_EMPTY !=
+@@ -698,7 +698,7 @@ static void hdd_softap_flush_tx_queues_sta( hdd_adapter_t *pAdapter, v_U8_t STAI
+          //current list is empty
+          break;
+       }
+-      spin_unlock_bh(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
++      SPIN_UNLOCK_BH(&pAdapter->aStaInfo[STAId].wmm_tx_queue[i].lock);
+    }
+ 
+    return;
+@@ -717,12 +717,12 @@ static void hdd_softap_flush_tx_queues_sta( hdd_adapter_t *pAdapter, v_U8_t STAI
+ VOS_STATUS hdd_softap_init_tx_rx_sta( hdd_adapter_t *pAdapter, v_U8_t STAId, v_MACADDR_t *pmacAddrSTA)
+ {
+    v_U8_t i = 0;
+-   spin_lock_bh( &pAdapter->staInfo_lock );
++   SPIN_LOCK_BH( &pAdapter->staInfo_lock );
+    if (pAdapter->aStaInfo[STAId].isUsed)
+    {
+       VOS_TRACE( VOS_MODULE_ID_HDD_SAP_DATA, VOS_TRACE_LEVEL_ERROR,
+                  "%s: Reinit station %d", __func__, STAId );
+-      spin_unlock_bh( &pAdapter->staInfo_lock );
++      SPIN_UNLOCK_BH( &pAdapter->staInfo_lock );
+       return VOS_STATUS_E_FAILURE;
+    }
+ 
+@@ -736,7 +736,7 @@ VOS_STATUS hdd_softap_init_tx_rx_sta( hdd_adapter_t *pAdapter, v_U8_t STAId, v_M
+    pAdapter->aStaInfo[STAId].isDeauthInProgress = FALSE;
+    vos_copy_macaddr( &pAdapter->aStaInfo[STAId].macAddrSTA, pmacAddrSTA);
+ 
+-   spin_unlock_bh( &pAdapter->staInfo_lock );
++   SPIN_UNLOCK_BH( &pAdapter->staInfo_lock );
+    return VOS_STATUS_SUCCESS;
+ }
+ 
+@@ -761,12 +761,12 @@ VOS_STATUS hdd_softap_deinit_tx_rx_sta ( hdd_adapter_t *pAdapter, v_U8_t STAId )
+ 
+    pHostapdState = WLAN_HDD_GET_HOSTAP_STATE_PTR(pAdapter);
+ 
+-   spin_lock_bh( &pAdapter->staInfo_lock );
++   SPIN_LOCK_BH( &pAdapter->staInfo_lock );
+    if (FALSE == pAdapter->aStaInfo[STAId].isUsed)
+    {
+       VOS_TRACE( VOS_MODULE_ID_HDD_SAP_DATA, VOS_TRACE_LEVEL_ERROR,
+                  "%s: Deinit station not inited %d", __func__, STAId );
+-      spin_unlock_bh( &pAdapter->staInfo_lock );
++      SPIN_UNLOCK_BH( &pAdapter->staInfo_lock );
+       return VOS_STATUS_E_FAILURE;
+    }
+ 
+@@ -814,7 +814,7 @@ VOS_STATUS hdd_softap_deinit_tx_rx_sta ( hdd_adapter_t *pAdapter, v_U8_t STAId )
+       }
+    }
+ 
+-   spin_unlock_bh( &pAdapter->staInfo_lock );
++   SPIN_UNLOCK_BH( &pAdapter->staInfo_lock );
+    return status;
+ }
+ 
+@@ -1008,7 +1008,7 @@ VOS_STATUS hdd_softap_DeregisterSTA( hdd_adapter_t *pAdapter, tANI_U8 staId )
+     }
+ 
+     if (pAdapter->aStaInfo[staId].isUsed) {
+-        spin_lock_bh( &pAdapter->staInfo_lock );
++        SPIN_LOCK_BH( &pAdapter->staInfo_lock );
+         vos_mem_zero(&pAdapter->aStaInfo[staId], sizeof(hdd_station_info_t));
+ 
+         /* re-init spin lock, since netdev can still open adapter until
+@@ -1019,7 +1019,7 @@ VOS_STATUS hdd_softap_DeregisterSTA( hdd_adapter_t *pAdapter, tANI_U8 staId )
+             hdd_list_init(&pAdapter->aStaInfo[staId].wmm_tx_queue[i],
+                           HDD_TX_QUEUE_MAX_LEN);
+         }
+-        spin_unlock_bh( &pAdapter->staInfo_lock );
++        SPIN_UNLOCK_BH( &pAdapter->staInfo_lock );
+    }
+     pHddCtx->sta_to_adapter[staId] = NULL;
+ 
+diff --git a/CORE/HDD/src/wlan_hdd_tx_rx.c b/CORE/HDD/src/wlan_hdd_tx_rx.c
+index 8e9464f..b874191 100644
+--- a/CORE/HDD/src/wlan_hdd_tx_rx.c
++++ b/CORE/HDD/src/wlan_hdd_tx_rx.c
+@@ -114,7 +114,7 @@ static VOS_STATUS hdd_flush_tx_queues( hdd_adapter_t *pAdapter )
+    while (++i != NUM_TX_QUEUES)
+    {
+       //Free up any packets in the Tx queue
+-      spin_lock_bh(&pAdapter->wmm_tx_queue[i].lock);
++      SPIN_LOCK_BH(&pAdapter->wmm_tx_queue[i].lock);
+       while (true)
+       {
+          status = hdd_list_remove_front( &pAdapter->wmm_tx_queue[i], &anchor );
+@@ -128,7 +128,7 @@ static VOS_STATUS hdd_flush_tx_queues( hdd_adapter_t *pAdapter )
+          }
+          break;
+       }
+-      spin_unlock_bh(&pAdapter->wmm_tx_queue[i].lock);
++      SPIN_UNLOCK_BH(&pAdapter->wmm_tx_queue[i].lock);
+       /* Back pressure is no longer in effect */
+       pAdapter->isTxSuspended[i] = VOS_FALSE;
+    }
+@@ -165,11 +165,11 @@ void hdd_flush_ibss_tx_queues( hdd_adapter_t *pAdapter, v_U8_t STAId)
+ 
+    for (i = 0; i < NUM_TX_QUEUES; i++)
+    {
+-      spin_lock_bh(&pAdapter->wmm_tx_queue[i].lock);
++      SPIN_LOCK_BH(&pAdapter->wmm_tx_queue[i].lock);
+ 
+       if ( list_empty( &pAdapter->wmm_tx_queue[i].anchor ) )
+       {
+-         spin_unlock_bh(&pAdapter->wmm_tx_queue[i].lock);
++         SPIN_UNLOCK_BH(&pAdapter->wmm_tx_queue[i].lock);
+          continue;
+       }
+ 
+@@ -204,7 +204,7 @@ void hdd_flush_ibss_tx_queues( hdd_adapter_t *pAdapter, v_U8_t STAId)
+          pAdapter->isTxSuspended[i] = VOS_FALSE;
+       }
+ 
+-      spin_unlock_bh(&pAdapter->wmm_tx_queue[i].lock);
++      SPIN_UNLOCK_BH(&pAdapter->wmm_tx_queue[i].lock);
+    }
+ }
+ 
+@@ -1723,38 +1723,38 @@ void wlan_hdd_netif_queue_control(hdd_adapter_t *adapter,
+ 		break;
+ 
+ 	case WLAN_STOP_ALL_NETIF_QUEUE:
+-		spin_lock_bh(&adapter->pause_map_lock);
++		SPIN_LOCK_BH(&adapter->pause_map_lock);
+ 		if (!adapter->pause_map) {
+ 			netif_tx_stop_all_queues(adapter->dev);
+ 			wlan_hdd_update_txq_timestamp(adapter->dev);
+ 			wlan_hdd_update_unpause_time(adapter);
+ 		}
+ 		adapter->pause_map |= (1 << reason);
+-		spin_unlock_bh(&adapter->pause_map_lock);
++		SPIN_UNLOCK_BH(&adapter->pause_map_lock);
+ 		break;
+ 
+ 	case WLAN_START_ALL_NETIF_QUEUE:
+-		spin_lock_bh(&adapter->pause_map_lock);
++		SPIN_LOCK_BH(&adapter->pause_map_lock);
+ 		adapter->pause_map &= ~(1 << reason);
+ 		if (!adapter->pause_map) {
+ 			netif_tx_start_all_queues(adapter->dev);
+ 			wlan_hdd_update_pause_time(adapter);
+ 		}
+-		spin_unlock_bh(&adapter->pause_map_lock);
++		SPIN_UNLOCK_BH(&adapter->pause_map_lock);
+ 		break;
+ 
+ 	case WLAN_WAKE_ALL_NETIF_QUEUE:
+-		spin_lock_bh(&adapter->pause_map_lock);
++		SPIN_LOCK_BH(&adapter->pause_map_lock);
+ 		adapter->pause_map &= ~(1 << reason);
+ 		if (!adapter->pause_map) {
+ 			netif_tx_wake_all_queues(adapter->dev);
+ 			wlan_hdd_update_pause_time(adapter);
+ 		}
+-		spin_unlock_bh(&adapter->pause_map_lock);
++		SPIN_UNLOCK_BH(&adapter->pause_map_lock);
+ 		break;
+ 
+ 	case WLAN_STOP_ALL_NETIF_QUEUE_N_CARRIER:
+-		spin_lock_bh(&adapter->pause_map_lock);
++		SPIN_LOCK_BH(&adapter->pause_map_lock);
+ 		if (!adapter->pause_map) {
+ 			netif_tx_stop_all_queues(adapter->dev);
+ 			wlan_hdd_update_txq_timestamp(adapter->dev);
+@@ -1762,33 +1762,33 @@ void wlan_hdd_netif_queue_control(hdd_adapter_t *adapter,
+ 		}
+ 		adapter->pause_map |= (1 << reason);
+ 		netif_carrier_off(adapter->dev);
+-		spin_unlock_bh(&adapter->pause_map_lock);
++		SPIN_UNLOCK_BH(&adapter->pause_map_lock);
+ 		break;
+ 
+ 	case WLAN_START_ALL_NETIF_QUEUE_N_CARRIER:
+-		spin_lock_bh(&adapter->pause_map_lock);
++		SPIN_LOCK_BH(&adapter->pause_map_lock);
+ 		netif_carrier_on(adapter->dev);
+ 		adapter->pause_map &= ~(1 << reason);
+ 		if (!adapter->pause_map) {
+ 			netif_tx_start_all_queues(adapter->dev);
+ 			wlan_hdd_update_pause_time(adapter);
+ 		}
+-		spin_unlock_bh(&adapter->pause_map_lock);
++		SPIN_UNLOCK_BH(&adapter->pause_map_lock);
+ 		break;
+ 
+ 	case WLAN_NETIF_TX_DISABLE:
+-		spin_lock_bh(&adapter->pause_map_lock);
++		SPIN_LOCK_BH(&adapter->pause_map_lock);
+ 		if (!adapter->pause_map) {
+ 			netif_tx_disable(adapter->dev);
+ 			wlan_hdd_update_txq_timestamp(adapter->dev);
+ 			wlan_hdd_update_unpause_time(adapter);
+ 		}
+ 		adapter->pause_map |= (1 << reason);
+-		spin_unlock_bh(&adapter->pause_map_lock);
++		SPIN_UNLOCK_BH(&adapter->pause_map_lock);
+ 		break;
+ 
+ 	case WLAN_NETIF_TX_DISABLE_N_CARRIER:
+-		spin_lock_bh(&adapter->pause_map_lock);
++		SPIN_LOCK_BH(&adapter->pause_map_lock);
+ 		if (!adapter->pause_map) {
+ 			netif_tx_disable(adapter->dev);
+ 			wlan_hdd_update_txq_timestamp(adapter->dev);
+@@ -1796,7 +1796,7 @@ void wlan_hdd_netif_queue_control(hdd_adapter_t *adapter,
+ 		}
+ 		adapter->pause_map |= (1 << reason);
+ 		netif_carrier_off(adapter->dev);
+-		spin_unlock_bh(&adapter->pause_map_lock);
++		SPIN_UNLOCK_BH(&adapter->pause_map_lock);
+ 		break;
+ 
+ 	default:
+diff --git a/CORE/HDD/src/wlan_hdd_wext.c b/CORE/HDD/src/wlan_hdd_wext.c
+index d139555..83d3b82 100644
+--- a/CORE/HDD/src/wlan_hdd_wext.c
++++ b/CORE/HDD/src/wlan_hdd_wext.c
+@@ -8924,11 +8924,11 @@ void hdd_wmm_tx_snapshot(hdd_adapter_t *pAdapter)
+     int i = 0, j = 0;
+     for ( i=0; i< NUM_TX_QUEUES; i++)
+     {
+-        spin_lock_bh(&pAdapter->wmm_tx_queue[i].lock);
++	SPIN_LOCK_BH(&pAdapter->wmm_tx_queue[i].lock);
+         hddLog(LOGE, "HDD WMM TxQueue Info For AC: %d Count: %d PrevAdress:%pK, NextAddress:%pK",
+                i, pAdapter->wmm_tx_queue[i].count,
+                pAdapter->wmm_tx_queue[i].anchor.prev, pAdapter->wmm_tx_queue[i].anchor.next);
+-        spin_unlock_bh(&pAdapter->wmm_tx_queue[i].lock);
++        SPIN_UNLOCK_BH(&pAdapter->wmm_tx_queue[i].lock);
+     }
+ 
+     for(i =0; i<WLAN_MAX_STA_COUNT; i++)
+@@ -8938,12 +8938,12 @@ void hdd_wmm_tx_snapshot(hdd_adapter_t *pAdapter)
+              hddLog(LOGE, "******STAIndex: %d*********", i);
+              for ( j=0; j< NUM_TX_QUEUES; j++)
+              {
+-                spin_lock_bh(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
++                SPIN_LOCK_BH(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
+                 hddLog(LOGE, "HDD TxQueue Info For AC: %d Count: %d PrevAdress:%pK, NextAddress:%pK",
+                        j, pAdapter->aStaInfo[i].wmm_tx_queue[j].count,
+                        pAdapter->aStaInfo[i].wmm_tx_queue[j].anchor.prev,
+                        pAdapter->aStaInfo[i].wmm_tx_queue[j].anchor.next);
+-                spin_unlock_bh(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
++                SPIN_UNLOCK_BH(&pAdapter->aStaInfo[i].wmm_tx_queue[j].lock);
+              }
+         }
+     }
+diff --git a/CORE/SERVICES/COMMON/adf/adf_trace.c b/CORE/SERVICES/COMMON/adf/adf_trace.c
+index 4a7b30a..d910f1a 100644
+--- a/CORE/SERVICES/COMMON/adf/adf_trace.c
++++ b/CORE/SERVICES/COMMON/adf/adf_trace.c
+@@ -44,6 +44,8 @@
+ #include "debug_linux.h"
+ #include "adf_os_io.h"
+ #include "vos_timer.h"
++#include "osdep.h"
++
+ 
+ /* Static and Global variables */
+ static spinlock_t l_dp_trace_lock;
+@@ -114,11 +116,11 @@ void adf_dp_trace_init(void)
+ void adf_dp_trace_set_value(uint8_t proto_bitmap, uint8_t no_of_record,
+ 			 uint8_t verbosity)
+ {
+-	spin_lock_bh(&l_dp_trace_lock);
++	SPIN_LOCK_BH(&l_dp_trace_lock);
+ 	g_adf_dp_trace_data.proto_bitmap = proto_bitmap;
+ 	g_adf_dp_trace_data.no_of_record = no_of_record;
+ 	g_adf_dp_trace_data.verbosity    = verbosity;
+-	spin_unlock_bh(&l_dp_trace_lock);
++	SPIN_UNLOCK_BH(&l_dp_trace_lock);
+ }
+ 
+ /**
+@@ -173,7 +175,7 @@ void adf_dp_trace_set_track(adf_nbuf_t nbuf,  enum adf_proto_dir dir)
+ {
+ 	uint32_t count = 0;
+ 
+-	spin_lock_bh(&l_dp_trace_lock);
++	SPIN_LOCK_BH(&l_dp_trace_lock);
+ 	if (ADF_TX == dir)
+ 		count = ++g_adf_dp_trace_data.tx_count;
+ 	else if (ADF_RX == dir)
+@@ -186,7 +188,7 @@ void adf_dp_trace_set_track(adf_nbuf_t nbuf,  enum adf_proto_dir dir)
+ 		else if (ADF_RX == dir)
+ 			ADF_NBUF_CB_RX_DP_TRACE(nbuf) = 1;
+ 	}
+-	spin_unlock_bh(&l_dp_trace_lock);
++	SPIN_UNLOCK_BH(&l_dp_trace_lock);
+ }
+ 
+ #define DPTRACE_PRINT(args...) \
+@@ -415,7 +417,7 @@ void adf_dp_add_record(enum ADF_DP_TRACE_ID code,
+ 	struct adf_dp_trace_record_s *rec = NULL;
+ 	int index;
+ 
+-	spin_lock_bh(&l_dp_trace_lock);
++	SPIN_LOCK_BH(&l_dp_trace_lock);
+ 
+ 	g_adf_dp_trace_data.num++;
+ 
+@@ -456,7 +458,7 @@ void adf_dp_add_record(enum ADF_DP_TRACE_ID code,
+ 	vos_get_time_of_the_day_in_hr_min_sec_usec(rec->time,
+ 					sizeof(rec->time));
+ 	rec->pid = (in_interrupt() ? 0 : current->pid);
+-	spin_unlock_bh(&l_dp_trace_lock);
++	SPIN_UNLOCK_BH(&l_dp_trace_lock);
+ 
+ 	if ((g_adf_dp_trace_data.live_mode || print == true) &&
+ 	    (rec->code < ADF_DP_TRACE_MAX))
+@@ -874,7 +876,7 @@ void adf_dp_trace_dump_all(uint32_t count)
+ 	/* aquire the lock so that only one thread at a time can read
+ 	 * the ring buffer
+ 	 */
+-	spin_lock_bh(&l_dp_trace_lock);
++	SPIN_LOCK_BH(&l_dp_trace_lock);
+ 
+ 	if (g_adf_dp_trace_data.head != INVALID_ADF_DP_TRACE_ADDR) {
+ 		i = g_adf_dp_trace_data.head;
+@@ -891,7 +893,7 @@ void adf_dp_trace_dump_all(uint32_t count)
+ 		}
+ 
+ 		pRecord = g_adf_dp_trace_tbl[i];
+-		spin_unlock_bh(&l_dp_trace_lock);
++		SPIN_UNLOCK_BH(&l_dp_trace_lock);
+ 		for (;; ) {
+ 			adf_dp_trace_cb_table[pRecord.
+ 					   code] (&pRecord, (uint16_t)i);
+@@ -899,14 +901,14 @@ void adf_dp_trace_dump_all(uint32_t count)
+ 				break;
+ 			i += 1;
+ 
+-			spin_lock_bh(&l_dp_trace_lock);
++			SPIN_LOCK_BH(&l_dp_trace_lock);
+ 			if (MAX_ADF_DP_TRACE_RECORDS == i)
+ 				i = 0;
+ 
+ 			pRecord = g_adf_dp_trace_tbl[i];
+-			spin_unlock_bh(&l_dp_trace_lock);
++			SPIN_UNLOCK_BH(&l_dp_trace_lock);
+ 		}
+ 	} else {
+-		spin_unlock_bh(&l_dp_trace_lock);
++		SPIN_UNLOCK_BH(&l_dp_trace_lock);
+ 	}
+ }
+diff --git a/CORE/SERVICES/COMMON/osapi_linux.h b/CORE/SERVICES/COMMON/osapi_linux.h
+index cb7b3ac..92b791d 100644
+--- a/CORE/SERVICES/COMMON/osapi_linux.h
++++ b/CORE/SERVICES/COMMON/osapi_linux.h
+@@ -149,8 +149,8 @@ extern int logger_write(const enum logidx idx,
+ /* Mutual Exclusion */
+ typedef spinlock_t                      A_MUTEX_T;
+ #define A_MUTEX_INIT(mutex)             spin_lock_init(mutex)
+-#define A_MUTEX_LOCK(mutex)             spin_lock_bh(mutex)
+-#define A_MUTEX_UNLOCK(mutex)           spin_unlock_bh(mutex)
++#define A_MUTEX_LOCK(mutex)             SPIN_LOCK_BH(mutex)
++#define A_MUTEX_UNLOCK(mutex)           SPIN_UNLOCK_BH(mutex)
+ #define A_IS_MUTEX_VALID(mutex)         TRUE  /* okay to return true, since A_MUTEX_DELETE does nothing */
+ #define A_MUTEX_DELETE(mutex)           /* spin locks are not kernel resources so nothing to free.. */
+ 
+diff --git a/CORE/SERVICES/COMMON/osdep_adf.h b/CORE/SERVICES/COMMON/osdep_adf.h
+index 4e2ff99..f111cde 100644
+--- a/CORE/SERVICES/COMMON/osdep_adf.h
++++ b/CORE/SERVICES/COMMON/osdep_adf.h
+@@ -277,6 +277,7 @@ typedef rwlock_t usb_readwrite_lock_t;
+ 
+ #ifdef CONFIG_SMP
+ /* Undo the one provided by the kernel to debug spin locks */
++#if 0
+ #undef spin_lock
+ #undef spin_unlock
+ #undef spin_trylock
+@@ -297,6 +298,23 @@ spin_unlock_bh(x);\
+ } while (0)
+ 
+ #define spin_trylock(x) spin_trylock_bh(x)
++#endif
++
++#define SPIN_LOCK_BH(x) do {\
++    if (irqs_disabled() || in_irq()) {\
++        spin_lock(x);\
++    } else {\
++        spin_lock_bh(x);\
++    }\
++} while (0)
++
++#define SPIN_UNLOCK_BH(x) do {\
++    if (irqs_disabled() || in_irq()) {\
++        spin_unlock(x);\
++    } else {\
++        spin_unlock_bh(x);\
++    }\
++} while (0)
+ 
+ #define OS_SUPPORT_ASYNC_Q 1 /* support for handling asyn function calls */
+ 
+diff --git a/CORE/UTILS/FWLOG/dbglog_host.c b/CORE/UTILS/FWLOG/dbglog_host.c
+index 5ac1dee..fe247a9 100644
+--- a/CORE/UTILS/FWLOG/dbglog_host.c
++++ b/CORE/UTILS/FWLOG/dbglog_host.c
+@@ -4284,13 +4284,13 @@ static ssize_t dbglog_block_read(struct file *file,
+     if (!buf)
+        return -ENOMEM;
+ 
+-    spin_lock_bh(&fwlog->fwlog_queue.lock);
++    SPIN_LOCK_BH(&fwlog->fwlog_queue.lock);
+ 
+     if (skb_queue_len(&fwlog->fwlog_queue) == 0) {
+        /* we must init under queue lock */
+        init_completion(&fwlog->fwlog_completion);
+ 
+-       spin_unlock_bh(&fwlog->fwlog_queue.lock);
++       SPIN_UNLOCK_BH(&fwlog->fwlog_queue.lock);
+ 
+        ret = wait_for_completion_interruptible_timeout(
+                     &fwlog->fwlog_completion,
+@@ -4300,7 +4300,7 @@ static ssize_t dbglog_block_read(struct file *file,
+                return ret;
+        }
+ 
+-       spin_lock_bh(&fwlog->fwlog_queue.lock);
++       SPIN_LOCK_BH(&fwlog->fwlog_queue.lock);
+     }
+ 
+     while ((skb = __skb_dequeue(&fwlog->fwlog_queue))) {
+@@ -4316,7 +4316,7 @@ static ssize_t dbglog_block_read(struct file *file,
+        kfree_skb(skb);
+     }
+ 
+-    spin_unlock_bh(&fwlog->fwlog_queue.lock);
++    SPIN_UNLOCK_BH(&fwlog->fwlog_queue.lock);
+ 
+     /* FIXME: what to do if len == 0? */
+     not_copied = copy_to_user(user_buf, buf, len);
+diff --git a/CORE/UTILS/PKTLOG/linux_ac.c b/CORE/UTILS/PKTLOG/linux_ac.c
+index ed6db17..1dd03b7 100644
+--- a/CORE/UTILS/PKTLOG/linux_ac.c
++++ b/CORE/UTILS/PKTLOG/linux_ac.c
+@@ -136,13 +136,13 @@ int pktlog_alloc_buf(struct ol_softc *scn)
+ 
+ 	page_cnt = (sizeof(*(pl_info->buf)) + pl_info->buf_size) / PAGE_SIZE;
+ 
+-	spin_lock_bh(&pl_info->log_lock);
++	SPIN_LOCK_BH(&pl_info->log_lock);
+ 	if(pl_info->buf != NULL) {
+ 		printk("Buffer is already in use\n");
+-		spin_unlock_bh(&pl_info->log_lock);
++		SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 		return -EINVAL;
+ 	}
+-	spin_unlock_bh(&pl_info->log_lock);
++	SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 
+ 	if ((buffer = vmalloc((page_cnt + 2) * PAGE_SIZE)) == NULL) {
+ 		printk(PKTLOG_TAG
+@@ -167,12 +167,12 @@ int pktlog_alloc_buf(struct ol_softc *scn)
+ 		SetPageReserved(vpg);
+ 	}
+ 
+-	spin_lock_bh(&pl_info->log_lock);
++	SPIN_LOCK_BH(&pl_info->log_lock);
+ 	if(pl_info->buf != NULL)
+ 		pktlog_release_buf(scn);
+ 
+ 	pl_info->buf =  buffer;
+-	spin_unlock_bh(&pl_info->log_lock);
++	SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 	return 0;
+ }
+ 
+@@ -574,10 +574,10 @@ static void pktlog_detach(struct ol_softc *scn)
+ 	remove_proc_entry(WLANDEV_BASENAME, g_pktlog_pde);
+ 	pktlog_sysctl_unregister(pl_dev);
+ 
+-	spin_lock_bh(&pl_info->log_lock);
++	SPIN_LOCK_BH(&pl_info->log_lock);
+ 	if (pl_info->buf)
+ 		pktlog_release_buf(scn);
+-	spin_unlock_bh(&pl_info->log_lock);
++	SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 	pktlog_cleanup(pl_info);
+ 
+ 	if (pl_dev) {
+@@ -630,14 +630,14 @@ pktlog_read_proc_entry(char *buf, size_t nbytes, loff_t *ppos,
+ 	int fold_offset, ppos_data, cur_rd_offset, cur_wr_offset;
+ 	struct ath_pktlog_buf *log_buf;
+ 
+-	spin_lock_bh(&pl_info->log_lock);
++	SPIN_LOCK_BH(&pl_info->log_lock);
+ 	log_buf = pl_info->buf;
+ 
+ 	*read_complete = false;
+ 
+ 	if (log_buf == NULL) {
+ 		*read_complete = true;
+-		spin_unlock_bh(&pl_info->log_lock);
++		SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 		return 0;
+ 	}
+ 
+@@ -754,7 +754,7 @@ rd_done:
+ 			*read_complete = true;
+ 		}
+ 	}
+-	spin_unlock_bh(&pl_info->log_lock);
++	SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 	return ret_val;
+ }
+ 
+@@ -776,11 +776,11 @@ __pktlog_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos)
+ #endif
+ 	struct ath_pktlog_buf *log_buf;
+ 
+-	spin_lock_bh(&pl_info->log_lock);
++	SPIN_LOCK_BH(&pl_info->log_lock);
+ 	log_buf = pl_info->buf;
+ 
+ 	if (log_buf == NULL) {
+-		spin_unlock_bh(&pl_info->log_lock);
++		SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 		return 0;
+ 	}
+ 
+@@ -797,13 +797,13 @@ __pktlog_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos)
+ 
+ 	if (*ppos < bufhdr_size) {
+ 		count = MIN((bufhdr_size - *ppos), rem_len);
+-		spin_unlock_bh(&pl_info->log_lock);
++		SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 		if (copy_to_user(buf, ((char *)&log_buf->bufhdr) + *ppos,
+ 				 count))
+ 			return -EFAULT;
+ 		rem_len -= count;
+ 		ret_val += count;
+-		spin_lock_bh(&pl_info->log_lock);
++		SPIN_LOCK_BH(&pl_info->log_lock);
+ 	}
+ 
+ 	start_offset = log_buf->rd_offset;
+@@ -845,25 +845,25 @@ __pktlog_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos)
+ 			goto rd_done;
+ 
+ 		count = MIN(rem_len, (end_offset - ppos_data + 1));
+-		spin_unlock_bh(&pl_info->log_lock);
++		SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 		if (copy_to_user(buf + ret_val,
+ 				 log_buf->log_data + ppos_data,
+ 				 count))
+ 			return -EFAULT;
+ 		ret_val += count;
+ 		rem_len -= count;
+-		spin_lock_bh(&pl_info->log_lock);
++		SPIN_LOCK_BH(&pl_info->log_lock);
+ 	} else {
+ 		if (ppos_data <= fold_offset) {
+ 			count = MIN(rem_len, (fold_offset - ppos_data + 1));
+-			spin_unlock_bh(&pl_info->log_lock);
++			SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 			if (copy_to_user(buf + ret_val,
+ 					 log_buf->log_data + ppos_data,
+ 					 count))
+ 				return -EFAULT;
+ 			ret_val += count;
+ 			rem_len -= count;
+-			spin_lock_bh(&pl_info->log_lock);
++			SPIN_LOCK_BH(&pl_info->log_lock);
+ 		}
+ 
+ 		if (rem_len == 0)
+@@ -875,14 +875,14 @@ __pktlog_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos)
+ 
+ 		if (ppos_data <= end_offset) {
+ 			count = MIN(rem_len, (end_offset - ppos_data + 1));
+-			spin_unlock_bh(&pl_info->log_lock);
++			SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 			if (copy_to_user(buf + ret_val,
+ 					 log_buf->log_data + ppos_data,
+ 					 count))
+ 				return -EFAULT;
+ 			ret_val += count;
+ 			rem_len -= count;
+-			spin_lock_bh(&pl_info->log_lock);
++			SPIN_LOCK_BH(&pl_info->log_lock);
+ 		}
+ 	}
+ 
+@@ -893,7 +893,7 @@ rd_done:
+ 	}
+ 	*ppos += ret_val;
+ 
+-	spin_unlock_bh(&pl_info->log_lock);
++	SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 	return ret_val;
+ }
+ 
+diff --git a/CORE/UTILS/PKTLOG/pktlog_ac.c b/CORE/UTILS/PKTLOG/pktlog_ac.c
+index 679a78c..63fab8e 100644
+--- a/CORE/UTILS/PKTLOG/pktlog_ac.c
++++ b/CORE/UTILS/PKTLOG/pktlog_ac.c
+@@ -351,7 +351,7 @@ __pktlog_enable(struct ol_softc *scn, int32_t log_state)
+ 			}
+ 		}
+ 
+-		spin_lock_bh(&pl_info->log_lock);
++		SPIN_LOCK_BH(&pl_info->log_lock);
+ 		pl_info->buf->bufhdr.version = CUR_PKTLOG_VER;
+ 		pl_info->buf->bufhdr.magic_num = PKTLOG_MAGIC_NUM;
+ 		pl_info->buf->wr_offset = 0;
+@@ -360,7 +360,7 @@ __pktlog_enable(struct ol_softc *scn, int32_t log_state)
+ 		pl_info->buf->bytes_written = 0;
+ 		pl_info->buf->msg_index = 1;
+ 		pl_info->buf->offset = PKTLOG_READ_OFFSET;
+-		spin_unlock_bh(&pl_info->log_lock);
++		SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 
+ 		pl_info->start_time_thruput = OS_GET_TIMESTAMP();
+ 		pl_info->start_time_per = pl_info->start_time_thruput;
+@@ -449,13 +449,13 @@ __pktlog_setsize(struct ol_softc *scn, int32_t size)
+ 		return -EINVAL;
+ 	}
+ 
+-	spin_lock_bh(&pl_info->log_lock);
++	SPIN_LOCK_BH(&pl_info->log_lock);
+ 	if (pl_info->buf != NULL)
+ 		pktlog_release_buf(scn);
+ 
+ 	if (size != 0)
+ 		pl_info->buf_size = size;
+-	spin_unlock_bh(&pl_info->log_lock);
++	SPIN_UNLOCK_BH(&pl_info->log_lock);
+ 
+ 	return 0;
+ }
+diff --git a/CORE/VOSS/src/vos_packet.c b/CORE/VOSS/src/vos_packet.c
+index db8e10d..e6ed59c 100644
+--- a/CORE/VOSS/src/vos_packet.c
++++ b/CORE/VOSS/src/vos_packet.c
+@@ -342,11 +342,11 @@ void vos_pkt_trace_buf_update
+       return;
+    }
+ 
+-   spin_lock_bh(&trace_buffer_lock);
++   SPIN_LOCK_BH(&trace_buffer_lock);
+    slot = trace_buffer_order % VOS_PKT_TRAC_MAX_TRACE_BUF;
+    trace_buffer[slot].order = trace_buffer_order;
+    trace_buffer_order++;
+-   spin_unlock_bh(&trace_buffer_lock);
++   SPIN_UNLOCK_BH(&trace_buffer_lock);
+    do_gettimeofday(&tv);
+    trace_buffer[slot].event_sec_time = tv.tv_sec;
+    trace_buffer[slot].event_msec_time = tv.tv_usec;
+@@ -462,10 +462,10 @@ void vos_pkt_proto_trace_close
+ {
+    VOS_TRACE(VOS_MODULE_ID_VOSS, VOS_TRACE_LEVEL_ERROR,
+              "%s %d", __func__, __LINE__);
+-   spin_lock_bh(&trace_buffer_lock);
++   SPIN_LOCK_BH(&trace_buffer_lock);
+    vos_mem_free(trace_buffer);
+    trace_buffer = NULL;
+-   spin_unlock_bh(&trace_buffer_lock);
++   SPIN_UNLOCK_BH(&trace_buffer_lock);
+ 
+    return;
+ }
+diff --git a/CORE/VOSS/src/vos_sched.c b/CORE/VOSS/src/vos_sched.c
+index cb5787e..ce09796 100644
+--- a/CORE/VOSS/src/vos_sched.c
++++ b/CORE/VOSS/src/vos_sched.c
+@@ -551,14 +551,14 @@ vos_sched_open
+   spin_lock_init(&pSchedContext->TlshimRxQLock);
+   spin_lock_init(&pSchedContext->VosTlshimPktFreeQLock);
+   INIT_LIST_HEAD(&pSchedContext->tlshimRxQueue);
+-  spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++  SPIN_LOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+   INIT_LIST_HEAD(&pSchedContext->VosTlshimPktFreeQ);
+   if (vos_alloc_tlshim_pkt_freeq(pSchedContext) !=  VOS_STATUS_SUCCESS)
+   {
+-       spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++       SPIN_UNLOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+        return VOS_STATUS_E_FAILURE;
+   }
+-  spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++  SPIN_UNLOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+   register_hotcpu_notifier(&vos_cpu_hotplug_notifier);
+   pSchedContext->cpuHotPlugNotifier = &vos_cpu_hotplug_notifier;
+   vos_lock_init(&pSchedContext->affinity_lock);
+@@ -1289,16 +1289,16 @@ void vos_free_tlshim_pkt_freeq(pVosSchedContext pSchedContext)
+ {
+    struct VosTlshimPkt *pkt;
+ 
+-   spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   SPIN_LOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+    while (!list_empty(&pSchedContext->VosTlshimPktFreeQ)) {
+        pkt = list_entry((&pSchedContext->VosTlshimPktFreeQ)->next,
+                      typeof(*pkt), list);
+        list_del(&pkt->list);
+-       spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++       SPIN_UNLOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+        vos_mem_free(pkt);
+-       spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++       SPIN_LOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+    }
+-   spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   SPIN_UNLOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+ 
+ }
+ 
+@@ -1353,9 +1353,9 @@ void vos_free_tlshim_pkt(pVosSchedContext pSchedContext,
+                          struct VosTlshimPkt *pkt)
+ {
+    memset(pkt, 0, sizeof(*pkt));
+-   spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   SPIN_LOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+    list_add_tail(&pkt->list, &pSchedContext->VosTlshimPktFreeQ);
+-   spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   SPIN_UNLOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+ }
+ 
+ /*---------------------------------------------------------------------------
+@@ -1371,15 +1371,15 @@ struct VosTlshimPkt *vos_alloc_tlshim_pkt(pVosSchedContext pSchedContext)
+ {
+    struct VosTlshimPkt *pkt;
+ 
+-   spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   SPIN_LOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+    if (list_empty(&pSchedContext->VosTlshimPktFreeQ)) {
+-       spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++       SPIN_UNLOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+        return NULL;
+    }
+    pkt = list_first_entry(&pSchedContext->VosTlshimPktFreeQ,
+                           struct VosTlshimPkt, list);
+    list_del(&pkt->list);
+-   spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   SPIN_UNLOCK_BH(&pSchedContext->VosTlshimPktFreeQLock);
+    return pkt;
+ }
+ 
+@@ -1396,9 +1396,9 @@ struct VosTlshimPkt *vos_alloc_tlshim_pkt(pVosSchedContext pSchedContext)
+ void vos_indicate_rxpkt(pVosSchedContext pSchedContext,
+                         struct VosTlshimPkt *pkt)
+ {
+-   spin_lock_bh(&pSchedContext->TlshimRxQLock);
++   SPIN_LOCK_BH(&pSchedContext->TlshimRxQLock);
+    list_add_tail(&pkt->list, &pSchedContext->tlshimRxQueue);
+-   spin_unlock_bh(&pSchedContext->TlshimRxQLock);
++   SPIN_UNLOCK_BH(&pSchedContext->TlshimRxQLock);
+    set_bit(RX_POST_EVENT, &pSchedContext->tlshimRxEvtFlg);
+    wake_up_interruptible(&pSchedContext->tlshimRxWaitQueue);
+ }
+@@ -1420,16 +1420,16 @@ void vos_drop_rxpkt_by_staid(pVosSchedContext pSchedContext, u_int16_t staId)
+    adf_nbuf_t buf, next_buf;
+ 
+    INIT_LIST_HEAD(&local_list);
+-   spin_lock_bh(&pSchedContext->TlshimRxQLock);
++   SPIN_LOCK_BH(&pSchedContext->TlshimRxQLock);
+    if (list_empty(&pSchedContext->tlshimRxQueue)) {
+-       spin_unlock_bh(&pSchedContext->TlshimRxQLock);
++       SPIN_UNLOCK_BH(&pSchedContext->TlshimRxQLock);
+        return;
+    }
+    list_for_each_entry_safe(pkt, tmp, &pSchedContext->tlshimRxQueue, list) {
+        if (pkt->staId == staId || staId == WLAN_MAX_STA_COUNT)
+            list_move_tail(&pkt->list, &local_list);
+    }
+-   spin_unlock_bh(&pSchedContext->TlshimRxQLock);
++   SPIN_UNLOCK_BH(&pSchedContext->TlshimRxQLock);
+ 
+    list_for_each_entry_safe(pkt, tmp, &local_list, list) {
+        list_del(&pkt->list);
+@@ -1457,18 +1457,18 @@ static void vos_rx_from_queue(pVosSchedContext pSchedContext)
+    struct VosTlshimPkt *pkt;
+    u_int16_t sta_id;
+ 
+-   spin_lock_bh(&pSchedContext->TlshimRxQLock);
++   SPIN_LOCK_BH(&pSchedContext->TlshimRxQLock);
+    while (!list_empty(&pSchedContext->tlshimRxQueue)) {
+            pkt = list_first_entry(&pSchedContext->tlshimRxQueue,
+                                   struct VosTlshimPkt, list);
+            list_del(&pkt->list);
+-           spin_unlock_bh(&pSchedContext->TlshimRxQLock);
++           SPIN_UNLOCK_BH(&pSchedContext->TlshimRxQLock);
+            sta_id = pkt->staId;
+            pkt->callback(pkt->context, pkt->Rxpkt, sta_id);
+            vos_free_tlshim_pkt(pSchedContext, pkt);
+-           spin_lock_bh(&pSchedContext->TlshimRxQLock);
++           SPIN_LOCK_BH(&pSchedContext->TlshimRxQLock);
+    }
+-   spin_unlock_bh(&pSchedContext->TlshimRxQLock);
++   SPIN_UNLOCK_BH(&pSchedContext->TlshimRxQLock);
+ }
+ 
+ /*---------------------------------------------------------------------------
+-- 
+1.9.1
+

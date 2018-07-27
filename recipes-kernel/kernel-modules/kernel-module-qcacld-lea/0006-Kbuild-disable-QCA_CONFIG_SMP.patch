@@ -1,0 +1,31 @@
+From 8b67d5d294896db83badb8d860051a2ab69e6a3d Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Mon, 14 May 2018 20:09:13 +0800
+Subject: [PATCH 06/11] Kbuild: disable QCA_CONFIG_SMP
+
+Disable QCA_CONFIG_SMP config for CLD driver since it still
+have bug that cause kernel dump.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ Kbuild | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Kbuild b/Kbuild
+index 3c4bd8d..af52286 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -1470,8 +1470,10 @@ endif
+ 
+ #Mark it as SMP Kernel
+ ifeq ($(CONFIG_SMP),y)
++ifneq ($(CONFIG_ROME_IF), sdio)
+ CDEFINES += -DQCA_CONFIG_SMP
+ endif
++endif
+ 
+ #rps feature
+ ifeq ($(CONFIG_RPS),y)
+-- 
+1.9.1
+

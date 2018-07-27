@@ -1,0 +1,39 @@
+From 48b35557f766f360d65b1c693c472997847c4738 Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Wed, 9 May 2018 16:08:57 +0800
+Subject: [PATCH 03/11] dbglog_host: add timeout for dbglog_block fwlog read
+
+Add timeout for dbglog_block fwlog read operation.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/UTILS/FWLOG/dbglog_host.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/CORE/UTILS/FWLOG/dbglog_host.c b/CORE/UTILS/FWLOG/dbglog_host.c
+index 7a7be6d..5ac1dee 100644
+--- a/CORE/UTILS/FWLOG/dbglog_host.c
++++ b/CORE/UTILS/FWLOG/dbglog_host.c
+@@ -57,6 +57,7 @@
+ #define CLD_DEBUGFS_DIR          "cld"
+ #endif
+ #define DEBUGFS_BLOCK_NAME       "dbglog_block"
++#define CNSS_DIAG_FWLOG_TIMEOUT	2000
+ 
+ #define ATH_MODULE_NAME fwlog
+ #include <a_debug.h>
+@@ -4291,8 +4292,9 @@ static ssize_t dbglog_block_read(struct file *file,
+ 
+        spin_unlock_bh(&fwlog->fwlog_queue.lock);
+ 
+-       ret = wait_for_completion_interruptible(
+-                    &fwlog->fwlog_completion);
++       ret = wait_for_completion_interruptible_timeout(
++                    &fwlog->fwlog_completion,
++		    msecs_to_jiffies(CNSS_DIAG_FWLOG_TIMEOUT));
+        if (ret == -ERESTARTSYS) {
+                vfree(buf);
+                return ret;
+-- 
+1.9.1
+

@@ -1,0 +1,83 @@
+From a2314b0afa1687cd043183ab3794e27336ad47b3 Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Tue, 15 May 2018 10:45:21 +0800
+Subject: [PATCH 09/11] CORE: add timeout when BMI request/response transaction
+ are not completed
+
+Add timeout when BMI request/response transaction are not completed.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/SERVICES/COMMON/adf/adf_os_lock.h           | 10 ++++++++++
+ CORE/SERVICES/COMMON/adf/linux/adf_os_lock_pvt.h |  6 ++++++
+ CORE/SERVICES/HIF/PCIe/hif_pci.c                 |  7 ++++---
+ 3 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/CORE/SERVICES/COMMON/adf/adf_os_lock.h b/CORE/SERVICES/COMMON/adf/adf_os_lock.h
+index 9e0a733..a634ea3 100644
+--- a/CORE/SERVICES/COMMON/adf/adf_os_lock.h
++++ b/CORE/SERVICES/COMMON/adf/adf_os_lock.h
+@@ -72,6 +72,16 @@ static inline int adf_os_mutex_acquire(adf_os_device_t osdev, adf_os_mutex_t *m)
+ }
+ 
+ /**
++ * @brief Take the mutex
++ *
++ * @param[in] m mutex to take
++ */
++static inline int adf_os_mutex_acquire_timeout(adf_os_device_t osdev, adf_os_mutex_t *m, long timeout)
++{
++    return (__adf_os_mutex_acquire_timeout(osdev, m, timeout));
++}
++
++/**
+  * @brief Give the mutex
+  *
+  * @param[in] m mutex to give
+diff --git a/CORE/SERVICES/COMMON/adf/linux/adf_os_lock_pvt.h b/CORE/SERVICES/COMMON/adf/linux/adf_os_lock_pvt.h
+index 9bfdb50..36c847e 100644
+--- a/CORE/SERVICES/COMMON/adf/linux/adf_os_lock_pvt.h
++++ b/CORE/SERVICES/COMMON/adf/linux/adf_os_lock_pvt.h
+@@ -70,6 +70,12 @@ __adf_os_mutex_acquire(adf_os_device_t osdev, struct semaphore *m)
+     return 0;
+ }
+ 
++static inline int
++__adf_os_mutex_acquire_timeout(adf_os_device_t osdev, struct semaphore *m, long timeout)
++{
++    return down_timeout(m, timeout);
++}
++
+ static inline void
+ __adf_os_mutex_release(adf_os_device_t osdev, struct semaphore *m)
+ {
+diff --git a/CORE/SERVICES/HIF/PCIe/hif_pci.c b/CORE/SERVICES/HIF/PCIe/hif_pci.c
+index 508aac9..1496f08 100644
+--- a/CORE/SERVICES/HIF/PCIe/hif_pci.c
++++ b/CORE/SERVICES/HIF/PCIe/hif_pci.c
+@@ -2033,9 +2033,9 @@ HIFExchangeBMIMsg(HIF_DEVICE *hif_device,
+     struct CE_handle *ce_recv = recv_pipe_info->ce_hdl;
+ 
+ #ifdef BMI_RSP_POLLING
++    int i;
+     CE_addr_t buf;
+     unsigned int completed_nbytes, id, flags;
+-    int i;
+ #endif
+ 
+     AR_DEBUG_PRINTF(ATH_DEBUG_TRC, (" %s\n",__FUNCTION__));
+@@ -2092,8 +2092,9 @@ HIFExchangeBMIMsg(HIF_DEVICE *hif_device,
+ 
+     /* Wait for BMI request/response transaction to complete */
+     /* Always just wait for BMI request here if BMI_RSP_POLLING is defined */
+-    while (adf_os_mutex_acquire(scn->adf_dev, &transaction->bmi_transaction_sem)) {
+-        /*need some break out condition(time out?)*/
++    if (adf_os_mutex_acquire_timeout(scn->adf_dev, &transaction->bmi_transaction_sem, HZ)) {
++	printk("%s:error, can't get bmi response\n", __func__);
++	status = A_EBUSY;
+     }
+ 
+     if (bmi_response) {
+-- 
+1.9.1
+
