@@ -39,11 +39,20 @@ do_install() {
     cp -rfv git/brcm/1BW_BCM43340/*.cal ${D}${base_libdir}/firmware/bcm/1BW_BCM43340
     cp -rfv git/brcm/1BW_BCM43340/*.hcd ${D}${sysconfdir}/firmware/
 
+    #1CX_BCM4356
+    install -d ${D}${base_libdir}/firmware/bcm/1CX_BCM4356
+    cp -rfv git/brcm/1CX_BCM4356/fw_bcmdhd.bin ${D}${base_libdir}/firmware/bcm/1CX_BCM4356
+
     #1DX_BCM4343W
     install -d ${D}${base_libdir}/firmware/bcm/1DX_BCM4343W
     cp -rfv git/brcm/1DX_BCM4343W/*.bin ${D}${base_libdir}/firmware/bcm/1DX_BCM4343W
     cp -rfv git/brcm/1DX_BCM4343W/*.cal ${D}${base_libdir}/firmware/bcm/1DX_BCM4343W
     cp -rfv git/brcm/1DX_BCM4343W/*.hcd ${D}${sysconfdir}/firmware/
+
+    #1FD_BCM89359
+    install -d ${D}${base_libdir}/firmware/bcm/1FD_BCM89359
+    cp -rfv git/brcm/1FD_BCM89359/*.bin ${D}${base_libdir}/firmware/bcm/1FD_BCM89359
+    cp -rfv git/brcm/1FD_BCM89359/*.hcd ${D}${sysconfdir}/firmware/
 
     #SN8000_BCM43362
     install -d ${D}${base_libdir}/firmware/bcm/SN8000_BCM43362
