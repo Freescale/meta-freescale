@@ -1,0 +1,257 @@
+From 7984a38559bf13bfc3aeff868faf3aacea4df20b Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Mon, 14 May 2018 14:19:46 +0800
+Subject: [PATCH 01/11] CORE: QCA9377 CLD LEA 2.0 porting to support Android O
+
+QCA9377 CLD LEA 2.0 porting to support Android O.
+
+Signed-off-by: Hangtian Zhu <hangtian@qti.qualcomm.com>
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/HDD/src/wlan_hdd_cfg80211.c           |  6 ++++++
+ CORE/HDD/src/wlan_hdd_hostapd.c            | 10 ++++++++++
+ CORE/HDD/src/wlan_hdd_wext.c               |  8 ++++++++
+ CORE/SERVICES/BMI/ol_fw.c                  |  4 +++-
+ CORE/SERVICES/HIF/sdio/linux/if_ath_sdio.c |  2 +-
+ CORE/VOSS/inc/vos_cnss.h                   |  2 ++
+ CORE/VOSS/src/vos_nvitem.c                 |  4 ++--
+ Kbuild                                     |  2 ++
+ 8 files changed, 34 insertions(+), 4 deletions(-)
+
+diff --git a/CORE/HDD/src/wlan_hdd_cfg80211.c b/CORE/HDD/src/wlan_hdd_cfg80211.c
+index c2793ce..cb6f03d 100644
+--- a/CORE/HDD/src/wlan_hdd_cfg80211.c
++++ b/CORE/HDD/src/wlan_hdd_cfg80211.c
+@@ -7520,6 +7520,8 @@ static int __wlan_hdd_cfg80211_ll_stats_get(struct wiphy *wiphy,
+     hdd_station_ctx_t *hddstactx = WLAN_HDD_GET_STATION_CTX_PTR(pAdapter);
+     int status;
+ 
++    printk("WAR: return ll_stats, because fw didn't enable\n");
++    return 0;
+     if (VOS_FTM_MODE == hdd_get_conparam()) {
+         hddLog(LOGE, FL("Command not allowed in FTM mode"));
+         return -EINVAL;
+@@ -29309,6 +29311,7 @@ wlan_hdd_cfg80211_set_mac_acl(struct wiphy *wiphy,
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_NL80211_TESTMODE
+ #ifdef WLAN_NL80211_TESTMODE
+ #ifdef FEATURE_WLAN_LPHB
+ void wlan_hdd_cfg80211_lphb_ind_handler
+@@ -29558,6 +29561,7 @@ nla_put_failure:
+ }
+ #endif
+ #endif /* CONFIG_NL80211_TESTMODE */
++#endif
+ 
+ /**
+  * wlan_hdd_chan_info_cb() - channel info callback
+@@ -31911,9 +31915,11 @@ static struct cfg80211_ops wlan_hdd_cfg80211_ops =
+      .resume = wlan_hdd_cfg80211_resume_wlan,
+      .suspend = wlan_hdd_cfg80211_suspend_wlan,
+      .set_mac_acl = wlan_hdd_cfg80211_set_mac_acl,
++#ifdef CONFIG_NL80211_TESTMODE
+ #ifdef WLAN_NL80211_TESTMODE
+      .testmode_cmd = wlan_hdd_cfg80211_testmode,
+ #endif
++#endif
+ #ifdef QCA_HT_2040_COEX
+      .set_ap_chanwidth = wlan_hdd_cfg80211_set_ap_channel_width,
+ #endif
+diff --git a/CORE/HDD/src/wlan_hdd_hostapd.c b/CORE/HDD/src/wlan_hdd_hostapd.c
+index 3b8373f..9519764 100644
+--- a/CORE/HDD/src/wlan_hdd_hostapd.c
++++ b/CORE/HDD/src/wlan_hdd_hostapd.c
+@@ -7670,11 +7670,15 @@ static const iw_handler hostapd_private[] = {
+ };
+ const struct iw_handler_def hostapd_handler_def = {
+    .num_standard     = sizeof(hostapd_handler) / sizeof(hostapd_handler[0]),
++#ifdef CONFIG_WEXT_PRIV
+    .num_private      = sizeof(hostapd_private) / sizeof(hostapd_private[0]),
+    .num_private_args = sizeof(hostapd_private_args) / sizeof(hostapd_private_args[0]),
++#endif
+    .standard         = (iw_handler *)hostapd_handler,
++#ifdef CONFIG_WEXT_PRIV
+    .private          = (iw_handler *)hostapd_private,
+    .private_args     = hostapd_private_args,
++#endif
+    .get_wireless_stats = NULL,
+ };
+ 
+@@ -7704,7 +7708,9 @@ void hdd_set_ap_ops( struct net_device *pWlanHostapdDev )
+ VOS_STATUS hdd_init_ap_mode(hdd_adapter_t *pAdapter, bool reinit)
+ {
+     hdd_hostapd_state_t * phostapdBuf;
++#ifdef CONFIG_WIRELESS_EXT
+     struct net_device *dev = pAdapter->dev;
++#endif
+     hdd_context_t *pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
+     VOS_STATUS status;
+ #ifdef WLAN_FEATURE_MBSSID
+@@ -7841,7 +7847,9 @@ VOS_STATUS hdd_init_ap_mode(hdd_adapter_t *pAdapter, bool reinit)
+     sema_init(&(WLAN_HDD_GET_AP_CTX_PTR(pAdapter))->semWpsPBCOverlapInd, 1);
+ 
+      // Register as a wireless device
++#ifdef CONFIG_WIRELESS_EXT
+     dev->wireless_handlers = (struct iw_handler_def *)& hostapd_handler_def;
++#endif
+ 
+     //Initialize the data path module
+     status = hdd_softap_init_tx_rx(pAdapter);
+@@ -8013,6 +8021,7 @@ VOS_STATUS hdd_unregister_hostapd(hdd_adapter_t *pAdapter, bool rtnl_held)
+       detach the wireless device handlers */
+    if (pAdapter->dev)
+    {
++#ifdef CONFIG_WIRELESS_EXT
+       if (rtnl_held)
+           pAdapter->dev->wireless_handlers = NULL;
+       else {
+@@ -8020,6 +8029,7 @@ VOS_STATUS hdd_unregister_hostapd(hdd_adapter_t *pAdapter, bool rtnl_held)
+           pAdapter->dev->wireless_handlers = NULL;
+           rtnl_unlock();
+       }
++#endif
+    }
+ 
+ #ifdef WLAN_FEATURE_MBSSID
+diff --git a/CORE/HDD/src/wlan_hdd_wext.c b/CORE/HDD/src/wlan_hdd_wext.c
+index eeeeab6..d139555 100644
+--- a/CORE/HDD/src/wlan_hdd_wext.c
++++ b/CORE/HDD/src/wlan_hdd_wext.c
+@@ -12822,12 +12822,16 @@ static const struct iw_priv_args we_private_args[] = {
+ 
+ const struct iw_handler_def we_handler_def = {
+    .num_standard     = sizeof(we_handler) / sizeof(we_handler[0]),
++#ifdef CONFIG_WEXT_PRIV
+    .num_private      = sizeof(we_private) / sizeof(we_private[0]),
+    .num_private_args = sizeof(we_private_args) / sizeof(we_private_args[0]),
++#endif
+ 
+    .standard         = (iw_handler *)we_handler,
++#ifdef CONFIG_WEXT_PRIV
+    .private          = (iw_handler *)we_private,
+    .private_args     = we_private_args,
++#endif
+    .get_wireless_stats = get_wireless_stats,
+ };
+ 
+@@ -13116,7 +13120,9 @@ int hdd_register_wext(struct net_device *dev)
+     }
+     hdd_initialize_fils_info(pwextBuf);
+     /* Register as a wireless device */
++#ifdef CONFIG_WIRELESS_EXT
+     dev->wireless_handlers = (struct iw_handler_def *)&we_handler_def;
++#endif
+ 
+     EXIT();
+     return 0;
+@@ -13127,9 +13133,11 @@ int hdd_UnregisterWext(struct net_device *dev)
+ 	hddLog(LOG1, FL("dev(%pK)"), dev);
+ 
+ 	if (dev != NULL) {
++#ifdef CONFIG_WIRELESS_EXT
+ 		rtnl_lock();
+ 		dev->wireless_handlers = NULL;
+ 		rtnl_unlock();
++#endif
+ 	}
+ 
+ 	return 0;
+diff --git a/CORE/SERVICES/BMI/ol_fw.c b/CORE/SERVICES/BMI/ol_fw.c
+index 83ae0d9..4f7dfbd 100644
+--- a/CORE/SERVICES/BMI/ol_fw.c
++++ b/CORE/SERVICES/BMI/ol_fw.c
+@@ -552,7 +552,7 @@ static char *ol_board_id_to_filename(struct ol_softc *scn, uint16_t board_id)
+ 	if (board_id > 0xFF)
+ 		board_id = 0x0;
+ 
+-	snprintf(&dest[input_len - 2], 3, "%.2x", board_id);
++	//snprintf(&dest[input_len - 2], 3, "%.2x", board_id);
+ out:
+ 	return dest;
+ }
+@@ -2314,6 +2314,7 @@ int ol_download_firmware(struct ol_softc *scn)
+ 	}
+ 
+ 	address = BMI_SEGMENTED_WRITE_ADDR;
++#if 0
+ 	if (scn->enablesinglebinary == FALSE) {
+ 		if (ol_transfer_bin_file(scn, ATH_SETUP_FILE,
+ 					BMI_SEGMENTED_WRITE_ADDR, TRUE) == EOK) {
+@@ -2322,6 +2323,7 @@ int ol_download_firmware(struct ol_softc *scn)
+ 			BMIExecute(scn->hif_hdl, address, &param, scn);
+ 		}
+ 	}
++#endif
+ 
+ 	/* Download Target firmware - TODO point to target specific files in runtime */
+ 	if (ol_transfer_bin_file(scn, ATH_FIRMWARE_FILE, address, TRUE) != EOK) {
+diff --git a/CORE/SERVICES/HIF/sdio/linux/if_ath_sdio.c b/CORE/SERVICES/HIF/sdio/linux/if_ath_sdio.c
+index 24bf785..0f68c58 100644
+--- a/CORE/SERVICES/HIF/sdio/linux/if_ath_sdio.c
++++ b/CORE/SERVICES/HIF/sdio/linux/if_ath_sdio.c
+@@ -227,7 +227,7 @@ ath_hif_sdio_probe(void *context, void *hif_handle)
+     ol_sc->hif_hdl = hif_handle;
+ 
+     /* Get RAM dump memory address and size */
+-    ol_sc->ramdump_base = hif_get_virt_ramdump_mem(&ol_sc->ramdump_size);
++    ol_sc->ramdump_base = NULL;//hif_get_virt_ramdump_mem(&ol_sc->ramdump_size);
+     if (ol_sc->ramdump_base == NULL || !ol_sc->ramdump_size) {
+         VOS_TRACE(VOS_MODULE_ID_HIF, VOS_TRACE_LEVEL_ERROR,
+             "%s: Failed to get RAM dump memory address or size!\n",
+diff --git a/CORE/VOSS/inc/vos_cnss.h b/CORE/VOSS/inc/vos_cnss.h
+index fa2d7f8..6d7c8f1 100644
+--- a/CORE/VOSS/inc/vos_cnss.h
++++ b/CORE/VOSS/inc/vos_cnss.h
+@@ -53,10 +53,12 @@ enum cnss_cc_src {
+ };
+ 
+ static inline void vos_wlan_pci_link_down(void){ return; }
++#ifdef HIF_PCI
+ static inline int vos_pcie_shadow_control(struct pci_dev *dev, bool enable)
+ {
+ 	return -ENODEV;
+ }
++#endif
+ 
+ static inline u8 *vos_get_cnss_wlan_mac_buff(struct device *dev, uint32_t *num)
+ {
+diff --git a/CORE/VOSS/src/vos_nvitem.c b/CORE/VOSS/src/vos_nvitem.c
+index bd463d0..ed7a048 100644
+--- a/CORE/VOSS/src/vos_nvitem.c
++++ b/CORE/VOSS/src/vos_nvitem.c
+@@ -976,7 +976,7 @@ static void vos_set_5g_channel_params(uint16_t oper_ch,
+ 				      struct ch_params_s *ch_params)
+ {
+ 	eNVChannelEnabledType chan_state = NV_CHANNEL_ENABLE;
+-	const struct bonded_chan *bonded_chan_ptr;
++	const struct bonded_chan *bonded_chan_ptr = NULL;
+ 	uint16_t center_chan;
+ 
+ 	if (CH_WIDTH_MAX <= ch_params->ch_width)
+@@ -1782,7 +1782,7 @@ bool vos_is_channel_support_sub20(uint16_t operation_channel,
+ 	eNVChannelEnabledType channel_state;
+ 
+ 	if (VOS_IS_CHANNEL_5GHZ(operation_channel)) {
+-		const struct bonded_chan *bonded_chan_ptr;
++		const struct bonded_chan *bonded_chan_ptr = NULL;
+ 
+ 		channel_state =
+ 		    vos_search_5g_bonded_channel(operation_channel,
+diff --git a/Kbuild b/Kbuild
+index c386d37..96d9b37 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -222,6 +222,8 @@ ifeq ($(CONFIG_ROME_IF),usb)
+ endif
+ ifeq ($(CONFIG_QCA_WIFI_SDIO), 1)
+ CONFIG_ATH_11AC_TXCOMPACT := 0
++CONFIG_WLAN_SYNC_TSF := y
++#CONFIG_WLAN_SYNC_TSF_PLUS := y
+ endif
+ 
+ #Enable per vdev Tx desc pool
+-- 
+1.9.1
+

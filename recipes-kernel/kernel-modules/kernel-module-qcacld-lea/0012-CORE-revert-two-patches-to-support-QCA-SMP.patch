@@ -1,0 +1,81 @@
+From 3ff83bf4a4f7c0e399f6ed32b0883ac1239b7b1c Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Fri, 18 May 2018 16:52:01 +0800
+Subject: [PATCH 1/2] CORE: revert two patches to support QCA SMP
+
+This reverts commit af8e2f5c3b2f4cd56ed972a22761049f402742c4.
+This reverts commit 2ba3dce3e199a29efcc1d56a4a33be0cfa8de529.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/HDD/src/wlan_hdd_main.c |  7 ++-----
+ CORE/VOSS/src/vos_sched.c    | 10 +++-------
+ Kbuild                       |  2 --
+ 3 files changed, 5 insertions(+), 14 deletions(-)
+
+diff --git a/CORE/HDD/src/wlan_hdd_main.c b/CORE/HDD/src/wlan_hdd_main.c
+index 4f48d53..db42731 100644
+--- a/CORE/HDD/src/wlan_hdd_main.c
++++ b/CORE/HDD/src/wlan_hdd_main.c
+@@ -13823,13 +13823,10 @@ VOS_STATUS hdd_get_front_adapter( hdd_context_t *pHddCtx,
+                                   hdd_adapter_list_node_t** ppAdapterNode)
+ {
+     VOS_STATUS status;
+-    bool in_irq_context = (in_irq() || irqs_disabled());
+-    if (!in_irq_context)
+-	spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    spin_lock_bh(&pHddCtx->hddAdapters.lock);
+     status =  hdd_list_peek_front ( &pHddCtx->hddAdapters,
+                    (hdd_list_node_t**) ppAdapterNode );
+-    if (!in_irq_context)
+-	spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+diff --git a/CORE/VOSS/src/vos_sched.c b/CORE/VOSS/src/vos_sched.c
+index 99912ab..cb5787e 100644
+--- a/CORE/VOSS/src/vos_sched.c
++++ b/CORE/VOSS/src/vos_sched.c
+@@ -1370,20 +1370,16 @@ void vos_free_tlshim_pkt(pVosSchedContext pSchedContext,
+ struct VosTlshimPkt *vos_alloc_tlshim_pkt(pVosSchedContext pSchedContext)
+ {
+    struct VosTlshimPkt *pkt;
+-   bool in_irq_context = (in_irq() || irqs_disabled());
+ 
+-   if (!in_irq_context)
+-	spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
+    if (list_empty(&pSchedContext->VosTlshimPktFreeQ)) {
+-   	if (!in_irq_context)
+-		spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++       spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
+        return NULL;
+    }
+    pkt = list_first_entry(&pSchedContext->VosTlshimPktFreeQ,
+                           struct VosTlshimPkt, list);
+    list_del(&pkt->list);
+-   if (!in_irq_context)
+-	spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
+    return pkt;
+ }
+ 
+diff --git a/Kbuild b/Kbuild
+index af52286..3c4bd8d 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -1470,10 +1470,8 @@ endif
+ 
+ #Mark it as SMP Kernel
+ ifeq ($(CONFIG_SMP),y)
+-ifneq ($(CONFIG_ROME_IF), sdio)
+ CDEFINES += -DQCA_CONFIG_SMP
+ endif
+-endif
+ 
+ #rps feature
+ ifeq ($(CONFIG_RPS),y)
+-- 
+1.9.1
+

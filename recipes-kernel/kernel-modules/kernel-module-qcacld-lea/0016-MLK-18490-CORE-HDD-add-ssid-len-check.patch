@@ -1,0 +1,75 @@
+From 5294a5788854d05ebea6e4f0d103d42fac220f00 Mon Sep 17 00:00:00 2001
+From: Hangtian Zhu <hangtian@qti.qualcomm.com>
+Date: Thu, 7 Jun 2018 13:12:43 +0800
+Subject: [PATCH] MLK-18490 CORE: HDD: add ssid len check
+
+Add ssid len check to avoid the race between iface up and down.
+
+log:
+[ 1579.835577] CPU: 1 PID: 8058 Comm: kworker/u8:0 Tainted:
+[ 1579.846096] Hardware name: FSL i.MX8MM EVK board (DT)
+[ 1579.851154] Workqueue: cfg80211 cfg80211_event_work
+[ 1579.856649] task: ffff800077df0c80 task.stack: ffff80006e668000
+[ 1579.862739] PC is at __cfg80211_connect_result+0x2d0/0x400
+[ 1579.868224] LR is at __cfg80211_connect_result+0x13c/0x400
+[ 1579.873709] pc : [<ffff000008c1f428>] lr : [<ffff000008c1f294>] pstate: 40000145
+
+Signed-off-by: Hangtian Zhu <hangtian@qti.qualcomm.com>
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/HDD/src/wlan_hdd_assoc.c | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
+
+diff --git a/CORE/HDD/src/wlan_hdd_assoc.c b/CORE/HDD/src/wlan_hdd_assoc.c
+index 889ea95..9818d79 100644
+--- a/CORE/HDD/src/wlan_hdd_assoc.c
++++ b/CORE/HDD/src/wlan_hdd_assoc.c
+@@ -2309,6 +2309,7 @@ static eHalStatus hdd_AssociationCompletionHandler( hdd_adapter_t *pAdapter, tCs
+     hdd_ap_ctx_t *hdd_ap_ctx;
+     uint8_t default_sap_channel = 6;
+     tSirResultCodes timeout_reason = 0;
++    struct wireless_dev *wdev = dev->ieee80211_ptr;
+ #ifdef WLAN_FEATURE_ROAM_OFFLOAD
+     if (pRoamInfo && pRoamInfo->roamSynchInProgress) {
+        /* change logging before release */
+@@ -2604,12 +2605,13 @@ static eHalStatus hdd_AssociationCompletionHandler( hdd_adapter_t *pAdapter, tCs
+                     hddLog(LOG1, "%s ft_carrier_on is %d, sending connect "
+                                  "indication", __FUNCTION__, ft_carrier_on);
+ 
+-                    hdd_connect_result(dev, pRoamInfo->bssid, pRoamInfo,
+-                                       pFTAssocReq, assocReqlen,
+-                                       pFTAssocRsp, assocRsplen,
+-                                       WLAN_STATUS_SUCCESS,
+-                                       GFP_KERNEL, false,
+-                                       pRoamInfo->statusCode);
++		    if(wdev->ssid_len != 0)
++			    hdd_connect_result(dev, pRoamInfo->bssid, pRoamInfo,
++					       pFTAssocReq, assocReqlen,
++					       pFTAssocRsp, assocRsplen,
++					       WLAN_STATUS_SUCCESS,
++					       GFP_KERNEL, false,
++					       pRoamInfo->statusCode);
+                 }
+             }
+             else
+@@ -2640,11 +2642,12 @@ static eHalStatus hdd_AssociationCompletionHandler( hdd_adapter_t *pAdapter, tCs
+                                roamResult, roamStatus);
+ 
+                         /* inform connect result to nl80211 */
+-                        hdd_connect_result(dev, pRoamInfo->bssid, pRoamInfo,
+-                                reqRsnIe, reqRsnLength,
+-                                rspRsnIe, rspRsnLength,
+-                                WLAN_STATUS_SUCCESS,
+-                                GFP_KERNEL, false, pRoamInfo->statusCode);
++			if(wdev->ssid_len != 0)
++				hdd_connect_result(dev, pRoamInfo->bssid, pRoamInfo,
++					reqRsnIe, reqRsnLength,
++					rspRsnIe, rspRsnLength,
++					WLAN_STATUS_SUCCESS,
++					GFP_KERNEL, false, pRoamInfo->statusCode);
+                     }
+                 }
+             }
+-- 
+1.9.1
+

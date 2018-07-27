@@ -1,0 +1,51 @@
+From 67edc9c191c31fc3dc911c6c8b81d584524d91e6 Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Tue, 22 May 2018 16:13:54 +0800
+Subject: [PATCH] CLD: CORE: add CONFIG_HDD_WLAN_WAIT_TIME support for user
+
+User can point the CONFIG_HDD_WLAN_WAIT_TIME for driver firmware loading
+timeout.
+
+In general, it can be set to 10s like:
+	export CONFIG_HDD_WLAN_WAIT_TIME=10000
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/HDD/src/wlan_hdd_main.c | 4 ++++
+ Kbuild                       | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/CORE/HDD/src/wlan_hdd_main.c b/CORE/HDD/src/wlan_hdd_main.c
+index 636ba5f..00dca1a 100755
+--- a/CORE/HDD/src/wlan_hdd_main.c
++++ b/CORE/HDD/src/wlan_hdd_main.c
+@@ -17645,7 +17645,11 @@ int hdd_hif_register_driver(void)
+ 		return ret;
+ 	}
+ 
++#ifdef HDD_WLAN_WAIT_TIME
++	timeout = msecs_to_jiffies(HDD_WLAN_WAIT_TIME);
++#else
+ 	timeout = msecs_to_jiffies(HDD_WLAN_START_WAIT_TIME);
++#endif
+ 
+ 	rc = wait_for_completion_timeout(&wlan_comp.wlan_start_comp, timeout);
+ 
+diff --git a/Kbuild b/Kbuild
+index 3c4bd8d..e26a7c9 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -1062,6 +1062,10 @@ ifeq ($(CONFIG_WLAN_POWER_DEBUGFS), y)
+ CDEFINES += -DWLAN_POWER_DEBUGFS
+ endif
+ 
++ifneq ($(CONFIG_HDD_WLAN_WAIT_TIME),)
++CDEFINES += -DHDD_WLAN_WAIT_TIME=$(CONFIG_HDD_WLAN_WAIT_TIME)
++endif
++
+ ifeq ($(CONFIG_FEATURE_COEX_PTA_CONFIG_ENABLE), y)
+ CDEFINES += -DFEATURE_COEX_PTA_CONFIG_ENABLE
+ endif
+-- 
+1.9.1
+

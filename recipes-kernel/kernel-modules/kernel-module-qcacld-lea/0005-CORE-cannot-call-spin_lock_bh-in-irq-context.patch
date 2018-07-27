@@ -1,0 +1,81 @@
+From b0944b8c45efecf75b9d1be3182bd41cba0a1859 Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Mon, 14 May 2018 15:36:44 +0800
+Subject: [PATCH 05/11] CORE: cannot call spin_lock_bh in irq context
+
+Cannot call spin_lock_bh in irq context.
+Remove the dump message when send wmi command during target is suspended.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/HDD/src/wlan_hdd_main.c    |  7 +++++--
+ CORE/SERVICES/WMI/wmi_unified.c |  3 +--
+ CORE/VOSS/src/vos_sched.c       | 10 +++++++---
+ 3 files changed, 13 insertions(+), 7 deletions(-)
+
+diff --git a/CORE/HDD/src/wlan_hdd_main.c b/CORE/HDD/src/wlan_hdd_main.c
+index db42731..4f48d53 100644
+--- a/CORE/HDD/src/wlan_hdd_main.c
++++ b/CORE/HDD/src/wlan_hdd_main.c
+@@ -13823,10 +13823,13 @@ VOS_STATUS hdd_get_front_adapter( hdd_context_t *pHddCtx,
+                                   hdd_adapter_list_node_t** ppAdapterNode)
+ {
+     VOS_STATUS status;
+-    spin_lock_bh(&pHddCtx->hddAdapters.lock);
++    bool in_irq_context = (in_irq() || irqs_disabled());
++    if (!in_irq_context)
++	spin_lock_bh(&pHddCtx->hddAdapters.lock);
+     status =  hdd_list_peek_front ( &pHddCtx->hddAdapters,
+                    (hdd_list_node_t**) ppAdapterNode );
+-    spin_unlock_bh(&pHddCtx->hddAdapters.lock);
++    if (!in_irq_context)
++	spin_unlock_bh(&pHddCtx->hddAdapters.lock);
+     return status;
+ }
+ 
+diff --git a/CORE/SERVICES/WMI/wmi_unified.c b/CORE/SERVICES/WMI/wmi_unified.c
+index 0b9c1cd..b291614 100644
+--- a/CORE/SERVICES/WMI/wmi_unified.c
++++ b/CORE/SERVICES/WMI/wmi_unified.c
+@@ -926,9 +926,8 @@ int wmi_unified_cmd_send(wmi_unified_t wmi_handle, wmi_buf_t buf, int len,
+ 	if (adf_os_atomic_read(&wmi_handle->is_target_suspended) &&
+ 			( (WMI_WOW_HOSTWAKEUP_FROM_SLEEP_CMDID != cmd_id) &&
+ 			  (WMI_PDEV_RESUME_CMDID != cmd_id)) ) {
+-		adf_os_print("\nERROR: %s: Target is suspended  could not send WMI command: %d\n",
++		pr_debug("\nERROR: %s: Target is suspended  could not send WMI command: %d\n",
+ 				__func__, cmd_id);
+-		VOS_ASSERT(0);
+ 		return -EBUSY;
+ 	} else
+ 		goto dont_tag;
+diff --git a/CORE/VOSS/src/vos_sched.c b/CORE/VOSS/src/vos_sched.c
+index cb5787e..99912ab 100644
+--- a/CORE/VOSS/src/vos_sched.c
++++ b/CORE/VOSS/src/vos_sched.c
+@@ -1370,16 +1370,20 @@ void vos_free_tlshim_pkt(pVosSchedContext pSchedContext,
+ struct VosTlshimPkt *vos_alloc_tlshim_pkt(pVosSchedContext pSchedContext)
+ {
+    struct VosTlshimPkt *pkt;
++   bool in_irq_context = (in_irq() || irqs_disabled());
+ 
+-   spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   if (!in_irq_context)
++	spin_lock_bh(&pSchedContext->VosTlshimPktFreeQLock);
+    if (list_empty(&pSchedContext->VosTlshimPktFreeQ)) {
+-       spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   	if (!in_irq_context)
++		spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
+        return NULL;
+    }
+    pkt = list_first_entry(&pSchedContext->VosTlshimPktFreeQ,
+                           struct VosTlshimPkt, list);
+    list_del(&pkt->list);
+-   spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
++   if (!in_irq_context)
++	spin_unlock_bh(&pSchedContext->VosTlshimPktFreeQLock);
+    return pkt;
+ }
+ 
+-- 
+1.9.1
+
