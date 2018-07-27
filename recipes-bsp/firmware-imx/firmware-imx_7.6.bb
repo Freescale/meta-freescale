@@ -19,7 +19,7 @@ SRCREV = "8ce9046f5058fdd2c5271f86ccfc61bc5a248ae3"
 SRC_URI[md5sum] = "3f6a00c3dfc0693c050bf39824865d28"
 SRC_URI[sha256sum] = "6c1e4d4f33b216f69eb46a6dff7a3e10d722afb694acd412c5398ccc270f8a9c"
 
-inherit fsl-eula-unpack allarch
+inherit fsl-eula-unpack allarch deploy
 
 do_install() {
     install -d ${D}${base_libdir}/firmware/imx
@@ -75,6 +75,27 @@ do_install() {
     # Remove files not going to be installed
     find ${D}${base_libdir}/firmware/ -name '*.mk' -exec rm '{}' ';'
 }
+
+do_deploy() {
+}
+do_deploy_append_mx8mq() {
+    # Synopsys DDR
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        install -m 0644 ${S}/firmware/ddr/synopsys/${ddr_firmware} ${DEPLOYDIR}
+    done
+    install -m 0644 ${S}/firmware/hdmi/cadence/signed_hdmi_imx8m.bin ${DEPLOYDIR}
+}
+do_deploy_append_mx8qm() {
+    # Cadence HDMI
+    install -m 0644 ${S}/firmware/hdmi/cadence/hdmitxfw.bin ${DEPLOYDIR}
+    install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${DEPLOYDIR}
+    install -m 0644 ${S}/firmware/hdmi/cadence/dpfw.bin ${DEPLOYDIR}
+}
+do_deploy_append_mx8qxp() {
+    # SECO
+    install -m 0644 ${S}/firmware/seco/ahab-container.img ${DEPLOYDIR}
+}
+addtask deploy before do_build after do_install
 
 python populate_packages_prepend() {
     vpudir = bb.data.expand('${base_libdir}/firmware/vpu', d)
