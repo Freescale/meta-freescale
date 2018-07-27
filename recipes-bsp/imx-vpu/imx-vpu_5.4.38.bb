@@ -1,8 +1,8 @@
 # Copyright (C) 2013-2018 O.S. Systems Software LTDA.
 # Copyright (C) 2013-2016 Freescale Semiconductor
-# Copyright 2017 NXP
+# Copyright 2017-2018 NXP
 
-DESCRIPTION = "Freescale VPU library"
+DESCRIPTION = "Freescale Chips&Media VPU library"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
@@ -32,4 +32,4 @@ do_install () {
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx6)"
+COMPATIBLE_MACHINE = "(mx6q|mx6dl)"
