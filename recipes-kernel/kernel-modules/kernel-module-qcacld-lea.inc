@@ -1,6 +1,6 @@
 # Copyright 2018 NXP
 
-SUMMARY = "Qualcomm WiFi driver for QCA module 9377"
+SUMMARY = "Qualcomm WiFi driver for QCA module 9377 and 6174"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://CORE/HDD/src/wlan_hdd_main.c;beginline=1;endline=20;md5=ec8d62116b13db773825ebf7cf91be1d;"
 
