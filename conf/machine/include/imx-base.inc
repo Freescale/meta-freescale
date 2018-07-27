@@ -213,6 +213,7 @@ MACHINE_EXTRA_RRECOMMENDS_append_mx7d = " ${@bb.utils.contains('DISTRO_FEATURES'
 MACHINE_EXTRA_RRECOMMENDS_append_mx7ulp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
 
 # Extra QCA Wi-Fi & BTE driver and firmware
+MACHINE_EXTRA_RRECOMMENDS_append = " ${@bb.utils.contains('MACHINE_FEATURES', 'qca6174', 'firmware-qca6174 kernel-module-qca6174 qca-tools', '', d)}"
 MACHINE_EXTRA_RRECOMMENDS_append = " ${@bb.utils.contains('MACHINE_FEATURES', 'qca9377', 'firmware-qca9377 kernel-module-qca9377 qca-tools', '', d)}"
 
 # Extra udev rules
