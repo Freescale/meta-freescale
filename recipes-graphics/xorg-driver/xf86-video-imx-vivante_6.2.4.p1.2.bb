@@ -27,10 +27,10 @@ INITSCRIPT_PARAMS = "start 99 2 3 4 5 ."
 EXTRA_OEMAKE += "prefix=${exec_prefix} \
                  sysroot=${STAGING_DIR_TARGET} \
                  SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
-                 LFLAGS="${LDFLAGS}" \
                  BUSID_HAS_NUMBER=1 \
                  BUILD_IN_YOCTO=1 \
                  XSERVER_GREATER_THAN_13=1"
+TARGET_CC_ARCH += "${LDFLAGS}"
 
 PACKAGES =+ "xserver-xorg-extension-viv-autohdmi"
 
