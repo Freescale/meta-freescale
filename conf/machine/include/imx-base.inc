@@ -56,7 +56,6 @@ DEFAULTTUNE_mx6 ?= "cortexa9thf-neon"
 DEFAULTTUNE_mx6ul ?= "cortexa7thf-neon"
 DEFAULTTUNE_mx6ull ?= "cortexa7thf-neon"
 DEFAULTTUNE_mx7 ?= "cortexa7thf-neon"
-DEFAULTTUNE_mx8 ?= "aarch64"
 DEFAULTTUNE_vf ?= "cortexa5thf-neon"
 
 INHERIT += "machine-overrides-extender"
