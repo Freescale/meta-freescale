@@ -22,9 +22,7 @@ SRCREV = "8c8c46d41839035de605291bc1c26902011a74ac"
 
 DEFAULT_PREFERENCE = "-1"
 
-# IMX: Remove manpages which is added in pyro
-#inherit autotools pkgconfig manpages
-inherit autotools pkgconfig
+inherit autotools pkgconfig manpages
 
 EXTRA_OECONF += "--disable-cairo-tests \
                  --without-cunit \
@@ -33,9 +31,7 @@ EXTRA_OECONF += "--disable-cairo-tests \
                  --enable-install-test-programs \
                  --disable-valgrind \
                 "
-# IMX: Remove manpages which is added in pyro
-#PACKAGECONFIG[manpages] = "--enable-manpages, --disable-manpages, libxslt-native xmlto-native"
-EXTRA_OECONF += "--disable-manpages"
+PACKAGECONFIG[manpages] = "--enable-manpages, --disable-manpages, libxslt-native xmlto-native"
 
 ALLOW_EMPTY_${PN}-drivers = "1"
 PACKAGES =+ "${PN}-tests ${PN}-drivers ${PN}-radeon ${PN}-nouveau ${PN}-omap \
