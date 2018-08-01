@@ -1,0 +1,195 @@
+From b4be5e338be2301f83f4dfdc0cbb740f0a783464 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Thu, 14 Jun 2018 13:54:08 +0800
+Subject: [PATCH 1/2] unstable: Add alpha-compositing protocol
+
+It's based on the Chromium Wayland protocol of the same name ([1])
+and Alexandros's modified version ([2])with a few changes
+made to the blending_equation enumeration.
+
+Add one more blending_equation "src_alpha / src_alpha"
+
+[1] https://chromium.googlesource.com/chromium/src/+/master/third_party/wayland-protocols/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
+[2] https://lists.freedesktop.org/archives/wayland-devel/2017-August/034741.html
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+---
+ Makefile.am                                        |   1 +
+ unstable/alpha-compositing/README                  |   6 +
+ .../alpha-compositing-unstable-v1.xml              | 136 +++++++++++++++++++++
+ 3 files changed, 143 insertions(+)
+ create mode 100644 unstable/alpha-compositing/README
+ create mode 100644 unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
+
+diff --git a/Makefile.am b/Makefile.am
+index 4b9a901..e6c44ec 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -17,6 +17,7 @@ unstable_protocols =								\
+ 	unstable/keyboard-shortcuts-inhibit/keyboard-shortcuts-inhibit-unstable-v1.xml \
+ 	unstable/xdg-output/xdg-output-unstable-v1.xml				\
+ 	unstable/input-timestamps/input-timestamps-unstable-v1.xml	\
++	unstable/alpha-compositing/alpha-compositing-unstable-v1.xml	\
+ 	$(NULL)
+ 
+ stable_protocols =								\
+diff --git a/unstable/alpha-compositing/README b/unstable/alpha-compositing/README
+new file mode 100644
+index 0000000..d874156
+--- /dev/null
++++ b/unstable/alpha-compositing/README
+@@ -0,0 +1,6 @@
++Alpha compositing protocol
++
++Maintainers:
++David Reveman <reveman at chromium.org>
++Alexandros Frantzis <alexandros.frantzis at collabora.com>
++Jared Hu <Jared Hu at nxp.com>
+diff --git a/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml b/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
+new file mode 100644
+index 0000000..0844b3f
+--- /dev/null
++++ b/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
+@@ -0,0 +1,136 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<protocol name="alpha_compositing_unstable_v1">
++
++  <copyright>
++    Copyright 2016 The Chromium Authors.
++    Copyright 2017 Collabora Ltd
++    Copyright 2018 NXP
++
++    Permission is hereby granted, free of charge, to any person obtaining a
++    copy of this software and associated documentation files (the "Software"),
++    to deal in the Software without restriction, including without limitation
++    the rights to use, copy, modify, merge, publish, distribute, sublicense,
++    and/or sell copies of the Software, and to permit persons to whom the
++    Software is furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice (including the next
++    paragraph) shall be included in all copies or substantial portions of the
++    Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
++    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++    DEALINGS IN THE SOFTWARE.
++  </copyright>
++
++  <description summary="Protocol for more advanced compositing and blending">
++    This protocol specifies a set of interfaces used to control the alpha
++    compositing and blending of surface contents.
++
++    Warning! The protocol described in this file is experimental and backward
++    incompatible changes may be made. Backward compatible changes may be added
++    together with the corresponding interface version bump. Backward
++    incompatible changes are done by bumping the version number in the protocol
++    and interface names and resetting the interface version. Once the protocol
++    is to be declared stable, the 'z' prefix and the version number in the
++    protocol and interface names are removed and the interface version number is
++    reset.
++  </description>
++
++  <interface name="zwp_alpha_compositing_v1" version="1">
++    <description summary="alpha_compositing">
++      The global interface exposing compositing and blending capabilities is
++      used to instantiate an interface extension for a wl_surface object.
++      This extended interface will then allow the client to specify the
++      blending equation and alpha value used for compositing the wl_surface.
++    </description>
++
++    <request name="destroy" type="destructor">
++      <description summary="unbind from the blending interface">
++        Informs the server that the client will not be using this
++        protocol object anymore. This does not affect any other objects,
++        blending objects included.
++      </description>
++    </request>
++
++    <enum name="error">
++      <entry name="blending_exists" value="0"
++             summary="the surface already has a blending object associated"/>
++    </enum>
++
++    <request name="get_blending">
++      <description summary="extend surface interface for blending">
++        Instantiate an interface extension for the given wl_surface to
++        provide surface blending. If the given wl_surface already has
++        a blending object associated, the blending_exists protocol error
++        is raised.
++      </description>
++
++      <arg name="id" type="new_id" interface="zwp_blending_v1"
++           summary="the new blending interface id"/>
++      <arg name="surface" type="object" interface="wl_surface"
++           summary="the surface"/>
++    </request>
++  </interface>
++
++  <interface name="zwp_blending_v1" version="1">
++    <description summary="blending interface to a wl_surface">
++      An additional interface to a wl_surface object, which allows the
++      client to specify the blending equation used for compositing and
++      an alpha value applied to the whole surface.
++
++      When the blending object is created its blending equation is
++      'none' and its alpha is 1.0, i.e., it's inactive by default. Clients
++      can activate it by setting the blending equation and alpha value.
++
++      If the wl_surface associated with the blending object is destroyed,
++      the blending object becomes inert.
++
++      If the blending object is destroyed, the blending state is removed
++      from the wl_surface. The change will be applied on the next
++      wl_surface.commit.
++    </description>
++
++    <request name="destroy" type="destructor">
++      <description summary="remove blending from the surface">
++        The associated wl_surface's blending state is removed.
++        The change is applied on the next wl_surface.commit.
++      </description>
++    </request>
++
++    <enum name="blending_equation">
++      <description summary="different blending equations for compositing">
++        Blending equations that can be used when compositing a surface.
++      </description>
++      <entry name="none" value="0" summary="blending object is inactive"/>
++      <entry name="opaque" value="1" summary="(one, zero)"/>
++      <entry name="premultiplied" value="2" summary="(one, one_minus_src_alpha)"/>
++      <entry name="straight" value="3" summary="(src_alpha, one_minus_src_alpha)" />
++      <entry name="fromsource" value="4" summary="(src_alpha, src_alpha)" />
++    </enum>
++
++    <request name="set_blending">
++      <description summary="set the blending equation">
++        Set the blending equation for compositing the wl_surface.
++
++        The blending equation state is double-buffered state,
++        and will be applied on the next wl_surface.commit.
++      </description>
++      <arg name="equation" type="uint" summary="the new blending equation"/>
++    </request>
++
++    <request name="set_alpha">
++      <description summary="set the alpha value">
++        Set the alpha value applied to the whole surface for compositing.
++
++        The alpha value state is double-buffered state,
++        and will be applied on the next wl_surface.commit.
++      </description>
++      <arg name="value" type="fixed" summary="the new alpha value"/>
++    </request>
++  </interface>
++
++</protocol>
+\ No newline at end of file
+-- 
+2.7.4
+
