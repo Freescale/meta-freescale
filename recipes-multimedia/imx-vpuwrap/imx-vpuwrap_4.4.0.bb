@@ -6,7 +6,7 @@ DESCRIPTION = "Freescale Multimedia VPU wrapper"
 DEPENDS = "virtual/imxvpu"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ab61cab9599935bfe9f700405ef00f28"
 
 # For backwards compatibility
 PROVIDES += "libfslvpuwrap"
@@ -16,8 +16,8 @@ RCONFLICTS_${PN} = "libfslvpuwrap"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "ebcafcd76ec7c5b7cb9ba084da2b5612"
-SRC_URI[sha256sum] = "5c08b4b7c771404c998779f0e27a75564b57958d463e2df152c910d76cca9e44"
+SRC_URI[md5sum] = "dc69b4df71bca964cccb19a9b46de591"
+SRC_URI[sha256sum] = "5adb17386584bdd39faa5004b4ceb83987f1519acf4466e15b42672def66f49d"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
