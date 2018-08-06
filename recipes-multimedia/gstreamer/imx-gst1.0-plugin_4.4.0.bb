@@ -1,5 +1,5 @@
 # Copyright (C) 2014,2016 Freescale Semiconductor
-# Copyright 2017 NXP
+# Copyright 2017-2018 NXP
 # Copyright (C) 2012-2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -21,10 +21,10 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 IMXGST_SRC ?= "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https"
-SRCBRANCH = "MM_04.03.05_1804_L4.9.88_MX7ULP_GA"
+SRCBRANCH = "MM_04.04.00_1805_L4.9.88_MX8QXP_BETA2"
 
 SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
-SRCREV = "38d026ed5269f7d61b8adb585f2d8aea86d9c4d7"
+SRCREV = "ded3b04018ca71306da9bc38b0037b9ea99abd29"
 
 S = "${WORKDIR}/git"
 
