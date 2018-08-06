@@ -6,17 +6,18 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c54ce9345727175ff66d17b67ff51f58 \
                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.03.05_1804_L4.9.88_MX7ULP_GA"
+SRCBRANCH = "MM_04.04.00_1805_L4.9.88_MX8QXP_BETA2"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
     file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
+    file://make-gio_unix_2_0-dependency-configurable.patch \
     file://0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch \
     file://0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch \
     file://0003-riff-add-missing-include-directories-when-calling-in.patch \
     file://0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch \
 "
-SRCREV = "7b637f65e7ce2b03c5adb7624501e74c575ac0f2"
+SRCREV = "04bafd740a52757f12496206cfabe282835a1eb5"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -26,6 +27,9 @@ S = "${WORKDIR}/git"
 
 # Enable pango lib
 PACKAGECONFIG_append = " pango "
+
+# Disable introspection to fix [GstGL-1.0.gir] Error
+EXTRA_OECONF_append = " --disable-introspection --disable-opengl --enable-wayland"
 
 # ion allocator will be enabled only when detecting the ion.h exists, which is built out from kernel.
 # Now, ion allocator can be supported on all i.MX platform
@@ -67,5 +71,7 @@ FILES_${MLPREFIX}libgsttag-1.0 += "${datadir}/gst-plugins-base/1.0/license-trans
 do_compile_prepend() {
         export GIR_EXTRA_LIBS_PATH="${B}/gst-libs/gst/tag/.libs:${B}/gst-libs/gst/video/.libs:${B}/gst-libs/gst/audio/.libs:${B}/gst-libs/gst/rtp/.libs"
 }
+
+FILES_${PN} += "${libdir}/gstreamer-1.0/include"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
