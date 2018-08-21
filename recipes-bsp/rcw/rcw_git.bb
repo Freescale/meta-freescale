@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=45a017ee5f4cfe64b1cddf2eb06cffc7"
 
 DEPENDS += "change-file-endianess-native tcl-native"
 
-inherit deploy siteinfo
+inherit deploy siteinfo fsl-eula-unpack
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/rcw;nobranch=1"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/rcw;fsl-eula=true;nobranch=1"
 SRCREV = "1f43bef4b4475d8e81c9b3b8c5bdd6c1ce8cfa6c"
 
 S = "${WORKDIR}/git"
