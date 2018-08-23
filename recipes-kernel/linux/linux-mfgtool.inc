@@ -6,7 +6,7 @@
 # This file must be included after the original linux-imx.inc file
 # as it overrides the needed values.
 #
-# Copyright (C) 2014, 2015 O.S. Systems Software LTDA.
+# Copyright (C) 2014, 2015, 2018 O.S. Systems Software LTDA.
 
 # Adjust provides
 PROVIDES = "linux-mfgtool"
@@ -92,3 +92,5 @@ emit_depmod_pkgdata() {
 do_install_append() {
     rm -r ${STAGING_KERNEL_BUILDDIR}
 }
+
+POPULATESYSROOTDEPS_class-target = "virtual/${TARGET_PREFIX}binutils:do_populate_sysroot"
