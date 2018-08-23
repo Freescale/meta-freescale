@@ -52,18 +52,9 @@ python () {
 
     class LinuxMfgToolExtender(ClassExtender):
         def extend_name(self, name):
-            if name.startswith("rtld"):
-                return name
-            if name.endswith("-" + self.extname):
-                name = name.replace("-" + self.extname, "")
-            if name.startswith("virtual/"):
-                subs = name.split("/", 1)[1]
-                if not subs.startswith(self.extname):
-                    return "virtual/" + self.extname + "-" + subs
-                return name
-            if not name.startswith(self.extname):
+            if name.startswith("kernel-"):
                 return self.extname + "-" + name
-            return name
+            return super().extend_name(name)
 
     clsextend = LinuxMfgToolExtender("mfgtool", d)
     clsextend.rename_packages()
