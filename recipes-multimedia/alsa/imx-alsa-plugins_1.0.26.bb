@@ -35,5 +35,5 @@ FILES_${PN} += "${libdir}/alsa-lib/libasound_*.so"
 FILES_${PN}-dbg += "${libdir}/alsa-lib/.debug"
 FILES_${PN}-dev += "${libdir}/alsa-lib/*.la"
 
-COMPATIBLE_MACHINE = "(mx6dl|mx6q|mx6sl|mx6sx|mx6ul|mx6ull|mx7d)"
+COMPATIBLE_MACHINE = "(mx6dl|mx6q|mx6sl|mx6sx|mx6ul|mx6ull|mx7d|mx7ulp)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
