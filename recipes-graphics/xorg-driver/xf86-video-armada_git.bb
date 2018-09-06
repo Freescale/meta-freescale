@@ -21,15 +21,15 @@ LIC_FILES_CHKSUM = " \
     file://../etna_viv/LICENSE;md5=9d4853905d85f044ed013e75def30a76 \
     "
 
-SRCREV_armada = "04748ff4fb30370086cc97b9487a32951c5600ba"
-SRCREV_etna = "f64d77abbb54433bd5de955c20afddc6eb4f4cb1"
+SRCREV_armada = "78e7116a5bc6cdd9f93cbf1552d342933623ab59"
+SRCREV_etna = "8478eef32fd911ebb300c970071e22227afa1896"
 SRCREV_FORMAT = "armada_etna"
 
 PV = "0.1+git${SRCPV}"
 
 SRC_URI = " \
     git://git.arm.linux.org.uk/cgit/xf86-video-armada.git;branch=unstable-devel;protocol=http;name=armada \
-    git://github.com/laanwj/etna_viv.git;protocol=https;name=etna;destsuffix=etna_viv \
+    git://github.com/etnaviv/etna_viv.git;protocol=https;name=etna;destsuffix=etna_viv \
     "
 
 S = "${WORKDIR}/git"
