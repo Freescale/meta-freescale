@@ -70,7 +70,9 @@ MACHINEOVERRIDES_EXTENDER_mx6ul  = "imxfbdev:imxpxp"
 MACHINEOVERRIDES_EXTENDER_mx6ull = "imxfbdev:imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx7d   = "imxfbdev:imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx7ulp = "imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx8qm  = "imxdrm:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8mq  = "imxdrm:imxvpu:imxgpu:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx8qxp = "imxdrm:imxgpu:imxgpu2d:imxgpu3d"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx6 \
@@ -102,7 +104,9 @@ MACHINE_SOCARCH_SUFFIX_vf60 = "-vf60"
 MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
 MACHINE_SOCARCH_SUFFIX_mx6ul  = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_mx6ull = "-mx6ul"
+MACHINE_SOCARCH_SUFFIX_mx8qm  = "-mx8"
 MACHINE_SOCARCH_SUFFIX_mx8mq  = "-mx8m"
+MACHINE_SOCARCH_SUFFIX_mx8qxp = "-mx8x"
 MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
@@ -169,6 +173,8 @@ MACHINE_FIRMWARE_append_mx6sll = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6ull = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx53 = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_append_mx51 = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
+MACHINE_FIRMWARE_append_mx8 = " linux-firmware-ath10k"
+MACHINE_FIRMWARE_append_mx8qxp = " firmware-imx-vpu-imx8qxp"
 MACHINE_FIRMWARE_append_use-mainline-bsp = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 # FIXME: Needs addition of firmware-imx of official BSPs
