@@ -14,6 +14,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 PV = "4.17+git${SRCPV}"
 
 SRCBRANCH = "4.17.x+fslc"
-SRCREV = "65375933f02aac8aa8e0e2da7827e2ae9dec0ff3"
+SRCREV = "30e9204ae9696a4f084807d26bd11acc3505d3e2"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
