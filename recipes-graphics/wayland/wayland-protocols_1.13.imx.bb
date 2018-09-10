@@ -17,7 +17,9 @@ SRC_URI[md5sum] = "29312149dafcd4a0e739ba94995a574d"
 SRC_URI[sha256sum] = "0758bc8008d5332f431b2a84fea7de64d971ce270ed208206a098ff2ebc68f38"
 S = "${WORKDIR}/${ARCHIVE_NAME}"
 
-inherit allarch autotools pkgconfig
+inherit autotools pkgconfig
 
 PACKAGES = "${PN}"
 FILES_${PN} += "${datadir}/pkgconfig/wayland-protocols.pc"
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
