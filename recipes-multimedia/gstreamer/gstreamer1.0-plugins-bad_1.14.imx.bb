@@ -23,6 +23,7 @@ SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
     file://configure-allow-to-disable-libssh2.patch \
     file://0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch \
+    file://0001-opencv-fix-build-for-opencv-3-4-2.patch \
 "
 
 SRCREV = "07ad0bb676a16c2dffb0f0e415a873f0924cfdc0"
