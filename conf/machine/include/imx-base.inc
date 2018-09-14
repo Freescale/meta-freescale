@@ -73,11 +73,18 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx6dl \
     mx6sx \
     mx6sl \
+    mx6sll \
     mx6ul \
     mx6ull \
     \
     mx7 \
     mx7d \
+    mx7ulp \
+    \
+    mx8 \
+    mx8qm \
+    mx8mq \
+    mx8qxp \
 "
 
 # Sub-architecture support
