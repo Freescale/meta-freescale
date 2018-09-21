@@ -11,9 +11,9 @@ include linux-fslc.inc
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-PV = "4.17+git${SRCPV}"
+PV = "4.18+git${SRCPV}"
 
-SRCBRANCH = "4.17.x+fslc"
-SRCREV = "80f8894094e04ddb6ae8dadbba41ebe7f392f230"
+SRCBRANCH = "4.18.x+fslc"
+SRCREV = "b84b14f4a55a09ab6cc392c7c0c89239f46c144f"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
