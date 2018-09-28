@@ -1,0 +1,28 @@
+From 2f2e1ca77b4459475e5d649bd22e6bc8c3873695 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Tue, 25 Sep 2018 01:23:02 -0700
+Subject: [PATCH] Do not ignore OE cflags and ldflags
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index afb4e32..d2763ed 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,8 +3,8 @@ prefix ?= "/usr/local"
+ 
+ all: mxsldr
+ 
+-CFLAGS = `pkg-config --cflags libusb-1.0`
+-LDFLAGS = `pkg-config --libs libusb-1.0`
++CFLAGS += `pkg-config --cflags libusb-1.0`
++LDFLAGS += `pkg-config --libs libusb-1.0`
+ 
+ mxsldr: mxsldr.c
+ 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -lusb-1.0
+-- 
+2.19.0
+
