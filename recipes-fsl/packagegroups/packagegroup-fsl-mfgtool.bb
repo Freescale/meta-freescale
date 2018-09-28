@@ -46,3 +46,4 @@ RDEPENDS_${PN}-extfs = " \
     e2fsprogs-mke2fs \
     e2fsprogs-e2fsck \
 "
+COMPATIBLE_MACHINE = "(imx)"
