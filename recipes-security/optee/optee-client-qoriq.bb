@@ -27,3 +27,5 @@ do_install() {
 
     cp -a ${S}/out/export/include ${D}/usr/
 }
+
+COMPATIBLE_MACHINE = "(qoriq)"

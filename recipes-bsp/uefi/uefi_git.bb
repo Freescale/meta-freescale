@@ -28,3 +28,4 @@ FILES_${PN}-image += "/uefi/*"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
+COMPATIBLE_MACHINE = "(qoriq)"
