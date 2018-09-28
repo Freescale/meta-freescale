@@ -16,3 +16,5 @@ SRCREV = "323efa5e4c799c40503ac92a8104c33b090e6731"
 S = "${WORKDIR}/git"
 
 FILES_${PN} += "/linuxrc /fat"
+
+COMPATIBLE_MACHINE = "(imx)"

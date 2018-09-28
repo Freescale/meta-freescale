@@ -13,3 +13,5 @@ SRC_URI = "git://git.armlinux.org.uk/~rmk/libdrm-armada.git"
 inherit autotools pkgconfig
 
 S = "${WORKDIR}/git"
+
+COMPATIBLE_MACHINE ?= "(imx)"

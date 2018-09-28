@@ -24,3 +24,4 @@ inherit module
 EXTRA_OEMAKE += "CONFIG_MXC_GPU_VIV=m"
 
 KERNEL_MODULE_AUTOLOAD = "galcore"
+COMPATIBLE_MACHINE = "(imx)"

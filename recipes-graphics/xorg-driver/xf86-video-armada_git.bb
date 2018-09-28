@@ -44,3 +44,5 @@ EXTRA_OECONF = "--disable-etnaviv \
                 --disable-vivante \
                 --with-etnaviv-source=${WORKDIR}/etna_viv \
                 "
+
+COMPATIBLE_MACHINE = "(imx)"

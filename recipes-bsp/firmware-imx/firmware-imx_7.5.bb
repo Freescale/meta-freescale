@@ -90,3 +90,5 @@ PACKAGES =+ "${PN}-epdc ${PN}-brcm"
 
 FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
 FILES_${PN}-brcm = "${base_libdir}/firmware/bcm/*/*.bin ${base_libdir}/firmware/bcm/*/*.cal ${sysconfdir}/firmware/"
+
+COMPATIBLE_MACHINE = "(imx)"
