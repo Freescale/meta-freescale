@@ -1,7 +1,7 @@
-From 7370e3004d56882652cb6d20b54c19b48b87f8a5 Mon Sep 17 00:00:00 2001
+From 5066b8f46b0f2348881923491b93825ac04d13d2 Mon Sep 17 00:00:00 2001
 From: Chunrong Guo <chunrong.guo@nxp.com>
-Date: Thu, 5 Jul 2018 15:43:19 +0800
-Subject: [PATCH] fix gcc-8 build error
+Date: Sat, 29 Sep 2018 14:12:34 +0800
+Subject: [PATCH] Makefile: fix gcc-8 build error
 
 Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/Makefile b/Makefile
-index 7d06dba..fb763a5 100644
+index 53d57ac..b7c5fd4 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -395,6 +395,7 @@ LINUXINCLUDE	+= $(filter-out $(LINUXINCLUDE),$(USERINCLUDE))
