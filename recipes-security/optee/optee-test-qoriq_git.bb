@@ -13,7 +13,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_tes
 "
 S = "${WORKDIR}/git"
 
-SRCREV = "a54952babb83d801148867bd639a24ff6cd36f00"
+SRCREV = "83c87d9b368c33545688c7aad27432ff9a22868f"
 
 OPTEE_CLIENT_EXPORT = "${STAGING_DIR_HOST}${prefix}"
 TEEC_EXPORT         = "${STAGING_DIR_HOST}${prefix}"
