@@ -6,14 +6,24 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9c7bd5e45d066db084bdb3543d55b1ac"
 PR = "r1"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/fmlib;nobranch=1"
-SRCREV = "22126510006f366981c078a340e012a1e0415429"
+SRCREV = "82d89adae917397324c5d74108305f6c9bae8d00"
 
 S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
         CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
-FMLIB_TARGET = "libfm-arm"
+TARGET_ARCH_FMLIB = "${DEFAULTTUNE}"
+TARGET_ARCH_FMLIB_qoriq-arm = "arm"
+TARGET_ARCH_FMLIB_qoriq-rm64 = "arm"
+TARGET_ARCH_FMLIB_e5500 = "ppc32e5500"
+TARGET_ARCH_FMLIB_e6500 = "ppc32e6500"
+TARGET_ARCH_FMLIB_e500mc = "ppce500mc"
+TARGET_ARCH_FMLIB_e500v2 = "ppce500v2"
+
+FMLIB_TARGET = "libfm-${TARGET_ARCH_FMLIB}"
+FMLIB_TARGET_t1 = "libfm-${TARGET_ARCH_FMLIB}-fmv3l"
+
 do_compile () {
     oe_runmake ${FMLIB_TARGET}.a
 }
