@@ -7,7 +7,7 @@ PR = "r2"
 DEPENDS = "libxml2 fmlib tclap"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/fmc;nobranch=1"
-SRCREV = "8c9f127138dc803bf58bef75e9fc092dc60f9c53"
+SRCREV = "09a497fe92aa6cf784140b9084bccf4aaaa97700"
 
 S = "${WORKDIR}/git"
 
@@ -22,6 +22,7 @@ EXTRA_OEMAKE_PLATFORM ?= ""
 EXTRA_OEMAKE_PLATFORM_ls1043a = "ls1043"
 EXTRA_OEMAKE_PLATFORM_ls1046a = "ls1046"
 EXTRA_OEMAKE_PLATFORM_ls1088a = "ls1088"
+EXTRA_OEMAKE_PLATFORM_qoriq-ppc = "p4080ds"
 
 do_compile () {
     oe_runmake MACHINE=${EXTRA_OEMAKE_PLATFORM} -C source
