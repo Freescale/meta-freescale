@@ -8,7 +8,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 inherit deploy
 
 SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;nobranch=1"
-SRCREV = "50c825b9300c5e36548fb5dcbef538b650fc1913"
+SRCREV = "58aa0cac630528ed91fe5639700d6b571c0c07b5"
 
 S = "${WORKDIR}/git"
 
