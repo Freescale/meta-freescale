@@ -1,0 +1,27 @@
+From bb5ab9463db2f79c11c60808fdccd5d57d31fdac Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Fri, 7 Sep 2018 14:54:30 +0800
+Subject: [PATCH] remove libio.h
+
+update for glibc libio.h removal in 2.28+
+
+Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
+---
+ flib/mc/fsl_mc_sys.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/flib/mc/fsl_mc_sys.h b/flib/mc/fsl_mc_sys.h
+index b01db32..7ba8800 100644
+--- a/flib/mc/fsl_mc_sys.h
++++ b/flib/mc/fsl_mc_sys.h
+@@ -52,7 +52,6 @@ struct fsl_mc_io {
+ #else /* __linux_driver__ */
+ 
+ #include <stdio.h>
+-#include <libio.h>
+ #include <stdint.h>
+ #include <errno.h>
+ #include <sys/uio.h>
+-- 
+2.7.4
+
