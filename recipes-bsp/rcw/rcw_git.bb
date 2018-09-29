@@ -8,7 +8,7 @@ DEPENDS += "change-file-endianess-native tcl-native"
 inherit deploy siteinfo fsl-eula-unpack
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/rcw;fsl-eula=true;nobranch=1"
-SRCREV = "1f43bef4b4475d8e81c9b3b8c5bdd6c1ce8cfa6c"
+SRCREV = "04ec3bbc210fd0d7762c26c0e72182eca5e26deb"
 
 S = "${WORKDIR}/git"
 
