@@ -31,4 +31,4 @@ do_install() {
 
 COMPATIBLE_MACHINE = "(qoriq-ppc)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-
+INSANE_SKIP_${PN} = "ldflags"
