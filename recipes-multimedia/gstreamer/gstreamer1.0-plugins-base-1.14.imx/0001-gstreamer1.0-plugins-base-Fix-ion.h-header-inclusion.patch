@@ -1,0 +1,45 @@
+From 84f693a70e6f3084ca67063a6336aaf3287abb49 Mon Sep 17 00:00:00 2001
+From: Yuqing Zhu <carol.zhu@nxp.com>
+Date: Thu, 27 Sep 2018 13:53:49 +0800
+Subject: [PATCH] gstreamer1.0-plugins-base: Fix ion.h header inclusion to be
+ standard
+
+NXP "solution" was to manually copy the header to include/linux.
+Let's point the Makefile to the proper (mainline) location instead:
+https://elixir.bootlin.com/linux/v4.17/source/drivers/staging/android/uapi/ion.h
+
+Signed-off-by: Yuqing Zhu <carol.zhu@nxp.com>
+---
+ configure.ac                           | 2 +-
+ gst-libs/gst/allocators/gstionmemory.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 51272df..4bea0dd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -678,7 +678,7 @@ AG_GST_CHECK_FEATURE(CDPARANOIA, [CDParanoia], cdparanoia, [
+ dnl check for ion
+ translit(dnm, m, l) AM_CONDITIONAL(USE_ION, true)
+ AG_GST_CHECK_FEATURE(ION, [ion], ion, [
+-  AC_CHECK_HEADER(linux/ion.h, HAVE_ION="yes", HAVE_ION="no")
++  AC_CHECK_HEADER(ion.h, HAVE_ION="yes", HAVE_ION="no")
+ ])
+ 
+ dnl FIXME : add second check somehow if that is necessary
+diff --git a/gst-libs/gst/allocators/gstionmemory.c b/gst-libs/gst/allocators/gstionmemory.c
+index 5e0455c..a285f09 100644
+--- a/gst-libs/gst/allocators/gstionmemory.c
++++ b/gst-libs/gst/allocators/gstionmemory.c
+@@ -26,7 +26,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/types.h>
+-#include <linux/ion.h>
++#include <ion.h>
+ #include <linux/dma-buf.h>
+ #include <linux/version.h>
+ 
+-- 
+1.9.1
+

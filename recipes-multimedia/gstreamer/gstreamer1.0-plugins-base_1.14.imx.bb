@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c54ce9345727175ff66d17b67ff51f58 \
                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.04.00_1805_L4.9.88_MX8QXP_BETA2"
+SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
@@ -16,8 +16,9 @@ SRC_URI = " \
     file://0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch \
     file://0003-riff-add-missing-include-directories-when-calling-in.patch \
     file://0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch \
+    file://0001-gstreamer1.0-plugins-base-Fix-ion.h-header-inclusion.patch \
 "
-SRCREV = "04bafd740a52757f12496206cfabe282835a1eb5"
+SRCREV = "e1f90437939b147658efed4d86c3f99d5e606968"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -62,6 +63,11 @@ PACKAGECONFIG[x11]          = "${X11ENABLEOPTS},${X11DISABLEOPTS},${X11DEPENDS}"
 
 EXTRA_OECONF += " \
     --enable-zlib \
+    CPPFLAGS=" \
+    -I${STAGING_KERNEL_DIR}/include/uapi \
+    -I${STAGING_KERNEL_DIR}/include \
+    -I${STAGING_KERNEL_DIR}/drivers/staging/android/uapi \
+    " \
 "
 
 CACHED_CONFIGUREVARS_append_x86 = " ac_cv_header_emmintrin_h=no ac_cv_header_xmmintrin_h=no"
