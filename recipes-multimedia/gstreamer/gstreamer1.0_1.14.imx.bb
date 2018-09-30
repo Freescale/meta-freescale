@@ -19,7 +19,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
 
 # Use i.MX fork of GST for customizations
 GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.04.00_1805_L4.9.88_MX8QXP_BETA2"
+SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
 
 SRC_URI = " \
     ${GST1.0_SRC};branch=${SRCBRANCH} \
