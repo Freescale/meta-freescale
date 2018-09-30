@@ -2,9 +2,10 @@
 
 DESCRIPTION = "i.MX Hantro VPU library"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ab61cab9599935bfe9f700405ef00f28"
+LIC_FILES_CHKSUM = "file://COPYING;md5=5ab1a30d0cd181e3408077727ea5a2db"
 
 DEPENDS = "virtual/kernel"
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 PROVIDES = "virtual/imxvpu"
 
@@ -12,13 +13,14 @@ SRC_URI = " \
     ${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
     file://0001-Fix-ion.h-header-inclusion-to-be-standard.patch \
 "
-SRC_URI[md5sum] = "9a8ade25333e6ac3f7c345b71f3477a6"
-SRC_URI[sha256sum] = "a3bbf2d8ac00ecae6d48b05cb94d9bdf68085d5bfc54eb176e3bf59670a87ad1"
+SRC_URI[md5sum] = "140796ddd6f1be47cffb7e5e2bfe0fb6"
+SRC_URI[sha256sum] = "c092a5b0f8897bae54154f58e47b6d2de033da01ee231a8cd779a51bbe962606"
 
 inherit fsl-eula-unpack
 
 PARALLEL_MAKE="-j 1"
 
+PLATFORM_mx8mm = "IMX8MM"
 PLATFORM_mx8mq = "IMX8MQ"
 
 do_compile () {
@@ -32,4 +34,4 @@ do_install () {
 FILES_${PN} += "/unit_tests"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx8mq)"
+COMPATIBLE_MACHINE = "(mx8mq|mx8mm)"
