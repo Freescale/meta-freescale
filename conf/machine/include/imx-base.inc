@@ -71,6 +71,7 @@ MACHINEOVERRIDES_EXTENDER_mx6ull = "imxfbdev:imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx7d   = "imxfbdev:imxpxp:imxepdc"
 MACHINEOVERRIDES_EXTENDER_mx7ulp = "imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8qm  = "imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx8mm  = "imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8mq  = "imxdrm:imxvpu:imxgpu:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8qxp = "imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
 
@@ -90,6 +91,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     \
     mx8 \
     mx8qm \
+    mx8mm \
     mx8mq \
     mx8qxp \
 "
@@ -112,6 +114,7 @@ MACHINE_SOCARCH_SUFFIX_vf50 = "-vf50"
 MACHINE_SOCARCH_SUFFIX_mx6ul  = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_mx6ull = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_mx8qm  = "-mx8"
+MACHINE_SOCARCH_SUFFIX_mx8mm  = "-mx8mm"
 MACHINE_SOCARCH_SUFFIX_mx8mq  = "-mx8m"
 MACHINE_SOCARCH_SUFFIX_mx8qxp = "-mx8x"
 MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
