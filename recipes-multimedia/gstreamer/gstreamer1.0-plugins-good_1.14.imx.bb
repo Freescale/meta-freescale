@@ -6,12 +6,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
                     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
 
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.04.00_1805_L4.9.88_MX8QXP_BETA2"
+SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} \
 "
-SRCREV = "037e2bf9a152de410623235974c68be21948985a"
+SRCREV = "f25cda9043fee159197898bb810d6e64f2a11140"
 
 DEFAULT_PREFERENCE = "-1"
 
