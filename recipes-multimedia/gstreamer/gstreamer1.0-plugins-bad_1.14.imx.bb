@@ -17,7 +17,7 @@ EXTRA_OECONF_append = " --disable-introspection"
 
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.04.00_1805_L4.9.88_MX8QXP_BETA2"
+SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
@@ -26,7 +26,7 @@ SRC_URI = " \
     file://0001-opencv-fix-build-for-opencv-3-4-2.patch \
 "
 
-SRCREV = "07ad0bb676a16c2dffb0f0e415a873f0924cfdc0"
+SRCREV = "03e6ef6a371a0578a9629abde8e9c83e66f34b11"
 
 DEFAULT_PREFERENCE = "-1"
 
