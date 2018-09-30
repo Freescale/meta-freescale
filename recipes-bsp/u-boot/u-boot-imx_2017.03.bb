@@ -10,9 +10,9 @@ PROVIDES += "u-boot"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCBRANCH = "imx_v2017.03_4.9.88_imx8qxp_beta2"
+SRCBRANCH = "imx_v2017.03_4.9.123_imx8mm_ga"
 SRC_URI = "git://source.codeaurora.org/external/imx/uboot-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "84c4e820340c0e76b1f14416536ff1fae08f120b"
+SRCREV = "8be98e9322040c655b9e5c9fb2c494e002e3fad9"
 
 S = "${WORKDIR}/git"
 
