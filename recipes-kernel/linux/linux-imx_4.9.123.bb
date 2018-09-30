@@ -11,9 +11,9 @@ require recipes-kernel/linux/linux-imx.inc
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_4.9.88_imx8qxp_beta2"
+SRCBRANCH = "imx_4.9.123_imx8mm_ga"
 LOCALVERSION = "-${SRCBRANCH}"
-SRCREV = "05f46d3f9b4a8987edac62a52528d52f47cfa42d"
+SRCREV = "6a71cbc089755afd6a86c005c22a1af6eab24a70"
 
 DEFAULT_PREFERENCE = "1"
 
