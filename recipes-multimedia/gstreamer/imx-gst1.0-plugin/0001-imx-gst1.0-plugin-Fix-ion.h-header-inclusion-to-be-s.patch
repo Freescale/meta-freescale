@@ -1,0 +1,44 @@
+From e4c96421700ecd008814bceceaf03f0ee9323c02 Mon Sep 17 00:00:00 2001
+From: Yuqing Zhu <carol.zhu@nxp.com>
+Date: Thu, 27 Sep 2018 16:00:55 +0800
+Subject: [PATCH] imx-gst1.0-plugin: Fix ion.h header inclusion to be standard
+
+NXP "solution" was to manually copy the header to include/linux.
+Let's point the Makefile to the proper (mainline) location instead:
+https://elixir.bootlin.com/linux/v4.17/source/drivers/staging/android/uapi/ion.h
+
+Signed-off-by: Yuqing Zhu <carol.zhu@nxp.com>
+---
+ configure.ac        | 2 +-
+ libs/gstimxcommon.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 7b2709d..d94e3a8 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -216,7 +216,7 @@ dnl check ion allocator headfile
+ old_CFLAGS=$CFLAGS
+ PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= 1.14, CFLAGS="$CFLAGS `$PKG_CONFIG --cflags gstreamer-allocators-1.0`",\
+                   CFLAGS="$CFLAGS `$PKG_CONFIG --cflags gstreamer-bad-allocators-1.0`")
+-AC_CHECK_HEADERS([linux/ion.h gst/allocators/gstionmemory.h], HAVE_ION="yes", HAVE_ION="no")
++AC_CHECK_HEADERS([ion.h gst/allocators/gstionmemory.h], HAVE_ION="yes", HAVE_ION="no")
+ AM_CONDITIONAL(USE_ION, test "x$HAVE_ION" = "xyes")
+ CFLAGS=$old_CFLAGS
+ 
+diff --git a/libs/gstimxcommon.c b/libs/gstimxcommon.c
+index eb808b9..c02ab5f 100644
+--- a/libs/gstimxcommon.c
++++ b/libs/gstimxcommon.c
+@@ -26,7 +26,7 @@
+ #include <linux/version.h>
+ #include <linux/dma-buf.h>
+ #ifdef USE_ION
+-#include <linux/ion.h>
++#include <ion.h>
+ #endif
+ const char *dev_ion = "/dev/ion";
+ 
+-- 
+1.9.1
+

@@ -21,10 +21,12 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 IMXGST_SRC ?= "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https"
-SRCBRANCH = "MM_04.04.00_1805_L4.9.88_MX8QXP_BETA2"
+SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
 
-SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
-SRCREV = "ded3b04018ca71306da9bc38b0037b9ea99abd29"
+SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH} \
+           file://0001-imx-gst1.0-plugin-Fix-ion.h-header-inclusion-to-be-s.patch \
+"
+SRCREV = "23dd0315c7087e1c8eba836b9a458d7906187c7e"
 
 S = "${WORKDIR}/git"
 
@@ -44,7 +46,7 @@ PLATFORM_mx8 = "MX8"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
-                CPPFLAGS="-I${STAGING_KERNEL_BUILDDIR}/include/generated/uapi -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include" \
+                CPPFLAGS="-I${STAGING_KERNEL_BUILDDIR}/include/generated/uapi -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include -I${STAGING_KERNEL_DIR}/drivers/staging/android/uapi" \
                 CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR} \
                 ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', bb.utils.contains('DISTRO_FEATURES', 'x11', '--disable-x11', '', d), '', d)}"
 
