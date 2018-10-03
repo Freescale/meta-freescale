@@ -67,6 +67,7 @@ EXTRA_OECONF += " \
     -I${STAGING_KERNEL_DIR}/include/uapi \
     -I${STAGING_KERNEL_DIR}/include \
     -I${STAGING_KERNEL_DIR}/drivers/staging/android/uapi \
+    -I${STAGING_KERNEL_BUILDDIR}/include/generated/uapi \
     " \
 "
 
