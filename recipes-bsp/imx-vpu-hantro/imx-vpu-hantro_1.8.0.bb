@@ -12,6 +12,7 @@ PROVIDES = "virtual/imxvpu"
 SRC_URI = " \
     ${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
     file://0001-Fix-ion.h-header-inclusion-to-be-standard.patch \
+    file://0002-Fix-version.h-inclusion-to-be-from-kernel-build-fold.patch \
 "
 SRC_URI[md5sum] = "140796ddd6f1be47cffb7e5e2bfe0fb6"
 SRC_URI[sha256sum] = "c092a5b0f8897bae54154f58e47b6d2de033da01ee231a8cd779a51bbe962606"
@@ -24,7 +25,9 @@ PLATFORM_mx8mm = "IMX8MM"
 PLATFORM_mx8mq = "IMX8MQ"
 
 do_compile () {
-    oe_runmake CROSS_COMPILE="${HOST_PREFIX}" LINUX_KERNEL_ROOT="${STAGING_KERNEL_DIR}" SDKTARGETSYSROOT="${STAGING_DIR_TARGET}" PLATFORM="${PLATFORM}" all
+    oe_runmake CROSS_COMPILE="${HOST_PREFIX}" LINUX_KERNEL_BUILD="${STAGING_KERNEL_BUILDDIR}" \
+        LINUX_KERNEL_ROOT="${STAGING_KERNEL_DIR}" SDKTARGETSYSROOT="${STAGING_DIR_TARGET}" \
+        PLATFORM="${PLATFORM}" all
 }
 
 do_install () {
