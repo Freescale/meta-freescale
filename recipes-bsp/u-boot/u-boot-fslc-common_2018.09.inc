@@ -14,5 +14,3 @@ SRCBRANCH = "2018.09+fslc"
 PV = "v2018.09+git${SRCPV}"
 
 S = "${WORKDIR}/git"
-
-COMPATIBLE_MACHINE = "(imx)"
