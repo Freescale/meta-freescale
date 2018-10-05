@@ -16,4 +16,3 @@ do_install () {
     install -d ${D}/${bindir}
     install -m 755 dtc ${D}/${bindir}/dtc-145
 }
-COMPATIBLE_MACHINE = "(imx)"
