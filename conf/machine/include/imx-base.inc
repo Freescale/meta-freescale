@@ -116,7 +116,7 @@ MACHINE_SOCARCH_SUFFIX_mx6ull = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_mx8qm  = "-mx8"
 MACHINE_SOCARCH_SUFFIX_mx8mm  = "-mx8mm"
 MACHINE_SOCARCH_SUFFIX_mx8mq  = "-mx8m"
-MACHINE_SOCARCH_SUFFIX_mx8qxp = "-mx8x"
+MACHINE_SOCARCH_SUFFIX_mx8qxp = "-mx8"
 MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
