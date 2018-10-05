@@ -1,0 +1,40 @@
+From 33c85073a35e697e080583ca8edb31400b45de60 Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Wed, 3 Oct 2018 18:02:43 -0500
+Subject: [PATCH] uapi: Install custom headers
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ include/uapi/linux/Kbuild | 2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: git/include/uapi/linux/Kbuild
+===================================================================
+--- git.orig/include/uapi/linux/Kbuild
++++ git/include/uapi/linux/Kbuild
+@@ -104,6 +104,7 @@ header-y += dlm_device.h
+ header-y += dlm.h
+ header-y += dlm_netlink.h
+ header-y += dlm_plock.h
++header-y += dma-buf.h
+ header-y += dm-ioctl.h
+ header-y += dm-log-userspace.h
+ header-y += dn.h
+@@ -144,6 +145,7 @@ header-y += gigaset_dev.h
+ header-y += gpio.h
+ header-y += gsmmux.h
+ header-y += gtp.h
++header-y += hantrodec.h
+ header-y += hdlcdrv.h
+ header-y += hdlc.h
+ header-y += hdreg.h
+@@ -152,6 +154,7 @@ header-y += hid.h
+ header-y += hidraw.h
+ header-y += hpet.h
+ header-y += hsr_netlink.h
++header-y += hx280enc.h
+ header-y += hyperv.h
+ header-y += hysdn_if.h
+ header-y += i2c-dev.h
