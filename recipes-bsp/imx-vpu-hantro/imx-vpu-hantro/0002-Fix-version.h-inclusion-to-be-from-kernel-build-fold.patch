@@ -34,7 +34,7 @@ index 56b4332..0be43ce 100755
  ENV += -I$(LINUX_KERNEL_ROOT)/drivers/staging/android/uapi
  
 +# LINUX_VERSION_CODE from kernel build folder instead of toolchain headers
-+INCLUDE_HEADERS += -I$(LINUX_KERNEL_BUILD)/include/generated/uapi
++ENV += -I$(LINUX_KERNEL_BUILD)/include/generated/uapi
 +
  LIBENCNAME = libcodec_enc
  LIBSENC = -L./ -lhantro_h1 -lpthread
