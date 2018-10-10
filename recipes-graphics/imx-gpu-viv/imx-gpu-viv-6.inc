@@ -30,14 +30,8 @@ EXTRA_PROVIDES_append_imxgpu3d = " \
     virtual/libgles1 \
     virtual/libgles2 \
 "
-EXTRA_PROVIDES_append_mx6q = " \
-    virtual/opencl-icd \
-    opencl-headers \
-"
 EXTRA_PROVIDES_append_mx8 = " \
     virtual/libgbm \
-    virtual/opencl-icd \
-    opencl-headers \
 "
 EXTRA_PROVIDES_append_mx8qm = " \
     virtual/libopenvx \
