@@ -1,0 +1,123 @@
+From 1641ce8c724018365d7fa598f9a70c6492e7c271 Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
+Date: Wed, 31 Jan 2018 15:06:53 +0800
+Subject: [PATCH] add ak4458 conf for multichannel support
+
+one limitation is that ALSA and pulseaudio only support
+maximum 8 channels, but ak4458 may support 16 channels
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ src/conf/cards/AK4458.conf  | 74 +++++++++++++++++++++++++++++++++++++++++++++
+ src/conf/cards/Makefile.am  |  3 +-
+ src/conf/cards/aliases.conf |  1 +
+ 3 files changed, 77 insertions(+), 1 deletion(-)
+ create mode 100644 src/conf/cards/AK4458.conf
+
+Index: alsa-lib-1.1.6/src/conf/cards/AK4458.conf
+===================================================================
+--- /dev/null
++++ alsa-lib-1.1.6/src/conf/cards/AK4458.conf
+@@ -0,0 +1,74 @@
++#
++# Configuration for the AK4458 chip
++#
++
++# default with dmix & dsnoop
++AK4458.pcm.default {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type asym
++	playback.pcm {
++		type plug
++		slave.pcm {
++			@func concat
++			strings [ "dmix:" $CARD ",FORMAT=S32_LE" ]
++		}
++	}
++	capture.pcm {
++		type plug
++		slave.pcm {
++			@func concat
++			strings [ "dsnoop:" $CARD ",FORMAT=S32_LE" ]
++		}
++	}
++}
++
++<confdir:pcm/surround40.conf>
++
++AK4458.pcm.surround40.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type plug
++	slave.pcm {
++		type hw
++		card $CARD
++	}
++	slave.channels 4
++}
++
++
++<confdir:pcm/surround41.conf>
++<confdir:pcm/surround50.conf>
++<confdir:pcm/surround51.conf>
++
++AK4458.pcm.surround51.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type plug
++	slave.pcm {
++		type hw
++		card $CARD
++	}
++	slave.channels 6
++}
++
++<confdir:pcm/surround71.conf>
++
++AK4458.pcm.surround71.0 {
++	@args [ CARD ]
++	@args.CARD {
++		type string
++	}
++	type plug
++	slave.pcm {
++		type hw
++		card $CARD
++	}
++	slave.channels 8
++}
+Index: alsa-lib-1.1.6/src/conf/cards/Makefile.am
+===================================================================
+--- alsa-lib-1.1.6.orig/src/conf/cards/Makefile.am
++++ alsa-lib-1.1.6/src/conf/cards/Makefile.am
+@@ -60,7 +60,8 @@ cfg_files = aliases.conf \
+ 	VXPocket.conf \
+ 	VXPocket440.conf \
+ 	CS42888.conf \
+-	IMX-HDMI.conf
++	IMX-HDMI.conf \
++	AK4458.conf
+ 
+ if BUILD_ALISP
+ cfg_files += aliases.alisp
+Index: alsa-lib-1.1.6/src/conf/cards/aliases.conf
+===================================================================
+--- alsa-lib-1.1.6.orig/src/conf/cards/aliases.conf
++++ alsa-lib-1.1.6/src/conf/cards/aliases.conf
+@@ -59,6 +59,7 @@ pistachio cards.pistachio-card
+ VC4-HDMI cards.vc4-hdmi
+ cs42888-audio cards.CS42888
+ imx-hdmi-soc cards.IMX-HDMI
++ak4458-audio cards.AK4458
+ 
+ <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>
