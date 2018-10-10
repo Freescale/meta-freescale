@@ -27,6 +27,9 @@ inherit autotools pkgconfig useradd distro_features_check
 REQUIRED_DISTRO_FEATURES          = "opengl"
 REQUIRED_DISTRO_FEATURES_imxgpu2d = ""
 REQUIRED_DISTRO_FEATURES_imxgpu3d = "opengl"
+PACKAGECONFIG_OPENGL              = "opengl"
+PACKAGECONFIG_OPENGL_imxgpu2d     = ""
+PACKAGECONFIG_OPENGL_imxgpu3d     = "opengl"
 
 DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 jpeg"
 DEPENDS += "wayland wayland-protocols libinput virtual/egl pango wayland-native"
@@ -47,7 +50,7 @@ EXTRA_OECONF_append_imxfbdev = "\
 		"
 PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev wayland egl', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
-                   ${@bb.utils.filter('DISTRO_FEATURES', 'opengl pam systemd x11', d)} \
+                   ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL} pam systemd x11', d)} \
                    clients launch"
 PACKAGECONFIG_remove_imxfbdev = "kms"
 PACKAGECONFIG_append_imxgpu   = " imxgpu"
