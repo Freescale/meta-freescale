@@ -26,12 +26,19 @@ do_install() {
     install -d ${D}${base_libdir}/firmware/bcm
     install -d ${D}${sysconfdir}/firmware
 
-    cp -rfv firmware/* ${D}${base_libdir}/firmware/
-
-    # FIXME: This need to be removed when iMX8 is integrated.
-    rm -rf ${D}${base_libdir}/firmware/ddr \
-           ${D}${base_libdir}/firmware/hdmi \
-           ${D}${base_libdir}/firmware/seco
+    cd firmware
+    for d in *; do
+        case $d in
+        ddr|hdmi|seco)
+            # These folders are for i.MX 8 and are included in the boot image via imx-boot
+            bbnote Excluding folder $d
+            ;;
+        *)
+            cp -rfv $d ${D}${base_libdir}/firmware
+            ;;
+        esac
+    done
+    cd -
 
     #1BW_BCM43340
     install -d ${D}${base_libdir}/firmware/bcm/1BW_BCM43340
