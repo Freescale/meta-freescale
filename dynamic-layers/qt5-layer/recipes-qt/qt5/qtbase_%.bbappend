@@ -28,3 +28,8 @@ QT_CONFIG_FLAGS_APPEND_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11'
 QT_CONFIG_FLAGS_APPEND_imxgpu3d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '-no-eglfs', '-eglfs', d)}"
 QT_CONFIG_FLAGS_APPEND_use-mainline-bsp =  "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '-no-eglfs', '-eglfs', d)}"
 QT_CONFIG_FLAGS_append = " ${QT_CONFIG_FLAGS_APPEND}"
+
+QT_CONFIG_FLAGS += \
+    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '-qpa wayland', \
+        bb.utils.contains('DISTRO_FEATURES',     'x11',             '', \
+                                                          '-qpa eglfs', d), d)}"
