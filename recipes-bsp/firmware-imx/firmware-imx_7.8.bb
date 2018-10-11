@@ -1,11 +1,11 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright 2017-2018 NXP
 # Copyright (C) 2018 O.S. Systems Software LTDA.
-SUMMARY = "Freescale IMX firmware"
-DESCRIPTION = "Freescale IMX firmware such as for the VPU"
+SUMMARY = "Freescale i.MX firmware"
+DESCRIPTION = "Freescale i.MX firmware such as for the VPU"
 SECTION = "base"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ab61cab9599935bfe9f700405ef00f28"
+LIC_FILES_CHKSUM = "file://COPYING;md5=5ab1a30d0cd181e3408077727ea5a2db"
 
 PE = "1"
 
@@ -16,8 +16,8 @@ SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
 #BRCM firmware git
 SRCREV = "8ce9046f5058fdd2c5271f86ccfc61bc5a248ae3"
 
-SRC_URI[md5sum] = "3f6a00c3dfc0693c050bf39824865d28"
-SRC_URI[sha256sum] = "6c1e4d4f33b216f69eb46a6dff7a3e10d722afb694acd412c5398ccc270f8a9c"
+SRC_URI[md5sum] = "0967aa59b3fd8d80fcb98146a9aac91b"
+SRC_URI[sha256sum] = "910fbf866f61185adfd60c1704b2da41030cb175901d06e40402b49f9240bdee"
 
 inherit fsl-eula-unpack allarch deploy
 
