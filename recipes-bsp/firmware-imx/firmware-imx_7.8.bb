@@ -90,6 +90,8 @@ do_deploy_append_mx8mq() {
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         install -m 0644 ${S}/firmware/ddr/synopsys/${ddr_firmware} ${DEPLOYDIR}
     done
+    # Cadence HDMI
+    install -m 0644 ${S}/firmware/hdmi/cadence/signed_dp_imx8m.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_hdmi_imx8m.bin ${DEPLOYDIR}
 }
 do_deploy_append_mx8qm() {
