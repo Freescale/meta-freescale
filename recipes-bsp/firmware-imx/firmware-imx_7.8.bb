@@ -99,10 +99,12 @@ do_deploy_append_mx8qm() {
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmitxfw.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/dpfw.bin ${DEPLOYDIR}
+    # SECO
+    install -m 0644 ${S}/firmware/seco/mx8qm-ahab-container.img ${DEPLOYDIR}
 }
 do_deploy_append_mx8qxp() {
     # SECO
-    install -m 0644 ${S}/firmware/seco/ahab-container.img ${DEPLOYDIR}
+    install -m 0644 ${S}/firmware/seco/mx8qx-ahab-container.img ${DEPLOYDIR}
 }
 addtask deploy before do_build after do_install
 
