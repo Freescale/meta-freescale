@@ -85,7 +85,7 @@ do_install() {
 
 do_deploy() {
 }
-do_deploy_append_mx8mq() {
+do_deploy_append_mx8m() {
     # Synopsys DDR
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         install -m 0644 ${S}/firmware/ddr/synopsys/${ddr_firmware} ${DEPLOYDIR}
@@ -102,7 +102,7 @@ do_deploy_append_mx8qm() {
     # SECO
     install -m 0644 ${S}/firmware/seco/mx8qm-ahab-container.img ${DEPLOYDIR}
 }
-do_deploy_append_mx8qxp() {
+do_deploy_append_mx8x() {
     # SECO
     install -m 0644 ${S}/firmware/seco/mx8qx-ahab-container.img ${DEPLOYDIR}
 }
