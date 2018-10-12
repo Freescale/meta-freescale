@@ -128,9 +128,10 @@ ALLOW_EMPTY_${PN} = "1"
 
 PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
 
-PACKAGES =+ "${PN}-epdc ${PN}-brcm"
+PACKAGES =+ "${PN}-epdc ${PN}-brcm ${PN}-scfw"
 
 FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
 FILES_${PN}-brcm = "${base_libdir}/firmware/bcm/*/*.bin ${base_libdir}/firmware/bcm/*/*.cal ${sysconfdir}/firmware/"
+FILES_${PN}-scfw = "${base_libdir}/firmware/scfw/"
 
 COMPATIBLE_MACHINE = "(imx)"
