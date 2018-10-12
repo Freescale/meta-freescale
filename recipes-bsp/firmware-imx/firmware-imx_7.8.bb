@@ -85,7 +85,7 @@ do_install() {
 
 do_deploy() {
 }
-do_deploy_append_mx8m() {
+do_deploy_mx8m() {
     # Synopsys DDR
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         install -m 0644 ${S}/firmware/ddr/synopsys/${ddr_firmware} ${DEPLOYDIR}
@@ -94,7 +94,10 @@ do_deploy_append_mx8m() {
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_dp_imx8m.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_hdmi_imx8m.bin ${DEPLOYDIR}
 }
-do_deploy_append_mx8qm() {
+do_deploy_mx8mm() {
+    do_deploy_mx8m
+}
+do_deploy_mx8qm() {
     # Cadence HDMI
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmitxfw.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${DEPLOYDIR}
@@ -102,7 +105,7 @@ do_deploy_append_mx8qm() {
     # SECO
     install -m 0644 ${S}/firmware/seco/mx8qm-ahab-container.img ${DEPLOYDIR}
 }
-do_deploy_append_mx8x() {
+do_deploy_mx8x() {
     # SECO
     install -m 0644 ${S}/firmware/seco/mx8qx-ahab-container.img ${DEPLOYDIR}
 }
