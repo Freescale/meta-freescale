@@ -14,5 +14,4 @@ FCC_TOOLS_FOLDER_aarch64 = "qca9377_qca6174_arm64"
 do_install() {
     install -d ${D}${sbindir}/fcc_tools
     cp -r ${S}/fcc_tools/${FCC_TOOLS_FOLDER} ${D}${sbindir}/fcc_tools
-    chmod 644 ${D}${sbindir}/fcc_tools/*
 }
