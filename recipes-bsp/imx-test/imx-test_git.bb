@@ -1,9 +1,9 @@
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
-# Copyright (C) 2015 Freescale Semiconductor
-# Copyright 2017 NXP
+# Copyright (C) 2013-2016 Freescale Semiconductor
+# Copyright 2017-2018 NXP
 
-SUMMARY = "Test programs for IMX BSP"
-DESCRIPTION = "Unit tests for the IMX BSP"
+SUMMARY = "Test programs for i.MX BSP"
+DESCRIPTION = "Unit tests for the i.MX BSP"
 SECTION = "base"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
@@ -15,13 +15,13 @@ DEPENDS_append_mx7 = " imx-lib"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "imx_4.9.88_imx8qxp_beta2"
+SRCBRANCH = "imx_4.9.123_imx8mm_ga"
 SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://0001-test-Makefile-Add-include-path-to-CC-command.patch \
     file://memtool_profile \
 "
-SRCREV = "3a87347ae408ef0234314a279ee74d9b015f06be"
+SRCREV = "2cc785f94e5ee8782083d941e6aef24952cc2a38"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers
