@@ -11,6 +11,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=80
 DEPENDS = "alsa-lib libdrm"
 DEPENDS_append_mx6 = " imx-lib"
 DEPENDS_append_mx7 = " imx-lib"
+DEPENDS_append_imxvpu = " virtual/imxvpu"
 
 PE = "1"
 PV = "7.0+${SRCPV}"
