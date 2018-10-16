@@ -1,0 +1,29 @@
+From a41baa51cbc517243d55ff24ec7aedc625ab376c Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Fri, 8 Jun 2018 13:12:20 +0800
+Subject: [PATCH] MLK-18491 qcacld-2.0: avoid overflow of bounce buffer
+
+Disable pEndpoint->TxCreditFlowEnabled to avoid overflow of bounce buffer.
+
+Signed-off-by: Hangtian Zhu <hangtian@qti.qualcomm.com>
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/SERVICES/HTC/htc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CORE/SERVICES/HTC/htc.c b/CORE/SERVICES/HTC/htc.c
+index 09936a0..1e2450d 100644
+--- a/CORE/SERVICES/HTC/htc.c
++++ b/CORE/SERVICES/HTC/htc.c
+@@ -657,7 +657,7 @@ static void ResetEndpointStates(HTC_TARGET *target)
+         INIT_HTC_PACKET_QUEUE(&pEndpoint->RxBufferHoldQueue);
+         pEndpoint->target = target;
+         //pEndpoint->TxCreditFlowEnabled = (A_BOOL)htc_credit_flow;
+-        pEndpoint->TxCreditFlowEnabled = (A_BOOL)1;
++        pEndpoint->TxCreditFlowEnabled = (A_BOOL)0;
+         adf_os_atomic_init(&pEndpoint->TxProcessCount);
+     }
+ }
+-- 
+1.9.1
+

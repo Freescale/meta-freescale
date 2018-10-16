@@ -1,0 +1,96 @@
+From 1c3170fe6acfd3ab411199bcf2235964a9036c2c Mon Sep 17 00:00:00 2001
+From: Hangtian Zhu <hangtian@qti.qualcomm.com>
+Date: Tue, 29 May 2018 18:09:49 +0800
+Subject: [PATCH] CORE: HIF: enable pcie MSI feature
+
+Add PCIe MSI interrupt support.
+Currently, it only support 1 MSI interrupt.
+
+Hangtian Zhu <hangtian@qti.qualcomm.com>
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/SERVICES/HIF/PCIe/cepci.h  |  2 +-
+ CORE/SERVICES/HIF/PCIe/if_pci.c | 19 +++++++++++++++++--
+ Kbuild                          |  2 +-
+ 3 files changed, 19 insertions(+), 4 deletions(-)
+
+diff --git a/CORE/SERVICES/HIF/PCIe/cepci.h b/CORE/SERVICES/HIF/PCIe/cepci.h
+index f5ba19b..95db903 100644
+--- a/CORE/SERVICES/HIF/PCIe/cepci.h
++++ b/CORE/SERVICES/HIF/PCIe/cepci.h
+@@ -41,7 +41,7 @@
+  * so for now we abide by this limit and avoid requesting more
+  * than that.
+  */
+-#define MSI_NUM_REQUEST_LOG2  3
++#define MSI_NUM_REQUEST_LOG2  0
+ #define MSI_NUM_REQUEST       (1<<MSI_NUM_REQUEST_LOG2)
+ 
+ /*
+diff --git a/CORE/SERVICES/HIF/PCIe/if_pci.c b/CORE/SERVICES/HIF/PCIe/if_pci.c
+index 374a9b0..840724d 100644
+--- a/CORE/SERVICES/HIF/PCIe/if_pci.c
++++ b/CORE/SERVICES/HIF/PCIe/if_pci.c
+@@ -81,7 +81,7 @@
+ #define RAMDUMP_EVENT_TIMEOUT 2500
+ #define MAX_REG_READ_RETRIES 10
+ 
+-unsigned int msienable = 0;
++unsigned int msienable = 1;
+ module_param(msienable, int, S_IRUSR | S_IRGRP | S_IROTH);
+ 
+ int hif_pci_configure(struct hif_pci_softc *sc, hif_handle_t *hif_hdl);
+@@ -788,6 +788,7 @@ wlan_tasklet(unsigned long data)
+     struct HIF_CE_state *hif_state = (struct HIF_CE_state *)sc->hif_device;
+     volatile int tmp;
+     bool hif_init_done = sc->hif_init_done;
++    A_target_id_t targid = hif_state->targid;
+ 
+     if (hif_init_done == FALSE) {
+          goto irq_handled;
+@@ -809,7 +810,7 @@ wlan_tasklet(unsigned long data)
+          goto irq_handled;
+ 
+     CE_per_engine_service_any(sc->irq_event, sc);
+-    adf_os_atomic_set(&sc->tasklet_from_intr, 0);
++    adf_os_atomic_set(&sc->tasklet_from_intr, 1);
+     if (CE_get_rx_pending(sc)) {
+         if (vos_is_load_unload_in_progress(VOS_MODULE_ID_HIF, NULL)) {
+             pr_err("%s: Load/Unload in Progress\n", __func__);
+@@ -835,6 +836,20 @@ end:
+         adf_os_atomic_set(&sc->ce_suspend, 1);
+         return;
+     }
++
++    if(!LEGACY_INTERRUPTS(sc) && CE_INTERRUPT_SUMMARY(targid)) {
++	if (vos_is_load_unload_in_progress(VOS_MODULE_ID_HIF, NULL))
++		goto msiend;
++
++	if (vos_is_logp_in_progress(VOS_MODULE_ID_HIF, NULL))
++		goto msiend;
++
++	tasklet_schedule(&sc->intr_tq);
++msiend:
++	adf_os_atomic_set(&sc->ce_suspend, 1);
++	return;
++    }
++
+ irq_handled:
+     /* use cached value for hif_init_done to prevent
+      * unlocking an unlocked spinlock if hif init finishes
+diff --git a/Kbuild b/Kbuild
+index e26a7c9..77feef4 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -1690,7 +1690,7 @@ CDEFINES += -DFEATURE_DPTRACE_ENABLE
+ endif
+ 
+ ifeq ($(CONFIG_HIF_PCI), 1)
+-CDEFINES += -DFORCE_LEGACY_PCI_INTERRUPTS
++#CDEFINES += -DFORCE_LEGACY_PCI_INTERRUPTS
+ endif
+ 
+ ifeq ($(CONFIG_WLAN_THERMAL_SHUTDOWN), 1)
+-- 
+1.9.1
+

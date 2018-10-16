@@ -1,0 +1,90 @@
+From e480b6825d3670f3517c3b7be0c13fd318cbe985 Mon Sep 17 00:00:00 2001
+From: Hangtian Zhu <hangtian@qti.qualcomm.com>
+Date: Thu, 14 Jun 2018 11:10:05 +0800
+Subject: [PATCH] MLK-18491-02 qcacld-2.0: fix the overflow of bounce buffer
+
+Patch a41baa51cbc5("MLK-18491 qcacld-2.0: avoid overflow of bounce buffer")
+is not reasonable to fix overflow of bounce buffer issue.
+
+The patch is released by Qualcomm to fix the issue.
+(Case Number:03515221)
+
+Signed-off-by: Hangtian Zhu <hangtian@qti.qualcomm.com>
+---
+ CORE/SERVICES/HTC/htc.c      |  2 +-
+ CORE/SERVICES/HTC/htc_send.c | 28 ++++++++++++++--------------
+ 2 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/CORE/SERVICES/HTC/htc.c b/CORE/SERVICES/HTC/htc.c
+index 1e2450d..09936a0 100644
+--- a/CORE/SERVICES/HTC/htc.c
++++ b/CORE/SERVICES/HTC/htc.c
+@@ -657,7 +657,7 @@ static void ResetEndpointStates(HTC_TARGET *target)
+         INIT_HTC_PACKET_QUEUE(&pEndpoint->RxBufferHoldQueue);
+         pEndpoint->target = target;
+         //pEndpoint->TxCreditFlowEnabled = (A_BOOL)htc_credit_flow;
+-        pEndpoint->TxCreditFlowEnabled = (A_BOOL)0;
++        pEndpoint->TxCreditFlowEnabled = (A_BOOL)1;
+         adf_os_atomic_init(&pEndpoint->TxProcessCount);
+     }
+ }
+diff --git a/CORE/SERVICES/HTC/htc_send.c b/CORE/SERVICES/HTC/htc_send.c
+index 1a3dd28..19d8065 100644
+--- a/CORE/SERVICES/HTC/htc_send.c
++++ b/CORE/SERVICES/HTC/htc_send.c
+@@ -105,12 +105,12 @@ void HTCGetControlEndpointTxHostCredits(HTC_HANDLE HTCHandle, int *credits)
+ 
+ static INLINE void RestoreTxPacket(HTC_TARGET *target, HTC_PACKET *pPacket)
+ {
++    adf_nbuf_t netbuf = GET_HTC_PACKET_NET_BUF_CONTEXT(pPacket);
+     if (pPacket->PktInfo.AsTx.Flags & HTC_TX_PACKET_FLAG_FIXUP_NETBUF) {
+-        adf_nbuf_t netbuf = GET_HTC_PACKET_NET_BUF_CONTEXT(pPacket);
+         adf_nbuf_unmap(target->osdev, netbuf, ADF_OS_DMA_TO_DEVICE);
+-        adf_nbuf_pull_head(netbuf, sizeof(HTC_FRAME_HDR));
+         pPacket->PktInfo.AsTx.Flags &= ~HTC_TX_PACKET_FLAG_FIXUP_NETBUF;
+     }
++    adf_nbuf_pull_head(netbuf, sizeof(HTC_FRAME_HDR));
+ 
+ }
+ 
+@@ -641,12 +641,11 @@ static A_STATUS HTCIssuePackets(HTC_TARGET       *target,
+              * that is already mapped, or a non-data netbuf that needs to be
+              * mapped.
+              */
+-            if (pPacket->PktInfo.AsTx.Flags & HTC_TX_PACKET_FLAG_FIXUP_NETBUF) {
+-                adf_nbuf_map(
+-                        target->osdev,
+-                        GET_HTC_PACKET_NET_BUF_CONTEXT(pPacket),
+-                        ADF_OS_DMA_TO_DEVICE);
+-            }
++            pPacket->PktInfo.AsTx.Flags |= HTC_TX_PACKET_FLAG_FIXUP_NETBUF;
++            adf_nbuf_map(
++                    target->osdev,
++                    GET_HTC_PACKET_NET_BUF_CONTEXT(pPacket),
++                    ADF_OS_DMA_TO_DEVICE);
+         }
+         LOCK_HTC_TX(target);
+             /* store in look up queue to match completions */
+@@ -1261,12 +1260,13 @@ A_STATUS HTCSendPktsMultiple(HTC_HANDLE HTCHandle, HTC_PACKET_QUEUE *pPktQueue)
+              * mapped.  This only applies to non-data frames, since data frames
+              * were already mapped as they entered into the driver.
+              */
+-            adf_nbuf_map(
+-                    target->osdev,
+-                    GET_HTC_PACKET_NET_BUF_CONTEXT(pPacket),
+-                    ADF_OS_DMA_TO_DEVICE);
+-
+-	pPacket->PktInfo.AsTx.Flags |= HTC_TX_PACKET_FLAG_FIXUP_NETBUF;
++            if(!IS_TX_CREDIT_FLOW_ENABLED(pEndpoint)) {
++	        pPacket->PktInfo.AsTx.Flags |= HTC_TX_PACKET_FLAG_FIXUP_NETBUF;
++                adf_nbuf_map(
++                        target->osdev,
++                        GET_HTC_PACKET_NET_BUF_CONTEXT(pPacket),
++                        ADF_OS_DMA_TO_DEVICE);
++	    }
+     } HTC_PACKET_QUEUE_ITERATE_END;
+ 
+     HTCTrySend(target,pEndpoint,pPktQueue);
+-- 
+1.9.1
+

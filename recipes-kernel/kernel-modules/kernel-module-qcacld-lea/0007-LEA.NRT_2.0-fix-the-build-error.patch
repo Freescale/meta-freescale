@@ -1,0 +1,53 @@
+From 26a981e1b0f0a4c123d2c2eaa59d50811e25929b Mon Sep 17 00:00:00 2001
+From: Fugang Duan <fugang.duan@nxp.com>
+Date: Mon, 2 Apr 2018 15:33:38 +0800
+Subject: [PATCH 07/11] LEA.NRT_2.0: fix the build error
+
+Fix the build error for PCI host in LEA.NRT_1.0 version.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/HDD/src/wlan_hdd_cfg80211.c | 2 ++
+ CORE/SERVICES/BMI/ol_fw.h        | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/CORE/HDD/src/wlan_hdd_cfg80211.c b/CORE/HDD/src/wlan_hdd_cfg80211.c
+index cb6f03d..50d5ae0 100644
+--- a/CORE/HDD/src/wlan_hdd_cfg80211.c
++++ b/CORE/HDD/src/wlan_hdd_cfg80211.c
+@@ -13492,12 +13492,14 @@ static int hdd_convert_auth_type(uint32_t auth_type)
+ 	case eCSR_AUTH_TYPE_WAPI_WAI_PSK:
+ 		ret_val = QCA_WLAN_AUTH_TYPE_WAI_PSK;
+ 		break;
++#ifdef WLAN_FEATURE_11W
+ 	case eCSR_AUTH_TYPE_RSN_PSK_SHA256:
+ 		ret_val = QCA_WLAN_AUTH_TYPE_SHA256_PSK;
+ 		break;
+ 	case eCSR_AUTH_TYPE_RSN_8021X_SHA256:
+ 		ret_val = QCA_WLAN_AUTH_TYPE_SHA256;
+ 		break;
++#endif
+ 	case eCSR_NUM_OF_SUPPORT_AUTH_TYPE:
+ 	case eCSR_AUTH_TYPE_FAILED:
+ 	case eCSR_AUTH_TYPE_NONE:
+diff --git a/CORE/SERVICES/BMI/ol_fw.h b/CORE/SERVICES/BMI/ol_fw.h
+index aca4961..fdd07f4 100644
+--- a/CORE/SERVICES/BMI/ol_fw.h
++++ b/CORE/SERVICES/BMI/ol_fw.h
+@@ -162,11 +162,11 @@ void ol_target_failure(void *instance, A_STATUS status);
+ u_int8_t ol_get_number_of_peers_supported(struct ol_softc *scn);
+ 
+ #ifdef REMOVE_PKT_LOG
+-static inline void ol_pktlog_init(void *)
++static inline void ol_pktlog_init(void *hif_sc)
+ {
+ }
+ #else
+-void ol_pktlog_init(void *);
++void ol_pktlog_init(void *hif_sc);
+ #endif
+ 
+ #if defined(HIF_SDIO)
+-- 
+1.9.1
+

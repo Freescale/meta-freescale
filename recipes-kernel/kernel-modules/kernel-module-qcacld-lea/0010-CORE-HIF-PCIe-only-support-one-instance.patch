@@ -1,0 +1,45 @@
+From 5c01620b0b3a3d7d6a95b4d00d75d44bd8e78b0c Mon Sep 17 00:00:00 2001
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Tue, 15 May 2018 10:55:42 +0800
+Subject: [PATCH 10/11] CORE: HIF: PCIe: only support one instance
+
+The CLD driver only support one instance, add code check it.
+
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+---
+ CORE/SERVICES/HIF/PCIe/if_pci.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/CORE/SERVICES/HIF/PCIe/if_pci.c b/CORE/SERVICES/HIF/PCIe/if_pci.c
+index 53fb1c2..374a9b0 100644
+--- a/CORE/SERVICES/HIF/PCIe/if_pci.c
++++ b/CORE/SERVICES/HIF/PCIe/if_pci.c
+@@ -1601,12 +1601,17 @@ hif_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+     u_int16_t device_id;
+     u_int16_t revision_id;
+     u_int32_t lcr_val;
++    static int devid = 0;
+ 
+     printk(KERN_INFO "%s:, con_mode= 0x%x\n", __func__, vos_get_conparam());
+ 
+ again:
+     ret = 0;
+ 
++    /* CLD driver only support one instance */
++    if (devid)
++	return -EIO;
++
+ #define BAR_NUM 0
+     /*
+      * Without any knowledge of the Host, the Target
+@@ -1886,6 +1891,7 @@ again:
+     pci_write_config_dword(pdev, 0x80, lcr_val);
+ 
+     hif_pci_pm_runtime_init(sc);
++    devid++;
+ 
+     return 0;
+ 
+-- 
+1.9.1
+
