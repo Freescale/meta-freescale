@@ -1,0 +1,40 @@
+From d877fddcef79e856193b9b0a3a3089c22151047f Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Fri, 29 Jun 2018 15:49:34 +0800
+Subject: [PATCH] fix build failure with GCC 8
+
+Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
+---
+ host/xtest/Makefile            | 2 ++
+ host/xtest/adbg/src/adbg_run.c | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/host/xtest/Makefile b/host/xtest/Makefile
+index 832cba2..d95899d 100644
+--- a/host/xtest/Makefile
++++ b/host/xtest/Makefile
+@@ -139,6 +139,8 @@ CFLAGS += -Wall -Wcast-align -Werror \
+ 	  -Wmissing-prototypes -Wnested-externs -Wpointer-arith \
+ 	  -Wshadow -Wstrict-prototypes -Wswitch-default \
+ 	  -Wwrite-strings \
++          -Wno-stringop-overflow \
++          -Wno-array-bounds \
+ 	  -Wno-missing-field-initializers -Wno-format-zero-length
+ endif
+ 
+diff --git a/host/xtest/adbg/src/adbg_run.c b/host/xtest/adbg/src/adbg_run.c
+index 406e429..3b57bbb 100644
+--- a/host/xtest/adbg/src/adbg_run.c
++++ b/host/xtest/adbg/src/adbg_run.c
+@@ -100,7 +100,7 @@ int Do_ADBG_AppendToSuite(
+ 		snprintf(p, size, "%s+%s", Dest_p->SuiteID_p,
+ 			 Source_p->SuiteID_p);
+ 	else
+-		strncpy(p, Source_p->SuiteID_p, size);
++		memcpy(p, Source_p->SuiteID_p, size);
+ 	free((void *)Dest_p->SuiteID_p);
+ 	Dest_p->SuiteID_p = p;
+ 
+-- 
+1.8.3.1
+
