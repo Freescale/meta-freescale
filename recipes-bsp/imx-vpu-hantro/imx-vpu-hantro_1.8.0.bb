@@ -32,4 +32,4 @@ do_install () {
 
 FILES_${PN} += "/unit_tests"
 
-COMPATIBLE_MACHINE = "(mx8mq|mx8mm)"
+COMPATIBLE_MACHINE = "(mx8m)"
