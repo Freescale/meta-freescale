@@ -29,4 +29,4 @@ do_install_append() {
 INSANE_SKIP_imx-vpuwrap = "file-rdeps"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx8mq|mx8mm)"
+COMPATIBLE_MACHINE = "(imxvpu)"
