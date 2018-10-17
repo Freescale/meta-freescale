@@ -1,0 +1,35 @@
+From 05f741c1e6263bec2977901abe61463b7f8175ad Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Fri, 22 Jun 2018 11:58:09 +0800
+Subject: [PATCH] GCC 8 format-truncation error
+
+Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
+---
+ libteec/src/teec_trace.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libteec/src/teec_trace.c b/libteec/src/teec_trace.c
+index 78b79d6..7901deb 100644
+--- a/libteec/src/teec_trace.c
++++ b/libteec/src/teec_trace.c
+@@ -73,7 +73,7 @@ int _dprintf(const char *function, int flen, int line, int level,
+ 	     const char *prefix, const char *fmt, ...)
+ {
+ 	char raw[MAX_PRINT_SIZE];
+-	char prefixed[MAX_PRINT_SIZE];
++	char prefixed[MAX_PRINT_SIZE + 10];
+ 	char *to_print = NULL;
+ 	const char *func;
+ 	int err;
+@@ -106,7 +106,7 @@ int _dprintf(const char *function, int flen, int line, int level,
+ 		 */
+ 		int thread_id = syscall(SYS_gettid);	/* perf issue ? */
+ 
+-		snprintf(prefixed, MAX_PRINT_SIZE,
++		snprintf(prefixed, MAX_PRINT_SIZE + 10,
+ 			 "%s [%d] %s:%s:%d: %s",
+ 			 trace_level_strings[level], thread_id, prefix, func,
+ 			 line, raw);
+-- 
+1.8.3.1
+
