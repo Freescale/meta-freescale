@@ -94,10 +94,7 @@ do_deploy_mx8m() {
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_dp_imx8m.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_hdmi_imx8m.bin ${DEPLOYDIR}
 }
-do_deploy_mx8mm() {
-    do_deploy_mx8m
-}
-do_deploy_mx8qm() {
+do_deploy_mx8() {
     # Cadence HDMI
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmitxfw.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${DEPLOYDIR}
