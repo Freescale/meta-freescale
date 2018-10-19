@@ -1,5 +1,5 @@
 SUMMARY = "Primary Protected Application"
-LICENSE = "Freescale-EULA"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://license.txt;md5=2ecf925c01a48f61c88f78c30fe2ee3b"
 
 DEPENDS += "u-boot-mkimage-native dtc-native"
