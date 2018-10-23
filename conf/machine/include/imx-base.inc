@@ -258,9 +258,9 @@ PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.13.imx"
 PREFERRED_VERSION_wayland-protocols_mx8 ?= "1.13.imx"
 
 # Use i.MX libdrm Version
-PREFERRED_VERSION_libdrm_mx6 ?= "2.4.84.imx"
-PREFERRED_VERSION_libdrm_mx7 ?= "2.4.84.imx"
-PREFERRED_VERSION_libdrm_mx8 ?= "2.4.84.imx"
+PREFERRED_VERSION_libdrm_mx6 ?= "2.4.91.imx"
+PREFERRED_VERSION_libdrm_mx7 ?= "2.4.91.imx"
+PREFERRED_VERSION_libdrm_mx8 ?= "2.4.91.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
