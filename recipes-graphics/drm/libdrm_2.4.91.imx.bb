@@ -11,14 +11,15 @@ PROVIDES = "drm"
 DEPENDS = "libpthread-stubs libpciaccess"
 
 IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https"
-IMX_LIBDRM_BRANCH = "libdrm-imx-2.4.84"
+IMX_LIBDRM_BRANCH = "libdrm-imx-2.4.91"
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
            file://installtests.patch \
            file://fix_O_CLOEXEC_undeclared.patch \
            file://0001-configure.ac-Allow-explicit-enabling-of-cunit-tests.patch \
           "
 SRC_URI_remove_mx8 = "file://drm-update-arm.patch"
-SRCREV = "8c8c46d41839035de605291bc1c26902011a74ac"
+SRCREV = "e8e9cf8a66be11508c39f1cc31b8a5e7eb758875"
+S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -60,7 +61,5 @@ PACKAGES_prepend_imxgpu = "${PN}-vivante "
 RRECOMMENDS_${PN}-drivers_append_imxgpu = " ${PN}-vivante"
 
 FILES_${PN}-vivante = "${libdir}/libdrm_vivante.so.*"
-
-S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
