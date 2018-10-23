@@ -35,6 +35,7 @@ EXTRA_PROVIDES_append_mx6q = " \
     opencl-headers \
 "
 EXTRA_PROVIDES_append_mx8 = " \
+    virtual/libgbm \
     virtual/opencl-icd \
     opencl-headers \
 "
