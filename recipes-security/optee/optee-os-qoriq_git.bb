@@ -64,4 +64,4 @@ FILES_${PN}-dev = "/usr/include/optee"
 INSANE_SKIP_${PN}-dev = "staticdev"
 
 INHIBIT_PACKAGE_STRIP = "1"
-COMPATIBLE_MACHINE = "(ls1043ardb|ls1046ardb|ls1012ardb)"
+COMPATIBLE_MACHINE = "(qoriq-arm64)"
