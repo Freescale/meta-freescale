@@ -7,7 +7,7 @@ DESCRIPTION = "Gstreamer freescale plugins"
 LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 
-DEPENDS = "imx-codec imx-parser virtual/kernel gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
+DEPENDS = "imx-codec imx-parser linux-imx-headers gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
 DEPENDS_append_mx6 = " imx-lib"
 DEPENDS_append_mx7 = " imx-lib"
 DEPENDS_append_imxvpu = " imx-vpuwrap libdrm"
@@ -23,17 +23,12 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
 IMXGST_SRC ?= "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https"
 SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
 
-SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH} \
-           file://0001-imx-gst1.0-plugin-Fix-ion.h-header-inclusion-to-be-s.patch \
-"
+SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
 SRCREV = "23dd0315c7087e1c8eba836b9a458d7906187c7e"
 
 S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
-
-# Make sure kernel sources are available
-do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 PLATFORM_mx6 = "MX6"
 PLATFORM_mx6sl = "MX6SL"
@@ -46,7 +41,7 @@ PLATFORM_mx8 = "MX8"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
-                CPPFLAGS="-I${STAGING_KERNEL_BUILDDIR}/include/generated/uapi -I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include -I${STAGING_KERNEL_DIR}/drivers/staging/android/uapi" \
+                CPPFLAGS="-I${STAGING_INCDIR}/imx" \
                 CROSS_ROOT=${PKG_CONFIG_SYSROOT_DIR} \
                 ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', bb.utils.contains('DISTRO_FEATURES', 'x11', '--disable-x11', '', d), '', d)}"
 
