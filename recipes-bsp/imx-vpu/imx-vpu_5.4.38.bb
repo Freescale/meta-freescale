@@ -6,7 +6,7 @@ DESCRIPTION = "Freescale Chips&Media VPU library"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=75abe2fa1d16ca79f87cde926f05f72d"
 
-DEPENDS = "virtual/kernel"
+DEPENDS = "linux-imx-headers"
 
 PROVIDES = "virtual/imxvpu"
 
@@ -22,8 +22,7 @@ inherit fsl-eula-unpack
 PLATFORM_mx6 = "IMX6Q"
 
 do_compile () {
-    INCLUDE_DIR="-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include"
-
+    INCLUDE_DIR="-I${STAGING_INCDIR}/imx"
     oe_runmake CROSS_COMPILE="${HOST_PREFIX}" PLATFORM="${PLATFORM}" INCLUDE="${INCLUDE_DIR}" all
 }
 
@@ -31,5 +30,5 @@ do_install () {
     oe_runmake PLATFORM="${PLATFORM}" DEST_DIR="${D}" install
 }
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx6q|mx6dl)"
