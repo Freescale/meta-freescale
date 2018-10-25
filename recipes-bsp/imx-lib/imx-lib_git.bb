@@ -5,7 +5,8 @@
 DESCRIPTION = "Platform specific libraries for imx platform"
 LICENSE = "LGPLv2.1"
 SECTION = "multimedia"
-DEPENDS = "virtual/kernel"
+
+DEPENDS = "linux-imx-headers"
 
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
@@ -32,7 +33,7 @@ PARALLEL_MAKE="-j 1"
 EXTRA_OEMAKE = ""
 
 do_compile () {
-    INCLUDE_DIR="-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include"
+    INCLUDE_DIR="-I${STAGING_INCDIR}/imx"
     oe_runmake CROSS_COMPILE="${HOST_PREFIX}" PLATFORM="${PLATFORM}" INCLUDE="${INCLUDE_DIR}" all
 }
 
@@ -41,3 +42,4 @@ do_install () {
 }
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
