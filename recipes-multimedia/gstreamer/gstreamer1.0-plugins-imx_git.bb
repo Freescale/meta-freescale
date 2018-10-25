@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
 SECTION = "multimedia"
 # gstreamer1.0-plugins-bad is in DEPENDS because the build script scans for the
 # GstPhotography headers and libraries
-DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad virtual/kernel"
+DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad linux-imx-headers"
 # add the audioparsers and the videoparsersbad plugins as RDEPENDS ; audioparsers
 # for the uniaudio decoder, videoparsersbad for the VPU video decoder
 # the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
@@ -24,8 +24,6 @@ S = "${WORKDIR}/git"
 
 inherit pkgconfig waf
 
-do_compile[depends] += "virtual/kernel:do_shared_workdir"
-
 # configure the eglvivsink element to use the appropriate EGL platform code
 # Wayland if 'wayland' is present in DISTRO_FEATURES, if not,
 # X11 if x11 is present in DISTRO_FEATURES,
@@ -35,7 +33,8 @@ EGLVIVSINK_PLATFORM = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayla
                           'fb', d),d)}"
 
 EGL_PLATFORM_CONF = "--egl-platform=${EGLVIVSINK_PLATFORM}"
-EXTRA_OECONF = "--kernel-headers=${STAGING_KERNEL_DIR}/include ${PACKAGECONFIG_CONFARGS}"
+
+EXTRA_OECONF = "--kernel-headers=${STAGING_INCDIR}/imx ${PACKAGECONFIG_CONFARGS}"
 
 EGLVIVSINK_DEPENDS = " \
     virtual/egl virtual/libgles2 \
