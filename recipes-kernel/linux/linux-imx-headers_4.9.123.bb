@@ -12,6 +12,7 @@ LOCALVERSION = "-${SRCBRANCH}"
 SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https;branch=${SRCBRANCH} \
     file://0001-uapi-Install-custom-headers.patch"
 SRCREV = "6a71cbc089755afd6a86c005c22a1af6eab24a70"
+
 S = "${WORKDIR}/git"
 
 do_compile[noexec] = "1"
@@ -36,14 +37,21 @@ IMX_UAPI_HEADERS = " \
 "
 
 do_install() {
+    # We install all headers inside of B so we can copy only the
+    # whitelisted ones, and there is no risk of a new header to be
+    # installed by mistake.
     oe_runmake headers_install INSTALL_HDR_PATH=${B}${exec_prefix}
+
+    # FIXME: The ion.h is still on staging so "promote" it for now
     cp ${S}/drivers/staging/android/uapi/ion.h ${B}${includedir}/linux
-    src=${B}${includedir}/linux
-    dest=${D}${includedir}/imx/linux
-    install -d $dest
-    cd $src
-    install -m 0644 ${IMX_UAPI_HEADERS} $dest
-    cd -
+
+    # Install whitelisted headers only
+    for h in ${IMX_UAPI_HEADERS}; do
+        install -D -m 0644 ${B}${includedir}/linux/$h \
+	                   ${D}${includedir}/imx/linux/$h
+    done
 }
+
+ALLOW_EMPTY_${PN} = "1"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
