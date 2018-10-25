@@ -8,7 +8,7 @@ SECTION = "base"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
-DEPENDS = "virtual/kernel alsa-lib libdrm"
+DEPENDS = "linux-imx-headers alsa-lib libdrm"
 DEPENDS_append_mx6 = " imx-lib"
 DEPENDS_append_mx7 = " imx-lib"
 
@@ -57,13 +57,7 @@ do_compile() {
                CROSS_COMPILE=${TARGET_PREFIX} \
                INC="-I${STAGING_INCDIR} \
                     -I${S}/include \
-                    -I${STAGING_KERNEL_BUILDDIR}/include/uapi \
-                    -I${STAGING_KERNEL_BUILDDIR}/include \
-                    -I${STAGING_KERNEL_DIR}/include/uapi \
-                    -I${STAGING_KERNEL_DIR}/include \
-                    -I${STAGING_KERNEL_DIR}/arch/arm/include \
-                    -I${STAGING_KERNEL_DIR}/drivers/mxc/security/rng/include \
-                    -I${STAGING_KERNEL_DIR}/drivers/mxc/security/sahara2/include" \
+                    -I${STAGING_INCDIR}/imx" \
                CC="${CC} -L${STAGING_LIBDIR} ${LDFLAGS}" \
                SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
                LINUXPATH=${STAGING_KERNEL_DIR} \
@@ -87,4 +81,6 @@ FILES_${PN} += "/unit_tests /home/root/.profile"
 RDEPENDS_${PN} = "bash"
 
 FILES_${PN}-dbg += "/unit_tests/.debug"
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
