@@ -4,16 +4,13 @@
 DESCRIPTION = "Freescale alsa-lib plugins"
 LICENSE = "GPLv2"
 SECTION = "multimedia"
-DEPENDS = "alsa-lib virtual/kernel"
+DEPENDS = "alsa-lib linux-imx-headers"
 
 # For backwards compatibility
 PROVIDES += "fsl-alsa-plugins"
 RREPLACES_${PN} = "fsl-alsa-plugins"
 RPROVIDES_${PN} = "fsl-alsa-plugins"
 RCONFLICTS_${PN} = "fsl-alsa-plugins"
-
-# Make sure kernel sources are available
-do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 LIC_FILES_CHKSUM = "file://COPYING.GPL;md5=94d55d512a9ba36caa9b7df079bae19f"
 
@@ -25,7 +22,7 @@ SRCREV = "9a63071e7734bd164017f3761b8d1944c017611f"
 
 S = "${WORKDIR}/git"
 
-INCLUDE_DIR = "-I${STAGING_KERNEL_DIR}/include/uapi -I${STAGING_KERNEL_DIR}/include"
+INCLUDE_DIR = "-I${STAGING_INCDIR}/imx"
 
 EXTRA_OECONF = "CFLAGS="${INCLUDE_DIR}""
 
