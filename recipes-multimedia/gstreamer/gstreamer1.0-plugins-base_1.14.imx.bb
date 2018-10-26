@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c54ce9345727175ff66d17b67ff51f58 \
                     file://COPYING.LIB;md5=6762ed442b3822387a51c92d928ead0d \
                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
 
-DEPENDS += "iso-codes util-linux linux-imx-headers"
+DEPENDS += "iso-codes util-linux"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
 SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
@@ -33,7 +33,7 @@ PACKAGECONFIG_append = " pango "
 # Disable introspection to fix [GstGL-1.0.gir] Error
 EXTRA_OECONF_append = " --disable-introspection --disable-opengl --enable-wayland"
 
-inherit gettext
+inherit gettext use-imx-headers
 
 PACKAGES_DYNAMIC =+ "^libgst.*"
 
@@ -60,7 +60,7 @@ PACKAGECONFIG[x11]          = "${X11ENABLEOPTS},${X11DISABLEOPTS},${X11DEPENDS}"
 
 EXTRA_OECONF += " \
     --enable-zlib \
-    CPPFLAGS="-I${STAGING_INCDIR}/imx" \
+    CPPFLAGS="-I${STAGING_INCDIR_IMX}" \
 "
 
 CACHED_CONFIGUREVARS_append_x86 = " ac_cv_header_emmintrin_h=no ac_cv_header_xmmintrin_h=no"

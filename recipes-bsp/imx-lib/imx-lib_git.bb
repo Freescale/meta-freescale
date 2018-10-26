@@ -6,8 +6,6 @@ DESCRIPTION = "Platform specific libraries for imx platform"
 LICENSE = "LGPLv2.1"
 SECTION = "multimedia"
 
-DEPENDS = "linux-imx-headers"
-
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 PE = "1"
@@ -19,6 +17,8 @@ SRC_URI = "git://source.codeaurora.org/external/imx/imx-lib.git;protocol=https;b
 SRCREV = "3f777974c0c146817e2ff5cb0340ca66a1f99e57"
 
 S = "${WORKDIR}/git"
+
+inherit use-imx-headers
 
 PLATFORM_mx6q  = "IMX6Q"
 PLATFORM_mx6dl = "IMX6Q"
@@ -33,7 +33,7 @@ PARALLEL_MAKE="-j 1"
 EXTRA_OEMAKE = ""
 
 do_compile () {
-    INCLUDE_DIR="-I${STAGING_INCDIR}/imx"
+    INCLUDE_DIR="-I${STAGING_INCDIR_IMX}"
     oe_runmake CROSS_COMPILE="${HOST_PREFIX}" PLATFORM="${PLATFORM}" INCLUDE="${INCLUDE_DIR}" all
 }
 
@@ -42,4 +42,3 @@ do_install () {
 }
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"

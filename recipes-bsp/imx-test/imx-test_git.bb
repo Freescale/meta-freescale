@@ -8,7 +8,7 @@ SECTION = "base"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
-DEPENDS = "linux-imx-headers alsa-lib libdrm"
+DEPENDS = "alsa-lib libdrm"
 DEPENDS_append_mx6 = " imx-lib"
 DEPENDS_append_mx7 = " imx-lib"
 
@@ -24,7 +24,7 @@ SRC_URI = " \
 SRCREV = "3a87347ae408ef0234314a279ee74d9b015f06be"
 S = "${WORKDIR}/git"
 
-inherit module-base
+inherit module-base use-imx-headers
 
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
@@ -55,9 +55,9 @@ do_compile() {
     CFLAGS="${TOOLCHAIN_OPTIONS}"
     oe_runmake V=1 VERBOSE='' \
                CROSS_COMPILE=${TARGET_PREFIX} \
-               INC="-I${STAGING_INCDIR} \
-                    -I${S}/include \
-                    -I${STAGING_INCDIR}/imx" \
+               INC="-I${S}/include \
+                    -I${STAGING_INCDIR} \
+                    -I${STAGING_INCDIR_IMX}" \
                CC="${CC} -L${STAGING_LIBDIR} ${LDFLAGS}" \
                SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
                LINUXPATH=${STAGING_KERNEL_DIR} \
@@ -82,5 +82,4 @@ RDEPENDS_${PN} = "bash"
 
 FILES_${PN}-dbg += "/unit_tests/.debug"
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
