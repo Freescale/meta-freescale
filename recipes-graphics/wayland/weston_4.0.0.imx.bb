@@ -9,6 +9,7 @@ DEFAULT_PREFERENCE = "-1"
 
 SRCBRANCH = "weston-imx-4.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
+           file://weston.ini \
            file://weston.png \
            file://weston.desktop \
            file://0001-make-error-portable.patch \
@@ -111,8 +112,7 @@ do_install_append() {
 	fi
 
 	# install default weston.ini
-	install -d ${D}${sysconfdir}/xdg/weston
-	install -m 0644 ${B}/weston.ini ${D}${sysconfdir}/xdg/weston
+	install -D -m 0644 ${WORKDIR}/weston.ini ${D}${sysconfdir}/xdg/weston/weston.ini
 }
 
 PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland', '', d)} \
