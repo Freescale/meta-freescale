@@ -7,15 +7,14 @@ allowing flexibility to use a newer graphics release with an older kernel."
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
-SRCBRANCH = "imx_4.9.88_imx8qxp_beta2"
+SRCBRANCH = "imx_4.9.123_imx8mm_ga"
 LOCALVERSION = "-${SRCBRANCH}"
-
 KERNEL_SRC ?= "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https"
 SRC_URI = " \
     ${KERNEL_SRC};branch=${SRCBRANCH};subpath=drivers/mxc/gpu-viv;destsuffix=git/src \
     file://Add-makefile.patch \
 "
-SRCREV = "05f46d3f9b4a8987edac62a52528d52f47cfa42d"
+SRCREV = "6a71cbc089755afd6a86c005c22a1af6eab24a70"
 
 S = "${WORKDIR}/git"
 
