@@ -18,11 +18,11 @@ Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
  libweston/g2d-renderer.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/libweston/g2d-renderer.c b/libweston/g2d-renderer.c
-index cc82711..0675350 100644
---- a/libweston/g2d-renderer.c
-+++ b/libweston/g2d-renderer.c
-@@ -1626,7 +1626,7 @@ g2d_renderer_create(struct weston_compositor *ec)
+Index: git/libweston/g2d-renderer.c
+===================================================================
+--- git.orig/libweston/g2d-renderer.c
++++ git/libweston/g2d-renderer.c
+@@ -1626,7 +1626,7 @@ g2d_renderer_create(struct weston_compos
  	path = malloc(strlen(dir) + 40);
  	strcpy(path, dir);
  	strcat(path, "/use-g2d-renderer");
@@ -31,15 +31,3 @@ index cc82711..0675350 100644
  	free(path);
  
  	return 0;
-@@ -1804,7 +1804,7 @@ fb_frame_buffer_open(struct g2d_output_state *output, const char *fb_dev,
-                         struct fb_screeninfo *screen_info)
- {
- 	/* Open the frame buffer device. */
--	screen_info->fb_fd = open(fb_dev, O_RDWR | O_CLOEXEC);
-+	screen_info->fb_fd = open(fb_dev, O_RDWR | O_CLOEXEC, 0600);
- 	if (screen_info->fb_fd < 0) {
- 		weston_log("Failed to open frame buffer device%s \n", fb_dev);
- 		return -1;
--- 
-2.7.4
-
