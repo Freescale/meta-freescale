@@ -22,14 +22,14 @@ PACKAGECONFIG_GL_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' gl
 PACKAGECONFIG_GL_imxgpu3d = "gles2"
 PACKAGECONFIG_GL_append_use-mainline-bsp = " gbm kms"
 
-QT_CONFIG_FLAGS_APPEND          = ""
-QT_CONFIG_FLAGS_APPEND_imxgpu2d = "-no-opengl -linuxfb"
-QT_CONFIG_FLAGS_APPEND_imxgpu3d = " \
+PACKAGECONFIG_PLATFORM          = ""
+PACKAGECONFIG_PLATFORM_imxgpu2d = "no-opengl linuxfb"
+PACKAGECONFIG_PLATFORM_imxgpu3d = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11',     '', \
        bb.utils.contains('DISTRO_FEATURES', 'wayland', '', \
-                                                       '-eglfs', d), d)}"
-QT_CONFIG_FLAGS_APPEND_use-mainline-bsp =  "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', '-eglfs', d)}"
-QT_CONFIG_FLAGS_append = " ${QT_CONFIG_FLAGS_APPEND}"
+                                                       'eglfs', d), d)}"
+PACKAGECONFIG_PLATFORM_use-mainline-bsp = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'eglfs', d)}"
+PACKAGECONFIG += "${PACKAGECONFIG_PLATFORM}"
 
 QT_CONFIG_FLAGS += \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '-qpa wayland', \
