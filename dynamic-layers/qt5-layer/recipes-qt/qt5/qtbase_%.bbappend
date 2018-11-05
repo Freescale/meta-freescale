@@ -23,13 +23,12 @@ PACKAGECONFIG_GL_imxgpu3d = "gles2"
 PACKAGECONFIG_GL_append_use-mainline-bsp = " gbm kms"
 
 QT_CONFIG_FLAGS_APPEND          = ""
-QT_CONFIG_FLAGS_APPEND_imxpxp   = "-no-eglfs"
-QT_CONFIG_FLAGS_APPEND_imxgpu2d = "-no-eglfs -no-opengl -linuxfb"
+QT_CONFIG_FLAGS_APPEND_imxgpu2d = "-no-opengl -linuxfb"
 QT_CONFIG_FLAGS_APPEND_imxgpu3d = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11',     '-no-eglfs', \
-       bb.utils.contains('DISTRO_FEATURES', 'wayland', '-no-eglfs', \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11',     '', \
+       bb.utils.contains('DISTRO_FEATURES', 'wayland', '', \
                                                        '-eglfs', d), d)}"
-QT_CONFIG_FLAGS_APPEND_use-mainline-bsp =  "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '-no-eglfs', '-eglfs', d)}"
+QT_CONFIG_FLAGS_APPEND_use-mainline-bsp =  "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', '-eglfs', d)}"
 QT_CONFIG_FLAGS_append = " ${QT_CONFIG_FLAGS_APPEND}"
 
 QT_CONFIG_FLAGS += \
