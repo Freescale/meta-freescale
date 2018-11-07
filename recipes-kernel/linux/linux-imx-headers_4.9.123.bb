@@ -55,3 +55,5 @@ do_install() {
 ALLOW_EMPTY_${PN} = "1"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+COMPATIBLE_HOST_imx = ".*"
+COMPATIBLE_HOST ?= "(none)"
