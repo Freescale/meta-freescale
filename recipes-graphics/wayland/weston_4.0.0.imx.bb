@@ -139,3 +139,6 @@ RRECOMMENDS_${PN}-dev += "wayland-protocols"
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM_${PN} = "--system weston-launch"
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+COMPATIBLE_MACHINE = "(imxfbdev|imxgpu)"
