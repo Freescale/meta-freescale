@@ -10,9 +10,8 @@ RDEPENDS_${PN} = "bash"
 inherit kernel-arch
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cst;nobranch=1 \
-    file://0001-gen_otpmk_drbg-fails-compilation-due-to-uninitialize.patch \
 "
-SRCREV = "e9abf79077fc8faf976e9a3c46a38111aa5b2e69"
+SRCREV = "3285e1d23a6abe3db6b3673e79acdeed4e19ea95"
 
 S = "${WORKDIR}/git"
 
