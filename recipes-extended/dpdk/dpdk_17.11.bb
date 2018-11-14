@@ -23,7 +23,7 @@ export RTE_TARGET = "${ARCH}-${DPAA_VER}-linuxapp-gcc"
 export ETHTOOL_LIB_PATH = "${S}/examples/ethtool/lib/${RTE_TARGET}/"
 
 EXTRA_OEMAKE += 'ARCH="${ARCH}" CROSS="${TARGET_PREFIX}" \
-    CPU_CFLAGS="--sysroot=${STAGING_DIR_HOST}" RTE_SDK="${S}" \
+    CPU_CFLAGS="-fPIC --sysroot=${STAGING_DIR_HOST}" RTE_SDK="${S}" \
     OPENSSL_PATH="${STAGING_DIR_HOST}" RTE_KERNELDIR="${STAGING_KERNEL_DIR}" \
     RTE_KERNELDIR_OUT="${STAGING_KERNEL_BUILDDIR}" \
 '
