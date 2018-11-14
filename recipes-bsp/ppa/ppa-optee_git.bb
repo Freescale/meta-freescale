@@ -5,6 +5,7 @@ DEPENDS += "optee-os-qoriq"
 PPA_PATH_ls1046a = "ls1046"
 PPA_PATH_ls1043a = "ls1043"
 PPA_PATH_ls1012a = "ls1012"
+PPA_PATH_ls2088a = "ls2088"
 
 do_compile() {
     export CROSS_COMPILE="${WRAP_TARGET_PREFIX}"
@@ -14,4 +15,4 @@ do_compile() {
     cd ${S}
 }
 
-COMPATIBLE_MACHINE = "(ls1043a|ls1046a|ls1012a)"
+COMPATIBLE_MACHINE = "(ls1043a|ls1046a|ls1012a|ls2088a)"
