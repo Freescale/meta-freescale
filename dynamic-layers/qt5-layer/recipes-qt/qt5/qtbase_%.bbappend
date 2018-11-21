@@ -30,8 +30,3 @@ PACKAGECONFIG_PLATFORM_imxgpu3d = " \
                                                        'eglfs', d), d)}"
 PACKAGECONFIG_PLATFORM_use-mainline-bsp = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'eglfs', d)}"
 PACKAGECONFIG += "${PACKAGECONFIG_PLATFORM}"
-
-QT_CONFIG_FLAGS += \
-    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '-qpa wayland', \
-        bb.utils.contains('DISTRO_FEATURES',     'x11',             '', \
-                                                          '-qpa eglfs', d), d)}"
