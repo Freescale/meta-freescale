@@ -130,7 +130,7 @@ do_configure () {
                 useprefix=/
         fi
 	libdirleaf="$(echo ${libdir} | sed s:$useprefix::)"
-	perl ./Configure ${EXTRA_OECONF} --prefix=$useprefix --openssldir=${libdir}/ssl-1.1 --libdir=${libdirleaf} $target
+	perl ./Configure -DHAVE_CRYPTODEV ${EXTRA_OECONF} --prefix=$useprefix --openssldir=${libdir}/ssl-1.1 --libdir=${libdirleaf} $target
 }
 
 #| engines/afalg/e_afalg.c: In function 'eventfd':
