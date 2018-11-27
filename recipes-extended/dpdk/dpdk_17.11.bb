@@ -17,8 +17,7 @@ SRCREV = "0c0332ae0016ca6742961f1f4ac6e2f4fdbe215a"
 
 S = "${WORKDIR}/git"
 
-DPAA_VER ?= "dpaa2"
-DPAA_VER_fsl-lsch2 = "dpaa"
+DPAA_VER ?= "dpaa"
 export RTE_TARGET = "${ARCH}-${DPAA_VER}-linuxapp-gcc"
 export ETHTOOL_LIB_PATH = "${S}/examples/ethtool/lib/${RTE_TARGET}/"
 
