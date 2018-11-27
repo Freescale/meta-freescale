@@ -12,8 +12,7 @@ SRCREV = "24eec4133f03b0a5a8f903577bc87603577150c0"
 
 S = "${WORKDIR}/git"
 
-DPAA_VER ?= "dpaa2"
-DPAA_VER_fsl-lsch2 = "dpaa"
+DPAA_VER ?= "dpaa"
 export RTE_TARGET = "${ARCH}-${DPAA_VER}-linuxapp-gcc"
 
 EXTRA_OEMAKE += 'ARCH="${ARCH}" CROSS="${TARGET_PREFIX}" \
