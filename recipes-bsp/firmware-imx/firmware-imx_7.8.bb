@@ -3,23 +3,17 @@
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 SUMMARY = "Freescale i.MX firmware"
 DESCRIPTION = "Freescale i.MX firmware such as for the VPU"
-SECTION = "base"
-LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5ab1a30d0cd181e3408077727ea5a2db"
+
+require firmware-imx-${PV}.inc
 
 PE = "1"
 
-SRCBRANCH ?= "master"
-SRC_URI = "${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
-           git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH};destsuffix=${S}/git"
-
-#BRCM firmware git
+SRC_URI += " \
+    git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH};destsuffix=${S}/git \
+"
 SRCREV = "8ce9046f5058fdd2c5271f86ccfc61bc5a248ae3"
 
-SRC_URI[md5sum] = "0967aa59b3fd8d80fcb98146a9aac91b"
-SRC_URI[sha256sum] = "910fbf866f61185adfd60c1704b2da41030cb175901d06e40402b49f9240bdee"
-
-inherit fsl-eula-unpack allarch
+inherit allarch
 
 do_install() {
     install -d ${D}${base_libdir}/firmware/imx
