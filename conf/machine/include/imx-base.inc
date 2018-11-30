@@ -314,3 +314,5 @@ MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
 
 # Add the ability to specify _imx machines
 MACHINEOVERRIDES =. "imx:"
+
+HOSTTOOLS_NONFATAL_append_mx8x = " sha384sum"
