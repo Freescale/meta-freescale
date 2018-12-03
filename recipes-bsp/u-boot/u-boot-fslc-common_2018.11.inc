@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://Licenses/README;md5=30503fd321432fc713238f582193b78e"
 
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
 
-SRCREV = "1f39b911b7817efb801f80784d9c7a41704b7a36"
+SRCREV = "6e25ce6f3c8568b9618de6569794a29a05e1b7a4"
 SRCBRANCH = "2018.11+fslc"
 
 PV = "v2018.11+git${SRCPV}"
