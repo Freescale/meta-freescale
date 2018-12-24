@@ -4,9 +4,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=386a6287daa6504b7e7e5014ddfb3987"
 
 DEPENDS = "dtc-native"
 
-inherit deploy
+inherit deploy fsl-eula-unpack
 
-SRC_URI = "git://github.com/qoriq-open-source/dpl-examples.git;nobranch=1"
+SRC_URI = "git://github.com/qoriq-open-source/dpl-examples.git;fsl-eula=true;nobranch=1"
 SRCREV = "a6c83759c0d9c02822eec89e86357a0998ef51d4"
 
 S = "${WORKDIR}/git"
