@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "file://Freescale-Binary-EULA;md5=b784c031868ba1bd5ebc5de372c
 
 PR = "r1"
 
-inherit deploy
+inherit deploy fsl-eula-unpack
 
-SRC_URI = "git://github.com/NXP/qoriq-fm-ucode.git;nobranch=1"
+SRC_URI = "git://github.com/NXP/qoriq-fm-ucode.git;fsl-eula=true;nobranch=1"
 SRCREV = "c275e91392e2adab1ed22f3867b8269ca3c54014"
 
 S = "${WORKDIR}/git"
