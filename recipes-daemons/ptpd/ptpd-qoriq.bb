@@ -8,6 +8,8 @@ SECTION = "net"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://README;md5=0733e1b3788ab2ebbc63bf33a020da1d"
 
+COMPATIBLE_MACHINE = "(qoriq)"
+
 DEPENDS = "libpcap"
 
 PROVIDES = "ptpd"
