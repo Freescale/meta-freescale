@@ -20,6 +20,7 @@ EXTRA_AUTORECONF = ""
 S = "${WORKDIR}/git"
 
 DEPENDS += "gstreamer1.0-plugins-base libcap zlib bzip2"
+RPROVIDES_${PN}-soup += "${PN}-souphttpsrc"
 
 inherit gettext
 
