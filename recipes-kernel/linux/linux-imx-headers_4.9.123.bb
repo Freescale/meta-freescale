@@ -8,7 +8,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 SRCBRANCH = "imx_4.9.123_imx8mm_ga"
-LOCALVERSION = "-${SRCBRANCH}"
+LOCALVERSION = "-imx"
 SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https;branch=${SRCBRANCH} \
     file://0001-uapi-Install-custom-headers.patch"
 SRCREV = "6a71cbc089755afd6a86c005c22a1af6eab24a70"
