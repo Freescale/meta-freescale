@@ -6,8 +6,11 @@ include conf/machine/include/fsl-default-versions.inc
 require conf/machine/include/utilities.inc
 
 # Set specific make target and binary suffix
-PREFERRED_PROVIDER_u-boot ??= "u-boot-fslc"
-PREFERRED_PROVIDER_virtual/bootloader ??= "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
+
+PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
+PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
 
@@ -268,7 +271,7 @@ IMX_DEFAULT_KERNEL_mxs = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx5 = "linux-fslc"
 IMX_DEFAULT_KERNEL_mx6 = "linux-fslc-imx"
 IMX_DEFAULT_KERNEL_mx7 = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL_mx8 = "linux-fslc-imx"
+IMX_DEFAULT_KERNEL_mx8 = "linux-imx"
 IMX_DEFAULT_KERNEL_mx7ulp = "linux-imx"
 IMX_DEFAULT_KERNEL_mx6sll = "linux-imx"
 IMX_DEFAULT_KERNEL_mx6ul = "linux-fslc-imx"
