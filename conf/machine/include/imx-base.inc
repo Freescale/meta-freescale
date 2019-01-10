@@ -301,7 +301,10 @@ WKS_FILE_DEPENDS ?= " \
     bmap-tools-native \
 "
 
+WKS_FILE_DEPENDS_mx8 += "imx-boot"
+
 SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks"
+SOC_DEFAULT_WKS_FILE_mx8 ?= "imx-imx-boot-bootpart.wks"
 SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
