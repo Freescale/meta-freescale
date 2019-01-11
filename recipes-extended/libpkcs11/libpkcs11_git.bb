@@ -3,7 +3,7 @@ LICENSE = "GPLv2 & BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=803852533e29eb1d6d5e55ad3078b625"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/libpkcs11;nobranch=1"
-SRCREV = "e9f570c4464598afea65a227b7e2f37fe6b032fc"
+SRCREV = "efd15b9fb6ecc453eb933ac28ef1741b989f842d"
 
 DEPENDS = "openssl secure-obj"
 
