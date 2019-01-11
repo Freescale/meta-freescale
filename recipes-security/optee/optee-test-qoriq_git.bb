@@ -46,4 +46,4 @@ FILES_${PN} += "/lib/optee_armtz/"
 
 # Imports machine specific configs from staging to build
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(ls1043ardb|ls1046ardb|ls1012ardb)"
+COMPATIBLE_MACHINE = "(qoriq-arm64)"
