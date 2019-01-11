@@ -8,7 +8,7 @@ DEPENDS = "python-pycrypto-native"
 
 inherit deploy pythonnative
 
-SRCREV = "5f6c95c085bb0dd750a7f5c464e5ebe6de0a99bd"
+SRCREV = "e93f053213c574ec1b97f9e56b2f31692cd3723c"
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;nobranch=1 \
            file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
           "
@@ -31,13 +31,21 @@ OPTEE_ARCH_aarch64 = "arm64"
 do_compile() {
     unset LDFLAGS
     oe_runmake all CFG_TEE_TA_LOG_LEVEL=0
+    ${OBJCOPY} -v -O binary ${B}/out/arm-plat-ls/core/tee.elf   ${B}/out/arm-plat-ls/core/tee.bin
+    
+    if [ ${MACHINE} = ls1012afrwy ]; then
+        mv ${B}/out/arm-plat-ls/core/tee.bin  ${B}/out/arm-plat-ls/core/tee_512mb.bin
+        oe_runmake CFG_DRAM0_SIZE=0x40000000 all CFG_TEE_TA_LOG_LEVEL=0
+        ${OBJCOPY} -v -O binary ${B}/out/arm-plat-ls/core/tee.elf   ${B}/out/arm-plat-ls/core/tee.bin
+    fi
 }
 
 do_install() {
     #install core on boot directory
     install -d ${D}/lib/firmware/
-
-    ${OBJCOPY} -v -O binary ${B}/out/arm-plat-ls/core/tee.elf   ${B}/out/arm-plat-ls/core/tee.bin
+    if [ ${MACHINE} = ls1012afrwy ]; then
+        install -m 644 ${B}/out/arm-plat-ls/core/tee_512mb.bin ${D}/lib/firmware/tee_${MACHINE}_512mb.bin
+    fi
     install -m 644 ${B}/out/arm-plat-ls/core/tee.bin ${D}/lib/firmware/tee_${MACHINE}.bin
     #install TA devkit
     install -d ${D}/usr/include/optee/export-user_ta/
@@ -52,7 +60,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 do_deploy() {
         install -d ${DEPLOYDIR}/optee
         for f in ${D}/lib/firmware/*; do
-            install -m 644 $f ${DEPLOYDIR}/optee/tee_${MACHINE}.bin
+            cp $f ${DEPLOYDIR}/optee/
         done
 }
 
