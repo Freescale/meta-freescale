@@ -34,4 +34,4 @@ do_install(){
 PARALLEL_MAKE = ""
 INSANE_SKIP_${PN} = "ldflags dev-deps"
 INSANE_SKIP_${PN}-dev = "ldflags dev-elf"
-COMPATIBLE_MACHINE = "(ls1043a|ls1046a|ls2088a|ls1088a)"
+COMPATIBLE_MACHINE = "(qoriq-arm64)"
