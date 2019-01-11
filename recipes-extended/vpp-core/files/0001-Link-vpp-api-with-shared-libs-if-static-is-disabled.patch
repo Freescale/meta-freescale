@@ -1,0 +1,28 @@
+From 7005c075cab39c8018d224c2fe56ad2e4f2db340 Mon Sep 17 00:00:00 2001
+From: babak sarashki <babak.sarashki@windriver.com>
+Date: Tue, 11 Sep 2018 14:08:51 -0700
+Subject: [PATCH] Link vpp-api with shared libs if static is disabled
+
+TODO: this is not complete
+---
+ src/vpp-api.am | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/vpp-api.am b/src/vpp-api.am
+index 553eafa..30dfe9d 100644
+--- a/src/vpp-api.am
++++ b/src/vpp-api.am
+@@ -23,8 +23,8 @@ libvppapiclient_la_LIBADD = \
+   -lpthread -lm -lrt
+ 
+ libvppapiclient_la_LDFLAGS = \
+-  -Wl,-L$(top_builddir)/.libs,--whole-archive,-l:libsvm.a,-l:libvppinfra.a,-l:libvlibmemoryclient.a,--no-whole-archive \
+-  -Wl,--version-script=$(srcdir)/vpp-api/client/libvppapiclient.map,-lrt
++  -L$(top_builddir)/.libs -lsvm -lvppinfra -lvlibmemoryclient  \
++	-Wl,--version-script=$(srcdir)/vpp-api/client/libvppapiclient.map,-lrt
+ 
+ libvppapiclient_la_DEPENDENCIES = libvppinfra.la libvlibmemoryclient.la libsvm.la
+ 
+-- 
+2.7.4
+
