@@ -11,15 +11,19 @@ SRCREV= "5b259f75decbc478bcab0612d79a58562bef1838"
 S = "${WORKDIR}/git"
 
 do_install () {
-       install -d ${D}/uefi
-       cp -r  ${B}/grub ${D}/uefi
-       cp -r  ${B}/${MACHINE} ${D}/uefi
+       if [ -d ${B}/${MACHINE} ]; then
+           install -d ${D}/uefi
+           cp -r  ${B}/grub ${D}/uefi
+           cp -r  ${B}/${MACHINE} ${D}/uefi
+       fi
 }
 
 do_deploy () {
-       install -d ${DEPLOYDIR}/uefi
-       cp -r  ${B}/grub   ${DEPLOYDIR}/uefi
-       cp -r  ${B}/${MACHINE} ${DEPLOYDIR}/uefi
+       if [ -d ${B}/${MACHINE} ]; then
+           install -d ${DEPLOYDIR}/uefi
+           cp -r  ${B}/grub   ${DEPLOYDIR}/uefi
+           cp -r  ${B}/${MACHINE} ${DEPLOYDIR}/uefi
+       fi
 }
 addtask deploy before do_build after do_install
 
