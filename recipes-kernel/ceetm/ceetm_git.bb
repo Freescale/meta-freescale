@@ -19,6 +19,6 @@ do_install(){
 FILES_${PN} += "${libdir}/tc"
 INHIBIT_PACKAGE_STRIP = "1"
 
-COMPATIBLE_MACHINE = "(b4|t1|t2|t4|ls1043a|ls1046a|ls2088a|ls1088a)"
+COMPATIBLE_MACHINE = "(qoriq)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
