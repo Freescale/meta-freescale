@@ -6,13 +6,14 @@ inherit deploy fsl-eula-unpack
 
 INHIBIT_DEFAULT_DEPS = "1"
 
-SRC_URI = "git://github.com/nxp/qoriq-mc-binary;protocol=https;fsl-eula=true;nobranch=1"
-SRCREV = "a71009e13b1e7dac9cffc708f62037e67985bbfc"
+SRC_URI = "git://github.com/nxp/qoriq-mc-binary;fsl-eula=true;nobranch=1"
+SRCREV = "cdb5af4b25ec1ee3e9d26ece41efaa1556b28bac"
 
 S = "${WORKDIR}/git"
 
 REGLEX_ls2088a = "ls2088a"
 REGLEX_ls1088a = "ls1088a"
+REGLEX_lx2160a = "lx2160a"
 
 do_install () {
     install -d ${D}/boot
@@ -34,6 +35,6 @@ FILES_${PN}-image += "/boot"
 
 INHIBIT_PACKAGE_STRIP = "1"
 
-COMPATIBLE_MACHINE = "(ls2080ardb|ls2088a|ls1088a)"
+COMPATIBLE_MACHINE = "(qoriq-arm64)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
