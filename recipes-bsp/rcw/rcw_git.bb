@@ -8,7 +8,7 @@ DEPENDS += "change-file-endianess-native tcl-native"
 inherit deploy siteinfo
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/rcw;nobranch=1"
-SRCREV = "04ec3bbc210fd0d7762c26c0e72182eca5e26deb"
+SRCREV = "17254ac35250197877c6321f9d13e33b1f85388a"
 
 S = "${WORKDIR}/git"
 
