@@ -4,6 +4,8 @@ LIC_FILES_CHKSUM = "file://README;md5=82b72e88f23cded9dd23f0fb1790b8d2"
 
 S = "${WORKDIR}/git"
 
+RDEPENDS_{PN}  += "secure-obj-module"
+
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 export SECURE_STORAGE_PATH = "${S}/secure_storage_ta/ta/"
 export OPTEE_CLIENT_EXPORT = "${RECIPE_SYSROOT}/usr"
