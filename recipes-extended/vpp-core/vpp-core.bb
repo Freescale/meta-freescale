@@ -60,3 +60,6 @@ do_install_append() {
 
 
 BBCLASSEXTEND = "native nativesdk"
+
+COMPATIBLE_MACHINE_class-target = "(qoriq)"
+
