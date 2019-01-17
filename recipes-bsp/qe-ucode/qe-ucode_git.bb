@@ -11,9 +11,9 @@ SRCREV= "57401f6dff6507055558eaa6838116baa8a2fd46"
 S = "${WORKDIR}/git"
 
 python () {
-    if not d.getVar("QE_UCODE", True):
-        PN = d.getVar("PN", True)
-        FILE = os.path.basename(d.getVar("FILE", True))
+    if not d.getVar("QE_UCODE"):
+        PN = d.getVar("PN")
+        FILE = os.path.basename(d.getVar("FILE"))
         bb.debug(1, "To build %s, see %s for instructions on \
                      setting up your qe-ucode" % (PN, FILE))
         raise bb.parse.SkipRecipe("because QE_UCODE is not set")

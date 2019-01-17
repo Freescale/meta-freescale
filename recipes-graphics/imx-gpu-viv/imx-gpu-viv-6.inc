@@ -82,7 +82,7 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libopenvx-imx libopenvx-imx-dev \
 "
 python __anonymous () {
-        has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT', True) or '0')
+        has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
         if has_vivante_kernel_driver_support != '1':
                 raise bb.parse.SkipPackage('The kernel of machine needs to have Vivante kernel driver support for this recipe to be used.')
 }
@@ -102,7 +102,7 @@ SOLIBS = "${SOLIBSDEV}"
 python __anonymous() {
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
-    packages = d.getVar('PACKAGES', True).split()
+    packages = d.getVar('PACKAGES').split()
     for p in packages:
         d.appendVar("INSANE_SKIP_%s" % p, " ldflags")
 

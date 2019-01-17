@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/qt4:"
 
 python __anonymous () {
     families = ['mx6']
-    cur_families = (d.getVar('MACHINEOVERRIDES', True) or '').split(':')
+    cur_families = (d.getVar('MACHINEOVERRIDES') or '').split(':')
     if any(map(lambda x: x in cur_families,
                families)):
         d.appendVarFlag('do_configure', 'depends', ' virtual/kernel:do_shared_workdir')

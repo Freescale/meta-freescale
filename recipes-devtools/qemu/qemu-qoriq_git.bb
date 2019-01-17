@@ -25,7 +25,7 @@ COMPATIBLE_HOST_mipsarchn64 = "null"
 PROVIDES = "qemu"
 
 python() {
-    pkgs = d.getVar('PACKAGES', True).split()
+    pkgs = d.getVar('PACKAGES').split()
     for p in pkgs:
         if 'qemu-qoriq' in p:
             d.appendVar("RPROVIDES_%s" % p, p.replace('qemu-qoriq', 'qemu'))

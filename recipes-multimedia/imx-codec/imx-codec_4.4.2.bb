@@ -43,7 +43,7 @@ python __set_insane_skip() {
     # Ensure we have PACKAGES expanded
     bb.build.exec_func("read_subpackage_metadata", d)
 
-    for p in d.getVar('PACKAGES', True).split():
+    for p in d.getVar('PACKAGES').split():
         # Even though we are packaging libraries those are plugins so we
         # shouldn't rename the packages to follow its sonames.
         d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
@@ -66,7 +66,7 @@ python __split_libfslcodec_plugins() {
                       output_pattern='imx-codec-%s',
                       description='Freescale i.MX Codec (%s)',
                       extra_depends='')
-    pkgs = d.getVar('PACKAGES', True).split()
+    pkgs = d.getVar('PACKAGES').split()
     for pkg in pkgs:
         meta = pkg[10:]
         if meta != '':

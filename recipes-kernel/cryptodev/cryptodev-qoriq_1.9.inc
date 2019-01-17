@@ -4,7 +4,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 python() {
-    pkgs = d.getVar('PACKAGES', True).split()
+    pkgs = d.getVar('PACKAGES').split()
     for p in pkgs:
         if 'cryptodev-qoriq' in p:
             d.appendVar("RPROVIDES_%s" % p, p.replace('cryptodev-qoriq', 'cryptodev'))

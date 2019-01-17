@@ -6,7 +6,7 @@ PACKAGECONFIG_remove_imxgpu3d = "gles"
 
 # FIXME: mesa should support 'x11-no-tls' option
 python () {
-    overrides = d.getVar("OVERRIDES", True).split(":")
+    overrides = d.getVar("OVERRIDES").split(":")
     if "imxgpu2d" not in overrides:
         return
 

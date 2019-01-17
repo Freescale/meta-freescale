@@ -17,7 +17,7 @@ PROVIDES = "ptpd"
 inherit autotools pkgconfig systemd
 
 python() {
-    pkgs = d.getVar('PACKAGES', True).split()
+    pkgs = d.getVar('PACKAGES').split()
     for p in pkgs:
         if 'ptpd-qoriq' in p:
             d.appendVar("RPROVIDES_%s" % p, p.replace('ptpd-qoriq', 'ptpd'))
