@@ -11,11 +11,11 @@ DEPENDS_append_qoriq-arm = " change-file-endianess-native dtc-native tcl-native"
 DEPENDS_append_qoriq-ppc = " boot-format-native"
 
 python () {
-    if d.getVar("TCMODE", True) == "external-fsl":
+    if d.getVar("TCMODE") == "external-fsl":
         return
 
-    ml = d.getVar("MULTILIB_VARIANTS", True)
-    arch = d.getVar("OVERRIDES", True)
+    ml = d.getVar("MULTILIB_VARIANTS")
+    arch = d.getVar("OVERRIDES")
 
     if "e5500-64b:" in arch or "e6500-64b:" in arch:
         if not "lib32" in ml:

@@ -12,7 +12,7 @@ python () {
         d.setVar('KERNEL_LD', d.getVar('CCACHE', False) + sys_multilib + '-' + 'ld.bfd' + d.getVar('HOST_LD_KERNEL_ARCH', False) + tc_options)
         d.setVar('KERNEL_AR', d.getVar('CCACHE', False) + sys_multilib + '-' + 'ar' + d.getVar('HOST_AR_KERNEL_ARCH', False))
 
-    error_qa = d.getVar('ERROR_QA', True)
+    error_qa = d.getVar('ERROR_QA')
     if 'arch' in error_qa:
         d.setVar('ERROR_QA', error_qa.replace(' arch', ''))
 }

@@ -15,18 +15,18 @@
 # Copyright 2016-2018 (C) O.S. Systems Software LTDA.
 
 def machine_overrides_extender(d):
-    machine_overrides = (d.getVar('PRISTINE_MACHINEOVERRIDES', True) or '').split(':')
+    machine_overrides = (d.getVar('PRISTINE_MACHINEOVERRIDES') or '').split(':')
 
     # Gather the list of overrides to filter out
     machine_overrides_filter_out = []
     for override in machine_overrides:
-        machine_overrides_filter_out += (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT_%s' % override, True) or '').split()
+        machine_overrides_filter_out += (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT_%s' % override) or '').split()
 
     # Drop any overrides of filter_out prior extending
     machine_overrides = [o for o in machine_overrides if o not in machine_overrides_filter_out]
 
     for override in machine_overrides:
-        extender = d.getVar('MACHINEOVERRIDES_EXTENDER_%s' % override, True)
+        extender = d.getVar('MACHINEOVERRIDES_EXTENDER_%s' % override)
 
         if extender:
             extender = extender.split(':')

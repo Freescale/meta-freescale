@@ -14,7 +14,7 @@ S = "${WORKDIR}/git"
 
 export PYTHON = "${USRBINPATH}/python2"
 
-M="${@d.getVar('MACHINE', True).replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
+M="${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
 do_install () {
     if [ ${M} = ls2088ardb ]; then

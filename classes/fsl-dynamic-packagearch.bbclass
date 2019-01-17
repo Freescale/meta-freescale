@@ -26,22 +26,22 @@
 # Copyright 2013-2016 (C) O.S. Systems Software LTDA.
 
 python __anonymous () {
-    machine_arch_filter = set((d.getVar("MACHINE_ARCH_FILTER", True) or "").split())
-    machine_socarch_filter = set((d.getVar("MACHINE_SOCARCH_FILTER", True) or "").split())
+    machine_arch_filter = set((d.getVar("MACHINE_ARCH_FILTER") or "").split())
+    machine_socarch_filter = set((d.getVar("MACHINE_SOCARCH_FILTER") or "").split())
     if machine_socarch_filter or machine_arch_filter:
-        provides = set((d.getVar("PROVIDES", True) or "").split())
-        depends = set((d.getVar("DEPENDS", True) or "").split())
-        PN = d.getVar("PN", True)
+        provides = set((d.getVar("PROVIDES") or "").split())
+        depends = set((d.getVar("DEPENDS") or "").split())
+        PN = d.getVar("PN")
 
         package_arch = None
         if list(machine_arch_filter & (provides | depends)):
-            package_arch = d.getVar("MACHINE_ARCH", True)
+            package_arch = d.getVar("MACHINE_ARCH")
         elif list(machine_socarch_filter & (provides | depends)):
-            package_arch = d.getVar("MACHINE_SOCARCH", True)
+            package_arch = d.getVar("MACHINE_SOCARCH")
             if not package_arch:
                 raise bb.parse.SkipPackage("You must set MACHINE_SOCARCH as MACHINE_SOCARCH_FILTER is set for this SoC.")
 
-            machine_socarch_suffix = d.getVar("MACHINE_SOCARCH_SUFFIX", True)
+            machine_socarch_suffix = d.getVar("MACHINE_SOCARCH_SUFFIX")
             if not machine_socarch_suffix:
                 raise bb.parse.SkipPackage("You must set MACHINE_SOCARCH_SUFFIX as MACHINE_SOCARCH_FILTER is set for this SoC.")
 
@@ -49,18 +49,18 @@ python __anonymous () {
             bb.debug(1, "Use '%s' as package architecture for '%s'" % (package_arch, PN))
             d.setVar("PACKAGE_ARCH", package_arch)
 
-    cur_package_archs = (d.getVar("PACKAGE_ARCHS", True) or "").split()
-    machine_socarch = (d.getVar("MACHINE_SOCARCH", True) or "")
+    cur_package_archs = (d.getVar("PACKAGE_ARCHS") or "").split()
+    machine_socarch = (d.getVar("MACHINE_SOCARCH") or "")
     if not machine_socarch in cur_package_archs:
         d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % machine_socarch)
 
-    if d.getVar("TUNE_ARCH", True) == "arm":
+    if d.getVar("TUNE_ARCH") == "arm":
         # For ARM we have two possible machine_socarch values, one for the arm and one for the thumb instruction set
         # add the other value to extra archs also, so that a image recipe searches both for packages.
-        if  d.getVar("ARM_INSTRUCTION_SET", True) == "thumb":
-            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("ARM_EXTRA_SOCARCH", True))
+        if  d.getVar("ARM_INSTRUCTION_SET") == "thumb":
+            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("ARM_EXTRA_SOCARCH"))
         else:
-            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("THUMB_EXTRA_SOCARCH", True))
+            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("THUMB_EXTRA_SOCARCH"))
 }
 
 MACHINE_SOCARCH = "${TUNE_PKGARCH}${MACHINE_SOCARCH_SUFFIX}"

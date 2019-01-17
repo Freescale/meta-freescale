@@ -26,7 +26,7 @@ SRCREV = "c2300d1fdb30a439f555b07f228d3bce498238d5"
 PROVIDES = "openssl"
 
 python() {
-    pkgs = d.getVar('PACKAGES', True).split()
+    pkgs = d.getVar('PACKAGES').split()
     for p in pkgs:
         if 'openssl-qoriq' in p:
             d.appendVar("RPROVIDES_%s" % p, p.replace('openssl-qoriq', 'openssl'))

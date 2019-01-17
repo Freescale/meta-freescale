@@ -30,7 +30,7 @@ python __set_insane_skip() {
     # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
     # the source we cannot fix it. Disable the insane check for now.
     # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
-    for p in d.getVar('PACKAGES', True).split():
+    for p in d.getVar('PACKAGES').split():
         d.setVar("INSANE_SKIP_%s" % p, "ldflags dev-so textrel")
 }
 
