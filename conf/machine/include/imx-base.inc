@@ -280,7 +280,7 @@ IMX_DEFAULT_KERNEL_use-mainline-bsp = "linux-fslc"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
-SOC_DEFAULT_IMAGE_FSTYPES = "wic.gz"
+SOC_DEFAULT_IMAGE_FSTYPES = "wic.bmap wic.gz"
 SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot-mxsboot-sdcard wic.gz"
 
 # Do not update fstab file when using wic images
