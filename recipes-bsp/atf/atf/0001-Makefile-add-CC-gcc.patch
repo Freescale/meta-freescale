@@ -1,0 +1,28 @@
+From 3161524085339ae214f7dee17a98ccd6c442d66b Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Thu, 16 Aug 2018 17:38:04 +0800
+Subject: [PATCH] Makefile: add CC=gcc
+
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Chunrong Guo <chunrong.guo@nxp.com>
+---
+ plat/nxp/tools/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/plat/nxp/tools/Makefile b/plat/nxp/tools/Makefile
+index e648fd1..43d3b56 100644
+--- a/plat/nxp/tools/Makefile
++++ b/plat/nxp/tools/Makefile
+@@ -32,6 +32,7 @@ endif
+ INCLUDE_PATHS :=
+ 
+ HOSTCC ?= gcc
++CC = gcc
+ 
+ .PHONY: all clean distclean
+ 
+-- 
+2.7.4
+

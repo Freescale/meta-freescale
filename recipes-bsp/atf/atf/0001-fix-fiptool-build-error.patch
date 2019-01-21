@@ -1,0 +1,28 @@
+From a76ae26fdb673613f5f97872b7275c630b7b24b8 Mon Sep 17 00:00:00 2001
+From: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
+Date: Wed, 16 May 2018 13:26:45 +0800
+Subject: [PATCH] fix fiptool build error
+
+Upstream-Status: Inappropriate [embedded specific]
+
+---
+ tools/fiptool/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/fiptool/Makefile b/tools/fiptool/Makefile
+index e0e3923..f213f44 100644
+--- a/tools/fiptool/Makefile
++++ b/tools/fiptool/Makefile
+@@ -19,7 +19,8 @@ ifeq (${DEBUG},1)
+ else
+   CFLAGS += -O2
+ endif
+-LDLIBS := -lcrypto
++
++LDLIBS := -Wl,-rpath=${LIBPATH}/usr/lib  -L${LIBPATH}/usr/lib -lcrypto
+ 
+ ifeq (${V},0)
+   Q := @
+-- 
+1.8.3.1
+
