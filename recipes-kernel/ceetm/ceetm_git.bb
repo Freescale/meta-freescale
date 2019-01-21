@@ -11,6 +11,10 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}" IPROUTE2_DIR="{STAGING_DIR_TARGET}"'
 
+do_compile_prepend () {
+    cp ${RECIPE_SYSROOT}/usr/include/include/json_print.h ${RECIPE_SYSROOT}/usr/include
+}
+
 do_install(){
     mkdir -p ${D}/${libdir}/tc
     cp ${S}/q_ceetm.so ${D}/${libdir}/tc/
