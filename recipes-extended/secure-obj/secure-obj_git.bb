@@ -37,6 +37,7 @@ do_install() {
         cp ${S}/securekey_lib/out/export/app/* ${D}${bindir}
         cp ${S}/secure_obj-openssl-engine/app/sobj_eng_app ${D}${bindir}
         cp ${S}/securekey_lib/out/export/include/*  ${D}${includedir}
+        rm -rf ${D}${bindir}/test
 }
 
 FILES_${PN} += "${base_libdir}/optee_armtz ${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines"
