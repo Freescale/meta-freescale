@@ -25,21 +25,12 @@ inherit deploy
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
 CFLAGS = "-O2 -Wall -std=c99 -static -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
 
-# For i.MX 8, this package aggregates the imx-m4-demos
-# output. Note that this aggregation replaces the aggregation
-# that would otherwise be done in the image build as controlled
-# by IMAGE_BOOTFILES_DEPENDS and IMAGE_BOOTFILES in image_types_fsl.bbclass
-IMX_M4_DEMOS        = ""
-IMX_M4_DEMOS_mx8qm  = "imx-m4-demos:do_deploy"
-IMX_M4_DEMOS_mx8qxp = "imx-m4-demos:do_deploy"
-
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
 do_compile[depends] += " \
     virtual/bootloader:do_deploy \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
     imx-atf:do_deploy \
-    ${IMX_M4_DEMOS} \
 "
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
