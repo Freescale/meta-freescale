@@ -23,7 +23,7 @@ PROVIDES = "${BOOT_NAME}"
 inherit deploy
 
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
-CFLAGS = "-O2 -Wall -std=c99 -static -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
+CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
 
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
