@@ -10,7 +10,7 @@ SECTION = "BSP"
 
 inherit native deploy
 
-CFLAGS = "-O2 -Wall -std=c99 -static -I ${STAGING_INCDIR} -L ${STAGING_LIBDIR}"
+CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR} -L ${STAGING_LIBDIR}"
 
 do_compile () {
     cd ${S}

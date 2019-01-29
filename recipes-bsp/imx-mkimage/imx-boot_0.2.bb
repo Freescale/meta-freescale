@@ -23,15 +23,7 @@ PROVIDES = "${BOOT_NAME}"
 inherit deploy
 
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
-CFLAGS = "-O2 -Wall -std=c99 -static -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
-
-# For i.MX 8, this package aggregates the imx-m4-demos
-# output. Note that this aggregation replaces the aggregation
-# that would otherwise be done in the image build as controlled
-# by IMAGE_BOOTFILES_DEPENDS and IMAGE_BOOTFILES in image_types_fsl.bbclass
-IMX_M4_DEMOS        = ""
-IMX_M4_DEMOS_mx8qm  = "imx-m4-demos:do_deploy"
-IMX_M4_DEMOS_mx8qxp = "imx-m4-demos:do_deploy"
+CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
 
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
@@ -39,7 +31,6 @@ do_compile[depends] += " \
     virtual/bootloader:do_deploy \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
     imx-atf:do_deploy \
-    ${IMX_M4_DEMOS} \
 "
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
@@ -69,15 +60,15 @@ SOC_TARGET_mx8mm  = "iMX8MM"
 IMXBOOT_TARGETS ?= \
     "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi', \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
-                                                  'flash_multi_cores flash flash_dcd', d), d)}"
+                                                  'flash flash_dcd', d), d)}"
 IMXBOOT_TARGETS_mx8qxp = \
     "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi', \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
-                                                  'flash_all flash', d), d)}"
+                                                  'flash', d), d)}"
 IMXBOOT_TARGETS_mx8qxpa0 = \
     "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi_a0', \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand_a0', \
-                                                  'flash_multi_cores_a0 flash_a0 flash_dcd_a0', d), d)}"
+                                                  'flash_a0 flash_dcd_a0', d), d)}"
 
 BOOT_STAGING       = "${S}/${SOC_TARGET}"
 BOOT_STAGING_mx8mm = "${S}/iMX8M"
@@ -106,14 +97,10 @@ compile_mx8() {
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
-    cp ${DEPLOY_DIR_IMAGE}/imx8qm_m4_0_TCM_rpmsg_lite_pingpong_rtos_linux_remote.bin ${BOOT_STAGING}/m40_tcm.bin
-    cp ${DEPLOY_DIR_IMAGE}/imx8qm_m4_1_TCM_rpmsg_lite_pingpong_rtos_linux_remote.bin ${BOOT_STAGING}/m41_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/mx8qm-ahab-container.img          ${BOOT_STAGING}
 }
 compile_mx8x() {
     bbnote 8QX boot binary build
-    cp ${DEPLOY_DIR_IMAGE}/imx8qx_m4_TCM_rpmsg_lite_pingpong_rtos_linux_remote.bin ${BOOT_STAGING}/m40_tcm.bin
-    cp ${DEPLOY_DIR_IMAGE}/imx8qx_m4_TCM_rpmsg_lite_pingpong_rtos_linux_remote.bin ${BOOT_STAGING}/CM4.bin
     cp ${DEPLOY_DIR_IMAGE}/mx8qx-ahab-container.img          ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
@@ -160,8 +147,6 @@ deploy_mx8x() {
         install -m 0644 ${BOOT_STAGING}/${DCD_NAME}          ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
     install -m 0644 ${BOOT_STAGING}/mx8qx-ahab-container.img ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/m40_tcm.bin              ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/CM4.bin                  ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
 }
 do_deploy() {
