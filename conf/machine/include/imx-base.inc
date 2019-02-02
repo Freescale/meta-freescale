@@ -145,7 +145,7 @@ MACHINE_SOCARCH_FILTER_append_imxgpu = " \
     pango \
 "
 MACHINE_SOCARCH_FILTER_append_imxgpu2d = " \
-￼    virtual/libg2d \
+    virtual/libg2d \
 "
 MACHINE_SOCARCH_FILTER_append_imxgpu3d = " \
     virtual/libgl \
