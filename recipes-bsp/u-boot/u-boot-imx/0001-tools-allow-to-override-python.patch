@@ -1,0 +1,46 @@
+From b48bfc74ee410b1e6681c620633ffef32aafaba0 Mon Sep 17 00:00:00 2001
+From: Stefano Babic <sbabic@denx.de>
+Date: Wed, 5 Apr 2017 17:46:41 +0200
+Subject: [PATCH] tools: allow to override python
+
+Not force to use python from PATH. Issue was noted when building with
+Yocto, because python from the distro is always taken instead of
+python-native built during Yocto process.
+
+Signed-off-by: Stefano Babic <sbabic@denx.de>
+CC: Simon Glass <sjg@chromium.org>
+Reviewed-by: Simon Glass <sjg@chromium.org>
+---
+ Makefile       | 2 +-
+ tools/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 09b597d450..8d4e6050b3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -348,7 +348,7 @@ OBJCOPY		= $(CROSS_COMPILE)objcopy
+ OBJDUMP		= $(CROSS_COMPILE)objdump
+ AWK		= awk
+ PERL		= perl
+-PYTHON		= python
++PYTHON		?= python
+ DTC		= dtc
+ CHECK		= sparse
+ 
+diff --git a/tools/Makefile b/tools/Makefile
+index fa1b85bdae..2fc4a583d4 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -120,7 +120,7 @@ _libfdt.so-sharedobjs += $(LIBFDT_OBJS)
+ libfdt:
+ 
+ tools/_libfdt.so: $(patsubst %.o,%.c,$(LIBFDT_OBJS)) tools/libfdt_wrap.c
+-	LDFLAGS="$(HOSTLDFLAGS)" python $(srctree)/lib/libfdt/setup.py \
++	LDFLAGS="$(HOSTLDFLAGS)" ${PYTHON} $(srctree)/lib/libfdt/setup.py \
+ 		"$(_hostc_flags)" $^
+ 	mv _libfdt.so $@
+ 
+-- 
+2.17.1
+
