@@ -289,19 +289,27 @@ WIC_CREATE_EXTRA_ARGS ?= "--no-fstab-update"
 SDCARD_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}.rootfs.ext4"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
+MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS += \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'packagegroup-fsl-optee-imx', '', d)}"
+
+OPTEE_BOOT_IMAGE         = "uTee"
+OPTEE_BOOT_IMAGE_aarch64 = ""
 IMAGE_BOOT_FILES ?= " \
     ${KERNEL_IMAGETYPE} \
     ${@make_dtb_boot_files(d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_BOOT_IMAGE}', '', d)} \
 "
 
 ### wic default support
+OPTEE_WKS_FILE_DEPENDS         = "optee-os-imx"
+OPTEE_WKS_FILE_DEPENDS_aarch64 = ""
 WKS_FILE_DEPENDS ?= " \
     virtual/bootloader \
     \
     e2fsprogs-native \
     bmap-tools-native \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_WKS_FILE_DEPENDS}', '', d)} \
 "
-
 WKS_FILE_DEPENDS_mx8 += "imx-boot"
 
 SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks"
