@@ -6,7 +6,7 @@ order to provide support for some backported features and fixes, or because it \
 was submitted for revision and it takes some time to become part of a stable \
 version, or because it is not applicable for upstreaming."
 
-DEPENDS_append = " dtc-native bison-native"
+DEPENDS_append = " dtc-native"
 
 PROVIDES += "u-boot"
 
