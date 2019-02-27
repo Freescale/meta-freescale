@@ -313,10 +313,14 @@ WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 # Certain machines override the default fsl u-boot with the
 # fslc u-boot. To restore the fsl u-boot, add use-fsl-bsp like this:
 #   MACHINEOVERRIDES_prepend_imx6ulevk = "use-fsl-bsp:"
-UBOOT_MAKE_TARGET_use-fsl-bsp = "u-boot.imx"
-UBOOT_SUFFIX_use-fsl-bsp = "imx"
-SPL_BINARY_use-fsl-bsp = ""
-WKS_FILE_use-fsl-bsp = "imx-uboot-bootpart.wks"
+UBOOT_MAKE_TARGET_use-fsl-bsp_mx6 = "u-boot.imx"
+UBOOT_SUFFIX_use-fsl-bsp_mx6 = "imx"
+SPL_BINARY_use-fsl-bsp_mx6 = ""
+WKS_FILE_use-fsl-bsp_mx6 = "imx-uboot-bootpart.wks"
+UBOOT_MAKE_TARGET_use-fsl-bsp_mx7 = "u-boot.imx"
+UBOOT_SUFFIX_use-fsl-bsp_mx7 = "imx"
+SPL_BINARY_use-fsl-bsp_mx7 = ""
+WKS_FILE_use-fsl-bsp_mx7 = "imx-uboot-bootpart.wks"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
