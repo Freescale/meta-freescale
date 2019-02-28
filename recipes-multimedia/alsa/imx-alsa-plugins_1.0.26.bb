@@ -1,4 +1,5 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
+# Copyright (C) 2017-2019 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale alsa-lib plugins"
@@ -32,4 +33,4 @@ FILES_${PN} += "${libdir}/alsa-lib/libasound_*.so"
 FILES_${PN}-dbg += "${libdir}/alsa-lib/.debug"
 FILES_${PN}-dev += "${libdir}/alsa-lib/*.la"
 
-COMPATIBLE_MACHINE = "(mx6dl|mx6q|mx6sl|mx6sx|mx6ul|mx6ull|mx7d|mx7ulp)"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
