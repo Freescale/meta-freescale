@@ -24,6 +24,7 @@ SRC_URI = " \
     file://configure-allow-to-disable-libssh2.patch \
     file://0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch \
     file://0001-opencv-fix-build-for-opencv-3-4-2.patch \
+    file://0002-opencv-Fix-build-with-opencv-3.4.5.patch \
 "
 
 SRCREV = "03e6ef6a371a0578a9629abde8e9c83e66f34b11"

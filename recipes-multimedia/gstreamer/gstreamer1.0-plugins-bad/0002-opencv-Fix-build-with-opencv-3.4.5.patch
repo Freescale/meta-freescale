@@ -1,0 +1,40 @@
+From 70661ec35ba7655b52f4043ee7362202bc632472 Mon Sep 17 00:00:00 2001
+From: Vincent Dehors <vincent.dehors@smile.fr>
+Date: Mon, 4 Mar 2019 09:01:37 +0100
+Subject: [PATCH] opencv: Fix build with opencv >= 3.4.5
+
+Including C header imgproc_c.h leads to a compilation error : several
+conflicting declartions for cvMoments(). Including the HPP fixes this error
+as it is done in other CPP files in the same directory.
+
+Upstream-Status: Inappropriate, code ported to C++ in more recent version
+Signed-off-by: Vincent DEHORS <vincent.dehors@smile.fr>
+
+---
+ ext/opencv/gstgrabcut.cpp | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/ext/opencv/gstgrabcut.cpp b/ext/opencv/gstgrabcut.cpp
+index 4cbc706d5..65b508f20 100644
+--- a/ext/opencv/gstgrabcut.cpp
++++ b/ext/opencv/gstgrabcut.cpp
+@@ -85,11 +85,12 @@
+ #endif
+ 
+ #include "gstgrabcut.h"
+-extern "C"
+-{
++
++#if (CV_MAJOR_VERSION >= 3)
++#include <opencv2/imgproc.hpp>
++#endif
+ #include <opencv2/imgproc/imgproc_c.h>
+-}
+-#include <opencv2/imgproc/imgproc.hpp>
++
+ GST_DEBUG_CATEGORY_STATIC (gst_grabcut_debug);
+ #define GST_CAT_DEFAULT gst_grabcut_debug
+ 
+-- 
+2.20.1
+
