@@ -140,7 +140,7 @@ MACHINE_SOCARCH_FILTER_append_imxgpu = " \
     virtual/libopenvg \
     libdrm \
     cairo \
-    gstreamer1.0-plugins-bad \
+    gstreamer1.0 \
     libgal-imx \
     pango \
 "
