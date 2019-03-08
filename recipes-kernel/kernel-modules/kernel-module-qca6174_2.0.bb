@@ -11,5 +11,3 @@ EXTRA_OEMAKE += " \
     CONFIG_WLAN_WAPI_MODE_11AC_DISABLE=y \
     MODNAME=qca6174 \
 "
-
-RDEPENDS_${PN} += "firmware-qca6174"

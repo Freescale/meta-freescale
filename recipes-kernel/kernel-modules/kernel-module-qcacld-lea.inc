@@ -20,5 +20,3 @@ EXTRA_OEMAKE += " \
     CONFIG_PMF_SUPPORT=y \
     TARGET_BUILD_VARIANT=user \
 "
-
-RDEPENDS_${PN} = "qca-tools"

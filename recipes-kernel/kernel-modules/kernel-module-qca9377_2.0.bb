@@ -13,5 +13,3 @@ EXTRA_OEMAKE += " \
     MODNAME=qca9377 \
     SAP_AUTH_OFFLOAD=1 \
 "
-
-RDEPENDS_${PN} += "firmware-qca9377"
