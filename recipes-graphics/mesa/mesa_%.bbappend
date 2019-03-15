@@ -16,7 +16,7 @@ python () {
 
 # Enable Etnaviv support
 PACKAGECONFIG_append_use-mainline-bsp = " gallium"
-GALLIUMDRIVERS_append_use-mainline-bsp = ",etnaviv,imx"
+GALLIUMDRIVERS_append_use-mainline-bsp = ",etnaviv,kmsro,vc4"
 
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
