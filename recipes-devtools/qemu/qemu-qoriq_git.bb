@@ -29,7 +29,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/qemu;branc
 SRCREV = "4b846e9b2b15660abace52dd27a406af08c4212d"
 
 # add ptest patches
-SRC_URI_append = "\
+SRC_URI_append = " \
     file://add-ptest-in-makefile.patch \
     file://run-ptest \
 "
