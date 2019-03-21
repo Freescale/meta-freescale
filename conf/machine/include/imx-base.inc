@@ -207,16 +207,9 @@ MACHINE_FIRMWARE_append_use-mainline-bsp = " linux-firmware-imx-sdma-imx6q linux
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
 # Extra audio support
-# FIXME: Add support for ALL SoC families
-MACHINE_EXTRA_RRECOMMENDS_append_mx6dl = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx6q = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx6sl = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx6sll = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx6sx = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx6ul = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx6ull = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx7d = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
-MACHINE_EXTRA_RRECOMMENDS_append_mx7ulp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
+MACHINE_EXTRA_RRECOMMENDS_append_mx6 = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
+MACHINE_EXTRA_RRECOMMENDS_append_mx7 = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
+MACHINE_EXTRA_RRECOMMENDS_append_mx8 = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'imx-alsa-plugins', '', d)}"
 
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
@@ -309,6 +302,18 @@ SOC_DEFAULT_WKS_FILE_mx8 ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
+
+# Certain machines override the default fsl u-boot with the
+# fslc u-boot. To restore the fsl u-boot, add use-fsl-bsp like this:
+#   MACHINEOVERRIDES_prepend_imx6ulevk = "use-fsl-bsp:"
+UBOOT_MAKE_TARGET_use-fsl-bsp_mx6 = "u-boot.imx"
+UBOOT_SUFFIX_use-fsl-bsp_mx6 = "imx"
+SPL_BINARY_use-fsl-bsp_mx6 = ""
+WKS_FILE_use-fsl-bsp_mx6 = "imx-uboot-bootpart.wks"
+UBOOT_MAKE_TARGET_use-fsl-bsp_mx7 = "u-boot.imx"
+UBOOT_SUFFIX_use-fsl-bsp_mx7 = "imx"
+SPL_BINARY_use-fsl-bsp_mx7 = ""
+WKS_FILE_use-fsl-bsp_mx7 = "imx-uboot-bootpart.wks"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 SERIAL_CONSOLE_mxs = "115200 ttyAMA0"
