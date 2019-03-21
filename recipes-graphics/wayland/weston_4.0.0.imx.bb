@@ -40,13 +40,13 @@ WESTON_MAJOR_VERSION = "${@'.'.join(d.getVar('PV').split('.')[0:1])}"
 EXTRA_OECONF = "--enable-setuid-install \
                 --disable-rdp-compositor \
                 "
-EXTRA_OECONF_append_qemux86 = "\
+EXTRA_OECONF_append_qemux86 = " \
 		WESTON_NATIVE_BACKEND=fbdev-backend.so \
 		"
-EXTRA_OECONF_append_qemux86-64 = "\
+EXTRA_OECONF_append_qemux86-64 = " \
 		WESTON_NATIVE_BACKEND=fbdev-backend.so \
 		"
-EXTRA_OECONF_append_imxfbdev = "\
+EXTRA_OECONF_append_imxfbdev = " \
 		WESTON_NATIVE_BACKEND=fbdev-backend.so \
 		"
 PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev wayland egl', '', d)} \
