@@ -1,0 +1,1885 @@
+diff --git a/chromium/components/viz/service/gl/gpu_service_impl.cc b/chromium/components/viz/service/gl/gpu_service_impl.cc
+index b169325012..0da9ca01fa 100644
+--- a/chromium/components/viz/service/gl/gpu_service_impl.cc
++++ b/chromium/components/viz/service/gl/gpu_service_impl.cc
+@@ -152,6 +152,7 @@ GpuServiceImpl::~GpuServiceImpl() {
+ void GpuServiceImpl::UpdateGPUInfo() {
+   DCHECK(main_runner_->BelongsToCurrentThread());
+   DCHECK(!gpu_host_);
++  VLOG(3) << "GpuServiceImpl::UpdateGPUInfo()";
+   gpu::GpuDriverBugWorkarounds gpu_workarounds(
+       gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
+   gpu_info_.video_decode_accelerator_capabilities =
+diff --git a/chromium/gpu/config/software_rendering_list.json b/chromium/gpu/config/software_rendering_list.json
+index 954f1dedfc..27810099c2 100644
+--- a/chromium/gpu/config/software_rendering_list.json
++++ b/chromium/gpu/config/software_rendering_list.json
+@@ -368,17 +368,6 @@
+         "all"
+       ]
+     },
+-    {
+-      "id": 48,
+-      "description": "Accelerated video decode is unavailable on Linux",
+-      "cr_bugs": [137247],
+-      "os": {
+-        "type": "linux"
+-      },
+-      "features": [
+-        "accelerated_video_decode"
+-      ]
+-    },
+     {
+       "id": 50,
+       "description": "Disable VMware software renderer on older Mesa",
+diff --git a/chromium/media/filters/gpu_video_decoder.cc b/chromium/media/filters/gpu_video_decoder.cc
+index 02243a6d44..440fd69efe 100644
+--- a/chromium/media/filters/gpu_video_decoder.cc
++++ b/chromium/media/filters/gpu_video_decoder.cc
+@@ -195,7 +195,7 @@ void GpuVideoDecoder::Initialize(const VideoDecoderConfig& config,
+ 
+   if (!IsProfileSupported(capabilities, config.profile(), config.coded_size(),
+                           config.is_encrypted())) {
+-    DVLOG(1) << "Unsupported profile " << GetProfileName(config.profile())
++    LOG(ERROR) << "Unsupported profile " << GetProfileName(config.profile())
+              << ", unsupported coded size " << config.coded_size().ToString()
+              << ", or accelerator should only be used for encrypted content. "
+              << " is_encrypted: " << (config.is_encrypted() ? "yes." : "no.");
+diff --git a/chromium/media/filters/stream_parser_factory.cc b/chromium/media/filters/stream_parser_factory.cc
+index c958632700..10dc4e2513 100644
+--- a/chromium/media/filters/stream_parser_factory.cc
++++ b/chromium/media/filters/stream_parser_factory.cc
+@@ -97,7 +97,7 @@ static const CodecInfo kAV1CodecInfo = {"av1", CodecInfo::VIDEO, nullptr,
+ #endif
+ 
+ static const CodecInfo* const kVideoWebMCodecs[] = {
+-    &kVP8CodecInfo,  &kLegacyVP9CodecInfo, &kVP9CodecInfo, &kVorbisCodecInfo,
++    &kVP8CodecInfo,  /*&kLegacyVP9CodecInfo, &kVP9CodecInfo, */ &kVorbisCodecInfo,
+     &kOpusCodecInfo,
+ #if BUILDFLAG(ENABLE_AV1_DECODER)
+     &kAV1CodecInfo,
+diff --git a/chromium/media/gpu/BUILD.gn b/chromium/media/gpu/BUILD.gn
+index 08b822528f..38acc1c4ff 100644
+--- a/chromium/media/gpu/BUILD.gn
++++ b/chromium/media/gpu/BUILD.gn
+@@ -405,6 +405,26 @@ component("gpu") {
+       ]
+     }
+   }
++
++  if (imx_platform) {
++    defines += [ "IMX_PLATFORM" ]
++    deps += [
++      "//ui/gl",
++    ]
++    sources += [
++      "imx/imx_gl_viv_direct_texture.cc",
++      "imx/imx_gl_viv_direct_texture.h",
++      "imx/imxvpu_video_decode_accelerator.cc",
++      "imx/imxvpu_video_decode_accelerator.h",
++      "imx/imxvpucodec_platform_chromium.cc",
++      "imx/imxvpucodec_platform_chromium.h",
++      "imx/imxvpucodec_platform.h",
++    ]
++    libs = [
++      "imxvpuapi",
++    ]
++  }
++
+ }
+ 
+ # TODO(watk): Run this on bots. http://crbug.com/461437
+diff --git a/chromium/media/gpu/args.gni b/chromium/media/gpu/args.gni
+index df4b0f980b..9c36686670 100644
+--- a/chromium/media/gpu/args.gni
++++ b/chromium/media/gpu/args.gni
+@@ -13,4 +13,6 @@ declare_args() {
+   # Indicates if VA-API-based hardware acceleration is to be used. This
+   # is typically the case on x86-based ChromeOS devices.
+   use_vaapi = false
++
++  imx_platform = true
+ }
+diff --git a/chromium/media/gpu/gpu_video_decode_accelerator_factory.cc b/chromium/media/gpu/gpu_video_decode_accelerator_factory.cc
+index 0a84cf39c8..4aacbbbe50 100644
+--- a/chromium/media/gpu/gpu_video_decode_accelerator_factory.cc
++++ b/chromium/media/gpu/gpu_video_decode_accelerator_factory.cc
+@@ -38,6 +38,9 @@
+ #include "media/gpu/vaapi/vaapi_video_decode_accelerator.h"
+ #include "ui/gl/gl_implementation.h"
+ #endif
++#if defined(IMX_PLATFORM)
++#include "imx/imxvpu_video_decode_accelerator.h"
++#endif
+ 
+ namespace media {
+ 
+@@ -92,7 +95,7 @@ GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
+   capabilities.supported_profiles =
+       DXVAVideoDecodeAccelerator::GetSupportedProfiles(gpu_preferences,
+                                                        workarounds);
+-#elif BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI)
++#elif BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI) || defined(IMX_PLATFORM)
+   VideoDecodeAccelerator::SupportedProfiles vda_profiles;
+ #if BUILDFLAG(USE_V4L2_CODEC)
+   vda_profiles = V4L2VideoDecodeAccelerator::GetSupportedProfiles();
+@@ -107,6 +110,12 @@ GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
+   GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
+       vda_profiles, &capabilities.supported_profiles);
+ #endif
++#if defined(IMX_PLATFORM)
++  vda_profiles = ImxVpuVideoDecodeAccelerator::GetSupportedProfiles();
++  GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
++      vda_profiles, &capabilities.supported_profiles);
++  VLOG(3) << "Registering imx-platform profiles";
++#endif
+ #elif defined(OS_MACOSX)
+   capabilities.supported_profiles =
+       VTVideoDecodeAccelerator::GetSupportedProfiles();
+@@ -127,7 +136,12 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
+   DCHECK(thread_checker_.CalledOnValidThread());
+ 
+   if (gpu_preferences.disable_accelerated_video_decode)
++  {
++    VLOG(1) << "disable_accelerated_video_decode: Not creating any VDA.";
+     return nullptr;
++  }
++
++  VLOG(3) << "GpuVideoDecodeAcceleratorFactory::CreateVDA";
+ 
+   // Array of Create..VDA() function pointers, potentially usable on current
+   // platform. This list is ordered by priority, from most to least preferred,
+@@ -152,6 +166,9 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
+ #endif
+ #if defined(OS_ANDROID)
+     &GpuVideoDecodeAcceleratorFactory::CreateAndroidVDA,
++#endif
++#if defined(IMX_PLATFORM)
++    &GpuVideoDecodeAcceleratorFactory::CreateImxVpuVDA,
+ #endif
+   };
+ 
+@@ -160,9 +177,13 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
+   for (const auto& create_vda_function : create_vda_fps) {
+     vda = (this->*create_vda_function)(workarounds, gpu_preferences);
+     if (vda && vda->Initialize(config, client))
++    {
++      VLOG(1) << "Created and initialized VDA.";
+       return vda;
++    }
+   }
+ 
++  LOG(ERROR) << "no VDA created.";
+   return nullptr;
+ }
+ 
+@@ -250,6 +271,19 @@ GpuVideoDecodeAcceleratorFactory::CreateAndroidVDA(
+ }
+ #endif
+ 
++#if defined(IMX_PLATFORM)
++std::unique_ptr<VideoDecodeAccelerator>
++GpuVideoDecodeAcceleratorFactory::CreateImxVpuVDA(
++    const gpu::GpuDriverBugWorkarounds& workarounds,
++    const gpu::GpuPreferences& gpu_preferences) const {
++        VLOG(3) << "GpuVideoDecodeAcceleratorFactory::CreateImxVpuVDA";
++  std::unique_ptr<VideoDecodeAccelerator> decoder;
++  decoder.reset(new ImxVpuVideoDecodeAccelerator(
++        get_context_group_cb_, make_context_current_cb_));
++  return decoder;
++}
++#endif
++
+ GpuVideoDecodeAcceleratorFactory::GpuVideoDecodeAcceleratorFactory(
+     const GetGLContextCallback& get_gl_context_cb,
+     const MakeGLContextCurrentCallback& make_context_current_cb,
+diff --git a/chromium/media/gpu/gpu_video_decode_accelerator_factory.h b/chromium/media/gpu/gpu_video_decode_accelerator_factory.h
+index 56a0d7fd16..b6d6152d4d 100644
+--- a/chromium/media/gpu/gpu_video_decode_accelerator_factory.h
++++ b/chromium/media/gpu/gpu_video_decode_accelerator_factory.h
+@@ -121,6 +121,11 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
+       const gpu::GpuDriverBugWorkarounds& workarounds,
+       const gpu::GpuPreferences& gpu_preferences) const;
+ #endif
++#if defined(IMX_PLATFORM)
++  std::unique_ptr<VideoDecodeAccelerator> CreateImxVpuVDA(
++      const gpu::GpuDriverBugWorkarounds& workarounds,
++      const gpu::GpuPreferences& gpu_preferences) const;
++#endif
+ 
+   const GetGLContextCallback get_gl_context_cb_;
+   const MakeGLContextCurrentCallback make_context_current_cb_;
+diff --git a/chromium/media/gpu/imx/imx_gl_viv_direct_texture.cc b/chromium/media/gpu/imx/imx_gl_viv_direct_texture.cc
+new file mode 100644
+index 0000000000..f03902d1f8
+--- /dev/null
++++ b/chromium/media/gpu/imx/imx_gl_viv_direct_texture.cc
+@@ -0,0 +1,38 @@
++#include "ui/gl/gl_implementation.h"
++#include "imx_gl_viv_direct_texture.h"
++
++
++bool init_viv_direct_texture(GLESVIVDirectTextureProcs &procs)
++{
++  VLOG(1) << "Initializing Vivante direct texture GLES extension";
++
++  gl::GLImplementation glimpl = gl::GetGLImplementation();
++  if (glimpl != gl::kGLImplementationEGLGLES2)
++  {
++    LOG(INFO) << "Cannot initialize direct textures - GL implementation is "
++              << gl::GetGLImplementationName(glimpl)
++              << ", expected " <<
++              gl::GetGLImplementationName(gl::kGLImplementationEGLGLES2);
++    return false;
++  }
++
++  // Newer Vivante drivers call the extension GL_VIV_tex_direct instead of GL_VIV_direct_texture,
++  // even though it is the same extension
++  // if (context.HasExtension("GL_VIV_direct_texture"))
++  //   VLOG(1) << "GL_VIV_direct_texture supported";
++  // else if (context.HasExtension("GL_VIV_tex_direct"))
++  //   VLOG(1) << "GL_VIV_tex_direct supported";
++  // else
++  // {
++  //   VLOG(1) << "Neither GL_VIV_direct_texture nor GL_VIV_tex_direct supported";
++  //   return false;
++  // }
++
++  procs.TexDirectVIV           = reinterpret_cast < PFNGLTEXDIRECTVIVPROC >           (gl::GetGLProcAddress("glTexDirectVIV"));
++  procs.TexDirectVIVMap        = reinterpret_cast < PFNGLTEXDIRECTVIVMAPPROC >        (gl::GetGLProcAddress("glTexDirectVIVMap"));
++  procs.TexDirectTiledMapVIV   = reinterpret_cast < PFNGLTEXDIRECTTILEDMAPVIVPROC >   (gl::GetGLProcAddress("glTexDirectTiledMapVIV"));
++  procs.TexDirectInvalidateVIV = reinterpret_cast < PFNGLTEXDIRECTINVALIDATEVIVPROC > (gl::GetGLProcAddress("glTexDirectInvalidateVIV"));
++
++  return true;
++}
++
+diff --git a/chromium/media/gpu/imx/imx_gl_viv_direct_texture.h b/chromium/media/gpu/imx/imx_gl_viv_direct_texture.h
+new file mode 100644
+index 0000000000..e0a3266e6e
+--- /dev/null
++++ b/chromium/media/gpu/imx/imx_gl_viv_direct_texture.h
+@@ -0,0 +1,55 @@
++#ifndef IMX_GL_VIV_DIRECT_TEXTURE_H
++#define IMX_GL_VIV_DIRECT_TEXTURE_H
++
++#include "ui/gl/gl_bindings.h"
++#include "ui/gl/gl_context.h"
++
++
++/* GL_VIV_direct_texture */
++#ifndef GL_VIV_direct_texture
++#define GL_VIV_YV12                                             0x8FC0
++#define GL_VIV_NV12                                             0x8FC1
++#define GL_VIV_YUY2                                             0x8FC2
++#define GL_VIV_UYVY                                             0x8FC3
++#define GL_VIV_NV21                                             0x8FC4
++#define GL_VIV_I420                                             0x8FC5
++#endif
++
++
++#ifndef GL_APICALL
++#define GL_APICALL  KHRONOS_APICALL
++#endif
++
++#ifndef GL_APIENTRY
++#define GL_APIENTRY KHRONOS_APIENTRY
++#endif
++
++#ifndef GL_APIENTRYP
++#define GL_APIENTRYP GL_APIENTRY*
++#endif
++
++
++/* GL_VIV_direct_texture */
++#ifndef GL_VIV_direct_texture
++#define GL_VIV_direct_texture 1
++
++typedef void (GL_APIENTRYP PFNGLTEXDIRECTVIVPROC)           (GLenum Target, GLsizei Width, GLsizei Height, GLenum Format, GLvoid ** Pixels);
++typedef void (GL_APIENTRYP PFNGLTEXDIRECTVIVMAPPROC)        (GLenum Target, GLsizei Width, GLsizei Height, GLenum Format, GLvoid ** Logical, const GLuint * Physical);
++typedef void (GL_APIENTRYP PFNGLTEXDIRECTTILEDMAPVIVPROC)   (GLenum Target, GLsizei Width, GLsizei Height, GLenum Format, GLvoid ** Logical, const GLuint * Physical);
++typedef void (GL_APIENTRYP PFNGLTEXDIRECTINVALIDATEVIVPROC) (GLenum Target);
++
++#endif
++
++struct GLESVIVDirectTextureProcs
++{
++  PFNGLTEXDIRECTVIVPROC           TexDirectVIV;
++  PFNGLTEXDIRECTVIVMAPPROC        TexDirectVIVMap;
++  PFNGLTEXDIRECTTILEDMAPVIVPROC   TexDirectTiledMapVIV;
++  PFNGLTEXDIRECTINVALIDATEVIVPROC TexDirectInvalidateVIV;
++};
++
++
++bool init_viv_direct_texture(GLESVIVDirectTextureProcs &procs);
++
++
++#endif
+diff --git a/chromium/media/gpu/imx/imxvpu_video_decode_accelerator.cc b/chromium/media/gpu/imx/imxvpu_video_decode_accelerator.cc
+new file mode 100644
+index 0000000000..7db786650c
+--- /dev/null
++++ b/chromium/media/gpu/imx/imxvpu_video_decode_accelerator.cc
+@@ -0,0 +1,820 @@
++#include <iomanip>
++#include "media/base/limits.h"
++#include "base/bind.h"
++#include "base/memory/shared_memory.h"
++#include "base/memory/singleton.h"
++#include "imxvpu_video_decode_accelerator.h"
++#include "ui/gl/gl_bindings.h"
++#include "ui/gl/gl_implementation.h"
++#include "base/threading/thread_task_runner_handle.h"
++#include "media/gpu/format_utils.h"
++
++
++namespace media
++{
++
++
++namespace
++{
++
++
++class ImxVpuLoadSingleton
++{
++public:
++  static ImxVpuLoadSingleton* GetInstance()
++  {
++    return base::Singleton < ImxVpuLoadSingleton > ::get();
++  }
++
++  bool Load()
++  {
++    base::AutoLock auto_lock(lock_);
++
++    ImxVpuDecReturnCodes ret;
++
++    if ((ret = imx_vpu_dec_load()) != IMX_VPU_DEC_RETURN_CODE_OK)
++    {
++      LOG(ERROR) << "Could not load VPU: " << imx_vpu_dec_error_string(ret);
++      return false;
++    }
++    else
++    {
++      VLOG(1) << "Successfully loaded VPU: " << imx_vpu_dec_error_string(ret);
++      return true;
++    }
++  }
++
++  bool Unload()
++  {
++    base::AutoLock auto_lock(lock_);
++
++    ImxVpuDecReturnCodes ret;
++
++    if ((ret = imx_vpu_dec_unload()) != IMX_VPU_DEC_RETURN_CODE_OK)
++    {
++      LOG(ERROR) << "Could not unload VPU: " << imx_vpu_dec_error_string(ret);
++      return false;
++    }
++    else
++      return true;
++  }
++
++private:
++  ImxVpuLoadSingleton()
++  {
++  }
++
++  friend struct base::DefaultSingletonTraits < ImxVpuLoadSingleton >;
++
++  DISALLOW_COPY_AND_ASSIGN(ImxVpuLoadSingleton);
++
++  base::Lock lock_;
++};
++
++
++} // unnamed namespace end
++
++static const media::VideoCodecProfile kSupportedProfiles[] = {
++  media::H264PROFILE_BASELINE,
++  media::H264PROFILE_MAIN,
++  media::H264PROFILE_HIGH,
++  media::H264PROFILE_MAX,
++  media::VP8PROFILE_ANY,
++};
++
++
++ImxVpuVideoDecodeAccelerator::ImxVpuVideoDecodeAccelerator(const GetContextGroupCallback& get_context_group_cb, base::Callback < bool(void) > const &make_context_current)
++  : get_context_group_cb_(get_context_group_cb)
++  , make_context_current_(make_context_current)
++{
++  VLOG(1) << "Creating ImxVpuVideoDecodeAccelerator";
++}
++
++
++ImxVpuVideoDecodeAccelerator::~ImxVpuVideoDecodeAccelerator()
++{
++}
++
++int ImxVpuVideoDecodeAccelerator::initial_info_callback(ImxVpuDecoder *decoder, ImxVpuDecInitialInfo *new_initial_info, unsigned int output_code, void *user_data)
++{
++  unsigned int i;
++  Context *ctx = (Context *)user_data;
++
++  ((void)(decoder));
++  ((void)(output_code));
++
++
++  /* Keep a copy of the initial information around */
++  ctx->initial_info = *new_initial_info;
++
++
++  VLOG(1)
++    << "initial info:  size: " << ctx->initial_info.frame_width << "x" << ctx->initial_info.frame_height
++    << " pixel  rate: "  << ctx->initial_info.frame_rate_numerator << "/" << ctx->initial_info.frame_rate_denominator
++    << " min num required framebuffers: " << ctx->initial_info.min_num_required_framebuffers
++    << " color format: " << ctx->initial_info.color_format
++    << " interlacing: " << ctx->initial_info.interlacing
++    << " framebuffer alignment: " << ctx->initial_info.framebuffer_alignment
++  ;
++
++  /* Using the initial information, calculate appropriate framebuffer sizes */
++  imx_vpu_calc_framebuffer_sizes(
++    ctx->initial_info.color_format,
++    ctx->initial_info.frame_width,
++    ctx->initial_info.frame_height,
++    ctx->initial_info.framebuffer_alignment,
++    ctx->initial_info.interlacing,
++    0,
++    &(ctx->calculated_sizes)
++  );
++
++  VLOG(1)
++    << "calculated sizes:  frame width&height: "
++    << ctx->calculated_sizes.aligned_frame_width << "x" << ctx->calculated_sizes.aligned_frame_height
++    << " Y stride: " << ctx->calculated_sizes.y_stride
++    << " CbCr stride: " << ctx->calculated_sizes.cbcr_stride
++    << " Y size: " << ctx->calculated_sizes.y_size
++    << " CbCr size: " << ctx->calculated_sizes.cbcr_size
++    << " MvCol size: " << ctx->calculated_sizes.mvcol_size
++    << " total size: " << ctx->calculated_sizes.total_size
++  ;
++
++
++  /* If any framebuffers were allocated previously, deallocate them now.
++   * This can happen when video sequence parameters change, for example. */
++
++  if (ctx->framebuffers != nullptr)
++    delete[] ctx->framebuffers;
++
++  if (ctx->fb_dmabuffers != nullptr)
++  {
++    for (i = 0; i < ctx->num_framebuffers; ++i)
++      imx_vpu_dma_buffer_deallocate(ctx->fb_dmabuffers[i]);
++    delete[] ctx->fb_dmabuffers;
++  }
++
++
++  /* Allocate memory blocks for the framebuffer and DMA buffer structures,
++   * and allocate the DMA buffers themselves */
++
++  // Use twice the number of framebuffers as minimum needed.
++  // Using the minimum number resulted in stopping playback.
++  ctx->num_framebuffers = ctx->initial_info.min_num_required_framebuffers * 2;
++
++  ctx->framebuffers = new ImxVpuFramebuffer[ctx->num_framebuffers];
++  ctx->fb_dmabuffers = new ImxVpuDMABuffer*[ctx->num_framebuffers];
++
++  for (i = 0; i < ctx->num_framebuffers; ++i)
++  {
++    /* Allocate a DMA buffer for each framebuffer. It is possible to specify alternate allocators;
++     * all that is required is that the allocator provides physically contiguous memory
++     * (necessary for DMA transfers) and respecs the alignment value. */
++    ctx->fb_dmabuffers[i] = imx_vpu_dma_buffer_allocate(
++      imx_vpu_dec_get_default_allocator(),
++      ctx->calculated_sizes.total_size,
++      ctx->initial_info.framebuffer_alignment,
++      0
++    );
++
++    /* The last parameter (the one with casting i) is the context data for the framebuffers in the pool.
++     * It is possible to attach user-defined context data to them. Note that it is not related to the
++     * context data in en- and decoded frames. For purposes of demonstrations, the context pointer
++     * is just a simple monotonically increasing integer. First framebuffer has context 0x0, second 0x01 etc. */
++    imx_vpu_fill_framebuffer_params(
++      &(ctx->framebuffers[i]),
++      &(ctx->calculated_sizes),
++      ctx->fb_dmabuffers[i],
++      reinterpret_cast<void*>(i)
++    );
++  }
++
++
++  /* Actual registration is done here. From this moment on, the VPU knows which buffers to use for
++   * storing decoded raw frames into. This call must not be done again until decoding is shut down or
++   * IMX_VPU_DEC_OUTPUT_CODE_INITIAL_INFO_AVAILABLE is set again. */
++  imx_vpu_dec_register_framebuffers(ctx->vpudec, ctx->framebuffers, ctx->num_framebuffers);
++
++  ctx->initial_info_received = true;
++
++  VideoPixelFormat format = GfxBufferFormatToVideoPixelFormat(gfx::BufferFormat::BGRX_8888);
++  base::ThreadTaskRunnerHandle::Get()->PostTask(
++      FROM_HERE,
++      base::Bind(
++        &Client::ProvidePictureBuffers,
++        ctx->client,
++        ctx->num_framebuffers,
++        format,
++        1,
++        gfx::Size(ctx->calculated_sizes.aligned_frame_width, ctx->calculated_sizes.aligned_frame_height),
++        GL_TEXTURE_2D
++    )
++  );
++
++  return 1;
++}
++
++bool ImxVpuVideoDecodeAccelerator::Initialize(const VideoDecodeAccelerator::Config& config, Client *client)
++{
++  client_ptr_factory_.reset(new base::WeakPtrFactory < Client > (client));
++  context_.client = client_ptr_factory_->GetWeakPtr();
++
++  base::AutoLock auto_lock(lock_);
++
++  VLOG(1) << "Initializing i.MX VPU decoder";
++
++  if (!make_context_current_.Run())
++  {
++    LOG(ERROR) << "Failed to make this decoder's GL context current.";
++    return false;
++  }
++
++  if (get_context_group_cb_.is_null())
++  {
++    LOG(ERROR) << "GLES2 context is nullptr";
++    return false;
++  }
++
++  auto* context_group = get_context_group_cb_.Run();
++  if (!context_group)
++  {
++    DLOG(ERROR) << "Failed to get context group.";
++    return false;
++  }
++
++  if (!init_viv_direct_texture(direct_texture_procs_))
++  {
++    LOG(ERROR) << "Initializing the direct texture extension failed";
++    return false;
++  }
++
++  if ((config.profile >= media::H264PROFILE_MIN) && (config.profile <= media::H264PROFILE_MAX))
++  {
++    codec_format_ = IMX_VPU_CODEC_FORMAT_H264;
++    VLOG(1) << "Setting h.264 as codec format";
++  }
++  else if ((config.profile >= media::VP8PROFILE_MIN) && (config.profile <= media::VP8PROFILE_MAX))
++  {
++    codec_format_ = IMX_VPU_CODEC_FORMAT_VP8;
++    VLOG(1) << "Setting VP8 as codec format";
++  }
++  else
++  {
++    VLOG(1) << "Unsupported profile";
++    return false;
++  }
++
++  VLOG(1) << "Loading VPU";
++  if (!(ImxVpuLoadSingleton::GetInstance()->Load()))
++    return false;
++
++  if (!AllocateVpuBitstreamBuffer())
++  {
++    ImxVpuLoadSingleton::GetInstance()->Unload();
++    return false;
++  }
++
++  VLOG(1) << "Opening decoder";
++  if (!OpenDecoder())
++  {
++    ImxVpuLoadSingleton::GetInstance()->Unload();
++    return false;
++  }
++
++  VLOG(1) << "Initialization done";
++
++  return true;
++}
++
++
++void ImxVpuVideoDecodeAccelerator::Decode(media::BitstreamBuffer const &bitstream_buffer)
++{
++  VLOG(3) << "Decoding bitstream buffer";
++
++  base::AutoLock auto_lock(lock_);
++
++  input_queue_.push(bitstream_buffer);
++  ProcessQueuedInput();
++}
++
++
++void ImxVpuVideoDecodeAccelerator::AssignPictureBuffers(std::vector < media::PictureBuffer > const &buffers)
++{
++  DCHECK(output_picture_buffers_.empty());
++  DCHECK(buffers.size() == context_.num_framebuffers);
++
++  base::AutoLock auto_lock(lock_);
++
++  VLOG(1) << buffers.size() << " picture buffers are being provided by the client";
++
++
++  // without this call, the GL calls below would not use the correct context
++  make_context_current_.Run();
++
++  for (size_t i = 0; i < buffers.size(); ++i)
++  {
++    int32_t id = buffers[i].id();
++
++    output_picture_buffers_.insert(std::make_pair(id, buffers[i]));
++
++    ImxVpuFramebuffer &framebuffer = context_.framebuffers[i];
++    framebuffer.context = reinterpret_cast < void* > (id);
++
++    // associate VIV direct textures with VPU framebuffers (one texture per framebuffer)
++    // by mapping the framebuffer to the direct texture
++    // only needs to be done once, since this mapping doesn't change
++    GLuint picture_buffer_texture_id = buffers[i].service_texture_ids()[0];
++    glActiveTexture(GL_TEXTURE0);
++    glBindTexture(GL_TEXTURE_2D, picture_buffer_texture_id);
++
++    // GLuint phys_addr = reinterpret_cast < GLuint > (framebuffer.dma_buffer);
++    GLuint phys_addr = imx_vpu_dma_buffer_get_physical_address(framebuffer.dma_buffer);
++    GLvoid *virt_addr = imx_vpu_dma_buffer_map(framebuffer.dma_buffer, IMX_VPU_MAPPING_FLAG_READ);
++
++    direct_texture_procs_.TexDirectVIVMap(
++      GL_TEXTURE_2D,
++      context_.calculated_sizes.aligned_frame_width,
++      context_.calculated_sizes.aligned_frame_height,
++      GL_VIV_I420,
++      &virt_addr, &phys_addr
++    );
++
++    VLOG(1)
++      << "Associating picture buffer " << i << "/" << buffers.size() << " ID " << id
++      << " picture_buffer_texture_id #" << picture_buffer_texture_id
++      << std::hex
++      << " virtual address " << std::setfill('0') << std::setw(8) << reinterpret_cast < void* > (virt_addr)
++      << " physical address " << std::setfill('0') << std::setw(8) << reinterpret_cast < void* > (phys_addr)
++      << std::dec;
++
++    imx_vpu_dma_buffer_unmap(framebuffer.dma_buffer);
++  }
++
++
++  ProcessQueuedInput();
++}
++
++
++void ImxVpuVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_buffer_id)
++{
++  base::AutoLock auto_lock(lock_);
++
++  VLOG(3) << "Reusing picture buffer with ID " << picture_buffer_id;
++
++  for (size_t i = 0; i < context_.num_framebuffers; ++i)
++  {
++    ImxVpuFramebuffer &framebuffer = context_.framebuffers[i];
++    int32_t id = reinterpret_cast < int32_t > (framebuffer.context);
++    if (id == picture_buffer_id)
++    {
++      ImxVpuDecReturnCodes ret;
++
++      if ((ret = imx_vpu_dec_mark_framebuffer_as_displayed(context_.vpudec, &framebuffer)) != IMX_VPU_DEC_RETURN_CODE_OK)
++      {
++        LOG(ERROR) << "Marking framebuffer for picture buffer with ID " << picture_buffer_id << "as displayed failed : " << imx_vpu_dec_error_string(ret);
++      }
++      else
++      {
++        VLOG(1) << "Marked frame " << picture_buffer_id << " as displayed.";
++        ProcessQueuedInput();
++      }
++
++      return;
++    }
++  }
++
++  LOG(WARNING) << "Picture buffer ID " << picture_buffer_id << " could not be associated with a framebuffer";
++}
++
++
++void ImxVpuVideoDecodeAccelerator::Flush()
++{
++  base::AutoLock auto_lock(lock_);
++
++  VLOG(2) << "Flush: processing all currently queued input bitstream buffers";
++  ProcessQueuedInput();
++
++  VLOG(2) << "Flush: draining VPU decoder";
++  imx_vpu_dec_enable_drain_mode(context_.vpudec, 1);
++  while (true)
++  {
++    ProcessRetval pretval = ProcessInput(BitstreamBuffer());
++    if (pretval != ProcessOK)
++      break;
++    // TODO: handle ProcessFail (ProcessEOS should just cause the loop to terminate)
++  }
++  imx_vpu_dec_enable_drain_mode(context_.vpudec, 0);
++
++  VLOG(2) << "Flush: done";
++  base::ThreadTaskRunnerHandle::Get()->PostTask(
++    FROM_HERE,
++    base::Bind(
++      &Client::NotifyFlushDone,
++      context_.client
++    )
++  );
++
++}
++
++
++void ImxVpuVideoDecodeAccelerator::Reset()
++{
++  base::AutoLock auto_lock(lock_);
++
++  VLOG(2) << "Reset: flushing decoder";
++  imx_vpu_dec_flush(context_.vpudec);
++
++  VLOG(2) << "Reset: ending all queued bitstream buffers";
++  while (!input_queue_.empty())
++  {
++    int32_t bitstream_buffer_id = input_queue_.front().id();
++    input_queue_.pop();
++
++    if (bitstream_buffer_id != -1)
++    {
++      base::ThreadTaskRunnerHandle::Get()->PostTask(
++        FROM_HERE,
++        base::Bind(
++          &Client::NotifyEndOfBitstreamBuffer,
++          context_.client, bitstream_buffer_id
++        )
++      );
++    }
++  }
++
++  BitstreamBufferQueue empty_queue;
++  std::swap(input_queue_, empty_queue);
++
++  VLOG(2) << "Reset: done";
++  base::ThreadTaskRunnerHandle::Get()->PostTask(
++    FROM_HERE,
++    base::Bind(
++      &Client::NotifyResetDone,
++      context_.client
++    )
++  );
++}
++
++
++void ImxVpuVideoDecodeAccelerator::Destroy()
++{
++  Cleanup();
++  delete this;
++}
++
++bool ImxVpuVideoDecodeAccelerator::TryToSetupDecodeOnSeparateThread(
++    const base::WeakPtr<Client>& decode_client,
++    const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner) {
++  return false;
++}
++
++// static
++media::VideoDecodeAccelerator::SupportedProfiles
++ImxVpuVideoDecodeAccelerator::GetSupportedProfiles()
++{
++  SupportedProfiles profiles;
++  for (const auto& supported_profile : kSupportedProfiles) {
++    SupportedProfile profile;
++    profile.profile = supported_profile;
++    profile.min_resolution.SetSize(64, 64);
++    profile.max_resolution.SetSize(1920, 1088);
++    profiles.push_back(profile);
++  }
++  return profiles;
++}
++
++void ImxVpuVideoDecodeAccelerator::Cleanup()
++{
++  base::AutoLock auto_lock(lock_);
++  client_ptr_factory_.reset();
++
++  CloseDecoder();
++
++  /* Free all allocated memory (both regular and DMA memory) */
++  delete[] context_.framebuffers;
++  for (unsigned int i = 0; i < context_.num_framebuffers; ++i)
++    imx_vpu_dma_buffer_deallocate(context_.fb_dmabuffers[i]);
++  delete[] context_.fb_dmabuffers;
++  imx_vpu_dma_buffer_deallocate(context_.bitstream_buffer);
++
++  ImxVpuLoadSingleton::GetInstance()->Unload();
++}
++
++
++bool ImxVpuVideoDecodeAccelerator::OpenDecoder()
++{
++  lock_.AssertAcquired();
++
++  context_.open_params.codec_format = codec_format_;
++
++  context_.open_params.enable_frame_reordering = (codec_format_ == IMX_VPU_CODEC_FORMAT_H264) ? 1 : 0;
++
++  // frame width & height are read from the bitstream
++  context_.open_params.frame_width = 0;
++  context_.open_params.frame_height = 0;
++  context_.open_params.chroma_interleave = 0;
++
++  if (imx_vpu_dec_open(&(context_.vpudec), &(context_.open_params), context_.bitstream_buffer, initial_info_callback, &context_) != IMX_VPU_DEC_RETURN_CODE_OK)
++    return false;
++
++  return true;
++}
++
++
++void ImxVpuVideoDecodeAccelerator::CloseDecoder()
++{
++  lock_.AssertAcquired();
++
++  if (context_.vpudec == nullptr)
++    return;
++
++  imx_vpu_dec_close(context_.vpudec);
++
++  context_.vpudec = nullptr;
++}
++
++
++bool ImxVpuVideoDecodeAccelerator::AllocateVpuBitstreamBuffer()
++{
++  lock_.AssertAcquired();
++
++  /* Retrieve information about the required bitstream buffer and allocate one based on this */
++  imx_vpu_dec_get_bitstream_buffer_info(&(context_.bitstream_buffer_size), &(context_.bitstream_buffer_alignment));
++  context_.bitstream_buffer = imx_vpu_dma_buffer_allocate(
++    imx_vpu_dec_get_default_allocator(),
++    context_.bitstream_buffer_size,
++    context_.bitstream_buffer_alignment,
++    0
++  );
++
++  return context_.bitstream_buffer != nullptr;
++}
++
++
++void ImxVpuVideoDecodeAccelerator::ProcessQueuedInput()
++{
++  lock_.AssertAcquired();
++
++  VLOG(1) << "Input queue size: " << input_queue_.size();
++
++  {
++    if (input_queue_.empty())
++    {
++      VLOG(1) << "Input queue empty - nothing to process";
++      return;
++    }
++
++    if (context_.initial_info_received && output_picture_buffers_.empty())
++    {
++      VLOG(1) << "No picture buffers have been provided yet - will try again later";
++      return;
++    }
++
++    if (context_.initial_info_received && imx_vpu_dec_check_if_can_decode(context_.vpudec) == 0)
++    {
++      VLOG(1) << "Not enough free framebuffers available - will try again later";
++      return;
++    }
++
++    if (!context_.initial_info_received)
++      VLOG(1) << "Initial info not received yet - nevertheless continuing...";
++
++    media::BitstreamBuffer const &queued_bitstream_buffer = input_queue_.front();
++    ProcessRetval ret = ProcessInput(queued_bitstream_buffer);
++    input_queue_.pop();
++
++    if (ret != ProcessOK)
++      return;
++  }
++}
++
++
++ImxVpuVideoDecodeAccelerator::ProcessRetval ImxVpuVideoDecodeAccelerator::ProcessInput(const media::BitstreamBuffer& input_bitstream_buffer)
++{
++  ProcessRetval ret;
++  ImxVpuDecReturnCodes imx_ret;
++
++  lock_.AssertAcquired();
++
++
++  ImxVpuEncodedFrame encoded_frame;
++  std::unique_ptr<base::SharedMemory> shm;
++ 
++  // bitstream_buffer is nullptr while draining
++  if (imx_vpu_dec_is_drain_mode_enabled(context_.vpudec))
++  {
++    VLOG(2) << "Setting input data to nullptr";
++
++    encoded_frame.data = nullptr;
++    encoded_frame.data_size = 0;
++    encoded_frame.context = nullptr;
++
++    imx_vpu_dec_set_codec_data(context_.vpudec, nullptr, 0);
++
++    ret = ProcessOK;
++  }
++  else
++  {
++    VLOG(3) << "Processing input bitstream buffer with ID " << input_bitstream_buffer.id();
++    context_.frame_id_counter = input_bitstream_buffer.id();
++
++    shm.reset(new base::SharedMemory(input_bitstream_buffer.handle(), true));
++ 
++    // The shared memory block is automatically unmapped by the destructor
++    shm->Map(input_bitstream_buffer.size());
++    encoded_frame.data = (uint8_t *)shm->memory(); //(uint8_t *)input_bitstream_buffer.handle();
++    encoded_frame.data_size = input_bitstream_buffer.size();
++
++    /* Codec data is out-of-band data that is typically stored in a separate space in
++     * containers for each elementary stream; h.264 byte-stream does not need it */
++    imx_vpu_dec_set_codec_data(context_.vpudec, nullptr, 0);
++
++    /* The frame id counter is used to give the encoded frames an example context.
++     * The context of an encoded frame is a user-defined pointer that is passed along
++     * to the corresponding decoded raw frame. This way, it can be determined which
++     * decoded raw frame is the result of what encoded frame.
++     * For example purposes (to be able to print some log output), the context
++     * is just a monotonically increasing integer. */
++    encoded_frame.context = reinterpret_cast<void *>(context_.frame_id_counter);
++
++    /* Not using the PTS/DTS values in this example */
++    encoded_frame.pts = 0;
++    encoded_frame.dts = 0;
++
++    VLOG(3) << "Creating encoded frame: size " << encoded_frame.data_size << " id " << input_bitstream_buffer.id();
++  }
++
++  unsigned int output_code;
++  /* Perform the actual decoding */
++  if (imx_vpu_dec_decode(context_.vpudec, &encoded_frame, &output_code) != IMX_VPU_DEC_RETURN_CODE_OK)
++  {
++    LOG(ERROR) << "imx_vpu_dec_decode() failed";
++    return ProcessFailed;
++  }
++
++  if (input_bitstream_buffer.size() != 0)
++  {
++    base::ThreadTaskRunnerHandle::Get()->PostTask(
++      FROM_HERE,
++      base::Bind(
++        &Client::NotifyEndOfBitstreamBuffer,
++        context_.client,
++        input_bitstream_buffer.id()
++      )
++    );
++  }
++
++  if (output_code & IMX_VPU_DEC_OUTPUT_CODE_VIDEO_PARAMS_CHANGED)
++  {
++    /* Video sequence parameters changed. Decoding cannot continue with the
++     * existing decoder. Drain it, and open a new one to resume decoding. */
++    VLOG(1) << "Initial information is available - retrieving";
++
++    imx_vpu_dec_enable_drain_mode(context_.vpudec, 1);
++
++    for (;;)
++    {
++      ProcessRetval rret = ProcessInput(input_bitstream_buffer);
++      if (rret == ProcessEOS)
++        break;
++      else if (rret == ProcessFailed)
++        return ProcessFailed;
++    }
++
++    imx_vpu_dec_enable_drain_mode(context_.vpudec, 0);
++
++    imx_vpu_dec_close(context_.vpudec);
++
++    imx_vpu_dec_open(&(context_.vpudec), &(context_.open_params), context_.bitstream_buffer, initial_info_callback, &context_);
++
++    /* Feed the data that caused the IMX_VPU_DEC_OUTPUT_CODE_VIDEO_PARAMS_CHANGED
++     * output code flag again, but this time into the new decoder */
++    if (imx_vpu_dec_decode(context_.vpudec, &encoded_frame, &output_code) != IMX_VPU_DEC_RETURN_CODE_OK)
++    {
++      LOG(ERROR) << "imx_vpu_dec_decode() failed";
++      return ProcessFailed;
++    }
++
++  }
++
++
++  if (output_code & IMX_VPU_DEC_OUTPUT_CODE_DECODED_FRAME_AVAILABLE)
++  {
++    /* A decoded raw frame is available for further processing. Retrieve it, do something
++     * with it, and once the raw frame is no longer needed, mark it as displayed. This
++     * marks it internally as available for further decoding by the VPU. */
++
++    ImxVpuRawFrame decoded_frame;
++    int32_t frame_id;
++    size_t num_out_byte = context_.calculated_sizes.y_size + context_.calculated_sizes.cbcr_size * 2;
++
++    /* This call retrieves information about the decoded raw frame, including
++     * a pointer to the corresponding framebuffer structure. This must not be called more
++     * than once after IMX_VPU_DEC_OUTPUT_CODE_DECODED_FRAME_AVAILABLE was set. */
++    if ((imx_ret = imx_vpu_dec_get_decoded_frame(context_.vpudec, &decoded_frame)) != IMX_VPU_DEC_RETURN_CODE_OK)
++    {
++      LOG(ERROR) << "Retrieving decoded frame failed: " << imx_vpu_dec_error_string(imx_ret);
++      return ProcessFailed;
++    }
++    frame_id = reinterpret_cast < int32_t > (decoded_frame.context);
++    VLOG(3) << "decoded output frame:  frame id: "<< frame_id << " writing # bytes: " << num_out_byte;
++
++    if (decoded_frame.framebuffer == nullptr)
++    {
++      LOG(ERROR) << "Framebuffer of decoded frame is nullptr";
++      ret = ProcessFailed;
++    }
++    else
++    {
++      /* Map buffer to the local address space, dump the decoded frame to file,
++       * and unmap again. The decoded frame uses the I420 color format for all
++       * bitstream formats (h.264, MPEG2 etc.), with one exception; with motion JPEG data,
++       * the format can be different. See imxvpuapi.h for details. */
++      if (!ProcessOutput(*(decoded_frame.framebuffer), frame_id))
++      {
++        // if ProcessOutput returns false, then no picture buffer has
++        // been sent to the client, so the decoded frame must be returned
++        // to the VPU pool here
++        VLOG(1) << "ProcessOutput failed -> returning decoded frame to internal VPU pool";
++        /* Mark the framebuffer as displayed, thus returning it to the list of
++         * framebuffers available for decoding. */
++        imx_vpu_dec_mark_framebuffer_as_displayed(context_.vpudec, decoded_frame.framebuffer);
++        ret = ProcessFailed;
++      }
++
++      // if processing the output was successful, the framebuffer is
++      // _not_ marked as displayed here; this is done in ReusePictureBuffer(),
++      // because only then it is certain that the client is done with that frame
++    }
++
++  }
++  else if (output_code & IMX_VPU_DEC_OUTPUT_CODE_DROPPED)
++  {
++    /* A frame was dropped. The context of the dropped frame can be retrieved
++     * if this is necessary for timestamping etc. */
++    void* dropped_frame_id;
++    imx_vpu_dec_get_dropped_frame_info(context_.vpudec, &dropped_frame_id, nullptr, nullptr);
++    VLOG(2) << "Frame was dropped, bitstream buffer id " << reinterpret_cast < int32_t > (dropped_frame_id);
++  }
++
++  if (output_code & IMX_VPU_DEC_OUTPUT_CODE_EOS)
++  {
++    VLOG(3) << "VPU reports EOS; no more decoded frames available";
++    ret = ProcessEOS;
++  }
++
++  return ret;
++}
++
++
++bool ImxVpuVideoDecodeAccelerator::ProcessOutput(ImxVpuFramebuffer const &output_framebuffer, int32_t input_bitstream_buffer_id)
++{
++  lock_.AssertAcquired();
++
++  int32_t picture_buffer_id = reinterpret_cast < int32_t > (output_framebuffer.context);
++  OutputBufferMap::const_iterator iter = output_picture_buffers_.find(picture_buffer_id);
++  if (iter == output_picture_buffers_.end())
++  {
++    LOG(ERROR) << "No picture buffer with ID " << picture_buffer_id << " found";
++    if (output_picture_buffers_.empty())
++      LOG(ERROR) << "Picture buffer is emtpy";
++    else
++      LOG(ERROR) << "ID of first output picture buffer: " << output_picture_buffers_.begin()->first;
++    return false;
++  }
++  GLuint picture_buffer_texture_id = iter->second.service_texture_ids()[0];
++
++  make_context_current_.Run();
++
++  glActiveTexture(GL_TEXTURE0);
++  glBindTexture(GL_TEXTURE_2D, picture_buffer_texture_id);
++
++  direct_texture_procs_.TexDirectInvalidateVIV(GL_TEXTURE_2D);
++
++  // TODO:
++  // gles2_decoder_->RestoreTextureUnitBindings(0);
++  // gles2_decoder_->RestoreActiveTexture();
++
++  base::ThreadTaskRunnerHandle::Get()->PostTask(
++    FROM_HERE,
++    base::Bind(
++      &Client::PictureReady,
++      context_.client,
++      media::Picture(
++        picture_buffer_id,
++        input_bitstream_buffer_id,
++        gfx::Rect(
++          0,
++          0,
++          context_.initial_info.frame_width,
++          context_.initial_info.frame_height
++        ),
++        gfx::ColorSpace(),
++        false
++      )
++    )
++  );
++
++  return true;
++}
++
++}  // namespace media
+diff --git a/chromium/media/gpu/imx/imxvpu_video_decode_accelerator.h b/chromium/media/gpu/imx/imxvpu_video_decode_accelerator.h
+new file mode 100644
+index 0000000000..0aadbe1d8e
+--- /dev/null
++++ b/chromium/media/gpu/imx/imxvpu_video_decode_accelerator.h
+@@ -0,0 +1,122 @@
++#ifndef MEDIA_GPU_IMXVPU_VIDEO_DECODE_ACCELERATOR_H_
++#define MEDIA_GPU_IMXVPU_VIDEO_DECODE_ACCELERATOR_H_
++
++#include <list>
++#include <map>
++#include <vector>
++
++#include "base/compiler_specific.h"
++#include "base/memory/linked_ptr.h"
++#include "base/memory/weak_ptr.h"
++#include "base/message_loop/message_loop.h"
++#include "base/compiler_specific.h"
++#include "base/synchronization/lock.h"
++#include "content/common/content_export.h"
++#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
++#include "media/base/bitstream_buffer.h"
++#include "media/video/picture.h"
++#include "media/video/video_decode_accelerator.h"
++
++#include <imxvpuapi/imxvpuapi.h>
++#include "imx_gl_viv_direct_texture.h"
++
++
++namespace media
++{
++
++
++class CONTENT_EXPORT ImxVpuVideoDecodeAccelerator
++  : public VideoDecodeAccelerator
++{
++    using GetContextGroupCallback =
++      base::RepeatingCallback<gpu::gles2::ContextGroup*(void)>;
++
++public:
++  explicit ImxVpuVideoDecodeAccelerator(const GetContextGroupCallback& get_context_group_cb, base::Callback < bool(void) > const &make_context_current);
++  virtual ~ImxVpuVideoDecodeAccelerator();
++
++  virtual bool Initialize(const Config& config, Client *client) override;
++  virtual void Decode(media::BitstreamBuffer const &bitstream_buffer) override;
++  virtual void AssignPictureBuffers(std::vector < media::PictureBuffer > const &buffers) override;
++  virtual void ReusePictureBuffer(int32_t picture_buffer_id) override;
++  virtual void Flush() override;
++  virtual void Reset() override;
++  virtual void Destroy() override;
++    bool TryToSetupDecodeOnSeparateThread(
++      const base::WeakPtr<Client>& decode_client,
++      const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
++      override;
++
++    static media::VideoDecodeAccelerator::SupportedProfiles GetSupportedProfiles();
++  static int initial_info_callback(ImxVpuDecoder *decoder, ImxVpuDecInitialInfo *new_initial_info, unsigned int output_code, void *user_data);
++
++private:
++  enum ProcessRetval
++  {
++    ProcessOK,
++    ProcessEOS,
++    ProcessFailed
++  };
++
++        struct Context {
++          ImxVpuDecoder* vpudec = 0;
++
++          ImxVpuDMABuffer* bitstream_buffer = 0;
++          size_t bitstream_buffer_size = 0;
++          unsigned int bitstream_buffer_alignment = 0;
++
++          ImxVpuDecInitialInfo initial_info;
++          bool initial_info_received = false;
++
++          ImxVpuFramebuffer* framebuffers = 0;
++          ImxVpuDMABuffer** fb_dmabuffers = 0;
++          unsigned int num_framebuffers = 0;
++          ImxVpuFramebufferSizes calculated_sizes;
++
++          unsigned int frame_id_counter = 0;
++
++          ImxVpuDecOpenParams open_params;
++
++          base::WeakPtr < Client > client;
++        };
++
++        void Cleanup();
++
++  // VPU specifics
++  bool OpenDecoder();
++  void CloseDecoder();
++  bool AllocateVpuBitstreamBuffer();
++
++  // Bitstream buffer and framebuffer processing
++  void ProcessQueuedInput();
++  ProcessRetval ProcessInput(const media::BitstreamBuffer& input_bitstream_buffer);
++  bool ProcessOutput(ImxVpuFramebuffer const &output_framebuffer, int32_t input_bitstream_buffer_id);
++
++  std::unique_ptr < base::WeakPtrFactory < Client > > client_ptr_factory_;
++
++  // Callback to return a ContextGroup*.
++  GetContextGroupCallback get_context_group_cb_;
++  base::Callback < bool(void) > make_context_current_;
++
++  typedef std::vector < ImxVpuFramebuffer > ImxVpuFramebuffers;
++  Context context_;
++  ImxVpuCodecFormat codec_format_;
++
++  GLESVIVDirectTextureProcs direct_texture_procs_;
++
++  base::Lock lock_;
++
++  typedef std::queue < media::BitstreamBuffer > BitstreamBufferQueue;
++  BitstreamBufferQueue input_queue_;
++
++  typedef std::map < int32_t, media::PictureBuffer > OutputBufferMap;
++  OutputBufferMap output_picture_buffers_;
++
++  DISALLOW_COPY_AND_ASSIGN(ImxVpuVideoDecodeAccelerator);
++};
++
++
++} // namespace media end
++
++
++#endif  // MEDIA_GPU_IMXVPU_VIDEO_DECODE_ACCELERATOR_H_
+diff --git a/chromium/media/gpu/imx/imxvpucodec.h b/chromium/media/gpu/imx/imxvpucodec.h
+new file mode 100644
+index 0000000000..4fb63b36f1
+--- /dev/null
++++ b/chromium/media/gpu/imx/imxvpucodec.h
+@@ -0,0 +1,418 @@
++/*
++ * imxvpucodec - i.MX6 VPU hardware codec engine API library
++ * Copyright (c) 2014 Carlos Rafael Giani
++ * 
++ * This software is provided 'as-is', without any express or implied
++ * warranty. In no event will the authors be held liable for any
++ * damages arising from the use of this software.
++ *
++ * Permission is granted to anyone to use this software for any purpose,
++ * including commercial applications, and to alter it and redistribute
++ * it freely, subject to the following restrictions:
++ *
++ * 1. The origin of this software must not be misrepresented; you must
++ *    not claim that you wrote the original software. If you use this
++ *    software in a product, an acknowledgment in the product
++ *    documentation would be appreciated but is not required.
++ *
++ * 2. Altered source versions must be plainly marked as such, and must
++ *    not be misrepresented as being the original software.
++ *
++ * 3. This notice may not be removed or altered from any source distribution.
++ */
++
++
++#ifndef IMXVPUCODEC_H
++#define IMXVPUCODEC_H
++
++#include <stddef.h>
++#include <stdint.h>
++
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++
++
++/* This library provides a high-level interface for controlling the Freescale
++ * i.MX VPU en/decoder.
++ * Other libraries do not provide a way of associating frames with user defined
++ * information, and lack calls to check the number of currently free framebuffers
++ * (when decoding). The former is required by many media frameworks such as
++ * GStreamer, FFmpeg/libav, the Chromium media codebase etc. The latter is
++ * necessary when framebuffer display and decoding can happen in different
++ * threads (the counter makes it possible to use synchronization primitives
++ * like thread condition variables to wait until enough frames are free).
++ *
++ * Note that the functions are _not_ thread safe. If they may be called from
++ * different threads, you must make sure they are surrounded by a mutex lock.
++ * It is recommended to use one global mutex for the imx_vpu_*_load()/unload()
++ * functions, and another de/encoder instance specific mutex for all of the other
++ * calls.
++ *
++ * How to use the decoder (error handling omitted for clarity):
++ * 1. Call imx_vpu_dec_load()
++ * 2. Call imx_vpu_dec_get_bitstream_buffer_info(), and allocate a DMA buffer
++ *    with the given size and alignment.
++ * 3. Fill an instance of ImxVpuDecOpenParams with the values specific to the
++ *    input data. In most cases, one wants to set enable_frame_reordering to 1
++ *    with h.264 data here.
++ * 4. Call imx_vpu_dec_open(), passing in a pointer to the filled ImxVpuDecOpenParams
++ *    instance, and the virtual and physical addresses of the bitstream DMA buffer
++ *    which was allocated in step 2.
++ * 5. Call imx_vpu_dec_decode_frame() with the first encoded frame.
++ *    If the output_code bitmask contains IMX_VPU_DEC_OUTPUT_CODE_INITIAL_INFO_AVAILABLE,
++ *    proceed, otherwise continue feeding in data.
++ * 6. Once IMX_VPU_DEC_OUTPUT_CODE_INITIAL_INFO_AVAILABLE has been set in the output code,
++ *    call imx_vpu_dec_get_initial_info() with a pointer to an ImxVpuDecInitialInfo
++ *    instance.
++ * 7. (Optional) Perform the necessary size and alignment calculations by calling
++ *    imx_vpu_dec_calc_framebuffer_sizes().
++ * 8. Create an array of at least as many ImxVpuFramebuffer instances as specified in
++ *    min_num_required_framebuffers. Each instance must point to a DMA buffer that is big
++ *    enough to hold a frame. If step 7 was performed, allocating as many bytes as indicated
++ *    by total_size is enough. Make sure the Y,Cb,Cr,MvCol offsets in each ImxVpuFramebuffer
++ *    instance are valid.
++ * 9. Call imx_vpu_dec_register_framebuffers() and pass in the ImxVpuFramebuffer array
++ *    and the number of ImxVpuFramebuffer instances.
++ * 10. Continue calling imx_vpu_dec_decode_frame(). The virtual address in encoded_frame
++ *     must not be NULL.
++ *     If the IMX_VPU_DEC_OUTPUT_CODE_FRAME_OUTPUT flag is set in the output code,
++ *     call imx_vpu_dec_get_decoded_frame() with a pointer to an ImxVpuDecodedFrame instance
++ *     which gets filled with information about the decoded frame. Once the decoded frame
++ *     has been processed by the user, imx_vpu_dec_mark_framebuffer_as_displayed() must be
++ *     called to let the decoder know that the framebuffer is available for storing new
++ *     decoded frames again.
++ *     If IMX_VPU_DEC_OUTPUT_CODE_DROPPED is set, you can call
++ *     imx_vpu_dec_get_dropped_frame_user_data() to retrieve the user_data field
++ *     of the dropped frame. If IMX_VPU_DEC_OUTPUT_CODE_EOS is set, stop playback and close
++ *     the decoder.
++ * 11. In case a flush/reset is desired (typically after seeking), call imx_vpu_dec_flush().
++ *     Note that any internal user_data pointers from the en/decoded frames will be
++ *     set to NULL after this call (this is the only exception where the library modifies
++ *     the user_data fields).
++ * 12. When there is no more incoming data, and pending decoded frames need to be retrieved
++ *     from the decoder, call imx_vpu_dec_set_drain_mode(). This is typically necessary when
++ *     the data source reached its end, playback is finishing, and there is a delay
++ *     of N frames at the beginning.
++ *     After this call, continue calling imx_vpu_dec_decode_frame() to retrieve the pending
++ *     decoded frames, but the virtual address of encoded_frame must be NULL.
++ *     As in step 10, if IMX_VPU_DEC_OUTPUT_CODE_EOS is set, stop playback, close the decoder.
++ * 13. After playback is finished, close the decoder with imx_vpu_dec_close().
++ * 14. Deallocate framebuffer memory blocks and the bitstream buffer memory block.
++ * 15. Call imx_vpu_dec_unload().
++ *
++ * Step 15 should only be called if no more playback sessions will occur.
++ *
++ * As mentioned before, in situations where decoding and display of decoded frames happen in
++ * different thread, it is necessary to let the decoder wait until enough framebuffers
++ * are free (= available for the VPU to decode into). This is typically done by such a check
++ * (in pseudo code):
++ *
++ *   mutex_lock(&mutex);
++ *
++ *   while (imx_vpu_dec_get_num_free_framebuffers(decoder) < imx_vpu_dec_get_min_num_free_required(decoder))
++ *     condition_wait(&condition_variable, &mutex);
++ *
++ *   imx_vpu_dec_decode_frame(decoder, encoded_frame, &output_code);
++ *   ...
++ *
++ *   mutex_unlock(&mutex);
++ */
++
++
++
++/***********************************************/
++/******* COMMON STRUCTURES AND FUNCTIONS *******/
++/***********************************************/
++
++
++#define IMX_VPU_ALIGN_VAL_TO(LENGTH, ALIGN_SIZE)  ( ((uintptr_t)(((uint8_t*)(LENGTH)) + (ALIGN_SIZE) - 1) / (ALIGN_SIZE)) * (ALIGN_SIZE) )
++
++
++typedef uint32_t imx_vpu_phys_addr_t;
++typedef uint32_t imx_vpu_cpu_addr_t; /* used only in allocators so far */
++
++
++typedef enum
++{
++	IMX_VPU_PIC_TYPE_UNKNOWN = 0,
++	IMX_VPU_PIC_TYPE_I,
++	IMX_VPU_PIC_TYPE_P,
++	IMX_VPU_PIC_TYPE_B,
++	IMX_VPU_PIC_TYPE_IDR,
++	IMX_VPU_PIC_TYPE_BI,
++	IMX_VPU_PIC_TYPE_SKIP
++}
++ImxVpuPicType;
++
++
++typedef enum
++{
++	IMX_VPU_CODEC_FORMAT_MPEG2 = 0, /* includes MPEG1 */
++	IMX_VPU_CODEC_FORMAT_MPEG4,
++	IMX_VPU_CODEC_FORMAT_H263,
++	IMX_VPU_CODEC_FORMAT_H264,
++	IMX_VPU_CODEC_FORMAT_H264_MVC,
++	IMX_VPU_CODEC_FORMAT_WMV3,
++	IMX_VPU_CODEC_FORMAT_WVC1,
++	IMX_VPU_CODEC_FORMAT_MJPEG,
++	IMX_VPU_CODEC_FORMAT_VP8
++	/* XXX others will be added when the firmware supports them */
++}
++ImxVpuCodecFormats;
++
++
++typedef enum
++{
++	IMX_VPU_MJPEG_FORMAT_YUV420            = 0, /* also known as I420 */
++	IMX_VPU_MJPEG_FORMAT_YUV422_HORIZONTAL = 1,
++	IMX_VPU_MJPEG_FORMAT_YUV422_VERTICAL   = 2, /* 4:2:2 vertical, actually 2:2:4 (according to the VPU docs) */
++	IMX_VPU_MJPEG_FORMAT_YUV444            = 3,
++	IMX_VPU_MJPEG_FORMAT_YUV400            = 4  /* 8-bit grayscale */
++}
++ImxVpuMJpegFormat;
++
++
++typedef struct
++{
++	/* Stride of the Y and of the Cb&Cr components.
++	 * Specified in bytes. */
++	unsigned int y_stride, cbcr_stride;
++
++	/* The virtual address of is actually not used by the VPU,
++	 * and only of interest to the user. It can be NULL for cases
++	 * where only a physical address exists or where a virtual
++	 * address is not necessary. */
++	void *virtual_address;
++	/* The physical address must always be valid. */
++	imx_vpu_phys_addr_t physical_address;
++
++	/* These define the starting offsets of each component
++	 * relative to the start of the buffer. Specified in bytes.
++	 *
++	 * mvcol is the "co-located motion vector" data. */
++	size_t
++		y_offset,
++		cb_offset,
++		cr_offset,
++		mvcol_offset;
++
++	/* User-defined pointer. The library does not touch this value.
++	 * This can be used to identify framebuffers for example.
++	 * Not to be confused with the user_data fields of ImxVpuEncodedFrame
++	 * and ImxVpuDecodedFrame. */
++	void *user_data;
++
++	/* Internal, implementation-defined data. Do not modify. */
++	void *internal;
++}
++ImxVpuFramebuffer;
++
++
++typedef struct
++{
++	/* Virtual and physical addresses pointing to the encoded data.
++	 * The virtual address must always be valid. The physical address
++	 * is only required for encoding. */
++	void *virtual_address;
++	imx_vpu_phys_addr_t physical_address;
++
++	/* Size of the encoded data, in bytes. */
++	unsigned int data_size;
++
++	/* Pointer to out-of-band codec/header data. If such data exists,
++	 * specify the pointer to the memory block containing the data,
++	 * as well as the size of the memory block (in bytes).
++	 * Set pointer and size for every encoded frame when decoding.
++	 * If no such data exists or is required, set pointer to NULL and
++	 * size to 0. */
++	void *codec_data;
++	unsigned int codec_data_size;
++
++	/* User-defined pointer. The library does not touch this value.
++	 * This pointer and the one from the corresponding
++	 * decoded frame will have the same value. The library will
++	 * pass then through.
++	 * It can be used to identify frames and associated corresponding
++	 * en- and decoded frames for example. */
++	void *user_data;
++}
++ImxVpuEncodedFrame;
++
++
++typedef struct
++{
++	/* When decoding: pointer to the framebuffer containing the decoded frame.
++	 * When encoding: pointer to the framebuffer containing the frame to be encoded.
++	 * Must always be valid. */
++	ImxVpuFramebuffer *framebuffer;
++
++	/* picture type (I, P, B, ..) */
++	ImxVpuPicType pic_type;
++
++	/* User-defined pointer. The library does not touch this value.
++	 * This pointer and the one from the corresponding
++	 * encoded frame will have the same value. The library will
++	 * pass then through.
++	 * It can be used to identify frames and associated corresponding
++	 * en- and decoded frames for example. */
++	void *user_data;
++}
++ImxVpuDecodedFrame;
++
++
++/* This structure is only used by the allocate/deallocate calls below,
++ * which in turn are convenience calls that wrap VPU-provided DMA buffer
++ * allocators. If a different DMA buffer allocator is used (like ION),
++ * this structure does not have to be used. */
++typedef struct
++{
++	size_t size;
++	unsigned int alignment;
++
++	void*               virtual_address;
++	imx_vpu_phys_addr_t physical_address;
++	imx_vpu_cpu_addr_t  cpu_address;
++
++	void*               virtual_address_unaligned;
++	imx_vpu_phys_addr_t physical_address_unaligned;
++}
++ImxVpuMemBlock;
++
++
++
++
++/************************************************/
++/******* DECODER STRUCTURES AND FUNCTIONS *******/
++/************************************************/
++
++
++typedef struct _ImxVpuDecoder ImxVpuDecoder;
++
++
++typedef enum
++{
++	IMX_VPU_DEC_RETURN_CODE_OK = 0,
++	IMX_VPU_DEC_RETURN_CODE_ERROR,
++	IMX_VPU_DEC_RETURN_CODE_INVALID_PARAMS,
++	IMX_VPU_DEC_RETURN_CODE_INVALID_HANDLE,
++	IMX_VPU_DEC_RETURN_CODE_INVALID_FRAMEBUFFER,
++	IMX_VPU_DEC_RETURN_CODE_INSUFFICIENT_FRAMEBUFFERS,
++	IMX_VPU_DEC_RETURN_CODE_INVALID_STRIDE,
++	IMX_VPU_DEC_RETURN_CODE_WRONG_CALL_SEQUENCE,
++	IMX_VPU_DEC_RETURN_CODE_TIMEOUT
++}
++ImxVpuDecReturnCodes;
++
++
++typedef enum
++{
++	IMX_VPU_DEC_OUTPUT_CODE_INPUT_USED               = (1UL << 0),
++	IMX_VPU_DEC_OUTPUT_CODE_EOS                      = (1UL << 1),
++	IMX_VPU_DEC_OUTPUT_CODE_FRAME_OUTPUT             = (1UL << 2),
++	IMX_VPU_DEC_OUTPUT_CODE_NO_FRAME_OUTPUT          = (1UL << 3),
++	IMX_VPU_DEC_OUTPUT_CODE_DROPPED                  = (1UL << 4),
++	IMX_VPU_DEC_OUTPUT_CODE_NOT_ENOUGH_OUTPUT_FRAMES = (1UL << 5),
++	IMX_VPU_DEC_OUTPUT_CODE_NOT_ENOUGH_INPUT_DATA    = (1UL << 6),
++	IMX_VPU_DEC_OUTPUT_CODE_INITIAL_INFO_AVAILABLE   = (1UL << 7),
++	IMX_VPU_DEC_OUTPUT_CODE_RESOLUTION_CHANGED       = (1UL << 8),
++	IMX_VPU_DEC_OUTPUT_CODE_DECODE_ONLY              = (1UL << 9),
++	IMX_VPU_DEC_OUTPUT_CODE_INTERNAL_RESET           = (1UL << 10)
++}
++ImxVpuDecOutputCodes;
++
++
++typedef struct
++{
++	ImxVpuCodecFormats codec_format;
++
++	int enable_frame_reordering;
++	unsigned int frame_width, frame_height;
++}
++ImxVpuDecOpenParams;
++
++
++typedef struct
++{
++	/* Width of height of frames, in pixels. */
++	unsigned int frame_width, frame_height;
++	/* Frame rate ratio. */
++	unsigned int frame_rate_numerator, frame_rate_denominator;
++
++	/* Caller must register at least this many framebuffers
++	 * with the decoder. */
++	unsigned int min_num_required_framebuffers;
++
++	/* Pixel format of the decoded frames. For codec formats
++	 * other than motion JPEG, this value will always be
++	 * IMX_VPU_MJPEG_FORMAT_YUV420. */
++	ImxVpuMJpegFormat mjpeg_source_format;
++
++	/* 0 = no interlacing, 1 = interlacing. */
++	int interlacing;
++
++	/* Fixed point, shifted by 16.
++	 * Example: 1.0 -> floor(1.0*(1<<16)) = 0x10000
++	 *          0.5 -> floor(0.5*(1<<16)) = 0x8000 */
++	unsigned int width_height_ratio;
++
++	/* Physical framebuffer addresses must be aligned to this value. */
++	unsigned int framebuffer_alignment;
++}
++ImxVpuDecInitialInfo;
++
++
++/* Returns a human-readable description of the error code.
++ * Useful for logging. */
++char const * imx_vpu_dec_error_string(ImxVpuDecReturnCodes code);
++
++/* These two functions load/unload the decoder. Thanks to an internal reference
++ * counter, it is safe to call these functions more than once. However, the
++ * number of unload() calls must match the number of load() calls.
++ *
++ * The decoder must be loaded before doing anything else with the decoder.
++ * Similarly, the decoder must not be unloaded before all decoder activities
++ * have been finished. This includes opening/decoding decoder instances. */
++ImxVpuDecReturnCodes imx_vpu_dec_load(void);
++ImxVpuDecReturnCodes imx_vpu_dec_unload(void);
++
++/* Convenience allocator for allocating DMA buffers. */
++ImxVpuDecReturnCodes imx_vpu_dec_allocate_memory(ImxVpuMemBlock *mem_block);
++ImxVpuDecReturnCodes imx_vpu_dec_deallocate_memory(ImxVpuMemBlock *mem_block);
++
++/* Called before imx_vpu_dec_open(), it returns the alignment and size for the
++ * physical memory block necessary for the decoder's bitstream buffer. The user
++ * must allocate a DMA buffer of at least this size, and its physical address
++ * must be aligned according to the alignment value. */
++void imx_vpu_dec_get_bitstream_buffer_info(unsigned int *alignment, size_t *size);
++
++ImxVpuDecReturnCodes imx_vpu_dec_open(ImxVpuDecoder **decoder, ImxVpuDecOpenParams const *open_params, void *bitstream_buffer_virtual_address, imx_vpu_phys_addr_t bitstream_buffer_physical_address);
++ImxVpuDecReturnCodes imx_vpu_dec_close(ImxVpuDecoder *decoder);
++
++ImxVpuDecReturnCodes imx_vpu_dec_set_drain_mode(ImxVpuDecoder *decoder, int enabled);
++ImxVpuDecReturnCodes imx_vpu_dec_flush(ImxVpuDecoder *decoder);
++
++ImxVpuDecReturnCodes imx_vpu_dec_register_framebuffers(ImxVpuDecoder *decoder, ImxVpuFramebuffer *framebuffers, unsigned int num_framebuffers);
++void imx_vpu_dec_calc_framebuffer_sizes(ImxVpuDecInitialInfo const *initial_info, unsigned int *frame_width, unsigned int *frame_height, unsigned int *y_stride, unsigned int *cbcr_stride, unsigned int *y_size, unsigned int *cbcr_size, unsigned int *mvcol_size, unsigned int *total_size);
++
++ImxVpuDecReturnCodes imx_vpu_dec_get_initial_info(ImxVpuDecoder *decoder, ImxVpuDecInitialInfo *info);
++
++ImxVpuDecReturnCodes imx_vpu_dec_decode_frame(ImxVpuDecoder *decoder, ImxVpuEncodedFrame const *encoded_frame, unsigned int *output_code);
++ImxVpuDecReturnCodes imx_vpu_dec_get_decoded_frame(ImxVpuDecoder *decoder, ImxVpuDecodedFrame *decoded_frame);
++void* imx_vpu_dec_get_dropped_frame_user_data(ImxVpuDecoder *decoder);
++int imx_vpu_dec_get_num_free_framebuffers(ImxVpuDecoder *decoder);
++int imx_vpu_dec_get_min_num_free_required(ImxVpuDecoder *decoder);
++ImxVpuDecReturnCodes imx_vpu_dec_mark_framebuffer_as_displayed(ImxVpuDecoder *decoder, ImxVpuFramebuffer const *framebuffer);
++
++
++
++
++#ifdef __cplusplus
++}
++#endif
++
++
++#endif
++
+diff --git a/chromium/media/gpu/imx/imxvpucodec_platform.h b/chromium/media/gpu/imx/imxvpucodec_platform.h
+new file mode 100644
+index 0000000000..83fe05a54c
+--- /dev/null
++++ b/chromium/media/gpu/imx/imxvpucodec_platform.h
+@@ -0,0 +1,35 @@
++/*
++ * imxvpucodec - i.MX6 VPU hardware codec engine API library
++ * Copyright (c) 2014 Carlos Rafael Giani
++ * 
++ * This software is provided 'as-is', without any express or implied
++ * warranty. In no event will the authors be held liable for any
++ * damages arising from the use of this software.
++ *
++ * Permission is granted to anyone to use this software for any purpose,
++ * including commercial applications, and to alter it and redistribute
++ * it freely, subject to the following restrictions:
++ *
++ * 1. The origin of this software must not be misrepresented; you must
++ *    not claim that you wrote the original software. If you use this
++ *    software in a product, an acknowledgment in the product
++ *    documentation would be appreciated but is not required.
++ *
++ * 2. Altered source versions must be plainly marked as such, and must
++ *    not be misrepresented as being the original software.
++ *
++ * 3. This notice may not be removed or altered from any source distribution.
++ */
++
++
++#ifndef IMXVPUCODEC_PLATFORM_H
++#define IMXVPUCODEC_PLATFORM_H
++
++
++#define IMXVPUCODEC_UNUSED_PARAM(x) ((void)(x))
++
++
++#include "imxvpucodec_platform_chromium.h"
++
++
++#endif
+diff --git a/chromium/media/gpu/imx/imxvpucodec_platform_chromium.cc b/chromium/media/gpu/imx/imxvpucodec_platform_chromium.cc
+new file mode 100644
+index 0000000000..b5e861d60c
+--- /dev/null
++++ b/chromium/media/gpu/imx/imxvpucodec_platform_chromium.cc
+@@ -0,0 +1,40 @@
++#include "imxvpucodec_platform_chromium.h"
++#include "base/logging.h"
++
++#include <stdio.h>
++#include <stdarg.h>
++
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++
++void imx_vpu_log(ImxVpuLogLevel level, char const *file, int const line, char const *fn, const char * format, ...)
++{
++	va_list args;
++	char buf[500];
++
++	va_start(args, format);
++	vsnprintf(buf, sizeof(buf), format, args);
++	va_end(args);
++
++	#define DO_LOG(severity) do { LOG(severity) << file << ":" << line << " (" << fn << ")  " << buf; } while(0)
++	#define DO_VLOG(severity) do { VLOG(severity) << file << ":" << line << " (" << fn << ")  " << buf; } while(0)
++
++	switch (level)
++	{
++		case IMX_VPU_LOG_LEVEL_ERROR: DO_LOG(ERROR); break;
++		case IMX_VPU_LOG_LEVEL_WARNING: DO_LOG(WARNING); break;
++		case IMX_VPU_LOG_LEVEL_INFO: DO_LOG(INFO); break;
++		case IMX_VPU_LOG_LEVEL_DEBUG: DO_VLOG(0); break;
++		case IMX_VPU_LOG_LEVEL_LOG: DO_VLOG(1); break;
++		case IMX_VPU_LOG_LEVEL_TRACE: DO_VLOG(2); break;
++		default: break;
++	}
++}
++
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/chromium/media/gpu/imx/imxvpucodec_platform_chromium.h b/chromium/media/gpu/imx/imxvpucodec_platform_chromium.h
+new file mode 100644
+index 0000000000..8803d3a8d2
+--- /dev/null
++++ b/chromium/media/gpu/imx/imxvpucodec_platform_chromium.h
+@@ -0,0 +1,71 @@
++/*
++ * imxvpucodec - i.MX6 VPU hardware codec engine API library
++ * Copyright (c) 2014 Carlos Rafael Giani
++ * 
++ * This software is provided 'as-is', without any express or implied
++ * warranty. In no event will the authors be held liable for any
++ * damages arising from the use of this software.
++ *
++ * Permission is granted to anyone to use this software for any purpose,
++ * including commercial applications, and to alter it and redistribute
++ * it freely, subject to the following restrictions:
++ *
++ * 1. The origin of this software must not be misrepresented; you must
++ *    not claim that you wrote the original software. If you use this
++ *    software in a product, an acknowledgment in the product
++ *    documentation would be appreciated but is not required.
++ *
++ * 2. Altered source versions must be plainly marked as such, and must
++ *    not be misrepresented as being the original software.
++ *
++ * 3. This notice may not be removed or altered from any source distribution.
++ */
++
++
++#ifndef IMXVPUCODEC_PLATFORM_CHROMIUM_H
++#define IMXVPUCODEC_PLATFORM_CHROMIUM_H
++
++
++#include <stdlib.h>
++
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++
++#define IMX_VPU_ALLOC(SIZE) malloc(SIZE)
++#define IMX_VPU_FREE(PTR, SIZE) free(PTR)
++
++
++#define IMX_VPU_ERROR(...)   imx_vpu_log(IMX_VPU_LOG_LEVEL_ERROR,   __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
++#define IMX_VPU_WARNING(...) imx_vpu_log(IMX_VPU_LOG_LEVEL_WARNING, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
++#define IMX_VPU_INFO(...)    imx_vpu_log(IMX_VPU_LOG_LEVEL_INFO,    __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
++#define IMX_VPU_DEBUG(...)   imx_vpu_log(IMX_VPU_LOG_LEVEL_DEBUG,   __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
++#define IMX_VPU_LOG(...)     imx_vpu_log(IMX_VPU_LOG_LEVEL_LOG,     __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
++#define IMX_VPU_TRACE(...)   imx_vpu_log(IMX_VPU_LOG_LEVEL_TRACE,   __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
++
++
++typedef enum
++{
++	IMX_VPU_LOG_LEVEL_ERROR = 0,
++	IMX_VPU_LOG_LEVEL_WARNING,
++	IMX_VPU_LOG_LEVEL_INFO,
++	IMX_VPU_LOG_LEVEL_DEBUG,
++	IMX_VPU_LOG_LEVEL_LOG,
++	IMX_VPU_LOG_LEVEL_TRACE
++}
++ImxVpuLogLevel;
++
++
++void imx_vpu_log(ImxVpuLogLevel level, char const *file, int const line, char const *fn, const char * format, ...);
++
++
++#ifdef __cplusplus
++}
++#endif
++
++
++#endif
++
++
+diff --git a/chromium/media/gpu/ipc/service/gpu_video_decode_accelerator.cc b/chromium/media/gpu/ipc/service/gpu_video_decode_accelerator.cc
+index e9a76ceed4..9900eb3dcb 100644
+--- a/chromium/media/gpu/ipc/service/gpu_video_decode_accelerator.cc
++++ b/chromium/media/gpu/ipc/service/gpu_video_decode_accelerator.cc
+@@ -370,6 +370,9 @@ bool GpuVideoDecodeAccelerator::Initialize(
+                << GetProfileName(config.profile)
+                << (config.is_encrypted() ? " with encryption" : "");
+     return false;
++  } else {
++    VLOG(3) << "HW video decode created for profile "
++            << GetProfileName(config.profile);
+   }
+ 
+   // Attempt to set up performing decoding tasks on IO thread, if supported by
+diff --git a/chromium/media/remoting/renderer_controller.cc b/chromium/media/remoting/renderer_controller.cc
+index 384b2dcd1c..b9ce1df303 100644
+--- a/chromium/media/remoting/renderer_controller.cc
++++ b/chromium/media/remoting/renderer_controller.cc
+@@ -313,7 +313,7 @@ bool RendererController::IsVideoCodecSupported() const {
+       return session_->HasVideoCapability(
+           mojom::RemotingSinkVideoCapability::CODEC_HEVC);
+     default:
+-      VLOG(2) << "Remoting does not support video codec: "
++      LOG(ERROR) << "Remoting does not support video codec: "
+               << pipeline_metadata_.video_decoder_config.codec();
+       return false;
+   }
