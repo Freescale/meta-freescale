@@ -23,6 +23,9 @@ EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8
 PACKAGECONFIG ?= ""
 PACKAGECONFIG_imxvpu = "vpu"
 
+# We need to ensure we don't have '-src' package overrided
+PACKAGE_DEBUG_SPLIT_STYLE = 'debug-without-src'
+
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 
 do_install_append() {
