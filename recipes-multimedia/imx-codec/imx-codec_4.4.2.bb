@@ -29,11 +29,6 @@ PACKAGE_DEBUG_SPLIT_STYLE = 'debug-without-src'
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 
 do_install_append() {
-    # FIXME: This link points to nowhere
-    if [ -e ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so ]; then
-        rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
-    fi
-
     # LTIB move the files around or gst-fsl-plugin won't find them
     for p in $(find ${D}${libdir}/imx-mm -mindepth 2 -maxdepth 2 -not -type d); do
             mv $p ${D}${libdir}
