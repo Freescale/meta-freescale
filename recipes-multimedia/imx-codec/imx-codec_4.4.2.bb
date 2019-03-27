@@ -35,6 +35,8 @@ do_install_append() {
     done
     rmdir ${D}${libdir}/imx-mm/video-codec
 
+    # Fixup ownership of files
+    chown -R root:root ${D}
 }
 
 python __set_insane_skip() {
