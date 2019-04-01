@@ -21,7 +21,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/openssl;n
            file://0001-aes-asm-aes-armv4-bsaes-armv7-.pl-make-it-work-with-.patch \
           "
 
-SRCREV = "c2300d1fdb30a439f555b07f228d3bce498238d5"
+SRCREV = "472c9c380669eb7a26819a52598632f257b3e72b"
 
 PROVIDES = "openssl"
 
