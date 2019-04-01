@@ -43,7 +43,7 @@ EXTRA_OECONF = " \
 "
 
 EXTRA_OECONF_append_class-native = " --disable-vlib"
-
+CFLAGS += "-DCLIB_LOG2_CACHE_LINE_BYTES=6"
 
 include vpp-pkgs.inc
 
