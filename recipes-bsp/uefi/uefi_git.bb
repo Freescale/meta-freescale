@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://NXP-Binary-EULA;md5=343ec8f06efc37467a6de53686fa6315"
 inherit deploy fsl-eula-unpack
 
 SRC_URI = "git://github.com/NXP/qoriq-uefi-binary.git;fsl-eula=true;nobranch=1"
-SRCREV= "5b259f75decbc478bcab0612d79a58562bef1838"
+SRCREV= "de8834df31646c1dc5a3fe1c1bf09582e0b2781c"
 
 S = "${WORKDIR}/git"
 
