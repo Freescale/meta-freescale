@@ -7,9 +7,9 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nobranch=1 \
-    file://0001-fix-gcc8-build-error.patch \
+    file://0001-Makfefile-add-cflags.patch \
 "
-SRCREV = "7e0006ca696756b867abbeb7a4ed97ffe9caf725"
+SRCREV = "7e52442b136c439c142c4859a70ce92208c481a9"
 
 S = "${WORKDIR}/git"
 
