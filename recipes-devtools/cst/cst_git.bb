@@ -11,7 +11,7 @@ inherit kernel-arch
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cst;nobranch=1 \
 "
-SRCREV = "f599f6126ae1a382a581dcd75e9ad2e34c79a183"
+SRCREV = "2737b8bca4432c3ef21ac675e949cb53d444a369"
 
 S = "${WORKDIR}/git"
 
