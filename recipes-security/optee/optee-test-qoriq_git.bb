@@ -9,11 +9,10 @@ DEPENDS = "optee-client-qoriq optee-os-qoriq python-pycrypto-native"
 inherit pythonnative
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_test;nobranch=1 \
-    file://0001-fix-build-failure-with-GCC-8.patch \
 "
 S = "${WORKDIR}/git"
 
-SRCREV = "83c87d9b368c33545688c7aad27432ff9a22868f"
+SRCREV = "669058459e4a544be12f37dab103ee4c2b32e31d"
 
 OPTEE_CLIENT_EXPORT = "${STAGING_DIR_HOST}${prefix}"
 TEEC_EXPORT         = "${STAGING_DIR_HOST}${prefix}"
