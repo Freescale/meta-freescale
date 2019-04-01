@@ -5,14 +5,15 @@ LIC_FILES_CHKSUM = "file://license.rst;md5=e927e02bca647e14efd87e9e914b2443"
 
 inherit deploy
 
-DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native mbedtls rcw cst-native uefi"
+DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native mbedtls rcw cst-native"
+DEPENDS_append_lx2160a += "ddr-phy"
 DEPENDS_append_qoriq-arm64 += "optee-os-qoriq"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 
 S = "${WORKDIR}/git"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/atf;nobranch=1"
-SRCREV = "4971f394cf32e33e3a9ca23a4faa49d606af31c5"
+SRCREV = "7e34aebe658c7c3439d2d68b0ce6b9776e8e6996"
 
 SRC_URI += "file://0001-fix-fiptool-build-error.patch \
     file://0001-Makefile-add-CC-gcc.patch \
@@ -80,6 +81,9 @@ do_compile() {
         bl32="${DEPLOY_DIR_IMAGE}/optee/tee_${MACHINE}.bin" 
         bl32opt="BL32=${bl32}"
         spdopt="SPD=opteed" 
+    fi
+    if [ -f ${DEPLOY_DIR_IMAGE}/ddr-phy/ddr4_pmu_train_dmem.bin ]; then
+        cp ${DEPLOY_DIR_IMAGE}/ddr-phy/*.bin ${S}/
     fi
 
     for d in ${BOOTTYPE}; do
