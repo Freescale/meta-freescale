@@ -1,6 +1,6 @@
 DESCRIPTION = "OVS DPDK"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://COPYING;md5=17b2c9d4c70853a09c0e143137754b35"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=1ce5d23a6429dff345518758f13aaeab"
 
 DEPENDS = "dpdk python-six-native coreutils-native"
 RDEPENDS_${PN} = "bash libcrypto libssl python"
@@ -8,9 +8,8 @@ RDEPENDS_${PN} = "bash libcrypto libssl python"
 inherit pythonnative
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/ovs-dpdk;nobranch=1 \
-    file://0001-automake-remove-static-key-word.patch \
 "
-SRCREV = "24eec4133f03b0a5a8f903577bc87603577150c0"
+SRCREV = "4d82df36993ca502d33afa305fbd2a41a950106d"
 
 S = "${WORKDIR}/git"
 
@@ -47,4 +46,4 @@ do_install() {
 ALLOW_EMPTY_${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(ls2080ardb|ls2084ardb|ls2088a|ls1043a|ls1046a|ls1088a)"
+COMPATIBLE_MACHINE = "(qoriq-arm64)"
