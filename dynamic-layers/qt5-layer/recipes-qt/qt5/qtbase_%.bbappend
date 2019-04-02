@@ -5,7 +5,7 @@
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI_append_imxgpu2d = "file://0014-Add-IMX-GPU-support.patch"
+SRC_URI_append_imxgpu2d = " file://0014-Add-IMX-GPU-support.patch"
 SRC_URI_append_imxgpu3d = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', \
                                                    'file://0015-Add-eglfs-to-IMX-GPU.patch \
