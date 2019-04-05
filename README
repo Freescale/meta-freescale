@@ -13,13 +13,17 @@ revision: HEAD
 Contributing
 ------------
 
-To contribute to this layer you should submit the patches for review to the
-mailing list (meta-freescale@yoctoproject.org).
+Please submit any patches against the `meta-freescale` layer by using the
+GitHub pull-request feature.  Fork the repo, make a branch, do the
+work, rebase from upstream, create the pull request.
 
-Please refer to:
+For some useful guidelines to be followed when submitting patches,
+please refer to:
 http://openembedded.org/wiki/Commit_Patch_Message_Guidelines
 
-for some useful guidelines to be followed when submitting patches.
+Pull requests will be discussed within the GitHub pull-request
+infrastructure. If you want to get informed on new PRs and the
+follow-up discussions please use the GitHub's notification system.
 
 Mailing list:
 
@@ -28,11 +32,3 @@ Mailing list:
 Source code:
 
     https://github.com/Freescale/meta-freescale
-
-When creating patches, please use something like:
-
-    git format-patch -s origin
-
-When sending patches, please use something like:
-
-    git send-email --to meta-freescale@yoctoproject.org <generated patch>
