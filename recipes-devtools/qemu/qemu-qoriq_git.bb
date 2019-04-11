@@ -5,6 +5,7 @@ require recipes-devtools/qemu/qemu.inc
 inherit ptest
 
 RDEPENDS_${PN}-ptest = "bash make"
+DEPENDS = "glib-2.0 zlib pixman dtc"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
                     file://COPYING.LIB;endline=24;md5=c04def7ae38850e7d3ef548588159913"
@@ -12,10 +13,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/qemu;nobranch=1 \
            file://powerpc_rom.bin \
            file://run-ptest \
-           file://memfd.patch \
            "
 
-SRCREV = "6c297a7ddd355d499ddd31353a763d57a092f851"
+SRCREV = "798304eeb99ec1d2f8910275a3505f964a73c651"
 
 S = "${WORKDIR}/git"
 
