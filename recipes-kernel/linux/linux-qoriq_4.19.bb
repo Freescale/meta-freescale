@@ -32,7 +32,7 @@ DELTA_KERNEL_DEFCONFIG_prepend_qoriq-arm64 = "lsdk.config "
 DELTA_KERNEL_DEFCONFIG_prepend_fsl-lsch2-32b = "multi_v7_lpae.config multi_v8.config lsdk.config "
 DELTA_KERNEL_DEFCONFIG_prepend_ls102xa = "multi_v7_lpae.config lsdk.config "
 
-do_merge_delta_config[depends] += "virtual/${TARGET_PREFIX}gcc:do_populate_sysroot"
+do_merge_delta_config[depends] += "virtual/${TARGET_PREFIX}gcc:do_populate_sysroot bison-native:do_populate_sysroot"
 do_merge_delta_config[dirs] = "${B}"
 
 do_merge_delta_config() {
