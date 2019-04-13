@@ -12,7 +12,7 @@
 # | |         |              |
 # 0 1kiB    4MiB          16MiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
 #
-part u-boot --source rawcopy --sourceparams="file=u-boot.imx" --ondisk mmcblk --no-table --align 1
+part u-boot --source rawcopy --sourceparams="file=${UBOOT_BINARY}" --ondisk mmcblk --no-table --align 1
 part /boot --source bootimg-partition --ondisk mmcblk --fstype=vfat --label boot --active --align 4096 --size 16
 part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096
 

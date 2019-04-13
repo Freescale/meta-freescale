@@ -14,6 +14,7 @@ PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
 
+UBOOT_BINARY ?= "u-boot.imx"
 UBOOT_MAKE_TARGET ?= "u-boot.imx"
 UBOOT_MAKE_TARGET_mxs ?= "u-boot.sb"
 UBOOT_MAKE_TARGET_mx8 ?= ""
@@ -301,7 +302,7 @@ WKS_FILE_DEPENDS ?= " \
 
 WKS_FILE_DEPENDS_mx8 += "imx-boot"
 
-SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks"
+SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mx8 ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
 
@@ -313,11 +314,11 @@ WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 UBOOT_MAKE_TARGET_use-fsl-bsp_mx6 = "u-boot.imx"
 UBOOT_SUFFIX_use-fsl-bsp_mx6 = "imx"
 SPL_BINARY_use-fsl-bsp_mx6 = ""
-WKS_FILE_use-fsl-bsp_mx6 = "imx-uboot-bootpart.wks"
+WKS_FILE_use-fsl-bsp_mx6 = "imx-uboot-bootpart.wks.in"
 UBOOT_MAKE_TARGET_use-fsl-bsp_mx7 = "u-boot.imx"
 UBOOT_SUFFIX_use-fsl-bsp_mx7 = "imx"
 SPL_BINARY_use-fsl-bsp_mx7 = ""
-WKS_FILE_use-fsl-bsp_mx7 = "imx-uboot-bootpart.wks"
+WKS_FILE_use-fsl-bsp_mx7 = "imx-uboot-bootpart.wks.in"
 
 SERIAL_CONSOLES = "115200;ttymxc0"
 SERIAL_CONSOLES_mxs = "115200;ttyAMA0"
