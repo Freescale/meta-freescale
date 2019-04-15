@@ -14,8 +14,8 @@ PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
 
-UBOOT_BINARY ?= "u-boot.imx"
-UBOOT_MAKE_TARGET ?= "u-boot.imx"
+UBOOT_BINARY ?= "u-boot.${UBOOT_SUFFIX}"
+UBOOT_MAKE_TARGET ?= "u-boot.${UBOOT_SUFFIX}"
 UBOOT_MAKE_TARGET_mxs ?= "u-boot.sb"
 UBOOT_MAKE_TARGET_mx8 ?= ""
 
