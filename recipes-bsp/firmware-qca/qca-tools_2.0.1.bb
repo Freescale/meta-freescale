@@ -15,3 +15,5 @@ do_install() {
     install -d ${D}${sbindir}/fcc_tools
     cp -r ${S}/fcc_tools/${FCC_TOOLS_FOLDER} ${D}${sbindir}/fcc_tools
 }
+
+COMPATIBLE_HOST = '(aarch64|arm).*-linux'
