@@ -126,6 +126,7 @@ MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER_append_imx = " \
     alsa-lib \
+    gstreamer1.0 \
     weston \
 "
 MACHINE_SOCARCH_FILTER_append_imxvpu = " \
@@ -141,7 +142,6 @@ MACHINE_SOCARCH_FILTER_append_imxgpu = " \
     virtual/libopenvg \
     libdrm \
     cairo \
-    gstreamer1.0 \
     libgal-imx \
     pango \
 "
