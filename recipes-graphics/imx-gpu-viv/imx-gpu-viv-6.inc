@@ -110,7 +110,7 @@ python __anonymous() {
     # they don't get Debian-renamed (which would remove the -imx suffix).
     for p in (("libegl", "libegl1"), ("libgl", "libgl1"),
               ("libgles1", "libglesv1-cm1"), ("libgles2", "libglesv2-2"),
-              ("libgles3",) , ("libvulkan",)):
+              ("libgles3",) , ("libvulkan",), ("libgbm",)):
         fullp = p[0] + "-imx"
         pkgs = " ".join(p)
         d.setVar("DEBIAN_NOAUTONAME_" + fullp, "1")
