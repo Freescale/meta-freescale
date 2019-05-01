@@ -62,7 +62,7 @@ IMX_PACKAGES_GBM     = ""
 IMX_PACKAGES_GBM_mx8 = "libgbm-imx libgbm-imx-dev"
 PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libgl-imx libgl-imx-dev \
-	libgles-imx libgles-imx-dev \
+	libgles1-imx libgles1-imx-dev \
 	libgles2-imx libgles2-imx-dev \
 	libgles3-imx-dev \
 	libglslc-imx libglslc-imx-dev \
@@ -112,7 +112,7 @@ python __anonymous() {
               ("libgles1", "libglesv1-cm1"), ("libgles2", "libglesv2-2"),
               ("libgles3",) , ("libvulkan",), ("libgbm",)):
         fullp = p[0] + "-imx"
-        pkgs = " ".join(p)
+        pkgs = "".join(' %s' % i for i in p)
         d.setVar("DEBIAN_NOAUTONAME_" + fullp, "1")
         d.appendVar("RREPLACES_" + fullp, pkgs)
         d.appendVar("RPROVIDES_" + fullp, pkgs)
@@ -318,9 +318,11 @@ FILES_libgl-imx = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL"
 
 # libEGL needs to open libGLESv1.so
-INSANE_SKIP_libgles-imx += "dev-so"
-FILES_libgles-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
-FILES_libgles-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
+INSANE_SKIP_libgles1-imx += "dev-so"
+FILES_libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
+FILES_libgles1-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
+RPROVIDES_libgles1-imx = "libgles-imx"
+RPROVIDES_libgles1-imx-dev = "libgles-imx-dev"
 
 # libEGL needs to open libGLESv2.so
 INSANE_SKIP_libgles2-imx += "dev-so"
