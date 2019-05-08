@@ -1,10 +1,10 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
-# Copyright 2017-2018 NXP
+# Copyright 2017-2019 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 require recipes-graphics/imx-gpu-viv/imx-gpu-viv-6.inc
-SRC_URI[md5sum] = "ef9e0b5fcb140c72b63dcf8b8da0be6b"
-SRC_URI[sha256sum] = "7c31d1c7b45309ff7ca667b4d69b7c3b5fa320dcdcd90f2eb895f66f826f422b"
+SRC_URI[md5sum] = "83c40f63358dd3bd9bbc1cd7521bf8fe"
+SRC_URI[sha256sum] = "5abfc3b24c1f9d02970064898fb30da705b67bc7e967dbfbf0525c1cc60f2491"
 
 PACKAGE_FP_TYPE = "hardfp"
 
