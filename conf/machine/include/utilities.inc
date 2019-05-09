@@ -13,4 +13,4 @@ def make_dtb_boot_files(d):
             #     destination: bcm2708-rpi-b.dtb
             return os.path.basename(dtb)
 
-    return ' '.join([transform(dtb) for dtb in alldtbs.split(' ') if dtb])
+    return ' '.join([transform(dtb) for dtb in alldtbs.split() if dtb])
