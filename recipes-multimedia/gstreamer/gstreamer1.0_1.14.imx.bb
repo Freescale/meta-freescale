@@ -19,7 +19,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
 
 # Use i.MX fork of GST for customizations
 GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
+SRCBRANCH = "MM_04.04.05_1902_L4.14.98_GA"
 
 SRC_URI = " \
     ${GST1.0_SRC};branch=${SRCBRANCH} \
@@ -27,7 +27,7 @@ SRC_URI = " \
     file://gtk-doc-tweaks.patch \
     file://0001-gst-gstpluginloader.c-when-env-var-is-set-do-not-fal.patch \
 "
-SRCREV = "f4e127a5e9a1eb977e023532d6636d939c8ccbc8"
+SRCREV = "d42548da09724ad8cc1aa4f1944607920be2f4c0"
 
 DEFAULT_PREFERENCE = "-1"
 
