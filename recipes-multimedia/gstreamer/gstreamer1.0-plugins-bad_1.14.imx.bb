@@ -17,17 +17,15 @@ EXTRA_OECONF_append = " --disable-introspection"
 
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.04.02_1808_L4.9.123_MX8MM_GA"
+SRCBRANCH = "MM_04.04.05_1902_L4.14.98_GA"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
     file://configure-allow-to-disable-libssh2.patch \
     file://0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch \
-    file://0001-opencv-fix-build-for-opencv-3-4-2.patch \
-    file://0002-opencv-Fix-build-with-opencv-3.4.5.patch \
 "
 
-SRCREV = "03e6ef6a371a0578a9629abde8e9c83e66f34b11"
+SRCREV = "0191521ba226904e4b2f84c38e5f6ae75169a18a"
 
 DEFAULT_PREFERENCE = "-1"
 
