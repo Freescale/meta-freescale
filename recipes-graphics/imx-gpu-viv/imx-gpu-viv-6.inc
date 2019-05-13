@@ -307,7 +307,7 @@ FILES_libgbm-imx_mx8           = "${libdir}/libgbm${SOLIBS} ${libdir}/gbm_viv${S
 FILES_libgbm-imx-dev_mx8       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h ${libdir}/libgbm${SOLIBSDEV}"
 RDEPENDS_libgbm-imx_append_mx8 = " libdrm"
 
-FILES_libvulkan-imx = "${libdir}/vulkan/libvulkan_VSI${SOLIBS}"
+FILES_libvulkan-imx = "${libdir}/vulkan/libvulkan_VSI${SOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
 FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/vulkan/libvulkan_VSI${SOLIBSDEV}"
 INSANE_SKIP_libvulkan-imx += "dev-deps dev-so"
 
@@ -340,6 +340,7 @@ FILES_libglslc-imx-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
 
 FILES_libopencl-imx = "${libdir}/libOpenCL${SOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \
+                       ${libdir}/libLLVM_viv${SOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
 FILES_libopencl-imx-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 RDEPENDS_libopencl-imx= "libclc-imx"
