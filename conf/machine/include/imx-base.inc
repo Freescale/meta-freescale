@@ -250,6 +250,7 @@ PREFERRED_PROVIDER_virtual/libgl_imxgpu3d    ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles1_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles2_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d            ?= "imx-gpu-g2d"
+PREFERRED_PROVIDER_virtual/libg2d_imxdpu     ?= "imx-dpu-g2d"
 
 PREFERRED_VERSION_weston_mx6 ?= "4.0.0.imx"
 PREFERRED_VERSION_weston_mx7 ?= "4.0.0.imx"
