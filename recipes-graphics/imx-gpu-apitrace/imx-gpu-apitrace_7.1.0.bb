@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
 DEPENDS = "imx-gpu-viv zlib libpng procps"
 
 SRC_URI = "git://source.codeaurora.org/external/imx/apitrace-imx.git;protocol=https;branch=imx_7.1"
-SRCREV = "438c29f7b43c8dd82275f2bac00075f77b9e9699"
+SRCREV = "013499c63d9eddd8c792bd8b136991caa3b8a100"
 
 S = "${WORKDIR}/git"
 
