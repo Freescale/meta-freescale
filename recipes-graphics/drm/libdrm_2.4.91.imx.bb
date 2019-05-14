@@ -18,7 +18,7 @@ SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
            file://0001-configure.ac-Allow-explicit-enabling-of-cunit-tests.patch \
           "
 SRC_URI_remove = "file://drm-update-arm.patch"
-SRCREV = "e8e9cf8a66be11508c39f1cc31b8a5e7eb758875"
+SRCREV = "95645843f59495387a072d48374718f22e69d7a4"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
