@@ -7,10 +7,11 @@ def make_dtb_boot_files(d):
     alldtbs = d.getVar('KERNEL_DEVICETREE')
 
     def transform(dtb):
-        if dtb.endswith('dtb') or dtb.endswith('dtbo'):
+        if not (dtb.endswith('dtb') or dtb.endswith('dtbo')):
             # eg: whatever/bcm2708-rpi-b.dtb has:
             #     DEPLOYDIR file: bcm2708-rpi-b.dtb
             #     destination: bcm2708-rpi-b.dtb
-            return os.path.basename(dtb)
+            bb.error("KERNEL_DEVICETREE entry %s is not a .dtb or .dtbo file." % (dtb) )
+        return os.path.basename(dtb)
 
     return ' '.join([transform(dtb) for dtb in alldtbs.split() if dtb])
