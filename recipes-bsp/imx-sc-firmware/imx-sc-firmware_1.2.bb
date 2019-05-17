@@ -1,17 +1,17 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright 2017-2018 NXP
+# Copyright (C) 2017-2019 NXP
 
 DESCRIPTION = "i.MX System Controller Firmware"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5ab1a30d0cd181e3408077727ea5a2db"
+LIC_FILES_CHKSUM = "file://COPYING;md5=80c0478f4339af024519b3723023fe28"
 SECTION = "BSP"
 
 inherit fsl-eula-unpack deploy
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "3246a44a242b68fae601561a80d5925c"
-SRC_URI[sha256sum] = "00024e0dd332b402df03b62eac9a515fabc903568d0ad7f30fabc7c98b494f15"
+SRC_URI[md5sum] = "1a37cfcb0c7d338f5b69cb8248c452e3"
+SRC_URI[sha256sum] = "05efa9ba86533e99cb508c4982afe9de16abbee2710db623359d856384247a64"
 
 BOARD_TYPE ?= "mek"
 SC_FIRMWARE_NAME ?= "mx8qm-mek-scfw-tcm.bin"
