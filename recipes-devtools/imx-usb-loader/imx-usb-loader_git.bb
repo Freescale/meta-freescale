@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 DEPENDS = "libusb1"
 
-SRCREV = "e5394615dd413c3823d5bd1de340933e16a8c07c"
+SRCREV = "29fa8ab592924cf2294584b4a407f0a76858b60e"
 SRC_URI = "git://github.com/boundarydevices/imx_usb_loader.git;protocol=http"
 
 PV = "1.0+${SRCPV}"
