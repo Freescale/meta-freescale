@@ -1,15 +1,14 @@
-From e480b6825d3670f3517c3b7be0c13fd318cbe985 Mon Sep 17 00:00:00 2001
+From 16573cbb9c82218f93741a9bc873242c012ac061 Mon Sep 17 00:00:00 2001
 From: Hangtian Zhu <hangtian@qti.qualcomm.com>
 Date: Thu, 14 Jun 2018 11:10:05 +0800
-Subject: [PATCH] MLK-18491-02 qcacld-2.0: fix the overflow of bounce buffer
+Subject: [PATCH 22/23] MLK-18491-02 qcacld-2.0: fix the overflow of bounce
+ buffer
 
 Patch a41baa51cbc5("MLK-18491 qcacld-2.0: avoid overflow of bounce buffer")
 is not reasonable to fix overflow of bounce buffer issue.
 
 The patch is released by Qualcomm to fix the issue.
 (Case Number:03515221)
-
-Upstream-Status: Pending
 
 Signed-off-by: Hangtian Zhu <hangtian@qti.qualcomm.com>
 ---
