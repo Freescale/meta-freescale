@@ -11,7 +11,6 @@ IMX_EXTRA_FIRMWARE      = "firmware-imx-8 imx-sc-firmware"
 IMX_EXTRA_FIRMWARE_mx8m = "firmware-imx-8m"
 IMX_EXTRA_FIRMWARE_mx8x = "firmware-imx-8x imx-sc-firmware"
 DEPENDS += " \
-    u-boot \
     firmware-imx \
     ${IMX_EXTRA_FIRMWARE} \
     imx-atf \
