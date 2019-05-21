@@ -17,3 +17,4 @@ do_install() {
 }
 
 COMPATIBLE_HOST = '(aarch64|arm).*-linux'
+COMPATIBLE_HOST_libc-musl = 'null'
