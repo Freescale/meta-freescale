@@ -1,17 +1,17 @@
-# Copyright 2017-2018 NXP
+# Copyright (C) 2017-2019 NXP
 
 DESCRIPTION = "i.MX ARM Trusted Firmware"
 SECTION = "BSP"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"
 
-PV = "1.5.0+git${SRCPV}"
+PV .= "+git${SRCPV}"
 
-SRCBRANCH = "imx_4.9.123_imx8mm_ga"
+SRCBRANCH = "imx_4.14.98_2.0.0_ga"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-Allow-BUILD_STRING-to-be-set-in-.revision-file.patch \
 "
-SRCREV = "af3554fc6ea8c17710ffd37a14a25834fad19271"
+SRCREV = "1cb68fa0a0dd8bc00b9871b51d4c4e1d0a827b2d"
 
 S = "${WORKDIR}/git"
 
