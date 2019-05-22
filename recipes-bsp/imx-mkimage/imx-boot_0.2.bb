@@ -56,14 +56,6 @@ IMXBOOT_TARGETS ?= \
     "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi', \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
                                                   'flash flash_dcd', d), d)}"
-IMXBOOT_TARGETS_mx8qxp = \
-    "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi', \
-        bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
-                                                  'flash', d), d)}"
-IMXBOOT_TARGETS_mx8qxpa0 = \
-    "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi_a0', \
-        bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand_a0', \
-                                                  'flash_a0 flash_dcd_a0', d), d)}"
 
 BOOT_STAGING       = "${S}/${SOC_TARGET}"
 BOOT_STAGING_mx8mm = "${S}/iMX8M"
