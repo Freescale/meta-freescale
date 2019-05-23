@@ -1,0 +1,26 @@
+From 4ab82e531d01c3c1f45a4f099d145cde2890a0d5 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Wed, 4 Jul 2018 16:05:20 +0800
+Subject: [PATCH] weston.ini: using argb8888 as gbm default on mscale 850D
+
+mscale 850D video playback need using pixel alpha for graphic layer
+
+upstream status: imx specific
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+
+---
+ weston.ini.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+Index: git/weston.ini.in
+===================================================================
+--- git.orig/weston.ini.in
++++ git/weston.ini.in
+@@ -2,6 +2,7 @@
+ # i.MX: Disable idle timeout
+ idle-time=0
+ #use-g2d=1
++gbm-format=argb8888
+ 
+ #[output]
+ #name=HDMI-A-1
