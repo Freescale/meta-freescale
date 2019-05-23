@@ -1,4 +1,4 @@
-From 4ab82e531d01c3c1f45a4f099d145cde2890a0d5 Mon Sep 17 00:00:00 2001
+From 186ec0c80410b2120b8f31c211cb44a836c84522 Mon Sep 17 00:00:00 2001
 From: Haihua Hu <jared.hu@nxp.com>
 Date: Wed, 4 Jul 2018 16:05:20 +0800
 Subject: [PATCH] weston.ini: using argb8888 as gbm default on mscale 850D
@@ -22,5 +22,5 @@ Index: git/weston.ini.in
  #use-g2d=1
 +gbm-format=argb8888
  
- #[output]
- #name=HDMI-A-1
+ [libinput]
+ touchscreen_calibrator=true

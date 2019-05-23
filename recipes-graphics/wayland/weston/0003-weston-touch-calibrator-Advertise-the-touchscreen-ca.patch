@@ -1,0 +1,30 @@
+From 46843c8681ddafbea6f491b7af4de6529e93f5bd Mon Sep 17 00:00:00 2001
+From: Jun Zhu <junzhu@nxp.com>
+Date: Sun, 30 Sep 2018 15:31:26 +0800
+Subject: [PATCH] weston-touch-calibrator: Advertise the touchscreen calibrator
+ interface to all clients. [YOCIMX-2963]
+
+Set touchscreen_calibrator to true in the section "libinput" of the configure file
+ /etc/xdg/weston/weston.ini.
+Otherwise, it will report that the new-added interface "weston-touch-calibration" cannot be found.
+
+Signed-off-by: Jun Zhu <junzhu@nxp.com>
+
+---
+ weston.ini.in | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/weston.ini.in b/weston.ini.in
+index 83dd56e..6e20e11 100644
+--- a/weston.ini.in
++++ b/weston.ini.in
+@@ -3,6 +3,9 @@
+ idle-time=0
+ #use-g2d=1
+ 
++[libinput]
++touchscreen_calibrator=true
++
+ #[output]
+ #name=HDMI-A-1
+ #mode=1920x1080@60
