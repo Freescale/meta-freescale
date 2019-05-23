@@ -9,12 +9,15 @@ DEFAULT_PREFERENCE = "-1"
 
 SRCBRANCH = "weston-imx-5.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
-           file://weston.ini \
            file://weston.png \
            file://weston.desktop \
            file://0001-make-error-portable.patch \
            file://xwayland.weston-start \
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
+"
+# Use argb8888 as gbm-format for i.MX8MQ only
+SRC_URI_append_mx8mq = " file://0001-weston.ini-using-argb8888-as-gbm-default-on-mscale-8.patch \
+                         file://0002-weston.ini-configure-desktop-shell-size-in-weston-co.patch \
 "
 SRCREV = "fb563901657b296c7c7c86d26602a622429e334f"
 S = "${WORKDIR}/git"

@@ -1,0 +1,28 @@
+From 3012798d7e9c9e624024fc962d749a960289ad8b Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Wed, 11 Jul 2018 17:47:47 +0800
+Subject: [PATCH] weston.ini: configure desktop shell size in weston configure
+ file
+
+mscale 850D need set desktop shell to 1080p
+
+upstream status: imx specific
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+
+---
+ weston.ini.in | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/weston.ini.in b/weston.ini.in
+index bd8abe4..077155b 100644
+--- a/weston.ini.in
++++ b/weston.ini.in
+@@ -8,6 +8,8 @@ gbm-format=argb8888
+ #mode=1920x1080@60
+ #transform=90
+ 
++[shell]
++size=1920x1080
+ 
+ #[output]
+ #name=HDMI-A-2
