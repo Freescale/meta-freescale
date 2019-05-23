@@ -21,7 +21,7 @@ BOOT_TOOLS = "imx-boot-tools"
 
 PLATFORM        ?= "INVALID"
 PLATFORM_mx8qm   = "imx8qm"
-PLATFORM_mx8qxp  = "imx8qxp"
+PLATFORM_mx8qxp  = "imx8qx"
 PLATFORM_mx8mq   = "imx8mq"
 PLATFORM_mx8mm   = "imx8mm"
 
