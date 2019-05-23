@@ -14,6 +14,7 @@ SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=http
            file://0001-make-error-portable.patch \
            file://xwayland.weston-start \
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
+           file://0003-weston-touch-calibrator-Advertise-the-touchscreen-ca.patch \
 "
 # Use argb8888 as gbm-format for i.MX8MQ only
 SRC_URI_append_mx8mq = " file://0001-weston.ini-using-argb8888-as-gbm-default-on-mscale-8.patch \
