@@ -1,4 +1,4 @@
-From ad1d2161c811cff25d1684c33611f300adb753bc Mon Sep 17 00:00:00 2001
+From 6ef33e86557c59b31c9b731c0360ec1d404cc801 Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Fri, 29 May 2015 20:56:00 -0700
 Subject: [PATCH] make error() portable
@@ -18,7 +18,7 @@ Signed-off-by: Khem Raj <raj.khem@gmail.com>
  create mode 100644 libweston/weston-error.h
 
 diff --git a/configure.ac b/configure.ac
-index 7aebbdb..dc9c802 100644
+index 9d98e84..8f6b80d 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -109,6 +109,8 @@ AC_CHECK_DECL(CLOCK_MONOTONIC,[],
@@ -57,7 +57,7 @@ index 0000000..2089d02
 +#endif
 +
 diff --git a/libweston/weston-launch.c b/libweston/weston-launch.c
-index 1adcf21..166bf3b 100644
+index bf73e0d..9064439 100644
 --- a/libweston/weston-launch.c
 +++ b/libweston/weston-launch.c
 @@ -33,7 +33,6 @@
