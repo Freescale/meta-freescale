@@ -3,11 +3,11 @@ DESCRIPTION = "Weston is the reference implementation of a Wayland compositor"
 HOMEPAGE = "http://wayland.freedesktop.org"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
-                    file://libweston/compositor.c;endline=26;md5=e342df749174a8ee11065583157c7a38"
+                    file://libweston/compositor.c;endline=26;md5=f47553ae598090444273db00adfb5b66"
 
 DEFAULT_PREFERENCE = "-1"
 
-SRCBRANCH = "weston-imx-4.0"
+SRCBRANCH = "weston-imx-5.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
            file://weston.ini \
            file://weston.png \
@@ -15,9 +15,8 @@ SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=http
            file://0001-make-error-portable.patch \
            file://xwayland.weston-start \
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
-           file://0001-g2d-renderer-Fix-open-function-build-break.patch \
 "
-SRCREV = "866072b52751e5023651dd9322baa513e1f74fe6"
+SRCREV = "fb563901657b296c7c7c86d26602a622429e334f"
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
