@@ -5,18 +5,23 @@ SRC_URI_append_imxgpu = " file://Replace-glWindowPos2iARB-calls-with-glWindowPos
                     file://Additional-eglSwapBuffer-calling-makes-wrong-throttl.patch \
                     file://Add-OpenVG-demos-to-support-wayland.patch"
 
-PACKAGECONFIG_IMX_TO_REMOVE_GLES          = ""
-PACKAGECONFIG_IMX_TO_REMOVE_GLES_imxgpu2d = "gles1 gles2"
-PACKAGECONFIG_IMX_TO_REMOVE_GLES_imxgpu3d = ""
-PACKAGECONFIG_IMX_TO_REMOVE               = "${PACKAGECONFIG_IMX_TO_REMOVE_GLES}"
-PACKAGECONFIG_IMX_TO_REMOVE_append_imxgpu = " \
+PACKAGECONFIG_REMOVE_IF_2D_ONLY          = ""
+PACKAGECONFIG_REMOVE_IF_2D_ONLY_imxgpu2d = "gles1 gles2"
+PACKAGECONFIG_REMOVE_IF_2D_ONLY_imxgpu3d = ""
+PACKAGECONFIG_REMOVE_IF_GPU              = ""
+PACKAGECONFIG_REMOVE_IF_GPU_imxgpu       = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'glu x11', '', d)} \
 "
-PACKAGECONFIG_remove        = "${PACKAGECONFIG_IMX_TO_REMOVE}"
+PACKAGECONFIG_remove = " \
+    ${PACKAGECONFIG_REMOVE_IF_2D_ONLY} \
+    ${PACKAGECONFIG_REMOVE_IF_GPU} \
+"
 
-PACKAGECONFIG_IMX_TO_APPEND               = ""
-PACKAGECONFIG_IMX_TO_APPEND_append_imxgpu = " \
+PACKAGECONFIG_APPEND_IF_GPU        = ""
+PACKAGECONFIG_APPEND_IF_GPU_imxgpu = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland vg', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES',     'x11',       'glut', '', d)} \
 "
-PACKAGECONFIG_append = "${PACKAGECONFIG_IMX_TO_APPEND}"
+PACKAGECONFIG_append = " \
+    ${PACKAGECONFIG_APPEND_IF_GPU} \
+"
