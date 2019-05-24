@@ -6,5 +6,6 @@ require recipes-kernel/linux/linux-imx.inc
 DEPENDS += "lzop-native bc-native"
 
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${SRCBRANCH} \
+           file://0001-menuconfig-mconf-cfg-Allow-specification-of-ncurses-.patch \
            file://defconfig"
 LOCALVERSION = "-fslc"
