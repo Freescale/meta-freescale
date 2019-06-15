@@ -8,5 +8,5 @@ RDEPENDS_${PN} = " \
     kernel-module-qca9377 \
     firmware-qca9377 \
 "
-
-RDEPENDS_${PN}_append_libc-glibc = " qca-tools"
+COMPATIBLE_HOST = '(aarch64|arm).*-linux'
+COMPATIBLE_HOST_libc-musl = 'null'
