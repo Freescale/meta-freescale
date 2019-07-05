@@ -1,0 +1,30 @@
+From 2c260c8c437c7f72f093b6c157a38b93443bde1d Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Mon, 11 Dec 2017 15:45:05 +0800
+Subject: [PATCH] Modify the Makefile for cross compile
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Chunrong Guo <chunrong.guo@nxp.com>
+---
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index c7bfee2..d6421f3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,8 +4,8 @@ LIBDIR=/usr/lib
+ SBINDIR=/sbin
+ MANDIR=/share/man
+ 
+-CC = gcc
+-HOSTCC = gcc
++CC ?= gcc
++HOSTCC ?= gcc
+ CCOPTS = -D_GNU_SOURCE -O2 -Wstrict-prototypes -Wall
+ CFLAGS = $(CCOPTS) -I../include
+ 
+-- 
+2.7.4
+
