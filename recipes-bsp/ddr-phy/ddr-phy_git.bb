@@ -7,7 +7,7 @@ inherit deploy fsl-eula-unpack
 SRC_URI = "git://github.com/nxp/ddr-phy-binary.git;fsl-eula=true;nobranch=1 \
     git://source.codeaurora.org/external/qoriq/qoriq-components/atf;nobranch=1;nobranch=1;destsuffix=git/atf;name=atf"
 SRCREV = "14d03e6e748ed5ebb9440f264bb374f1280b061c"
-SRCREV_atf = "7e34aebe658c7c3439d2d68b0ce6b9776e8e6996"
+SRCREV_atf = "17f94e4315e81e3d1b22d863d9614d724e8273dc"
 
 S = "${WORKDIR}/git"
 
