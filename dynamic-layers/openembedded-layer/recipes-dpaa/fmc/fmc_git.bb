@@ -39,7 +39,7 @@ do_install () {
     install -m 755 ${S}/source/fmc ${D}/${bindir}
 
     install -d ${D}${sysconfdir}/fmc/config
-    install -m 644 ${S}${sysconfdir}/fmc/config/hxs_pdl_v3.xml ${D}${sysconfdir}/fmc/config
+    install -m 644 ${S}${sysconfdir}/fmc/config/* ${D}${sysconfdir}/fmc/config
 
     install -d ${D}/${includedir}/fmc
     install ${S}/source/fmc.h ${D}/${includedir}/fmc
