@@ -17,7 +17,7 @@ index 967692b..ae395cd 100644
  KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar \
 -		   -Werror-implicit-function-declaration \
-+		   -Werror-implicit-function-declaration -Wno-misleading-indentation -Wno-tautological-compare \
++		   -Werror-implicit-function-declaration -Wno-address-of-packed-member \
  		   -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
