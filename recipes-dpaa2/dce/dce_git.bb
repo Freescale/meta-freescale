@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=956df5ea6cfe0a1dcf2dee7ca37c0cdf"
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dce;nobranch=1 \
       git://source.codeaurora.org/external/qoriq/qoriq-components/qbman_userspace;nobranch=1;name=qbman;destsuffix=git/lib/qbman_userspace \
 "
-SRCREV = "0455555e5ce6f469d0c60e25f14a2340054a531a"
+SRCREV = "1b9e9ac80bce1c3a209f38f72599c44768854551"
 SRCREV_qbman = "a1af1e1528fe2e1ce0df1e6d9170b6c239c8ab4f"
 
 S = "${WORKDIR}/git"
