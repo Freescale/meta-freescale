@@ -15,6 +15,8 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;
 S = "${WORKDIR}/git"
 
 OPTEEMACHINE ?= "${MACHINE}"
+OPTEEMACHINE_ls1088ardb-pb = "ls1088ardb"
+OPTEEMACHINE_ls1046afrwy = "ls1046ardb"
 
 EXTRA_OEMAKE = "PLATFORM=ls-${OPTEEMACHINE} CFG_ARM64_core=y \
                 ARCH=arm \
