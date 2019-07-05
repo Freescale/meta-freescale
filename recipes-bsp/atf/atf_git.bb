@@ -13,7 +13,7 @@ do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 S = "${WORKDIR}/git"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/atf;nobranch=1"
-SRCREV = "7e34aebe658c7c3439d2d68b0ce6b9776e8e6996"
+SRCREV = "17f94e4315e81e3d1b22d863d9614d724e8273dc"
 
 SRC_URI += "file://0001-fix-fiptool-build-error.patch \
     file://0001-Makefile-add-CC-gcc.patch \
@@ -47,6 +47,7 @@ chassistype_ls1012ardb = "ls104x_1012"
 chassistype_ls1012afrwy = "ls104x_1012"
 chassistype_ls1043ardb = "ls104x_1012"
 chassistype_ls1046ardb = "ls104x_1012"
+chassistype_ls1046afrwy = "ls104x_1012"
 
 ddrphyopt ?= ""
 ddrphyopt_lx2160ardb = "fip_ddr_sec"
@@ -97,6 +98,10 @@ do_compile() {
             ;;
         qspi)
             rcwimg="${RCWQSPI}${rcwtemp}.bin"
+            uefiboot="${UEFI_QSPIBOOT}"
+            if [ "${BUILD_SECURE}" = "true" ] && [ ${MACHINE} = ls1046ardb ]; then
+                rcwimg="RR_FFSSPPPH_1133_5559/rcw_1600_qspiboot_sben.bin"
+            fi
             ;;
         sd)
             rcwimg="${RCWSD}${rcwtemp}.bin"
@@ -165,6 +170,9 @@ do_install() {
             fi
     fi
     chown -R root:root ${D}
+    if [ -f "${S}/fip_ddr_sec.bin" ]; then
+        cp -r ${S}/fip_ddr_sec.bin ${D}/boot/atf/fip_ddr_sec.bin
+    fi
 }
 
 do_deploy() {
@@ -194,6 +202,9 @@ do_deploy() {
         if [ -f "${S}/fuse_fip_512mb.bin" ]; then
                 cp -r ${S}/fuse_fip_512mb.bin ${D}/boot/atf/fuse_fip_512mb${secext}.bin
         fi
+    fi
+    if [ -f "${S}/fip_ddr_sec.bin" ]; then
+        cp -r ${D}/boot/atf/fip_ddr_sec.bin ${DEPLOYDIR}/atf/fip_ddr_sec.bin
     fi
 }
 addtask deploy after do_install
