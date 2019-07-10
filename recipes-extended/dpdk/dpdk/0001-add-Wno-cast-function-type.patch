@@ -18,7 +18,7 @@ index d28badf..4e9851c 100644
  
  CFLAGS += -O3
 -CFLAGS += $(WERROR_FLAGS)
-+CFLAGS += $(WERROR_FLAGS) -Wno-cast-function-type
++CFLAGS += $(WERROR_FLAGS) -Wno-cast-function-type -Wno-missing-attributes
  CFLAGS += -I$(RTE_SDK)/examples/cmdif/lib
  CFLAGS += -I$(RTE_SDK)/examples/cmdif/lib/client
  CFLAGS += -I$(RTE_SDK)/examples/cmdif/lib/server
