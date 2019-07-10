@@ -11,7 +11,10 @@ PACKAGES += "vpp-core-data vpp-core-plugin-igmp vpp-core-plugin-gtpu vpp-core-pl
 		vpp-core-plugin-nat_test vpp-core-plugin-acl_test vpp-core-plugin-ioam_export_test \
 		vpp-core-plugin-flowprobe_test vpp-core-plugin-ioam_pot_test \
 		vpp-core-plugin-vxlan_gpe_ioam_export_test  vpp-core-plugin-pppoe_test vpp-core-plugin-gtpu_test \
-		vpp-core-plugin-cdp_test vpp-core-plugin-dpdk vpp-core-plugin-dpdk_test vpp-core-test \
+		vpp-core-plugin-cdp_test vpp-core-plugin-dpdk vpp-core-plugin-dpdk_test vpp-core-plugin-vmxnet3_test \
+                vpp-core-plugin-vmxnet3 vpp-core-plugin-svs vpp-core-test vpp-core-plugin-nsh_test \
+                vpp-core-plugin-ioam_test vpp-core-plugin-nsim_test vpp-core-plugin-nsim vpp-core-plugin-perfmon \ 
+                vpp-core-plugin-nsh \
 		vpp-core-plugin-tlsopenssl vpp-core-plugin-ixge vpp-core-plugin-ila vpp-core-plugin-data \
 		"
 
@@ -54,6 +57,11 @@ FILES_${PN}-plugin-nat = "  ${libdir}/vpp_plugins/nat_plugin.so "
 FILES_${PN}-plugin-srv6am = "  ${libdir}/vpp_plugins/srv6am_plugin.so "
 FILES_${PN}-plugin-dpdk = "  ${libdir}/vpp_plugins/dpdk_plugin.so "
 FILES_${PN}-plugin-ila = "  ${libdir}/vpp_plugins/ila_plugin.so "
+FILES_${PN}-plugin-svs = "  ${libdir}/vpp_plugins/svs_plugin.so "
+FILES_${PN}-plugin-nsh = "  ${libdir}/vpp_plugins/nsh_plugin.so "
+FILES_${PN}-plugin-vmxnet3 = "  ${libdir}/vpp_plugins/vmxnet3_plugin.so "
+FILES_${PN}-plugin-perfmon = "  ${libdir}/vpp_plugins/perfmon_plugin.so "
+FILES_${PN}-plugin-nsim = " ${libdir}/vpp_plugins/nsim_plugin.so"
 
 FILES_${PN}-plugin-lb_test = "  ${libdir}/vpp_api_test_plugins/lb_test_plugin.so "
 FILES_${PN}-plugin-ioam_vxlan_gpe_test = "  ${libdir}/vpp_api_test_plugins/ioam_vxlan_gpe_test_plugin.so "
@@ -75,6 +83,11 @@ FILES_${PN}-plugin-pppoe_test = "  ${libdir}/vpp_api_test_plugins/pppoe_test_plu
 FILES_${PN}-plugin-gtpu_test = "  ${libdir}/vpp_api_test_plugins/gtpu_test_plugin.so "
 FILES_${PN}-plugin-cdp_test = "  ${libdir}/vpp_api_test_plugins/cdp_test_plugin.so "
 FILES_${PN}-plugin-dpdk_test = "  ${libdir}/vpp_api_test_plugins/dpdk_test_plugin.so "
+FILES_${PN}-plugin-nsh_test = "  ${libdir}/vpp_api_test_plugins/nsh_test_plugin.so "
+FILES_${PN}-plugin-ioam_test = "  ${libdir}/vpp_api_test_plugins/ioam_test_plugin.so "
+FILES_${PN}-plugin-vmxnet3_test = "  ${libdir}/vpp_api_test_plugins/vmxnet3_test_plugin.so "
+FILES_${PN}-plugin-nsim_test = "  ${libdir}/vpp_api_test_plugins/nsim_test_plugin.so "
+
 
 FILES_${PN}-data = " \
 		${datadir}/vpp/api/core/sctp.api.json \
@@ -130,8 +143,10 @@ FILES_${PN}-data = " \
 		${datadir}/vpp/C.py \
                 ${datadir}/vpp/api/core/flow.api.json \
                 ${datadir}/vpp/api/core/map.api.json  \
-                ${datadir}/vpp/api/core/dpdk.api.json \
-		${datadir}/vpp/JSON.py "
+                ${datadir}/vpp/api/core/dpdk.api.json \    
+		${datadir}/vpp/JSON.py  \
+                ${datadir}/vpp/vppapigen_json.py \
+                ${datadir}/vpp/vppapigen_c.py "
 
 
 FILES_${PN} = " \
@@ -142,6 +157,8 @@ FILES_${PN} = " \
 		${bindir}/svmdbtool \
 		${bindir}/svmtool \
 		${bindir}/vppapigen \
+                ${bindir}/vpp_get_stats \
+                ${bindir}/vpp_prometheus_export \
 		${bindir}/elftool \
 		${bindir}/cpelatency \
 		${bindir}/cpelinreg \
@@ -176,7 +193,19 @@ FILES_${PN} = " \
 		${libdir}/libvnet.so.0.0.0 \
 		${libdir}/libvppapiclient.so.0 \
 		${libdir}/libvppapiclient.so.0.0.0 \
-		${libdir}/libvppcom.so.0 \
+		${libdir}/libvppcom.so.19.06 \
+                ${libdir}/libvppapiclient.so.19.06  \
+                ${libdir}/libsvm.so.19.06 \
+                ${libdir}/libvcl_ldpreload.so.19.06 \
+                ${libdir}/libvlibmemoryclient.so.19.06 \
+                ${libdir}/libvnet.so.19.06 \
+                ${libdir}/libvapiclient.so.19.06 \
+                ${libdir}/libvlibmemory.so.19.06 \
+                ${libdir}/libvppinfra.so.19.06 \
+                ${libdir}/usr/lib/libvppcom.so.19.06 \
+                ${libdir}/libvlib.so.19.06 \
+                ${libdir}/libvatplugin.so.19.06 \
+                ${libdir}/libsvmdb.so.19.06 \
 		${libdir}/libvppcom.so.0.0.0 \
 		${libdir}/libvppinfra.so.0 \
 		${libdir}/libvppinfra.so.0.0.0 \
@@ -207,7 +236,14 @@ FILES_${PN}-plugin-data = " \
 		${datadir}/vpp/api/plugins/gtpu.api.json \
 		${datadir}/vpp/api/plugins/trace.api.json \
 		${datadir}/vpp/api/plugins/dpdk.api.json \
-		${datadir}/vpp/api/plugins/cdp.api.json "
+		${datadir}/vpp/api/plugins/cdp.api.json \
+                ${datadir}/vpp/api/plugins/nsh.api.json \
+                ${datadir}/vpp/api/plugins/nsim.api.json \
+                ${datadir}/vpp/api/plugins/svs.api.json \
+                ${datadir}/vpp/api/plugins/vmxnet3.api.json \
+                ${datadir}/vpp/api/core/syslog.api.json \
+                ${datadir}/vpp/api/core/vxlan_gbp.api.json \
+                ${datadir}/vpp/plugins/perfmon/PerfmonTables.tar.xz "
 
 FILES_${PN}-dev = " \
 		${includedir}/* \
@@ -223,5 +259,6 @@ FILES_${PN}-dev = " \
 		${libdir}/libvnet.so \
 		${libdir}/libvppinfra.so \
 		${libdir}/libcperf.so \
-		${libdir}/libvlibmemoryclient.so "
+		${libdir}/libvlibmemoryclient.so  \
+                ${libdir}/cmake/vpp/*.cmake "
 
