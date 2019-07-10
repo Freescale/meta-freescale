@@ -1,0 +1,28 @@
+From 79330c8383e02e91a355964a3cc7b932d03c2517 Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Wed, 10 Jul 2019 11:09:01 +0200
+Subject: [PATCH] fix build failure with GCC 9
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: C.r. Guo <nxa13725@lsv07004.swis.us-cdc01.nxp.com>
+---
+ host/xtest/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/host/xtest/Makefile b/host/xtest/Makefile
+index e4e2881..e86e056 100644
+--- a/host/xtest/Makefile
++++ b/host/xtest/Makefile
+@@ -152,7 +152,7 @@ CFLAGS += -Wall -Wcast-align -Werror \
+ 	  -Wmissing-include-dirs -Wmissing-noreturn \
+ 	  -Wmissing-prototypes -Wnested-externs -Wpointer-arith \
+ 	  -Wshadow -Wstrict-prototypes -Wswitch-default \
+-	  -Wwrite-strings \
++	  -Wwrite-strings -Wno-format-overflow \
+ 	  -Wno-missing-field-initializers -Wno-format-zero-length
+ endif
+ 
+-- 
+2.7.4
+
