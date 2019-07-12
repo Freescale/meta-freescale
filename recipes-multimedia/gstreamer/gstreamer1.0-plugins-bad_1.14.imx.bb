@@ -45,7 +45,7 @@ LICENSE = "GPLv2+ & LGPLv2+ & LGPLv2.1+"
 
 DEPENDS += "gstreamer1.0-plugins-base jpeg"
 
-inherit gettext bluetooth
+inherit gettext
 
 PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
@@ -61,7 +61,7 @@ PACKAGECONFIG ??= " \
 # not add GL dependencies here, since these are taken care of in -base.
 
 PACKAGECONFIG[assrender]       = "--enable-assrender,--disable-assrender,libass"
-PACKAGECONFIG[bluez]           = "--enable-bluez,--disable-bluez,${BLUEZ}"
+PACKAGECONFIG[bluez]           = "--enable-bluez,--disable-bluez,bluez5"
 PACKAGECONFIG[bz2]             = "--enable-bz2,--disable-bz2,bzip2"
 PACKAGECONFIG[curl]            = "--enable-curl,--disable-curl,curl"
 PACKAGECONFIG[dash]            = "--enable-dash,--disable-dash,libxml2"
