@@ -19,5 +19,5 @@ EXTRA_OEMAKE += " \
     TARGET_BUILD_VARIANT=user \
 "
 
-COMPATIBLE_HOST = '(aarch64|arm).*-linux'
+COMPATIBLE_MACHINE = "(imx)"
 COMPATIBLE_HOST_libc-musl = 'null'
