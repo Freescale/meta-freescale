@@ -17,7 +17,14 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 inherit module
 
-export RTE_TARGET = "${ARCH}-dpaa-linuxapp-gcc"
+COMPATIBLE_HOST = '(aarch64|arm|i.86|x86_64).*-linux'
+COMPATIBLE_HOST_libc-musl = 'null'
+
+DPDK_RTE_TARGET_x86-64 = "x86_64-native-linuxapp-gcc"
+DPDK_RTE_TARGET_x86 = "i686-native-linuxapp-gcc"
+DPDK_RTE_TARGET ?= "${ARCH}-dpaa-linuxapp-gcc"
+
+export RTE_TARGET = "${DPDK_RTE_TARGET}"
 export RTE_OUTPUT = "${S}/${RTE_TARGET}"
 export  MODULE_DIR = "/lib/modules/${KERNEL_VERSION}/kernel/drivers/net"
 
