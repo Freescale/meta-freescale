@@ -2,12 +2,11 @@ SUMMARY = "PPFE Linux firmware"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=92723670f432558b9e2494ed177d2a85"
 
-
 INHIBIT_DEFAULT_DEPS = "1"
 
-inherit deploy fsl-eula-unpack
+inherit deploy
 
-SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;fsl-eula=true;nobranch=1"
+SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;nobranch=1"
 SRCREV = "58aa0cac630528ed91fe5639700d6b571c0c07b5"
 
 S = "${WORKDIR}/git"
