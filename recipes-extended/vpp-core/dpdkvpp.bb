@@ -25,6 +25,9 @@ DPDK_RTE_TARGET_x86-64 = "x86_64-native-linuxapp-gcc"
 DPDK_RTE_TARGET_x86 = "i686-native-linuxapp-gcc"
 DPDK_RTE_TARGET ?= "${ARCH}-dpaa-linuxapp-gcc"
 
+TLSDIALECT ?= ""
+TLSDIALECT_aarch64 ?= "-mtls-dialect=trad"
+
 export RTE_TARGET = "${DPDK_RTE_TARGET}"
 export RTE_OUTPUT = "${S}/${RTE_TARGET}"
 
@@ -51,7 +54,7 @@ do_compile () {
 	oe_runmake  CONFIG_RTE_EAL_IGB_UIO=n CONFIG_RTE_KNI_KMOD=y \
 	            CONFIG_RTE_LIBRTE_PMD_OPENSSL=y \
                    EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu" \
-		   EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR} -fPIC -mtls-dialect=trad" \
+		   EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR} -fPIC ${TLSDIALECT}" \
 		   CROSS="${TARGET_PREFIX}" \
 		   prefix=""  LDFLAGS="${TUNE_LDARGS}"  WERROR_FLAGS="-w" V=1
 
