@@ -13,6 +13,7 @@ SRCREV = "0123ced10233e7de8a72f743e2ae7e9791124f07"
 
 RDEPENDS_${PN} += "python-subprocess"
 DEPENDS = "virtual/kernel openssl"
+DEPENDS_append_x86-64 = " numactl"
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 inherit module
