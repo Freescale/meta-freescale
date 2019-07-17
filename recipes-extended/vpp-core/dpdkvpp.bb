@@ -20,9 +20,14 @@ inherit module
 
 COMPATIBLE_HOST = '(aarch64|arm|i.86|x86_64).*-linux'
 COMPATIBLE_HOST_libc-musl = 'null'
+COMPATIBLE_HOST_armv4 = 'null'
+COMPATIBLE_HOST_armv5 = 'null'
+COMPATIBLE_HOST_armv6 = 'null'
 
 DPDK_RTE_TARGET_x86-64 = "x86_64-native-linuxapp-gcc"
 DPDK_RTE_TARGET_x86 = "i686-native-linuxapp-gcc"
+DPDK_RTE_TARGET_armv7a = "${ARCH}-armv7a-linuxapp-gcc"
+DPDK_RTE_TARGET_armv7ve = "${ARCH}-armv7a-linuxapp-gcc"
 DPDK_RTE_TARGET ?= "${ARCH}-dpaa-linuxapp-gcc"
 
 TLSDIALECT ?= ""
