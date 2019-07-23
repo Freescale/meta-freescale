@@ -24,9 +24,8 @@ do_deploy () {
     install -d ${DEPLOYDIR}/mc_app
     install -m 755 ${S}/${REGLEX}/*.itb ${DEPLOYDIR}/mc_app
     # make a symlink to the latest binary
-    for mc_binary in `ls ${DEPLOYDIR}/mc_app |sort`;do
-        ln -sfT ${mc_binary} ${DEPLOYDIR}/mc_app/mc.itb
-    done
+    mc_binary="$(ls ${DEPLOYDIR}/mc_app | grep -v ^mc.itb$ | sort | tail -1)"
+    ln -sfT "$mc_binary" ${DEPLOYDIR}/mc_app/mc.itb
 }
 addtask deploy before do_build after do_install
 
