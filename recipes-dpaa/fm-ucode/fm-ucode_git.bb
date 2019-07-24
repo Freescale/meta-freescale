@@ -32,6 +32,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/
     install -m 644 ${B}/fsl_fman_ucode_${UCODE}*.bin ${DEPLOYDIR}
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"

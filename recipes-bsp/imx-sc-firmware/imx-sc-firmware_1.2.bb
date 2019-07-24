@@ -29,6 +29,7 @@ do_deploy() {
     install -Dm 0644 ${S}/${SC_FIRMWARE_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME}
     ln -sf ${SC_FIRMWARE_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}/${symlink_name}
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_install
 
 INHIBIT_PACKAGE_STRIP = "1"

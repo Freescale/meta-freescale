@@ -207,6 +207,7 @@ do_deploy() {
         cp -r ${D}/boot/atf/fip_ddr_sec.bin ${DEPLOYDIR}/atf/fip_ddr_sec.bin
     fi
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_install
 FILES_${PN} += "/boot"
 BBCLASSEXTEND = "native nativesdk"

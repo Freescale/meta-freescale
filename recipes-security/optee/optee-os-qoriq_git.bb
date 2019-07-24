@@ -65,7 +65,7 @@ do_deploy() {
             cp $f ${DEPLOYDIR}/optee/
         done
 }
-
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 FILES_${PN} = "/lib/firmware/"

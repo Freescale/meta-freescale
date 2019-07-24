@@ -18,6 +18,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/ls2-phy
     cp -fr ${S}/* ${DEPLOYDIR}/ls2-phy
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"

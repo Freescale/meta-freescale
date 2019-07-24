@@ -25,6 +25,7 @@ do_deploy () {
            cp -r  ${B}/${MACHINE} ${DEPLOYDIR}/uefi
        fi
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"

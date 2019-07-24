@@ -24,7 +24,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/engine-pfe-bin
     cp -r ${D}/boot/engine-pfe-bin/* ${DEPLOYDIR}/engine-pfe-bin
 }
-
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_install
 
 FILES_${PN} += "/lib/firmware /boot/"

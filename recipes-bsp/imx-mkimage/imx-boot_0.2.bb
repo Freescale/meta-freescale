@@ -156,6 +156,7 @@ do_deploy() {
     ln -sf ${BOOT_CONFIG_MACHINE}-${IMAGE_IMXBOOT_TARGET} ${BOOT_NAME}
     cd -
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_compile
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

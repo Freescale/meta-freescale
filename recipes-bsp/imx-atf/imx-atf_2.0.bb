@@ -41,6 +41,7 @@ do_install[noexec] = "1"
 do_deploy() {
     install -Dm 0644 ${S}/build/${PLATFORM}/release/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${PLATFORM}.bin
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_compile
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"

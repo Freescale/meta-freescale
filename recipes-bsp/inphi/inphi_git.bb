@@ -18,6 +18,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/inphi
     cp -fr ${S}/in112525-phy-ucode.txt ${DEPLOYDIR}/inphi
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"

@@ -33,6 +33,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/ddr-phy
     install -m 755 ${S}/${REGLEX}/*.bin ${DEPLOYDIR}/ddr-phy
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_populate_sysroot after do_install
 
 PACKAGES += "${PN}-image"

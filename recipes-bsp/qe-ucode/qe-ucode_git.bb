@@ -19,6 +19,7 @@ do_deploy () {
        install -d ${DEPLOYDIR}/boot
        install -m 644 ${B}/*.bin ${DEPLOYDIR}/boot
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"

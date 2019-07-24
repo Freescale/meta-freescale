@@ -17,6 +17,7 @@ do_deploy() {
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_dp_imx8m.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_hdmi_imx8m.bin ${DEPLOYDIR}
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_install before do_build
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"

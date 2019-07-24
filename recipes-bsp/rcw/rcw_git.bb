@@ -31,6 +31,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/rcw
     cp -r ${D}/boot/rcw/* ${DEPLOYDIR}/rcw/
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_install
 
 PACKAGES += "${PN}-image"

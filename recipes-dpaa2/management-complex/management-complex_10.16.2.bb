@@ -27,6 +27,7 @@ do_deploy () {
     mc_binary="$(ls ${DEPLOYDIR}/mc_app | grep -v ^mc.itb$ | sort | tail -1)"
     ln -sfT "$mc_binary" ${DEPLOYDIR}/mc_app/mc.itb
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"

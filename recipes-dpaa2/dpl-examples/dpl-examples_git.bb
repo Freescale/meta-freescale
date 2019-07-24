@@ -25,6 +25,7 @@ do_deploy () {
     install -m 644 ${S}/${REGLEX}/RDB/*.dtb ${DEPLOYDIR}/dpl-examples
     install -m 644 ${S}/${REGLEX}/RDB/custom/*.dtb ${DEPLOYDIR}/dpl-examples
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"

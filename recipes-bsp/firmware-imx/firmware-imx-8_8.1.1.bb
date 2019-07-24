@@ -16,6 +16,7 @@ do_deploy() {
     # SECO
     install -m 0644 ${S}/firmware/seco/mx8qm-ahab-container.img ${DEPLOYDIR}
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_install before do_build
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"

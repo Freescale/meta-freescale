@@ -38,6 +38,7 @@ do_deploy () {
             cp -r ${S}/config/${MC_CFG}/RDB/custom/*.dtb ${DEPLOYDIR}/mc-utils/custom
         fi
 }
+do_deploy[cleandirs] = "${DEPLOYDIR}"
 addtask deploy after do_install
 
 PACKAGES += "${PN}-image"
