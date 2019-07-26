@@ -1,0 +1,148 @@
+From b2dd8747125be413f9b8b7fd7e52f457cabd709c Mon Sep 17 00:00:00 2001
+From: Jens Wiklander <jens.wiklander@linaro.org>
+Date: Tue, 5 Feb 2019 13:05:29 +0100
+Subject: [PATCH] Fix alignment of data for mempool_alloc_pool()
+
+Upstream-Status: Submitted
+
+Prior to this patch was _TEE_MathAPI_Init() in
+lib/libutee/tee_api_arith_mpi.c supplying a data buffer which was only 4
+byte aligned while mempool_alloc_pool() requires the alignment of long.
+This will work in 32-bit mode, but could lead to alignment problem in
+64-bit mode. The same problem can happen with
+lib/libutee/tee_api_arith_mpa.c, but so far it has remained hidden.
+
+Incorrect alignment can result in errors like:
+E/TA:  assertion '!((vaddr_t)data & (POOL_ALIGN - 1))' failed at lib/libutils/ext/mempool.c:134 in mempool_alloc_pool()
+
+This fix introduces MEMPOOL_ALIGN which specifies required alignment of
+data supplied to mempool_alloc_pool().
+
+Fixes: 062e3d01c039 ("ta: switch to to mbedtls for bignum")
+Reviewed-by: Joakim Bech <joakim.bech@linaro.org>
+Tested-by: Joakim Bech <joakim.bech@linaro.org> (QEMU v8)
+Acked-by: Jerome Forissier <jerome.forissier@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+---
+ core/lib/libtomcrypt/src/mpa_desc.c | 2 +-
+ core/lib/libtomcrypt/src/mpi_desc.c | 2 +-
+ lib/libutee/tee_api_arith_mpa.c     | 3 ++-
+ lib/libutee/tee_api_arith_mpi.c     | 3 +--
+ lib/libutils/ext/include/mempool.h  | 5 ++++-
+ lib/libutils/ext/mempool.c          | 9 ++++-----
+ 6 files changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/core/lib/libtomcrypt/src/mpa_desc.c b/core/lib/libtomcrypt/src/mpa_desc.c
+index b407f54..58aa242 100644
+--- a/core/lib/libtomcrypt/src/mpa_desc.c
++++ b/core/lib/libtomcrypt/src/mpa_desc.c
+@@ -40,7 +40,7 @@ static struct mempool *get_mpa_scratch_memory_pool(void)
+ #else /* CFG_WITH_PAGER */
+ static struct mempool *get_mpa_scratch_memory_pool(void)
+ {
+-	static uint32_t data[LTC_MEMPOOL_U32_SIZE] __aligned(__alignof__(long));
++	static uint32_t data[LTC_MEMPOOL_U32_SIZE] __aligned(MEMPOOL_ALIGN);
+ 
+ 	return mempool_alloc_pool(data, sizeof(data), NULL);
+ }
+diff --git a/core/lib/libtomcrypt/src/mpi_desc.c b/core/lib/libtomcrypt/src/mpi_desc.c
+index a43fbb4..67bc3a7 100644
+--- a/core/lib/libtomcrypt/src/mpi_desc.c
++++ b/core/lib/libtomcrypt/src/mpi_desc.c
+@@ -38,7 +38,7 @@ static struct mempool *get_mp_scratch_memory_pool(void)
+ #else /* CFG_WITH_PAGER */
+ static struct mempool *get_mp_scratch_memory_pool(void)
+ {
+-	static uint8_t data[MPI_MEMPOOL_SIZE] __aligned(__alignof__(long));
++	static uint8_t data[MPI_MEMPOOL_SIZE] __aligned(MEMPOOL_ALIGN);
+ 
+ 	return mempool_alloc_pool(data, sizeof(data), NULL);
+ }
+diff --git a/lib/libutee/tee_api_arith_mpa.c b/lib/libutee/tee_api_arith_mpa.c
+index 0f6c7f1..a8ca6aa 100644
+--- a/lib/libutee/tee_api_arith_mpa.c
++++ b/lib/libutee/tee_api_arith_mpa.c
+@@ -19,7 +19,8 @@
+ 
+ static uint32_t mempool_u32[mpa_scratch_mem_size_in_U32(
+ 					    MPA_INTERNAL_MEM_POOL_SIZE,
+-					    CFG_TA_BIGNUM_MAX_BITS)];
++					    CFG_TA_BIGNUM_MAX_BITS)]
++						__aligned(MEMPOOL_ALIGN);
+ static mpa_scratch_mem mempool;
+ 
+ /*************************************************************
+diff --git a/lib/libutee/tee_api_arith_mpi.c b/lib/libutee/tee_api_arith_mpi.c
+index 8e2751b..6b074e1 100644
+--- a/lib/libutee/tee_api_arith_mpi.c
++++ b/lib/libutee/tee_api_arith_mpi.c
+@@ -42,8 +42,7 @@ static void __noreturn mpi_panic(const char *func, int line, int rc)
+ 
+ void _TEE_MathAPI_Init(void)
+ {
+-	static uint8_t data[MPI_MEMPOOL_SIZE]
+-		__aligned(__alignof__(mbedtls_mpi_uint));
++	static uint8_t data[MPI_MEMPOOL_SIZE] __aligned(MEMPOOL_ALIGN);
+ 
+ 	mbedtls_mpi_mempool = mempool_alloc_pool(data, sizeof(data), NULL);
+ 	if (!mbedtls_mpi_mempool)
+diff --git a/lib/libutils/ext/include/mempool.h b/lib/libutils/ext/include/mempool.h
+index 62377df..2a60800 100644
+--- a/lib/libutils/ext/include/mempool.h
++++ b/lib/libutils/ext/include/mempool.h
+@@ -19,9 +19,12 @@ struct mempool_item {
+ 
+ struct mempool;
+ 
++#define MEMPOOL_ALIGN	__alignof__(long)
++
+ /*
+  * mempool_alloc_pool() - Allocate a new memory pool
+- * @data:		a block of memory to carve out items from
++ * @data:		a block of memory to carve out items from, must
++ *			have an alignment of MEMPOOL_ALIGN.
+  * @size:		size fo the block of memory
+  * @release_mem:	function to call when the pool has been emptied,
+  *			ignored if NULL.
+diff --git a/lib/libutils/ext/mempool.c b/lib/libutils/ext/mempool.c
+index f977699..6d38590 100644
+--- a/lib/libutils/ext/mempool.c
++++ b/lib/libutils/ext/mempool.c
+@@ -53,7 +53,6 @@
+  *   So the potential fragmentation is mitigated.
+  */
+ 
+-#define POOL_ALIGN	__alignof__(long)
+ 
+ struct mempool {
+ 	size_t size;  /* size of the memory pool, in bytes */
+@@ -130,8 +129,8 @@ mempool_alloc_pool(void *data, size_t size,
+ {
+ 	struct mempool *pool = calloc(1, sizeof(*pool));
+ 
+-	COMPILE_TIME_ASSERT(POOL_ALIGN >= __alignof__(struct mempool_item));
+-	assert(!((vaddr_t)data & (POOL_ALIGN - 1)));
++	COMPILE_TIME_ASSERT(MEMPOOL_ALIGN >= __alignof__(struct mempool_item));
++	assert(!((vaddr_t)data & (MEMPOOL_ALIGN - 1)));
+ 
+ 	if (pool) {
+ 		pool->size = size;
+@@ -163,13 +162,13 @@ void *mempool_alloc(struct mempool *pool, size_t size)
+ 						    pool->last_offset);
+ 		offset = pool->last_offset + last_item->size;
+ 
+-		offset = ROUNDUP(offset, POOL_ALIGN);
++		offset = ROUNDUP(offset, MEMPOOL_ALIGN);
+ 		if (offset > pool->size)
+ 			goto error;
+ 	}
+ 
+ 	size = sizeof(struct mempool_item) + size;
+-	size = ROUNDUP(size, POOL_ALIGN);
++	size = ROUNDUP(size, MEMPOOL_ALIGN);
+ 	if (offset + size > pool->size)
+ 		goto error;
+ 
+-- 
+2.7.4
+
