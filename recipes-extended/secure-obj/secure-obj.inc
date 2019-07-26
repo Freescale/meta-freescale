@@ -2,7 +2,7 @@ DESCRIPTION = "Secure Object"
 LICENSE = "BSD"
 
 DEPENDS = "openssl optee-os-qoriq optee-client-qoriq"
-RDEPENDS_${PN} = "bash libcrypto libssl python"
+RDEPENDS_${PN} = "bash libcrypto libssl"
 
 DEPENDS += "python-pycrypto-native"
 
