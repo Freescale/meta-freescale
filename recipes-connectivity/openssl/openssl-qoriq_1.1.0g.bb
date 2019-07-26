@@ -10,7 +10,7 @@ DISABLE_STATIC = ""
 LICENSE = "openssl"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=cae6da10f4ffd9703214776d2aabce32"
 
-DEPENDS += "cryptodev-linux"
+DEPENDS += "cryptodev-linux hostperl-runtime-native"
 DEPENDS_append_class-target = " openssl-native"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/openssl;nobranch=1 \
@@ -167,10 +167,8 @@ do_install_ptest() {
         sed -i 's/$target{shared_extension_simple}/".so.ptest"/' ${D}${PTEST_PATH}/test/recipes/90-test_shlibload.t
 }
 
-RDEPENDS_${PN}-ptest += "perl-module-file-spec-functions bash python"
+RDEPENDS_${PN}-ptest += "perl-module-file-spec-functions bash"
 RRECOMMENDS_libcrypto += "openssl-conf"
-RDEPENDS_${PN}-bin = "perl"
-RDEPENDS_${PN}-misc = "perl"
 
 FILES_${PN} =+ " ${libdir}/ssl-1.1/*"
 
