@@ -1,0 +1,31 @@
+From fb1fe93a2bab083652a65804be5ddd37a7e86a9f Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Wed, 14 Aug 2019 04:05:14 +0200
+Subject: [PATCH] Makefile: update CFLAGS
+
+*fix the below error:
+|error: json_print.h: No such file or directory
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: C.r. Guo <nxa13725@lsv07004.swis.us-cdc01.nxp.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index f89700c..49243d8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -8,7 +8,7 @@ LDFLAGS += -Wl,-export-dynamic
+ # if you are not using flex-builder. Download the iproute2 sources for the
+ # desired version and point to those instead.
+ ifneq ($(IPROUTE2_DIR),)
+-CFLAGS += -I$(IPROUTE2_DIR) -I$(IPROUTE2_DIR)/include
++CFLAGS += -I$(IPROUTE2_DIR) -I$(IPROUTE2_DIR)/include -I$(IPROUTE2_DIR)/usr/include/ -I$(IPROUTE2_DIR)/usr/include/include
+ endif
+ 
+ MODDESTDIR := $(DESTDIR)/usr/lib/tc
+-- 
+2.7.4
+
