@@ -7,7 +7,6 @@ inherit deploy
 
 DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native mbedtls rcw cst-native"
 DEPENDS_append_lx2160a += "ddr-phy"
-DEPENDS_append_qoriq-arm64 += "optee-os-qoriq"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 
 S = "${WORKDIR}/git"
@@ -32,8 +31,13 @@ LD[unexport] = "1"
 
 BOOTTYPE ?= "nor nand qspi flexspi_nor sd emmc"
 BUILD_SECURE = "${@bb.utils.contains('DISTRO_FEATURES', 'secure', 'true', 'false', d)}"
-BUILD_OPTEE = "${@bb.utils.contains('DISTRO_FEATURES', 'optee', 'true', 'false', d)}"
+BUILD_OPTEE = "${@bb.utils.contains('COMBINED_FEATURES', 'optee', 'true', 'false', d)}"
 BUILD_FUSE = "${@bb.utils.contains('DISTRO_FEATURES', 'fuse', 'true', 'false', d)}"
+
+PACKAGECONFIG ??= " \
+    ${@bb.utils.filter('COMBINED_FEATURES', 'optee', d)} \
+"
+PACKAGECONFIG[optee] = ",,optee-os-qoriq"
 
 uboot_boot_sec ?= "${DEPLOY_DIR_IMAGE}/u-boot.bin-tfa-secure-boot"
 uboot_boot ?= "${DEPLOY_DIR_IMAGE}/u-boot.bin-tfa"
