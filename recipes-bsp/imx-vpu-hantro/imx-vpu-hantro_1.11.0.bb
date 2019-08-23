@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=80c0478f4339af024519b3723023fe28"
 PROVIDES = "virtual/imxvpu"
 
 SRC_URI = " \
-    ${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true \
+    ${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
 "
 SRC_URI[md5sum] = "51b811f9523d03ca87f611ba86594311"
 SRC_URI[sha256sum] = "cec620241d303852ddad8601f2025a68abbc1ec26d605103c7e4173749b59e3f"
