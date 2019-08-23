@@ -55,7 +55,7 @@ inherit fsl-eula-unpack distro_features_check
 
 REQUIRED_DISTRO_FEATURES_mx8 = "wayland"
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
 IMX_PACKAGES_GBM     = ""
