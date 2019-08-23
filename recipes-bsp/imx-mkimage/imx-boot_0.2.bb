@@ -1,11 +1,11 @@
-# Copyright 2017-2018 NXP
-
-require imx-mkimage_git.inc
+# Copyright 2017-2019 NXP
 
 DESCRIPTION = "Generate Boot Loader for i.MX 8 device"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 SECTION = "BSP"
+
+require imx-mkimage_git.inc
 
 IMX_EXTRA_FIRMWARE      = "firmware-imx-8 imx-sc-firmware"
 IMX_EXTRA_FIRMWARE_mx8m = "firmware-imx-8m"
@@ -24,12 +24,21 @@ inherit deploy
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
 
+# For i.MX 8, this package aggregates the imx-m4-demos
+# output. Note that this aggregation replaces the aggregation
+# that would otherwise be done in the image build as controlled
+# by IMAGE_BOOTFILES_DEPENDS and IMAGE_BOOTFILES in image_types_fsl.bbclass
+IMX_M4_DEMOS        = ""
+IMX_M4_DEMOS_mx8qm  = "imx-m4-demos:do_deploy"
+IMX_M4_DEMOS_mx8qxp = "imx-m4-demos:do_deploy"
+
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
 do_compile[depends] += " \
     virtual/bootloader:do_deploy \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
     imx-atf:do_deploy \
+    ${IMX_M4_DEMOS} \
 "
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
@@ -88,6 +97,10 @@ compile_mx8() {
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
     cp ${DEPLOY_DIR_IMAGE}/mx8qm-ahab-container.img          ${BOOT_STAGING}
+    cp ${DEPLOY_DIR_IMAGE}/imx8qm_m4_0_TCM_rpmsg_lite_pingpong_rtos_linux_remote_m40.bin \
+                                                             ${BOOT_STAGING}/m4_image.bin
+    cp ${DEPLOY_DIR_IMAGE}/imx8qm_m4_1_TCM_rpmsg_lite_pingpong_rtos_linux_remote_m41.bin \
+                                                             ${BOOT_STAGING}/m4_1_image.bin
 }
 compile_mx8x() {
     bbnote 8QX boot binary build
@@ -95,6 +108,7 @@ compile_mx8x() {
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
+    cp ${DEPLOY_DIR_IMAGE}/imx8qx_m4_TCM_srtm_demo.bin       ${BOOT_STAGING}/m4_image.bin
 }
 do_compile() {
     compile_${SOC_FAMILY}
@@ -131,11 +145,14 @@ deploy_mx8() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/mx8qm-ahab-container.img ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/m4_image.bin             ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/m4_1_image.bin           ${DEPLOYDIR}/${BOOT_TOOLS}
 }
 deploy_mx8x() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/mx8qx-ahab-container.img ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/m4_image.bin             ${DEPLOYDIR}/${BOOT_TOOLS}
 }
 do_deploy() {
     deploy_${SOC_FAMILY}
