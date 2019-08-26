@@ -2,9 +2,9 @@ SUMMARY = "DDR firmware repository"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=89cc852481956e861228286ac7430d74"
 
-inherit deploy fsl-eula-unpack
+inherit deploy 
 
-SRC_URI = "git://github.com/nxp/ddr-phy-binary.git;fsl-eula=true;nobranch=1"
+SRC_URI = "git://github.com/nxp/ddr-phy-binary.git;nobranch=1"
 SRCREV = "14d03e6e748ed5ebb9440f264bb374f1280b061c"
 
 S = "${WORKDIR}/git"
