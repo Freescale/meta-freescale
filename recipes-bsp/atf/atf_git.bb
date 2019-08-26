@@ -64,7 +64,12 @@ do_compile() {
     export LIBPATH="${RECIPE_SYSROOT_NATIVE}"
     install -d ${S}/include/tools_share/openssl
     cp -r ${RECIPE_SYSROOT}/usr/include/openssl/*   ${S}/include/tools_share/openssl
-    ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/gen_keys 1024
+    if [ ! -f ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/srk.pri ]; then
+       ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/gen_keys 1024
+    else
+       cp ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/srk.pri ${S}
+       cp ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/srk.pub ${S}
+    fi
 
     if [ "${BUILD_FUSE}" = "true" ]; then
        ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/gen_fusescr ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/input_files/gen_fusescr/${chassistype}/input_fuse_file
