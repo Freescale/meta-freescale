@@ -33,6 +33,8 @@ python() {
             d.appendVar("RREPLACES_%s" % p, p.replace('qemu-qoriq', 'qemu'))
 }
 
+EXTRA_OECONF_append = " --python=python2.7"
+
 PPC_OECONF = '--enable-fdt --enable-kvm --with-system-pixman --disable-werror'
 EXTRA_OECONF_qoriq-arm64 = "--prefix=${prefix} --target-list=aarch64-softmmu --enable-fdt --enable-kvm --with-system-pixman --disable-werror"
 EXTRA_OECONF_qoriq-arm = "--prefix=${prefix} --target-list=arm-softmmu --enable-fdt --enable-kvm --with-system-pixman --disable-werror"
