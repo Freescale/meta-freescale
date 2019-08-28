@@ -19,8 +19,7 @@ SRCREV = "79df0577f5467dfaf0b2469ce3973a342f0c9e90"
 
 S = "${WORKDIR}/git"
 
-COMPATIBLE_HOST_mipsarchn32 = "null"
-COMPATIBLE_HOST_mipsarchn64 = "null"
+COMPATIBLE_MACHINE = "(qoriq|imx)"
 
 PROVIDES = "qemu"
 
