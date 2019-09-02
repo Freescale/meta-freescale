@@ -18,6 +18,7 @@ SRC_URI += "file://0001-fix-fiptool-build-error.patch \
     file://0001-Makefile-add-CC-gcc.patch \
 "
 COMPATIBLE_MACHINE = "(qoriq)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 PLATFORM = "${MACHINE}"
 PLATFORM_ls1088ardb-pb = "ls1088ardb"
 # requires CROSS_COMPILE set by hand as there is no configure script
