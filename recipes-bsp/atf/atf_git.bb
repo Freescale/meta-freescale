@@ -204,4 +204,3 @@ do_deploy() {
 addtask deploy after do_install
 FILES_${PN} += "/boot"
 BBCLASSEXTEND = "native nativesdk"
-COMPATIBLE_MACHINE = "(qoriq)"
