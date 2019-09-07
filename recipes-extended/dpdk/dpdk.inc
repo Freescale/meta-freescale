@@ -24,6 +24,8 @@ COMPATIBLE_HOST_armv4 = 'null'
 COMPATIBLE_HOST_armv5 = 'null'
 COMPATIBLE_HOST_armv6 = 'null'
 
+COMPATIBLE_MACHINE = "(imx)"
+
 DPDK_RTE_TARGET_x86-64 = "x86_64-native-linuxapp-gcc"
 DPDK_RTE_TARGET_x86 = "i686-native-linuxapp-gcc"
 DPDK_RTE_TARGET_armv7a = "${ARCH}-armv7a-linuxapp-gcc"
