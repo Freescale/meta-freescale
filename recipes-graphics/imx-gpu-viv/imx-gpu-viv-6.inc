@@ -153,7 +153,7 @@ do_install () {
     cp -r ${S}/gpu-demos/opt ${D}
     cp -r ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
 
-    # Use vulkan header from vulkan recipe to support vkmark
+    # Use vulkan header from vulkan-headers recipe to support vkmark
     rm -rf ${D}${includedir}/vulkan/
 
     install -d ${D}${libdir}/pkgconfig
