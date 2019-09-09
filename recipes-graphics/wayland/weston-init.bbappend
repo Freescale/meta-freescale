@@ -13,11 +13,6 @@ HAS_XWAYLAND = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland x11', 'true', '
 
 do_install_append() {
     if ${HAS_SYSTEMD}; then
-        sed -i \
-            -e 's,/usr/bin,${bindir},g' \
-            -e 's,/etc,${sysconfdir},g' \
-            -e 's,/var,${localstatedir},g' \
-            ${D}${systemd_system_unitdir}/weston.service
         if ${HAS_XWAYLAND}; then
             install -Dm0755 ${WORKDIR}/weston.config ${D}${sysconfdir}/default/weston
         fi
