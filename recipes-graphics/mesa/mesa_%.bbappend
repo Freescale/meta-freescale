@@ -22,15 +22,15 @@ GALLIUMDRIVERS_append_use-mainline-bsp_armv7ve = ",etnaviv,kmsro,vc4"
 # Define the osmesa block in PACKAGECONFIG for target, this block is
 # not defined in the master recipe, effectively causing the osmesa
 # feature to be disabled and -Dosmesa=none set.
-PACKAGECONFIG_append_mx8mm = " osmesa"
+PACKAGECONFIG_append_mx8 = " osmesa"
 
 # Solve 'Problem encountered: OSMesa classic requires dri (classic) swrast.'
 # by defining the dri swrast for mx8mm machine
-DRIDRIVERS_append_mx8mm = "swrast"
+DRIDRIVERS_append_mx8 = "swrast"
 
 # Solve 'ERROR: Problem encountered: Only one swrast provider can be built'
 # by excluding gallium support, dri is used together with 'classic' mesa backend.
-PACKAGECONFIG_remove_mx8mm = "gallium"
+PACKAGECONFIG_remove_mx8 = "gallium"
 
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
