@@ -14,7 +14,7 @@ RULE = "71-fsl-dpaa-persistent-networking.rules"
 RULE_e6500 = "72-fsl-dpaa-persistent-networking.rules"
 RULE_e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
 RULE_t1024 = "72-fsl-dpaa-persistent-networking.rules"
-RULE_ls1043a = "73-fsl-dpaa-persistent-networking.rules"
+RULE_qoriq-arm64 = "73-fsl-dpaa-persistent-networking.rules"
 RULE_ls1046a = "73-fsl-dpaa-persistent-networking.rules \
     74-ls1046a-xfi2-networking.rules \
 "
