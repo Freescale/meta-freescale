@@ -252,9 +252,9 @@ PREFERRED_PROVIDER_virtual/libgles2_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d            ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d_imxdpu     ?= "imx-dpu-g2d"
 
-PREFERRED_VERSION_weston_mx6 ?= "4.0.0.imx"
-PREFERRED_VERSION_weston_mx7 ?= "4.0.0.imx"
-PREFERRED_VERSION_weston_mx8 ?= "4.0.0.imx"
+PREFERRED_VERSION_weston_mx6 ?= "5.0.0.imx"
+PREFERRED_VERSION_weston_mx7 ?= "5.0.0.imx"
+PREFERRED_VERSION_weston_mx8 ?= "5.0.0.imx"
 
 PREFERRED_VERSION_wayland-protocols_mx6 ?= "1.17.imx"
 PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.17.imx"
