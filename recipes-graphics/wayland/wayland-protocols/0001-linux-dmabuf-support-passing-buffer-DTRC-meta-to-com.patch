@@ -1,0 +1,49 @@
+From 50ea8fbdd1b768ccaa33dfee43b0f12245ef09b8 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Wed, 5 Sep 2018 13:00:47 +0800
+Subject: [PATCH] linux-dmabuf: support passing buffer DTRC meta to compositor
+
+DTRC meta is untilized to pass offset to DTRC in drm dcss driver
+to enable video tile compress
+
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+---
+ unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml b/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml
+index 154afe2..9c955c7 100644
+--- a/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml
++++ b/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml
+@@ -343,6 +343,28 @@
+       <arg name="flags" type="uint" summary="see enum flags"/>
+     </request>
+ 
++    <request name="add_dtrc_meta">
++      <description summary="add dtrc meta in this dmabuf">
++        This request adds one dmabuf to the set in this
++        zwp_linux_buffer_params_v1.
++
++        The 64-bit unsigned value combined from modifier_hi and modifier_lo
++        is the dmabuf layout modifier. DRM AddFB2 ioctl calls this the
++        fb modifier, which is defined in drm_mode.h of Linux UAPI.
++        This is an opaque token. Drivers use this token to express tiling,
++        compression, etc. driver-specific modifications to the base format
++        defined by the DRM fourcc code.
++
++        This request raises the PLANE_IDX error if plane_idx is too large.
++        The error PLANE_SET is raised if attempting to set a plane that
++        was already set.
++      </description>
++      <arg name="rfc_chroma_offset" type="uint"
++           summary="high 32 bits of DTRC offset"/>
++      <arg name="rfc_luma_offset" type="uint"
++           summary="low 32 bits of DTRC offset"/>
++    </request>
++
+   </interface>
+ 
+ </protocol>
+-- 
+2.7.4
+

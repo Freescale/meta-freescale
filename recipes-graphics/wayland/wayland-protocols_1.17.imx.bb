@@ -12,7 +12,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c7b12b6702da38ca028ace54aae3d484 \
 ARCHIVE_NAME = "${BPN}-1.17"
 SRC_URI = "https://wayland.freedesktop.org/releases/${ARCHIVE_NAME}.tar.xz \
            file://0001-unstable-Add-alpha-compositing-protocol.patch \
-           file://0002-unstable-Add-hdr10-metadata-protocol.patch"
+           file://0002-unstable-Add-hdr10-metadata-protocol.patch \
+           file://0001-linux-dmabuf-support-passing-buffer-DTRC-meta-to-com.patch \
+           "
 SRC_URI[md5sum] = "55ddd5fdb02b73b9de9559aaec267315"
 SRC_URI[sha256sum] = "df1319cf9705643aea9fd16f9056f4e5b2471bd10c0cc3713d4a4cdc23d6812f"
 S = "${WORKDIR}/${ARCHIVE_NAME}"
