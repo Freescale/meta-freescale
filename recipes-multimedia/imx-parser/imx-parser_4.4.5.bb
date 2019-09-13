@@ -13,7 +13,7 @@ RREPLACES_${PN} = "libfslparser"
 RPROVIDES_${PN} = "libfslparser"
 RCONFLICTS_${PN} = "libfslparser"
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 SRC_URI[md5sum] = "7fa7b0fa1682cae71c3a163da866f676"
 SRC_URI[sha256sum] = "de86b57b429c0e6ed6b6842e5af1ec4d7b9d2074234769de6ba2edf04c967acd"
 

@@ -8,7 +8,7 @@ SECTION = "BSP"
 
 inherit fsl-eula-unpack deploy
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
 SRC_URI[md5sum] = "1a37cfcb0c7d338f5b69cb8248c452e3"
 SRC_URI[sha256sum] = "05efa9ba86533e99cb508c4982afe9de16abbee2710db623359d856384247a64"
