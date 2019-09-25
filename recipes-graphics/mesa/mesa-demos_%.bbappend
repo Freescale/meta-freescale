@@ -2,7 +2,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI_append_imxgpu = " file://Replace-glWindowPos2iARB-calls-with-glWindowPos2i.patch \
                     file://fix-clear-build-break.patch \
-                    file://Additional-eglSwapBuffer-calling-makes-wrong-throttl.patch \
                     file://Add-OpenVG-demos-to-support-wayland.patch"
 
 PACKAGECONFIG_REMOVE_IF_2D_ONLY          = ""
