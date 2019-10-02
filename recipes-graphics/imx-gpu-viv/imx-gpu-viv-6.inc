@@ -18,6 +18,7 @@ DEPENDS += " \
                                                        '', d)} \
 "
 DEPENDS_append_imxdrm = " libdrm wayland"
+DEPENDS_append_mx8 = " patchelf-native"
 
 # imx-gpu-viv does not provide everything it needs to for virtual/libgl
 # on x11 backend or on Wayland backend with XWayland support.
@@ -233,12 +234,10 @@ do_install () {
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
     if [ "${IS_MX8}" = "1" ]; then
-        # Install the vulkan driver in a sub-folder. When installed in the same
-        # folder as the vulkan loader layer library, an incorrect linkage is
-        # created from libvulkan.so.1 to our library instead of the loader
-        # layer library.
-        install -d ${D}${libdir}/vulkan
-        mv ${D}${libdir}/libvulkan-${backend}.so ${D}${libdir}/vulkan/libvulkan_VSI.so
+        # Change libvulkon.so driver soname, so that it does not clash with the
+        # vulkan-loader libvulkan.so
+        patchelf --set-soname libvulkan_VSI.so.1 ${D}${libdir}/libvulkan-${backend}.so
+        mv ${D}${libdir}/libvulkan-${backend}.so ${D}${libdir}/libvulkan_VSI.so
     fi
     for header in ${GLES3_HEADER_REMOVALS}; do
         rm -f ${D}${includedir}/GLES3/${header}
@@ -307,9 +306,8 @@ FILES_libgbm-imx_mx8           = "${libdir}/libgbm${SOLIBS} ${libdir}/gbm_viv${S
 FILES_libgbm-imx-dev_mx8       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h ${libdir}/libgbm${SOLIBSDEV}"
 RDEPENDS_libgbm-imx_append_mx8 = " libdrm"
 
-FILES_libvulkan-imx = "${libdir}/vulkan/libvulkan_VSI${SOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
-FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/vulkan/libvulkan_VSI${SOLIBSDEV}"
-INSANE_SKIP_libvulkan-imx += "dev-deps dev-so"
+FILES_libvulkan-imx = "${libdir}/libvulkan_VSI${SOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
+FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 
 FILES_libopenvx-imx = "${libdir}/libOpenVX${SOLIBS} ${libdir}/libOpenVXC${SOLIBS} ${libdir}/libOpenVXU${SOLIBS}"
 FILES_libopenvx-imx-dev = "${includedir}/VX ${libdir}/libopenVX${SOLIBSDEV}"
