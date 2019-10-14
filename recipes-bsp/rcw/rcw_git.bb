@@ -8,11 +8,11 @@ DEPENDS += "change-file-endianess-native tcl-native"
 inherit deploy siteinfo
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/rcw;nobranch=1"
-SRCREV = "93358b4872bc69f1e3757739d70f20c8b18894e4"
+SRCREV = "b73c4f6e5ad772aca5a8990f0ccc45d387ee7ac6"
 
 S = "${WORKDIR}/git"
 
-export PYTHON = "${USRBINPATH}/python2"
+export PYTHON = "${USRBINPATH}/python3"
 
 M="${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
