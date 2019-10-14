@@ -12,7 +12,7 @@ do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 S = "${WORKDIR}/git"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/atf;nobranch=1"
-SRCREV = "17f94e4315e81e3d1b22d863d9614d724e8273dc"
+SRCREV = "85e98b945172118c55f0cea9c1f655b4307e6fab"
 
 SRC_URI += "file://0001-fix-fiptool-build-error.patch \
     file://0001-Makefile-add-CC-gcc.patch \
@@ -33,9 +33,11 @@ LD[unexport] = "1"
 EXTRA_OEMAKE += "HOSTCC='${BUILD_CC} ${BUILD_CPPFLAGS} ${BUILD_CFLAGS} ${BUILD_LDFLAGS}'"
 
 BOOTTYPE ?= "nor nand qspi flexspi_nor sd emmc"
+OTABOOTTYPE ?= "nor qspi flexspi_nor"
 BUILD_SECURE = "${@bb.utils.contains('DISTRO_FEATURES', 'secure', 'true', 'false', d)}"
 BUILD_OPTEE = "${@bb.utils.contains('COMBINED_FEATURES', 'optee', 'true', 'false', d)}"
 BUILD_FUSE = "${@bb.utils.contains('DISTRO_FEATURES', 'fuse', 'true', 'false', d)}"
+BUILD_OTA = "${@bb.utils.contains('DISTRO_FEATURES', 'ota', 'true', 'false', d)}"
 
 PACKAGECONFIG ??= " \
     ${@bb.utils.filter('COMBINED_FEATURES', 'optee', d)} \
@@ -95,11 +97,19 @@ do_compile() {
         bl32opt="BL32=${bl32}"
         spdopt="SPD=opteed" 
     fi
+
+    if [ "${BUILD_OTA}" = "true" ]; then
+        otaopt="POLICY_OTA=1"
+        btype="${OTABOOTTYPE}"
+    else
+        btype="${BOOTTYPE}"
+    fi
+
     if [ -f ${DEPLOY_DIR_IMAGE}/ddr-phy/ddr4_pmu_train_dmem.bin ]; then
         cp ${DEPLOY_DIR_IMAGE}/ddr-phy/*.bin ${S}/
     fi
 
-    for d in ${BOOTTYPE}; do
+    for d in ${btype}; do
         case $d in
         nor)
             rcwimg="${RCWNOR}${rcwtemp}.bin"
@@ -118,6 +128,9 @@ do_compile() {
         sd)
             rcwimg="${RCWSD}${rcwtemp}.bin"
             ;;
+        emmc)
+            rcwimg="${RCWEMMC}${rcwtemp}.bin"
+            ;;
         flexspi_nor)
             rcwimg="${RCWXSPI}${rcwtemp}.bin"
             uefiboot="${UEFI_XSPIBOOT}"
@@ -126,7 +139,7 @@ do_compile() {
             
 	if [ -f "${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg}" ]; then
                 oe_runmake V=1 -C ${S} realclean
-                oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt}
+                oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
                 cp -r ${S}/build/${PLATFORM}/release/bl2_${d}*.pbl ${S}
                 cp -r ${S}/build/${PLATFORM}/release/fip.bin ${S}
                 if [ "${BUILD_FUSE}" = "true" ]; then
@@ -135,7 +148,7 @@ do_compile() {
 
                 if [ ${MACHINE} = ls1012afrwy ]; then
                     oe_runmake V=1 -C ${S} realclean
-                    oe_runmake V=1 -C ${S} all fip pbl PLAT=ls1012afrwy_512mb BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt}
+                    oe_runmake V=1 -C ${S} all fip pbl PLAT=ls1012afrwy_512mb BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
                     cp -r ${S}/build/ls1012afrwy_512mb/release/bl2_qspi${secext}.pbl ${S}/bl2_${d}${secext}_512mb.pbl
                     cp -r ${S}/build/ls1012afrwy_512mb/release/fip.bin ${S}/fip_512mb.bin
                     if [ "${BUILD_FUSE}" = "true" ]; then
@@ -144,7 +157,7 @@ do_compile() {
                 fi
                 if [ -n "${uefiboot}" -a -f "${DEPLOY_DIR_IMAGE}/uefi/${PLATFORM}/${uefiboot}" ]; then
                     oe_runmake V=1 -C ${S} realclean
-                    oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${DEPLOY_DIR_IMAGE}/uefi/${PLATFORM}/${uefiboot} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt}
+                    oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${DEPLOY_DIR_IMAGE}/uefi/${PLATFORM}/${uefiboot} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
                     cp -r ${S}/build/${PLATFORM}/release/fip.bin ${S}/fip_uefi.bin
                 fi
         fi
