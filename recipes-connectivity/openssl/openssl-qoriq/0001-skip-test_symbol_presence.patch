@@ -1,0 +1,29 @@
+From 097b9081eced6ffc13c6cbb83abf7110baeca902 Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Mon, 14 Oct 2019 14:59:11 +0800
+Subject: [PATCH] skip test_symbol_presence
+
+Upstream-Status: Inappropriate [OE Specific]
+
+Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
+---
+ test/recipes/01-test_symbol_presence.t | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/test/recipes/01-test_symbol_presence.t b/test/recipes/01-test_symbol_presence.t
+index 7f2a2d7..918a8a19 100644
+--- a/test/recipes/01-test_symbol_presence.t
++++ b/test/recipes/01-test_symbol_presence.t
+@@ -14,8 +14,7 @@ use OpenSSL::Test::Utils;
+ 
+ setup("test_symbol_presence");
+ 
+-plan skip_all => "Only useful when building shared libraries"
+-    if disabled("shared");
++plan skip_all => "The case needs debug symbols then we just disable it";
+ 
+ my @libnames = ("crypto", "ssl");
+ my $testcount = scalar @libnames;
+-- 
+2.7.4
+
