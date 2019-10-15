@@ -15,7 +15,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/qemu;nobr
            file://run-ptest \
            "
 
-SRCREV = "79df0577f5467dfaf0b2469ce3973a342f0c9e90"
+SRCREV = "ca6417b6c3fa7a965d021c98d079a1895c973dbb"
 
 S = "${WORKDIR}/git"
 
