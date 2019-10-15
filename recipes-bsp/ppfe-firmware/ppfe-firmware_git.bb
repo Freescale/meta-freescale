@@ -8,7 +8,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 inherit deploy fsl-eula-unpack
 
 SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;fsl-eula=true;nobranch=1"
-SRCREV = "58aa0cac630528ed91fe5639700d6b571c0c07b5"
+SRCREV = "d3a8ef0760c54ddc243039c86389497e37be90ab"
 
 S = "${WORKDIR}/git"
 
