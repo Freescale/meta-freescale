@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=175792518e4ac015ab6696d16c4f607e"
 
 OECMAKE_SOURCEPATH = "${S}/src"
 
-SRCREV = "ff7bf7bdc0fd5a7029abdf9083178d066a42a9fb"
+SRCREV = "ea4f900311027e4c50f101e08c12920f6e2ddf8d"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/vpp;nobranch=1 \
 	file://0001-GCC-above-5.4-fails-when-we-specify-arch-funattribut.patch \
