@@ -9,7 +9,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobr
            file://0001-Add-RTE_KERNELDIR_OUT.patch \
            file://0004-update-WERROR_FLAGS.patch \
 "
-SRCREV = "0123ced10233e7de8a72f743e2ae7e9791124f07"
+SRCREV = "a36da6a94243015b228c15b8b9aa1e650fd4b96d"
 
 RDEPENDS_${PN} += "python-subprocess"
 DEPENDS = "virtual/kernel openssl"
@@ -87,12 +87,18 @@ do_install () {
 	# Install examples
         install -d 0644 ${D}/${datadir}/dpdk/cmdif/include
         install -d 0644 ${D}/${datadir}/dpdk/cmdif/lib
+        install -d 0644 ${D}/${datadir}/dpdk/examples
         cp examples/cmdif/lib/client/fsl_cmdif_client.h examples/cmdif/lib/server/fsl_cmdif_server.h \
             examples/cmdif/lib/shbp/fsl_shbp.h      ${D}/${datadir}/dpdk/cmdif/include
         cp examples/cmdif/lib/${RTE_TARGET}/librte_cmdif.a ${D}/${datadir}/dpdk/cmdif/lib
         install -d 0644 ${D}/${datadir}/dpdk/examples/ipsec_secgw
 	cp -r ${S}/examples/ipsec-secgw/*.cfg  ${D}/${datadir}/dpdk/examples/ipsec_secgw
         cp -rf ${S}/nxp/* ${D}/${datadir}/dpdk
+        cp -r ${S}/examples/cmdif/cmdif_demo/${DPDK_RTE_TARGET}/cmdif_demo ${D}/${datadir}/dpdk/examples
+        cp -r ${S}/examples/vhost/vhost-switch ${D}/${datadir}/dpdk/examples
+        for APP in l2fwd l3fwd l2fwd-qdma l2fwd-crypto ipsec-secgw  kni ip_fragmentation ip_reassembly; do
+            cp -r ${S}/examples/${APP}/${APP}  ${D}/${datadir}/dpdk/examples
+        done
 }
 
 PACKAGES += "${PN}-examples"
