@@ -9,7 +9,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobr
            file://0001-Add-RTE_KERNELDIR_OUT.patch \
            file://0004-update-WERROR_FLAGS.patch \
 "
-SRCREV = "0123ced10233e7de8a72f743e2ae7e9791124f07"
+SRCREV = "a36da6a94243015b228c15b8b9aa1e650fd4b96d"
 
 RDEPENDS_${PN} += "python-subprocess"
 DEPENDS = "virtual/kernel openssl"
@@ -33,7 +33,7 @@ DPDK_RTE_TARGET_armv7ve = "${ARCH}-armv7a-linuxapp-gcc"
 DPDK_RTE_TARGET ?= "${ARCH}-dpaa-linuxapp-gcc"
 
 TLSDIALECT ?= ""
-TLSDIALECT_aarch64 ?= "-mtls-dialect=trad"
+TLSDIALECT_aarch64 ?= "-ftls-model=local-dynamic"
 
 export RTE_TARGET = "${DPDK_RTE_TARGET}"
 export RTE_OUTPUT = "${S}/${RTE_TARGET}"
@@ -61,7 +61,7 @@ do_compile () {
 	oe_runmake  CONFIG_RTE_EAL_IGB_UIO=n CONFIG_RTE_KNI_KMOD=y \
 	            CONFIG_RTE_LIBRTE_PMD_OPENSSL=y \
                    EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu" \
-		   EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR} -fPIC ${TLSDIALECT}" \
+		   EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR} -Ofast -fPIC ${TLSDIALECT}" \
 		   CROSS="${TARGET_PREFIX}" \
 		   prefix=""  LDFLAGS="${TUNE_LDARGS}"  WERROR_FLAGS="-w" V=1
 
