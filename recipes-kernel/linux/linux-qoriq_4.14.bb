@@ -8,6 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nobranch=1 \
     file://0001-Makfefile-add-cflags.patch \
+    file://0001-perf-tools-Add-Python-3-support.patch \
 "
 SRCREV = "328b263103fbd83f7c7a5d42acef266375a2f717"
 
