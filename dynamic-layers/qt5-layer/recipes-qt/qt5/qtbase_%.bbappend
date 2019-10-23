@@ -11,7 +11,6 @@ SRC_URI_append_imxgpu2d = " \
 "
 SRC_URI_APPEND_3D_NOT_X11 = " \
     file://0015-Add-eglfs-to-IMX-GPU.patch \
-    file://0016-Configure-eglfs-with-egl-pkg-config.patch \
 "
 SRC_URI_append_imxgpu3d = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', '${SRC_URI_APPEND_3D_NOT_X11}', d)} \
