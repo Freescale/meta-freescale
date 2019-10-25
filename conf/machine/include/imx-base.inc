@@ -266,6 +266,11 @@ PREFERRED_VERSION_libdrm_mx6 ?= "2.4.91.imx"
 PREFERRED_VERSION_libdrm_mx7 ?= "2.4.91.imx"
 PREFERRED_VERSION_libdrm_mx8 ?= "2.4.91.imx"
 
+# Use i.MX optee Version
+PREFERRED_VERSION_optee-os_mx8     ?= "3.2.0.imx"
+PREFERRED_VERSION_optee-client_mx8 ?= "3.2.0.imx"
+PREFERRED_VERSION_optee-test_mx8   ?= "3.2.0.imx"
+
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
 IMX_DEFAULT_KERNEL_mxs = "linux-fslc"
@@ -287,19 +292,29 @@ SOC_DEFAULT_IMAGE_FSTYPES_mxs = "uboot-mxsboot-sdcard wic.gz"
 # Do not update fstab file when using wic images
 WIC_CREATE_EXTRA_ARGS ?= "--no-fstab-update"
 
+OPTEE_BOOT_IMAGE         = "uTee"
+OPTEE_BOOT_IMAGE_aarch64 = ""
+
+SDCARD_ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}.rootfs.ext4"
+
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
 IMAGE_BOOT_FILES ?= " \
     ${KERNEL_IMAGETYPE} \
     ${@make_dtb_boot_files(d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_BOOT_IMAGE}', '', d)} \
 "
 
 ### wic default support
+OPTEE_WKS_FILE_DEPENDS         = "optee-os"
+OPTEE_WKS_FILE_DEPENDS_aarch64 = ""
+
 WKS_FILE_DEPENDS ?= " \
     virtual/bootloader \
     \
     e2fsprogs-native \
     bmap-tools-native \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_WKS_FILE_DEPENDS}', '', d)} \
 "
 
 WKS_FILE_DEPENDS_mx8 += "imx-boot"

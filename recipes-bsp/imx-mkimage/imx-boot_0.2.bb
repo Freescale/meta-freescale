@@ -14,6 +14,7 @@ DEPENDS += " \
     firmware-imx \
     ${IMX_EXTRA_FIRMWARE} \
     imx-atf \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
 DEPENDS_append_mx8m = " dtc-native"
 BOOT_NAME = "imx-boot"
@@ -30,6 +31,7 @@ do_compile[depends] += " \
     virtual/bootloader:do_deploy \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
     imx-atf:do_deploy \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
@@ -39,7 +41,7 @@ ATF_MACHINE_NAME_mx8qm = "bl31-imx8qm.bin"
 ATF_MACHINE_NAME_mx8qxp = "bl31-imx8qx.bin"
 ATF_MACHINE_NAME_mx8mq = "bl31-imx8mq.bin"
 ATF_MACHINE_NAME_mx8mm = "bl31-imx8mm.bin"
-ATF_MACHINE_NAME_append = "${@bb.utils.contains('COMBINED_FEATURES', 'optee', '-optee', '', d)}"
+ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
 BOOT_CONFIG_MACHINE = "${BOOT_NAME}-${MACHINE}-${UBOOT_CONFIG}.bin"
@@ -51,6 +53,8 @@ SOC_TARGET_mx8qm  = "iMX8QM"
 SOC_TARGET_mx8qxp = "iMX8QX"
 SOC_TARGET_mx8mq  = "iMX8M"
 SOC_TARGET_mx8mm  = "iMX8MM"
+
+DEPLOY_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
 IMXBOOT_TARGETS ?= \
     "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi', \
@@ -99,6 +103,9 @@ compile_mx8x() {
 do_compile() {
     compile_${SOC_FAMILY}
     # mkimage for i.MX8
+    if ${DEPLOY_OPTEE}; then
+        cp ${DEPLOY_DIR_IMAGE}/tee.bin ${BOOT_STAGING}
+    fi
     for target in ${IMXBOOT_TARGETS}; do
         bbnote "building ${SOC_TARGET} - ${target}"
         make SOC=${SOC_TARGET} dtbs=${UBOOT_DTB_NAME} ${target}
@@ -141,6 +148,12 @@ do_deploy() {
     deploy_${SOC_FAMILY}
     # copy the tool mkimage to deploy path and sc fw, dcd and uboot
     install -m 0644 ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}        ${DEPLOYDIR}/${BOOT_TOOLS}
+
+    # copy tee.bin to deploy path
+    if ${DEPLOY_OPTEE}; then
+       install -m 0644 ${DEPLOY_DIR_IMAGE}/tee.bin ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+
     # copy makefile (soc.mak) for reference
     install -m 0644 ${BOOT_STAGING}/soc.mak                  ${DEPLOYDIR}/${BOOT_TOOLS}
     # copy the generated boot image to deploy path
