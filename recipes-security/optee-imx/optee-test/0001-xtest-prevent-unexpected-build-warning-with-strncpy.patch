@@ -1,0 +1,66 @@
+Upstream-Status: Backport 3.4.0
+
+Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+---
+From 493574ad1f4f56dd63097a652b87c25c507ce99c Mon Sep 17 00:00:00 2001
+From: Etienne Carriere <etienne.carriere@linaro.org>
+Date: Fri, 21 Dec 2018 15:36:00 +0100
+Subject: [PATCH] xtest: prevent unexpected build warning with strncpy
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This change modifies adbg_run.c to prevent a false positive
+warning reported by GCC 8.2 on usage of strncpy():
+
+    build/optee_test/host/xtest/adbg/src/adbg_run.c: In function ‘Do_ADBG_AppendToSuite’:
+    build/optee_test/host/xtest/adbg/src/adbg_run.c:103:3: error: ‘strncpy’ specified bound depends on the length of the source argument [-Werror=stringop-overflow=]
+       strncpy(p, Source_p->SuiteID_p, size);
+       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    build/optee_test/host/xtest/adbg/src/adbg_run.c:88:9: note: length computed here
+      size = strlen(Source_p->SuiteID_p);
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+    cc1: all warnings being treated as errors
+
+From [1]:
+  Using strncpy Safely
+  In general, it is not possible to avoid string truncation by strncpy
+  except by sizing the destination to be at least a byte larger than
+  the length of the source string. With that approach, however, using
+  strncpy becomes unnecessary and the function can be avoided in favor
+  of other APIs such as strcpy or (less preferably) memcpy. Much has
+  been written about the problems with strncpy and we recommend to
+  avoid it whenever possible. It is, however, worth keeping in mind
+  that unlike other standard string-handling functions, strncpy always
+  writes exactly as many characters as specified by the third argument;
+  if the source string is shorter, the function fills the remaining
+  bytes with NULs.
+
+This change prefers using a snprintf() as used in the alternate
+instruction block of the strncpy() call.
+
+[1] https://developers.redhat.com/blog/2018/05/24/detecting-string-truncation-with-gcc-8/
+
+Signed-off-by: Etienne Carriere <etienne.carriere@linaro.org>
+Signed-off-by: Simon Hughes <simon.hughes@arm.com>
+Reviewed-by: Jens Wiklander <jens.wiklander@linaro.org>
+---
+ host/xtest/adbg/src/adbg_run.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/host/xtest/adbg/src/adbg_run.c b/host/xtest/adbg/src/adbg_run.c
+index 406e429..2739db5 100644
+--- a/host/xtest/adbg/src/adbg_run.c
++++ b/host/xtest/adbg/src/adbg_run.c
+@@ -100,7 +100,7 @@ int Do_ADBG_AppendToSuite(
+ 		snprintf(p, size, "%s+%s", Dest_p->SuiteID_p,
+ 			 Source_p->SuiteID_p);
+ 	else
+-		strncpy(p, Source_p->SuiteID_p, size);
++		snprintf(p, size, "%s", Source_p->SuiteID_p);
+ 	free((void *)Dest_p->SuiteID_p);
+ 	Dest_p->SuiteID_p = p;
+ 
+-- 
+2.7.4
+

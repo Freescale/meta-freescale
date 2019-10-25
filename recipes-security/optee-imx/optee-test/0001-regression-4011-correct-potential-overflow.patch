@@ -1,0 +1,72 @@
+Upstream-Status: Backport 3.4.0
+
+Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+---
+From 0953bf0abb08fb98d24b7966001171a707fbb9b9 Mon Sep 17 00:00:00 2001
+From: Etienne Carriere <etienne.carriere@linaro.org>
+Date: Fri, 21 Dec 2018 15:36:25 +0100
+Subject: [PATCH] regression 4011: correct potential overflow
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fix issues reported by GCC 8.2.0.
+
+build/optee_test/host/xtest/regression_4000.c: In function ‘xtest_tee_test_4011’:
+build/optee_test/host/xtest/regression_4000.c:5029:3: error: ‘memmove’ pointer overflow between offset [0, 8] and size [4294967295, 2147483647] accessing array ‘tmp’ with type ‘uint8_t[1024]’ {aka ‘unsigned char[1024]’} [-Werror=array-bounds]
+   memmove(tmp + n + i, tmp + m, tmp_size - m);
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+build/optee_test/host/xtest/regression_4000.c:4927:10: note: array ‘tmp’ declared here
+  uint8_t tmp[1024];
+          ^~~
+build/optee_test/host/xtest/regression_4000.c:5029:3: error: ‘memmove’ specified size 4294967295 exceeds maximum object size 2147483647 [-Werror=stringop-overflow=]
+   memmove(tmp + n + i, tmp + m, tmp_size - m);
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
+
+Reported-by: Simon Hughes <simon.hughes@arm.com>
+Signed-off-by: Etienne Carriere <etienne.carriere@linaro.org>
+Reviewed-by: Jens Wiklander <jens.wiklander@linaro.org>
+---
+ host/xtest/regression_4000.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/host/xtest/regression_4000.c b/host/xtest/regression_4000.c
+index 766aad2..205a226 100644
+--- a/host/xtest/regression_4000.c
++++ b/host/xtest/regression_4000.c
+@@ -5018,18 +5018,28 @@ static void xtest_tee_test_4011(ADBG_Case_t *c)
+ 				out, out_size, tmp, &tmp_size)))
+ 			goto out;
+ 
++		if (!ADBG_EXPECT_COMPARE_UNSIGNED(c, tmp_size, <=, sizeof(tmp)))
++			goto out;
++
+ 		/* 4.1 */
+-		for (n = 0; n < tmp_size; n++)
++		for (n = 0; n < tmp_size - i; n++)
+ 			if (tmp[n] == 0xff)
+ 				break;
++
++		/* Shall find at least a padding start before buffer end */
++	        if (!ADBG_EXPECT_COMPARE_UNSIGNED(c, n, <, tmp_size - i - 1))
++			goto out;
++
+ 		for (m = n + 1; m < tmp_size; m++)
+ 			if (tmp[m] != 0xff)
+ 				break;
++
+ 		/* 4.2 */
+ 		memmove(tmp + n + i, tmp + m, tmp_size - m);
++
+ 		/* 4.3 */
+-		for (n = n + tmp_size - m + i; n < tmp_size; n++)
+-			tmp[n] = 0;
++		n = n + i + tmp_size - m;
++		memset(tmp + n, 0, tmp_size - n);
+ 
+ 		/* 5 */
+ 		out_size = sizeof(out);
+-- 
+2.7.4
+
