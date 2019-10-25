@@ -30,16 +30,25 @@ EXTRA_OEMAKE += " \
     PLAT=${PLATFORM} \
 "
 
+BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
+
 do_compile() {
     # Clear LDFLAGS to avoid the option -Wl recognize issue
     unset LDFLAGS
     oe_runmake bl31
+    if ${BUILD_OPTEE}; then
+       oe_runmake clean BUILD_BASE=build-optee
+       oe_runmake BUILD_BASE=build-optee SPD=opteed bl31
+    fi
 }
 
 do_install[noexec] = "1"
 
 do_deploy() {
     install -Dm 0644 ${S}/build/${PLATFORM}/release/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${PLATFORM}.bin
+    if ${BUILD_OPTEE}; then
+       install -m 0644 ${S}/build-optee/${PLATFORM}/release/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${PLATFORM}.bin-optee
+    fi
 }
 addtask deploy after do_compile
 
