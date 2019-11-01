@@ -120,7 +120,7 @@ do_install_append() {
 	fi
 
 	# install default weston.ini
-	if [ -z "${@bb.utils.filter('BBFILE_COLLECTIONS', 'aglprofilegraphical', d)}" ]; then
+	if [ -n "${@bb.utils.filter('BBFILE_COLLECTIONS', 'aglprofilegraphical', d)}" ]; then
 		if [ "${@bb.utils.filter('BBFILE_COLLECTIONS', 'ivi', d)}" ]; then
 			WESTON_INI_SRCDIR=${B}/ivi-shell
 		else
