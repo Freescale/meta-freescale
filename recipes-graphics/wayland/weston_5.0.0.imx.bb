@@ -102,6 +102,9 @@ PACKAGECONFIG[imxg2d] = "--enable-imxg2d,--disable-imxg2d,virtual/libg2d"
 # Weston with OpenGL support
 PACKAGECONFIG[opengl] = "--enable-opengl,--disable-opengl"
 
+# Set to install a default weston.ini file
+WESTON_INI_INSTALL_FILE = "${B}/weston.ini"
+
 do_install_append() {
 	# Weston doesn't need the .la files to load modules, so wipe them
 	rm -f ${D}/${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.la
@@ -120,13 +123,8 @@ do_install_append() {
 	fi
 
 	# install default weston.ini
-	if [ -n "${@bb.utils.filter('BBFILE_COLLECTIONS', 'aglprofilegraphical', d)}" ]; then
-		if [ "${@bb.utils.filter('BBFILE_COLLECTIONS', 'ivi', d)}" ]; then
-			WESTON_INI_SRCDIR=${B}/ivi-shell
-		else
-			WESTON_INI_SRCDIR=${B}
-		fi
-		install -D -m 0644 ${WESTON_INI_SRCDIR}/weston.ini ${D}${sysconfdir}/xdg/weston/weston.ini
+	if [ "${WESTON_INI_INSTALL_FILE}" != "" ]; then
+		install -D -m 0644 ${WESTON_INI_INSTALL_FILE} ${D}${sysconfdir}/xdg/weston/weston.ini
 	fi
 }
 
