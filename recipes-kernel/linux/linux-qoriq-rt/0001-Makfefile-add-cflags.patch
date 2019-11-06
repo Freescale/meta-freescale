@@ -1,0 +1,26 @@
+From e2283cc7582ba82f346b05fdb38f0057e54de7fa Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Tue, 12 Mar 2019 03:52:03 +0100
+Subject: [PATCH] Makfefile: add cflags
+
+Signed-off-by: C.r. Guo <nxa13725@lsv07004.swis.us-cdc01.nxp.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 967692b..ae395cd 100644
+--- a/Makefile
++++ b/Makefile
+@@ -417,7 +417,7 @@ LINUXINCLUDE    := \
+ KBUILD_AFLAGS   := -D__ASSEMBLY__
+ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common -fshort-wchar \
+-		   -Werror-implicit-function-declaration \
++		   -Werror-implicit-function-declaration -Wno-address-of-packed-member -Wno-packed-not-aligned \
+ 		   -Wno-format-security \
+ 		   -std=gnu89
+ KBUILD_CPPFLAGS := -D__KERNEL__
+-- 
+2.7.4
+
