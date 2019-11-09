@@ -90,3 +90,4 @@ FILES_${PN}-staticdev = "/usr/include/optee/"
 RDEPENDS_${PN}-dev += "${PN}-staticdev"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_MACHINE = "(imx)"
