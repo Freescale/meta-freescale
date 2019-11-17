@@ -16,10 +16,6 @@ SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=http
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
            file://0003-weston-touch-calibrator-Advertise-the-touchscreen-ca.patch \
 "
-# Use argb8888 as gbm-format for i.MX8MQ only
-SRC_URI_append_mx8mq = " file://0001-weston.ini-using-argb8888-as-gbm-default-on-mscale-8.patch \
-                         file://0002-weston.ini-configure-desktop-shell-size-in-weston-co.patch \
-"
 SRCREV = "fb563901657b296c7c7c86d26602a622429e334f"
 S = "${WORKDIR}/git"
 
@@ -102,9 +98,6 @@ PACKAGECONFIG[imxg2d] = "--enable-imxg2d,--disable-imxg2d,virtual/libg2d"
 # Weston with OpenGL support
 PACKAGECONFIG[opengl] = "--enable-opengl,--disable-opengl"
 
-# Set to install a default weston.ini file
-WESTON_INI_INSTALL_FILE = "${B}/weston.ini"
-
 do_install_append() {
 	# Weston doesn't need the .la files to load modules, so wipe them
 	rm -f ${D}/${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.la
@@ -120,11 +113,6 @@ do_install_append() {
 
 	if [ "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', 'yes', 'no', d)}" = "yes" ]; then
 		install -Dm 644 ${WORKDIR}/xwayland.weston-start ${D}${datadir}/weston-start/xwayland
-	fi
-
-	# install default weston.ini
-	if [ "${WESTON_INI_INSTALL_FILE}" != "" ]; then
-		install -D -m 0644 ${WESTON_INI_INSTALL_FILE} ${D}${sysconfdir}/xdg/weston/weston.ini
 	fi
 }
 
