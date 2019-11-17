@@ -6,14 +6,15 @@ IMX_REQUIRED_DISTRO_FEATURES_REMOVE_imxgpu2d = "opengl"
 IMX_REQUIRED_DISTRO_FEATURES_REMOVE_imxgpu3d = ""
 REQUIRED_DISTRO_FEATURES_remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 
-SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd wayland x11', 'file://weston.config', '', d)}"
-
-HAS_SYSTEMD = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}"
-HAS_XWAYLAND = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland x11', 'true', 'false', d)}"
+SRC_URI_append_mx6sl = "file://weston.config"
 
 # To customize weston.ini, start by setting the desired assignment in weston.ini,
-# commented out. Then add the assignment to INI_UNCOMMENT_ASSIGNMENTS.
-INI_UNCOMMENT_ASSIGNMENTS = ""
+# commented out. For example:
+#     #xwayland=true
+# Then add the assignment to INI_UNCOMMENT_ASSIGNMENTS.
+INI_UNCOMMENT_ASSIGNMENTS = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland=true', '', d)} \
+"
 INI_UNCOMMENT_ASSIGNMENTS_append_mx7ulp = " \
     use-g2d=1 \
 "
@@ -34,10 +35,8 @@ uncomment() {
 }
 
 do_install_append() {
-    if ${HAS_SYSTEMD}; then
-        if ${HAS_XWAYLAND}; then
-            install -Dm0755 ${WORKDIR}/weston.config ${D}${sysconfdir}/default/weston
-        fi
+    if [ -f "${WORKDIR}/weston.config" ]; then
+        install -Dm0755 ${WORKDIR}/weston.config ${D}${sysconfdir}/default/weston
     fi
     for assignment in ${INI_UNCOMMENT_ASSIGNMENTS}; do
         uncomment "$assignment" ${D}${sysconfdir}/xdg/weston/weston.ini
