@@ -1,0 +1,84 @@
+From 2d75d1869fb3d9d7d47ae7c0ac6fab4e7dd9487e Mon Sep 17 00:00:00 2001
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Fri, 2 Aug 2019 12:37:57 +0200
+Subject: [PATCH 2/2] include/linux/module.h: copy __init/__exit attrs to
+ init/cleanup_module
+
+commit a6e60d84989fa0e91db7f236eda40453b0e44afa upstream.
+
+The upcoming GCC 9 release extends the -Wmissing-attributes warnings
+(enabled by -Wall) to C and aliases: it warns when particular function
+attributes are missing in the aliases but not in their target.
+
+In particular, it triggers for all the init/cleanup_module
+aliases in the kernel (defined by the module_init/exit macros),
+ending up being very noisy.
+
+These aliases point to the __init/__exit functions of a module,
+which are defined as __cold (among other attributes). However,
+the aliases themselves do not have the __cold attribute.
+
+Since the compiler behaves differently when compiling a __cold
+function as well as when compiling paths leading to calls
+to __cold functions, the warning is trying to point out
+the possibly-forgotten attribute in the alias.
+
+In order to keep the warning enabled, we decided to silence
+this case. Ideally, we would mark the aliases directly
+as __init/__exit. However, there are currently around 132 modules
+in the kernel which are missing __init/__exit in their init/cleanup
+functions (either because they are missing, or for other reasons,
+e.g. the functions being called from somewhere else); and
+a section mismatch is a hard error.
+
+A conservative alternative was to mark the aliases as __cold only.
+However, since we would like to eventually enforce __init/__exit
+to be always marked,  we chose to use the new __copy function
+attribute (introduced by GCC 9 as well to deal with this).
+With it, we copy the attributes used by the target functions
+into the aliases. This way, functions that were not marked
+as __init/__exit won't have their aliases marked either,
+and therefore there won't be a section mismatch.
+
+Note that the warning would go away marking either the extern
+declaration, the definition, or both. However, we only mark
+the definition of the alias, since we do not want callers
+(which only see the declaration) to be compiled as if the function
+was __cold (and therefore the paths leading to those calls
+would be assumed to be unlikely).
+
+Link: https://lore.kernel.org/lkml/259986242.BvXPX32bHu@devpool35/
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/lkml/20190123173707.GA16603@gmail.com/
+Link: https://lore.kernel.org/lkml/20190206175627.GA20399@gmail.com/
+Suggested-by: Martin Sebor <msebor@gcc.gnu.org>
+Acked-by: Jessica Yu <jeyu@kernel.org>
+Signed-off-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/module.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 0c3207d26ac0..06aca48417c9 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -129,13 +129,13 @@ extern void cleanup_module(void);
+ #define module_init(initfn)					\
+ 	static inline initcall_t __inittest(void)		\
+ 	{ return initfn; }					\
+-	int init_module(void) __attribute__((alias(#initfn)));
++	int init_module(void) __copy(initfn) __attribute__((alias(#initfn)));
+ 
+ /* This is only required if you want to be unloadable. */
+ #define module_exit(exitfn)					\
+ 	static inline exitcall_t __exittest(void)		\
+ 	{ return exitfn; }					\
+-	void cleanup_module(void) __attribute__((alias(#exitfn)));
++	void cleanup_module(void) __copy(exitfn) __attribute__((alias(#exitfn)));
+ 
+ #endif
+ 
+-- 
+2.17.1
+
