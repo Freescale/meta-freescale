@@ -12,8 +12,8 @@ PV .= "+git${SRCPV}"
 
 SRCBRANCH = "4.9-1.0.x-imx"
 SRCREV = "953c6e30c9701fda69ef08e2476c541dc4fb1453"
-SRC_URI += "file://0001-compiler-attributes-add-support-for-copy-gcc-9.patch \
-            file://0002-include-linux-module.h-copy-init-exit-attrs-to-.patch \
+SRC_URI += "file://0001-Backport-minimal-compiler_attributes.h-to-support-GC.patch \
+            file://0002-include-linux-module.h-copy-__init-__exit-attrs-to-i.patch \
            "
 
 COMPATIBLE_MACHINE = "(mx6|mx7)"
