@@ -1,4 +1,4 @@
-inherit distro_features_check
+inherit features_check
 REQUIRED_DISTRO_FEATURES_e6500 += "multiarch"
 
 python () {

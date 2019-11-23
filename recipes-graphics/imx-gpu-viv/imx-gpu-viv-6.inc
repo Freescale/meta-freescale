@@ -52,7 +52,7 @@ RPROVIDES_${PN}_imxgpu3d += "imx-gpu-viv"
 
 PE = "1"
 
-inherit fsl-eula-unpack distro_features_check
+inherit fsl-eula-unpack features_check
 
 REQUIRED_DISTRO_FEATURES_mx8 = "wayland"
 
