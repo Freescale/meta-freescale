@@ -23,7 +23,7 @@ PLATFORM_FLAVOR_imx6qpdlsolox   = "mx6qsabresd"
 PLATFORM_FLAVOR_imx6ul7d        = "mx6ulevk"
 PLATFORM_FLAVOR_imx6ull14x14evk = "mx6ullevk"
 PLATFORM_FLAVOR_imx6ull9x9evk   = "mx6ullevk"
-PLATFORM_FLAVOR_imx6ulz14x14evk = "mx6ullevk"
+PLATFORM_FLAVOR_imx6ulz14x14evk = "mx6ulzevk"
 PLATFORM_FLAVOR_mx8mm   = "mx8mmevk"
 
 OPTEE_ARCH ?= "arm32"
