@@ -1,0 +1,219 @@
+From 80753240b46aa50154363a040512242c28c377cf Mon Sep 17 00:00:00 2001
+From: Clement Faure <clement.faure@nxp.com>
+Date: Thu, 14 Nov 2019 13:59:19 +0100
+Subject: [PATCH] imx: change imx8 prefixe to mx8
+
+For consistency, change all imx8 prefixe to mx8.
+This change affects:
+ * CFG_IMX8*
+ * platform flavors
+
+Signed-off-by: Clement Faure <clement.faure@nxp.com>
+Acked-by: Jens Wiklander <jens.wiklander@linaro.org>
+Acked-by: Jerome Forissier <jerome@forissier.org>
+---
+ .shippable.yml                           | 10 ++---
+ core/arch/arm/plat-imx/conf.mk           | 48 ++++++++++++------------
+ core/arch/arm/plat-imx/imx-common.c      |  4 +-
+ core/arch/arm/plat-imx/imx-regs.h        |  6 +--
+ core/arch/arm/plat-imx/registers/imx8m.h |  4 +-
+ core/drivers/crypto/caam/hal/sub.mk      |  2 +-
+ 6 files changed, 37 insertions(+), 37 deletions(-)
+
+diff --git a/.shippable.yml b/.shippable.yml
+index cd471f86f..712a4ce52 100644
+--- a/.shippable.yml
++++ b/.shippable.yml
+@@ -85,11 +85,11 @@ build:
+     - _make PLATFORM=imx-mx6qapalis
+     - _make PLATFORM=imx-mx7dsabresd
+     - _make PLATFORM=imx-mx7ulpevk
+-    - _make PLATFORM=imx-imx8mmevk
+-    - _make PLATFORM=imx-imx8mnevk
+-    - _make PLATFORM=imx-imx8mqevk
+-    - _make PLATFORM=imx-imx8qxpmek
+-    - _make PLATFORM=imx-imx8qmmek
++    - _make PLATFORM=imx-mx8mmevk
++    - _make PLATFORM=imx-mx8mnevk
++    - _make PLATFORM=imx-mx8mqevk
++    - _make PLATFORM=imx-mx8qxpmek
++    - _make PLATFORM=imx-mx8qmmek
+     - _make PLATFORM=k3-j721e
+     - _make PLATFORM=k3-j721e CFG_ARM64_core=y
+     - _make PLATFORM=k3-am65x
+diff --git a/core/arch/arm/plat-imx/conf.mk b/core/arch/arm/plat-imx/conf.mk
+index 032dd3151..cf4dcd826 100644
+--- a/core/arch/arm/plat-imx/conf.mk
++++ b/core/arch/arm/plat-imx/conf.mk
+@@ -57,20 +57,20 @@ mx7s-flavorlist = \
+ mx7ulp-flavorlist = \
+ 	mx7ulpevk
+ 
+-imx8mq-flavorlist = \
+-	imx8mqevk
++mx8mq-flavorlist = \
++	mx8mqevk
+ 
+-imx8mm-flavorlist = \
+-	imx8mmevk
++mx8mm-flavorlist = \
++	mx8mmevk
+ 
+-imx8mn-flavorlist = \
+-	imx8mnevk
++mx8mn-flavorlist = \
++	mx8mnevk
+ 
+-imx8qm-flavorlist = \
+-	imx8qmmek \
++mx8qm-flavorlist = \
++	mx8qmmek \
+ 
+-imx8qx-flavorlist = \
+-	imx8qxpmek \
++mx8qx-flavorlist = \
++	mx8qxpmek \
+ 
+ ifneq (,$(filter $(PLATFORM_FLAVOR),$(mx6ul-flavorlist)))
+ $(call force,CFG_MX6,y)
+@@ -134,34 +134,34 @@ $(call force,CFG_TZC380,n)
+ $(call force,CFG_CSU,n)
+ $(call force,CFG_NXP_CAAM,n)
+ include core/arch/arm/cpu/cortex-a7.mk
+-else ifneq (,$(filter $(PLATFORM_FLAVOR),$(imx8mq-flavorlist)))
+-$(call force,CFG_IMX8MQ,y)
++else ifneq (,$(filter $(PLATFORM_FLAVOR),$(mx8mq-flavorlist)))
++$(call force,CFG_MX8MQ,y)
+ $(call force,CFG_ARM64_core,y)
+ CFG_IMX_UART ?= y
+ CFG_DRAM_BASE ?= 0x40000000
+ CFG_TEE_CORE_NB_CORE ?= 4
+-else ifneq (,$(filter $(PLATFORM_FLAVOR),$(imx8mm-flavorlist)))
+-$(call force,CFG_IMX8MM,y)
++else ifneq (,$(filter $(PLATFORM_FLAVOR),$(mx8mm-flavorlist)))
++$(call force,CFG_MX8MM,y)
+ $(call force,CFG_ARM64_core,y)
+ CFG_IMX_UART ?= y
+ CFG_DRAM_BASE ?= 0x40000000
+ CFG_TEE_CORE_NB_CORE ?= 4
+-else ifneq (,$(filter $(PLATFORM_FLAVOR),$(imx8mn-flavorlist)))
+-$(call force,CFG_IMX8MN,y)
++else ifneq (,$(filter $(PLATFORM_FLAVOR),$(mx8mn-flavorlist)))
++$(call force,CFG_MX8MN,y)
+ $(call force,CFG_ARM64_core,y)
+ CFG_IMX_UART ?= y
+ CFG_DRAM_BASE ?= 0x40000000
+ CFG_TEE_CORE_NB_CORE ?= 4
+-else ifneq (,$(filter $(PLATFORM_FLAVOR),$(imx8qm-flavorlist)))
+-$(call force,CFG_IMX8QM,y)
++else ifneq (,$(filter $(PLATFORM_FLAVOR),$(mx8qm-flavorlist)))
++$(call force,CFG_MX8QM,y)
+ $(call force,CFG_ARM64_core,y)
+ $(call force,CFG_IMX_SNVS,n)
+ CFG_IMX_LPUART ?= y
+ CFG_DRAM_BASE ?= 0x40000000
+ CFG_TEE_CORE_NB_CORE ?= 6
+ $(call force,CFG_NXP_CAAM,n)
+-else ifneq (,$(filter $(PLATFORM_FLAVOR),$(imx8qx-flavorlist)))
+-$(call force,CFG_IMX8QX,y)
++else ifneq (,$(filter $(PLATFORM_FLAVOR),$(mx8qx-flavorlist)))
++$(call force,CFG_MX8QX,y)
+ $(call force,CFG_ARM64_core,y)
+ CFG_IMX_LPUART ?= y
+ CFG_DRAM_BASE ?= 0x40000000
+@@ -282,22 +282,22 @@ CFG_DDR_SIZE ?= 0x10000000
+ CFG_NS_ENTRY_ADDR ?= 0x80800000
+ endif
+ 
+-ifneq (,$(filter $(PLATFORM_FLAVOR),imx8mqevk))
++ifneq (,$(filter $(PLATFORM_FLAVOR),mx8mqevk))
+ CFG_DDR_SIZE ?= 0xc0000000
+ CFG_UART_BASE ?= UART1_BASE
+ endif
+ 
+-ifneq (,$(filter $(PLATFORM_FLAVOR),imx8mmevk))
++ifneq (,$(filter $(PLATFORM_FLAVOR),mx8mmevk))
+ CFG_DDR_SIZE ?= 0x80000000
+ CFG_UART_BASE ?= UART2_BASE
+ endif
+ 
+-ifneq (,$(filter $(PLATFORM_FLAVOR),imx8mnevk))
++ifneq (,$(filter $(PLATFORM_FLAVOR),mx8mnevk))
+ CFG_DDR_SIZE ?= 0x80000000
+ CFG_UART_BASE ?= UART2_BASE
+ endif
+ 
+-ifneq (,$(filter $(PLATFORM_FLAVOR),imx8qxpmek imx8qmmek))
++ifneq (,$(filter $(PLATFORM_FLAVOR),mx8qxpmek mx8qmmek))
+ CFG_DDR_SIZE ?= 0x80000000
+ CFG_UART_BASE ?= UART0_BASE
+ endif
+diff --git a/core/arch/arm/plat-imx/imx-common.c b/core/arch/arm/plat-imx/imx-common.c
+index e355c4199..106e2fb04 100644
+--- a/core/arch/arm/plat-imx/imx-common.c
++++ b/core/arch/arm/plat-imx/imx-common.c
+@@ -27,9 +27,9 @@ static void imx_digproc(void)
+ 
+ #if defined(CFG_MX7ULP)
+ 	digprog = SOC_MX7ULP << 16;
+-#elif defined(CFG_IMX8QX)
++#elif defined(CFG_MX8QX)
+ 	digprog = SOC_MX8QX << 16;
+-#elif defined(CFG_IMX8QM)
++#elif defined(CFG_MX8QM)
+ 	digprog = SOC_MX8QM << 16;
+ #else
+ 	anatop_addr = core_mmu_get_va(ANATOP_BASE, MEM_AREA_IO_SEC);
+diff --git a/core/arch/arm/plat-imx/imx-regs.h b/core/arch/arm/plat-imx/imx-regs.h
+index 22c536c14..4cbe96b2e 100644
+--- a/core/arch/arm/plat-imx/imx-regs.h
++++ b/core/arch/arm/plat-imx/imx-regs.h
+@@ -36,12 +36,12 @@
+ #include <registers/imx7.h>
+ #elif defined(CFG_MX7ULP)
+ #include <registers/imx7ulp.h>
+-#elif defined(CFG_IMX8MQ) || defined(CFG_IMX8MM) || defined(CFG_IMX8MN)
++#elif defined(CFG_MX8MQ) || defined(CFG_MX8MM) || defined(CFG_MX8MN)
+ #include <registers/imx8m.h>
+-#elif defined(CFG_IMX8QX) || defined(CFG_IMX8QM)
++#elif defined(CFG_MX8QX) || defined(CFG_MX8QM)
+ #include <registers/imx8q.h>
+ #else
+-#error "CFG_MX6/7/7ULP or CFG_IMX8MQ/8MM/8QX/8QM is not defined"
++#error "CFG_MX6/7/7ULP or CFG_MX8MQ/8MM/8QX/8QM is not defined"
+ #endif
+ 
+ #define IOMUXC_GPR4_OFFSET	0x10
+diff --git a/core/arch/arm/plat-imx/registers/imx8m.h b/core/arch/arm/plat-imx/registers/imx8m.h
+index 73e2936a1..6870812e5 100644
+--- a/core/arch/arm/plat-imx/registers/imx8m.h
++++ b/core/arch/arm/plat-imx/registers/imx8m.h
+@@ -16,10 +16,10 @@
+ #define CAAM_BASE	0x30900000
+ #define ANATOP_BASE	0x30360000
+ 
+-#ifdef CFG_IMX8MQ
++#ifdef CFG_MX8MQ
+ #define DIGPROG_OFFSET	0x06c
+ #endif
+-#if defined(CFG_IMX8MM) || defined(CFG_IMX8MN)
++#if defined(CFG_MX8MM) || defined(CFG_MX8MN)
+ #define DIGPROG_OFFSET	0x800
+ #endif
+ 
+diff --git a/core/drivers/crypto/caam/hal/sub.mk b/core/drivers/crypto/caam/hal/sub.mk
+index e26ada50d..46f84c27f 100644
+--- a/core/drivers/crypto/caam/hal/sub.mk
++++ b/core/drivers/crypto/caam/hal/sub.mk
+@@ -4,7 +4,7 @@ endif
+ ifeq ($(filter y, $(CFG_MX6) $(CFG_MX7) $(CFG_MX7ULP)),y)
+ CAAM_HAL_DIR = imx_6_7
+ endif
+-ifeq ($(filter y, $(CFG_IMX8MQ) $(CFG_IMX8MM) $(CFG_IMX8MN)),y)
++ifeq ($(filter y, $(CFG_MX8MQ) $(CFG_MX8MM) $(CFG_MX8MN)),y)
+ CAAM_HAL_DIR = imx_8m
+ endif
+ 
+-- 
+2.17.1
+

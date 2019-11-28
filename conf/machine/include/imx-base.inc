@@ -267,9 +267,9 @@ PREFERRED_VERSION_libdrm_mx7 ?= "2.4.91.imx"
 PREFERRED_VERSION_libdrm_mx8 ?= "2.4.91.imx"
 
 # Use i.MX optee Version
-PREFERRED_VERSION_optee-os_mx8     ?= "3.2.0.imx"
-PREFERRED_VERSION_optee-client_mx8 ?= "3.2.0.imx"
-PREFERRED_VERSION_optee-test_mx8   ?= "3.2.0.imx"
+PREFERRED_VERSION_optee-os     ?= "3.2.0.imx"
+PREFERRED_VERSION_optee-client ?= "3.2.0.imx"
+PREFERRED_VERSION_optee-test   ?= "3.2.0.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
