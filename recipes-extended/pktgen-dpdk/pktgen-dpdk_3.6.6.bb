@@ -17,8 +17,7 @@ export RTE_SDK = "${RECIPE_SYSROOT}/usr/share/"
 EXTRA_OEMAKE += 'CC="${CC}" LD="${LD}"  RTE_SDK="${RECIPE_SYSROOT}/usr/share/" RTE_TARGET="arm64-${DPAA_VER}-linuxapp-gcc"'
 
 do_compile() {
-      unset LDFLAGS TARGET_LDFLAGS BUILD_LDFLAGS
-      oe_runmake  EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR} ${BUILD_CFLAGS} ${BUILD_LDFLAGS}" 
+      oe_runmake 
 }
 
 do_install() {
