@@ -1,0 +1,27 @@
+From 825c59ba5ac7bb1e63d58b80c7d41d9ad22e89bd Mon Sep 17 00:00:00 2001
+From: Clement Faure <clement.faure@nxp.com>
+Date: Wed, 27 Nov 2019 18:18:48 +0100
+Subject: [PATCH] fix build failure with GCC 9 v2
+
+Signed-off-by: Clement Faure <clement.faure@nxp.com>
+---
+ host/xtest/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/host/xtest/Makefile b/host/xtest/Makefile
+index 7b3de36..0c95e95 100644
+--- a/host/xtest/Makefile
++++ b/host/xtest/Makefile
+@@ -160,7 +160,8 @@ CFLAGS += -Wall -Wcast-align -Werror \
+ 	  -Wwrite-strings \
+ 	  -Wno-declaration-after-statement \
+ 	  -Wno-unsafe-loop-optimizations \
+-	  -Wno-missing-field-initializers -Wno-format-zero-length
++	  -Wno-missing-field-initializers -Wno-format-zero-length \
++	  -Wno-format-overflow
+ endif
+ 
+ CFLAGS += -g3
+-- 
+2.17.1
+
