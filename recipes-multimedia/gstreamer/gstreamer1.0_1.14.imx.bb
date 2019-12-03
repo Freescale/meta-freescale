@@ -26,6 +26,8 @@ SRC_URI = " \
     file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
     file://gtk-doc-tweaks.patch \
     file://0001-gst-gstpluginloader.c-when-env-var-is-set-do-not-fal.patch \
+    file://0001-protection-Add-a-new-definition-for-unspecified-syst.patch \
+    file://0001-protection-Fix-the-string-to-define-unspecified-syst.patch \
 "
 SRCREV = "d42548da09724ad8cc1aa4f1944607920be2f4c0"
 
