@@ -1,0 +1,98 @@
+From 2a0f719db71c69f5a04fcfc164f12f58f3ee7703 Mon Sep 17 00:00:00 2001
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date: Fri, 8 Feb 2019 23:51:05 +0100
+Subject: [PATCH] Compiler Attributes: add support for __copy (gcc >= 9)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit c0d9782f5b6d7157635ae2fd782a4b27d55a6013 upstream.
+
+From the GCC manual:
+
+  copy
+  copy(function)
+
+    The copy attribute applies the set of attributes with which function
+    has been declared to the declaration of the function to which
+    the attribute is applied. The attribute is designed for libraries
+    that define aliases or function resolvers that are expected
+    to specify the same set of attributes as their targets. The copy
+    attribute can be used with functions, variables, or types. However,
+    the kind of symbol to which the attribute is applied (either
+    function or variable) must match the kind of symbol to which
+    the argument refers. The copy attribute copies only syntactic and
+    semantic attributes but not attributes that affect a symbol’s
+    linkage or visibility such as alias, visibility, or weak.
+    The deprecated attribute is also not copied.
+
+  https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html
+
+The upcoming GCC 9 release extends the -Wmissing-attributes warnings
+(enabled by -Wall) to C and aliases: it warns when particular function
+attributes are missing in the aliases but not in their target, e.g.:
+
+    void __cold f(void) {}
+    void __alias("f") g(void);
+
+diagnoses:
+
+    warning: 'g' specifies less restrictive attribute than
+    its target 'f': 'cold' [-Wmissing-attributes]
+
+Using __copy(f) we can copy the __cold attribute from f to g:
+
+    void __cold f(void) {}
+    void __copy(f) __alias("f") g(void);
+
+This attribute is most useful to deal with situations where an alias
+is declared but we don't know the exact attributes the target has.
+
+For instance, in the kernel, the widely used module_init/exit macros
+define the init/cleanup_module aliases, but those cannot be marked
+always as __init/__exit since some modules do not have their
+functions marked as such.
+
+Suggested-by: Martin Sebor <msebor@gcc.gnu.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/compiler-gcc.h   | 4 ++++
+ include/linux/compiler_types.h | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+index a8ff0ca..3ebee1c 100644
+--- a/include/linux/compiler-gcc.h
++++ b/include/linux/compiler-gcc.h
+@@ -201,6 +201,10 @@
+ #define COMPILER_HAS_GENERIC_BUILTIN_OVERFLOW 1
+ #endif
+ 
++#if GCC_VERSION >= 90100
++#define __copy(symbol)                 __attribute__((__copy__(symbol)))
++#endif
++
+ #if !defined(__noclone)
+ #define __noclone	/* not needed */
+ #endif
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index c2ded31..2b8ed70 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -180,6 +180,10 @@ struct ftrace_likely_data {
+ #define __diag_GCC(version, severity, string)
+ #endif
+ 
++#ifndef __copy
++# define __copy(symbol)
++#endif
++
+ #define __diag_push()	__diag(push)
+ #define __diag_pop()	__diag(pop)
+ 
+-- 
+2.7.4
+
