@@ -1,0 +1,39 @@
+From d2e35983281a811b38e540ab82e7643322e84aab Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+Date: Wed, 4 Dec 2019 14:17:50 +0000
+Subject: [PATCH] mxc_v4l2_test: fix compilation error produced by gcc9
+
+Fix trivial compilation error when GCC9 is used:
+
+error: call to '__open_missing_mode' declared with attribute error: open
+with O_CREAT or O_TMPFILE in second argument needs 3 arguments
+
+This is now caused by not explicitly supplying the mode when O_CREAT is
+used as disposition.
+
+Upstream-Status: Pending
+
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+---
+ test/mxc_v4l2_test/mx8_v4l2_cap_drm.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/test/mxc_v4l2_test/mx8_v4l2_cap_drm.c b/test/mxc_v4l2_test/mx8_v4l2_cap_drm.c
+index 6e10744..d63b2db 100644
+--- a/test/mxc_v4l2_test/mx8_v4l2_cap_drm.c
++++ b/test/mxc_v4l2_test/mx8_v4l2_cap_drm.c
+@@ -561,11 +561,7 @@ static int open_save_file(struct video_channel *video_ch)
+ 
+ 	for (i = 0; i < NUM_SENSORS; i++) {
+ 		if ((g_cam >> i) & 0x01) {
+-#ifdef BUILD_FOR_ANDROID
+ 			fd = open(video_ch[i].save_file_name, O_RDWR | O_CREAT, 0660);
+-#else
+-			fd = open(video_ch[i].save_file_name, O_RDWR | O_CREAT);
+-#endif
+ 			if (fd < 0) {
+ 				 v4l2_err("Channel[%d] unable to create recording file\n", i);
+ 				 while (i)
+-- 
+2.17.1
+
