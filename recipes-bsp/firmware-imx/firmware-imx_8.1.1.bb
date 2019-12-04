@@ -60,6 +60,13 @@ python populate_packages_prepend() {
                       description='Freescale IMX Firmware %s',
                       extra_depends='',
                       prepend=True)
+
+    imxsdmadir = bb.data.expand('${base_libdir}/firmware/imx/sdma', d)
+    do_split_packages(d, imxsdmadir, '^sdma-([^-]*).*\.bin',
+                      output_pattern='firmware-imx-sdma-%s',
+                      description='Freescale IMX Firmware %s',
+                      extra_depends='',
+                      prepend=True)
 }
 
 ALLOW_EMPTY_${PN} = "1"
