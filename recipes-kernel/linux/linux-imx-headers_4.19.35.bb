@@ -5,7 +5,7 @@ SUMMARY = "Installs i.MX-specific kernel headers"
 DESCRIPTION = "Installs i.MX-specific kernel headers to userspace. \            
 New headers are installed in ${includedir}/imx."                                
 LICENSE = "GPLv2"                                                               
-LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"        
+LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
                                                                                 
 SRCBRANCH = "imx_4.19.35_1.1.0"                                              
 LOCALVERSION = "-1.1.0"                                                           
