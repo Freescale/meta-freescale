@@ -3,8 +3,8 @@ LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://CORE/HDD/src/wlan_hdd_main.c;beginline=1;endline=20;md5=ec8d62116b13db773825ebf7cf91be1d;"
 
 QCACLD_SRC ?= "git://source.codeaurora.org/external/imx/qcacld-2.0-imx.git;protocol=https"
-SRC_URI = "${QCACLD_SRC};branch=IMX_CNSS.LEA.NRT_2.0"
-SRCREV = "e008d2578b09f1f593f65ede48529a52312e3957"
+SRC_URI = "${QCACLD_SRC};branch=IMX_CNSS.LEA.NRT_3.0"
+SRCREV = "2f4ae376ce3db65c3270a4bf7e804f3e86052c8c"
 
 S = "${WORKDIR}/git"
 
