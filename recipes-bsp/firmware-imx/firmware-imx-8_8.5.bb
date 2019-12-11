@@ -13,8 +13,6 @@ do_deploy() {
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmitxfw.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/dpfw.bin ${DEPLOYDIR}
-    # SECO
-    install -m 0644 ${S}/firmware/seco/mx8qm-ahab-container.img ${DEPLOYDIR}
 }
 addtask deploy after do_install before do_build
 
