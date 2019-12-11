@@ -21,6 +21,9 @@ do_install() {
     cd firmware
     for d in *; do
         case $d in
+        easrc)
+            # excluding as only applies Nano SoC
+            ;;
         ddr|hdmi|seco)
             # These folders are for i.MX 8 and are included in the boot image via imx-boot
             bbnote Excluding folder $d
