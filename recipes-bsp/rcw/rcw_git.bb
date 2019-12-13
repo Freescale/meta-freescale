@@ -16,15 +16,15 @@ export PYTHON = "${USRBINPATH}/python3"
 
 M="${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
+BOARD_TARGETS="${M}"
+BOARD_TARGETS_ls2088ardb="${M} ${M}_rev1.1"
+BOARD_TARGETS_ls1088ardb-pb="ls1088ardb"
+
 do_install () {
-    if [ ${M} = ls2088ardb ]; then
-        oe_runmake BOARDS=${M} DESTDIR=${D}/boot/rcw/ install
-        oe_runmake BOARDS=${M}_rev1.1  DESTDIR=${D}/boot/rcw/ install
-    elif [ ${M} = ls1088ardb-pb ]; then
-        oe_runmake BOARDS=ls1088ardb DESTDIR=${D}/boot/rcw/ install
-    else
-        oe_runmake BOARDS=${M} DESTDIR=${D}/boot/rcw/ install
-    fi
+    for BT in ${BOARD_TARGETS}
+    do
+        oe_runmake BOARDS=${BT} DESTDIR=${D}/boot/rcw/ install
+    done
 }
 
 do_deploy () {
