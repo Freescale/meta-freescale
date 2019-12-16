@@ -37,7 +37,7 @@ do_merge_delta_config[dirs] = "${B}"
 do_merge_delta_config() {
     # create config with make config
     oe_runmake  -C ${S} O=${B} ${KERNEL_DEFCONFIG}
-
+    
     # check if bigendian is enabled
     if [ "${SITEINFO_ENDIANNESS}" = "be" ]; then
         echo "CONFIG_CPU_BIG_ENDIAN=y" >> .config
@@ -56,7 +56,7 @@ do_merge_delta_config() {
     done
     cp .config ${WORKDIR}/defconfig
 }
-addtask merge_delta_config before do_configure after do_patch do_preconfigure
+addtask merge_delta_config before do_preconfigure after do_patch
 
 # The link of dts folder is needed for 32b compile of aarch64 targets(e.g. ls1043ardb-32b)
 do_compile_prepend_fsl-lsch2-32b() {
