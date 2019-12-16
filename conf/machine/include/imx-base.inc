@@ -261,9 +261,7 @@ PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.17.imx"
 PREFERRED_VERSION_wayland-protocols_mx8 ?= "1.17.imx"
 
 # Use i.MX libdrm Version
-PREFERRED_VERSION_libdrm_mx6 ?= "2.4.91.imx"
-PREFERRED_VERSION_libdrm_mx7 ?= "2.4.91.imx"
-PREFERRED_VERSION_libdrm_mx8 ?= "2.4.91.imx"
+PREFERRED_VERSION_libdrm_imx ?= "2.4.99.imx"
 
 # Use i.MX optee Version
 PREFERRED_VERSION_optee-os_mx8     ?= "3.2.0.imx"

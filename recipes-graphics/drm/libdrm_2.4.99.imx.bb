@@ -8,31 +8,38 @@ SECTION = "x11/base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c530816761e949dc71"
 PROVIDES = "drm"
-DEPENDS = "libpthread-stubs libpciaccess"
+DEPENDS = "libpthread-stubs"
 
 IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https;nobranch=1"
-IMX_LIBDRM_BRANCH = "libdrm-imx-2.4.91"
+IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.99"
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
-           file://installtests.patch \
-           file://fix_O_CLOEXEC_undeclared.patch \
-           file://0001-configure.ac-Allow-explicit-enabling-of-cunit-tests.patch \
-          "
-SRC_URI_remove = "file://drm-update-arm.patch"
-SRCREV = "95645843f59495387a072d48374718f22e69d7a4"
+           file://musl-ioctl.patch"
+SRCREV = "5748c8ff40f1ae87487c01e580f145a43542cbda"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
 
-inherit autotools pkgconfig manpages
+inherit meson pkgconfig manpages
 
-EXTRA_OECONF += "--disable-cairo-tests \
-                 --without-cunit \
-                 --enable-omap-experimental-api \
-                 --enable-etnaviv-experimental-api \
-                 --enable-install-test-programs \
-                 --disable-valgrind \
-                "
-PACKAGECONFIG[manpages] = "--enable-manpages, --disable-manpages, libxslt-native xmlto-native"
+PACKAGECONFIG ??= "libkms intel radeon amdgpu nouveau vmwgfx omap freedreno vc4 etnaviv install-test-programs"
+PACKAGECONFIG[libkms] = "-Dlibkms=true,-Dlibkms=false"
+PACKAGECONFIG[intel] = "-Dintel=true,-Dintel=false,libpciaccess"
+PACKAGECONFIG[radeon] = "-Dradeon=true,-Dradeon=false"
+PACKAGECONFIG[amdgpu] = "-Damdgpu=true,-Damdgpu=false"
+PACKAGECONFIG[nouveau] = "-Dnouveau=true,-Dnouveau=false"
+PACKAGECONFIG[vmwgfx] = "-Dvmwgfx=true,-Dvmwgfx=false"
+PACKAGECONFIG[omap] = "-Domap=true,-Domap=false"
+PACKAGECONFIG[exynos] = "-Dexynos=true,-Dexynos=false"
+PACKAGECONFIG[freedreno] = "-Dfreedreno=true,-Dfreedreno=false"
+PACKAGECONFIG[tegra] = "-Dtegra=true,-Dtegra=false"
+PACKAGECONFIG[vc4] = "-Dvc4=true,-Dvc4=false"
+PACKAGECONFIG[etnaviv] = "-Detnaviv=true,-Detnaviv=false"
+PACKAGECONFIG[freedreno-kgsl] = "-Dfreedreno-kgsl=true,-Dfreedreno-kgsl=false"
+PACKAGECONFIG[valgrind] = "-Dvalgrind=true,-Dvalgrind=false,valgrind"
+PACKAGECONFIG[install-test-programs] = "-Dinstall-test-programs=true,-Dinstall-test-programs=false"
+PACKAGECONFIG[cairo-tests] = "-Dcairo-tests=true,-Dcairo-tests=false"
+PACKAGECONFIG[udev] = "-Dudev=true,-Dudev=false,udev"
+PACKAGECONFIG[manpages] = "-Dman-pages=true,-Dman-pages=false,libxslt-native xmlto-native"
 
 ALLOW_EMPTY_${PN}-drivers = "1"
 PACKAGES =+ "${PN}-tests ${PN}-drivers ${PN}-radeon ${PN}-nouveau ${PN}-omap \
@@ -51,15 +58,13 @@ FILES_${PN}-intel = "${libdir}/libdrm_intel.so.*"
 FILES_${PN}-exynos = "${libdir}/libdrm_exynos.so.*"
 FILES_${PN}-kms = "${libdir}/libkms*.so.*"
 FILES_${PN}-freedreno = "${libdir}/libdrm_freedreno.so.*"
-FILES_${PN}-amdgpu = "${libdir}/libdrm_amdgpu.so.*"
+FILES_${PN}-amdgpu = "${libdir}/libdrm_amdgpu.so.* ${datadir}/${PN}/amdgpu.ids"
 FILES_${PN}-etnaviv = "${libdir}/libdrm_etnaviv.so.*"
 
-EXTRA_OECONF_append_imxgpu = " --enable-vivante-experimental-api"
+BBCLASSEXTEND = "native nativesdk"
 
-PACKAGES_prepend_imxgpu = "${PN}-vivante "
-
+PACKAGES_append_imxgpu = " ${PN}-vivante"
 RRECOMMENDS_${PN}-drivers_append_imxgpu = " ${PN}-vivante"
-
 FILES_${PN}-vivante = "${libdir}/libdrm_vivante.so.*"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
