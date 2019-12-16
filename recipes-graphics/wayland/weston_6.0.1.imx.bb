@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
 
 DEFAULT_PREFERENCE = "-1"
 
-SRCBRANCH = "weston-imx-5.0"
+SRCBRANCH = "weston-imx-6.0.1"
 SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
            file://weston.png \
            file://weston.desktop \
@@ -16,7 +16,7 @@ SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=http
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
            file://0003-weston-touch-calibrator-Advertise-the-touchscreen-ca.patch \
 "
-SRCREV = "fb563901657b296c7c7c86d26602a622429e334f"
+SRCREV = "4ee0a1da010053b35495e82ad30aa5a8b1c34e6c"
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
@@ -38,6 +38,7 @@ WESTON_MAJOR_VERSION = "${@'.'.join(d.getVar('PV').split('.')[0:1])}"
 
 EXTRA_OECONF = "--enable-setuid-install \
                 --disable-rdp-compositor \
+                --enable-autotools \
                 "
 EXTRA_OECONF_append_qemux86 = " \
 		WESTON_NATIVE_BACKEND=fbdev-backend.so \
