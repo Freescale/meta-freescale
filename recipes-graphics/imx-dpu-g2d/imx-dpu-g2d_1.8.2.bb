@@ -4,12 +4,12 @@
 
 DESCRIPTION = "GPU G2D library and apps for i.MX with 2D GPU and DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=80c0478f4339af024519b3723023fe28"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6c12031a11b81db21cdfe0be88cac4b3"
 PROVIDES += "virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "a47ae6db002b47031e44d8402c40604e"
-SRC_URI[sha256sum] = "5a2785ba1f4e4ea6f61ab98f8408600adca9decd66511e6665023325184bf7e9"
+SRC_URI[md5sum] = "b34737fe41688672e1d9522e931509f4"
+SRC_URI[sha256sum] = "46c72ce9b98b7116e9f7f53a66aadc8fb66910473477c6553db77ed71e54d7ea"
 
 inherit fsl-eula-unpack
 
