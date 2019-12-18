@@ -6,7 +6,7 @@
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=80c0478f4339af024519b3723023fe28"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6c12031a11b81db21cdfe0be88cac4b3"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -33,8 +33,6 @@ EXTRA_PROVIDES_append_imxgpu3d = " \
 "
 EXTRA_PROVIDES_append_mx8 = " \
     virtual/libgbm \
-"
-EXTRA_PROVIDES_append_mx8qm = " \
     virtual/libopenvx \
 "
 PROVIDES += " \
@@ -81,6 +79,7 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	imx-gpu-viv-demos \
 	libvulkan-imx libvulkan-imx-dev \
 	libopenvx-imx libopenvx-imx-dev \
+	libnn-imx \
 "
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
@@ -94,6 +93,7 @@ USE_WL = "${@bb.utils.contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
 # Inhibit warnings about files being stripped.
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+INSANE_SKIP_${BPN} += "already-stripped"
 
 # FIXME: The provided binary doesn't provide soname. If in future BSP
 # release the libraries are fixed, we can drop this hack.
@@ -206,6 +206,10 @@ do_install () {
     install -d ${D}${sysconfdir}/OpenCL/vendors/
     install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
+    if [ "${USE_WL}" = "yes" -o "${USE_X11}" = "yes" ]; then
+        cp ${S}/gpu-core/usr/lib/libGL-${backend}.so ${D}${libdir}/libGL.so.1.2
+    fi
+
     # We'll only have one backend here so we rename it to generic name
     # and avoid rework in other packages, when possible
     mv ${D}${libdir}/libGL.so.1.2 ${D}${libdir}/libGL.so.1.2.0
@@ -302,15 +306,22 @@ INSANE_SKIP_libgal-imx += "build-deps"
 
 FILES_libvsc-imx = "${libdir}/libVSC${SOLIBS}"
 
-FILES_libgbm-imx_mx8           = "${libdir}/libgbm${SOLIBS} ${libdir}/gbm_viv${SOLIBS}"
+FILES_libgbm-imx_mx8           = "${libdir}/libgbm*${SOLIBS} ${libdir}/gbm_viv${SOLIBS}"
 FILES_libgbm-imx-dev_mx8       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h ${libdir}/libgbm${SOLIBSDEV}"
 RDEPENDS_libgbm-imx_append_mx8 = " libdrm"
 
 FILES_libvulkan-imx = "${libdir}/libvulkan_VSI${SOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
 FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 
-FILES_libopenvx-imx = "${libdir}/libOpenVX${SOLIBS} ${libdir}/libOpenVXC${SOLIBS} ${libdir}/libOpenVXU${SOLIBS}"
-FILES_libopenvx-imx-dev = "${includedir}/VX ${libdir}/libopenVX${SOLIBSDEV}"
+FILES_libopenvx-imx = " \
+        ${libdir}/libOpenVX*${SOLIBS} \
+        ${libdir}/libOpenVXC${SOLIBS} \
+        ${libdir}/libOpenVXU${SOLIBS} \
+        ${libdir}/libOvx*${SOLIBS} \
+        ${libdir}/libovx*${SOLIBS} \
+        "
+FILES_libopenvx-imx-dev = "${includedir}/VX ${libdir}/libopenVX${SOLIBSDEV} "
+RDEPENDS_libopenvx-imx = "libnn-imx"
 
 FILES_libgl-imx = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL"
@@ -367,5 +378,8 @@ FILES_imx-gpu-viv-tools = "${bindir}/gmem_info"
 
 FILES_imx-gpu-viv-demos = "/opt"
 INSANE_SKIP_imx-gpu-viv-demos += "rpaths dev-deps"
+
+FILES_libnn-imx = "${libdir}/libNN*${SOLIBS} ${libdir}/libnn*${SOLIBS} ${libdir}/libneuralnetworks${SOLIBS}"
+FILES_libnn-imx-dev = "${includedir}/NNRT"
 
 # COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx8)"
