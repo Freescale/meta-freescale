@@ -41,6 +41,7 @@ BACKEND = \
 do_install_append_imxgpu3d () {
     rm -f ${D}${libdir}/libGL.* \
           ${D}${includedir}/GL/gl.h \
+          ${D}${includedir}/GL/glcorearb.h \
           ${D}${includedir}/GL/glext.h \
           ${D}${includedir}/GL/glx.h \
           ${D}${includedir}/GL/glxext.h
