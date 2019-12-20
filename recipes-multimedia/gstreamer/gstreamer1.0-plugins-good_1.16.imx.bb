@@ -5,13 +5,17 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607 \
                     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
 
+FILESEXTRAPATHS_prepend := "${BSPDIR}/sources/poky/meta/recipes-multimedia/gstreamer/${PN}:"
+FILESEXTRAPATHS_prepend := "${BSPDIR}/sources/poky/meta/recipes-multimedia/gstreamer/files:"
+
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.04.05_1902_L4.14.98_GA"
+SRCBRANCH = "MM_04.05.01_1909_L4.19.35"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} \
+    file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
 "
-SRCREV = "a31aabb7581d3f491cd31889d44479bb0f34990b"
+SRCREV = "3bcc85705695ee629ac3fb687411bb196d231918"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -49,7 +53,16 @@ PACKAGECONFIG[v4l2]       = "--enable-gst_v4l2 --enable-v4l2-probe,--disable-gst
 PACKAGECONFIG[vpx]        = "--enable-vpx,--disable-vpx,libvpx"
 PACKAGECONFIG[wavpack]    = "--enable-wavpack,--disable-wavpack,wavpack"
 PACKAGECONFIG[x11]        = "--enable-x,--disable-x,${X11DEPENDS}"
+PACKAGECONFIG[bz2]        = "--enable-bz2,--disable-bz2,bzip2"
+PACKAGECONFIG[gtk]        = "--enable-gtk3,--disable-gtk3,gtk+3"
+PACKAGECONFIG[lame]       = "--enable-lame,--disable-lame,lame"
+PACKAGECONFIG[mpg123]     = "--enable-mpg123,--disable-mpg123,mpg123"
+PACKAGECONFIG[zlib]       = "--enable-zlib,--disable-zlib,zlib"
 
+# qt5 support is disabled, because it is not present in OE core, and requires more work than
+# just adding a packageconfig (it requires access to moc, uic, rcc, and qmake paths).
+# This is better done in a separate qt5 layer (which then should add a "qt5" packageconfig
+# in a gstreamer1.0-plugins-good bbappend).
 EXTRA_OECONF += " \
     --enable-bz2 \
     --enable-oss \
@@ -64,6 +77,8 @@ EXTRA_OECONF += " \
     --disable-osx_video \
     --disable-shout2 \
     --disable-waveform \
+    --disable-qt \
+    --disable-twolame \
 "
 
 FILES_${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
