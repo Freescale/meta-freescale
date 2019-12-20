@@ -2,11 +2,11 @@ SUMMARY = "DPAA2 Management Complex Firmware"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=afcb1213054384820390d410ab62105f"
 
-inherit deploy fsl-eula-unpack
+inherit deploy
 
 INHIBIT_DEFAULT_DEPS = "1"
 
-SRC_URI = "git://github.com/nxp/qoriq-mc-binary;fsl-eula=true;nobranch=1"
+SRC_URI = "git://github.com/nxp/qoriq-mc-binary;nobranch=1"
 SRCREV = "bd64d1824681b009fd83b0a3699e45b117b72695"
 
 S = "${WORKDIR}/git"
