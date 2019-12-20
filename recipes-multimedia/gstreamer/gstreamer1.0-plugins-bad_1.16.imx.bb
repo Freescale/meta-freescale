@@ -10,22 +10,22 @@ PACKAGECONFIG_append_mx6q = " opencv"
 PACKAGECONFIG_append_mx6qp = " opencv"
 PACKAGECONFIG_append_mx8 = " opencv kms"
 
-PACKAGECONFIG[wayland] = "--enable-wayland --disable-x11,--disable-wayland,wayland-native wayland wayland-protocols libdrm"
-
-# Disable introspection to fix [GstGL-1.0.gir] Error
-EXTRA_OECONF_append = " --disable-introspection"
-
+FILESEXTRAPATHS_prepend := "${BSPDIR}/sources/poky/meta/recipes-multimedia/gstreamer/${PN}:"
+FILESEXTRAPATHS_prepend := "${BSPDIR}/sources/poky/meta/recipes-multimedia/gstreamer/files:"
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.04.05_1902_L4.14.98_GA"
+SRCBRANCH = "MM_04.05.01_1909_L4.19.35"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
     file://configure-allow-to-disable-libssh2.patch \
-    file://0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch \
+    file://fix-maybe-uninitialized-warnings-when-compiling-with-Os.patch \
+    file://avoid-including-sys-poll.h-directly.patch \
+    file://ensure-valid-sentinels-for-gst_structure_get-etc.patch \
+    file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
 "
 
-SRCREV = "0191521ba226904e4b2f84c38e5f6ae75169a18a"
+SRCREV = "eba3db4034fc17b712808d5e90ed5ff22ef490ca"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -99,17 +99,19 @@ PACKAGECONFIG[ttml]            = "--enable-ttml,--disable-ttml,libxml2 pango cai
 PACKAGECONFIG[uvch264]         = "--enable-uvch264,--disable-uvch264,libusb1 libgudev"
 PACKAGECONFIG[voaacenc]        = "--enable-voaacenc,--disable-voaacenc,vo-aacenc"
 PACKAGECONFIG[voamrwbenc]      = "--enable-voamrwbenc,--disable-voamrwbenc,vo-amrwbenc"
-PACKAGECONFIG[vulkan]          = "--enable-vulkan,--disable-vulkan,vulkan-loader"
+PACKAGECONFIG[vulkan]          = "--enable-vulkan,--disable-vulkan,vulkan-headers"
+PACKAGECONFIG[lcms2]           = "--enable-lcms2,--disable-lcms2,lcms"
+PACKAGECONFIG[openmpt]         = "--enable-openmpt,--disable-openmpt,libopenmpt"
 PACKAGECONFIG[wayland]         = "--enable-wayland,--disable-wayland,wayland-native wayland wayland-protocols libdrm"
 PACKAGECONFIG[webp]            = "--enable-webp,--disable-webp,libwebp"
 PACKAGECONFIG[webrtc]          = "--enable-webrtc,--disable-webrtc,libnice"
 PACKAGECONFIG[webrtcdsp]       = "--enable-webrtcdsp,--disable-webrtcdsp,webrtc-audio-processing"
 
 # these plugins have no corresponding library in OE-core or meta-openembedded:
-#   openni2 winks direct3d directsound winscreencap acm apple_media iqa
-#   android_media avc bs2b chromaprint daala dts fdkaac gme gsm kate ladspa
+#   openni2 winks direct3d directsound winscreencap apple_media iqa
+#   android_media avc bs2b chromaprint dts fdkaac gme gsm kate ladspa
 #   lv2 mpeg2enc mplex msdk musepack nvenc ofa openmpt opensles soundtouch
-#   spandsp spc teletextdec vdpau wasapi x265 zbar
+#   spandsp teletextdec vdpau wasapi x265 zbar
 
 EXTRA_OECONF += " \
     --enable-decklink \
@@ -118,15 +120,12 @@ EXTRA_OECONF += " \
     --enable-ipcpipeline \
     --enable-netsim \
     --enable-shm \
-    --enable-vcd \
-    --disable-acm \
     --disable-android_media \
     --disable-aom \
     --disable-apple_media \
     --disable-avc \
     --disable-bs2b \
     --disable-chromaprint \
-    --disable-daala \
     --disable-direct3d \
     --disable-directsound \
     --disable-dts \
@@ -149,7 +148,6 @@ EXTRA_OECONF += " \
     --disable-opensles \
     --disable-soundtouch \
     --disable-spandsp \
-    --disable-spc \
     --disable-srt \
     --disable-teletextdec \
     --disable-vdpau \
@@ -160,6 +158,7 @@ EXTRA_OECONF += " \
     --disable-x265 \
     --disable-zbar \
     ${@bb.utils.contains("TUNE_FEATURES", "mx32", "--disable-yadif", "", d)} \
+    --disable-introspection \
 "
 export OPENCV_PREFIX = "${STAGING_DIR_TARGET}${prefix}"
 
@@ -169,5 +168,7 @@ ARM_INSTRUCTION_SET_armv5 = "arm"
 FILES_${PN}-freeverb += "${datadir}/gstreamer-${LIBV}/presets/GstFreeverb.prs"
 FILES_${PN}-opencv += "${datadir}/gst-plugins-bad/${LIBV}/opencv*"
 FILES_${PN}-voamrwbenc += "${datadir}/gstreamer-${LIBV}/presets/GstVoAmrwbEnc.prs"
+# include fragment shaders
+FILES_${PN}-opengl += "/usr/share/*.fs"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
