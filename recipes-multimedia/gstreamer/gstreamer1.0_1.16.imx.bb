@@ -19,17 +19,15 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
 
 # Use i.MX fork of GST for customizations
 GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.04.05_1902_L4.14.98_GA"
+SRCBRANCH = "MM_04.05.01_1909_L4.19.35"
 
 SRC_URI = " \
     ${GST1.0_SRC};branch=${SRCBRANCH} \
     file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
     file://gtk-doc-tweaks.patch \
     file://0001-gst-gstpluginloader.c-when-env-var-is-set-do-not-fal.patch \
-    file://0001-protection-Add-a-new-definition-for-unspecified-syst.patch \
-    file://0001-protection-Fix-the-string-to-define-unspecified-syst.patch \
 "
-SRCREV = "d42548da09724ad8cc1aa4f1944607920be2f4c0"
+SRCREV = "a4c220605ac0923596b89f4f07c05d235bc09259"
 
 DEFAULT_PREFERENCE = "-1"
 
