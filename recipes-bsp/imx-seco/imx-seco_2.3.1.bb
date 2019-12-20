@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=fb0303e4ee8b0e71c094171e2272bd44"
 
 inherit fsl-eula-unpack deploy
 
-SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true "
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true "
 
 SRC_URI[md5sum] = "cf8d6bbf93f0aa6e1049f1098a0f7e0f"
 SRC_URI[sha256sum] = "b429ac58b2ea1771b3fdf7ae87bf1d37ccaf596bde01a5ecccae27b2145f6824"
