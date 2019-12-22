@@ -21,10 +21,10 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
 IMXGST_SRC ?= "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https"
-SRCBRANCH = "MM_04.04.05_1902_L4.14.98_GA"
+SRCBRANCH = "MM_04.05.01_1909_L4.19.35"
 
 SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
-SRCREV = "0c5f48b3aee473d8c8f3e853eb2078f054caa4d2"
+SRCREV = "3330461b906153a180ef9bda58368ed6782e2c28"
 
 S = "${WORKDIR}/git"
 
