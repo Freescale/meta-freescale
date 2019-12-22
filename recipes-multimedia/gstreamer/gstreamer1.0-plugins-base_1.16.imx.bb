@@ -7,12 +7,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
 DEPENDS += "iso-codes util-linux"
 DEPENDS_append_imxgpu2d = " virtual/libg2d"
 
-PV = "1.16.0.imx"
-
-FILESEXTRAPATHS_prepend := "${BSPDIR}/sources/poky/meta/recipes-multimedia/gstreamer/files:"
-FILESEXTRAPATHS_prepend := "${BSPDIR}/sources/poky/meta/recipes-multimedia/gstreamer/${PN}:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
 SRCBRANCH = "MM_04.05.01_1909_L4.19.35"
 SRCREV = "df30480711d68a1c1d2152bf4d6a7b245a85f967" 
@@ -20,9 +14,9 @@ SRC_URI = " \
     ${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
     file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
     file://make-gio_unix_2_0-dependency-configurable.patch \
-    file://0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch \
+    file://0001-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch \
     file://0003-riff-add-missing-include-directories-when-calling-in.patch \
-    file://0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch \
+    file://0002-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch \
 "
 
 S = "${WORKDIR}/git"
