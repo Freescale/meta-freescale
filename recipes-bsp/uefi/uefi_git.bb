@@ -3,9 +3,9 @@ SECTION = "bootloaders"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA;md5=343ec8f06efc37467a6de53686fa6315"
 
-inherit deploy fsl-eula-unpack
+inherit deploy
 
-SRC_URI = "git://github.com/NXP/qoriq-uefi-binary.git;fsl-eula=true;nobranch=1"
+SRC_URI = "git://github.com/NXP/qoriq-uefi-binary.git;nobranch=1"
 SRCREV= "cd84334952594b241f331829d6a092ffe971eb2d"
 
 S = "${WORKDIR}/git"
