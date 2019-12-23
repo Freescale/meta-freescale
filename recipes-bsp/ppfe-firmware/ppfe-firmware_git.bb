@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=92723670f432558b9e2494ed177d2
 
 INHIBIT_DEFAULT_DEPS = "1"
 
-inherit deploy fsl-eula-unpack
+inherit deploy
 
-SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;fsl-eula=true;nobranch=1"
+SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;nobranch=1"
 SRCREV = "d3a8ef0760c54ddc243039c86389497e37be90ab"
 
 S = "${WORKDIR}/git"
