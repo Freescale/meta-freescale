@@ -1,0 +1,62 @@
+From 1401b89684ee81bf0b3d3dea06e2926b24ba3f97 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@jci.com>
+Date: Thu, 7 Feb 2019 01:29:08 +0000
+Subject: [PATCH 2/3] build: ignore declaration-after-statement warnings
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+| Makefile:37: recipe for target 'xtest' failed
+| make: *** [xtest] Error 2
+| make: *** Waiting for unfinished jobs....
+| arith_taf.c: In function 'get_handle':
+| arith_taf.c:56:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+|   int h = handle_get(&hdb, ptr);
+|   ^~~
+| arith_taf.c: In function 'ta_entry_arith_new_var':
+| arith_taf.c:82:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+|   size_t len = TEE_BigIntSizeInU32(params[0].value.a);
+|   ^~~~~~
+| arith_taf.c: In function 'ta_entry_arith_new_fmm_var':
+| arith_taf.c:129:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+|   size_t len = TEE_BigIntFMMSizeInU32(params[0].value.a);
+|   ^~~~~~
+| arith_taf.c: In function 'ta_entry_arith_free_handle':
+| arith_taf.c:150:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+|   void *ptr = put_handle(params[0].value.a & ~HT_MASK);
+|   ^~~~
+| arith_taf.c: In function 'ta_entry_arith_from_octet_string':
+| arith_taf.c:165:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+|   TEE_BigInt *big_int = lookup_handle(HT_BIGINT, params[0].value.a);
+|   ^~~~~~~~~~
+| arith_taf.c: In function 'ta_entry_arith_from_s32':
+| arith_taf.c:181:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+|   TEE_BigInt *big_int = lookup_handle(HT_BIGINT, params[0].value.a);
+|   ^~~~~~~~~~
+
+etc.
+
+Signed-off-by: André Draszik <andre.draszik@jci.com>
+Acked-by: Jens Wiklander <jens.wiklander@linaro.org>
+Reviewed-by: Jerome Forissier <jerome.forissier@linaro.org>
+---
+Signed-off-by: André Draszik <andre.draszik@jci.com>
+Upstream-Status: Backport [3.5.0]
+ host/xtest/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/host/xtest/Makefile b/host/xtest/Makefile
+index f4291e0..e97e555 100644
+--- a/host/xtest/Makefile
++++ b/host/xtest/Makefile
+@@ -154,6 +154,7 @@ CFLAGS += -Wall -Wcast-align -Werror \
+ 	  -Wmissing-prototypes -Wnested-externs -Wpointer-arith \
+ 	  -Wshadow -Wstrict-prototypes -Wswitch-default \
+ 	  -Wwrite-strings \
++	  -Wno-declaration-after-statement \
+ 	  -Wno-missing-field-initializers -Wno-format-zero-length
+ endif
+ 
+-- 
+2.23.0.rc1
+
