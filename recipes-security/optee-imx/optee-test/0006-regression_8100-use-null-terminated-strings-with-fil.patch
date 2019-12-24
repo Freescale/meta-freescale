@@ -1,0 +1,88 @@
+From 7d566ed585d1e13f444d48fde5705b5be54de4af Mon Sep 17 00:00:00 2001
+From: Ricardo Salveti <ricardo@foundries.io>
+Date: Wed, 26 Jun 2019 17:32:11 -0300
+Subject: [PATCH] regression_8100: use null terminated strings with file_to_c
+
+GCC 9 is more strict with string manipulation, causing the build to
+fail as the string data converted via file_to_c is not null terminated,
+as described by the following build error:
+
+regression_8100.c:100:29: error: '%*s' directive argument is not a
+nul-terminated string [-Werror=format-overflow=]
+tlen = myasprintf(&trust, "%*s", (int)sizeof(regression_8100_ca_crt),
+                           ^~~
+      regression_8100_ca_crt);
+      ~~~~~~~~~~~~~~~~~~~~~~
+
+Change file_to_c to terminate the string after conversion and update the
+string size to remove the null terminated byte. Also update
+regression_8100 to use the size variable defined via file_to_c instead
+of manually calling sizeof.
+
+Signed-off-by: Ricardo Salveti <ricardo@foundries.io>
+Acked-by: Jens Wiklander <jens.wiklander@linaro.org>
+---
+Signed-off-by: André Draszik <andre.draszik@jci.com>
+Upstream-Status: Backport [3.6.0]
+ host/xtest/regression_8100.c | 10 +++++-----
+ scripts/file_to_c.py         |  4 ++--
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/host/xtest/regression_8100.c b/host/xtest/regression_8100.c
+index 04d62d9..13780e1 100644
+--- a/host/xtest/regression_8100.c
++++ b/host/xtest/regression_8100.c
+@@ -91,13 +91,13 @@ static void test_8102(ADBG_Case_t *c)
+ 		return;
+ 
+ 	clen = myasprintf(&chain, "%*s\n%*s",
+-			  (int)sizeof(regression_8100_my_crt),
++			  (int)regression_8100_my_crt_size,
+ 			  regression_8100_my_crt,
+-			  (int)sizeof(regression_8100_mid_crt),
++			  (int)regression_8100_mid_crt_size,
+ 			   regression_8100_mid_crt);
+ 	if (!ADBG_EXPECT_COMPARE_SIGNED(c, clen, !=, -1))
+ 		goto out;
+-	tlen = myasprintf(&trust, "%*s", (int)sizeof(regression_8100_ca_crt),
++	tlen = myasprintf(&trust, "%*s", (int)regression_8100_ca_crt_size,
+ 			  regression_8100_ca_crt);
+ 	if (!ADBG_EXPECT_COMPARE_SIGNED(c, tlen, !=, -1))
+ 		goto out;
+@@ -282,7 +282,7 @@ static void test_8103(ADBG_Case_t *c)
+ 					      NULL, &ret_orig)))
+ 		return;
+ 
+-	clen = myasprintf(&csr, "%*s", (int)sizeof(regression_8100_my_csr),
++	clen = myasprintf(&csr, "%*s", (int)regression_8100_my_csr_size,
+ 			  regression_8100_my_csr);
+ 	if (!ADBG_EXPECT_COMPARE_SIGNED(c, clen, >=, 0))
+ 		goto out;
+@@ -300,7 +300,7 @@ static void test_8103(ADBG_Case_t *c)
+ 	if (!ADBG_EXPECT_TEEC_SUCCESS(c, res))
+ 		goto out;
+ 
+-	myasprintf(&ca, "%*s", (int)sizeof(regression_8100_ca_crt),
++	myasprintf(&ca, "%*s", (int)regression_8100_ca_crt_size,
+ 		   regression_8100_ca_crt);
+ 	if (!ADBG_EXPECT_NOT_NULL(c, ca))
+ 		goto out;
+diff --git a/scripts/file_to_c.py b/scripts/file_to_c.py
+index 83a9832..ae16f52 100755
+--- a/scripts/file_to_c.py
++++ b/scripts/file_to_c.py
+@@ -37,9 +37,9 @@ def main():
+         else:
+             f.write(" ")
+ 
+-    f.write("};\n")
++    f.write("'\\0'};\n")
+     f.write("const size_t " + args.name + "_size = sizeof(" + 
+-            args.name + ");\n")
++            args.name + ") - 1;\n")
+ 
+     f.close()
+     inf.close()
+-- 
+2.23.0.rc1
+
