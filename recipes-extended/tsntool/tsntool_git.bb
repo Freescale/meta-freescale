@@ -12,6 +12,8 @@ SRCREV = "30a0320eb4a1798ac3d6258a2e02d863e60a1582"
 
 S = "${WORKDIR}/git"
 
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
 do_compile_prepend() {
         mkdir -p ${S}/include/linux
         cp -r ${STAGING_KERNEL_DIR}/include/uapi/linux/tsn.h ${S}/include/linux
