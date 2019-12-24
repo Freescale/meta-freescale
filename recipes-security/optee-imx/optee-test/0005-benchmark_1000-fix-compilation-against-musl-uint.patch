@@ -1,0 +1,57 @@
+From f74e9f339a8e8cb97fc8ea03bef51d7e3862a60a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@jci.com>
+Date: Thu, 7 Feb 2019 01:31:27 +0000
+Subject: [PATCH 3/3] benchmark_1000: fix compilation against musl (uint)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Compiling against musl-libc fails with the following error:
+
+| .../host/xtest/benchmark_1000.c: In function 'show_test_result':
+| .../host/xtest/benchmark_1000.c:102:2: error: unknown type name 'uint'; did you mean 'int'?
+|   uint i;
+|   ^~~~
+|   int
+| ...host/xtest/benchmark_1000.c:108:16: error: comparison of integer expressions of different signedness: 'int' and 'size_t' {aka 'unsigned int'} [-Werror=sign-compare]
+|   for (i = 0; i < size; i++) {
+|                 ^
+
+etc.
+
+Convert to using more standard size_t
+
+Signed-off-by: André Draszik <andre.draszik@jci.com>
+Acked-by: Jens Wiklander <jens.wiklander@linaro.org>
+Reviewed-by: Jerome Forissier <jerome.forissier@linaro.org>
+---
+Signed-off-by: André Draszik <andre.draszik@jci.com>
+Upstream-Status: Backport [3.5.0]
+ host/xtest/benchmark_1000.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/host/xtest/benchmark_1000.c b/host/xtest/benchmark_1000.c
+index bf92fa0..1caf420 100644
+--- a/host/xtest/benchmark_1000.c
++++ b/host/xtest/benchmark_1000.c
+@@ -99,7 +99,7 @@ static TEEC_Result run_chunk_access_test(enum storage_benchmark_cmd cmd,
+ 
+ static void show_test_result(struct test_record records[], size_t size)
+ {
+-	uint i;
++	size_t i;
+ 
+ 	printf("-----------------+---------------+----------------\n");
+ 	printf(" Data Size (B) \t | Time (s)\t | Speed (kB/s)\t \n");
+@@ -119,7 +119,7 @@ static void chunk_test(ADBG_Case_t *c, enum storage_benchmark_cmd cmd)
+ {
+ 	uint32_t chunk_size = DEFAULT_CHUNK_SIZE;
+ 	struct test_record records[ARRAY_SIZE(data_size_table) - 1];
+-	uint i;
++	size_t i;
+ 
+ 	for (i = 0; data_size_table[i]; i++) {
+ 		ADBG_EXPECT_TEEC_SUCCESS(c,
+-- 
+2.23.0.rc1
+
