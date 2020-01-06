@@ -24,6 +24,7 @@ PLATFORM_mx8qm   = "imx8qm"
 PLATFORM_mx8qxp  = "imx8qx"
 PLATFORM_mx8mq   = "imx8mq"
 PLATFORM_mx8mm   = "imx8mm"
+PLATFORM_mx8mn   = "imx8mn"
 
 EXTRA_OEMAKE += " \
     CROSS_COMPILE="${TARGET_PREFIX}" \
