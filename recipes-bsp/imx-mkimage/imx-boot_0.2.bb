@@ -41,6 +41,7 @@ ATF_MACHINE_NAME_mx8qm = "bl31-imx8qm.bin"
 ATF_MACHINE_NAME_mx8qxp = "bl31-imx8qx.bin"
 ATF_MACHINE_NAME_mx8mq = "bl31-imx8mq.bin"
 ATF_MACHINE_NAME_mx8mm = "bl31-imx8mm.bin"
+ATF_MACHINE_NAME_mx8mn = "bl31-imx8mn.bin"
 ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
@@ -53,6 +54,7 @@ SOC_TARGET_mx8qm  = "iMX8QM"
 SOC_TARGET_mx8qxp = "iMX8QX"
 SOC_TARGET_mx8mq  = "iMX8M"
 SOC_TARGET_mx8mm  = "iMX8MM"
+SOC_TARGET_mx8mn  = "iMX8MN"
 
 DEPLOY_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
@@ -63,6 +65,7 @@ IMXBOOT_TARGETS ?= \
 
 BOOT_STAGING       = "${S}/${SOC_TARGET}"
 BOOT_STAGING_mx8mm = "${S}/iMX8M"
+BOOT_STAGING_mx8mn = "${S}/iMX8M"
 
 SOC_FAMILY      = "INVALID"
 SOC_FAMILY_mx8  = "mx8"
@@ -70,7 +73,7 @@ SOC_FAMILY_mx8m = "mx8m"
 SOC_FAMILY_mx8x = "mx8x"
 
 compile_mx8m() {
-    bbnote 8MQ/8MM boot binary build
+    bbnote 8MQ/8MM/8MN boot binary build
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING} "
         cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}
