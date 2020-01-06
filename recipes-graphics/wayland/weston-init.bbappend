@@ -26,6 +26,9 @@ INI_UNCOMMENT_ASSIGNMENTS_append_mx8mq = " \
     \\[shell\\] \
     size=1920x1080 \
 "
+INI_UNCOMMENT_ASSIGNMENTS_append_mx8mn = " \
+    use-g2d=1 \
+"
 
 uncomment() {
     if ! (grep "^#$1" $2); then
