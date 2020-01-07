@@ -255,6 +255,7 @@ PREFERRED_PROVIDER_virtual/libg2d            ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d_imxdpu     ?= "imx-dpu-g2d"
 
 PREFERRED_VERSION_weston_imx ?= "6.0.1.imx"
+PREFERRED_VERSION_weston_use-mainline-bsp = ""
 
 PREFERRED_VERSION_wayland-protocols_mx6 ?= "1.17.imx"
 PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.17.imx"
