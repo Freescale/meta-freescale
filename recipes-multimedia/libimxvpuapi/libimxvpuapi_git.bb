@@ -8,8 +8,8 @@ DEPENDS = "imx-vpu"
 
 PV = "0.10.3+${SRCPV}"
 
-SRCBRANCH ?= "master"
-SRCREV = "4afb52f97e28c731c903a8538bf99e4a6d155b42"
+SRCBRANCH ?= "v1"
+SRCREV = "3a1ee3a54fe93813868d38c3d32ea065b59e227e"
 SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
