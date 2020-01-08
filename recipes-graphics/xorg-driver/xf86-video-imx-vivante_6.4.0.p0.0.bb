@@ -13,7 +13,7 @@ DEPENDS += "virtual/xserver virtual/libx11 libgal-imx imx-gpu-viv virtual/libg2d
 
 LIC_FILES_CHKSUM = "file://COPYING-MIT;md5=b5e9d9f5c02ea831ab3ecf802bb7c4f3"
 
-SRCREV = "b765c3ffc0dcc4246afa659aa0d59f78a6736b08"
+SRCREV = "c828e8a7c38743e960967e7bb78c134cec31c102"
 SRCBRANCH = "imx_exa_viv6_g2d"
 SRC_URI = "git://source.codeaurora.org/external/imx/xf86-video-imx-vivante.git;protocol=https;branch=${SRCBRANCH} \
            file://rc.autohdmi"
