@@ -13,7 +13,8 @@ DEPENDS = "libpthread-stubs"
 IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https;nobranch=1"
 IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.99"
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
-           file://musl-ioctl.patch"
+           file://musl-ioctl.patch \
+           file://0001-meson-add-libdrm-vivante-to-the-meson-meta-data.patch "
 SRCREV = "5748c8ff40f1ae87487c01e580f145a43542cbda"
 S = "${WORKDIR}/git"
 
@@ -63,8 +64,10 @@ FILES_${PN}-etnaviv = "${libdir}/libdrm_etnaviv.so.*"
 
 BBCLASSEXTEND = "native nativesdk"
 
-PACKAGES_append_imxgpu = " ${PN}-vivante"
+PACKAGES_prepend_imxgpu = "${PN}-vivante "
 RRECOMMENDS_${PN}-drivers_append_imxgpu = " ${PN}-vivante"
 FILES_${PN}-vivante = "${libdir}/libdrm_vivante.so.*"
+PACKAGECONFIG_append_imxgpu = " vivante"
+PACKAGECONFIG[vivante] = "-Dvivante=true,-Dvivante=false"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
