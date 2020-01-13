@@ -63,7 +63,7 @@ PACKAGECONFIG[mp3encoder] = ",--disable-mp3encoder,imx-codec"
 
 # LIBV is used by gst-plugins-package.inc to specify the GStreamer version (0.10 vs 1.0)
 LIBV = "1.0"
-require recipes-multimedia/gstreamer/gst-plugins-package.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
 # the following line is required to produce one package for each plugin
 PACKAGES_DYNAMIC = "^${PN}-.*"

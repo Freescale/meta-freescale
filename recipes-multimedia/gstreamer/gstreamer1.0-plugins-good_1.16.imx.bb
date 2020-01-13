@@ -1,4 +1,4 @@
-require recipes-multimedia/gstreamer/gstreamer1.0-plugins.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 LICENSE = "GPLv2+ & LGPLv2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
