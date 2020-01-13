@@ -24,7 +24,7 @@ EXTRA_OECONF = "--disable-examples --disable-tests --disable-introspection "
 
 # Starting with 1.8.0 gst-rtsp-server includes dependency-less plugins as well
 LIBV = "1.0"
-require recipes-multimedia/gstreamer/gst-plugins-package.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
 delete_pkg_m4_file() {
         # This m4 file is out of date and is missing PKG_CONFIG_SYSROOT_PATH tweaks which we need for introspection
