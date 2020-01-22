@@ -1,0 +1,62 @@
+From aa8e341e73c288b77a5187e3676a2bbb6588b705 Mon Sep 17 00:00:00 2001
+From: Jose Fonseca <jfonseca@vmware.com>
+Date: Mon, 29 Apr 2019 06:41:49 +0100
+Subject: [PATCH 4/4] scripts: Tie a few more Python 2 to 3 conversion loose
+ ends.
+
+Upstream-Status: Backport [https://github.com/apitrace/apitrace/commit/f527924cca45591966139eae8c2fefb4a9a0f947]
+
+(cherry picked from commit f527924cca45591966139eae8c2fefb4a9a0f947)
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+---
+ scripts/jsonextractimages.py | 10 +++++-----
+ scripts/profileshader.py     |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/scripts/jsonextractimages.py b/scripts/jsonextractimages.py
+index 785e32db..ac20c23d 100755
+--- a/scripts/jsonextractimages.py
++++ b/scripts/jsonextractimages.py
+@@ -34,7 +34,7 @@ import base64
+ import sys
+ 
+ 
+-pngSignature = "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"
++pngSignature = b"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"
+ 
+ 
+ def dumpSurfaces(state, memberName):
+@@ -46,13 +46,13 @@ def dumpSurfaces(state, memberName):
+             extName = 'png'
+         else:
+             magic = data[:2]
+-            if magic in ('P1', 'P4'):
++            if magic in (b'P1', b'P4'):
+                 extName = 'pbm'
+-            elif magic in ('P2', 'P5'):
++            elif magic in (b'P2', b'P5'):
+                 extName = 'pgm'
+-            elif magic in ('P3', 'P6'):
++            elif magic in (b'P3', b'P6'):
+                 extName = 'ppm'
+-            elif magic in ('Pf', 'PF'):
++            elif magic in (b'Pf', b'PF'):
+                 extName = 'pfm'
+             else:
+                 sys.stderr.write('warning: unsupport Netpbm format %s\n' % magic)
+diff --git a/scripts/profileshader.py b/scripts/profileshader.py
+index c6c1c935..7e8637eb 100755
+--- a/scripts/profileshader.py
++++ b/scripts/profileshader.py
+@@ -92,7 +92,7 @@ def process(stream, groupField):
+         id = str(group[0]).rjust(maxGroupLen)
+         draw = str(group[1]['draws']).rjust(12)
+         dura = str(group[1]['duration']).rjust(18)
+-        perCall = str(group[1]['duration'] / group[1]['draws']).rjust(12)
++        perCall = str(group[1]['duration'] // group[1]['draws']).rjust(12)
+         longest = str(group[1]['longest']).rjust(11)
+         print("| %s | %s | %s | %s | %s |" % (id, draw, dura, perCall, longest))
+ 
+-- 
+2.17.1
+

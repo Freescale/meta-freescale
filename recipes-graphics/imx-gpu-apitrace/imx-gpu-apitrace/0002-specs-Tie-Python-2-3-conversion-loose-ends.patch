@@ -1,0 +1,169 @@
+From a8791e3dca61500a382be84dc96973639b8bd182 Mon Sep 17 00:00:00 2001
+From: Jose Fonseca <jfonseca@vmware.com>
+Date: Sun, 28 Apr 2019 14:13:01 +0100
+Subject: [PATCH 2/4] specs: Tie Python 2 ->3 conversion loose ends.
+
+Upstream-Status: Backport [https://github.com/apitrace/apitrace/commit/5b3c68cafaddc82c0f34bea8127582eee07ac3be]
+
+(cherry picked from commit 5b3c68cafaddc82c0f34bea8127582eee07ac3be)
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+---
+ specs/scripts/Makefile        | 16 ++++++++--------
+ specs/scripts/c2api.py        |  6 +++---
+ specs/scripts/cxx2api.py      |  2 +-
+ specs/scripts/spec2api.py     |  2 +-
+ specs/scripts/txt2api.py      |  8 +++++---
+ specs/scripts/xml2api.py      |  2 +-
+ specs/scripts/xml2enum.py     |  2 +-
+ specs/scripts/xml2glparams.py |  2 +-
+ 8 files changed, 21 insertions(+), 19 deletions(-)
+
+diff --git a/specs/scripts/Makefile b/specs/scripts/Makefile
+index 714a3deb..f03f36eb 100644
+--- a/specs/scripts/Makefile
++++ b/specs/scripts/Makefile
+@@ -37,28 +37,28 @@ download: \
+ 	wget -N https://www.opengl.org/registry/oldspecs/$@
+ 
+ glapi.py: xml2api.py gl.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ glxapi.py: xml2api.py glx.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ wglapi.py: xml2api.py wgl.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ eglapi.py: xml2api.py egl.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ glparams.py: xml2glparams.py gl.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ glxenum.py: xml2enum.py glx.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ wglenum.py: xml2enum.py wgl.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ eglenum.py: xml2enum.py egl.xml
+-	python $^ > $@
++	python3 $^ > $@
+ 
+ clean:
+ 	rm -f \
+diff --git a/specs/scripts/c2api.py b/specs/scripts/c2api.py
+index b8aaa81d..208169d2 100755
+--- a/specs/scripts/c2api.py
++++ b/specs/scripts/c2api.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ ##########################################################################
+ #
+ # Copyright 2011 Jose Fonseca
+@@ -404,8 +404,8 @@ class DeclParser:
+                     type = 'S' + type
+             elif short:
+                 type = 'Short'
+-            elif int:
+-                type = 'Long' * int
++            elif long:
++                type = 'Long' * long
+             else:
+                 type = 'Int'
+             if unsigned:
+diff --git a/specs/scripts/cxx2api.py b/specs/scripts/cxx2api.py
+index 9720615d..8056de47 100755
+--- a/specs/scripts/cxx2api.py
++++ b/specs/scripts/cxx2api.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ 
+ 
+diff --git a/specs/scripts/spec2api.py b/specs/scripts/spec2api.py
+index 7fb395a4..33a8d058 100755
+--- a/specs/scripts/spec2api.py
++++ b/specs/scripts/spec2api.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ ##########################################################################
+ #
+ # Copyright 2010 VMware, Inc.
+diff --git a/specs/scripts/txt2api.py b/specs/scripts/txt2api.py
+index e9469d3c..a32ca658 100755
+--- a/specs/scripts/txt2api.py
++++ b/specs/scripts/txt2api.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ ##########################################################################
+ #
+ # Copyright 2010 VMware, Inc.
+@@ -28,6 +28,7 @@
+ """Parser for OpenGL .txt extensions specification."""
+ 
+ 
++import io
+ import sys
+ import re
+ import optparse
+@@ -233,12 +234,13 @@ def main():
+ 
+     for arg in args:
+         if arg.startswith('http://') or arg.startswith('https://'):
+-            stream = urlopen(arg, 'rt')
++            stream = urlopen(arg)
++            stream = io.TextIOWrapper(stream, encoding='ascii')
+         else:
+             stream = open(arg, 'rt')
+         parser = TxtParser(stream, prefix = options.prefix)
+         parser.parse()
+-    
++
+ 
+ if __name__ == '__main__':
+     main()
+diff --git a/specs/scripts/xml2api.py b/specs/scripts/xml2api.py
+index f09fe0bf..6b4ec3b7 100755
+--- a/specs/scripts/xml2api.py
++++ b/specs/scripts/xml2api.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ ##########################################################################
+ #
+ # Copyright 2014 VMware, Inc
+diff --git a/specs/scripts/xml2enum.py b/specs/scripts/xml2enum.py
+index cb2c4ae9..f799b7b5 100755
+--- a/specs/scripts/xml2enum.py
++++ b/specs/scripts/xml2enum.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ ##########################################################################
+ #
+ # Copyright 2014 VMware, Inc
+diff --git a/specs/scripts/xml2glparams.py b/specs/scripts/xml2glparams.py
+index 805aac86..a651d896 100755
+--- a/specs/scripts/xml2glparams.py
++++ b/specs/scripts/xml2glparams.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ ##########################################################################
+ #
+ # Copyright 2014 VMware, Inc
+-- 
+2.17.1
+
