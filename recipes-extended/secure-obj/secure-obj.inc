@@ -6,7 +6,7 @@ RDEPENDS_${PN} = "bash libcrypto libssl"
 
 DEPENDS += "python-pycrypto-native"
 
-inherit pythonnative
+inherit python3native
 
 LDFLAGS += "${TOOLCHAIN_OPTIONS}"
 
