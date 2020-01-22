@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=69663ab153298557a59c67a60a743e5b"
 
 DEPENDS = "python-pycrypto-native"
 
-inherit deploy pythonnative
+inherit deploy python3native
 
 SRCREV = "4e8d2e5307b99a91a0cac3ea3560ecb7d62898d6"
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;nobranch=1 \

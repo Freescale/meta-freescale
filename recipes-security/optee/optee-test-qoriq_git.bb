@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
 DEPENDS = "optee-client-qoriq optee-os-qoriq python-pycrypto-native"
 
-inherit pythonnative
+inherit python3native
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_test;nobranch=1 \
     file://0001-fix-build-failure-with-GCC-9.patch \
