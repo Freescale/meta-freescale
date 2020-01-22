@@ -35,10 +35,6 @@ do_install() {
     done
     cd -
 
-    install -d ${D}${base_libdir}/firmware/imx/sdma
-    mv ${D}${base_libdir}/firmware/sdma/sdma-imx6q.bin ${D}${base_libdir}/firmware/imx/sdma
-    mv ${D}${base_libdir}/firmware/sdma/sdma-imx7d.bin ${D}${base_libdir}/firmware/imx/sdma
-
     mv ${D}${base_libdir}/firmware/epdc/ ${D}${base_libdir}/firmware/imx/epdc/
     mv ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw.nonrestricted ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw
 
@@ -46,6 +42,8 @@ do_install() {
     find ${D}${base_libdir}/firmware -type f -exec chown root:root '{}' ';'
 
     # Remove files not going to be installed
+    rm ${D}${base_libdir}/firmware/sdma/sdma-imx6q.bin
+    rm ${D}${base_libdir}/firmware/sdma/sdma-imx7d.bin
     find ${D}${base_libdir}/firmware/ -name '*.mk' -exec rm '{}' ';'
 }
 
