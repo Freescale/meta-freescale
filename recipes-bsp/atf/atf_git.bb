@@ -12,7 +12,7 @@ do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 S = "${WORKDIR}/git"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/atf;nobranch=1"
-SRCREV = "85e98b945172118c55f0cea9c1f655b4307e6fab"
+SRCREV = "bf83b558cd535ae0272b5e5985d1c7d269b5b020"
 
 SRC_URI += "file://0001-fix-fiptool-build-error.patch \
     file://0001-Makefile-add-CC-gcc.patch \
