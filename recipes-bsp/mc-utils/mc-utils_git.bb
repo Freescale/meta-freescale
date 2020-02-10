@@ -19,24 +19,28 @@ MC_CFG_ls1088a = "ls1088a"
 MC_CFG_ls2088a = "ls2088a"
 MC_CFG_lx2160a = "lx2160a"
 
-do_install () {
-	oe_runmake -C config 
+MC_FLAVOUR ?= "RDB"
 
+do_compile () {
+	oe_runmake -C config 
+}
+
+do_install () {
 	install -d ${D}/boot/mc-utils
-	cp -r ${S}/config/${MC_CFG}/RDB/*.dtb ${D}/boot/mc-utils
-        if [ -d ${S}/config/${MC_CFG}/RDB/custom/ ]; then
-            install -d ${D}/boot/mc-utils/custom
-            cp -r ${S}/config/${MC_CFG}/RDB/custom/*.dtb ${D}/boot/mc-utils/custom
-        fi
+	cp -r ${S}/config/${MC_CFG}/${MC_FLAVOUR}/*.dtb ${D}/boot/mc-utils
+	if [ -d ${S}/config/${MC_CFG}/${MC_FLAVOUR}/custom/ ]; then
+		install -d ${D}/boot/mc-utils/custom
+		cp -r ${S}/config/${MC_CFG}/${MC_FLAVOUR}/custom/*.dtb ${D}/boot/mc-utils/custom
+	fi
 }
 
 do_deploy () {
 	install -d ${DEPLOYDIR}/mc-utils
-	cp -r ${S}/config/${MC_CFG}/RDB/*.dtb ${DEPLOYDIR}/mc-utils
-        if [ -d ${S}/config/${MC_CFG}/RDB/custom/ ]; then
-            install -d ${DEPLOYDIR}/mc-utils/custom
-            cp -r ${S}/config/${MC_CFG}/RDB/custom/*.dtb ${DEPLOYDIR}/mc-utils/custom
-        fi
+	cp -r ${S}/config/${MC_CFG}/${MC_FLAVOUR}/*.dtb ${DEPLOYDIR}/mc-utils
+	if [ -d ${S}/config/${MC_CFG}/${MC_FLAVOUR}/custom/ ]; then
+		install -d ${DEPLOYDIR}/mc-utils/custom
+		cp -r ${S}/config/${MC_CFG}/${MC_FLAVOUR}/custom/*.dtb ${DEPLOYDIR}/mc-utils/custom
+	fi
 }
 addtask deploy after do_install
 
