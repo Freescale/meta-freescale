@@ -16,3 +16,4 @@ SRCBRANCH = "2019.07+fslc"
 PV = "v2019.07+git${SRCPV}"
 
 S = "${WORKDIR}/git"
+B = "${WORKDIR}/build"

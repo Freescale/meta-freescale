@@ -15,5 +15,6 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;no
 SRCREV= "ebb420ac9d67ffeaf9df2d69a928fdb3df78394a"
 
 S = "${WORKDIR}/git"
+B = "${WORKDIR}/build"
 PV_append = "+fslgit"
 LOCALVERSION = "+fsl"
