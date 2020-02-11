@@ -16,9 +16,9 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/vpp;nobra
         file://0001-getcpu-rename-getcpu-to-avoid-conflict-with-glibc-2..patch \
         file://0001-vpp-core-fix-package_qa-error.patch \
 "
-DEPENDS = "dpdkvpp openssl python-ply util-linux vpp-core-native"
+DEPENDS = "dpdkvpp openssl python3-ply util-linux vpp-core-native"
 
-DEPENDS_class-native = "openssl-native  python-ply-native util-linux-native"
+DEPENDS_class-native = "openssl-native  python3-ply-native util-linux-native"
 
 inherit cmake
 inherit pkgconfig
