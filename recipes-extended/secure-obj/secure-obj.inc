@@ -4,7 +4,7 @@ LICENSE = "BSD"
 DEPENDS = "openssl optee-os-qoriq optee-client-qoriq"
 RDEPENDS_${PN} = "bash libcrypto libssl"
 
-DEPENDS += "python-pycrypto-native"
+DEPENDS += "python3-pycrypto-native"
 
 inherit python3native
 
