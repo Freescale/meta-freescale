@@ -11,7 +11,6 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobr
 "
 SRCREV = "a36da6a94243015b228c15b8b9aa1e650fd4b96d"
 
-RDEPENDS_${PN} += "python-subprocess"
 DEPENDS = "virtual/kernel openssl"
 DEPENDS_append_x86-64 = " numactl"
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
