@@ -4,7 +4,7 @@ DESCRIPTION = "OPTEE OS"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=69663ab153298557a59c67a60a743e5b"
 
-DEPENDS = "python-pycrypto-native"
+DEPENDS = "python3-pycrypto-native"
 
 inherit deploy python3native
 
