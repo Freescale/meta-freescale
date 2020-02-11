@@ -4,7 +4,7 @@ HOMEPAGE = "https://github.com/qoriq-open-source/optee_test"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
-DEPENDS = "optee-client-qoriq optee-os-qoriq python-pycrypto-native"
+DEPENDS = "optee-client-qoriq optee-os-qoriq python3-pycrypto-native"
 
 inherit python3native
 
