@@ -7,6 +7,7 @@ was submitted for revision and it takes some time to become part of a stable \
 version, or because it is not applicable for upstreaming."
 
 DEPENDS_append = " bc-native dtc-native"
+DEPENDS_append_imx6qdlsabreauto = " lzop-native"
 
 PROVIDES += "u-boot"
 
