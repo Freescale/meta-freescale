@@ -10,11 +10,11 @@
 #  - ---------- -------------- --------------
 # ^ ^          ^              ^              ^
 # | |          |              |              |
-# 0 |        4MiB          68MiB          68MiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
+# 0 |        8MiB          72MiB          72MiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
 #   ${IMX_BOOT_SEEK} 32 or 33kiB, see reference manual
 #
 part u-boot --source rawcopy --sourceparams="file=imx-boot" --ondisk mmcblk --no-table --align ${IMX_BOOT_SEEK}
-part /boot --source bootimg-partition --ondisk mmcblk --fstype=vfat --label boot --active --align 4096 --size 64
-part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096
+part /boot --source bootimg-partition --ondisk mmcblk --fstype=vfat --label boot --active --align 8192 --size 64
+part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 8192
 
 bootloader --ptable msdos
