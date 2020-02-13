@@ -18,19 +18,19 @@ python () {
 PACKAGECONFIG_append_use-mainline-bsp = " gallium"
 PACKAGECONFIG_append_use-mainline-bsp_armv7a = " etnaviv freedreno kmsro vc4"
 PACKAGECONFIG_append_use-mainline-bsp_armv7ve = " etnaviv freedreno kmsro vc4"
+PACKAGECONFIG_append_use-mainline-bsp_mx8 = " etnaviv kmsro vc4"
 
-# Define the osmesa block in PACKAGECONFIG for target, this block is
-# not defined in the master recipe, effectively causing the osmesa
-# feature to be disabled and -Dosmesa=none set.
-PACKAGECONFIG_append_mx8 = " osmesa"
+USE_OSMESA_ONLY ?= "no"
 
-# Solve 'Problem encountered: OSMesa classic requires dri (classic) swrast.'
-# by defining the dri swrast for mx8mm machine
-DRIDRIVERS_append_mx8 = "swrast"
+# Etnaviv support state for i.MX8 is unknown, therefore only enable OSMesa and
+# disable Gallium for now. If you still want to enable Etnaviv, just set
+# USE_OSMESA_ONLY_mx8 = "no" in your bbappend.
+USE_OSMESA_ONLY_mx8 ?= "yes"
 
-# Solve 'ERROR: Problem encountered: Only one swrast provider can be built'
-# by excluding gallium support, dri is used together with 'classic' mesa backend.
-PACKAGECONFIG_remove_mx8 = "gallium"
+# Enable OSMesa which also requires dri (classic) swrast
+PACKAGECONFIG_append = " ${@oe.utils.conditional('USE_OSMESA_ONLY', 'yes', ' osmesa', '', d)}"
+PACKAGECONFIG_remove = " ${@oe.utils.conditional('USE_OSMESA_ONLY', 'yes', 'gallium', '', d)}"
+DRIDRIVERS_append = "${@oe.utils.conditional('USE_OSMESA_ONLY', 'yes', 'swrast', '', d)}"
 
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
