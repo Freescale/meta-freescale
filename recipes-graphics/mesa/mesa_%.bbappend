@@ -16,8 +16,8 @@ python () {
 
 # Enable Etnaviv and Freedreno support
 PACKAGECONFIG_append_use-mainline-bsp = " gallium"
-GALLIUMDRIVERS_append_use-mainline-bsp_armv7a = ",etnaviv,freedreno,kmsro,vc4"
-GALLIUMDRIVERS_append_use-mainline-bsp_armv7ve = ",etnaviv,freedreno,kmsro,vc4"
+PACKAGECONFIG_append_use-mainline-bsp_armv7a = " etnaviv freedreno kmsro vc4"
+PACKAGECONFIG_append_use-mainline-bsp_armv7ve = " etnaviv freedreno kmsro vc4"
 
 # Define the osmesa block in PACKAGECONFIG for target, this block is
 # not defined in the master recipe, effectively causing the osmesa
