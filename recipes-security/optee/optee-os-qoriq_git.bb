@@ -30,7 +30,12 @@ EXTRA_OEMAKE = "PLATFORM=ls-${OPTEEMACHINE} CFG_ARM64_core=y \
 
 OPTEE_ARCH_armv7a = "arm32"
 OPTEE_ARCH_aarch64 = "arm64"
-
+do_configure_prepend () {
+ # use /usr/bin/env instead of version specific python
+    for s in `find ${S}/scripts/ -name '*.py'`; do
+        sed -i 's,/usr/bin/env python,/usr/bin/env python3,' "${s}"
+    done
+}
 do_compile() {
     unset LDFLAGS
     oe_runmake all CFG_TEE_TA_LOG_LEVEL=0
