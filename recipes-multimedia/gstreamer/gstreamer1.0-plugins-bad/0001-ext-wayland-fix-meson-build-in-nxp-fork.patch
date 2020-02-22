@@ -1,0 +1,60 @@
+From e637d9f6bb961afcecb74faa6dff38562f6ce796 Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+Date: Sun, 26 Jan 2020 10:45:28 +0000
+Subject: [PATCH] ext/wayland: fix meson build in nxp fork
+
+- Add Wayland protocols, which are not enabled in upstream
+- Add missing compilation unit, which in NXP-specific
+
+Upstream-Status: Pending
+
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+---
+ ext/wayland/meson.build | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/ext/wayland/meson.build b/ext/wayland/meson.build
+index fa6fbf42f..eb425b14f 100644
+--- a/ext/wayland/meson.build
++++ b/ext/wayland/meson.build
+@@ -8,6 +8,11 @@ wl_sources = [
+     'wllinuxdmabuf.c'
+ ]
+ 
++imx_wl_sources = [
++    'wlutils.c',
++]
++wl_sources += imx_wl_sources
++
+ if use_wayland
+     protocols_datadir = wl_protocol_dep.get_pkgconfig_variable('pkgdatadir')
+ 
+@@ -19,6 +24,25 @@ if use_wayland
+          'fullscreen-shell-unstable-v1-protocol.c', 'fullscreen-shell-unstable-v1-client-protocol.h'],
+         ['/stable/xdg-shell/xdg-shell.xml', 'xdg-shell-protocol.c', 'xdg-shell-client-protocol.h'],
+     ]
++
++    imx_protocol_defs = [
++        [
++         '/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml',
++         'alpha-compositing-unstable-v1-protocol.c',
++         'alpha-compositing-unstable-v1-client-protocol.h'
++        ],
++        ['/unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml',
++         'hdr10-metadata-unstable-v1-protocol.c',
++         'hdr10-metadata-unstable-v1-client-protocol.h'
++        ],
++        [
++         '/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml',
++         'linux-explicit-synchronization-unstable-v1-protocol.c',
++         'linux-explicit-synchronization-unstable-v1-client-protocol.h'
++        ],
++    ]
++    protocol_defs += imx_protocol_defs
++
+     protocols_files = []
+ 
+     foreach protodef: protocol_defs
+-- 
+2.17.1
+
