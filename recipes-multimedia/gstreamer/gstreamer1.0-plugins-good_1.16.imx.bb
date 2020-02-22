@@ -1,81 +1,77 @@
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
-LICENSE = "GPLv2+ & LGPLv2.1+"
-LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
-                    file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607 \
-                    file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
 
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
 SRCBRANCH = "MM_04.05.01_1909_L4.19.35"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} \
-    file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
 "
 SRCREV = "3bcc85705695ee629ac3fb687411bb196d231918"
 
 DEFAULT_PREFERENCE = "-1"
 
-EXTRA_AUTORECONF = ""
-
 S = "${WORKDIR}/git"
 
-DEPENDS += "gstreamer1.0-plugins-base libcap zlib bzip2"
-RPROVIDES_${PN}-soup += "${PN}-souphttpsrc"
+LICENSE = "GPLv2+ & LGPLv2.1+"
+LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+                    file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607 \
+                    file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
 
-inherit gettext
+DEPENDS += "gstreamer1.0-plugins-base libcap zlib"
+RPROVIDES_${PN}-pulseaudio += "${PN}-pulse"
+RPROVIDES_${PN}-soup += "${PN}-souphttpsrc"
 
 PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'pulseaudio x11', d)} \
-    cairo flac gdk-pixbuf gudev jpeg libpng soup speex taglib v4l2 \
+    bz2 cairo flac gdk-pixbuf gudev jpeg lame libpng mpg123 soup speex taglib v4l2 \
 "
 
 X11DEPENDS = "virtual/libx11 libsm libxrender libxfixes libxdamage"
+X11ENABLEOPTS = "-Dximagesrc=enabled -Dximagesrc-xshm=enabled -Dximagesrc-xfixes=enabled -Dximagesrc-xdamage=enabled"
+X11DISABLEOPTS = "-Dximagesrc=disabled -Dximagesrc-xshm=disabled -Dximagesrc-xfixes=disabled -Dximagesrc-xdamage=disabled"
 
-PACKAGECONFIG[cairo]      = "--enable-cairo,--disable-cairo,cairo"
-PACKAGECONFIG[dv1394]     = "--enable-dv1394,--disable-dv1394,libiec61883 libavc1394 libraw1394"
-PACKAGECONFIG[flac]       = "--enable-flac,--disable-flac,flac"
-PACKAGECONFIG[gdk-pixbuf] = "--enable-gdk_pixbuf,--disable-gdk_pixbuf,gdk-pixbuf"
-PACKAGECONFIG[gudev]      = "--with-gudev,--without-gudev,libgudev"
-PACKAGECONFIG[jack]       = "--enable-jack,--disable-jack,jack"
-PACKAGECONFIG[jpeg]       = "--enable-jpeg,--disable-jpeg,jpeg"
-PACKAGECONFIG[libpng]     = "--enable-libpng,--disable-libpng,libpng"
-PACKAGECONFIG[libv4l2]    = "--with-libv4l2,--without-libv4l2,v4l-utils"
-PACKAGECONFIG[pulseaudio] = "--enable-pulse,--disable-pulse,pulseaudio"
-PACKAGECONFIG[soup]       = "--enable-soup,--disable-soup,libsoup-2.4"
-PACKAGECONFIG[speex]      = "--enable-speex,--disable-speex,speex"
-PACKAGECONFIG[taglib]     = "--enable-taglib,--disable-taglib,taglib"
-PACKAGECONFIG[v4l2]       = "--enable-gst_v4l2 --enable-v4l2-probe,--disable-gst_v4l2,libdrm"
-PACKAGECONFIG[vpx]        = "--enable-vpx,--disable-vpx,libvpx"
-PACKAGECONFIG[wavpack]    = "--enable-wavpack,--disable-wavpack,wavpack"
-PACKAGECONFIG[x11]        = "--enable-x,--disable-x,${X11DEPENDS}"
-PACKAGECONFIG[bz2]        = "--enable-bz2,--disable-bz2,bzip2"
-PACKAGECONFIG[gtk]        = "--enable-gtk3,--disable-gtk3,gtk+3"
-PACKAGECONFIG[lame]       = "--enable-lame,--disable-lame,lame"
-PACKAGECONFIG[mpg123]     = "--enable-mpg123,--disable-mpg123,mpg123"
-PACKAGECONFIG[zlib]       = "--enable-zlib,--disable-zlib,zlib"
+PACKAGECONFIG[bz2]        = "-Dbz2=enabled,-Dbz2=disabled,bzip2"
+PACKAGECONFIG[cairo]      = "-Dcairo=enabled,-Dcairo=disabled,cairo"
+PACKAGECONFIG[dv1394]     = "-Ddv1394=enabled,-Ddv1394=disabled,libiec61883 libavc1394 libraw1394"
+PACKAGECONFIG[flac]       = "-Dflac=enabled,-Dflac=disabled,flac"
+PACKAGECONFIG[gdk-pixbuf] = "-Dgdk-pixbuf=enabled,-Dgdk-pixbuf=disabled,gdk-pixbuf"
+PACKAGECONFIG[gtk]        = "-Dgtk3=enabled,-Dgtk3=disabled,gtk+3"
+PACKAGECONFIG[gudev]      = "-Dv4l2-gudev=enabled,-Dv4l2-gudev=disabled,libgudev"
+PACKAGECONFIG[jack]       = "-Djack=enabled,-Djack=disabled,jack"
+PACKAGECONFIG[jpeg]       = "-Djpeg=enabled,-Djpeg=disabled,jpeg"
+PACKAGECONFIG[lame]       = "-Dlame=enabled,-Dlame=disabled,lame"
+PACKAGECONFIG[libpng]     = "-Dpng=enabled,-Dpng=disabled,libpng"
+PACKAGECONFIG[libv4l2]    = "-Dv4l2-libv4l2=enabled,-Dv4l2-libv4l2=disabled,v4l-utils"
+PACKAGECONFIG[mpg123]     = "-Dmpg123=enabled,-Dmpg123=disabled,mpg123"
+PACKAGECONFIG[pulseaudio] = "-Dpulse=enabled,-Dpulse=disabled,pulseaudio"
+PACKAGECONFIG[soup]       = "-Dsoup=enabled,-Dsoup=disabled,libsoup-2.4"
+PACKAGECONFIG[speex]      = "-Dspeex=enabled,-Dspeex=disabled,speex"
+PACKAGECONFIG[taglib]     = "-Dtaglib=enabled,-Dtaglib=disabled,taglib"
+PACKAGECONFIG[v4l2]       = "-Dv4l2=enabled -Dv4l2-probe=true,-Dv4l2=disabled -Dv4l2-probe=false,libdrm"
+PACKAGECONFIG[vpx]        = "-Dvpx=enabled,-Dvpx=disabled,libvpx"
+PACKAGECONFIG[wavpack]    = "-Dwavpack=enabled,-Dwavpack=disabled,wavpack"
+PACKAGECONFIG[x11]        = "${X11ENABLEOPTS},${X11DISABLEOPTS},${X11DEPENDS}"
 
 # qt5 support is disabled, because it is not present in OE core, and requires more work than
 # just adding a packageconfig (it requires access to moc, uic, rcc, and qmake paths).
 # This is better done in a separate qt5 layer (which then should add a "qt5" packageconfig
 # in a gstreamer1.0-plugins-good bbappend).
-EXTRA_OECONF += " \
-    --enable-bz2 \
-    --enable-oss \
-    --enable-zlib \
-    --disable-aalib \
-    --disable-aalibtest \
-    --disable-directsound \
-    --disable-libcaca \
-    --disable-libdv \
-    --disable-oss4 \
-    --disable-osx_audio \
-    --disable-osx_video \
-    --disable-shout2 \
-    --disable-waveform \
-    --disable-qt \
-    --disable-twolame \
+
+EXTRA_OEMESON += " \
+    -Daalib=disabled \
+    -Ddirectsound=disabled \
+    -Ddv=disabled \
+    -Dlibcaca=disabled \
+    -Doss=enabled \
+    -Doss4=disabled \
+    -Dosxaudio=disabled \
+    -Dosxvideo=disabled \
+    -Dqt5=disabled \
+    -Dshout2=disabled \
+    -Dtwolame=disabled \
+    -Dwaveform=disabled \
 "
 
 FILES_${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
