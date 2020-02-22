@@ -1,0 +1,36 @@
+From a145a129a8122f21c1e243b3dc2e5708f4c13bef Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+Date: Thu, 23 Jan 2020 12:54:10 +0000
+Subject: [PATCH] gst-libs gst gl wayland: fix meson build
+
+Since introduction of meson build system, modifications introduced in
+NXP fork are breaking the build, where xdg-shell-client-protocol.h
+is searched via relative path. This code is only present in NXP fork and
+should be removed.
+
+This reverts commit [48bde732b00fb42df636ebbaf3b06e5e7971c206]
+("wayland: fix build break in yocto") from upstream.
+
+Upstream-Status: Pending
+
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+---
+ gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h
+index d1795591f..89dedd9b5 100644
+--- a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h
++++ b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h
+@@ -22,7 +22,7 @@
+ #define __GST_GL_WINDOW_WAYLAND_EGL_H__
+ 
+ #include <wayland-client.h>
+-#include <gst/gl/wayland/xdg-shell-client-protocol.h>
++#include "xdg-shell-client-protocol.h"
+ #include <wayland-egl.h>
+ #include <wayland-cursor.h>
+ 
+-- 
+2.17.1
+

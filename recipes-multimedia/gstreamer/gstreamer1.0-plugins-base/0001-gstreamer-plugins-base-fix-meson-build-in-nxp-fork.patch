@@ -1,0 +1,220 @@
+From def285f623bc30b9d1acede00393188e693cc741 Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+Date: Sat, 22 Feb 2020 13:22:57 +0000
+Subject: [PATCH] gstreamer-plugins-base: fix meson build in nxp fork
+
+- Add missing IMX header file into istall target;
+- Allocator's meta data files are missing in meson.build, bring them back;
+- Add ION NXP-specific allocator to meson.build;
+- Introduce additional configuration option to pass extra include paths,
+  which are required to build ION allocator;
+- Some video sources are missing, bring them also into the build;
+
+Upstream-Status: Pending
+
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+---
+ gst-libs/gst/allocators/meson.build | 30 +++++++++++++++++++++++++++--
+ gst-libs/gst/gl/gstglconfig.h.meson |  2 ++
+ gst-libs/gst/gl/meson.build         | 20 +++++++++++++++++++
+ gst-libs/gst/meson.build            |  6 ++++++
+ gst-libs/gst/video/meson.build      | 11 +++++++++++
+ meson.build                         |  3 +++
+ meson_options.txt                   |  4 ++++
+ 7 files changed, 74 insertions(+), 2 deletions(-)
+
+diff --git a/gst-libs/gst/allocators/meson.build b/gst-libs/gst/allocators/meson.build
+index 364baeebf..30b1495c9 100644
+--- a/gst-libs/gst/allocators/meson.build
++++ b/gst-libs/gst/allocators/meson.build
+@@ -5,18 +5,44 @@ gst_allocators_headers = [
+   'gstphysmemory.h',
+   'gstdmabuf.h',
+ ]
++
++imx_gst_allocators_headers = [
++  'gstphymemmeta.h',
++  'gstdmabufmeta.h',
++  'gstallocatorphymem.h',
++]
++
++if cc.has_header('linux/ion.h', include_directories : imx_includes)
++  imx_gst_allocators_headers += [
++    'gstionmemory.h',
++  ]
++endif
++
++gst_allocators_headers += imx_gst_allocators_headers
++
+ install_headers(gst_allocators_headers, subdir : 'gstreamer-1.0/gst/allocators/')
+ 
+ gst_allocators_sources = [ 'gstdmabuf.c', 'gstfdmemory.c', 'gstphysmemory.c']
++
++imx_gst_allocators_sources = ['gstdmabufmeta.c', 'gstphymemmeta.c', 'gstallocatorphymem.c']
++
++if cc.has_header('linux/ion.h', include_directories : imx_includes)
++  imx_gst_allocators_sources += [
++    'gstionmemory.c',
++  ]
++endif
++
++gst_allocators_sources += imx_gst_allocators_sources
++
+ gstallocators = library('gstallocators-@0@'.format(api_version),
+   gst_allocators_sources,
+   c_args : gst_plugins_base_args + ['-DBUILDING_GST_ALLOCATORS'],
+-  include_directories: [configinc, libsinc],
++  include_directories: [configinc, libsinc, imx_includes],
+   version : libversion,
+   soversion : soversion,
+   darwin_versions : osxversion,
+   install : true,
+-  dependencies : [gst_dep],
++  dependencies : [video_dep, gst_dep],
+ )
+ 
+ allocators_gen_sources  = []
+diff --git a/gst-libs/gst/gl/gstglconfig.h.meson b/gst-libs/gst/gl/gstglconfig.h.meson
+index 11795c16c..66cd54a7e 100644
+--- a/gst-libs/gst/gl/gstglconfig.h.meson
++++ b/gst-libs/gst/gl/gstglconfig.h.meson
+@@ -32,8 +32,10 @@ G_BEGIN_DECLS
+ #mesondefine GST_GL_HAVE_PLATFORM_CGL
+ #mesondefine GST_GL_HAVE_PLATFORM_EAGL
+ 
++#mesondefine GST_GL_HAVE_IONDMA
+ #mesondefine GST_GL_HAVE_DMABUF
+ #mesondefine GST_GL_HAVE_VIV_DIRECTVIV
++#mesondefine GST_GL_HAVE_PHYMEM
+ 
+ #mesondefine GST_GL_HAVE_GLEGLIMAGEOES
+ #mesondefine GST_GL_HAVE_GLCHAR
+diff --git a/gst-libs/gst/gl/meson.build b/gst-libs/gst/gl/meson.build
+index 0e0ba1b7d..6f6c6866d 100644
+--- a/gst-libs/gst/gl/meson.build
++++ b/gst-libs/gst/gl/meson.build
+@@ -123,8 +123,10 @@ glconf_options = [
+     'GST_GL_HAVE_PLATFORM_CGL',
+     'GST_GL_HAVE_PLATFORM_EAGL',
+ 
++    'GST_GL_HAVE_IONDMA',
+     'GST_GL_HAVE_DMABUF',
+     'GST_GL_HAVE_VIV_DIRECTVIV',
++    'GST_GL_HAVE_PHYMEM',
+ 
+     'GST_GL_HAVE_GLEGLIMAGEOES',
+     'GST_GL_HAVE_GLCHAR',
+@@ -146,6 +148,18 @@ if unneeded_dep.found()
+   error ('Found unfindable dependency')
+ endif
+ 
++if cc.has_header('linux/ion.h', include_directories : imx_includes)
++  glconf.set10('GST_GL_HAVE_IONDMA', 1)
++  gl_sources += [
++    'gstglmemorydma.c',
++  ]
++  gl_headers += [
++   'gstglmemorydma.h',
++  ]
++else
++ error('i.MX platform requires ION support to be enabled!')
++endif
++
+ # OpenGL/GLES2 libraries
+ gl_lib_deps = []
+ # GL platform - EGL, GLX, CGL, WGL, etc
+@@ -501,6 +515,7 @@ if need_platform_egl != 'no'
+       glconf.set10('GST_GL_HAVE_DMABUF', 1)
+     endif
+ 
++
+     egl_includes = '''
+ #include <EGL/egl.h>
+ #include <EGL/eglext.h>
+@@ -808,9 +823,14 @@ if need_platform_egl != 'no' and need_win_viv_fb != 'no'
+       enabled_gl_winsys += 'viv-fb'
+       glconf.set10('GST_GL_HAVE_WINDOW_VIV_FB', 1)
+       glconf.set10('GST_GL_HAVE_VIV_DIRECTVIV', 1)
++      glconf.set10('GST_GL_HAVE_PHYMEM', 1)
+       gl_sources += [
+         'viv-fb/gstgldisplay_viv_fb.c',
+         'viv-fb/gstglwindow_viv_fb_egl.c',
++        'gstglphymemory.c',
++      ]
++      gl_headers += [
++        'gstglphymemory.h',
+       ]
+       gl_cpp_args += ['-DEGL_API_FB']
+     endif
+diff --git a/gst-libs/gst/meson.build b/gst-libs/gst/meson.build
+index cd3b5b043..1935f46e5 100644
+--- a/gst-libs/gst/meson.build
++++ b/gst-libs/gst/meson.build
+@@ -11,3 +11,9 @@ subdir('app')
+ subdir('allocators')
+ # FIXME: gl deps are automagic
+ subdir('gl')
++
++# Install dangling imx header, required by other plugins
++gst_imx_header = [
++    'gstimxcommon.h',
++]
++install_headers(gst_imx_header, subdir : 'gstreamer-1.0/')
+diff --git a/gst-libs/gst/video/meson.build b/gst-libs/gst/video/meson.build
+index b4dfcdf65..d8531f199 100644
+--- a/gst-libs/gst/video/meson.build
++++ b/gst-libs/gst/video/meson.build
+@@ -35,6 +35,11 @@ video_sources = [
+   'videooverlay.c',
+ ]
+ 
++imx_video_sources = [
++  'gstvideohdr10meta.c',
++]
++video_sources += imx_video_sources
++
+ video_headers = [
+   'colorbalance.h',
+   'colorbalancechannel.h',
+@@ -70,6 +75,12 @@ video_headers = [
+   'video-overlay-composition.h',
+   'video-multiview.h',
+ ]
++
++imx_video_headers = [
++  'gstvideohdr10meta.h',
++]
++video_headers += imx_video_headers
++
+ install_headers(video_headers, subdir : 'gstreamer-1.0/gst/video/')
+ 
+ video_mkenum_headers = [
+diff --git a/meson.build b/meson.build
+index 2fca28205..7781934cd 100644
+--- a/meson.build
++++ b/meson.build
+@@ -103,6 +103,9 @@ if glib_checks.disabled() or (glib_checks.auto() and not gst_version_is_dev)
+   add_project_arguments('-DG_DISABLE_CHECKS', language: 'c')
+ endif
+ 
++# Define i.MX-specific include path as variable from options
++imx_includes = include_directories(get_option('extra_imx_incdir'))
++
+ check_headers = [
+   ['HAVE_DLFCN_H', 'dlfcn.h'],
+   ['HAVE_EMMINTRIN_H', 'emmintrin.h'],
+diff --git a/meson_options.txt b/meson_options.txt
+index e7af4dd45..d44401ca6 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -85,3 +85,7 @@ option('package-name', type : 'string', yield : true,
+        description : 'package name to use in plugins')
+ option('package-origin', type : 'string', value : 'Unknown package origin', yield : true,
+        description : 'package origin URL to use in plugins')
++
++# NXP specific options
++option('extra_imx_incdir', type : 'string', yield : true, description : 'i.MX specific header include path')
++
+-- 
+2.17.1
+
