@@ -67,6 +67,7 @@ DEFAULTTUNE_vf ?= "cortexa5thf-neon"
 DEFAULTTUNE_mx8mm ?= "cortexa53-crypto"
 DEFAULTTUNE_mx8mn ?= "cortexa53-crypto"
 DEFAULTTUNE_mx8mq ?= "cortexa53-crypto"
+DEFAULTTUNE_mx8qm ?= "cortexa72-cortexa53-crypto"
 
 INHERIT += "machine-overrides-extender"
 
