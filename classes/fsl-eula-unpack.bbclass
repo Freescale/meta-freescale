@@ -10,6 +10,11 @@ LIC_FILES_CHKSUM_append = " file://${FSL_EULA_FILE};md5=ab61cab9599935bfe9f70040
 
 LIC_FILES_CHKSUM[vardepsexclude] += "FSL_EULA_FILE"
 
+do_fetch_prepend() {
+    if "Proprietary" not in d.getVar("LICENSE"):
+        bb.fatal("The recipe LICENSE should include Proprietary but is " + d.getVar("LICENSE") + ".")
+}
+
 python fsl_bin_do_unpack() {
     src_uri = (d.getVar('SRC_URI') or "").split()
     if len(src_uri) == 0:
