@@ -22,25 +22,16 @@ python fsl_bin_do_unpack() {
     fetcher = bb.fetch2.Fetch(src_uri, localdata)
 
     for url in fetcher.ud.values():
-        save_cwd = os.getcwd()
-        # Check for supported fetchers
-        if url.type in ['http', 'https', 'ftp', 'file']:
-            if url.parm.get('fsl-eula', False):
-                # If download has failed, do nothing
-                if not os.path.exists(url.localpath):
-                    bb.debug(1, "Exiting as '%s' cannot be found" % url.basename)
-                    return
-
-                # Change to the working directory
-                bb.note("Handling file '%s' as a Freescale's EULA binary." % url.basename)
-                save_cwd = os.getcwd()
-                os.chdir(rootdir)
-
-                cmd = "sh %s --auto-accept --force" % (url.localpath)
-                bb.fetch2.runfetchcmd(cmd, d, quiet=True)
-
-    # Return to the previous directory
-    os.chdir(save_cwd)
+        # Skip this fetcher if it's not under EULA or if the fetcher type is not supported
+        if not url.parm.get('fsl-eula', False) or url.type not in ['http', 'https', 'ftp', 'file']:
+            continue
+        # If download has failed, do nothing
+        if not os.path.exists(url.localpath):
+            bb.debug(1, "Exiting as '%s' cannot be found" % url.basename)
+            return
+        bb.note("Handling file '%s' as a Freescale EULA-licensed archive." % url.basename)
+        cmd = "sh %s --auto-accept --force" % (url.localpath)
+        bb.fetch2.runfetchcmd(cmd, d, quiet=True, workdir=rootdir)
 }
 
 python do_unpack() {
