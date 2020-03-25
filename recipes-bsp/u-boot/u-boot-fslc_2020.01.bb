@@ -10,6 +10,8 @@ DEPENDS_append = " bc-native dtc-native lzop-native"
 
 PROVIDES += "u-boot"
 
+B = "${WORKDIR}/build"
+
 # FIXME: Allow linking of 'tools' binaries with native libraries
 #        used for generating the boot logo and other tools used
 #        during the build process.
