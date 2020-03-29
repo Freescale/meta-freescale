@@ -1,0 +1,60 @@
+From 8b3afcaeebdd87962f2f3fef36973090621d116b Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Sun, 29 Mar 2020 15:38:31 +0000
+Subject: [PATCH 5/5] scripts: Tie a few more Python 2 to 3 conversion loose
+ ends.
+
+Upstream-Status: pending
+Note: code exists in NXP's fork only.
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ wrappers/glxtrace.py | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/wrappers/glxtrace.py b/wrappers/glxtrace.py
+index b05028e2..2472560d 100644
+--- a/wrappers/glxtrace.py
++++ b/wrappers/glxtrace.py
+@@ -67,9 +67,9 @@ class GlxTracer(GlTracer):
+             print('    gltrace::releaseContext((uintptr_t)ctx);')
+ 
+         if function.name == 'glXGetCurrentDisplay':
+-            print '    if(_glXGetCurrentDisplay == &glXGetCurrentDisplay ){'
+-            print '        _glXGetCurrentDisplay = (PFN_GLXGETCURRENTDISPLAY)_getPublicProcAddress("glXGetCurrentDisplay");'
+-            print '    }'
++            print ('    if(_glXGetCurrentDisplay == &glXGetCurrentDisplay ){')
++            print ('        _glXGetCurrentDisplay = (PFN_GLXGETCURRENTDISPLAY)_getPublicProcAddress("glXGetCurrentDisplay");')
++            print ('    }')
+ 
+         GlTracer.traceFunctionImplBody(self, function)
+ 
+@@ -184,7 +184,7 @@ if __name__ == '__main__':
+     tracer = GlxTracer()
+     tracer.traceApi(api)
+ 
+-    print r'''
++    print (r'''
+ 
+ 
+ /*
+@@ -247,8 +247,8 @@ void * dlopen(const char *filename, int flag)
+ 
+ 
+ 
+-'''
+-    print r'''
++''')
++    print (r'''
+ /*
+  * let the GPU driver know that we are in apitrace
+  */
+@@ -257,4 +257,4 @@ int APIENTRY ApiTraceEnabled(void) {
+     return 1;
+ }
+ 
+-'''
++''')
+-- 
+2.20.1
+

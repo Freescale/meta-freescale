@@ -10,6 +10,7 @@ SRC_URI = "\
        file://0002-specs-Tie-Python-2-3-conversion-loose-ends.patch \
        file://0003-scripts-Tie-Python-2-3-conversion-loose-ends.patch \
        file://0004-scripts-Tie-a-few-more-Python-2-to-3-conversion-loos.patch \
+       file://0005-scripts-Tie-a-few-more-Python-2-to-3-conversion-loos.patch \
 "
 SRCREV = "09579e67262af9c993dd082055a924c2c61cf34d"
 
