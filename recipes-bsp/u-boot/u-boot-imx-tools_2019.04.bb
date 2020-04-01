@@ -6,4 +6,5 @@ PROVIDES_append_class-native = " u-boot-tools-native"
 PROVIDES_append_class-nativesdk = " nativesdk-u-boot-tools"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
 COMPATIBLE_MACHINE_class-target = "(mx6|mx7|mx8)"
