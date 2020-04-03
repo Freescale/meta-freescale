@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = " \
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;nobranch=1 \
 "
-SRCREV= "ebb420ac9d67ffeaf9df2d69a928fdb3df78394a"
+SRCREV= "b0833bd0e26c059277f0673c9887b967f1ea5837"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
