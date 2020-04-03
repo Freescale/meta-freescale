@@ -5,6 +5,8 @@
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common.inc
 
+SRC_URI += "file://0001-Add-target-to-generate-initial-environment.patch"
+
 PROVIDES += "u-boot"
 
 do_deploy_append_mx8m() {
