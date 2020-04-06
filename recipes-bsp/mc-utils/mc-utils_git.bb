@@ -10,7 +10,7 @@ DEPENDS += "dtc-native"
 inherit deploy
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/mc-utils;nobranch=1"
-SRCREV = "b11bd6b808906a8b38c3fa29dc5120b0e4b439ac"
+SRCREV = "8672a5f5abcd3a354dcab07e03f2a8a69b2e962d"
 
 S = "${WORKDIR}/git"
 
