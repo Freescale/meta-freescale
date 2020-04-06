@@ -1,14 +1,14 @@
 SUMMARY = "Reset Configuration Word"
 DESCRIPTION = "Reset Configuration Word - hardware boot-time parameters for the QorIQ targets"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=45a017ee5f4cfe64b1cddf2eb06cffc7"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=44a0d0fad189770cc022af4ac6262cbe"
 
 DEPENDS += "change-file-endianess-native tcl-native"
 
 inherit deploy siteinfo
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/rcw;nobranch=1"
-SRCREV = "28803f86938eb2a1df2cbcc16c15ebf862fbb1e9"
+SRCREV = "5689bf9c9f087f50aaa0d91b43d8a791fedbedd3"
 
 S = "${WORKDIR}/git"
 
