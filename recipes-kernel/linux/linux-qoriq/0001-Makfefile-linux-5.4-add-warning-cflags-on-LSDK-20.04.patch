@@ -1,0 +1,26 @@
+From 6cf92b25d63ff9e2b77ce0fbf62f4d5d040ef5db Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <chunrong.guo@nxp.com>
+Date: Tue, 12 Mar 2019 03:52:03 +0100
+Subject: [PATCH] Makfefile: linux-5.4 add warning cflags on LSDK-20.04
+
+Signed-off-by: C.r. Guo <nxa13725@lsv07004.swis.us-cdc01.nxp.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 07998b60d56c..7ec8fcb73e17 100644
+--- a/Makefile
++++ b/Makefile
+@@ -458,7 +458,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+ KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
+ 		   -Werror=implicit-function-declaration -Werror=implicit-int \
+-		   -Wno-format-security \
++		   -Wno-address-of-packed-member -Wno-format-security \
+ 		   -std=gnu89
+ KBUILD_CPPFLAGS := -D__KERNEL__
+ KBUILD_AFLAGS_KERNEL :=
+-- 
+2.17.1
+
