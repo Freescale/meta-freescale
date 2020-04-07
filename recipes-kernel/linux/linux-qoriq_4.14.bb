@@ -10,7 +10,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nob
     file://0001-Makfefile-add-cflags.patch \
     file://0001-perf-tools-Add-Python-3-support.patch \
 "
-SRCREV = "328b263103fbd83f7c7a5d42acef266375a2f717"
+SRCREV = "d39cc9ffcbe5638b50f5f45698eb87a6c3a96eb3"
 
 S = "${WORKDIR}/git"
 
