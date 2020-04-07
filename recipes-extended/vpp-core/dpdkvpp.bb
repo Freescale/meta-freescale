@@ -9,7 +9,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobr
            file://0001-Add-RTE_KERNELDIR_OUT.patch \
            file://0004-update-WERROR_FLAGS.patch \
 "
-SRCREV = "a36da6a94243015b228c15b8b9aa1e650fd4b96d"
+SRCREV = "4110a5fed09fa034963cfc246a6285911ecbd540"
 
 DEPENDS = "virtual/kernel openssl"
 DEPENDS_append_x86-64 = " numactl"
