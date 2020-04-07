@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nobranch=1 \
 "
-SRCREV = "4aba815fd6404a9620a66c8a3c2af4ba2a6a701a"
+SRCREV = "c5f3ab9ac163f5c86a5c1ed163afaf24f2eea669"
 
 SRC_URI += " file://0001-Makfefile-add-cflags.patch \
 "
