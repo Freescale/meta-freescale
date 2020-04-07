@@ -18,9 +18,11 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/openssl;n
            file://0001-skip-test_symbol_presence.patch \
            file://0001-buildinfo-strip-sysroot-and-debug-prefix-map-from-co.patch \
            file://afalg.patch \
+           file://0001-eng_devcrypto-add-support-for-TLS-algorithms-offload.patch \
+           file://0002-eng_devcrypto-add-support-for-TLS1.2-algorithms-offl.patch \
           "
 
-SRCREV = "894da2fb7ed5d314ee5c2fc9fd2d9b8b74111596"
+SRCREV = "36eadf1f84daa965041cce410b4ff32cbda4ef08"
 
 SRC_URI_append_class-nativesdk = " \
            file://environment.d-openssl.sh \
