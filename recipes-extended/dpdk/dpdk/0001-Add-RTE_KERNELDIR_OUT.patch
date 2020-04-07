@@ -1,4 +1,4 @@
-From 4ea737c1d5a185d56ee1d6da18172b389ea90760 Mon Sep 17 00:00:00 2001
+From 9c2b840a1c8ac0fbb638b5cd481909a3f832eed4 Mon Sep 17 00:00:00 2001
 From: Chunrong Guo <chunrong.guo@nxp.com>
 Date: Wed, 3 Jul 2019 08:50:45 +0200
 Subject: [PATCH] Add RTE_KERNELDIR_OUT
@@ -9,7 +9,7 @@ Signed-off-by: C.r. Guo <nxa13725@lsv07004.swis.us-cdc01.nxp.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/linux/kni/Makefile b/kernel/linux/kni/Makefile
-index 282be7b..dfbebdc 100644
+index 595bac261..28a31f36a 100644
 --- a/kernel/linux/kni/Makefile
 +++ b/kernel/linux/kni/Makefile
 @@ -20,7 +20,7 @@ MODULE_CFLAGS += -Wall -Werror
@@ -22,5 +22,5 @@ index 282be7b..dfbebdc 100644
  MODULE_CFLAGS += -D"UBUNTU_KERNEL_CODE=UBUNTU_KERNEL_VERSION($(UBUNTU_KERNEL_CODE))"
  endif
 -- 
-2.7.4
+2.17.1
 

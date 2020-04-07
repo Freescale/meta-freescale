@@ -1,15 +1,6 @@
 DESCRIPTION = "Data Plane Development Kit"
 HOMEPAGE = "http://dpdk.org"
 LICENSE = "BSD-3-Clause & LGPLv2 & GPLv2"
-LIC_FILES_CHKSUM = "file://license/README;md5=3383def2d4c82237df281174e981a492"
-
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobranch=1 \
-           file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
-           file://0001-add-Wno-cast-function-type.patch \
-           file://0001-Add-RTE_KERNELDIR_OUT.patch \
-           file://0004-update-WERROR_FLAGS.patch \
-"
-SRCREV = "a36da6a94243015b228c15b8b9aa1e650fd4b96d"
 
 DEPENDS = "virtual/kernel openssl"
 DEPENDS_append_x86-64 = " numactl"
