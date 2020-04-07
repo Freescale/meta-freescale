@@ -9,7 +9,7 @@ inherit python3native
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/ovs-dpdk;nobranch=1 \
 "
-SRCREV = "abc80ef87a8786050f27afb2a797cadd14e2a6bd"
+SRCREV = "71d553b995d0bd527d3ab1e9fbaf5a2ae34de2f3"
 
 S = "${WORKDIR}/git"
 
