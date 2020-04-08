@@ -19,6 +19,7 @@ SRC_URI = "${OPTEE_TEST_SRC};branch=${SRCBRANCH} \
            file://0004-build-ignore-declaration-after-statement-warnings.patch \
            file://0005-benchmark_1000-fix-compilation-against-musl-uint.patch \
            file://0006-regression_8100-use-null-terminated-strings-with-fil.patch \
+           file://0001-use-python3-instead-of-python.patch \
 "
 
 S = "${WORKDIR}/git"
