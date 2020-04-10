@@ -9,6 +9,14 @@ require conf/machine/include/utilities.inc
 IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
 IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 
+# Machines or distros can define which BSP it should use by default. We are
+# intending to default for mainline BSP by default and specific machines or
+# DISTROs might change it if need.
+#
+# Two values are considered valid: mainline, nxp
+IMX_DEFAULT_BSP ??= "mainline"
+MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
+
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
 PREFERRED_PROVIDER_nativesdk-u-boot-tools ??= "nativesdk-${IMX_DEFAULT_BOOTLOADER}-tools"
