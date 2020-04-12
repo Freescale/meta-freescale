@@ -17,6 +17,9 @@ IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 IMX_DEFAULT_BSP ??= "mainline"
 MACHINEOVERRIDES .= ":use-${IMX_DEFAULT_BSP}-bsp"
 
+# Those are SoC families we'd like to force the use of mainline BSP.
+IMX_DEFAULT_BSP_mxs = "mainline"
+IMX_DEFAULT_BSP_mx5 = "mainline"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
