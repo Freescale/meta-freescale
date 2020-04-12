@@ -15,7 +15,8 @@ IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 #
 # Two values are considered valid: mainline, nxp
 IMX_DEFAULT_BSP ??= "mainline"
-MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
+MACHINEOVERRIDES .= ":use-${IMX_DEFAULT_BSP}-bsp"
+
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
