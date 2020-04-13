@@ -290,10 +290,6 @@ do_install () {
 
 ALLOW_EMPTY_${PN} = "1"
 
-# FIXME: Remove the following lines after adding libopenvx package
-INSANE_SKIP_imx-gpu-viv-dev += "dev-elf"
-INSANE_SKIP_libclc-imx += "dev-deps"
-
 FILES_libclc-imx = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-imx-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 
