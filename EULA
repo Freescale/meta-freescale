@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v9 August 2019
+LA_OPT_NXP_Software_License v10 December 2019
 
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
@@ -82,10 +82,13 @@ you are granted the rights in both Section 2.2 and 2.3.
 Agreement, NXP grants you a worldwide, personal, non-transferable,
 non-exclusive, non-sublicensable license, solely for the development of an
 Authorized System:
+
 (a)        to use and reproduce the Licensed Software (and its Derivative Works
 prepared under the license in Section 2.2(b)); and
+
 (b)        for Licensed Software provided to you in source code form (human
 readable), to prepare Derivative Works of the Licensed Software.
+
 You may not distribute or sublicense the Licensed Software to others under the
 license granted in this Section 2.2.
 
@@ -94,6 +97,7 @@ Content Register, subject to the terms and conditions of this Agreement, NXP
 grants you a worldwide, personal, non-transferable, non-exclusive,
 non-sublicensable license solely in connection with your manufacturing and
 distribution of an Authorized System:
+
 (a)            to manufacture (or have manufactured), distribute, and market
 the Licensed Software (and its Derivative Works prepared under the license in
 2.2(b)) in object code (machine readable format) only as part of, or embedded
@@ -101,6 +105,7 @@ within, Authorized Systems and not on a standalone basis.  Notwithstanding the
 foregoing, those files marked as .h files ("Header files") may be distributed
 in source or object code form, but only as part of, or embedded within
 Authorized Systems; and
+
 (b)            to copy and distribute as needed, solely in connection with an
 Authorized System, non-confidential NXP information provided as part of the
 Licensed Software for the purpose of maintaining and supporting Authorized
@@ -126,29 +131,35 @@ this Agreement and the Licensed Software.
 3.1.         The licenses granted above in Section 2 only extend to NXP
 Intellectual Property Rights that would be infringed by the unmodified Licensed
 Software prior to your preparation of any Derivative Work.
+
 3.2.         The Licensed Software is licensed to you, not sold. Title to
 Licensed Software delivered hereunder remains vested in NXP or NXP's licensor
 and cannot be assigned or transferred. You are expressly forbidden from selling
 or otherwise distributing the Licensed Software, or any portion thereof, except
 as expressly permitted herein. This Agreement does not grant to you any implied
 rights under any NXP or third party Intellectual Property Rights.
+
 3.3.         You may not translate, reverse engineer, decompile, or disassemble
 the Licensed Software except to the extent applicable law specifically
 prohibits such restriction. You must prohibit your subcontractors or customers
 (if distribution is permitted) from translating, reverse engineering,
 decompiling, or disassembling the Licensed Software except to the extent
 applicable law specifically prohibits such restriction.
+
 3.4.         You must reproduce any and all of NXP's (or its third-party
 licensor's) copyright notices and other proprietary legends on copies of
 Licensed Software.
+
 3.5.         If you distribute the Licensed Software to the United States
 Government, then the Licensed Software is "restricted computer software" and is
 subject to FAR 52.227-19.
+
 3.6.         You grant to NXP a non-exclusive, non-transferable, irrevocable,
 perpetual, worldwide, royalty-free, sub-licensable license under your
 Intellectual Property Rights to use without restriction and for any purpose any
 suggestion, comment or other feedback related to the Licensed Software
 (including, but not limited to, error corrections and bug fixes).
+
 3.7.         You will not take or fail to take any action that could subject
 the Licensed Software to an Excluded License. An Excluded License means any
 license that requires, as a condition of use, modification or distribution of
@@ -156,6 +167,7 @@ software subject to the Excluded License, that such software or other software
 combined and/or distributed with the software be (i) disclosed or distributed
 in source code form; (ii) licensed for the purpose of making Derivative Works;
 or (iii) redistributable at no charge.
+
 3.8.         You may not publish or distribute information, results or data
 associated with the use of the Licensed Software to anyone other than NXP;
 however, you must advise NXP of any results obtained including any problems or
@@ -199,13 +211,16 @@ Authorized System (whether or not as part of the Licensed Software).
 
 8.       TERM AND TERMINATION.   This Agreement will remain in effect unless
 terminated as provided in this Section.
+
 8.1.         You may terminate this Agreement immediately upon written notice
 to NXP at the address provided below.
+
 8.2.         Either party may terminate this Agreement if the other party is in
 default of any of the terms and conditions of this Agreement, and termination
 is effective if the defaulting party fails to correct such default within 30
 days after written notice thereof by the non-defaulting party to the defaulting
 party at the address below.
+
 8.3.         Notwithstanding the foregoing, NXP may terminate this Agreement
 immediately upon written notice if you: breach any of your confidentiality
 obligations or the license restrictions under this Agreement;  become bankrupt,
@@ -213,11 +228,14 @@ insolvent, or file a petition for bankruptcy or insolvency; make an assignment
 for the benefit of its creditors; enter proceedings for winding up or
 dissolution; are dissolved; or are nationalized or become subject to the
 expropriation of all or substantially all of your business or assets.
+
 8.4.         Upon termination of this Agreement, all licenses granted under
 Section 2 will expire.
+
 8.5.         After termination of this Agreement by either party   you will
 destroy all parts of Licensed Software and its Derivative Works (if any) and
 will provide to NXP a statement certifying the same.
+
 8.6.         Notwithstanding the termination of this Agreement for any reason,
 the terms of Sections 1 and 3 through 25 will survive.
 
@@ -279,6 +297,7 @@ governments or entities, NXP makes no representations, certifications, or
 warranties whatsoever about compliance with government or public entity
 acquisition statutes or regulations, including, without limitation, statutes or
 regulations that may relate to pricing, quality, origin or content.
+
 14.2.      The Licensed Software has been developed at private expense and is a
 "Commercial Item" as defined in 48 C.F.R. Section 2.101, consisting of
 "Commercial Computer Software", and/or "Commercial Computer Software
@@ -363,11 +382,12 @@ examination or audit.
 23.        NOTICES.             All notices and communications under this
 Agreement will be made in writing, and will be effective when received at the
 following addresses:
-          NXP:          NXP B.V.
-                        High Tech Campus 60
-                        5656 AG Eindhoven
-                        The Netherlands
-                  ATTN: Legal Department
+
+          NXP:            NXP B.V.
+                          High Tech Campus 60
+                          5656 AG Eindhoven
+                          The Netherlands
+                    ATTN: Legal Department
 
 You:              The address provided at registration will be used.
 
@@ -441,9 +461,22 @@ CSR: Use of Cambridge Silicon Radio, Inc. ("CSR") software is limited to
 evaluation and demonstration only.  Permitted distributions must be similarly
 limited.  Further rights must be obtained directly from CSR.
 
+Crank: Use of Crank Software Inc. software is limited to evaluation and
+demonstration only. Permitted distributions must be similarly limited. Further
+rights must be obtained directly from Crank Software Inc.
+
 Cypress Semiconductor Corporation: WWD RTOS source code may only be used in
 accordance with the Cypress IOT Community License Agreement located at
 https://community.cypress.com/terms-and-conditions!input.jspa?displayOnly=true.
+
+Embedded Systems Academy GmbH (EmSA):  Any use of Micro CANopen Plus is subject
+to the acceptance of the license conditions described in the LICENSE.INFO file
+distributed with all example projects and in the documentation and the
+additional clause described below.
+
+Clause 1: Micro CANopen Plus may not be used for any competitive or comparative
+purpose, including the publication of any form of run time or compile time
+metric, without the express permission of EmSA.
 
 Future Technology Devices International Ltd.: Future Technology Devices
 International software must be used consistent with the terms found here:
@@ -534,9 +567,11 @@ original release form, or whether in whole or in part, can only be distributed
 by you under the terms of version 2 of the GNU General Public License plus this
 exception.  An independent module is a module which is not derived from or
 based on FreeRTOS.
+
 Clause 1: Linking FreeRTOS with other modules is making a combined work based
 on FreeRTOS. Thus, the terms and conditions of the GNU General Public License
 V2 cover the whole combination.
+
 As a special exception, the copyright holders of FreeRTOS give you permission
 to link FreeRTOS with independent modules to produce a statically linked
 executable, regardless of the license terms of these independent modules, and
@@ -544,6 +579,7 @@ to copy and distribute the resulting executable under terms of your choice,
 provided that you also meet, for each linked independent module, the terms and
 conditions of the license of that module.  An independent module is a module
 which is not derived from or based on FreeRTOS.
+
 Clause 2:  FreeRTOS may not be used for any competitive or comparative purpose,
 including the publication of any form of run time or compile time metric,
 without the express permission of Real Time Engineers Ltd. (this is the norm
@@ -559,12 +595,16 @@ SanDisk Corporation: If the Licensed Software includes software developed by
 SanDisk Corporation ("SanDisk"), you must separately obtain the rights to
 reproduce and distribute this software in source code form from SanDisk.
 Please follow these easy steps to obtain the license and software:
+
 (1) Contact your local SanDisk sales representative to obtain the SanDisk
 License Agreement.
+
 (2) Sign the license agreement.  Fax the signed agreement to SanDisk USA
 marketing department at 408-542-0403.  The license will be valid when fully
 executed by SanDisk.
+
 (3) If you have specific questions, please send an email to sales@sandisk.com
+
 You may only use the SanDisk Corporation Licensed Software on products
 compatible with a SanDisk Secure Digital Card.  You may not use the SanDisk
 Corporation Licensed Software on any memory device product.  SanDisk retains
@@ -581,14 +621,22 @@ consistent with the terms found here: http://www.segger.com/jlink-software.html
 Synopsys/Target Compiler Technologies: Your use of the Synopsys/Target Compiler
 Technologies Licensed Software and related documentation is subject to the
 following:
+
 (1) Duration of the license for the Licensed Software is limited to 12 months,
 unless otherwise specified in the license file.
+
 (2) The Licensed Software is usable by one user at a time on a single
 designated computer, unless otherwise agreed by Synopsys.
+
 (3) Licensed Software and documentation are to be used only on a designated
 computer at the designated physical address provided by you on the APEX license
 form.
+
 (4) The Licensed Software is not sub-licensable.
+
+TARA Systems: Use of TARA Systems GUI technology Embedded Wizard is limited to
+evaluation and demonstration only. Permitted distributions must be similarly
+limited. Further rights must be obtained directly from TARA Systems.
 
 Texas Instruments: Your use of Texas Instruments Inc. WiLink8 Licensed Software
 is restricted to NXP SoC based systems that include a compatible connectivity
