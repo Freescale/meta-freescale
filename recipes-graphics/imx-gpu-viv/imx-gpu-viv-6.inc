@@ -35,8 +35,10 @@ EXTRA_PROVIDES_append_imxgpu3d = " \
 "
 EXTRA_PROVIDES_append_mx8 = " \
     virtual/libgbm \
-    virtual/libopenvx \
 "
+PROVIDES_OPENVX       = ""
+PROVIDES_OPENVX_mx8   = "virtual/libopenvx"
+PROVIDES_OPENVX_mx8mm = ""
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
@@ -45,6 +47,7 @@ PROVIDES += " \
     virtual/libopenvg \
     virtual/opencl-headers \
     virtual/opencl-icd \
+    ${PROVIDES_OPENVX} \
     ${EXTRA_PROVIDES} \
 "
 
