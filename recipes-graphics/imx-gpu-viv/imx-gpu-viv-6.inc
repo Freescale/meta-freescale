@@ -27,7 +27,9 @@ DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'mesa', '', d)}"
 
 EXTRA_PROVIDES = ""
 EXTRA_PROVIDES_append_imxgpu3d = " \
-    virtual/libgl \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'virtual/libgl', \
+       bb.utils.contains('DISTRO_FEATURES',     'x11', 'virtual/libgl', \
+                                                       '', d), d)} \
     virtual/libgles1 \
     virtual/libgles2 \
 "
@@ -206,16 +208,14 @@ do_install () {
     install -d ${D}${sysconfdir}/OpenCL/vendors/
     install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
-    if [ "${USE_WL}" = "yes" -o "${USE_X11}" = "yes" ]; then
-        cp ${S}/gpu-core/usr/lib/libGL-${backend}.so ${D}${libdir}/libGL.so.1.2
-    fi
-
     # We'll only have one backend here so we rename it to generic name
     # and avoid rework in other packages, when possible
-    mv ${D}${libdir}/libGL.so.1.2 ${D}${libdir}/libGL.so.1.2.0
-    ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1.2
-    ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1
-    ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so
+    if [ "${USE_WL}" = "yes" -o "${USE_X11}" = "yes" ]; then
+        cp ${S}/gpu-core/usr/lib/libGL-${backend}.so ${D}${libdir}/libGL.so.1.2.0
+        ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1.2
+        ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1
+        ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so
+    fi
     mv ${D}${libdir}/libEGL-${backend}.so ${D}${libdir}/libEGL.so.1.0
     ln -sf libEGL.so.1.0 ${D}${libdir}/libEGL.so.1
     ln -sf libEGL.so.1.0 ${D}${libdir}/libEGL.so
