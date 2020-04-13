@@ -14,13 +14,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
-LOCALVERSION = "-1.1.0"
-SRCREV = "0f9917c56d5995e1dc3bde5658e2d7bc865464de"
-SRC_URI += "file://0001-Compiler-Attributes-add-support-for-__copy-gcc-9.patch \
-            file://0002-include-linux-module.h-copy-__init-__exit-attrs-to-i.patch \
-            file://0001-perf-Make-perf-able-to-build-with-latest-libbfd.patch \
-           "
+SRCBRANCH = "imx_5.4.3_2.0.0"
+LOCALVERSION = "-2.0.0"
+SRCREV = "fd263a3edd95dfe812397fabf1059b5f99bba2ab"
 
 DEFAULT_PREFERENCE = "1"
 
