@@ -280,20 +280,20 @@ PREFERRED_PROVIDER_virtual/libgles2_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d            ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d_imxdpu     ?= "imx-dpu-g2d"
 
-PREFERRED_VERSION_weston_imx ?= "6.0.1.imx"
+PREFERRED_VERSION_weston_imx ?= "8.0.0.imx"
 PREFERRED_VERSION_weston_use-mainline-bsp = ""
 
-PREFERRED_VERSION_wayland-protocols_mx6 ?= "1.17.imx"
-PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.17.imx"
-PREFERRED_VERSION_wayland-protocols_mx8 ?= "1.17.imx"
+PREFERRED_VERSION_wayland-protocols_mx6 ?= "1.18.imx"
+PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.18.imx"
+PREFERRED_VERSION_wayland-protocols_mx8 ?= "1.18.imx"
 
 # Use i.MX libdrm Version
 PREFERRED_VERSION_libdrm_imx ?= "2.4.99.imx"
 
 # Use i.MX optee Version
-PREFERRED_VERSION_optee-os_mx8     ?= "3.2.0.imx"
-PREFERRED_VERSION_optee-client_mx8 ?= "3.2.0.imx"
-PREFERRED_VERSION_optee-test_mx8   ?= "3.2.0.imx"
+PREFERRED_VERSION_optee-os_mx8     ?= "3.7.0.imx"
+PREFERRED_VERSION_optee-client_mx8 ?= "3.7.0.imx"
+PREFERRED_VERSION_optee-test_mx8   ?= "3.7.0.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-imx"
