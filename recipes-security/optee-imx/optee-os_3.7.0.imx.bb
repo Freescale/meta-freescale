@@ -4,19 +4,18 @@ SUMMARY = "OPTEE OS"
 DESCRIPTION = "OPTEE OS"
 HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=69663ab153298557a59c67a60a743e5b"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
 inherit deploy python3native autotools
-DEPENDS = "python3-pycrypto-native u-boot-mkimage-native"
+DEPENDS = "python3-pycrypto-native python3-pyelftools-native u-boot-mkimage-native"
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
+SRCBRANCH = "imx_5.4.3_2.0.0"
 OPTEE_OS_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https"
 SRC_URI = "\
 	${OPTEE_OS_SRC};branch=${SRCBRANCH} \
-	file://0001-scripts-update-scripts-to-use-python3.patch \
 "
 
-SRCREV = "6a22e6e8a2840b245808527679f3397b7e620b3c"
+SRCREV = "b32a9b6b9fa474359464ca70e62b796a45e16e36"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build.${PLATFORM_FLAVOR}"
