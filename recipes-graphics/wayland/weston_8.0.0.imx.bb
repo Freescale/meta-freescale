@@ -7,21 +7,19 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
 
 DEFAULT_PREFERENCE = "-1"
 
-SRCBRANCH = "weston-imx-6.0.1"
+SRCBRANCH = "weston-imx-8.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
            file://weston.png \
            file://weston.desktop \
-           file://0001-make-error-portable.patch \
            file://xwayland.weston-start \
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
-           file://0003-weston-touch-calibrator-Advertise-the-touchscreen-ca.patch \
 "
-SRCREV = "4ee0a1da010053b35495e82ad30aa5a8b1c34e6c"
+SRCREV = "f6a7d35650121fbe7c20d4cbe0eaac730fab3b2a"
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
 
-inherit autotools pkgconfig useradd features_check
+inherit meson pkgconfig useradd features_check
 
 # Disable OpenGL for parts with GPU support for 2D but not 3D
 REQUIRED_DISTRO_FEATURES          = "opengl"
@@ -36,68 +34,59 @@ DEPENDS += "wayland wayland-protocols libinput virtual/egl pango wayland-native"
 
 WESTON_MAJOR_VERSION = "${@'.'.join(d.getVar('PV').split('.')[0:1])}"
 
-EXTRA_OECONF = "--enable-setuid-install \
-                --disable-rdp-compositor \
-                --enable-autotools \
-                "
-EXTRA_OECONF_append_qemux86 = " \
-		WESTON_NATIVE_BACKEND=fbdev-backend.so \
-		"
-EXTRA_OECONF_append_qemux86-64 = " \
-		WESTON_NATIVE_BACKEND=fbdev-backend.so \
-		"
-EXTRA_OECONF_append_imxfbdev = " \
-		WESTON_NATIVE_BACKEND=fbdev-backend.so \
-		"
-PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev wayland egl', '', d)} \
+EXTRA_OEMESON += "-Dbackend-default=auto -Dbackend-rdp=false -Dpipewire=false"
+
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev wayland egl clients', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
                    ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL} pam systemd x11', d)} \
-                   clients launch"
+                   ${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'headless', d)} \
+                   launch"
+
 PACKAGECONFIG_remove_imxfbdev = "kms"
+PACKAGECONFIG_append_imxfbdev = " fbdev"
 PACKAGECONFIG_append_imxgpu   = " imxgpu"
 PACKAGECONFIG_append_imxgpu2d = " imxg2d"
-PACKAGECONFIG_append_imxgpu3d = " cairo-glesv2"
 #
 # Compositor choices
 #
 # Weston on KMS
-PACKAGECONFIG[kms] = "--enable-drm-compositor,--disable-drm-compositor,drm udev virtual/mesa mtdev"
+PACKAGECONFIG[kms] = "-Dbackend-drm=true,-Dbackend-drm=false,drm udev virtual/egl virtual/libgles2 virtual/libgbm mtdev"
 # Weston on Wayland (nested Weston)
-PACKAGECONFIG[wayland] = "--enable-wayland-compositor,--disable-wayland-compositor,virtual/mesa"
+PACKAGECONFIG[wayland] = "-Dbackend-wayland=true,-Dbackend-wayland=false,virtual/egl virtual/libgles2"
 # Weston on X11
-PACKAGECONFIG[x11] = "--enable-x11-compositor,--disable-x11-compositor,virtual/libx11 libxcb libxcb libxcursor cairo"
+PACKAGECONFIG[x11] = "-Dbackend-x11=true,-Dbackend-x11=false,virtual/libx11 libxcb libxcb libxcursor cairo"
 # Headless Weston
-PACKAGECONFIG[headless] = "--enable-headless-compositor,--disable-headless-compositor"
+PACKAGECONFIG[headless] = "-Dbackend-headless=true,-Dbackend-headless=false"
 # Weston on framebuffer
-PACKAGECONFIG[fbdev] = "--enable-fbdev-compositor,--disable-fbdev-compositor,udev mtdev"
+PACKAGECONFIG[fbdev] = "-Dbackend-fbdev=true,-Dbackend-fbdev=false,udev mtdev"
 # weston-launch
-PACKAGECONFIG[launch] = "--enable-weston-launch,--disable-weston-launch,drm"
+PACKAGECONFIG[launch] = "-Dweston-launch=true,-Dweston-launch=false,drm"
 # VA-API desktop recorder
-PACKAGECONFIG[vaapi] = "--enable-vaapi-recorder,--disable-vaapi-recorder,libva"
+PACKAGECONFIG[vaapi] = "-Dbackend-drm-screencast-vaapi=true,-Dbackend-drm-screencast-vaapi=false,libva"
 # Weston with EGL support
-PACKAGECONFIG[egl] = "--enable-egl --enable-simple-egl-clients,--disable-egl --disable-simple-egl-clients,virtual/egl"
-# Weston with cairo glesv2 support
-PACKAGECONFIG[cairo-glesv2] = "--with-cairo-glesv2,--with-cairo=image,cairo"
+PACKAGECONFIG[egl] = "-Drenderer-gl=true,-Drenderer-gl=false,virtual/egl"
 # Weston with lcms support
-PACKAGECONFIG[lcms] = "--enable-lcms,--disable-lcms,lcms"
+PACKAGECONFIG[lcms] = "-Dcolor-management-lcms=true,-Dcolor-management-lcms=false,lcms"
 # Weston with webp support
-PACKAGECONFIG[webp] = "--with-webp,--without-webp,libwebp"
+PACKAGECONFIG[webp] = "-Dimage-webp=true,-Dimage-webp=false,libwebp"
 # Weston with systemd-login support
-PACKAGECONFIG[systemd] = "--enable-systemd-login,--disable-systemd-login,systemd dbus"
+PACKAGECONFIG[systemd] = "-Dsystemd=true -Dlauncher-logind=true,-Dsystemd=false -Dlauncher-logind=false,systemd dbus"
 # Weston with Xwayland support (requires X11 and Wayland)
-PACKAGECONFIG[xwayland] = "--enable-xwayland,--disable-xwayland"
+PACKAGECONFIG[xwayland] = "-Dxwayland=true,-Dxwayland=false"
 # colord CMS support
-PACKAGECONFIG[colord] = "--enable-colord,--disable-colord,colord"
+PACKAGECONFIG[colord] = "-Dcolor-management-colord=true,-Dcolor-management-colord=false,colord"
 # Clients support
-PACKAGECONFIG[clients] = "--enable-clients --enable-simple-clients --enable-demo-clients-install,--disable-clients --disable-simple-clients"
+PACKAGECONFIG[clients] = "-Dsimple-clients=all -Ddemo-clients=true,-Dsimple-clients= -Ddemo-clients=false"
+# Virtual remote output with GStreamer on DRM backend
+PACKAGECONFIG[remoting] = "-Dremoting=true,-Dremoting=false,gstreamer-1.0"
 # Weston with PAM support
-PACKAGECONFIG[pam] = "--with-pam,--without-pam,libpam"
+PACKAGECONFIG[pam] = "-Dpam=true,-Dpam=false,libpam"
 # Weston with i.MX GPU support
-PACKAGECONFIG[imxgpu] = "--enable-imxgpu,--disable-imxgpu"
+PACKAGECONFIG[imxgpu] = "-Dimxgpu=true,-Dimxgpu=false,virtual/egl"
 # Weston with i.MX G2D renderer
-PACKAGECONFIG[imxg2d] = "--enable-imxg2d,--disable-imxg2d,virtual/libg2d"
+PACKAGECONFIG[imxg2d] = "-Drenderer-g2d=true,-Drenderer-g2d=false,virtual/libg2d"
 # Weston with OpenGL support
-PACKAGECONFIG[opengl] = "--enable-opengl,--disable-opengl"
+PACKAGECONFIG[opengl] = "-Dopengl=true,--Dopengl=false"
 
 do_install_append() {
 	# Weston doesn't need the .la files to load modules, so wipe them
@@ -115,12 +104,17 @@ do_install_append() {
 	if [ "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', 'yes', 'no', d)}" = "yes" ]; then
 		install -Dm 644 ${WORKDIR}/xwayland.weston-start ${D}${datadir}/weston-start/xwayland
 	fi
+
+        if [ "${@bb.utils.contains('PACKAGECONFIG', 'launch', 'yes', 'no', d)}" = "yes" ]; then
+                chmod u+s ${D}${bindir}/weston-launch
+        fi
 }
 
 PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland', '', d)} \
              libweston-${WESTON_MAJOR_VERSION} ${PN}-examples"
 
-FILES_${PN} = "${bindir}/weston ${bindir}/weston-terminal ${bindir}/weston-info ${bindir}/weston-launch ${bindir}/wcap-decode ${libexecdir} ${libdir}/${BPN}/*.so ${datadir} ${sysconfdir}/xdg/weston"
+FILES_${PN}-dev += "${libdir}/${BPN}/libexec_weston.so"
+FILES_${PN} = "${bindir}/weston ${bindir}/weston-terminal ${bindir}/weston-info ${bindir}/weston-launch ${bindir}/wcap-decode ${libexecdir} ${libdir}/${BPN}/*.so* ${datadir} ${sysconfdir}/xdg/weston"
 
 FILES_libweston-${WESTON_MAJOR_VERSION} = "${libdir}/lib*${SOLIBS} ${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.so"
 SUMMARY_libweston-${WESTON_MAJOR_VERSION} = "Helper library for implementing 'wayland window managers'."
@@ -131,7 +125,7 @@ FILES_${PN}-xwayland = "${libdir}/libweston-${WESTON_MAJOR_VERSION}/xwayland.so"
 RDEPENDS_${PN}-xwayland += "xserver-xorg-xwayland"
 
 RDEPENDS_${PN} += "xkeyboard-config"
-RRECOMMENDS_${PN} = "liberation-fonts"
+RRECOMMENDS_${PN} = "weston-init liberation-fonts"
 RRECOMMENDS_${PN}-dev += "wayland-protocols"
 
 USERADD_PACKAGES = "${PN}"
