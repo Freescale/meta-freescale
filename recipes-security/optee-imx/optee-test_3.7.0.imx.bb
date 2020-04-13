@@ -11,7 +11,7 @@ inherit python3native
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
+SRCBRANCH = "imx_5.4.3_2.0.0"
 OPTEE_TEST_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-test.git;protocol=https"
 
 SRC_URI = "${OPTEE_TEST_SRC};branch=${SRCBRANCH} \
@@ -23,7 +23,7 @@ SRC_URI = "${OPTEE_TEST_SRC};branch=${SRCBRANCH} \
 
 S = "${WORKDIR}/git"
 
-SRCREV = "b7114b828b82f2c0eec124ed424eff1230cc5319"
+SRCREV = "227d6f4c40eaa6f84fe049b9e48c7b27ad7fab08"
 
 
 
