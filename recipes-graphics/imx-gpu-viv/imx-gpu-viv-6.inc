@@ -311,7 +311,7 @@ INSANE_SKIP_libgal-imx += "build-deps"
 
 FILES_libvsc-imx = "${libdir}/libVSC${SOLIBS}"
 
-FILES_libgbm-imx_mx8           = "${libdir}/libgbm*${SOLIBS} ${libdir}/gbm_viv${SOLIBS}"
+FILES_libgbm-imx_mx8           = "${libdir}/libgbm*${SOLIBS}"
 FILES_libgbm-imx-dev_mx8       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h ${libdir}/libgbm${SOLIBSDEV}"
 RDEPENDS_libgbm-imx_append_mx8 = " libdrm"
 
@@ -320,12 +320,10 @@ FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSD
 
 FILES_libopenvx-imx = " \
         ${libdir}/libOpenVX*${SOLIBS} \
-        ${libdir}/libOpenVXC${SOLIBS} \
-        ${libdir}/libOpenVXU${SOLIBS} \
         ${libdir}/libOvx*${SOLIBS} \
         ${libdir}/libovx*${SOLIBS} \
         "
-FILES_libopenvx-imx-dev = "${includedir}/VX ${libdir}/libopenVX${SOLIBSDEV} "
+FILES_libopenvx-imx-dev = "${includedir}/VX ${includedir}/OVXLIB"
 RDEPENDS_libopenvx-imx = "libnn-imx"
 
 FILES_libgl-imx = "${libdir}/libGL${REALSOLIBS}"
@@ -385,6 +383,6 @@ FILES_imx-gpu-viv-demos = "/opt"
 INSANE_SKIP_imx-gpu-viv-demos += "rpaths dev-deps"
 
 FILES_libnn-imx = "${libdir}/libNN*${SOLIBS} ${libdir}/libnn*${SOLIBS} ${libdir}/libneuralnetworks${SOLIBS}"
-FILES_libnn-imx-dev = "${includedir}/NNRT"
+FILES_libnn-imx-dev = "${includedir}/nnrt"
 
 # COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx8)"
