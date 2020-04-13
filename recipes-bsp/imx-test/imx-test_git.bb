@@ -16,13 +16,12 @@ DEPENDS_append_imxvpu = " virtual/imxvpu"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
+SRCBRANCH = "imx_5.4.3_2.0.0"
 SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-mxc_v4l2_test-fix-compilation-error-produced-by-gcc9.patch \
     file://memtool_profile \
 "
-SRCREV = "709d14b037e7a45af018875c4a880f8f9c198288"
+SRCREV = "178ff3015384febee3689703ae68ac7938f24b84"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers
