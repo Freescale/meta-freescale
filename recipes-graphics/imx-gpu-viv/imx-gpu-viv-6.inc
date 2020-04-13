@@ -84,7 +84,7 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	imx-gpu-viv-demos \
 	libvulkan-imx libvulkan-imx-dev \
 	libopenvx-imx libopenvx-imx-dev \
-	libnn-imx \
+	libnn-imx libnn-imx-dev \
 "
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
