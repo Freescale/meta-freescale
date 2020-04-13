@@ -7,11 +7,11 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 
 PV .= "+git${SRCPV}"
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
+SRCBRANCH = "imx_5.4.3_2.0.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-Allow-BUILD_STRING-to-be-set-in-.revision-file.patch \
 "
-SRCREV = "70fa7bcc1a2035ab8402550911b3ae29eff55371"
+SRCREV = "f1a195b5cce64365a7227557a9009a4f545aa02d"
 
 S = "${WORKDIR}/git"
 
