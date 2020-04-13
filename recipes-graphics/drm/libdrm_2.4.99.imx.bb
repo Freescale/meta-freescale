@@ -15,7 +15,7 @@ IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.99"
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
            file://musl-ioctl.patch \
            file://0001-meson-add-libdrm-vivante-to-the-meson-meta-data.patch "
-SRCREV = "5748c8ff40f1ae87487c01e580f145a43542cbda"
+SRCREV = "f421c9c8c4b8fe48d9e6ef43910e98569c94a4b2"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
