@@ -12,3 +12,5 @@ require linux-mfgtool.inc
 KERNEL_IMAGE_BASE_NAME[vardepsexclude] = "DATETIME"
 MODULE_IMAGE_BASE_NAME[vardepsexclude] = "DATETIME"
 do_package[vardepsexclude] = "DATETIME"
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
