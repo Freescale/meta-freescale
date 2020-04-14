@@ -20,6 +20,13 @@ IMX_DEFAULT_BSP ??= "mainline"
 IMX_DEFAULT_BSP_mxs = "mainline"
 IMX_DEFAULT_BSP_mx5 = "mainline"
 
+# Those are SoC families we'd like to force to use of NXP BSP.
+IMX_DEFAULT_BSP_mx8mm = "nxp"
+IMX_DEFAULT_BSP_mx8mn = "nxp"
+IMX_DEFAULT_BSP_mx8mq = "nxp"
+IMX_DEFAULT_BSP_mx8qm = "nxp"
+
+# We set the override as a DISTROOVERRIDES so we avoid a cycle while expanding
 # the MACHINEOVERRIDES. This is required so this is reworked late in the
 # expansion cycle.
 DISTROOVERRIDES_append = ":use-${IMX_DEFAULT_BSP}-bsp"
