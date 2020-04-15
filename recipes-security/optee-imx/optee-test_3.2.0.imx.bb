@@ -11,7 +11,7 @@ inherit python3native
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
+SRCBRANCH = "lf-5.4.y"
 OPTEE_TEST_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-test.git;protocol=https"
 
 SRC_URI = "${OPTEE_TEST_SRC};branch=${SRCBRANCH} \
@@ -24,8 +24,6 @@ SRC_URI = "${OPTEE_TEST_SRC};branch=${SRCBRANCH} \
 S = "${WORKDIR}/git"
 
 SRCREV = "b7114b828b82f2c0eec124ed424eff1230cc5319"
-
-
 
 do_compile () {
     if [ ${DEFAULTTUNE} = "aarch64" ];then
@@ -40,7 +38,7 @@ do_compile () {
     export CROSS_COMPILE_TA=${HOST_PREFIX}
     export CROSS_COMPILE=${HOST_PREFIX}
     export OPTEE_OPENSSL_EXPORT=${STAGING_INCDIR}/
-    oe_runmake V=1
+    oe_runmake V=1  --warn-undefined-variables
 }
 
 do_install () {
