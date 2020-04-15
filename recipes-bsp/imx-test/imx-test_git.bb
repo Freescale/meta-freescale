@@ -81,3 +81,4 @@ RDEPENDS_${PN} = "bash"
 FILES_${PN}-dbg += "/unit_tests/.debug"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_HOST = "(use-nxp-bsp)"
