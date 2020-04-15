@@ -9,14 +9,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=69663ab153298557a59c67a60a743e5b"
 inherit deploy python3native autotools
 DEPENDS = "python3-pycrypto-native u-boot-mkimage-native"
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
+SRCBRANCH = "lf-5.4.y"
 OPTEE_OS_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https"
 SRC_URI = "\
 	${OPTEE_OS_SRC};branch=${SRCBRANCH} \
 	file://0001-scripts-update-scripts-to-use-python3.patch \
 "
 
-SRCREV = "6a22e6e8a2840b245808527679f3397b7e620b3c"
+SRCREV = "6d99b525af752ecdaabdca6098b2564b2665f2b2"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build.${PLATFORM_FLAVOR}"
@@ -30,6 +30,7 @@ PLATFORM_FLAVOR_imx6ull9x9evk   = "mx6ullevk"
 PLATFORM_FLAVOR_imx6ulz14x14evk = "mx6ulzevk"
 PLATFORM_FLAVOR_mx8mm   = "mx8mmevk"
 PLATFORM_FLAVOR_mx8mn   = "mx8mnevk"
+PLATFORM_FLAVOR_mx8qxp  = "mx8qxpmek"
 
 OPTEE_ARCH ?= "arm32"
 OPTEE_ARCH_armv7a = "arm32"
@@ -46,10 +47,6 @@ EXTRA_OEMAKE = "PLATFORM=imx PLATFORM_FLAVOR=${PLATFORM_FLAVOR} \
                 NOWERROR=1 \
                 LDFLAGS= \
                 O=${B} \
-                CFG_SECURE_DATA_PATH=y \
-                CFG_TEE_SDP_MEM_BASE=0xCC000000 \
-                CFG_TEE_SDP_MEM_SIZE=0x02000000 \
-                CFG_TEE_SDP_NONCACHE=y \
                 "
 
 

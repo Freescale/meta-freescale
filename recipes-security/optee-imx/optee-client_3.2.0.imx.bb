@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=69663ab153298557a59c67a60a743e5b"
 
 inherit python3native systemd
 
-SRCBRANCH = "imx_4.19.35_1.1.0"
+SRCBRANCH = "lf-5.4.y"
 OPTEE_CLIENT_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-client.git;protocol=https"
 SRC_URI = "${OPTEE_CLIENT_SRC};branch=${SRCBRANCH}"
 
@@ -19,8 +19,6 @@ SRC_URI_append = " file://tee-supplicant.service"
 
 S = "${WORKDIR}/git"
 SYSTEMD_SERVICE_${PN} = "tee-supplicant.service"
-
-EXTRA_OEMAKE = "CFG_SECURE_DATA_PATH=y"
 
 do_compile () {
     if [ ${DEFAULTTUNE} = "aarch64" ]; then
