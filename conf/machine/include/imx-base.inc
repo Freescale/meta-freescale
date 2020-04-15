@@ -14,22 +14,13 @@ IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 # DISTROs might change it if need.
 #
 # Two values are considered valid: mainline, nxp
-IMX_DEFAULT_BSP ??= "mainline"
+IMX_DEFAULT_BSP = "mainline"
 
 # Those are SoC families we'd like to force the use of mainline BSP.
 IMX_DEFAULT_BSP_mxs = "mainline"
 IMX_DEFAULT_BSP_mx5 = "mainline"
 
-# Those are SoC families we'd like to force to use of NXP BSP.
-IMX_DEFAULT_BSP_mx8mm = "nxp"
-IMX_DEFAULT_BSP_mx8mn = "nxp"
-IMX_DEFAULT_BSP_mx8mq = "nxp"
-IMX_DEFAULT_BSP_mx8qm = "nxp"
-
-# We set the override as a DISTROOVERRIDES so we avoid a cycle while expanding
-# the MACHINEOVERRIDES. This is required so this is reworked late in the
-# expansion cycle.
-DISTROOVERRIDES_append = ":use-${IMX_DEFAULT_BSP}-bsp"
+MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
