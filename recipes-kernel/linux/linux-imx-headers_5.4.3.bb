@@ -63,5 +63,5 @@ INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS += "unifdef-native bison-native rsync-native"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-COMPATIBLE_HOST_imx = ".*"
+COMPATIBLE_HOST_imx = "(use-nxp-bsp)"
 COMPATIBLE_HOST ?= "(none)"
