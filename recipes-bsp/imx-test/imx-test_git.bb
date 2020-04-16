@@ -79,7 +79,3 @@ FILES_${PN} += "/unit_tests /home/root/.profile"
 RDEPENDS_${PN} = "bash"
 
 FILES_${PN}-dbg += "/unit_tests/.debug"
-
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
-COMPATIBLE_HOST ?= "(none)"
-COMPATIBLE_HOST_use-nxp-bsp = "(.*)"
