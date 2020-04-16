@@ -63,5 +63,8 @@ INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS += "unifdef-native bison-native rsync-native"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-COMPATIBLE_HOST_imx = "(use-nxp-bsp)"
-COMPATIBLE_HOST ?= "(none)"
+
+# Restrict this recipe to NXP BSP only, this recipe is not compatible
+# with mainline BSP
+COMPATIBLE_HOST = '(null)'
+COMPATIBLE_HOST_use-nxp-bsp = '.*'
