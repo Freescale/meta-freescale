@@ -4,15 +4,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
 DEPENDS = "imx-gpu-viv zlib libpng procps"
 
-SRC_URI = "\
-       git://source.codeaurora.org/external/imx/apitrace-imx.git;protocol=https;branch=imx_7.1 \
-       file://0001-switch-from-python2-to-python3.patch \
-       file://0002-specs-Tie-Python-2-3-conversion-loose-ends.patch \
-       file://0003-scripts-Tie-Python-2-3-conversion-loose-ends.patch \
-       file://0004-scripts-Tie-a-few-more-Python-2-to-3-conversion-loos.patch \
-       file://0005-scripts-Tie-a-few-more-Python-2-to-3-conversion-loos.patch \
-"
-SRCREV = "09579e67262af9c993dd082055a924c2c61cf34d"
+SRC_URI = "git://source.codeaurora.org/external/imx/apitrace-imx.git;protocol=https;branch=imx_9.0"
+SRCREV = "8636fa989d8e914a7986916b058878761a981a6f"
 
 S = "${WORKDIR}/git"
 
