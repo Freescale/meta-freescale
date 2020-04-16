@@ -9,7 +9,7 @@ SRCREV = "8636fa989d8e914a7986916b058878761a981a6f"
 
 S = "${WORKDIR}/git"
 
-inherit cmake lib_package pkgconfig perlnative python3native
+inherit cmake pkgconfig perlnative python3native
 
 PACKAGECONFIG ??= ""
 PACKAGECONFIG_append = \
@@ -30,8 +30,12 @@ PACKAGECONFIG[x11] = "-DENABLE_X11=ON,-DENABLE_X11=OFF"
 PACKAGECONFIG[x11-egl] = "-Dwaffle_has_x11_egl=ON,-Dwaffle_has_x11_egl=OFF"
 PACKAGECONFIG[vivante] = "-DENABLE_VIVANTE=ON,-DENABLE_VIVANTE=OFF,virtual/libg2d"
 
-FILES_${PN} = "${bindir} ${libdir}"
-FILES_${PN}-dbg += "${libdir}/*/*/.debug"
+SOLIBS = ".so"
+FILES_SOLIBSDEV = ""
+FILES_${PN} += " \
+    ${libdir}/apitrace/scripts/* \
+    ${libdir}/apitrace/wrappers/* \
+"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxgpu)"
