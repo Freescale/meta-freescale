@@ -11,18 +11,12 @@ S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig perlnative python3native
 
-PACKAGECONFIG ??= ""
+PACKAGECONFIG ??= "egl waffle"
 PACKAGECONFIG_append = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', \
         bb.utils.contains('DISTRO_FEATURES',     'x11', ' x11', \
                                                         '', d), d)}"
 PACKAGECONFIG_append_imxgpu2d = " vivante"
-# For 8M, which has 3D but no 2D, eglretrace is not available
-# on Wayland except through X11 and waffle.
-PACKAGECONFIG_IMXGPU3D = \
-    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland x11', ' waffle x11', '', d)}"
-PACKAGECONFIG_IMXGPU3D_imxgpu2d = ""
-PACKAGECONFIG_append_imxgpu3d = "${PACKAGECONFIG_IMXGPU3D}"
 
 PACKAGECONFIG[egl] = "-DENABLE_EGL=ON,-DENABLE_EGL=OFF,virtual/egl"
 PACKAGECONFIG[gui] = "-DENABLE_GUI=ON,-DENABLE_GUI=OFF"
