@@ -19,6 +19,7 @@ M="${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITE
 BOARD_TARGETS="${M}"
 BOARD_TARGETS_ls2088ardb="${M} ${M}_rev1.1"
 BOARD_TARGETS_ls1088ardb-pb="ls1088ardb"
+BOARD_TARGETS_lx2160ardb = "${M} ${M}_rev2"
 
 do_install () {
     for BT in ${BOARD_TARGETS}
