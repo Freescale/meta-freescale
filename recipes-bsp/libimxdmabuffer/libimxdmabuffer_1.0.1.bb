@@ -5,10 +5,10 @@ LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=38fa42a5a6425b26d2919b17b1527324"
 SECTION = "base"
 
-PV = "1.0.0+git${SRCPV}"
+PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "db17cb57d1087cf590b28487c43cb5c47bf76fe7"
+SRCREV = "d2058aa404ee1e8e8abd552c6a637787bcdcf514"
 SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
