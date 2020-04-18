@@ -10,6 +10,7 @@ inherit python3native
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_test;nobranch=1 \
     file://0001-fix-build-failure-with-GCC-9.patch \
+    file://0001-use-python3-instead-of-python.patch \
 "
 S = "${WORKDIR}/git"
 
