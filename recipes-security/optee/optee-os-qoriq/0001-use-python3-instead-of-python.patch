@@ -1,0 +1,80 @@
+diff --git a/scripts/arm32_sysreg.py b/scripts/arm32_sysreg.py
+index bd0c619e..530b0f44 100755
+--- a/scripts/arm32_sysreg.py
++++ b/scripts/arm32_sysreg.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-2-Clause
+ #
+ # Copyright (c) 2018, Linaro Limited
+diff --git a/scripts/gen_hashed_bin.py b/scripts/gen_hashed_bin.py
+index 67b2b049..619cf26e 100755
+--- a/scripts/gen_hashed_bin.py
++++ b/scripts/gen_hashed_bin.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-2-Clause
+ #
+ # Copyright (c) 2014-2017, Linaro Limited
+diff --git a/scripts/gen_ld_sects.py b/scripts/gen_ld_sects.py
+index 43e812b5..bc82dd8b 100755
+--- a/scripts/gen_ld_sects.py
++++ b/scripts/gen_ld_sects.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-2-Clause
+ #
+ # Copyright (c) 2017, Linaro Limited
+diff --git a/scripts/pem_to_pub_c.py b/scripts/pem_to_pub_c.py
+index ddc17c18..69a4355c 100755
+--- a/scripts/pem_to_pub_c.py
++++ b/scripts/pem_to_pub_c.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-2-Clause
+ #
+ # Copyright (c) 2015, Linaro Limited
+diff --git a/scripts/sign.py b/scripts/sign.py
+index 84fd7714..f6e6b667 100755
+--- a/scripts/sign.py
++++ b/scripts/sign.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ #
+ # Copyright (c) 2015, 2017, Linaro Limited
+ #
+diff --git a/scripts/symbolize.py b/scripts/symbolize.py
+index 99a48c70..cbd9884a 100755
+--- a/scripts/symbolize.py
++++ b/scripts/symbolize.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-2-Clause
+ #
+ # Copyright (c) 2017, Linaro Limited
+diff --git a/scripts/ta_bin_to_c.py b/scripts/ta_bin_to_c.py
+index 1496f816..a01e7f9b 100755
+--- a/scripts/ta_bin_to_c.py
++++ b/scripts/ta_bin_to_c.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-2-Clause
+ #
+ # Copyright (c) 2017, Linaro Limited
+diff --git a/scripts/tee_bin_parser.py b/scripts/tee_bin_parser.py
+index 8356ad5d..4409074b 100755
+--- a/scripts/tee_bin_parser.py
++++ b/scripts/tee_bin_parser.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-2-Clause
+ #
+ # Copyright (c) 2016, Linaro Limited
