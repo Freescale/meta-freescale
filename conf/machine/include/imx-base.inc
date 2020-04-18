@@ -14,11 +14,11 @@ IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 # DISTROs might change it if need.
 #
 # Two values are considered valid: mainline, nxp
-IMX_DEFAULT_BSP = "mainline"
+IMX_DEFAULT_BSP ?= "mainline"
 
 # Those are SoC families we'd like to force the use of mainline BSP.
-IMX_DEFAULT_BSP_mxs = "mainline"
-IMX_DEFAULT_BSP_mx5 = "mainline"
+IMX_DEFAULT_BSP_mxs ?= "mainline"
+IMX_DEFAULT_BSP_mx5 ?= "mainline"
 
 MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
 
