@@ -6,7 +6,7 @@ DEPENDS += "libpcap dpdk lua lua-native"
 
 SRC_URI = "git://dpdk.org/git/apps/pktgen-dpdk;protocol=https;nobranch=1 \
 "
-SRCREV = "b3d08bb3c29c999b261c7d74443da03079a012e9"
+SRCREV = "7a61e4dfcdf037c31460b6c9bcb301797813036a"
 
 S = "${WORKDIR}/git"
 
