@@ -16,15 +16,18 @@ COMPATIBLE_HOST_armv6 = 'null'
 
 COMPATIBLE_MACHINE = "(imx|qoriq)"
 
+export EXAMPLES_BUILD_DIR = "${RTE_TARGET}"
+export PKGS_WITH_OPENSSL_ENABLED = "l2fwd-crypto ipsec-secgw"
+
 DPDK_RTE_TARGET_x86-64 = "x86_64-native-linuxapp-gcc"
 DPDK_RTE_TARGET_x86 = "i686-native-linuxapp-gcc"
 DPDK_RTE_TARGET_armv7a = "${ARCH}-armv7a-linuxapp-gcc"
 DPDK_RTE_TARGET_armv7ve = "${ARCH}-armv7a-linuxapp-gcc"
 DPDK_RTE_TARGET ?= "${ARCH}-dpaa-linuxapp-gcc"
-
 export RTE_TARGET = "${DPDK_RTE_TARGET}"
+
 export RTE_OUTPUT = "${S}/${RTE_TARGET}"
-export  MODULE_DIR = "/lib/modules/${KERNEL_VERSION}/kernel/drivers/net"
+export MODULE_DIR = "/lib/modules/${KERNEL_VERSION}/kernel/drivers/net"
 
 S = "${WORKDIR}/git"
 
@@ -34,7 +37,6 @@ EXTRA_OEMAKE += '\
     OPENSSL_PATH="${STAGING_DIR_HOST}" \
     RTE_KERNELDIR="${STAGING_KERNEL_DIR}" \
     RTE_KERNELDIR_OUT="${STAGING_KERNEL_BUILDDIR}" \
-    EXAMPLES_BUILD_DIR="${RTE_TARGET}" \
 '
 
 do_configure () {
@@ -61,19 +63,16 @@ do_compile () {
     prefix="" LDFLAGS="${TUNE_LDARGS}" WERROR_FLAGS="-w" V=1
 
     cd ${S}/examples/
-    for APP in l2fwd l3fwd cmdif l2fwd-qdma l2fwd-crypto ipsec-secgw vhost kni ip_fragmentation ip_reassembly; do
-        temp=`basename ${APP}`
-        if [ ${temp} = "ipsec-secgw" ] || [ ${temp} = "l2fwd-crypto" ]; then
-            oe_runmake \
-            EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu -fuse-ld=bfd" \
-            EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR}" \
-            CROSS="${TARGET_PREFIX}" -C ${APP} CONFIG_RTE_LIBRTE_PMD_OPENSSL=y O="${S}/examples/${temp}"
-        else
-            oe_runmake \
-            EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu -fuse-ld=bfd" \
-            EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR}" \
-            CROSS="${TARGET_PREFIX}" -C ${APP} CONFIG_RTE_LIBRTE_PMD_OPENSSL=y O="${S}/examples/${temp}/"
-        fi
+    oe_runmake \
+    EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu -fuse-ld=bfd" \
+    EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -O3 -I${STAGING_INCDIR}" \
+    CROSS="${TARGET_PREFIX}" O="${S}/examples"
+
+    for APP in ${PKGS_WITH_OPENSSL_ENABLED}; do
+        oe_runmake -C ${APP} CONFIG_RTE_LIBRTE_PMD_OPENSSL=y \
+        EXTRA_LDFLAGS="-L${STAGING_LIBDIR} --hash-style=gnu -fuse-ld=bfd" \
+        EXTRA_CFLAGS="${HOST_CC_ARCH} ${TOOLCHAIN_OPTIONS} -I${STAGING_INCDIR}" \
+        CROSS="${TARGET_PREFIX}" O="${S}/examples/${APP}"
     done
 }
 
@@ -82,25 +81,33 @@ do_install () {
     oe_runmake O=${RTE_OUTPUT} T= install-kmod DESTDIR=${D} kerneldir=${MODULE_DIR}
     oe_runmake O=${RTE_OUTPUT} T= install-sdk DESTDIR=${D}
 
-    # Install examples
-    install -d 0644 ${D}/${datadir}/dpdk/cmdif/include
-    install -d 0644 ${D}/${datadir}/dpdk/cmdif/lib
-    install -d 0644 ${D}/${datadir}/dpdk/examples
-    cp examples/cmdif/lib/client/fsl_cmdif_client.h \
-    examples/cmdif/lib/server/fsl_cmdif_server.h \
-    examples/cmdif/lib/shbp/fsl_shbp.h \
-    ${D}/${datadir}/dpdk/cmdif/include
-    cp examples/cmdif/lib/${RTE_TARGET}/librte_cmdif.a \
-    ${D}/${datadir}/dpdk/cmdif/lib
-    install -d 0644 ${D}/${datadir}/dpdk/examples/ipsec_secgw
-    cp -r ${S}/examples/ipsec-secgw/*.cfg \
-    ${D}/${datadir}/dpdk/examples/ipsec_secgw
-    cp -rf ${S}/nxp/* ${D}/${datadir}/dpdk
-    cp -r ${S}/examples/cmdif/cmdif_demo/${DPDK_RTE_TARGET}/cmdif_demo ${D}/${datadir}/dpdk/examples
-    cp -r ${S}/examples/vhost/vhost-switch ${D}/${datadir}/dpdk/examples
-    for APP in l2fwd l3fwd l2fwd-qdma l2fwd-crypto ipsec-secgw kni ip_fragmentation ip_reassembly; do
-        cp -r ${S}/examples/${APP}/${APP} ${D}/${datadir}/dpdk/examples
+    # install examples without openssl enabled
+    install -m 0755 -d ${D}/${datadir}/dpdk/examples
+    for dirname in ${S}/examples/*
+    do
+        for appname in `find ${dirname} -regex ".*${EXAMPLES_BUILD_DIR}\/app\/[-0-9a-zA-Z0-9/_]*$"`
+        do
+            install -m 755 ${appname} ${D}/${datadir}/dpdk/examples/
+        done
     done
+
+    # install examples with openssl enabled
+    for APP in ${PKGS_WITH_OPENSSL_ENABLED}; do
+        install ${S}/examples/${APP}/${APP} ${D}/${datadir}/dpdk/examples/
+    done
+
+    # install cmdif header and library
+    install -m 0644 -d ${D}/${datadir}/dpdk/cmdif/include
+    install ${S}/examples/cmdif/lib/client/fsl_cmdif_client.h \
+        ${S}/examples/cmdif/lib/server/fsl_cmdif_server.h \
+        ${S}/examples/cmdif/lib/shbp/fsl_shbp.h \
+        ${D}/${datadir}/dpdk/cmdif/include/
+    install -m 0644 -d ${D}/${datadir}/dpdk/cmdif/lib
+    install ${S}/examples/cmdif/lib/${RTE_TARGET}/librte_cmdif.a \
+        ${D}/${datadir}/dpdk/cmdif/lib/
+
+    # copy nxp specific cfg and scripts
+    cp -rf ${S}/nxp/* ${D}/${datadir}/dpdk/
 }
 
 PACKAGES += "${PN}-examples"
