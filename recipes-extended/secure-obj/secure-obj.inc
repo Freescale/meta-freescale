@@ -12,7 +12,7 @@ LDFLAGS += "${TOOLCHAIN_OPTIONS}"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/secure_obj;nobranch=1 \
 "
-SRCREV = "cd3c353df1c3f19577cf3fa08f8a21abd63fb3c1"
+SRCREV = "fb179a861e8e9bfed85ac5ef8387bdd30de48db9"
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 export SECURE_STORAGE_PATH = "${S}/secure_storage_ta/ta/"
