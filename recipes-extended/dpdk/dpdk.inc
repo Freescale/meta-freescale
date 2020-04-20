@@ -1,6 +1,5 @@
 DESCRIPTION = "Data Plane Development Kit"
 HOMEPAGE = "http://dpdk.org"
-LICENSE = "BSD-3-Clause & LGPLv2 & GPLv2"
 
 DEPENDS = "virtual/kernel openssl"
 DEPENDS_append_x86-64 = " numactl"
