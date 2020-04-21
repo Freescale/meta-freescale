@@ -17,14 +17,22 @@ SRCREV = "4a82c939a0211196e2b80a495f966383803753bb"
 SRC_URI += "file://0001-fix-fiptool-build-error.patch \
     file://0001-Makefile-add-CC-gcc.patch \
 "
+
 COMPATIBLE_MACHINE = "(qoriq)"
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 PLATFORM = "${MACHINE}"
 PLATFORM_ls1088ardb-pb = "ls1088ardb"
+PLATFORM_ADDITIONAL_TARGET ??= ""
+PLATFORM_ADDITIONAL_TARGET_ls1012afrwy = "ls1012afrwy_512mb"
+
 # requires CROSS_COMPILE set by hand as there is no configure script
 export CROSS_COMPILE="${TARGET_PREFIX}"
 export ARCH="arm64"
-# Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is a standalone application
+
+# Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is
+# a standalone application
 CFLAGS[unexport] = "1"
 LDFLAGS[unexport] = "1"
 AS[unexport] = "1"
@@ -66,7 +74,7 @@ do_configure[noexec] = "1"
 do_compile() {
     export LIBPATH="${RECIPE_SYSROOT_NATIVE}"
     install -d ${S}/include/tools_share/openssl
-    cp -r ${RECIPE_SYSROOT}/usr/include/openssl/*   ${S}/include/tools_share/openssl
+    cp -r ${RECIPE_SYSROOT}/usr/include/openssl/* ${S}/include/tools_share/openssl
     if [ ! -f ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/srk.pri ]; then
        ${RECIPE_SYSROOT_NATIVE}/usr/bin/cst/gen_keys 1024
     else
@@ -146,13 +154,13 @@ do_compile() {
                     cp -f ${S}/build/${PLATFORM}/release/fuse_fip.bin ${S}
                 fi
 
-                if [ ${MACHINE} = ls1012afrwy ]; then
+                if [ -n "${PLATFORM_ADDITIONAL_TARGET}" ]; then
                     oe_runmake V=1 -C ${S} realclean
-                    oe_runmake V=1 -C ${S} all fip pbl PLAT=ls1012afrwy_512mb BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
-                    cp -r ${S}/build/ls1012afrwy_512mb/release/bl2_qspi${secext}.pbl ${S}/bl2_${d}${secext}_512mb.pbl
-                    cp -r ${S}/build/ls1012afrwy_512mb/release/fip.bin ${S}/fip_512mb.bin
+                    oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM_ADDITIONAL_TARGET} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
+                    cp -r ${S}/build/${PLATFORM_ADDITIONAL_TARGET}/release/bl2_qspi${secext}.pbl ${S}/bl2_${d}${secext}_${PLATFORM_ADDITIONAL_TARGET}.pbl
+                    cp -r ${S}/build/${PLATFORM_ADDITIONAL_TARGET}/release/fip.bin ${S}/fip_${PLATFORM_ADDITIONAL_TARGET}.bin
                     if [ "${BUILD_FUSE}" = "true" ]; then
-                        cp -r ${S}/build/ls1012afrwy_512mb/release/fuse_fip.bin ${S}/fuse_fip_512mb.bin
+                        cp -r ${S}/build/${PLATFORM_ADDITIONAL_TARGET}/release/fuse_fip.bin ${S}/fuse_fip_${PLATFORM_ADDITIONAL_TARGET}.bin
                     fi
                 fi
                 if [ -n "${uefiboot}" -a -f "${DEPLOY_DIR_IMAGE}/uefi/${PLATFORM}/${uefiboot}" ]; then
@@ -187,11 +195,11 @@ do_install() {
             cp -r ${S}/bl2_${d}${secext}.pbl ${D}/boot/atf/bl2_${d}${secext}.pbl
         fi
     done
-    if [ ${MACHINE} = ls1012afrwy ]; then
-            cp -r ${S}/fip_512mb.bin ${D}/boot/atf/fip_512mb.bin
-            cp -r ${S}/bl2_qspi${secext}_512mb.pbl ${D}/boot/atf/bl2_qspi${secext}_512mb.pbl
-            if [ -f "${S}/fuse_fip_512mb.bin" ]; then
-                cp -r ${S}/fuse_fip_512mb.bin ${D}/boot/atf/fuse_fip_512mb.bin
+    if [ -n "${PLATFORM_ADDITIONAL_TARGET}" ]; then
+            cp -r ${S}/fip_${PLATFORM_ADDITIONAL_TARGET}.bin ${D}/boot/atf/fip_${PLATFORM_ADDITIONAL_TARGET}.bin
+            cp -r ${S}/bl2_qspi${secext}_${PLATFORM_ADDITIONAL_TARGET}.pbl ${D}/boot/atf/bl2_qspi${secext}_${PLATFORM_ADDITIONAL_TARGET}.pbl
+            if [ -f "${S}/fuse_fip_${PLATFORM_ADDITIONAL_TARGET}.bin" ]; then
+                cp -r ${S}/fuse_fip_${PLATFORM_ADDITIONAL_TARGET}.bin ${D}/boot/atf/fuse_fip_${PLATFORM_ADDITIONAL_TARGET}.bin
             fi
     fi
     chown -R root:root ${D}
@@ -221,11 +229,11 @@ do_deploy() {
             cp -r ${D}/boot/atf/bl2_${d}${secext}.pbl ${DEPLOYDIR}/atf/bl2_${d}${secext}.pbl
         fi
     done
-    if [ ${MACHINE} = ls1012afrwy ]; then
-        cp -r ${S}/bl2_qspi${secext}_512mb.pbl ${DEPLOYDIR}/atf/
-        cp -r ${S}/fip_512mb.bin ${DEPLOYDIR}/atf/fip_uboot${secext}_512mb.bin
-        if [ -f "${S}/fuse_fip_512mb.bin" ]; then
-                cp -r ${S}/fuse_fip_512mb.bin ${D}/boot/atf/fuse_fip_512mb${secext}.bin
+    if [ -n "${PLATFORM_ADDITIONAL_TARGET}" ]; then
+        cp -r ${S}/bl2_qspi${secext}_${PLATFORM_ADDITIONAL_TARGET}.pbl ${DEPLOYDIR}/atf/
+        cp -r ${S}/fip_${PLATFORM_ADDITIONAL_TARGET}.bin ${DEPLOYDIR}/atf/fip_uboot${secext}_${PLATFORM_ADDITIONAL_TARGET}.bin
+        if [ -f "${S}/fuse_fip_${PLATFORM_ADDITIONAL_TARGET}.bin" ]; then
+                cp -r ${S}/fuse_fip_${PLATFORM_ADDITIONAL_TARGET}.bin ${D}/boot/atf/fuse_fip_${PLATFORM_ADDITIONAL_TARGET}${secext}.bin
         fi
     fi
     if [ -f "${S}/fip_ddr_sec.bin" ]; then
