@@ -1,0 +1,100 @@
+diff --git a/app/test-bbdev/test-bbdev.py b/app/test-bbdev/test-bbdev.py
+index 0194be046..86fe3a89d 100755
+--- a/app/test-bbdev/test-bbdev.py
++++ b/app/test-bbdev/test-bbdev.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2017 Intel Corporation
+diff --git a/app/test-cmdline/cmdline_test.py b/app/test-cmdline/cmdline_test.py
+index 3a8fac426..231fe6032 100755
+--- a/app/test-cmdline/cmdline_test.py
++++ b/app/test-cmdline/cmdline_test.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2010-2014 Intel Corporation
+ 
+diff --git a/app/test/autotest.py b/app/test/autotest.py
+index b42f48879..30541d102 100644
+--- a/app/test/autotest.py
++++ b/app/test/autotest.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2010-2014 Intel Corporation
+ 
+diff --git a/buildtools/map_to_def.py b/buildtools/map_to_def.py
+index 6775b54a9..ff67f0a35 100644
+--- a/buildtools/map_to_def.py
++++ b/buildtools/map_to_def.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2019 Intel Corporation
+ 
+diff --git a/config/arm/armv8_machine.py b/config/arm/armv8_machine.py
+index 404866d2f..1f689d9a8 100755
+--- a/config/arm/armv8_machine.py
++++ b/config/arm/armv8_machine.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2017 Cavium, Inc
+ 
+diff --git a/devtools/update_version_map_abi.py b/devtools/update_version_map_abi.py
+index 616412a1c..3244b0984 100755
+--- a/devtools/update_version_map_abi.py
++++ b/devtools/update_version_map_abi.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2019 Intel Corporation
+ 
+diff --git a/usertools/cpu_layout.py b/usertools/cpu_layout.py
+index 6f129b1db..e86bf6b92 100755
+--- a/usertools/cpu_layout.py
++++ b/usertools/cpu_layout.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2010-2014 Intel Corporation
+ # Copyright(c) 2017 Cavium, Inc. All rights reserved.
+diff --git a/usertools/dpdk-devbind.py b/usertools/dpdk-devbind.py
+index b1d149876..3f8175338 100755
+--- a/usertools/dpdk-devbind.py
++++ b/usertools/dpdk-devbind.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2010-2014 Intel Corporation
+ #
+diff --git a/usertools/dpdk-pmdinfo.py b/usertools/dpdk-pmdinfo.py
+index 069a3bf12..1d5c99c2a 100755
+--- a/usertools/dpdk-pmdinfo.py
++++ b/usertools/dpdk-pmdinfo.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2016  Neil Horman <nhorman@tuxdriver.com>
+ 
+diff --git a/usertools/dpdk-telemetry-client.py b/usertools/dpdk-telemetry-client.py
+index 290345dcc..279067450 100755
+--- a/usertools/dpdk-telemetry-client.py
++++ b/usertools/dpdk-telemetry-client.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: BSD-3-Clause
+ # Copyright(c) 2018 Intel Corporation
+ 
