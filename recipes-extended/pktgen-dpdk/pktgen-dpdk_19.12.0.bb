@@ -12,9 +12,9 @@ S = "${WORKDIR}/git"
 
 DPAA_VER ?= "dpaa"
 export RTE_TARGET = "arm64-${DPAA_VER}-linuxapp-gcc"
-export RTE_SDK = "${RECIPE_SYSROOT}/usr/share/"
+export RTE_SDK = "${RECIPE_SYSROOT}${datadir}/dpdk"
 
-EXTRA_OEMAKE += 'CC="${CC}" LD="${LD}"  RTE_SDK="${RECIPE_SYSROOT}/usr/share/" RTE_TARGET="arm64-${DPAA_VER}-linuxapp-gcc"'
+EXTRA_OEMAKE += 'CC="${CC}" LD="${LD}"'
 
 do_compile() {
       oe_runmake 
