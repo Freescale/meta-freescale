@@ -1,6 +1,7 @@
 DESCRIPTION = "Data Plane Development Kit"
 HOMEPAGE = "http://dpdk.org"
 
+RDEPENDS_${PN} += "python3-core"
 DEPENDS = "virtual/kernel openssl"
 DEPENDS_append_x86-64 = " numactl"
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
