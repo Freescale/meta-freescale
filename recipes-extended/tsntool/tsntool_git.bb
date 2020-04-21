@@ -8,7 +8,7 @@ DEPENDS = "cjson libnl readline"
 inherit pkgconfig
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/tsntool;protocol=https;nobranch=1"
-SRCREV = "30a0320eb4a1798ac3d6258a2e02d863e60a1582"
+SRCREV = "ca2d8fb348bb54960d706177108c43ae213e0063"
 
 S = "${WORKDIR}/git"
 
@@ -19,10 +19,8 @@ do_compile_prepend() {
         cp -r ${STAGING_KERNEL_DIR}/include/uapi/linux/tsn.h ${S}/include/linux
 }     
 do_install() {
-    install -d ${D}${bindir} ${D}${libdir} 
+    install -d ${D}${bindir} ${D}${libdir}
     install -m 0755 ${S}/tsntool ${D}${bindir}
-    install -m 0755 ${S}/tools/event ${D}${bindir}/
-    install -m 0755 ${S}/tools/timestamping ${D}${bindir}/
     install -m 0755 ${S}/libtsn.so ${D}${libdir}
 }
 
