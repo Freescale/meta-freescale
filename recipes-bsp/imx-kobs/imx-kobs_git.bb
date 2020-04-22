@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 PV = "5.5+git${SRCPV}"
 SRC_URI = "git://github.com/NXPmicro/imx-kobs.git;protocol=https \
 "
-SRCREV = "02c01d4a3d85d767360820a23751cd1aa231d0a0"
+SRCREV = "cee66d0e956a64d03cc866fa8819da5b798c7f1b"
 S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
