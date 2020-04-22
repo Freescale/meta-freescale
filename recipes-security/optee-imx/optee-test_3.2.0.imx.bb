@@ -26,14 +26,14 @@ S = "${WORKDIR}/git"
 
 SRCREV = "b7114b828b82f2c0eec124ed424eff1230cc5319"
 
+OPTEE_ARCH ?= "arm32"
+OPTEE_ARCH_armv7a = "arm32"
+OPTEE_ARCH_aarch64 = "arm64"
+
 do_compile () {
-    if [ ${DEFAULTTUNE} = "aarch64" ];then
-        export TA_DEV_KIT_DIR=${STAGING_INCDIR}/optee/export-user_ta_arm64/
-        export ARCH=arm64
-    else
-        export TA_DEV_KIT_DIR=${STAGING_INCDIR}/optee/export-user_ta_arm32/
-        export ARCH=arm
-    fi
+    export TA_DEV_KIT_DIR=${STAGING_INCDIR}/optee/export-user_ta_${OPTEE_ARCH}/
+    export ARCH=${OPTEE_ARCH}
+
     export OPTEE_CLIENT_EXPORT=${STAGING_DIR_HOST}/usr
     export CROSS_COMPILE_HOST=${HOST_PREFIX}
     export CROSS_COMPILE_TA=${HOST_PREFIX}
