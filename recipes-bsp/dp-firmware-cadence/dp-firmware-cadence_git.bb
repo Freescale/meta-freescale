@@ -1,5 +1,5 @@
 SUMMARY = "DP firmware"
-LICENSE = "NXP-Binary-EULA"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6c12031a11b81db21cdfe0be88cac4b3"
 
 inherit deploy fsl-eula-unpack 
