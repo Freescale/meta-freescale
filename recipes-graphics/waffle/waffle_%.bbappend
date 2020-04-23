@@ -1,3 +1,9 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
+SRC_URI += " \
+    file://0001-meson-Add-missing-wayland-dependency-on-EGL.patch \
+"
+
 PACKAGECONFIG_IMXGPU_X11          = ""
 PACKAGECONFIG_IMXGPU_X11_imxgpu3d = "x11-egl glx"
 PACKAGECONFIG_IMXGPU_GBM          = "gbm"
