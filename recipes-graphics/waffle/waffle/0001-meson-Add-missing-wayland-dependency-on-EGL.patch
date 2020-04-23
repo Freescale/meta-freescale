@@ -1,0 +1,49 @@
+From 932c21d2851fe79bf4fe55d3b613f71f65762adb Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Wed, 22 Apr 2020 13:40:04 -0500
+Subject: [PATCH] meson: Add missing wayland dependency on EGL
+
+The build was not finding egl.pc due to this
+missing dependency.
+
+Upstream-Status: Pending
+
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ meson.build | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 957737c..4ebb022 100644
+--- a/meson.build
++++ b/meson.build
+@@ -65,6 +65,7 @@ dep_gl = _dep_null
+ dep_egl = _dep_null
+ dep_wayland_client = _dep_null
+ dep_wayland_egl = _dep_null
++dep_wayland_wayland_egl = _dep_null
+ dep_x11_xcb = _dep_null
+ dep_gbm = _dep_null
+ dep_udev = _dep_null
+@@ -90,7 +91,8 @@ else
+   dep_wayland_client = dependency(
+     'wayland-client', version : '>= 1.0', required : get_option('wayland'),
+   )
+-  dep_wayland_egl = dependency(
++  dep_wayland_egl = dependency('egl', required : get_option('wayland'))
++  dep_wayland_wayland_egl = dependency(
+     'wayland-egl', version : '>= 9.1', required : get_option('wayland'),
+   )
+   dep_x11_xcb = dependency('x11-xcb', required : get_option('glx'))
+@@ -101,7 +103,7 @@ else
+   dep_udev = dependency('libudev', required : get_option('gbm'))
+ 
+   build_x11_egl = dep_egl.found()
+-  build_wayland = dep_wayland_client.found() and dep_wayland_egl.found()
++  build_wayland = dep_wayland_client.found() and dep_wayland_egl.found() and dep_wayland_wayland_egl.found()
+   build_glx = dep_gl.found()
+   build_gbm = dep_gbm.found() and dep_udev.found()
+   build_surfaceless = dep_egl.found()
+-- 
+2.17.1
+
