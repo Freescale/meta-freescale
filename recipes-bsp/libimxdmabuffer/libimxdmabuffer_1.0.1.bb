@@ -9,7 +9,10 @@ PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
 SRCREV = "d2058aa404ee1e8e8abd552c6a637787bcdcf514"
-SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH} \
+           file://run-ptest \
+          "
+
 
 S = "${WORKDIR}/git"
 
@@ -33,9 +36,11 @@ PACKAGECONFIG[ipu] = "--with-ipu-allocator=yes,               --with-ipu-allocat
 PACKAGECONFIG[g2d] = "--with-g2d-allocator=yes,               --with-g2d-allocator=no,virtual/libg2d"
 PACKAGECONFIG[pxp] = "--with-pxp-allocator=yes,               --with-pxp-allocator=no,"
 
-do_install_ptest () {
-    install -d ${D}${PTEST_PATH}/tests
-    install -m 0755 ${B}/test-alloc ${D}${PTEST_PATH}/tests
+# Using do_install_ptest_base instead of do_install_ptest, since
+# the default do_install_ptest_base is hardcoded to expect Makefiles.
+do_install_ptest_base() {
+    install -D ${WORKDIR}/run-ptest ${D}${PTEST_PATH}/run-ptest
+    install -m 0755 ${B}/test-alloc ${D}${PTEST_PATH}
 }
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"

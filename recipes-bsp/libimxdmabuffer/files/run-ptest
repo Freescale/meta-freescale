@@ -1,0 +1,10 @@
+#!/bin/sh
+
+./test-alloc >/dev/null 2>&1
+
+if [ $? -eq 0 ]; then
+   echo "PASS: test-alloc"
+else
+   echo "FAIL: test-alloc"
+fi
+
