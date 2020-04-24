@@ -14,10 +14,10 @@ RDEPENDS_gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-good"
 RDEPENDS_gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
 RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
-PV = "0.13.0+git${SRCPV}"
+PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "64485a1573f39a79f92688f9e32b2babab066b9d"
+SRCREV = "805987bff74af13fcb14ff111955206f1c92554d"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
@@ -50,8 +50,8 @@ PACKAGECONFIG_append_imxipu   = " ipu"
 PACKAGECONFIG_append_imxvpu   = " vpu"
 PACKAGECONFIG_append_imxpxp   = " pxp"
 
-PACKAGECONFIG[g2d] = ",--disable-g2d,imx-gpu-viv"
-PACKAGECONFIG[g2dpango] = ",--disable-g2dpango,imx-gpu-viv pango"
+PACKAGECONFIG[g2d] = ",--disable-g2d,imx-gpu-g2d"
+PACKAGECONFIG[g2dpango] = ",--disable-g2dpango,imx-gpu-g2d pango"
 PACKAGECONFIG[pxp] = ",--disable-pxp,"
 PACKAGECONFIG[ipu] = ",--disable-ipu,"
 PACKAGECONFIG[vpu] = ",--disable-vpu,libimxvpuapi"
