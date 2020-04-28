@@ -146,7 +146,7 @@ PACKAGECONFIG_OPENGL_imxgpu3d     = "opengl"
 
 PACKAGECONFIG_append = " ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)}"
 
-PACKAGECONFIG_remove_imxfbdev = "kms"
+PACKAGECONFIG_remove_imxfbdev = "kms clients"
 PACKAGECONFIG_append_imxfbdev = " fbdev"
 PACKAGECONFIG_append_imxgpu   = " imxgpu"
 PACKAGECONFIG_append_imxgpu2d = " imxg2d"
