@@ -1,33 +1,31 @@
-SUMMARY = "Weston, a Wayland compositor, i.MX fork"
+# This recipe is for the i.MX fork of weston. For ease of
+# maintenance, the top section is a verbatim copy of an OE-core
+# recipe. The second section customizes the recipe for i.MX.
+
+########### OE-core copy ##################
+# Upstream hash: 9b1d30810eeecb46b977c8eed68be69aef891312
+
+SUMMARY = "Weston, a Wayland compositor"
 DESCRIPTION = "Weston is the reference implementation of a Wayland compositor"
 HOMEPAGE = "http://wayland.freedesktop.org"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
                     file://libweston/compositor.c;endline=27;md5=6c53bbbd99273f4f7c4affa855c33c0a"
 
-DEFAULT_PREFERENCE = "-1"
-
-SRCBRANCH = "weston-imx-8.0"
-SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
+SRC_URI = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz \
            file://weston.png \
            file://weston.desktop \
            file://xwayland.weston-start \
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
 "
-SRCREV = "f6a7d35650121fbe7c20d4cbe0eaac730fab3b2a"
-S = "${WORKDIR}/git"
+SRC_URI[md5sum] = "53e4810d852df0601d01fd986a5b22b3"
+SRC_URI[sha256sum] = "7518b49b2eaa1c3091f24671bdcc124fd49fc8f1af51161927afa4329c027848"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
 
 inherit meson pkgconfig useradd features_check
-
-# Disable OpenGL for parts with GPU support for 2D but not 3D
-REQUIRED_DISTRO_FEATURES          = "opengl"
-REQUIRED_DISTRO_FEATURES_imxgpu2d = ""
-REQUIRED_DISTRO_FEATURES_imxgpu3d = "opengl"
-PACKAGECONFIG_OPENGL              = "opengl"
-PACKAGECONFIG_OPENGL_imxgpu2d     = ""
-PACKAGECONFIG_OPENGL_imxgpu3d     = "opengl"
+# depends on virtual/egl
+REQUIRED_DISTRO_FEATURES = "opengl"
 
 DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0 jpeg"
 DEPENDS += "wayland wayland-protocols libinput virtual/egl pango wayland-native"
@@ -39,14 +37,8 @@ EXTRA_OEMESON += "-Dbackend-default=auto -Dbackend-rdp=false -Dpipewire=false"
 PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms fbdev wayland egl clients', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
                    ${@bb.utils.filter('DISTRO_FEATURES', 'pam systemd x11', d)} \
-                   ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)} \
                    ${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'headless', d)} \
                    launch"
-
-PACKAGECONFIG_remove_imxfbdev = "kms"
-PACKAGECONFIG_append_imxfbdev = " fbdev"
-PACKAGECONFIG_append_imxgpu   = " imxgpu"
-PACKAGECONFIG_append_imxgpu2d = " imxg2d"
 #
 # Compositor choices
 #
@@ -82,12 +74,6 @@ PACKAGECONFIG[clients] = "-Dsimple-clients=all -Ddemo-clients=true,-Dsimple-clie
 PACKAGECONFIG[remoting] = "-Dremoting=true,-Dremoting=false,gstreamer-1.0"
 # Weston with PAM support
 PACKAGECONFIG[pam] = "-Dpam=true,-Dpam=false,libpam"
-# Weston with i.MX GPU support
-PACKAGECONFIG[imxgpu] = "-Dimxgpu=true,-Dimxgpu=false,virtual/egl"
-# Weston with i.MX G2D renderer
-PACKAGECONFIG[imxg2d] = "-Drenderer-g2d=true,-Drenderer-g2d=false,virtual/libg2d"
-# Weston with OpenGL support
-PACKAGECONFIG[opengl] = "-Dopengl=true,--Dopengl=false"
 
 do_install_append() {
 	# Weston doesn't need the .la files to load modules, so wipe them
@@ -106,9 +92,9 @@ do_install_append() {
 		install -Dm 644 ${WORKDIR}/xwayland.weston-start ${D}${datadir}/weston-start/xwayland
 	fi
 
-        if [ "${@bb.utils.contains('PACKAGECONFIG', 'launch', 'yes', 'no', d)}" = "yes" ]; then
-                chmod u+s ${D}${bindir}/weston-launch
-        fi
+	if [ "${@bb.utils.contains('PACKAGECONFIG', 'launch', 'yes', 'no', d)}" = "yes" ]; then
+		chmod u+s ${D}${bindir}/weston-launch
+	fi
 }
 
 PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland', '', d)} \
@@ -116,7 +102,6 @@ PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland',
 
 FILES_${PN}-dev += "${libdir}/${BPN}/libexec_weston.so"
 FILES_${PN} = "${bindir}/weston ${bindir}/weston-terminal ${bindir}/weston-info ${bindir}/weston-launch ${bindir}/wcap-decode ${libexecdir} ${libdir}/${BPN}/*.so* ${datadir}"
-FILES_${PN}_append = " ${sysconfdir}/xdg/weston"
 
 FILES_libweston-${WESTON_MAJOR_VERSION} = "${libdir}/lib*${SOLIBS} ${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.so"
 SUMMARY_libweston-${WESTON_MAJOR_VERSION} = "Helper library for implementing 'wayland window managers'."
@@ -133,5 +118,49 @@ RRECOMMENDS_${PN}-dev += "wayland-protocols"
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM_${PN} = "--system weston-launch"
 
+########### End of OE-core copy ###########
+
+########### i.MX overrides ################
+
+SUMMARY = "Weston, a Wayland compositor, i.MX fork"
+
+DEFAULT_PREFERENCE = "-1"
+
+SRCBRANCH = "weston-imx-8.0"
+SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
+           file://weston.png \
+           file://weston.desktop \
+           file://xwayland.weston-start \
+           file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
+"
+SRCREV = "f6a7d35650121fbe7c20d4cbe0eaac730fab3b2a"
+S = "${WORKDIR}/git"
+
+# Disable OpenGL for parts with GPU support for 2D but not 3D
+REQUIRED_DISTRO_FEATURES          = "opengl"
+REQUIRED_DISTRO_FEATURES_imxgpu2d = ""
+REQUIRED_DISTRO_FEATURES_imxgpu3d = "opengl"
+PACKAGECONFIG_OPENGL              = "opengl"
+PACKAGECONFIG_OPENGL_imxgpu2d     = ""
+PACKAGECONFIG_OPENGL_imxgpu3d     = "opengl"
+
+PACKAGECONFIG_append = " ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)}"
+
+PACKAGECONFIG_remove_imxfbdev = "kms"
+PACKAGECONFIG_append_imxfbdev = " fbdev"
+PACKAGECONFIG_append_imxgpu   = " imxgpu"
+PACKAGECONFIG_append_imxgpu2d = " imxg2d"
+
+# Weston with i.MX GPU support
+PACKAGECONFIG[imxgpu] = "-Dimxgpu=true,-Dimxgpu=false,virtual/egl"
+# Weston with i.MX G2D renderer
+PACKAGECONFIG[imxg2d] = "-Drenderer-g2d=true,-Drenderer-g2d=false,virtual/libg2d"
+# Weston with OpenGL support
+PACKAGECONFIG[opengl] = "-Dopengl=true,--Dopengl=false"
+
+FILES_${PN}_append = " ${sysconfdir}/xdg/weston"
+
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxfbdev|imxgpu)"
+
+########### End of i.MX overrides #########
