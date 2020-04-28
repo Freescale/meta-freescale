@@ -156,7 +156,7 @@ PACKAGECONFIG[imxgpu] = "-Dimxgpu=true,-Dimxgpu=false,virtual/egl"
 # Weston with i.MX G2D renderer
 PACKAGECONFIG[imxg2d] = "-Drenderer-g2d=true,-Drenderer-g2d=false,virtual/libg2d"
 # Weston with OpenGL support
-PACKAGECONFIG[opengl] = "-Dopengl=true,--Dopengl=false"
+PACKAGECONFIG[opengl] = "-Dopengl=true,-Dopengl=false"
 
 FILES_${PN}_append = " ${sysconfdir}/xdg/weston"
 
