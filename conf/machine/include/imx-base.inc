@@ -107,6 +107,8 @@ MACHINEOVERRIDES_EXTENDER_mx8mq  = "imxdrm:imxvpu:imxgpu:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8qxp = "imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
+    imx \
+    \
     mx6 \
     mx6q \
     mx6dl \
