@@ -15,10 +15,7 @@ python () {
 }
 
 # Enable Etnaviv and Freedreno support
-PACKAGECONFIG_append_use-mainline-bsp = " gallium"
-PACKAGECONFIG_append_use-mainline-bsp_armv7a = " etnaviv freedreno kmsro vc4"
-PACKAGECONFIG_append_use-mainline-bsp_armv7ve = " etnaviv freedreno kmsro vc4"
-PACKAGECONFIG_append_use-mainline-bsp_mx8 = " etnaviv kmsro vc4"
+PACKAGECONFIG_append_use-mainline-bsp = " gallium etnaviv kmsro vc4 freedreno"
 
 USE_OSMESA_ONLY ?= "no"
 
