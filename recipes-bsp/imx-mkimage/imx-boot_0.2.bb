@@ -105,6 +105,8 @@ compile_mx8x() {
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
 }
 do_compile() {
+    # mkimage_uboot requires libssl.so.1.1 from ${STAGING_LIBDIR_NATIVE}
+    export LD_LIBRARY_PATH=${STAGING_LIBDIR_NATIVE}:$LD_LIBRARY_PATH
     compile_${SOC_FAMILY}
     # mkimage for i.MX8
     if ${DEPLOY_OPTEE}; then
