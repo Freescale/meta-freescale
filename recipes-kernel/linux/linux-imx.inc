@@ -4,18 +4,35 @@
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-inherit kernel fsl-kernel-localversion fsl-vivante-kernel-driver-handler
+inherit kernel-yocto kernel fsl-kernel-localversion fsl-vivante-kernel-driver-handler
 
 # Put a local version until we have a true SRCREV to point to
 LOCALVERSION ?= ""
 SCMVERSION ?= "y"
 SRCBRANCH ?= ""
 
+# Set the PV to the correct kernel version to satisfy the kernel version sanity check
+PV = "${LINUX_VERSION}+git${SRCPV}"
+
 SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx;protocol=https;branch=${SRCBRANCH} \
            file://defconfig \
 "
 
 S = "${WORKDIR}/git"
+
+# Tell to kernel class that we would like to use our defconfig to configure the kernel.
+# Otherwise, the --allnoconfig would be used per default which leads to mis-configured
+# kernel.
+#
+# This behavior happens when a defconfig is provided, the kernel-yocto configuration
+# uses the filename as a trigger to use a 'allnoconfig' baseline before merging
+# the defconfig into the build.
+#
+# If the defconfig file was created with make_savedefconfig, not all options are
+# specified, and should be restored with their defaults, not set to 'n'.
+# To properly expand a defconfig like this, we need to specify: KCONFIG_MODE="--alldefconfig"
+# in the kernel recipe include.
+KCONFIG_MODE="--alldefconfig"
 
 # We need to pass it as param since kernel might support more then one
 # machine, with different entry points
