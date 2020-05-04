@@ -1,5 +1,8 @@
 # Copyright (C) 2012-2019 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
+#
+# SPDX-License-Identifier: MIT
+#
 
 SUMMARY = "FSL Community BSP Linux mainline based kernel with backported features and fixes"
 DESCRIPTION = "Linux kernel based on mainline kernel used by FSL Community BSP in order to \
@@ -11,7 +14,12 @@ include linux-fslc.inc
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-PV = "5.4.31+git${SRCPV}"
+# PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
+# required by kernel-yocto.bbclass.
+#
+# LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
+# should be updated once patchlevel is merged.
+LINUX_VERSION = "5.4.31"
 
 SRCBRANCH = "5.4.x+fslc"
 SRCREV = "bde0c4ce26b13fe6d477d3ded90370964404a61f"
