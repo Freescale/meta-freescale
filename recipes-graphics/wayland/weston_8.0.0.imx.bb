@@ -146,11 +146,15 @@ PACKAGECONFIG_OPENGL_imxgpu3d     = "opengl"
 
 PACKAGECONFIG_append = " ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)}"
 
-PACKAGECONFIG_remove_imxfbdev = "kms clients"
-PACKAGECONFIG_append_imxfbdev = " fbdev"
+PACKAGECONFIG_remove_imxfbdev = "kms"
+PACKAGECONFIG_append_imxfbdev = " fbdev clients"
 PACKAGECONFIG_append_imxgpu   = " imxgpu"
 PACKAGECONFIG_append_imxgpu2d = " imxg2d"
 
+# Clients support
+SIMPLE_CLIENTS = "all"
+SIMPLE_CLIENTS_imxfbdev = "damage,im,egl,shm,touch,dmabuf-v4l"
+PACKAGECONFIG[clients] = "-Dsimple-clients=${SIMPLE_CLIENTS} -Ddemo-clients=true,-Dsimple-clients= -Ddemo-clients=false"
 # Weston with i.MX GPU support
 PACKAGECONFIG[imxgpu] = "-Dimxgpu=true,-Dimxgpu=false,virtual/egl"
 # Weston with i.MX G2D renderer
