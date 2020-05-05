@@ -10,6 +10,8 @@ bfd_section_<field> since 2019-09-18. See below two commits:
 
 This fix make perf able to build with both old and new libbfd.
 
+Upstream-Status: Submitted [commit 0ada120c883d4f1f6aafd01cf0fbb10d8bbba015 upstream]
+
 Signed-off-by: Changbin Du <changbin.du@gmail.com>
 Acked-by: Jiri Olsa <jolsa@redhat.com>
 Cc: Peter Zijlstra <peterz@infradead.org>
