@@ -1,8 +1,8 @@
-Index: git/mkspecs/linux-oe-g++/qmake.conf
-===================================================================
---- git.orig/mkspecs/linux-oe-g++/qmake.conf	2016-12-14 17:03:17.000000000 -0600
-+++ git/mkspecs/linux-oe-g++/qmake.conf	2016-12-14 17:06:23.000000000 -0600
-@@ -37,6 +37,8 @@ QMAKE_LINK_C_SHLIB = $$(OE_QMAKE_LINK)
+diff --git a/mkspecs/linux-oe-g++/qmake.conf b/mkspecs/linux-oe-g++/qmake.conf
+index c202c47fa1..2bfb96f4ec 100644
+--- a/mkspecs/linux-oe-g++/qmake.conf
++++ b/mkspecs/linux-oe-g++/qmake.conf
+@@ -33,6 +33,8 @@ QMAKE_CFLAGS_ISYSTEM =
  # for the SDK
  isEmpty(QMAKE_QT_CONFIG):QMAKE_QT_CONFIG = $$(OE_QMAKE_QT_CONFIG)
  
@@ -10,4 +10,6 @@ Index: git/mkspecs/linux-oe-g++/qmake.conf
 +
  include(../oe-device-extra.pri)
  
- QMAKE_LIBS_EGL        += -lEGL
+ load(device_config)
+-- 
+2.17.1
