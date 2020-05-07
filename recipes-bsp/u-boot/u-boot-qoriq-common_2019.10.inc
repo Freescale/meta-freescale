@@ -11,6 +11,13 @@ LIC_FILES_CHKSUM = " \
 "
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;nobranch=1 \
+    file://0001-patman-Drop-binary-parameter.patch \
+    file://0001-patman-Update-command.Run-to-handle-failure-better.patch \
+    file://0001-patman-Adjust-command-to-return-strings-instead-of-b.patch \
+    file://0001-pylibfdt-Convert-to-Python-3.patch \
+    file://0001-binman-Convert-a-few-tests-to-Python-3.patch \
+    file://0001-binman-Move-to-use-Python-3.patch \
+    file://0001-buildman-Convert-to-Python-3.patch \
 "
 SRCREV= "3cd9bc39934825200822855574fc91d8276e6584"
 

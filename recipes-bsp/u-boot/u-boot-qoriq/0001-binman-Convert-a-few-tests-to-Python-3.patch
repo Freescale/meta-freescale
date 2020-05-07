@@ -1,0 +1,79 @@
+From b6ee0cf89f9405094cbb6047076a13e14ebc030b Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Thu, 31 Oct 2019 07:43:03 -0600
+Subject: [PATCH] binman: Convert a few tests to Python 3
+
+Some tests have crept in with Python 2 strings and constructs. Convert
+then.
+
+Upstream-Status: Backport
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tools/binman/ftest.py | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/tools/binman/ftest.py b/tools/binman/ftest.py
+index 93507993a0..80df0e3ca9 100644
+--- a/tools/binman/ftest.py
++++ b/tools/binman/ftest.py
+@@ -2113,7 +2113,7 @@ class TestFunctional(unittest.TestCase):
+         data = self.data = self._DoReadFileRealDtb('115_fdtmap.dts')
+         fdtmap_data = data[len(U_BOOT_DATA):]
+         magic = fdtmap_data[:8]
+-        self.assertEqual('_FDTMAP_', magic)
++        self.assertEqual(b'_FDTMAP_', magic)
+         self.assertEqual(tools.GetBytes(0, 8), fdtmap_data[8:16])
+ 
+         fdt_data = fdtmap_data[16:]
+@@ -2156,7 +2156,7 @@ class TestFunctional(unittest.TestCase):
+         dtb = fdt.Fdt.FromData(fdt_data)
+         fdt_size = dtb.GetFdtObj().totalsize()
+         hdr_data = data[-8:]
+-        self.assertEqual('BinM', hdr_data[:4])
++        self.assertEqual(b'BinM', hdr_data[:4])
+         offset = struct.unpack('<I', hdr_data[4:])[0] & 0xffffffff
+         self.assertEqual(fdtmap_pos - 0x400, offset - (1 << 32))
+ 
+@@ -2165,7 +2165,7 @@ class TestFunctional(unittest.TestCase):
+         data = self.data = self._DoReadFileRealDtb('117_fdtmap_hdr_start.dts')
+         fdtmap_pos = 0x100 + len(U_BOOT_DATA)
+         hdr_data = data[:8]
+-        self.assertEqual('BinM', hdr_data[:4])
++        self.assertEqual(b'BinM', hdr_data[:4])
+         offset = struct.unpack('<I', hdr_data[4:])[0]
+         self.assertEqual(fdtmap_pos, offset)
+ 
+@@ -2174,7 +2174,7 @@ class TestFunctional(unittest.TestCase):
+         data = self.data = self._DoReadFileRealDtb('118_fdtmap_hdr_pos.dts')
+         fdtmap_pos = 0x100 + len(U_BOOT_DATA)
+         hdr_data = data[0x80:0x88]
+-        self.assertEqual('BinM', hdr_data[:4])
++        self.assertEqual(b'BinM', hdr_data[:4])
+         offset = struct.unpack('<I', hdr_data[4:])[0]
+         self.assertEqual(fdtmap_pos, offset)
+ 
+@@ -2435,9 +2435,9 @@ class TestFunctional(unittest.TestCase):
+ '  section               100   %x  section          100' % section_size,
+ '    cbfs                100   400  cbfs               0',
+ '      u-boot            138     4  u-boot            38',
+-'      u-boot-dtb        180   10f  u-boot-dtb        80          3c9',
++'      u-boot-dtb        180   105  u-boot-dtb        80          3c9',
+ '    u-boot-dtb          500   %x  u-boot-dtb       400          3c9' % fdt_size,
+-'  fdtmap                %x   3b4  fdtmap           %x' %
++'  fdtmap                %x   3bd  fdtmap           %x' %
+         (fdtmap_offset, fdtmap_offset),
+ '  image-header          bf8     8  image-header     bf8',
+             ]
+@@ -2522,7 +2522,7 @@ class TestFunctional(unittest.TestCase):
+         data = self._RunExtractCmd('section')
+         cbfs_data = data[:0x400]
+         cbfs = cbfs_util.CbfsReader(cbfs_data)
+-        self.assertEqual(['u-boot', 'u-boot-dtb', ''], cbfs.files.keys())
++        self.assertEqual(['u-boot', 'u-boot-dtb', ''], list(cbfs.files.keys()))
+         dtb_data = data[0x400:]
+         dtb = self._decompress(dtb_data)
+         self.assertEqual(EXTRACT_DTB_SIZE, len(dtb))
+-- 
+2.24.0
+
