@@ -28,12 +28,18 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.38
+#    tag: v5.4.39
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
 #    tag: lf-5.4.y-1.0.0
+#    40fe6bd54230 MLK-23844-2 ARM64: dts: freescale: imx8mm: correct VDDARM@1.6GHz
+#    aec0c14ae61d MLK-23844-1: ARM64: dts: freescale: imx8mn-ddr4-evk: cleanup Rhom pmic
+#    e8e35fd0e759 MLK-23275-2: ARM64: dts: freescale: imx8mn-ddr4-evk: correct ldo1/ldo2 voltage
+#    975d8ab07267 MLK-23275-1: ARM64: dts: freescale: fsl-imx8mm-evk: correct ldo1/ldo2 voltage
+#    4711466d535c MLK-23562: regulator: core: adjust supply voltage in bypass
+#    bbbc26a40a9c MLK-13793-6 regulator: anatop: fix min dropout for bypass mode
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -52,14 +58,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-1.0.0-imx"
-SRCREV = "af74f302cf25008aad8170afcfc267b4ed338a7e"
+SRCREV = "e0743cf91d9e44a810e6f86d22db2bfc89e5016d"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.38"
+LINUX_VERSION = "5.4.39"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-lf-5.4.y"
