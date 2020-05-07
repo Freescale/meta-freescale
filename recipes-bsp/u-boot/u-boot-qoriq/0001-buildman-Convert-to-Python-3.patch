@@ -1,0 +1,928 @@
+From c05aa0364280803d8274e260a739553d588ea052 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Thu, 31 Oct 2019 07:42:53 -0600
+Subject: [PATCH] buildman: Convert to Python 3
+
+Convert buildman to Python 3 and make it use that, to meet the 2020
+deadline.
+
+Upstream-Status: Backport
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tools/buildman/board.py         |  9 +--
+ tools/buildman/bsettings.py     | 20 +++----
+ tools/buildman/builder.py       | 47 ++++++++--------
+ tools/buildman/builderthread.py | 24 ++++----
+ tools/buildman/buildman.py      | 10 ++--
+ tools/buildman/control.py       | 44 +++++++--------
+ tools/buildman/func_test.py     | 16 +++---
+ tools/buildman/test.py          | 22 ++++----
+ tools/buildman/toolchain.py     | 99 +++++++++++++++++----------------
+ 9 files changed, 146 insertions(+), 145 deletions(-)
+
+diff --git a/tools/buildman/board.py b/tools/buildman/board.py
+index 2a1d021574..447aaabea8 100644
+--- a/tools/buildman/board.py
++++ b/tools/buildman/board.py
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0+
+ # Copyright (c) 2012 The Chromium OS Authors.
+ 
++from collections import OrderedDict
+ import re
+ 
+ class Expr:
+@@ -120,7 +121,7 @@ class Boards:
+         Args:
+             fname: Filename of boards.cfg file
+         """
+-        with open(fname, 'r') as fd:
++        with open(fname, 'r', encoding='utf-8') as fd:
+             for line in fd:
+                 if line[0] == '#':
+                     continue
+@@ -155,7 +156,7 @@ class Boards:
+                 key is board.target
+                 value is board
+         """
+-        board_dict = {}
++        board_dict = OrderedDict()
+         for board in self._boards:
+             board_dict[board.target] = board
+         return board_dict
+@@ -166,7 +167,7 @@ class Boards:
+         Returns:
+             List of Board objects that are marked selected
+         """
+-        board_dict = {}
++        board_dict = OrderedDict()
+         for board in self._boards:
+             if board.build_it:
+                 board_dict[board.target] = board
+@@ -259,7 +260,7 @@ class Boards:
+                     due to each argument, arranged by argument.
+                 List of errors found
+         """
+-        result = {}
++        result = OrderedDict()
+         warnings = []
+         terms = self._BuildTerms(args)
+ 
+diff --git a/tools/buildman/bsettings.py b/tools/buildman/bsettings.py
+index 03d7439aa5..0b7208da37 100644
+--- a/tools/buildman/bsettings.py
++++ b/tools/buildman/bsettings.py
+@@ -1,9 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0+
+ # Copyright (c) 2012 The Chromium OS Authors.
+ 
+-import ConfigParser
++import configparser
+ import os
+-import StringIO
++import io
+ 
+ 
+ def Setup(fname=''):
+@@ -15,20 +15,20 @@ def Setup(fname=''):
+     global settings
+     global config_fname
+ 
+-    settings = ConfigParser.SafeConfigParser()
++    settings = configparser.SafeConfigParser()
+     if fname is not None:
+         config_fname = fname
+         if config_fname == '':
+             config_fname = '%s/.buildman' % os.getenv('HOME')
+         if not os.path.exists(config_fname):
+-            print 'No config file found ~/.buildman\nCreating one...\n'
++            print('No config file found ~/.buildman\nCreating one...\n')
+             CreateBuildmanConfigFile(config_fname)
+-            print 'To install tool chains, please use the --fetch-arch option'
++            print('To install tool chains, please use the --fetch-arch option')
+         if config_fname:
+             settings.read(config_fname)
+ 
+ def AddFile(data):
+-    settings.readfp(StringIO.StringIO(data))
++    settings.readfp(io.StringIO(data))
+ 
+ def GetItems(section):
+     """Get the items from a section of the config.
+@@ -41,7 +41,7 @@ def GetItems(section):
+     """
+     try:
+         return settings.items(section)
+-    except ConfigParser.NoSectionError as e:
++    except configparser.NoSectionError as e:
+         return []
+     except:
+         raise
+@@ -68,10 +68,10 @@ def CreateBuildmanConfigFile(config_fname):
+     try:
+         f = open(config_fname, 'w')
+     except IOError:
+-        print "Couldn't create buildman config file '%s'\n" % config_fname
++        print("Couldn't create buildman config file '%s'\n" % config_fname)
+         raise
+ 
+-    print >>f, '''[toolchain]
++    print('''[toolchain]
+ # name = path
+ # e.g. x86 = /opt/gcc-4.6.3-nolibc/x86_64-linux
+ 
+@@ -93,5 +93,5 @@ openrisc = or1k
+ # snapper-boards=ENABLE_AT91_TEST=1
+ # snapper9260=${snapper-boards} BUILD_TAG=442
+ # snapper9g45=${snapper-boards} BUILD_TAG=443
+-'''
++''', file=f)
+     f.close();
+diff --git a/tools/buildman/builder.py b/tools/buildman/builder.py
+index fbb236676c..cfbe4c26b1 100644
+--- a/tools/buildman/builder.py
++++ b/tools/buildman/builder.py
+@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
+ import glob
+ import os
+ import re
+-import Queue
++import queue
+ import shutil
+ import signal
+ import string
+@@ -92,11 +92,10 @@ u-boot/             source directory
+ """
+ 
+ # Possible build outcomes
+-OUTCOME_OK, OUTCOME_WARNING, OUTCOME_ERROR, OUTCOME_UNKNOWN = range(4)
++OUTCOME_OK, OUTCOME_WARNING, OUTCOME_ERROR, OUTCOME_UNKNOWN = list(range(4))
+ 
+ # Translate a commit subject into a valid filename (and handle unicode)
+-trans_valid_chars = string.maketrans('/: ', '---')
+-trans_valid_chars = trans_valid_chars.decode('latin-1')
++trans_valid_chars = str.maketrans('/: ', '---')
+ 
+ BASE_CONFIG_FILENAMES = [
+     'u-boot.cfg', 'u-boot-spl.cfg', 'u-boot-tpl.cfg'
+@@ -122,8 +121,8 @@ class Config:
+     def __hash__(self):
+         val = 0
+         for fname in self.config:
+-            for key, value in self.config[fname].iteritems():
+-                print key, value
++            for key, value in self.config[fname].items():
++                print(key, value)
+                 val = val ^ hash(key) & hash(value)
+         return val
+ 
+@@ -293,8 +292,8 @@ class Builder:
+         self._re_dtb_warning = re.compile('(.*): Warning .*')
+         self._re_note = re.compile('(.*):(\d*):(\d*): note: this is the location of the previous.*')
+ 
+-        self.queue = Queue.Queue()
+-        self.out_queue = Queue.Queue()
++        self.queue = queue.Queue()
++        self.out_queue = queue.Queue()
+         for i in range(self.num_threads):
+             t = builderthread.BuilderThread(self, i, incremental,
+                     per_board_out_dir)
+@@ -781,7 +780,7 @@ class Builder:
+         config = {}
+         environment = {}
+ 
+-        for board in boards_selected.itervalues():
++        for board in boards_selected.values():
+             outcome = self.GetBuildOutcome(commit_upto, board.target,
+                                            read_func_sizes, read_config,
+                                            read_environment)
+@@ -814,13 +813,13 @@ class Builder:
+             tconfig = Config(self.config_filenames, board.target)
+             for fname in self.config_filenames:
+                 if outcome.config:
+-                    for key, value in outcome.config[fname].iteritems():
++                    for key, value in outcome.config[fname].items():
+                         tconfig.Add(fname, key, value)
+             config[board.target] = tconfig
+ 
+             tenvironment = Environment(board.target)
+             if outcome.environment:
+-                for key, value in outcome.environment.iteritems():
++                for key, value in outcome.environment.items():
+                     tenvironment.Add(key, value)
+             environment[board.target] = tenvironment
+ 
+@@ -1040,12 +1039,12 @@ class Builder:
+ 
+         # We now have a list of image size changes sorted by arch
+         # Print out a summary of these
+-        for arch, target_list in arch_list.iteritems():
++        for arch, target_list in arch_list.items():
+             # Get total difference for each type
+             totals = {}
+             for result in target_list:
+                 total = 0
+-                for name, diff in result.iteritems():
++                for name, diff in result.items():
+                     if name.startswith('_'):
+                         continue
+                     total += diff
+@@ -1250,7 +1249,7 @@ class Builder:
+             if self._show_unknown:
+                 self.AddOutcome(board_selected, arch_list, unknown_boards, '?',
+                         self.col.MAGENTA)
+-            for arch, target_list in arch_list.iteritems():
++            for arch, target_list in arch_list.items():
+                 Print('%10s: %s' % (arch, target_list))
+                 self._error_lines += 1
+             if better_err:
+@@ -1283,13 +1282,13 @@ class Builder:
+                 environment_minus = {}
+                 environment_change = {}
+                 base = tbase.environment
+-                for key, value in tenvironment.environment.iteritems():
++                for key, value in tenvironment.environment.items():
+                     if key not in base:
+                         environment_plus[key] = value
+-                for key, value in base.iteritems():
++                for key, value in base.items():
+                     if key not in tenvironment.environment:
+                         environment_minus[key] = value
+-                for key, value in base.iteritems():
++                for key, value in base.items():
+                     new_value = tenvironment.environment.get(key)
+                     if new_value and value != new_value:
+                         desc = '%s -> %s' % (value, new_value)
+@@ -1342,15 +1341,15 @@ class Builder:
+                     config_minus = {}
+                     config_change = {}
+                     base = tbase.config[name]
+-                    for key, value in tconfig.config[name].iteritems():
++                    for key, value in tconfig.config[name].items():
+                         if key not in base:
+                             config_plus[key] = value
+                             all_config_plus[key] = value
+-                    for key, value in base.iteritems():
++                    for key, value in base.items():
+                         if key not in tconfig.config[name]:
+                             config_minus[key] = value
+                             all_config_minus[key] = value
+-                    for key, value in base.iteritems():
++                    for key, value in base.items():
+                         new_value = tconfig.config.get(key)
+                         if new_value and value != new_value:
+                             desc = '%s -> %s' % (value, new_value)
+@@ -1368,7 +1367,7 @@ class Builder:
+                 summary[target] = '\n'.join(lines)
+ 
+             lines_by_target = {}
+-            for target, lines in summary.iteritems():
++            for target, lines in summary.items():
+                 if lines in lines_by_target:
+                     lines_by_target[lines].append(target)
+                 else:
+@@ -1392,7 +1391,7 @@ class Builder:
+                     Print('%s:' % arch)
+                     _OutputConfigInfo(lines)
+ 
+-            for lines, targets in lines_by_target.iteritems():
++            for lines, targets in lines_by_target.items():
+                 if not lines:
+                     continue
+                 Print('%s :' % ' '.join(sorted(targets)))
+@@ -1463,7 +1462,7 @@ class Builder:
+             commits: Selected commits to build
+         """
+         # First work out how many commits we will build
+-        count = (self.commit_count + self._step - 1) / self._step
++        count = (self.commit_count + self._step - 1) // self._step
+         self.count = len(board_selected) * count
+         self.upto = self.warned = self.fail = 0
+         self._timestamps = collections.deque()
+@@ -1566,7 +1565,7 @@ class Builder:
+         self.ProcessResult(None)
+ 
+         # Create jobs to build all commits for each board
+-        for brd in board_selected.itervalues():
++        for brd in board_selected.values():
+             job = builderthread.BuilderJob()
+             job.board = brd
+             job.commits = commits
+diff --git a/tools/buildman/builderthread.py b/tools/buildman/builderthread.py
+index 8a9d47cd5e..570c1f6595 100644
+--- a/tools/buildman/builderthread.py
++++ b/tools/buildman/builderthread.py
+@@ -28,7 +28,7 @@ def Mkdir(dirname, parents = False):
+     except OSError as err:
+         if err.errno == errno.EEXIST:
+             if os.path.realpath('.') == os.path.realpath(dirname):
+-                print "Cannot create the current working directory '%s'!" % dirname
++                print("Cannot create the current working directory '%s'!" % dirname)
+                 sys.exit(1)
+             pass
+         else:
+@@ -291,15 +291,13 @@ class BuilderThread(threading.Thread):
+         outfile = os.path.join(build_dir, 'log')
+         with open(outfile, 'w') as fd:
+             if result.stdout:
+-                # We don't want unicode characters in log files
+-                fd.write(result.stdout.decode('UTF-8').encode('ASCII', 'replace'))
++                fd.write(result.stdout)
+ 
+         errfile = self.builder.GetErrFile(result.commit_upto,
+                 result.brd.target)
+         if result.stderr:
+             with open(errfile, 'w') as fd:
+-                # We don't want unicode characters in log files
+-                fd.write(result.stderr.decode('UTF-8').encode('ASCII', 'replace'))
++                fd.write(result.stderr)
+         elif os.path.exists(errfile):
+             os.remove(errfile)
+ 
+@@ -314,17 +312,17 @@ class BuilderThread(threading.Thread):
+                 else:
+                     fd.write('%s' % result.return_code)
+             with open(os.path.join(build_dir, 'toolchain'), 'w') as fd:
+-                print >>fd, 'gcc', result.toolchain.gcc
+-                print >>fd, 'path', result.toolchain.path
+-                print >>fd, 'cross', result.toolchain.cross
+-                print >>fd, 'arch', result.toolchain.arch
++                print('gcc', result.toolchain.gcc, file=fd)
++                print('path', result.toolchain.path, file=fd)
++                print('cross', result.toolchain.cross, file=fd)
++                print('arch', result.toolchain.arch, file=fd)
+                 fd.write('%s' % result.return_code)
+ 
+             # Write out the image and function size information and an objdump
+             env = result.toolchain.MakeEnvironment(self.builder.full_path)
+             with open(os.path.join(build_dir, 'env'), 'w') as fd:
+                 for var in sorted(env.keys()):
+-                    print >>fd, '%s="%s"' % (var, env[var])
++                    print('%s="%s"' % (var, env[var]), file=fd)
+             lines = []
+             for fname in ['u-boot', 'spl/u-boot-spl']:
+                 cmd = ['%snm' % self.toolchain.cross, '--size-sort', fname]
+@@ -335,7 +333,7 @@ class BuilderThread(threading.Thread):
+                     nm = self.builder.GetFuncSizesFile(result.commit_upto,
+                                     result.brd.target, fname)
+                     with open(nm, 'w') as fd:
+-                        print >>fd, nm_result.stdout,
++                        print(nm_result.stdout, end=' ', file=fd)
+ 
+                 cmd = ['%sobjdump' % self.toolchain.cross, '-h', fname]
+                 dump_result = command.RunPipe([cmd], capture=True,
+@@ -346,7 +344,7 @@ class BuilderThread(threading.Thread):
+                     objdump = self.builder.GetObjdumpFile(result.commit_upto,
+                                     result.brd.target, fname)
+                     with open(objdump, 'w') as fd:
+-                        print >>fd, dump_result.stdout,
++                        print(dump_result.stdout, end=' ', file=fd)
+                     for line in dump_result.stdout.splitlines():
+                         fields = line.split()
+                         if len(fields) > 5 and fields[1] == '.rodata':
+@@ -378,7 +376,7 @@ class BuilderThread(threading.Thread):
+                 sizes = self.builder.GetSizesFile(result.commit_upto,
+                                 result.brd.target)
+                 with open(sizes, 'w') as fd:
+-                    print >>fd, '\n'.join(lines)
++                    print('\n'.join(lines), file=fd)
+ 
+         # Write out the configuration files, with a special case for SPL
+         for dirname in ['', 'spl', 'tpl']:
+diff --git a/tools/buildman/buildman.py b/tools/buildman/buildman.py
+index f17aa15e7c..30a8690f93 100755
+--- a/tools/buildman/buildman.py
++++ b/tools/buildman/buildman.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python2
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: GPL-2.0+
+ #
+ # Copyright (c) 2012 The Chromium OS Authors.
+@@ -6,6 +6,8 @@
+ 
+ """See README for more information"""
+ 
++from __future__ import print_function
++
+ import multiprocessing
+ import os
+ import re
+@@ -46,11 +48,11 @@ def RunTests(skip_net_tests):
+         suite = unittest.TestLoader().loadTestsFromTestCase(module)
+         suite.run(result)
+ 
+-    print result
++    print(result)
+     for test, err in result.errors:
+-        print err
++        print(err)
+     for test, err in result.failures:
+-        print err
++        print(err)
+ 
+ 
+ options, args = cmdline.ParseArgs()
+diff --git a/tools/buildman/control.py b/tools/buildman/control.py
+index 9787b86747..216012d001 100644
+--- a/tools/buildman/control.py
++++ b/tools/buildman/control.py
+@@ -30,7 +30,7 @@ def GetActionSummary(is_summary, commits, selected, options):
+     """
+     if commits:
+         count = len(commits)
+-        count = (count + options.step - 1) / options.step
++        count = (count + options.step - 1) // options.step
+         commit_str = '%d commit%s' % (count, GetPlural(count))
+     else:
+         commit_str = 'current source'
+@@ -59,31 +59,31 @@ def ShowActions(series, why_selected, boards_selected, builder, options,
+         board_warnings: List of warnings obtained from board selected
+     """
+     col = terminal.Color()
+-    print 'Dry run, so not doing much. But I would do this:'
+-    print
++    print('Dry run, so not doing much. But I would do this:')
++    print()
+     if series:
+         commits = series.commits
+     else:
+         commits = None
+-    print GetActionSummary(False, commits, boards_selected,
+-            options)
+-    print 'Build directory: %s' % builder.base_dir
++    print(GetActionSummary(False, commits, boards_selected,
++            options))
++    print('Build directory: %s' % builder.base_dir)
+     if commits:
+         for upto in range(0, len(series.commits), options.step):
+             commit = series.commits[upto]
+-            print '   ', col.Color(col.YELLOW, commit.hash[:8], bright=False),
+-            print commit.subject
+-    print
++            print('   ', col.Color(col.YELLOW, commit.hash[:8], bright=False), end=' ')
++            print(commit.subject)
++    print()
+     for arg in why_selected:
+         if arg != 'all':
+-            print arg, ': %d boards' % len(why_selected[arg])
++            print(arg, ': %d boards' % len(why_selected[arg]))
+             if options.verbose:
+-                print '   %s' % ' '.join(why_selected[arg])
+-    print ('Total boards to build for each commit: %d\n' %
+-            len(why_selected['all']))
++                print('   %s' % ' '.join(why_selected[arg]))
++    print(('Total boards to build for each commit: %d\n' %
++            len(why_selected['all'])))
+     if board_warnings:
+         for warning in board_warnings:
+-            print col.Color(col.YELLOW, warning)
++            print(col.Color(col.YELLOW, warning))
+ 
+ def CheckOutputDir(output_dir):
+     """Make sure that the output directory is not within the current directory
+@@ -146,17 +146,17 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
+     if options.fetch_arch:
+         if options.fetch_arch == 'list':
+             sorted_list = toolchains.ListArchs()
+-            print col.Color(col.BLUE, 'Available architectures: %s\n' %
+-                            ' '.join(sorted_list))
++            print(col.Color(col.BLUE, 'Available architectures: %s\n' %
++                            ' '.join(sorted_list)))
+             return 0
+         else:
+             fetch_arch = options.fetch_arch
+             if fetch_arch == 'all':
+                 fetch_arch = ','.join(toolchains.ListArchs())
+-                print col.Color(col.CYAN, '\nDownloading toolchains: %s' %
+-                                fetch_arch)
++                print(col.Color(col.CYAN, '\nDownloading toolchains: %s' %
++                                fetch_arch))
+             for arch in fetch_arch.split(','):
+-                print
++                print()
+                 ret = toolchains.FetchAndInstall(arch)
+                 if ret:
+                     return ret
+@@ -167,7 +167,7 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
+         toolchains.Scan(options.list_tool_chains and options.verbose)
+     if options.list_tool_chains:
+         toolchains.List()
+-        print
++        print()
+         return 0
+ 
+     # Work out how many commits to build. We want to build everything on the
+@@ -191,7 +191,7 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
+                 sys.exit(col.Color(col.RED, "Range '%s' has no commits" %
+                                    options.branch))
+             if msg:
+-                print col.Color(col.YELLOW, msg)
++                print(col.Color(col.YELLOW, msg))
+             count += 1   # Build upstream commit also
+ 
+     if not count:
+@@ -268,7 +268,7 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
+         options.threads = min(multiprocessing.cpu_count(), len(selected))
+     if not options.jobs:
+         options.jobs = max(1, (multiprocessing.cpu_count() +
+-                len(selected) - 1) / len(selected))
++                len(selected) - 1) // len(selected))
+ 
+     if not options.step:
+         options.step = len(series.commits) - 1
+diff --git a/tools/buildman/func_test.py b/tools/buildman/func_test.py
+index f90b8ea7f5..4c3d497294 100644
+--- a/tools/buildman/func_test.py
++++ b/tools/buildman/func_test.py
+@@ -270,7 +270,7 @@ class TestFunctional(unittest.TestCase):
+                                             stdout=''.join(commit_log[:count]))
+ 
+         # Not handled, so abort
+-        print 'git log', args
++        print('git log', args)
+         sys.exit(1)
+ 
+     def _HandleCommandGitConfig(self, args):
+@@ -286,7 +286,7 @@ class TestFunctional(unittest.TestCase):
+                                          stdout='refs/heads/master\n')
+ 
+         # Not handled, so abort
+-        print 'git config', args
++        print('git config', args)
+         sys.exit(1)
+ 
+     def _HandleCommandGit(self, in_args):
+@@ -320,7 +320,7 @@ class TestFunctional(unittest.TestCase):
+             return command.CommandResult(return_code=0)
+ 
+         # Not handled, so abort
+-        print 'git', git_args, sub_cmd, args
++        print('git', git_args, sub_cmd, args)
+         sys.exit(1)
+ 
+     def _HandleCommandNm(self, args):
+@@ -351,7 +351,7 @@ class TestFunctional(unittest.TestCase):
+             if pipe_list[1] == ['wc', '-l']:
+                 wc = True
+             else:
+-                print 'invalid pipe', kwargs
++                print('invalid pipe', kwargs)
+                 sys.exit(1)
+         cmd = pipe_list[0][0]
+         args = pipe_list[0][1:]
+@@ -371,7 +371,7 @@ class TestFunctional(unittest.TestCase):
+ 
+         if not result:
+             # Not handled, so abort
+-            print 'unknown command', kwargs
++            print('unknown command', kwargs)
+             sys.exit(1)
+ 
+         if wc:
+@@ -404,14 +404,14 @@ class TestFunctional(unittest.TestCase):
+             return command.CommandResult(return_code=0)
+ 
+         # Not handled, so abort
+-        print 'make', stage
++        print('make', stage)
+         sys.exit(1)
+ 
+     # Example function to print output lines
+     def print_lines(self, lines):
+-        print len(lines)
++        print(len(lines))
+         for line in lines:
+-            print line
++            print(line)
+         #self.print_lines(terminal.GetPrintTestLines())
+ 
+     def testNoBoards(self):
+diff --git a/tools/buildman/test.py b/tools/buildman/test.py
+index ed99b9375c..b4e28d6867 100644
+--- a/tools/buildman/test.py
++++ b/tools/buildman/test.py
+@@ -212,11 +212,11 @@ class TestBuild(unittest.TestCase):
+         self.assertEqual(lines[1].text, '02: %s' % commits[1][1])
+ 
+         col = terminal.Color()
+-        self.assertSummary(lines[2].text, 'sandbox', 'w+', ['board4'],
++        self.assertSummary(lines[2].text, 'arm', 'w+', ['board1'],
+                            outcome=OUTCOME_WARN)
+-        self.assertSummary(lines[3].text, 'arm', 'w+', ['board1'],
++        self.assertSummary(lines[3].text, 'powerpc', 'w+', ['board2', 'board3'],
+                            outcome=OUTCOME_WARN)
+-        self.assertSummary(lines[4].text, 'powerpc', 'w+', ['board2', 'board3'],
++        self.assertSummary(lines[4].text, 'sandbox', 'w+', ['board4'],
+                            outcome=OUTCOME_WARN)
+ 
+         # Second commit: The warnings should be listed
+@@ -226,10 +226,10 @@ class TestBuild(unittest.TestCase):
+ 
+         # Third commit: Still fails
+         self.assertEqual(lines[6].text, '03: %s' % commits[2][1])
+-        self.assertSummary(lines[7].text, 'sandbox', '+', ['board4'])
+-        self.assertSummary(lines[8].text, 'arm', '', ['board1'],
++        self.assertSummary(lines[7].text, 'arm', '', ['board1'],
+                            outcome=OUTCOME_OK)
+-        self.assertSummary(lines[9].text, 'powerpc', '+', ['board2', 'board3'])
++        self.assertSummary(lines[8].text, 'powerpc', '+', ['board2', 'board3'])
++        self.assertSummary(lines[9].text, 'sandbox', '+', ['board4'])
+ 
+         # Expect a compiler error
+         self.assertEqual(lines[10].text, '+%s' %
+@@ -237,8 +237,6 @@ class TestBuild(unittest.TestCase):
+ 
+         # Fourth commit: Compile errors are fixed, just have warning for board3
+         self.assertEqual(lines[11].text, '04: %s' % commits[3][1])
+-        self.assertSummary(lines[12].text, 'sandbox', 'w+', ['board4'],
+-                           outcome=OUTCOME_WARN)
+         expect = '%10s: ' % 'powerpc'
+         expect += ' ' + col.Color(col.GREEN, '')
+         expect += '  '
+@@ -246,7 +244,9 @@ class TestBuild(unittest.TestCase):
+         expect += ' ' + col.Color(col.YELLOW, 'w+')
+         expect += '  '
+         expect += col.Color(col.YELLOW, ' %s' % 'board3')
+-        self.assertEqual(lines[13].text, expect)
++        self.assertEqual(lines[12].text, expect)
++        self.assertSummary(lines[13].text, 'sandbox', 'w+', ['board4'],
++                           outcome=OUTCOME_WARN)
+ 
+         # Compile error fixed
+         self.assertEqual(lines[14].text, '-%s' %
+@@ -259,9 +259,9 @@ class TestBuild(unittest.TestCase):
+ 
+         # Fifth commit
+         self.assertEqual(lines[16].text, '05: %s' % commits[4][1])
+-        self.assertSummary(lines[17].text, 'sandbox', '+', ['board4'])
+-        self.assertSummary(lines[18].text, 'powerpc', '', ['board3'],
++        self.assertSummary(lines[17].text, 'powerpc', '', ['board3'],
+                            outcome=OUTCOME_OK)
++        self.assertSummary(lines[18].text, 'sandbox', '+', ['board4'])
+ 
+         # The second line of errors[3] is a duplicate, so buildman will drop it
+         expect = errors[3].rstrip().split('\n')
+diff --git a/tools/buildman/toolchain.py b/tools/buildman/toolchain.py
+index a65737fdf8..cc26e2ede5 100644
+--- a/tools/buildman/toolchain.py
++++ b/tools/buildman/toolchain.py
+@@ -4,18 +4,19 @@
+ 
+ import re
+ import glob
+-from HTMLParser import HTMLParser
++from html.parser import HTMLParser
+ import os
+ import sys
+ import tempfile
+-import urllib2
++import urllib.request, urllib.error, urllib.parse
+ 
+ import bsettings
+ import command
+ import terminal
++import tools
+ 
+ (PRIORITY_FULL_PREFIX, PRIORITY_PREFIX_GCC, PRIORITY_PREFIX_GCC_PATH,
+-    PRIORITY_CALC) = range(4)
++    PRIORITY_CALC) = list(range(4))
+ 
+ # Simple class to collect links from a page
+ class MyHTMLParser(HTMLParser):
+@@ -100,15 +101,15 @@ class Toolchain:
+                                      raise_on_error=False)
+             self.ok = result.return_code == 0
+             if verbose:
+-                print 'Tool chain test: ',
++                print('Tool chain test: ', end=' ')
+                 if self.ok:
+-                    print "OK, arch='%s', priority %d" % (self.arch,
+-                                                          self.priority)
++                    print("OK, arch='%s', priority %d" % (self.arch,
++                                                          self.priority))
+                 else:
+-                    print 'BAD'
+-                    print 'Command: ', cmd
+-                    print result.stdout
+-                    print result.stderr
++                    print('BAD')
++                    print('Command: ', cmd)
++                    print(result.stdout)
++                    print(result.stderr)
+         else:
+             self.ok = True
+ 
+@@ -138,7 +139,7 @@ class Toolchain:
+         value = ''
+         for name, value in bsettings.GetItems('toolchain-wrapper'):
+             if not value:
+-                print "Warning: Wrapper not found"
++                print("Warning: Wrapper not found")
+         if value:
+             value = value + ' '
+ 
+@@ -227,11 +228,11 @@ class Toolchains:
+         """
+         toolchains = bsettings.GetItems('toolchain')
+         if show_warning and not toolchains:
+-            print ("Warning: No tool chains. Please run 'buildman "
++            print(("Warning: No tool chains. Please run 'buildman "
+                    "--fetch-arch all' to download all available toolchains, or "
+                    "add a [toolchain] section to your buildman config file "
+                    "%s. See README for details" %
+-                   bsettings.config_fname)
++                   bsettings.config_fname))
+ 
+         paths = []
+         for name, value in toolchains:
+@@ -272,10 +273,10 @@ class Toolchains:
+         if add_it:
+             self.toolchains[toolchain.arch] = toolchain
+         elif verbose:
+-            print ("Toolchain '%s' at priority %d will be ignored because "
++            print(("Toolchain '%s' at priority %d will be ignored because "
+                    "another toolchain for arch '%s' has priority %d" %
+                    (toolchain.gcc, toolchain.priority, toolchain.arch,
+-                    self.toolchains[toolchain.arch].priority))
++                    self.toolchains[toolchain.arch].priority)))
+ 
+     def ScanPath(self, path, verbose):
+         """Scan a path for a valid toolchain
+@@ -289,9 +290,9 @@ class Toolchains:
+         fnames = []
+         for subdir in ['.', 'bin', 'usr/bin']:
+             dirname = os.path.join(path, subdir)
+-            if verbose: print "      - looking in '%s'" % dirname
++            if verbose: print("      - looking in '%s'" % dirname)
+             for fname in glob.glob(dirname + '/*gcc'):
+-                if verbose: print "         - found '%s'" % fname
++                if verbose: print("         - found '%s'" % fname)
+                 fnames.append(fname)
+         return fnames
+ 
+@@ -321,9 +322,9 @@ class Toolchains:
+         Args:
+             verbose: True to print out progress information
+         """
+-        if verbose: print 'Scanning for tool chains'
++        if verbose: print('Scanning for tool chains')
+         for name, value in self.prefixes:
+-            if verbose: print "   - scanning prefix '%s'" % value
++            if verbose: print("   - scanning prefix '%s'" % value)
+             if os.path.exists(value):
+                 self.Add(value, True, verbose, PRIORITY_FULL_PREFIX, name)
+                 continue
+@@ -335,10 +336,10 @@ class Toolchains:
+             for f in fname_list:
+                 self.Add(f, True, verbose, PRIORITY_PREFIX_GCC_PATH, name)
+             if not fname_list:
+-                raise ValueError, ("No tool chain found for prefix '%s'" %
++                raise ValueError("No tool chain found for prefix '%s'" %
+                                    value)
+         for path in self.paths:
+-            if verbose: print "   - scanning path '%s'" % path
++            if verbose: print("   - scanning path '%s'" % path)
+             fnames = self.ScanPath(path, verbose)
+             for fname in fnames:
+                 self.Add(fname, True, verbose)
+@@ -346,13 +347,13 @@ class Toolchains:
+     def List(self):
+         """List out the selected toolchains for each architecture"""
+         col = terminal.Color()
+-        print col.Color(col.BLUE, 'List of available toolchains (%d):' %
+-                        len(self.toolchains))
++        print(col.Color(col.BLUE, 'List of available toolchains (%d):' %
++                        len(self.toolchains)))
+         if len(self.toolchains):
+-            for key, value in sorted(self.toolchains.iteritems()):
+-                print '%-10s: %s' % (key, value.gcc)
++            for key, value in sorted(self.toolchains.items()):
++                print('%-10s: %s' % (key, value.gcc))
+         else:
+-            print 'None'
++            print('None')
+ 
+     def Select(self, arch):
+         """Returns the toolchain for a given architecture
+@@ -370,7 +371,7 @@ class Toolchains:
+                         return self.toolchains[alias]
+ 
+         if not arch in self.toolchains:
+-            raise ValueError, ("No tool chain found for arch '%s'" % arch)
++            raise ValueError("No tool chain found for arch '%s'" % arch)
+         return self.toolchains[arch]
+ 
+     def ResolveReferences(self, var_dict, args):
+@@ -464,9 +465,9 @@ class Toolchains:
+         links = []
+         for version in versions:
+             url = '%s/%s/%s/' % (base, arch, version)
+-            print 'Checking: %s' % url
+-            response = urllib2.urlopen(url)
+-            html = response.read()
++            print('Checking: %s' % url)
++            response = urllib.request.urlopen(url)
++            html = tools.ToString(response.read())
+             parser = MyHTMLParser(fetch_arch)
+             parser.feed(html)
+             if fetch_arch == 'list':
+@@ -488,14 +489,14 @@ class Toolchains:
+                 Full path to the downloaded archive file in that directory,
+                     or None if there was an error while downloading
+         """
+-        print 'Downloading: %s' % url
++        print('Downloading: %s' % url)
+         leaf = url.split('/')[-1]
+         tmpdir = tempfile.mkdtemp('.buildman')
+-        response = urllib2.urlopen(url)
++        response = urllib.request.urlopen(url)
+         fname = os.path.join(tmpdir, leaf)
+         fd = open(fname, 'wb')
+         meta = response.info()
+-        size = int(meta.getheaders('Content-Length')[0])
++        size = int(meta.get('Content-Length'))
+         done = 0
+         block_size = 1 << 16
+         status = ''
+@@ -504,19 +505,19 @@ class Toolchains:
+         while True:
+             buffer = response.read(block_size)
+             if not buffer:
+-                print chr(8) * (len(status) + 1), '\r',
++                print(chr(8) * (len(status) + 1), '\r', end=' ')
+                 break
+ 
+             done += len(buffer)
+             fd.write(buffer)
+-            status = r'%10d MiB  [%3d%%]' % (done / 1024 / 1024,
+-                                             done * 100 / size)
++            status = r'%10d MiB  [%3d%%]' % (done // 1024 // 1024,
++                                             done * 100 // size)
+             status = status + chr(8) * (len(status) + 1)
+-            print status,
++            print(status, end=' ')
+             sys.stdout.flush()
+         fd.close()
+         if done != size:
+-            print 'Error, failed to download'
++            print('Error, failed to download')
+             os.remove(fname)
+             fname = None
+         return tmpdir, fname
+@@ -565,11 +566,11 @@ class Toolchains:
+         """
+         # Fist get the URL for this architecture
+         col = terminal.Color()
+-        print col.Color(col.BLUE, "Downloading toolchain for arch '%s'" % arch)
++        print(col.Color(col.BLUE, "Downloading toolchain for arch '%s'" % arch))
+         url = self.LocateArchUrl(arch)
+         if not url:
+-            print ("Cannot find toolchain for arch '%s' - use 'list' to list" %
+-                   arch)
++            print(("Cannot find toolchain for arch '%s' - use 'list' to list" %
++                   arch))
+             return 2
+         home = os.environ['HOME']
+         dest = os.path.join(home, '.buildman-toolchains')
+@@ -580,28 +581,28 @@ class Toolchains:
+         tmpdir, tarfile = self.Download(url)
+         if not tarfile:
+             return 1
+-        print col.Color(col.GREEN, 'Unpacking to: %s' % dest),
++        print(col.Color(col.GREEN, 'Unpacking to: %s' % dest), end=' ')
+         sys.stdout.flush()
+         path = self.Unpack(tarfile, dest)
+         os.remove(tarfile)
+         os.rmdir(tmpdir)
+-        print
++        print()
+ 
+         # Check that the toolchain works
+-        print col.Color(col.GREEN, 'Testing')
++        print(col.Color(col.GREEN, 'Testing'))
+         dirpath = os.path.join(dest, path)
+         compiler_fname_list = self.ScanPath(dirpath, True)
+         if not compiler_fname_list:
+-            print 'Could not locate C compiler - fetch failed.'
++            print('Could not locate C compiler - fetch failed.')
+             return 1
+         if len(compiler_fname_list) != 1:
+-            print col.Color(col.RED, 'Warning, ambiguous toolchains: %s' %
+-                            ', '.join(compiler_fname_list))
++            print(col.Color(col.RED, 'Warning, ambiguous toolchains: %s' %
++                            ', '.join(compiler_fname_list)))
+         toolchain = Toolchain(compiler_fname_list[0], True, True)
+ 
+         # Make sure that it will be found by buildman
+         if not self.TestSettingsHasPath(dirpath):
+-            print ("Adding 'download' to config file '%s'" %
+-                   bsettings.config_fname)
++            print(("Adding 'download' to config file '%s'" %
++                   bsettings.config_fname))
+             bsettings.SetItem('toolchain', 'download', '%s/*/*' % dest)
+         return 0
+-- 
+2.24.0
+

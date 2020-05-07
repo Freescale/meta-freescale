@@ -1,0 +1,117 @@
+From b4cf5f1df741e8781bed6149291823cd1a4b8baa Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Thu, 31 Oct 2019 07:42:59 -0600
+Subject: [PATCH] pylibfdt: Convert to Python 3
+
+Build this swig module with Python 3.
+
+Upstream-Status: Backport
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ scripts/dtc/pylibfdt/Makefile         |  2 +-
+ scripts/dtc/pylibfdt/libfdt.i_shipped |  2 +-
+ scripts/dtc/pylibfdt/setup.py         |  2 +-
+ tools/binman/entry.py                 | 16 ++--------------
+ tools/binman/entry_test.py            | 15 ---------------
+ 5 files changed, 5 insertions(+), 32 deletions(-)
+
+diff --git a/scripts/dtc/pylibfdt/Makefile b/scripts/dtc/pylibfdt/Makefile
+index 15e66ad44d..42342c75bb 100644
+--- a/scripts/dtc/pylibfdt/Makefile
++++ b/scripts/dtc/pylibfdt/Makefile
+@@ -21,7 +21,7 @@ quiet_cmd_pymod = PYMOD   $@
+ 		CPPFLAGS="$(HOSTCFLAGS) -I$(LIBFDT_srcdir)" OBJDIR=$(obj) \
+ 		SOURCES="$(PYLIBFDT_srcs)" \
+ 		SWIG_OPTS="-I$(LIBFDT_srcdir) -I$(LIBFDT_srcdir)/.." \
+-		$(PYTHON2) $< --quiet build_ext --inplace
++		$(PYTHON3) $< --quiet build_ext --inplace
+ 
+ $(obj)/_libfdt.so: $(src)/setup.py $(PYLIBFDT_srcs) FORCE
+ 	$(call if_changed,pymod)
+diff --git a/scripts/dtc/pylibfdt/libfdt.i_shipped b/scripts/dtc/pylibfdt/libfdt.i_shipped
+index 76e61e98bd..53b70f8f5e 100644
+--- a/scripts/dtc/pylibfdt/libfdt.i_shipped
++++ b/scripts/dtc/pylibfdt/libfdt.i_shipped
+@@ -624,7 +624,7 @@ class Fdt(FdtRo):
+         Raises:
+             FdtException if no parent found or other error occurs
+         """
+-        val = val.encode('utf-8') + '\0'
++        val = val.encode('utf-8') + b'\0'
+         return check_err(fdt_setprop(self._fdt, nodeoffset, prop_name,
+                                      val, len(val)), quiet)
+ 
+diff --git a/scripts/dtc/pylibfdt/setup.py b/scripts/dtc/pylibfdt/setup.py
+index 4f7cf042bf..992cdec30f 100755
+--- a/scripts/dtc/pylibfdt/setup.py
++++ b/scripts/dtc/pylibfdt/setup.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python2
++#!/usr/bin/env python3
+ 
+ """
+ setup.py file for SWIG libfdt
+diff --git a/tools/binman/entry.py b/tools/binman/entry.py
+index 409c0dca93..5bf5be4794 100644
+--- a/tools/binman/entry.py
++++ b/tools/binman/entry.py
+@@ -7,16 +7,7 @@
+ from __future__ import print_function
+ 
+ from collections import namedtuple
+-
+-# importlib was introduced in Python 2.7 but there was a report of it not
+-# working in 2.7.12, so we work around this:
+-# http://lists.denx.de/pipermail/u-boot/2016-October/269729.html
+-try:
+-    import importlib
+-    have_importlib = True
+-except:
+-    have_importlib = False
+-
++import importlib
+ import os
+ import sys
+ 
+@@ -119,10 +110,7 @@ class Entry(object):
+             old_path = sys.path
+             sys.path.insert(0, os.path.join(our_path, 'etype'))
+             try:
+-                if have_importlib:
+-                    module = importlib.import_module(module_name)
+-                else:
+-                    module = __import__(module_name)
++                module = importlib.import_module(module_name)
+             except ImportError as e:
+                 raise ValueError("Unknown entry type '%s' in node '%s' (expected etype/%s.py, error '%s'" %
+                                  (etype, node_path, module_name, e))
+diff --git a/tools/binman/entry_test.py b/tools/binman/entry_test.py
+index 13f5864516..277e10b585 100644
+--- a/tools/binman/entry_test.py
++++ b/tools/binman/entry_test.py
+@@ -39,21 +39,6 @@ class TestEntry(unittest.TestCase):
+         else:
+             import entry
+ 
+-    def test1EntryNoImportLib(self):
+-        """Test that we can import Entry subclassess successfully"""
+-        sys.modules['importlib'] = None
+-        global entry
+-        self._ReloadEntry()
+-        entry.Entry.Create(None, self.GetNode(), 'u-boot')
+-        self.assertFalse(entry.have_importlib)
+-
+-    def test2EntryImportLib(self):
+-        del sys.modules['importlib']
+-        global entry
+-        self._ReloadEntry()
+-        entry.Entry.Create(None, self.GetNode(), 'u-boot-spl')
+-        self.assertTrue(entry.have_importlib)
+-
+     def testEntryContents(self):
+         """Test the Entry bass class"""
+         import entry
+-- 
+2.24.0
+

@@ -1,0 +1,42 @@
+From 6eace398072a62e74f10f412ffadfe51b7402395 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 24 Aug 2019 07:22:42 -0600
+Subject: [PATCH] patman: Update command.Run() to handle failure better
+
+At present tools are not expected to fail. If they do an exception is
+raised but there is no detail about what went wrong. This makes it hard
+to debug if something does actually go wrong.
+
+Fix this by outputting both stderr and stdout on failure.
+
+Upstream-Status: Backport
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tools/patman/tools.py | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/tools/patman/tools.py b/tools/patman/tools.py
+index 97441ca796..0952681579 100644
+--- a/tools/patman/tools.py
++++ b/tools/patman/tools.py
+@@ -205,8 +205,14 @@ def Run(name, *args):
+         if tool_search_paths:
+             env = dict(os.environ)
+             env['PATH'] = ':'.join(tool_search_paths) + ':' + env['PATH']
+-        return command.Run(name, *args, capture=True, capture_stderr=True,
+-                           env=env)
++        all_args = (name,) + args
++        result = command.RunPipe([all_args], capture=True, capture_stderr=True,
++                                 env=env, raise_on_error=False)
++        if result.return_code:
++            raise Exception("Error %d running '%s': %s" %
++               (result.return_code,' '.join(all_args),
++                result.stderr))
++        return result.stdout
+     except:
+         if env and not PathHasFile(env['PATH'], name):
+             msg = "Please install tool '%s'" % name
+-- 
+2.24.0
+

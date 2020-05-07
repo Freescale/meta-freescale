@@ -1,0 +1,228 @@
+From 3b3e3c0f6c261a8c9f989d437dc261ba84467d4f Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Thu, 31 Oct 2019 07:42:50 -0600
+Subject: [PATCH] patman: Adjust 'command' to return strings instead of bytes
+
+At present all the 'command' methods return bytes. Most of the time we
+actually want strings, so change this. We still need to keep the internal
+representation as bytes since otherwise unicode strings might break over
+a read() boundary (e.g. 4KB), causing errors. But we can convert the end
+result to strings.
+
+Add a 'binary' parameter to cover the few cases where bytes are needed.
+
+Upstream-Status: Backport
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tools/binman/cbfs_util_test.py |  2 +-
+ tools/binman/ftest.py          |  2 +-
+ tools/patman/command.py        | 31 +++++++++++++++++++++++--------
+ tools/patman/tools.py          | 29 +++++++++++++++++++++--------
+ 4 files changed, 46 insertions(+), 18 deletions(-)
+
+diff --git a/tools/binman/cbfs_util_test.py b/tools/binman/cbfs_util_test.py
+index 772c794ece..ddc2e09e35 100755
+--- a/tools/binman/cbfs_util_test.py
++++ b/tools/binman/cbfs_util_test.py
+@@ -56,7 +56,7 @@ class TestCbfs(unittest.TestCase):
+         cls.have_lz4 = True
+         try:
+             tools.Run('lz4', '--no-frame-crc', '-c',
+-                      tools.GetInputFilename('u-boot.bin'))
++                      tools.GetInputFilename('u-boot.bin'), binary=True)
+         except:
+             cls.have_lz4 = False
+ 
+--- a/tools/binman/ftest.py
++++ b/tools/binman/ftest.py
+@@ -151,7 +151,7 @@ class TestFunctional(unittest.TestCase):
+         self.have_lz4 = True
+         try:
+             tools.Run('lz4', '--no-frame-crc', '-c',
+-                      os.path.join(self._indir, 'u-boot.bin'))
++                      os.path.join(self._indir, 'u-boot.bin'), binary=True)
+         except:
+             self.have_lz4 = False
+ 
+diff --git a/tools/patman/command.py b/tools/patman/command.py
+index 16299f3f5b..5fbd2c4a3e 100644
+--- a/tools/patman/command.py
++++ b/tools/patman/command.py
+@@ -4,6 +4,7 @@
+ 
+ import os
+ import cros_subprocess
++import tools
+ 
+ """Shell command ease-ups for Python."""
+ 
+@@ -31,6 +32,13 @@ class CommandResult:
+         self.return_code = return_code
+         self.exception = exception
+ 
++    def ToOutput(self, binary):
++        if not binary:
++            self.stdout = tools.ToString(self.stdout)
++            self.stderr = tools.ToString(self.stderr)
++            self.combined = tools.ToString(self.combined)
++        return self
++
+ 
+ # This permits interception of RunPipe for test purposes. If it is set to
+ # a function, then that function is called with the pipe list being
+@@ -41,7 +49,7 @@ test_result = None
+ 
+ def RunPipe(pipe_list, infile=None, outfile=None,
+             capture=False, capture_stderr=False, oneline=False,
+-            raise_on_error=True, cwd=None, **kwargs):
++            raise_on_error=True, cwd=None, binary=False, **kwargs):
+     """
+     Perform a command pipeline, with optional input/output filenames.
+ 
+@@ -67,7 +75,7 @@ def RunPipe(pipe_list, infile=None, outfile=None,
+         else:
+             return test_result
+         # No result: fall through to normal processing
+-    result = CommandResult()
++    result = CommandResult(b'', b'', b'')
+     last_pipe = None
+     pipeline = list(pipe_list)
+     user_pipestr =  '|'.join([' '.join(pipe) for pipe in pipe_list])
+@@ -93,29 +101,36 @@ def RunPipe(pipe_list, infile=None, outfile=None,
+             if raise_on_error:
+                 raise Exception("Error running '%s': %s" % (user_pipestr, str))
+             result.return_code = 255
+-            return result
++            return result.ToOutput(binary)
+ 
+     if capture:
+         result.stdout, result.stderr, result.combined = (
+                 last_pipe.CommunicateFilter(None))
+         if result.stdout and oneline:
+-            result.output = result.stdout.rstrip('\r\n')
++            result.output = result.stdout.rstrip(b'\r\n')
+         result.return_code = last_pipe.wait()
+     else:
+         result.return_code = os.waitpid(last_pipe.pid, 0)[1]
+     if raise_on_error and result.return_code:
+         raise Exception("Error running '%s'" % user_pipestr)
+-    return result
++    return result.ToOutput(binary)
+ 
+ def Output(*cmd, **kwargs):
+     kwargs['raise_on_error'] = kwargs.get('raise_on_error', True)
+     return RunPipe([cmd], capture=True, **kwargs).stdout
+ 
+ def OutputOneLine(*cmd, **kwargs):
++    """Run a command and output it as a single-line string
++
++    The command us expected to produce a single line of output
++
++    Returns:
++        String containing output of command
++    """
+     raise_on_error = kwargs.pop('raise_on_error', True)
+-    return (RunPipe([cmd], capture=True, oneline=True,
+-            raise_on_error=raise_on_error,
+-            **kwargs).stdout.strip())
++    result = RunPipe([cmd], capture=True, oneline=True,
++                     raise_on_error=raise_on_error, **kwargs).stdout.strip()
++    return result
+ 
+ def Run(*cmd, **kwargs):
+     return RunPipe([cmd], **kwargs).stdout
+diff --git a/tools/patman/tools.py b/tools/patman/tools.py
+index 4a7fcdad21..3feddb292f 100644
+--- a/tools/patman/tools.py
++++ b/tools/patman/tools.py
+@@ -186,7 +186,7 @@ def PathHasFile(path_spec, fname):
+             return True
+     return False
+ 
+-def Run(name, *args):
++def Run(name, *args, **kwargs):
+     """Run a tool with some arguments
+ 
+     This runs a 'tool', which is a program used by binman to process files and
+@@ -201,13 +201,14 @@ def Run(name, *args):
+         CommandResult object
+     """
+     try:
++        binary = kwargs.get('binary')
+         env = None
+         if tool_search_paths:
+             env = dict(os.environ)
+             env['PATH'] = ':'.join(tool_search_paths) + ':' + env['PATH']
+         all_args = (name,) + args
+         result = command.RunPipe([all_args], capture=True, capture_stderr=True,
+-                                 env=env, raise_on_error=False)
++                                 env=env, raise_on_error=False, binary=binary)
+         if result.return_code:
+             raise Exception("Error %d running '%s': %s" %
+                (result.return_code,' '.join(all_args),
+@@ -375,7 +376,7 @@ def ToBytes(string):
+     """Convert a str type into a bytes type
+ 
+     Args:
+-        string: string to convert value
++        string: string to convert
+ 
+     Returns:
+         Python 3: A bytes type
+@@ -385,6 +386,18 @@ def ToBytes(string):
+         return string.encode('utf-8')
+     return string
+ 
++def ToString(bval):
++    """Convert a bytes type into a str type
++
++    Args:
++        bval: bytes value to convert
++
++    Returns:
++        Python 3: A bytes type
++        Python 2: A string type
++    """
++    return bval.decode('utf-8')
++
+ def Compress(indata, algo, with_header=True):
+     """Compress some data using a given algorithm
+ 
+@@ -406,14 +419,14 @@ def Compress(indata, algo, with_header=True):
+     fname = GetOutputFilename('%s.comp.tmp' % algo)
+     WriteFile(fname, indata)
+     if algo == 'lz4':
+-        data = Run('lz4', '--no-frame-crc', '-c', fname)
++        data = Run('lz4', '--no-frame-crc', '-c', fname, binary=True)
+     # cbfstool uses a very old version of lzma
+     elif algo == 'lzma':
+         outfname = GetOutputFilename('%s.comp.otmp' % algo)
+         Run('lzma_alone', 'e', fname, outfname, '-lc1', '-lp0', '-pb0', '-d8')
+         data = ReadFile(outfname)
+     elif algo == 'gzip':
+-        data = Run('gzip', '-c', fname)
++        data = Run('gzip', '-c', fname, binary=True)
+     else:
+         raise ValueError("Unknown algorithm '%s'" % algo)
+     if with_header:
+@@ -446,13 +459,13 @@ def Decompress(indata, algo, with_header=True):
+     with open(fname, 'wb') as fd:
+         fd.write(indata)
+     if algo == 'lz4':
+-        data = Run('lz4', '-dc', fname)
++        data = Run('lz4', '-dc', fname, binary=True)
+     elif algo == 'lzma':
+         outfname = GetOutputFilename('%s.decomp.otmp' % algo)
+         Run('lzma_alone', 'd', fname, outfname)
+-        data = ReadFile(outfname)
++        data = ReadFile(outfname, binary=True)
+     elif algo == 'gzip':
+-        data = Run('gzip', '-cd', fname)
++        data = Run('gzip', '-cd', fname, binary=True)
+     else:
+         raise ValueError("Unknown algorithm '%s'" % algo)
+     return data
+-- 
+2.24.0
+
