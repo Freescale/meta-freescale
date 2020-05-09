@@ -20,7 +20,7 @@ SRC_URI = " \
     file://0001-ext-wayland-fix-meson-build-in-nxp-fork.patch \
     file://0001-meson-build-gir-even-when-cross-compiling-if-introsp.patch \
     file://0001-meson-fix-build-with-opencv-enabled-and-opencv4.-Fix.patch \
-    file://0002-opencv-allow-compilation-against-4.1.x.patch \
+    file://0001-opencv-allow-compilation-against-4.3.x.patch \
     file://opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
     file://fix-maybe-uninitialized-warnings-when-compiling-with-Os.patch \
     file://avoid-including-sys-poll.h-directly.patch \
