@@ -73,4 +73,4 @@ FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
 FILES_${PN}-scfw = "${base_libdir}/firmware/scfw/"
 FILES_${PN}-sdma = " ${base_libdir}/firmware/imx/sdma"
 
-COMPATIBLE_MACHINE = "(imx)"
+COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"
