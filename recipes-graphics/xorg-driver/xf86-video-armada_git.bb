@@ -45,4 +45,4 @@ EXTRA_OECONF = "--disable-etnaviv \
                 --with-etnaviv-source=${WORKDIR}/etna_viv \
                 "
 
-COMPATIBLE_MACHINE = "(imx)"
+COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"
