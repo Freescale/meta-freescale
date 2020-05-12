@@ -1,0 +1,69 @@
+From f07cd0e5f32a00a4091fa964d0dae0cd46c17554 Mon Sep 17 00:00:00 2001
+From: Cristinel Panfir <cristinel.panfir@nxp.com>
+Date: Sat, 23 May 2020 08:51:31 +0000
+Subject: [PATCH] tools/scripts: update shebang to python3
+
+Upstream-Status: Pending
+
+Signed-off-by: Cristinel Panfir <cristinel.panfir@nxp.com>
+---
+ scripts/arm64-parsedump.py     | 2 +-
+ tools/jailhouse-cell-linux     | 2 +-
+ tools/jailhouse-cell-stats     | 2 +-
+ tools/jailhouse-config-create  | 2 +-
+ tools/jailhouse-hardware-check | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/arm64-parsedump.py b/scripts/arm64-parsedump.py
+index 9519eb5..c695706 100755
+--- a/scripts/arm64-parsedump.py
++++ b/scripts/arm64-parsedump.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # Jailhouse, a Linux-based partitioning hypervisor
+ #
+diff --git a/tools/jailhouse-cell-linux b/tools/jailhouse-cell-linux
+index 215932a..bcbb902 100755
+--- a/tools/jailhouse-cell-linux
++++ b/tools/jailhouse-cell-linux
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # Jailhouse, a Linux-based partitioning hypervisor
+ #
+diff --git a/tools/jailhouse-cell-stats b/tools/jailhouse-cell-stats
+index 2f7e966..4c5289f 100755
+--- a/tools/jailhouse-cell-stats
++++ b/tools/jailhouse-cell-stats
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # Jailhouse, a Linux-based partitioning hypervisor
+ #
+diff --git a/tools/jailhouse-config-create b/tools/jailhouse-config-create
+index 55601a6..9869b94 100755
+--- a/tools/jailhouse-config-create
++++ b/tools/jailhouse-config-create
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ #
+ # Jailhouse, a Linux-based partitioning hypervisor
+ #
+diff --git a/tools/jailhouse-hardware-check b/tools/jailhouse-hardware-check
+index b86756a..0c8fb42 100755
+--- a/tools/jailhouse-hardware-check
++++ b/tools/jailhouse-hardware-check
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ # Jailhouse, a Linux-based partitioning hypervisor
+ #
+-- 
+2.7.4
+
