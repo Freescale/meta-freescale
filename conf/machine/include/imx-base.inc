@@ -255,6 +255,11 @@ MACHINE_EXTRA_RRECOMMENDS_append = " ${@bb.utils.contains('MACHINE_FEATURES', 'q
 # Extra udev rules
 MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
 
+# Jailhouse
+MACHINE_EXTRA_RRECOMMENDS += " \
+    ${@bb.utils.contains('COMBINED_FEATURES', 'jailhouse', 'jailhouse', '', d)} \
+"
+
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6dl ?= "gstreamer1.0-plugins-imx-meta"
@@ -375,6 +380,9 @@ KERNEL_IMAGETYPE = "zImage"
 KERNEL_IMAGETYPE_aarch64 = "Image"
 
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
+
+SOC_MACHINE_FEATURES_BACKFILL_mx8m = "jailhouse"
+MACHINE_FEATURES_BACKFILL_append = " ${SOC_MACHINE_FEATURES_BACKFILL}"
 
 # Add the ability to specify _imx machines
 MACHINEOVERRIDES =. "imx:"
