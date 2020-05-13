@@ -18,4 +18,4 @@ S = "${WORKDIR}/git"
 
 FILES_${PN} += "/linuxrc /fat"
 
-COMPATIBLE_MACHINE = "(imx)"
+COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"
