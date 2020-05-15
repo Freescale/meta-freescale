@@ -101,7 +101,7 @@ do_compile() {
     fi       
 
     if [ "${BUILD_OPTEE}" = "true" ]; then
-        bl32="${DEPLOY_DIR_IMAGE}/optee/tee_${MACHINE}.bin" 
+        bl32="${RECIPE_SYSROOT}${nonarch_base_libdir}/firmware/tee_${MACHINE}.bin" 
         bl32opt="BL32=${bl32}"
         spdopt="SPD=opteed" 
     fi
