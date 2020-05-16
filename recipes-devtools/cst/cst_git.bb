@@ -17,6 +17,7 @@ inherit kernel-arch
 #SECURE_PUB_KEY = "/path/srk.pub"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cst;nobranch=1 \
+           file://0001-tools-Mark-struct-input_field-file_field-extern.patch \
 "
 SRCREV = "9aafbdf2441858ceca2779279b6876c6bdc2d3ed"
 
