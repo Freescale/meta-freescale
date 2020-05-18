@@ -6,6 +6,11 @@ def make_dtb_boot_files(d):
     # Use only the basename for dtb files:
     alldtbs = d.getVar('KERNEL_DEVICETREE')
 
+
+    # DTBs may be built out of kernel with devicetree.bbclass
+    if not alldtbs:
+        return ''
+
     def transform(dtb):
         if not (dtb.endswith('dtb') or dtb.endswith('dtbo')):
             # eg: whatever/bcm2708-rpi-b.dtb has:
