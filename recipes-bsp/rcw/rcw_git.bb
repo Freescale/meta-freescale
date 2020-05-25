@@ -21,11 +21,12 @@ BOARD_TARGETS_ls2088ardb="${M} ${M}_rev1.1"
 BOARD_TARGETS_ls1088ardb-pb="ls1088ardb"
 BOARD_TARGETS_lx2160ardb = "${M} ${M}_rev2"
 
+do_compile () {
+    oe_runmake BOARDS="${BOARD_TARGETS}" DESTDIR=${D}/boot/rcw/
+}
+
 do_install () {
-    for BT in ${BOARD_TARGETS}
-    do
-        oe_runmake BOARDS=${BT} DESTDIR=${D}/boot/rcw/ install
-    done
+    oe_runmake BOARDS="${BOARD_TARGETS}" DESTDIR=${D}/boot/rcw/ install
 }
 
 do_deploy () {
