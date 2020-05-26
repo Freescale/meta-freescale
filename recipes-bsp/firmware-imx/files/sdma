@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# firmware loader script
+
+MX6_SDMA="/sys/bus/platform/devices/*/firmware/imx!sdma!sdma-imx6q.bin"
+MX7_SDMA="/sys/bus/platform/devices/*/firmware/imx!sdma!sdma-imx7d.bin"
+
+if [ 0 -lt $(ls $MX6_SDMA 2>/dev/null | wc -w) ]; then
+cd ${MX6_SDMA}
+echo 1 > loading
+cat /lib/firmware/imx/sdma/sdma-imx6q.bin > data
+echo 0 > loading
+fi
+
+if [ 0 -lt $(ls $MX7_SDMA 2>/dev/null | wc -w) ]; then
+cd ${MX7_SDMA}
+echo 1 > loading
+cat /lib/firmware/imx/sdma/sdma-imx7d.bin > data
+echo 0 > loading
+fi

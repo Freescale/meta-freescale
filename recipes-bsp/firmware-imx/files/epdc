@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# firmware loader script
+
+MX7_EPDC="/sys/bus/platform/devices/*/firmware/imx!epdc!epdc_ED060XH2C1.fw"
+
+if [ 0 -lt $(ls $MX7_EPDC 2>/dev/null | wc -w) ]; then
+cd ${MX7_EPDC}
+echo 1 > loading
+cat /lib/firmware/imx/epdc/epdc_ED060XH2C1.fw > data
+echo 0 > loading
+fi

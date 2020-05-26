@@ -6,25 +6,31 @@ DESCRIPTION = "Freescale i.MX firmware such as for the VPU"
 
 require firmware-imx-${PV}.inc
 
-PE = "1"
-
-SRC_URI += " \
-    git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH};destsuffix=${S}/git \
+SRC_URI_append = " \
+    file://sdma \
+    file://epdc \
+    file://regulatory \
+    file://hdmi \
 "
-SRCREV = "8ce9046f5058fdd2c5271f86ccfc61bc5a248ae3"
+
+PE = "1"
 
 inherit allarch
 
 do_install() {
     install -d ${D}${base_libdir}/firmware/imx
 
+    # Install loading scripts
+    install -d ${D}${sysconfdir}
+    install -m 0755 ${WORKDIR}/sdma ${D}${sysconfdir}
+    install -m 0755 ${WORKDIR}/epdc ${D}${sysconfdir}
+    install -m 0755 ${WORKDIR}/regulatory ${D}${sysconfdir}
+    install -m 0755 ${WORKDIR}/hdmi ${D}${sysconfdir}
+
     cd firmware
     for d in *; do
         case $d in
-        easrc)
-            # excluding as only applies Nano SoC
-            ;;
-        ddr|hdmi|seco)
+        ddr|seco)
             # These folders are for i.MX 8 and are included in the boot image via imx-boot
             bbnote Excluding folder $d
             ;;
@@ -35,16 +41,28 @@ do_install() {
     done
     cd -
 
+    # Install SDMA Firmware: sdma-imx6q.bin & sdma-imx7d.bin into lib/firmware/imx/sdma
+    install -d ${D}${base_libdir}/firmware/imx/sdma
+    mv ${D}${base_libdir}/firmware/sdma/sdma-imx6q.bin ${D}${base_libdir}/firmware/imx/sdma
+    mv ${D}${base_libdir}/firmware/sdma/sdma-imx7d.bin ${D}${base_libdir}/firmware/imx/sdma
+
     mv ${D}${base_libdir}/firmware/epdc/ ${D}${base_libdir}/firmware/imx/epdc/
     mv ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw.nonrestricted ${D}${base_libdir}/firmware/imx/epdc/epdc_ED060XH2C1.fw
+
+    mv ${D}${base_libdir}/firmware/easrc/ ${D}${base_libdir}/firmware/imx/easrc/
+
+    # Install HDMI Firmware: hdmitxfw.bin, hdmirxfw.bin & dpfw.bin into lib/firmware/imx/hdmi
+    install -d ${D}${base_libdir}/firmware/imx/hdmi
+    mv ${D}${base_libdir}/firmware/hdmi/cadence/hdmitxfw.bin ${D}${base_libdir}/firmware/imx/hdmi
+    mv ${D}${base_libdir}/firmware/hdmi/cadence/hdmirxfw.bin ${D}${base_libdir}/firmware/imx/hdmi
+    mv ${D}${base_libdir}/firmware/hdmi/cadence/dpfw.bin ${D}${base_libdir}/firmware/imx/hdmi
 
     find ${D}${base_libdir}/firmware -type f -exec chmod 644 '{}' ';'
     find ${D}${base_libdir}/firmware -type f -exec chown root:root '{}' ';'
 
     # Remove files not going to be installed
-    rm ${D}${base_libdir}/firmware/sdma/sdma-imx6q.bin
-    rm ${D}${base_libdir}/firmware/sdma/sdma-imx7d.bin
     find ${D}${base_libdir}/firmware/ -name '*.mk' -exec rm '{}' ';'
+    rm -rf ${D}${base_libdir}/firmware/hdmi
 }
 
 python populate_packages_prepend() {
@@ -67,10 +85,12 @@ ALLOW_EMPTY_${PN} = "1"
 
 PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-*"
 
-PACKAGES =+ "${PN}-epdc ${PN}-scfw ${PN}-sdma"
+PACKAGES =+ "${PN}-epdc ${PN}-sdma ${PN}-easrc ${PN}-regulatory ${PN}-hdmi"
 
-FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/"
-FILES_${PN}-scfw = "${base_libdir}/firmware/scfw/"
-FILES_${PN}-sdma = " ${base_libdir}/firmware/imx/sdma"
+FILES_${PN}-epdc = "${base_libdir}/firmware/imx/epdc/ ${sysconfdir}/epdc"
+FILES_${PN}-sdma = "${base_libdir}/firmware/imx/sdma ${sysconfdir}/sdma"
+FILES_${PN}-easrc = "${base_libdir}/firmware/imx/easrc/"
+FILES_${PN}-regulatory = "${sysconfdir}/regulatory"
+FILES_${PN}-hdmi = "${base_libdir}/firmware/imx/hdmi/ ${sysconfdir}/hdmi"
 
 COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"

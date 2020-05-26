@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# firmware loader script
+
+MX8_HDMITX="/sys/bus/platform/devices/*/firmware/hdmitxfw.bin"
+MX8_HDMIRX="/sys/bus/platform/devices/*/firmware/hdmirxfw.bin"
+MX8_HDMIDP="/sys/bus/platform/devices/*/firmware/dpfw.bin"
+
+if [ 0 -lt $(ls $MX8_HDMITX 2>/dev/null | wc -w) ]; then
+cd ${MX8_HDMITX}
+echo 1 > loading
+cat /lib/firmware/imx/hdmi/hdmitxfw.bin > data
+echo 0 > loading
+fi
+
+if [ 0 -lt $(ls $MX8_HDMIRX 2>/dev/null | wc -w) ]; then
+cd ${MX8_HDMIRX}
+echo 1 > loading
+cat /lib/firmware/imx/hdmi/hdmirxfw.bin > data
+echo 0 > loading
+fi
+
+if [ 0 -lt $(ls $MX8_HDMIDP 2>/dev/null | wc -w) ]; then
+cd ${MX8_HDMIDP}
+echo 1 > loading
+cat /lib/firmware/imx/hdmi/dpfw.bin > data
+echo 0 > loading
+fi
