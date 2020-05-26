@@ -5,7 +5,7 @@
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI_append_imxgpu2d = " \
+SRC_URI_append_imxgpu = " \
     file://0014-Add-IMX-GPU-support.patch \
     file://0001-egl.prf-Fix-build-error-when-egl-headers-need-platfo.patch \
 "
@@ -16,9 +16,14 @@ SRC_URI_append_imxgpu3d = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', '${SRC_URI_APPEND_3D_NOT_X11}', d)} \
 "
 
+PACKAGECONFIG_GL_IMX_GPU     = ""
+PACKAGECONFIG_GL_IMX_GPU_mx8 = "gbm kms"
+
 PACKAGECONFIG_GL_imxpxp   = "gles2"
-PACKAGECONFIG_GL_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' gl', '', d)}"
-PACKAGECONFIG_GL_imxgpu3d = "gles2"
+PACKAGECONFIG_GL_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' gl', '', d)} \
+                             ${PACKAGECONFIG_GL_IMX_GPU}"
+PACKAGECONFIG_GL_imxgpu3d = "gles2 \
+                             ${PACKAGECONFIG_GL_IMX_GPU}"
 PACKAGECONFIG_GL_use-mainline-bsp ?= "gles2 gbm kms"
 
 PACKAGECONFIG_PLATFORM          = ""
@@ -29,3 +34,9 @@ PACKAGECONFIG_PLATFORM_imxgpu3d = " \
                                                        'eglfs', d), d)}"
 PACKAGECONFIG_PLATFORM_use-mainline-bsp = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'eglfs', d)}"
 PACKAGECONFIG += "${PACKAGECONFIG_PLATFORM}"
+
+PACKAGECONFIG_VULKAN_IMX_GPU       = ""
+PACKAGECONFIG_VULKAN_IMX_GPU_mx8   = "vulkan"
+PACKAGECONFIG_VULKAN_IMX_GPU_mx8mm = ""
+PACKAGECONFIG_VULKAN_imxgpu        = "${PACKAGECONFIG_VULKAN_IMX_GPU}"
+PACKAGECONFIG += "${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', '${PACKAGECONFIG_VULKAN}', '', d)}"
