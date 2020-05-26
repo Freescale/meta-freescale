@@ -133,6 +133,9 @@ do_compile() {
                 rcwimg="RR_FFSSPPPH_1133_5559/rcw_1600_qspiboot_sben.bin"
             fi
             ;;
+        auto)
+            rcwimg="${RCWAUTO}${rcwtemp}.bin"
+            ;;
         sd)
             rcwimg="${RCWSD}${rcwtemp}.bin"
             ;;
