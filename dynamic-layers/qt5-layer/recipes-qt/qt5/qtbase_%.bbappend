@@ -5,6 +5,13 @@
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
+IMX_BACKEND = \
+    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland',\
+        bb.utils.contains('DISTRO_FEATURES',     'x11',     'x11', \
+                                                             'fb', d), d)}"
+SRC_URI_append = " \
+    file://qt5-${IMX_BACKEND}.sh \
+"
 SRC_URI_append_imxgpu2d = " \
     file://0014-Add-IMX-GPU-support.patch \
     file://0001-egl.prf-Fix-build-error-when-egl-headers-need-platfo.patch \
@@ -29,3 +36,10 @@ PACKAGECONFIG_PLATFORM_imxgpu3d = " \
                                                        'eglfs', d), d)}"
 PACKAGECONFIG_PLATFORM_use-mainline-bsp = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'eglfs', d)}"
 PACKAGECONFIG += "${PACKAGECONFIG_PLATFORM}"
+
+do_install_append_imxgpu () {
+    install -d ${D}${sysconfdir}/profile.d/
+    install -m 0755 ${WORKDIR}/qt5-${IMX_BACKEND}.sh ${D}${sysconfdir}/profile.d/qt5.sh
+}
+
+FILES_${PN}_append_imxgpu = " ${sysconfdir}/profile.d/qt5.sh"
