@@ -21,3 +21,9 @@ SUBSYSTEM=="video", MODE="0660"
 KERNEL=="fb[0-9]",  MODE="0660", GROUP="video"
 KERNEL=="gsl_kmod", MODE="0660", GROUP="video"
 KERNEL=="galcore",  MODE="0660", GROUP="video"
+
+# Load hdmi/sdma/regulatory/epdc firmware
+SUBSYSTEM=="platform" DRIVER=="cdns-mhdp-imx", ACTION=="add", RUN+="/etc/hdmi"
+SUBSYSTEM=="platform" KERNEL=="regulatory.0", ACTION=="add", RUN+="/etc/regulatory"
+SUBSYSTEM=="platform" DRIVER=="imx-sdma", ACTION=="add", RUN+="/etc/sdma"
+SUBSYSTEM=="platform" KERNEL=="*.epdc", ACTION=="add", RUN+="/etc/epdc"
