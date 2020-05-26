@@ -10,8 +10,8 @@ inherit fsl-eula-unpack deploy
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "b9d81d0c4cb7871e62dfe7b26d203240"
-SRC_URI[sha256sum] = "5a28180217975f3d78fcfac15e46b0a942910fadf078e4af76deb6dc498136ed"
+SRC_URI[md5sum] = "17f5d9521e775a6256460100445cee2d"
+SRC_URI[sha256sum] = "5ec7f5373a147aae998f1b89226ecd16e2d882cae89b554ce9c3ab43d2053725"
 
 BOARD_TYPE ?= "mek"
 SC_FIRMWARE_NAME ?= "mx8qm-mek-scfw-tcm.bin"
@@ -35,4 +35,4 @@ INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-COMPATIBLE_MACHINE = "(mx8qm|mx8qxp)"
+COMPATIBLE_MACHINE = "(mx8qm|mx8qxq)"
