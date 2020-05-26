@@ -1,0 +1,64 @@
+From ef5327d7e9d74a433b0a1f2ca2f4cf3953797350 Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.z@gmail.com>
+Date: Fri, 22 May 2020 21:01:15 +0000
+Subject: [PATCH] arm64: Disable outline-atomics when compiling
+
+This is a backport of upstream patch [1] with adaptions to optee-imx
+version in this layer.
+
+Original patch uses $(call cc-option,-mno-outline-atomics,) to disable
+outline-atomics which itself is broken and required 4 additional patches
+to be compatible with gcc and clang.
+
+This is resolved in the upstream PR [2], which is applicable to the
+latest upstream version.
+
+NXP fork contains old version of OP-TEE, and therefore would receive the
+update for Makefiles with new version. Since it is not required to make
+current NXP version compatible with old compiler versions on master
+branch - outline-atomics are disabled directly.
+
+Original patch description:
+---------------------------------------------------------------------
+Disables the automatic detection of LSE (Large System Extension)
+instructions when compiling AArch64 code. GCC 10 implements this
+detection in libgcc using __getauxval(), which optee doesn't implement.
+This requires that the proper -mcpu is passed to GCC so that the code
+can be correctly compiled to use either LSE or load-store-exclusive.
+
+Fixes linker errors like the following when compiling with GCC 10:
+
+ aarch64-linux-ld.bfd: libgcc.a(lse-init.o):
+    in function `init_have_lse_atomics':
+ lse-init.c:44: undefined reference to `__getauxval'
+ core/arch/arm/kernel/link.mk:38:
+    recipe for target 'build/core/all_objs.o' failed
+---------------------------------------------------------------------
+
+Upstream-Status: Backport [e07c2b062846df4385542f4e4fe08b40cf7d8191]
+
+Signed-off-by: Joshua Watt <JPEWhacker@gmail.com>
+
+[1]: https://github.com/OP-TEE/optee_os/pull/3891/commits/e07c2b062846df4385542f4e4fe08b40cf7d8191
+[2]: https://github.com/OP-TEE/optee_os/pull/3891
+Signed-off-by: Andrey Zhizhikin <andrey.z@gmail.com>
+---
+ core/arch/arm/arm.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/arm.mk b/core/arch/arm/arm.mk
+index aa101be8..8cb2b2e2 100644
+--- a/core/arch/arm/arm.mk
++++ b/core/arch/arm/arm.mk
+@@ -88,7 +88,7 @@ arm32-platform-aflags-no-hard-float ?=
+ 
+ arm64-platform-cflags-no-hard-float ?= -mgeneral-regs-only
+ arm64-platform-cflags-hard-float ?=
+-arm64-platform-cflags-generic ?= -mstrict-align
++arm64-platform-cflags-generic ?= -mstrict-align -mno-outline-atomics
+ 
+ ifeq ($(DEBUG),1)
+ # For backwards compatibility
+-- 
+2.17.1
+
