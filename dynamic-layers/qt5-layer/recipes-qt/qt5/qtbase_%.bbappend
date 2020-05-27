@@ -9,12 +9,6 @@ SRC_URI_append_imxgpu = " \
     file://0014-Add-IMX-GPU-support.patch \
     file://0001-egl.prf-Fix-build-error-when-egl-headers-need-platfo.patch \
 "
-SRC_URI_APPEND_3D_NOT_X11 = " \
-    file://0015-Add-eglfs-to-IMX-GPU.patch \
-"
-SRC_URI_append_imxgpu3d = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', '${SRC_URI_APPEND_3D_NOT_X11}', d)} \
-"
 
 PACKAGECONFIG_GL_IMX_GPU     = ""
 PACKAGECONFIG_GL_IMX_GPU_mx8 = "gbm kms"
