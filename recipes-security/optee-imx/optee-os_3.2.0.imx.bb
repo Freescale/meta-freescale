@@ -14,7 +14,7 @@ OPTEE_OS_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-os.git;proto
 SRC_URI = "\
 	${OPTEE_OS_SRC};branch=${SRCBRANCH} \
 	file://0001-scripts-update-scripts-to-use-python3.patch \
-	file://0001-arm64-Disable-outline-atomics-when-compiling.patch \
+	file://0001-optee-os-fix-gcc10-compilation-issue-and-missing-cc-.patch \
 "
 
 SRCREV = "6d99b525af752ecdaabdca6098b2564b2665f2b2"
