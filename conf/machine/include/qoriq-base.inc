@@ -2,7 +2,6 @@
 PREFERRED_PROVIDER_cryptodev-linux = "cryptodev-qoriq-linux"
 PREFERRED_PROVIDER_cryptodev-module = "cryptodev-qoriq-module"
 PREFERRED_PROVIDER_cryptodev-tests = "cryptodev-qoriq-tests"
-PREFERRED_PROVIDER_openssl = "openssl-qoriq"
 PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_u-boot-fw-utils ?= "${PREFERRED_PROVIDER_u-boot}-fw-utils"
 PREFERRED_PROVIDER_virtual/bootloader ?= "u-boot-qoriq"
