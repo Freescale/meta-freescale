@@ -1,0 +1,34 @@
+From ea7e0fba6da734e5f99f84d10d456ceaaed05883 Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.z@gmail.com>
+Date: Sun, 31 May 2020 20:40:25 +0000
+Subject: [PATCH] flags: do not override CFLAGS from host
+
+Some build systems set CFLAGS in environment before the build, but they
+got overridden by CFLAGS immediate assignment operator.
+
+Replace immediate assignment with append directive, so the former
+definition of CFLAGS gets properly expanded.
+
+Upstream-Status: Submitted [https://github.com/OP-TEE/optee_client/pull/211]
+
+Signed-off-by: Andrey Zhizhikin <andrey.z@gmail.com>
+---
+ flags.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/flags.mk b/flags.mk
+index 71f3d18..af13495 100644
+--- a/flags.mk
++++ b/flags.mk
+@@ -6,7 +6,7 @@ CROSS_COMPILE   ?= arm-linux-gnueabihf-
+ CC              ?= $(CROSS_COMPILE)gcc
+ AR		?= $(CROSS_COMPILE)ar
+ 
+-CFLAGS          := -Wall -Wbad-function-cast -Wcast-align \
++CFLAGS          += -Wall -Wbad-function-cast -Wcast-align \
+ 		   -Werror-implicit-function-declaration -Wextra \
+ 		   -Wfloat-equal -Wformat-nonliteral -Wformat-security \
+ 		   -Wformat=2 -Winit-self -Wmissing-declarations \
+-- 
+2.17.1
+

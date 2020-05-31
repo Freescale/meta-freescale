@@ -13,7 +13,9 @@ SRC_URI = "${OPTEE_CLIENT_SRC};branch=${SRCBRANCH}"
 
 SRCREV = "71a9bef78fff2d5d4db8a2307d3b91e2aa671dc9"
 
-SRC_URI_append = " file://tee-supplicant.service"
+SRC_URI += "file://tee-supplicant.service \
+            file://0001-flags-do-not-override-CFLAGS-from-host.patch \
+"
 
 S = "${WORKDIR}/git"
 SYSTEMD_SERVICE_${PN} = "tee-supplicant.service"
