@@ -13,20 +13,16 @@ SRC_URI = "${OPTEE_CLIENT_SRC};branch=${SRCBRANCH}"
 
 SRCREV = "71a9bef78fff2d5d4db8a2307d3b91e2aa671dc9"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-
 SRC_URI_append = " file://tee-supplicant.service"
 
 S = "${WORKDIR}/git"
 SYSTEMD_SERVICE_${PN} = "tee-supplicant.service"
 
-do_compile () {
-    if [ ${DEFAULTTUNE} = "aarch64" ]; then
-        oe_runmake -C ${S} ARCH=arm64
-    else
-        oe_runmake -C ${S} ARCH=arm
-    fi
-}
+OPTEE_ARCH ?= "arm32"
+OPTEE_ARCH_armv7a = "arm32"
+OPTEE_ARCH_aarch64 = "arm64"
+
+EXTRA_OEMAKE = "ARCH=${OPTEE_ARCH}"
 
 do_install () {
 	oe_runmake install
