@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.41
+#    tag: v5.4.43
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -45,6 +45,18 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
 #    7cf8871cd7d0 perf: Make perf able to build with latest libbfd
+#    285869ec9087 ARM: dts: imx6ul-kontron-n6x1x-s: Remove an obsolete comment and fix indentation
+#    f03791085754 ARM: dts: imx6ul-kontron-n6x1x-s: Add vbus-supply and overcurrent polarity to usb nodes
+#    67e44952c670 ARM: dts: imx6ul-kontron-n6x1x: Add 'chosen' node with 'stdout-path'
+#    d4b105f930e2 ARM: dts: Add support for two more Kontron evalkit boards 'N6311 S' and 'N6411 S'
+#    e778467f65d0 ARM: dts: imx6ul-kontron-n6310-s: Move common nodes to a separate file
+#    8b39f5e53831 ARM: dts: Add support for two more Kontron SoMs N6311 and N6411
+#    3bee262233eb ARM: dts: imx6ul-kontron-n6310: Move common SoM nodes to a separate file
+#    40a6a98b3f38 ARM: imx: Fix boot crash if ocotp is not found
+#    8aad5031be00 ARM: imx: Correct ocotp id for serial number support of i.MX6ULL/ULZ SoCs
+#    564409aa3b33 soc: imx-scu: Using existing serial_number instead of UID
+#    0ee8e005bbfc soc: imx8: Using existing serial_number instead of UID
+#    134cbb845fc7 ARM: imx: Add serial number support for i.MX6/7 SoCs
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -58,14 +70,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-1.0.0-imx"
-SRCREV = "ec7a9ec0c94bf10ce1e80e12f1dc1833c5e13b15"
+SRCREV = "eea55cca78493df0cd74256c8389def9063826f7"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.41"
+LINUX_VERSION = "5.4.43"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-lf-5.4.y"
