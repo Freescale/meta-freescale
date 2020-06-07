@@ -1,7 +1,7 @@
-From 451381a61ad0c96e870da2325fc188eaa3d91fec Mon Sep 17 00:00:00 2001
+From 12ac4372cc6a66e83b61f8510bdaa4f11c72113d Mon Sep 17 00:00:00 2001
 From: Tom Hochstein <tom.hochstein@nxp.com>
 Date: Wed, 22 Apr 2020 14:08:36 -0500
-Subject: [PATCH 2/2] meson: Separate surfaceless option from x11
+Subject: [PATCH] meson: Separate surfaceless option from x11
 
 Allow surfaceless build separate from the x11 option.
 Also require gbm for surfaceless build.
@@ -9,12 +9,13 @@ Also require gbm for surfaceless build.
 Upstream-Status: Pending
 
 Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+
 ---
  meson.build | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/meson.build b/meson.build
-index 4ebb022..0705f61 100644
+index efb51f4..0ee3ee5 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -72,6 +72,7 @@ dep_udev = _dep_null
@@ -41,6 +42,3 @@ index 4ebb022..0705f61 100644
  endif
  
  dep_bash = dependency('bash-completion', required : false)
--- 
-2.17.1
-
