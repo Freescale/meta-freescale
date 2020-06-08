@@ -27,6 +27,9 @@ PLATFORM_ls1088ardb-pb = "ls1088ardb"
 PLATFORM_ADDITIONAL_TARGET ??= ""
 PLATFORM_ADDITIONAL_TARGET_ls1012afrwy = "ls1012afrwy_512mb"
 
+RCW_FOLDER ?= "${MACHINE}"
+RCW_FOLDER_ls1088ardb-pb = "ls1088ardb"
+
 # requires CROSS_COMPILE set by hand as there is no configure script
 export CROSS_COMPILE="${TARGET_PREFIX}"
 export ARCH="arm64"
@@ -148,9 +151,9 @@ do_compile() {
             ;;        
         esac
             
-	if [ -f "${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg}" ]; then
+	if [ -f "${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/${rcwimg}" ]; then
                 oe_runmake V=1 -C ${S} realclean
-                oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
+                oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
                 cp -r ${S}/build/${PLATFORM}/release/bl2_${d}*.pbl ${S}
                 cp -r ${S}/build/${PLATFORM}/release/fip.bin ${S}
                 if [ "${BUILD_FUSE}" = "true" ]; then
@@ -159,7 +162,7 @@ do_compile() {
 
                 if [ -n "${PLATFORM_ADDITIONAL_TARGET}" ]; then
                     oe_runmake V=1 -C ${S} realclean
-                    oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM_ADDITIONAL_TARGET} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
+                    oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM_ADDITIONAL_TARGET} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/${rcwimg} BL33=${bl33} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
                     cp -r ${S}/build/${PLATFORM_ADDITIONAL_TARGET}/release/bl2_qspi${secext}.pbl ${S}/bl2_${d}${secext}_${PLATFORM_ADDITIONAL_TARGET}.pbl
                     cp -r ${S}/build/${PLATFORM_ADDITIONAL_TARGET}/release/fip.bin ${S}/fip_${PLATFORM_ADDITIONAL_TARGET}.bin
                     if [ "${BUILD_FUSE}" = "true" ]; then
@@ -168,7 +171,7 @@ do_compile() {
                 fi
                 if [ -n "${uefiboot}" -a -f "${DEPLOY_DIR_IMAGE}/uefi/${PLATFORM}/${uefiboot}" ]; then
                     oe_runmake V=1 -C ${S} realclean
-                    oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${PLATFORM}/${rcwimg} BL33=${DEPLOY_DIR_IMAGE}/uefi/${PLATFORM}/${uefiboot} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
+                    oe_runmake V=1 -C ${S} all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/${rcwimg} BL33=${DEPLOY_DIR_IMAGE}/uefi/${PLATFORM}/${uefiboot} ${bl32opt} ${spdopt} ${secureopt} ${fuseopt} ${otaopt}
                     cp -r ${S}/build/${PLATFORM}/release/fip.bin ${S}/fip_uefi.bin
                 fi
         fi
