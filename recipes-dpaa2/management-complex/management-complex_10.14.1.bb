@@ -25,7 +25,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/mc_app
     install -m 755 ${S}/${REGLEX}/*.itb ${DEPLOYDIR}/mc_app
     # make a symlink to the latest binary
-    for mc_binary in `ls ${DEPLOYDIR}/mc_app |sort`;do
+    for mc_binary in `find ${DEPLOYDIR}/mc_app -type f -printf "%f\n" |sort`;do
         ln -sfT ${mc_binary} ${DEPLOYDIR}/mc_app/mc.itb
     done
 }
