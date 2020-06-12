@@ -14,10 +14,6 @@ S = "${WORKDIR}/git"
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/atf;nobranch=1"
 SRCREV = "7d748e6f0ec652ba7c43733dc67a3d0b0217390a"
 
-SRC_URI += "file://0001-fix-fiptool-build-error.patch \
-    file://0001-Makefile-add-CC-gcc.patch \
-"
-
 COMPATIBLE_MACHINE = "(qoriq)"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
