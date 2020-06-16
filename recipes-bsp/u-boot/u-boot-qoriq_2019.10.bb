@@ -22,6 +22,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;no
     file://0001-binman-Convert-a-few-tests-to-Python-3.patch \
     file://0001-binman-Move-to-use-Python-3.patch \
     file://0001-buildman-Convert-to-Python-3.patch \
+    file://0001-Remove-redundant-YYLOC-global-declaration.patch \
 "
 SRCREV= "1e55b2f9e7f56b76569089b9e950f49c1579580e"
 
