@@ -5,6 +5,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobr
            file://0001-add-Wno-cast-function-type.patch \
            file://0001-Add-RTE_KERNELDIR_OUT.patch \
            file://0004-update-WERROR_FLAGS.patch \
+	   file://0001-examples-ipsec-gw-fix-gcc-10-maybe-uninitialized-war.patch \
 "
 SRCREV = "4110a5fed09fa034963cfc246a6285911ecbd540"
 
