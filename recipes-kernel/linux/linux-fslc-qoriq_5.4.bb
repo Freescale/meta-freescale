@@ -13,5 +13,5 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 LINUX_VERSION = "5.4.51"
 
 SRCBRANCH = "5.4.y+qoriq+fslc"
-SRCREV = "8221fcf6c01e7ed451510e2792c9f45422a4ca8c"
+SRCREV = "c34b53c0927fcefcdea3be16cc1fb9fdcbedbe40"
 SRC_URI := "git://github.com/Freescale/linux-fslc.git;branch=${SRCBRANCH}"
