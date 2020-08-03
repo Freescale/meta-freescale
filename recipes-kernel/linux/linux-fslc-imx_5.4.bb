@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.51
+#    tag: v5.4.55
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -44,6 +44,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    d40fb1b86571 libtraceevent: Fix build with binutils 2.35
 #    285869ec9087 ARM: dts: imx6ul-kontron-n6x1x-s: Remove an obsolete comment and fix indentation
 #    f03791085754 ARM: dts: imx6ul-kontron-n6x1x-s: Add vbus-supply and overcurrent polarity to usb nodes
 #    67e44952c670 ARM: dts: imx6ul-kontron-n6x1x: Add 'chosen' node with 'stdout-path'
@@ -69,14 +70,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-1.0.0-imx"
-SRCREV = "9fb52fae75909b9ca83b2a04e824f97d2df85302"
+SRCREV = "84b7307a4801afd90732666a29ce61f748c452b4"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.51"
+LINUX_VERSION = "5.4.55"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-lf-5.4.y"
