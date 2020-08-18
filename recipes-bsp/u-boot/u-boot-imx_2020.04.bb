@@ -1,11 +1,9 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2018 (C) O.S. Systems Software LTDA.
-# Copyright 2017-2019 NXP
+# Copyright (C) 2017-2020 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common.inc
-
-SRC_URI += "file://0001-Add-target-to-generate-initial-environment.patch"
 
 PROVIDES += "u-boot"
 
@@ -21,7 +19,6 @@ do_deploy_append_mx8m() {
                 then
                     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
                     install -m 0777 ${B}/${config}/arch/arm/dts/${UBOOT_DTB_NAME}  ${DEPLOYDIR}/${BOOT_TOOLS}
-                    install -m 0777 ${B}/${config}/tools/mkimage  ${DEPLOYDIR}/${BOOT_TOOLS}/mkimage_uboot
                     install -m 0777 ${B}/${config}/u-boot-nodtb.bin  ${DEPLOYDIR}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}-${UBOOT_CONFIG}
                 fi
             done
