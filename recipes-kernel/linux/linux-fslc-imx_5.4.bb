@@ -13,7 +13,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # This recipe (and corresponding kernel repository and branch) receives updates
 # from 3 different sources:
 # 1. Stable [linux-5.4.y] branch updates of korg;
-# 2. NXP-specific updates via branch [lf-5.4.y] shared via CodeAurora forum;
+# 2. NXP-specific updates via branch [5.4-2.1.x-imx] shared via CodeAurora forum;
 # 3. Critical patches, which are not (yet) integrated into either of 2 above
 #    sources, but are required to be applied to the kernel tree.
 #
@@ -33,27 +33,20 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-5.4.y-1.0.0
-#    40fe6bd54230 MLK-23844-2 ARM64: dts: freescale: imx8mm: correct VDDARM@1.6GHz
-#    aec0c14ae61d MLK-23844-1: ARM64: dts: freescale: imx8mn-ddr4-evk: cleanup Rhom pmic
-#    e8e35fd0e759 MLK-23275-2: ARM64: dts: freescale: imx8mn-ddr4-evk: correct ldo1/ldo2 voltage
-#    975d8ab07267 MLK-23275-1: ARM64: dts: freescale: fsl-imx8mm-evk: correct ldo1/ldo2 voltage
-#    4711466d535c MLK-23562: regulator: core: adjust supply voltage in bypass
-#    bbbc26a40a9c MLK-13793-6 regulator: anatop: fix min dropout for bypass mode
+#    tag: rel_imx_5.4.24_2.1.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-#    bffbf24c88a7 fbdev: fix fbinfo flag dropped upstream
-#    fd34d250e9a5 arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
-#    4e0a3bc7b1af arm64: dts: imx8mn: Use "fsl,imx8mm-ocotp" as ocotp's fallback compatible
-#    66af62de926c arm64: dts: imx8mm: Remove incorrect fallback compatible for ocotp
-#    19be176e9eed perf cs-etm: Move definition of 'traceid_list' global variable from header file
-#    d40fb1b86571 libtraceevent: Fix build with binutils 2.35
-#    0296957500a0 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
-#    804e520787f3 arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
-#    0c01f815c1b4 arm: imx: enable HAVE_IMX_BUSFREQ for i.MX6
-#    691712e2b671 arm: imx: do not build busfreq without HAVE_IMX_BUSFREQ
+#    c874333fa0be arm64: dts: imx8mp: Add fallback compatible to ocotp node
+#    55abb34c9faf arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
+#    df1f59fb613e arm64: dts: imx8mn: Use "fsl,imx8mm-ocotp" as ocotp's fallback compatible
+#    7ad2a7f3fd6f arm64: dts: imx8mm: Remove incorrect fallback compatible for ocotp
+#    959ad6073277 perf cs-etm: Move definition of 'traceid_list' global variable from header file
+#    129a6fad43b8 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
+#    e85ce3157725 arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
+#    4f49200132e6 arm: imx: enable HAVE_IMX_BUSFREQ for i.MX6
+#    5d229c51b5a5 arm: imx: do not build busfreq without HAVE_IMX_BUSFREQ
 #    285869ec9087 ARM: dts: imx6ul-kontron-n6x1x-s: Remove an obsolete comment and fix indentation
 #    f03791085754 ARM: dts: imx6ul-kontron-n6x1x-s: Add vbus-supply and overcurrent polarity to usb nodes
 #    67e44952c670 ARM: dts: imx6ul-kontron-n6x1x: Add 'chosen' node with 'stdout-path'
@@ -78,8 +71,8 @@ include linux-fslc.inc
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-SRCBRANCH = "5.4-1.0.0-imx"
-SRCREV = "a5efa25ffaf3e3efd1aa41a5aca9ae8b7ac125bd"
+SRCBRANCH = "5.4-2.1.x-imx"
+SRCREV = "e176f4c52f8071238edbc93c858a94c3362c8b22"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
@@ -89,7 +82,7 @@ SRCREV = "a5efa25ffaf3e3efd1aa41a5aca9ae8b7ac125bd"
 LINUX_VERSION = "5.4.65"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-lf-5.4.y"
+LOCALVERSION = "-imx_5.4.24_2.1.0"
 
 DEFAULT_PREFERENCE = "1"
 
