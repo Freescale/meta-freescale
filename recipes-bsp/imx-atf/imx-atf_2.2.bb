@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2019 NXP
+# Copyright (C) 2017-2020 NXP
 
 DESCRIPTION = "i.MX ARM Trusted Firmware"
 SECTION = "BSP"
@@ -7,12 +7,11 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 
 PV .= "+git${SRCPV}"
 
-SRCBRANCH = "lf-5.4.y"
+SRCBRANCH = "imx_5.4.24_2.1.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
-           file://0001-Allow-BUILD_STRING-to-be-set-in-.revision-file.patch \
            file://0001-imx-Fix-multiple-definition-of-ipc_handle.patch \
 "
-SRCREV = "7b3389d49815f1e3f7942bd312a27ee665bd2e33"
+SRCREV = "b0a00f22b09c13572d3e87902a1069dee34763bd"
 
 S = "${WORKDIR}/git"
 
@@ -22,10 +21,14 @@ BOOT_TOOLS = "imx-boot-tools"
 
 PLATFORM        ?= "INVALID"
 PLATFORM_mx8qm   = "imx8qm"
-PLATFORM_mx8qxp  = "imx8qx"
+PLATFORM_mx8x    = "imx8qx"
 PLATFORM_mx8mq   = "imx8mq"
 PLATFORM_mx8mm   = "imx8mm"
 PLATFORM_mx8mn   = "imx8mn"
+PLATFORM_mx8mp   = "imx8mp"
+PLATFORM_mx8dx   = "imx8dx"
+PLATFORM_imx8dxlevk = "imx8dxl"
+PLATFORM_mx8dxlevk-phantom = "imx8qx"
 
 EXTRA_OEMAKE += " \
     CROSS_COMPILE="${TARGET_PREFIX}" \
