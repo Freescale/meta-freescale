@@ -1,5 +1,5 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright 2017-2018 NXP
+# Copyright (C) 2017-2020 NXP
 
 require imx-mkimage_git.inc
 
@@ -12,13 +12,16 @@ inherit native deploy
 
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR} -L ${STAGING_LIBDIR}"
 
+REV_CHIP ?= "B0"
+REV_CHIP_mx8qxpc0 = "C0"
+
 do_compile () {
     cd ${S}
     oe_runmake clean
     oe_runmake bin
     oe_runmake -C iMX8M -f soc.mak mkimage_imx8
-    oe_runmake -C iMX8QM -f soc.mak imx8qm_dcd.cfg.tmp
-    oe_runmake -C iMX8QX -f soc.mak imx8qx_dcd.cfg.tmp
+    oe_runmake -C iMX8QM REV=${REV_CHIP} -f soc.mak imx8qm_dcd.cfg.tmp
+    oe_runmake -C iMX8QX REV=${REV_CHIP} -f soc.mak imx8qx_dcd.cfg.tmp
 }
 
 do_install () {
