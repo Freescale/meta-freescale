@@ -1,4 +1,4 @@
-# Copyright 2018 NXP
+# Copyright (C) 2018-2020 NXP
 
 require firmware-qca.inc
 
