@@ -1,0 +1,62 @@
+From e8bb1c2caa19fa224090eca0793586857199af9e Mon Sep 17 00:00:00 2001
+From: Samuel Holland <samuel@sholland.org>
+Date: Wed, 4 Dec 2019 02:48:37 -0600
+Subject: [PATCH] imx: Fix missing inclusion of cdefs.h
+
+This was found by compiling with -fno-common:
+
+./build/picopi/release/bl2/imx_snvs.o:(.bss.__packed+0x0): multiple definition of `__packed';
+./build/picopi/release/bl2/imx_caam.o:(.bss.__packed+0x0): first defined here
+
+__packed was intended to be the attribute macro from cdefs.h, not an
+object of the structure type.
+
+Upstream-Status: Backport
+
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Change-Id: Id02fac3f098be2d71c35c6b4a18012515532f32a
+---
+ plat/imx/common/include/imx_caam.h | 3 ++-
+ plat/imx/common/include/imx_snvs.h | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/plat/imx/common/include/imx_caam.h b/plat/imx/common/include/imx_caam.h
+index 335bd0f8b..61005b51c 100644
+--- a/plat/imx/common/include/imx_caam.h
++++ b/plat/imx/common/include/imx_caam.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2018-2019, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -7,6 +7,7 @@
+ #ifndef IMX_CAAM_H
+ #define IMX_CAAM_H
+ 
++#include <cdefs.h>
+ #include <stdint.h>
+ #include <arch.h>
+ #include <imx_regs.h>
+diff --git a/plat/imx/common/include/imx_snvs.h b/plat/imx/common/include/imx_snvs.h
+index 0b3d1085f..565c451dd 100644
+--- a/plat/imx/common/include/imx_snvs.h
++++ b/plat/imx/common/include/imx_snvs.h
+@@ -1,11 +1,12 @@
+ /*
+- * Copyright (C) 2018, ARM Limited and Contributors. All rights reserved.
++ * Copyright (C) 2018-2019, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+ #ifndef IMX_SNVS_H
+ #define IMX_SNVS_H
+ 
++#include <cdefs.h>
+ #include <stdint.h>
+ 
+ #include <arch.h>
+-- 
+2.28.0
+
