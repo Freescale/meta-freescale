@@ -7,10 +7,10 @@ New headers are installed in ${includedir}/imx."
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-SRCBRANCH = "lf-5.4.y"
-LOCALVERSION = "-1.0.0"
+SRCBRANCH = "imx_5.4.24_2.1.0"
+LOCALVERSION = "-2.1.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "f8118585ee3c7025265b28985fdfe0af96a84466"
+SRCREV = "dea2fede7e024ee7029b13e8d82a00ec14427777"
 
 S = "${WORKDIR}/git"
 
@@ -33,7 +33,6 @@ IMX_UAPI_HEADERS = " \
     mxcfb.h \
     pxp_device.h \
     pxp_dma.h \
-    version.h \
     videodev2.h \
 "
 
