@@ -8,6 +8,7 @@ PROVIDES = "virtual/imxvpu"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
+    file://0001-decoder_sw-resolve-compilation-error-with-fcommon.patch \
 "
 SRC_URI[md5sum] = "78034de7ed74363eb793d29894bba5e3"
 SRC_URI[sha256sum] = "bebd82649d00d6dd8236b77b8677b1cc6ac46dc474200502df7797a75dc8f568"
