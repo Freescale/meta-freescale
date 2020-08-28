@@ -1,0 +1,44 @@
+From 2338329e35254c1b8a887409d930ca76d9612093 Mon Sep 17 00:00:00 2001
+From: Samuel Holland <samuel@sholland.org>
+Date: Wed, 4 Dec 2019 02:45:58 -0600
+Subject: [PATCH] imx: Fix multiple definition of ipc_handle
+
+This is not conforming C and does not compile with -fno-common.
+
+Upstream-Status: Backport
+
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Change-Id: I6535954cc567d6efa06919069b91e3f50975b073
+---
+ plat/imx/common/include/sci/sci_ipc.h | 2 +-
+ plat/imx/common/sci/ipc.c             | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/plat/imx/common/include/sci/sci_ipc.h b/plat/imx/common/include/sci/sci_ipc.h
+index cc8e47b28..1e3e53247 100755
+--- a/plat/imx/common/include/sci/sci_ipc.h
++++ b/plat/imx/common/include/sci/sci_ipc.h
+@@ -63,6 +63,6 @@ void sc_ipc_read(sc_ipc_t ipc, void *data);
+  */
+ void sc_ipc_write(sc_ipc_t ipc, const void *data);
+ 
+-sc_ipc_t ipc_handle;
++extern sc_ipc_t ipc_handle;
+ 
+ #endif /* SCI_IPC_H */
+diff --git a/plat/imx/common/sci/ipc.c b/plat/imx/common/sci/ipc.c
+index f329482fe..bf35a5ead 100755
+--- a/plat/imx/common/sci/ipc.c
++++ b/plat/imx/common/sci/ipc.c
+@@ -11,6 +11,8 @@
+ 
+ #include "imx8_mu.h"
+ 
++sc_ipc_t ipc_handle;
++
+ #include <lib/bakery_lock.h>
+ DEFINE_BAKERY_LOCK(sc_ipc_bakery_lock);
+ #define sc_ipc_lock_init()	bakery_lock_init(&sc_ipc_bakery_lock)
+-- 
+2.28.0
+
