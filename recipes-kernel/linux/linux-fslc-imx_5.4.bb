@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.58
+#    tag: v5.4.61
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -44,7 +44,12 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    19be176e9eed perf cs-etm: Move definition of 'traceid_list' global variable from header file
 #    d40fb1b86571 libtraceevent: Fix build with binutils 2.35
+#    0296957500a0 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
+#    804e520787f3 arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
+#    0c01f815c1b4 arm: imx: enable HAVE_IMX_BUSFREQ for i.MX6
+#    691712e2b671 arm: imx: do not build busfreq without HAVE_IMX_BUSFREQ
 #    285869ec9087 ARM: dts: imx6ul-kontron-n6x1x-s: Remove an obsolete comment and fix indentation
 #    f03791085754 ARM: dts: imx6ul-kontron-n6x1x-s: Add vbus-supply and overcurrent polarity to usb nodes
 #    67e44952c670 ARM: dts: imx6ul-kontron-n6x1x: Add 'chosen' node with 'stdout-path'
@@ -70,14 +75,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-1.0.0-imx"
-SRCREV = "74731e66e7ec52db4e5fe956c288f3ec8353a671"
+SRCREV = "cd91bed8782ac945568ae453b538a69bfdb0b247"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.58"
+LINUX_VERSION = "5.4.61"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-lf-5.4.y"
