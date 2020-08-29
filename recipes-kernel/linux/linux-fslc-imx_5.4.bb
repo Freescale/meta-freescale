@@ -38,6 +38,11 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    959ad6073277 perf cs-etm: Move definition of 'traceid_list' global variable from header file
+#    129a6fad43b8 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
+#    e85ce3157725 arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
+#    4f49200132e6 arm: imx: enable HAVE_IMX_BUSFREQ for i.MX6
+#    5d229c51b5a5 arm: imx: do not build busfreq without HAVE_IMX_BUSFREQ
 #    285869ec9087 ARM: dts: imx6ul-kontron-n6x1x-s: Remove an obsolete comment and fix indentation
 #    f03791085754 ARM: dts: imx6ul-kontron-n6x1x-s: Add vbus-supply and overcurrent polarity to usb nodes
 #    67e44952c670 ARM: dts: imx6ul-kontron-n6x1x: Add 'chosen' node with 'stdout-path'
@@ -63,7 +68,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-2.1.x-imx"
-SRCREV = "529f455210be2c40915fdf3e4aac602820dfe303"
+SRCREV = "e89cbd28fe652bd7a5a525877d0098840ec91694"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
