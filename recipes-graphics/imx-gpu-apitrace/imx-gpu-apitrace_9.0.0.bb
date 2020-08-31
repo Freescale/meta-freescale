@@ -5,17 +5,18 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
 DEPENDS = "imx-gpu-viv zlib libpng procps"
 
 SRC_URI = "git://source.codeaurora.org/external/imx/apitrace-imx.git;protocol=https;branch=imx_9.0"
-SRCREV = "8636fa989d8e914a7986916b058878761a981a6f"
+SRCREV = "fed74f6f84cb4f48ddace4306c9bf90bf7a9a967"
 
 S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig perlnative python3native
 
-PACKAGECONFIG ??= "egl waffle"
+PACKAGECONFIG ??= "egl"
 PACKAGECONFIG_append = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', \
         bb.utils.contains('DISTRO_FEATURES',     'x11', ' x11', \
                                                         '', d), d)}"
+PACKAGECONFIG_append_mx8 = " waffle"
 PACKAGECONFIG_append_imxgpu2d = " vivante"
 
 PACKAGECONFIG[egl] = "-DENABLE_EGL=ON,-DENABLE_EGL=OFF,virtual/egl"
