@@ -1,23 +1,22 @@
-# Copyright (C) 2017-2018 NXP
+# Copyright (C) 2017-2020 NXP
 
 SUMMARY = "OPTEE OS"
 DESCRIPTION = "OPTEE OS"
 HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=69663ab153298557a59c67a60a743e5b"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
 inherit deploy python3native autotools
-DEPENDS = "python3-pycrypto-native u-boot-mkimage-native"
+DEPENDS = "python3-pycrypto-native python3-pyelftools-native u-boot-mkimage-native"
 
-SRCBRANCH = "lf-5.4.y"
-OPTEE_OS_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https"
+SRCBRANCH = "imx_5.4.24_2.1.0"
+
 SRC_URI = "\
-	${OPTEE_OS_SRC};branch=${SRCBRANCH} \
-	file://0001-scripts-update-scripts-to-use-python3.patch \
+	git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
 	file://0001-optee-os-fix-gcc10-compilation-issue-and-missing-cc-.patch \
 "
 
-SRCREV = "6d99b525af752ecdaabdca6098b2564b2665f2b2"
+SRCREV = "7a49776de59265500f10a247125429fde1555ac1"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build.${PLATFORM_FLAVOR}"
@@ -29,9 +28,13 @@ PLATFORM_FLAVOR_imx6ul7d        = "mx6ulevk"
 PLATFORM_FLAVOR_imx6ull14x14evk = "mx6ullevk"
 PLATFORM_FLAVOR_imx6ull9x9evk   = "mx6ullevk"
 PLATFORM_FLAVOR_imx6ulz14x14evk = "mx6ulzevk"
-PLATFORM_FLAVOR_mx8mm   = "mx8mmevk"
-PLATFORM_FLAVOR_mx8mn   = "mx8mnevk"
-PLATFORM_FLAVOR_mx8qxp  = "mx8qxpmek"
+PLATFORM_FLAVOR_mx8mm   	= "mx8mmevk"
+PLATFORM_FLAVOR_mx8mn   	= "mx8mnevk"
+PLATFORM_FLAVOR_mx8qxp 		= "mx8qxpmek"
+PLATFORM_FLAVOR_mx8mp   	= "mx8mpevk"
+PLATFORM_FLAVOR_mx8dx   	= "mx8dxmek"
+PLATFORM_FLAVOR_mx8dxl  	= "mx8dxlevk"
+PLATFORM_FLAVOR_mx8phantomdxl 	= "mx8qxpmek"
 
 OPTEE_ARCH ?= "arm32"
 OPTEE_ARCH_armv7a = "arm32"
@@ -42,19 +45,20 @@ OPTEE_ARCH_aarch64 = "arm64"
 # For 64bits, CROSS_COMPILE64 must be set
 # When defining CROSS_COMPILE and CROSS_COMPILE64, we assure that
 # any 32 or 64 bits builds will pass
-EXTRA_OEMAKE = "PLATFORM=imx PLATFORM_FLAVOR=${PLATFORM_FLAVOR} \
-                CROSS_COMPILE=${HOST_PREFIX} \
-                CROSS_COMPILE64=${HOST_PREFIX} \
-                NOWERROR=1 \
-                LDFLAGS= \
-                O=${B} \
-                "
-
+EXTRA_OEMAKE = " \
+	PLATFORM=imx \
+	PLATFORM_FLAVOR=${PLATFORM_FLAVOR} \
+	CROSS_COMPILE=${HOST_PREFIX} \
+	CROSS_COMPILE64=${HOST_PREFIX} \
+	NOWERROR=1 \
+	LDFLAGS= \
+	O=${B} \
+"
 
 do_compile () {
     unset LDFLAGS
     export CFLAGS="${CFLAGS} --sysroot=${STAGING_DIR_HOST}"
-    oe_runmake -C ${S} all CFG_TEE_TA_LOG_LEVEL=0
+    oe_runmake -C ${S} all CFG_TEE_TA_LOG_LEVEL=0 CFG_TEE_CORE_LOG_LEVEL=0
 }
 
 
