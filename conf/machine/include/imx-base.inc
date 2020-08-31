@@ -217,6 +217,7 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS_append = " \
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE_append_mx25 = " firmware-imx-sdma-imx25"
+MACHINE_FIRMWARE_append_mx27 = " firmware-imx-vpu-imx27"
 MACHINE_FIRMWARE_append_mx7d = " linux-firmware-imx-sdma-imx7d firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6 = " linux-firmware-imx-sdma-imx6q"
 MACHINE_FIRMWARE_append_mx6q = " firmware-imx-vpu-imx6q"
@@ -226,11 +227,10 @@ MACHINE_FIRMWARE_append_mx6sll = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6ull = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx53 = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_append_mx51 = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
-MACHINE_FIRMWARE_append_mx8qxp = " firmware-imx-vpu-imx8qxp"
 MACHINE_FIRMWARE_append_use-mainline-bsp = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 # FIXME: Needs addition of firmware-imx of official BSPs
-#MACHINE_FIRMWARE_append_mx27 = " firmware-imx-vpu-imx27"
+#MACHINE_FIRMWARE_append_mx8qxp = " firmware-imx-vpu-imx8qxp"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
