@@ -10,6 +10,7 @@ PV .= "+git${SRCPV}"
 SRCBRANCH = "lf-5.4.y"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-Allow-BUILD_STRING-to-be-set-in-.revision-file.patch \
+           file://0001-imx-Fix-multiple-definition-of-ipc_handle.patch \
 "
 SRCREV = "7b3389d49815f1e3f7942bd312a27ee665bd2e33"
 
