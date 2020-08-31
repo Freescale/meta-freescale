@@ -1,11 +1,11 @@
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright 2017, 2019 NXP
+# Copyright (C) 2017, 2019 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia parser libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=fd4b227530cd88a82af6a5982cfb724d"
+LIC_FILES_CHKSUM = "file://COPYING;md5=228c72f2a91452b8a03c4cab30f30ef9"
 
 # For backwards compatibility
 PROVIDES += "libfslparser"
@@ -14,8 +14,8 @@ RPROVIDES_${PN} = "libfslparser"
 RCONFLICTS_${PN} = "libfslparser"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "9659678b1a07a14558d55ed7e23e04d3"
-SRC_URI[sha256sum] = "c6cb8a06acad73f50052d18cda02be729616218472f93974390622d6acea768e"
+SRC_URI[md5sum] = "0845c64d2b64c2822328e8bc8442f5b8"
+SRC_URI[sha256sum] = "33b8377a663b2ca749f40ef1164918335913e4de02a3857f2892707647d243de"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
