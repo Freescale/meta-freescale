@@ -13,20 +13,19 @@ PACKAGE_ARCH_imxpxp = "${MACHINE_SOCARCH}"
 PACKAGE_ARCH_mx8 = "${MACHINE_SOCARCH}"
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.05.03_1911_L5.4.0"
+SRCBRANCH = "MM_04.05.05_2005_L5.4.24"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
     file://0001-ext-wayland-fix-meson-build-in-nxp-fork.patch \
     file://0001-meson-build-gir-even-when-cross-compiling-if-introsp.patch \
-    file://0001-meson-fix-build-with-opencv-enabled-and-opencv4.-Fix.patch \
-    file://0001-opencv-allow-compilation-against-4.3.x.patch \
     file://opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
+    file://0001-opencv-allow-compilation-against-4.4.x.patch \
     file://fix-maybe-uninitialized-warnings-when-compiling-with-Os.patch \
     file://avoid-including-sys-poll.h-directly.patch \
     file://ensure-valid-sentinels-for-gst_structure_get-etc.patch \
 "
-SRCREV = "b80b6a2db690c815a88c2450956e23e86dbd6538"
+SRCREV = "2fdaef1839ebfef7ea3bc8c1c59463a9ef0ae19a"
 
 S = "${WORKDIR}/git"
 
