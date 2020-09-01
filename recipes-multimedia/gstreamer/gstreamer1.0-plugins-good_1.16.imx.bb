@@ -2,12 +2,12 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.05.03_1911_L5.4.0"
+SRCBRANCH = "MM_04.05.05_2005_L5.4.24"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} \
 "
-SRCREV = "3bcc85705695ee629ac3fb687411bb196d231918"
+SRCREV = "fc6d8ccf3bd775517fafb1ce1d9224312d2812d8"
 
 DEFAULT_PREFERENCE = "-1"
 
