@@ -38,6 +38,10 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    c874333fa0be arm64: dts: imx8mp: Add fallback compatible to ocotp node
+#    55abb34c9faf arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
+#    df1f59fb613e arm64: dts: imx8mn: Use "fsl,imx8mm-ocotp" as ocotp's fallback compatible
+#    7ad2a7f3fd6f arm64: dts: imx8mm: Remove incorrect fallback compatible for ocotp
 #    959ad6073277 perf cs-etm: Move definition of 'traceid_list' global variable from header file
 #    129a6fad43b8 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
 #    e85ce3157725 arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
@@ -68,7 +72,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-2.1.x-imx"
-SRCREV = "e89cbd28fe652bd7a5a525877d0098840ec91694"
+SRCREV = "eedc0de7de8b12af3b56cbe960105ddfc0f1e17c"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
