@@ -4,7 +4,7 @@
 
 require recipes-graphics/imx-gpu-viv/imx-gpu-viv-6.inc
 
-SRC_URI[md5sum] = "4544b0c874914dfbc47ec93855bd04a7"
-SRC_URI[sha256sum] = "bae4099119259a303a265eb02d9f0d63348bbf3f8637de6cb892e209171b4c97"
+SRC_URI[md5sum] = "cd5e9ba9247aa0da5d97b0f030e2ede1"
+SRC_URI[sha256sum] = "9cc4c6594083f5970bc394a698a0a8ed0c7f2a1a753dfbf25cb0be5ab8bdcbd5"
 
 COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx7ulp)"
