@@ -18,6 +18,7 @@ inherit waf pkgconfig use-imx-headers
 IMX_PLATFORM_mx6 = "imx6"
 IMX_PLATFORM_mx8mq = "imx8m"
 IMX_PLATFORM_mx8mm = "imx8mm"
+IMX_PLATFORM_mx8mp = "imx8mm"
 
 EXTRA_OECONF = "--imx-platform=${IMX_PLATFORM} --libdir=${libdir} --imx-headers=${STAGING_INCDIR_IMX} --sysroot-path=${RECIPE_SYSROOT}"
 
