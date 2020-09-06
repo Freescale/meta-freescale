@@ -53,6 +53,7 @@ UBOOT_ENTRYPOINT_mx7 = "0x80008000"
 UBOOT_ENTRYPOINT_mx7ulp = "0x60008000"
 UBOOT_ENTRYPOINT_mx8mm  = "0x40480000"
 UBOOT_ENTRYPOINT_mx8mn  = "0x40480000"
+UBOOT_ENTRYPOINT_mx8mp  = "0x40480000"
 UBOOT_ENTRYPOINT_mx8mq  = "0x40480000"
 UBOOT_ENTRYPOINT_vf = "0x80008000"
 
@@ -84,6 +85,7 @@ DEFAULTTUNE_vf     ?= "cortexa5thf-neon"
 
 DEFAULTTUNE_mx8mm  ?= "cortexa53-crypto"
 DEFAULTTUNE_mx8mn  ?= "cortexa53-crypto"
+DEFAULTTUNE_mx8mp  ?= "cortexa53-crypto"
 DEFAULTTUNE_mx8mq  ?= "cortexa53-crypto"
 DEFAULTTUNE_mx8qm  ?= "cortexa72-cortexa53-crypto"
 DEFAULTTUNE_mx8qxp ?= "cortexa35-crypto"
@@ -103,6 +105,7 @@ MACHINEOVERRIDES_EXTENDER_mx7ulp = "imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8qm  = "imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8mm  = "imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8mn  = "imxdrm:imxgpu:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx8mp  = "imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8mq  = "imxdrm:imxvpu:imxgpu:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8qxp = "imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
 
@@ -126,6 +129,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx8qm \
     mx8mm \
     mx8mn \
+    mx8mp \
     mx8mq \
     mx8qxp \
 "
@@ -146,6 +150,7 @@ MACHINE_SOCARCH_SUFFIX_mx6ull = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX_mx8qm  = "-mx8"
 MACHINE_SOCARCH_SUFFIX_mx8mm  = "-mx8mm"
 MACHINE_SOCARCH_SUFFIX_mx8mn  = "-mx8mn"
+MACHINE_SOCARCH_SUFFIX_mx8mp  = "-mx8mp"
 MACHINE_SOCARCH_SUFFIX_mx8mq  = "-mx8m"
 MACHINE_SOCARCH_SUFFIX_mx8qxp = "-mx8"
 MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
@@ -226,6 +231,7 @@ MACHINE_FIRMWARE_append_mx6sll = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx6ull = " firmware-imx-epdc"
 MACHINE_FIRMWARE_append_mx53 = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE_append_mx51 = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
+MACHINE_FIRMWARE_append_mx8mp  = " firmware-imx-easrc-imx8mn firmware-imx-xcvr-imx8mp firmware-sof-imx"
 MACHINE_FIRMWARE_append_use-mainline-bsp = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 # FIXME: Needs addition of firmware-imx of official BSPs
@@ -260,14 +266,17 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 "
 
 # GStreamer 1.0 plugins
-MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
-MACHINE_GSTREAMER_1_0_PLUGIN_mx6dl ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN_mx6q ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN_mx6sl ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN_mx6sx ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN_mx6ul ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN        ?= ""
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6dl  ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6q   ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6sl  ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6sx  ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6ul  ?= "gstreamer1.0-plugins-imx-meta"
 MACHINE_GSTREAMER_1_0_PLUGIN_mx6ull ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN_mx7d ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx7d   ?= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx8mm  ?= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx8mn  ?= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN_mx8mp  ?= "imx-gst1.0-plugin"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
