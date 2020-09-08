@@ -241,11 +241,17 @@ do_install () {
     ln -sf libGLESv2.so.2.0.0 ${D}${libdir}/libGLESv2.so
 
     if [ "${IS_MX8}" = "1" ]; then
-        # Change libvulkon.so driver soname, so that it does not clash with the
-        # vulkan-loader libvulkan.so
-        patchelf --set-soname libvulkan_VSI.so.1 ${D}${libdir}/libvulkan-${backend}.so
-        mv ${D}${libdir}/libvulkan-${backend}.so ${D}${libdir}/libvulkan_VSI.so
+        # Rename the vulkan implementation library which is wrapped by the vulkan-loader
+        # library of the same name
+        MAJOR=1
+        FULL=$MAJOR.1.3
+        mv ${D}${libdir}/libvulkan-${backend}.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
+        patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
+        rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
+        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
+        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
     fi
+
     for header in ${GLES3_HEADER_REMOVALS}; do
         rm -f ${D}${includedir}/GLES3/${header}
     done
@@ -310,7 +316,7 @@ FILES_libgbm-imx_mx8           = "${libdir}/libgbm*${SOLIBS}"
 FILES_libgbm-imx-dev_mx8       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h ${libdir}/libgbm${SOLIBSDEV}"
 RDEPENDS_libgbm-imx_append_mx8 = " libdrm"
 
-FILES_libvulkan-imx = "${libdir}/libvulkan_VSI${SOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
+FILES_libvulkan-imx = "${libdir}/libvulkan_VSI${REALSOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
 FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 
 FILES_libopenvx-imx = " \
