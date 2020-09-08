@@ -61,6 +61,11 @@ REQUIRED_DISTRO_FEATURES_mx8 = "wayland"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
+PACKAGECONFIG ?= ""
+
+# Enables valgrind annotations for libgal-imx
+PACKAGECONFIG[valgrind] = ""
+
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
 IMX_PACKAGES_GBM     = ""
 IMX_PACKAGES_GBM_mx8 = "libgbm-imx libgbm-imx-dev"
@@ -304,7 +309,7 @@ FILES_libegl-imx-dev = "${libdir}/libEGL${SOLIBSDEV} ${includedir}/EGL ${include
 FILES_libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES_libgal-imx-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
 RDEPENDS_libgal-imx += "kernel-module-imx-gpu-viv"
-RSUGGESTS_libgal-imx += "valgrind"
+RDEPENDS_libgal-imx += "${@bb.utils.contains('PACKAGECONFIG', 'valgrind', 'valgrind', '', d)}"
 RPROVIDES_libgal-imx += "libgal-imx"
 INSANE_SKIP_libgal-imx += "build-deps"
 
