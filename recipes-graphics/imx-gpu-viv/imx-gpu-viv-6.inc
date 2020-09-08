@@ -257,8 +257,8 @@ do_install () {
     fi
 
     for i in wl x11 fb dri; do
-        find ${D}${libdir} -name "*-$i.so" -exec rm '{}' ';'
-        find ${D}${libdir} -name "*.$i.so" -exec rm '{}' ';'
+        find ${D}${libdir} -name "*-$i.so*" -exec rm '{}' ';'
+        find ${D}${libdir} -name "*.$i.so*" -exec rm '{}' ';'
     done
 
     # FIXME: MX6SL does not have 3D support; hack it for now
