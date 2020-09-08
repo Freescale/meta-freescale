@@ -217,7 +217,6 @@ do_install () {
     if [ "${USE_WL}" = "yes" -o "${USE_X11}" = "yes" ]; then
         cp ${S}/gpu-core/usr/lib/libGL-${backend}.so ${D}${libdir}/libGL.so.1.2.0
         ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1.2
-        ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so.1
         ln -sf libGL.so.1.2.0 ${D}${libdir}/libGL.so
     fi
     mv ${D}${libdir}/libEGL-${backend}.so ${D}${libdir}/libEGL.so.1.0
