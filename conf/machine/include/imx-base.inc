@@ -158,7 +158,6 @@ MACHINE_SOCARCH_FILTER_append_imx = " \
 "
 MACHINE_SOCARCH_FILTER_append_imxvpu = " \
     imx-codec \
-    imx-parser \
     imx-vpuwrap \
     libimxvpuapi \
     virtual/imxvpu \
