@@ -39,8 +39,6 @@ do_package_qa[prefuncs] += "__set_insane_skip"
 # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
 FILES_${PN} += "${libdir}/imx-mm/*/*${SOLIBS} ${libdir}/imx-mm/*/*${SOLIBSDEV}"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 INHIBIT_SYSROOT_STRIP = "1"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
