@@ -13,6 +13,7 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;
            file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
            file://0001-Fix-alignment-of-data-for-mempool_alloc_pool.patch \
            file://0001-use-python3-instead-of-python.patch \
+           file://0001-optee-os-fix-gcc10-compilation-issue-and-missing-cc-.patch \
           "
 S = "${WORKDIR}/git"
 
