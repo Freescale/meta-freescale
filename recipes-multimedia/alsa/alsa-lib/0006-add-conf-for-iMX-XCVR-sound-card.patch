@@ -1,0 +1,119 @@
+From 2fd2737a1a0553e164d1b4f78687edf573f8e621 Mon Sep 17 00:00:00 2001
+From: Viorel Suman <viorel.suman@nxp.com>
+Date: Mon, 9 Mar 2020 14:25:46 +0200
+Subject: [PATCH] add conf for iMX XCVR sound card
+
+Upstream Status: Pending
+
+Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
+---
+ src/conf/cards/IMX-XCVR.conf | 69 ++++++++++++++++++++++++++++++++++++++++++++
+ src/conf/cards/Makefile.am   |  3 +-
+ src/conf/cards/aliases.conf  |  1 +
+ 3 files changed, 72 insertions(+), 1 deletion(-)
+ create mode 100755 src/conf/cards/IMX-XCVR.conf
+
+diff --git a/src/conf/cards/IMX-XCVR.conf b/src/conf/cards/IMX-XCVR.conf
+new file mode 100755
+index 0000000..ee323c7
+--- /dev/null
++++ b/src/conf/cards/IMX-XCVR.conf
+@@ -0,0 +1,69 @@
++#
++# Configuration for the IMX-XCVR sound card using software IEC958
++# subframe conversion
++#
++IMX-XCVR.pcm.default {
++	@args [ CARD ]
++	@args.CARD { type string }
++	type asym
++	playback.pcm {
++		type linear
++		slave.pcm {
++			@func concat
++			strings [ "iec958:" $CARD ]
++		}
++		slave.format S24_LE
++	}
++	capture.pcm {
++		type plug
++		slave.pcm {
++			@func concat
++			strings [ "iec958:" $CARD ]
++		}
++	}
++}
++
++<confdir:pcm/iec958.conf>
++
++IMX-XCVR.pcm.iec958.0 {
++	@args [ CARD AES0 AES1 AES2 AES3 ]
++	@args.CARD { type string  }
++	@args.AES0 { type integer }
++	@args.AES1 { type integer }
++	@args.AES2 { type integer }
++	@args.AES3 { type integer }
++	type asym
++	playback.pcm {
++		type hooks
++		slave.pcm {
++			type hw
++			card $CARD
++		}
++		hooks.0 {
++			type ctl_elems
++			hook_args [
++			{
++				interface PCM
++				name "IEC958 Playback Default"
++				preserve true
++				optional true
++				value [ $AES0 $AES1 $AES2 $AES3 ]
++			}
++			]
++		}
++	}
++	capture.pcm {
++		type iec958
++		slave {
++			format IEC958_SUBFRAME_LE
++			pcm {
++				type plug
++				slave.pcm {
++					type hw
++					card $CARD
++				}
++			}
++		}
++		status [ $AES0 $AES1 $AES2 $AES3 ]
++	}
++}
+diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
+index 34fa5a3..70b9bab 100644
+--- a/src/conf/cards/Makefile.am
++++ b/src/conf/cards/Makefile.am
+@@ -61,7 +61,8 @@ cfg_files = aliases.conf \
+ 	VXPocket440.conf \
+ 	CS42888.conf \
+ 	IMX-HDMI.conf \
+-	AK4458.conf
++	AK4458.conf \
++	IMX-XCVR.conf
+ 
+ if BUILD_ALISP
+ cfg_files += aliases.alisp
+diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
+index 5d92ac7..c195848 100644
+--- a/src/conf/cards/aliases.conf
++++ b/src/conf/cards/aliases.conf
+@@ -60,6 +60,7 @@ VC4-HDMI cards.vc4-hdmi
+ cs42888-audio cards.CS42888
+ imx-hdmi-soc cards.IMX-HDMI
+ ak4458-audio cards.AK4458
++imx-audio-xcvr cards.IMX-XCVR
+ 
+ <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>
+-- 
+2.7.4
+
