@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v10 December 2019
+LA_OPT_NXP_Software_License v11 February 2020
 
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
@@ -196,32 +196,24 @@ or limitation on use or subsequent modification. Notwithstanding the foregoing,
 you will have the license rights granted in Section 2 hereto to any such
 modifications made by you or your subcontractor.
 
-6.       PATENT COVENANT NOT TO SUE. As partial, material consideration for the
-rights granted to you under this Agreement, you covenant not to sue or
-otherwise assert your patents against NXP or an NXP Affiliate, or a NXP
-licensee of the Licensed Software for infringement of your Intellectual
-Property Rights by the manufacture, use, sale, offer for sale, importation or
-other disposition or promotion of the Licensed Software and/or any
-redistributed portions of the Licensed Software.
-
-7.       ESSENTIAL PATENTS.    NXP has no obligation to identify or obtain any
+6.       ESSENTIAL PATENTS.    NXP has no obligation to identify or obtain any
 license to any Intellectual Property Right of a third-party that may be
 necessary for use in connection with technology that is incorporated into the
 Authorized System (whether or not as part of the Licensed Software).
 
-8.       TERM AND TERMINATION.   This Agreement will remain in effect unless
+7.       TERM AND TERMINATION.   This Agreement will remain in effect unless
 terminated as provided in this Section.
 
-8.1.         You may terminate this Agreement immediately upon written notice
+7.1.         You may terminate this Agreement immediately upon written notice
 to NXP at the address provided below.
 
-8.2.         Either party may terminate this Agreement if the other party is in
+7.2.         Either party may terminate this Agreement if the other party is in
 default of any of the terms and conditions of this Agreement, and termination
 is effective if the defaulting party fails to correct such default within 30
 days after written notice thereof by the non-defaulting party to the defaulting
 party at the address below.
 
-8.3.         Notwithstanding the foregoing, NXP may terminate this Agreement
+7.3.         Notwithstanding the foregoing, NXP may terminate this Agreement
 immediately upon written notice if you: breach any of your confidentiality
 obligations or the license restrictions under this Agreement;  become bankrupt,
 insolvent, or file a petition for bankruptcy or insolvency; make an assignment
@@ -229,17 +221,17 @@ for the benefit of its creditors; enter proceedings for winding up or
 dissolution; are dissolved; or are nationalized or become subject to the
 expropriation of all or substantially all of your business or assets.
 
-8.4.         Upon termination of this Agreement, all licenses granted under
+7.4.         Upon termination of this Agreement, all licenses granted under
 Section 2 will expire.
 
-8.5.         After termination of this Agreement by either party   you will
+7.5.         After termination of this Agreement by either party   you will
 destroy all parts of Licensed Software and its Derivative Works (if any) and
 will provide to NXP a statement certifying the same.
 
-8.6.         Notwithstanding the termination of this Agreement for any reason,
-the terms of Sections 1 and 3 through 25 will survive.
+7.6.         Notwithstanding the termination of this Agreement for any reason,
+the terms of Sections 1 and 3 through 24 will survive.
 
-9.        SUPPORT.  NXP is not obligated to provide any support, upgrades or
+8.        SUPPORT.  NXP is not obligated to provide any support, upgrades or
 new releases of the Licensed Software under this Agreement. If you wish, you
 may contact NXP and report problems and provide suggestions regarding the
 Licensed Software. NXP has no obligation to respond to such a problem report or
@@ -247,7 +239,7 @@ suggestion. NXP may make changes to the Licensed Software at any time, without
 any obligation to notify or provide updated versions of the Licensed Software
 to you.
 
-10.        NO WARRANTY.  To the maximum extent permitted by law, NXP expressly
+9.        NO WARRANTY.  To the maximum extent permitted by law, NXP expressly
 disclaims any warranty for the Licensed Software. The Licensed Software is
 provided "AS IS", without warranty of any kind, either express or implied,
 including without limitation the implied warranties of merchantability, fitness
@@ -255,15 +247,15 @@ for a particular purpose, or non-infringement. You assume the entire risk
 arising out of the use or performance of the licensed software, or any systems
 you design using the licensed software (if any).
 
-11.        INDEMNITY. You agree to fully defend and indemnify NXP from all
+10.        INDEMNITY. You agree to fully defend and indemnify NXP from all
 claims, liabilities, and costs (including reasonable attorney's fees) related
 to (1) your use (including your subcontractor's or distributee's use, if
 permitted) of the Licensed Software or (2) your violation of the terms and
 conditions of this Agreement.
 
-12.        LIMITATION OF LIABILITY.  EXCLUDING LIABILITY FOR A BREACH OF
+11.        LIMITATION OF LIABILITY.  EXCLUDING LIABILITY FOR A BREACH OF
 SECTION 2 (LICENSE GRANTS), SECTION 3 (LICENSE LIMITATIONS AND RESTRICTIONS),
-SECTION 17 (CONFIDENTIAL INFORMATION), OR CLAIMS UNDER SECTION 11(INDEMNITY),
+SECTION 16 (CONFIDENTIAL INFORMATION), OR CLAIMS UNDER SECTION 10 (INDEMNITY),
 IN NO EVENT WILL EITHER PARTY BE LIABLE, WHETHER IN CONTRACT, TORT, OR
 OTHERWISE, FOR ANY INCIDENTAL, SPECIAL, INDIRECT, CONSEQUENTIAL OR PUNITIVE
 DAMAGES, INCLUDING, BUT NOT LIMITED TO, DAMAGES FOR ANY LOSS OF USE, LOSS OF
@@ -274,7 +266,7 @@ WITH THIS AGREEMENT OR PRODUCT(S) SUPPLIED UNDER THIS AGREEMENT IS LIMITED TO
 THE AGGREGATE AMOUNT PAID BY YOU TO NXP IN CONNECTION WITH THE LICENSED
 SOFTWARE PROVIDED UNDER THIS AGREEMENT TO WHICH LOSSES OR DAMAGES ARE CLAIMED.
 
-13.        EXPORT COMPLIANCE. Each party shall comply with all applicable
+12.        EXPORT COMPLIANCE. Each party shall comply with all applicable
 export and import control laws and regulations including but not limited to the
 US Export Administration Regulation (including prohibited party lists issued by
 other federal governments), Catch-all regulations and all national and
@@ -288,9 +280,9 @@ such transfer, diversion, export or re-export is restricted or prohibited,
 without obtaining prior written authorization from the applicable competent
 government authorities to the extent required by those laws.
 
-14.   GOVERNMENT CONTRACT COMPLIANCE
+13.   GOVERNMENT CONTRACT COMPLIANCE
 
-14.1.      If you sell Authorized Systems directly to any government or public
+13.1.      If you sell Authorized Systems directly to any government or public
 entity, including U.S., state, local, foreign or international governments or
 public entities, or indirectly via a prime contractor or subcontractor of such
 governments or entities, NXP makes no representations, certifications, or
@@ -298,7 +290,7 @@ warranties whatsoever about compliance with government or public entity
 acquisition statutes or regulations, including, without limitation, statutes or
 regulations that may relate to pricing, quality, origin or content.
 
-14.2.      The Licensed Software has been developed at private expense and is a
+13.2.      The Licensed Software has been developed at private expense and is a
 "Commercial Item" as defined in 48 C.F.R. Section 2.101, consisting of
 "Commercial Computer Software", and/or "Commercial Computer Software
 Documentation," as such terms are used in 48 C.F.R. Section 12.212 (or 48
@@ -309,20 +301,25 @@ Licensed Software will include a provision that reiterates the limitations of
 this document and requires all sub-agreements to similarly contain such
 limitations.
 
-15.        CRITICAL APPLICATIONS
+14.        CRITICAL APPLICATIONS.  In some cases, NXP may promote certain
+software for use in the development of, or for incorporation into, products or
+services (a) used in applications requiring fail-safe performance or (b) in
+which failure could lead to death, personal injury, or severe physical or
+environmental damage (these products and services are referred to as "Critical
+Applications"). NXP's goal is to educate customers so that they can design
+their own end-product solutions to meet applicable functional safety standards
+and requirements. Licensee makes the ultimate design decisions regarding its
+products and is solely responsible for compliance with all legal, regulatory,
+safety, and security related requirements concerning its products, regardless
+of any information or support that may be provided by NXP. As such, Licensee
+assumes all risk related to use of the Licensed Software in Critical
+Applications and NXP SHALL NOT BE LIABLE FOR ANY SUCH USE IN CRITICAL
+APPLICATIONS BY LICENSEE. Accordingly, Licensee will indemnify and hold NXP
+harmless from any claims, liabilities, damages and associated costs and
+expenses (including attorneys' fees) that NXP may incur related to Licensee’s
+incorporation of the Licensed Software in a Critical Application.
 
-15.1.      You make the ultimate design decisions regarding your products and
-are solely responsible for compliance with all legal, regulatory, safety, and
-security related requirements concerning your products, regardless of any
-information or support that may be provided by NXP.  The Licensed Software is
-not designed for use in connection with products, applications, or systems
-where a failure could cause personal injury or death.  If Licensee's, or
-Licensee's contractors or distributees, permit use of the Licensed Software for
-such products, applications, or systems, Licensee agrees to indemnify NXP and
-its officers and employees from all liability, including attorneys' fees and
-costs.
-
-16.        CHOICE OF LAW; VENUE.  This Agreement will be governed by,
+15.        CHOICE OF LAW; VENUE.  This Agreement will be governed by,
 construed, and enforced in accordance with the laws of The Netherlands, without
 regard to conflicts of laws principles, will apply to all matters relating to
 this Agreement or the Licensed Software, and you agree that any litigation will
@@ -330,7 +327,7 @@ be subject to the exclusive jurisdiction of the courts of Amsterdam, The
 Netherlands. The United Nations Convention on Contracts for the International
 Sale of Goods will not apply to this document.
 
-17.        CONFIDENTIAL INFORMATION.  Subject to the license grants and
+16.        CONFIDENTIAL INFORMATION.  Subject to the license grants and
 restrictions contained herein, you must treat the Licensed Software as
 confidential information and you agree to retain the Licensed Software in
 confidence perpetually. You may not disclose any part of the Licensed Software
@@ -347,16 +344,16 @@ disclose the minimum of the required information, and that you allow NXP the
 opportunity to object to such court or other legal body requiring such
 disclosure.
 
-18.       TRADEMARKS.  You are not authorized to use any NXP trademarks, brand
+17.       TRADEMARKS.  You are not authorized to use any NXP trademarks, brand
 names, or logos.
 
-19        ENTIRE AGREEMENT.  This Agreement constitutes the entire agreement
+18.        ENTIRE AGREEMENT.  This Agreement constitutes the entire agreement
 between you and NXP regarding the subject matter of this Agreement, and
 supersedes all prior communications, negotiations, understandings, agreements
 or representations, either written or oral, if any. This Agreement may only be
 amended in written form, signed by you and NXP.
 
-20.        SEVERABILITY.  If any provision of this Agreement is held for any
+19.        SEVERABILITY.  If any provision of this Agreement is held for any
 reason to be invalid or unenforceable, then the remaining provisions of this
 Agreement will be unimpaired and, unless a modification or replacement of the
 invalid or unenforceable provision is further held to deprive you or NXP of a
@@ -365,11 +362,11 @@ invalid or unenforceable provision will be replaced with a provision that is
 valid and enforceable and that comes closest to the intention underlying the
 invalid or unenforceable provision.
 
-21.        NO WAIVER.  The waiver by NXP of any breach of any provision of this
+20.        NO WAIVER.  The waiver by NXP of any breach of any provision of this
 Agreement will not operate or be construed as a waiver of any other or a
 subsequent breach of the same or a different provision.
 
-22.        AUDIT.  You will keep full, clear and accurate records with respect
+21.        AUDIT.  You will keep full, clear and accurate records with respect
 to your compliance with the limited license rights granted under this Agreement
 for three years following expiration or termination of this Agreement. NXP will
 have the right, either itself or through an independent certified public
@@ -379,24 +376,25 @@ compliance with the limited license rights granted above. You must make prompt
 adjustment to compensate for any errors and/or omissions disclosed by such
 examination or audit.
 
-23.        NOTICES.             All notices and communications under this
+22.        NOTICES.             All notices and communications under this
 Agreement will be made in writing, and will be effective when received at the
 following addresses:
 
-          NXP:            NXP B.V.
-                          High Tech Campus 60
-                          5656 AG Eindhoven
-                          The Netherlands
+          NXP:      NXP B.V.
+                    High Tech Campus 60
+                    5656 AG Eindhoven
+                    The Netherlands
+
                     ATTN: Legal Department
 
 You:              The address provided at registration will be used.
 
-24.        RELATIONSHIP OF THE PARTIES.     The parties are independent
+23.        RELATIONSHIP OF THE PARTIES.     The parties are independent
 contractors. Nothing in this Agreement will be construed to create any
 partnership, joint venture, or similar relationship. Neither party is
 authorized to bind the other to any obligations with third parties.
 
-25.        SUCCESSION AND ASSIGNMENT.   This Agreement will be binding upon and
+24.        SUCCESSION AND ASSIGNMENT.   This Agreement will be binding upon and
 inure to the benefit of the parties and their permitted successors and assigns.
  You may not assign this Agreement, or any part of this Agreement, without the
 prior written approval of NXP, which approval will not be unreasonably withheld
