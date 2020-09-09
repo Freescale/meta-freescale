@@ -1,0 +1,161 @@
+From 027a3b9a33fbb23e1d1d7ed6411d4d112d2a55a1 Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.z@gmail.com>
+Date: Sat, 30 May 2020 22:00:59 +0000
+Subject: [PATCH] optee-os: fix gcc10 compilation issue and missing cc-options
+
+Backport PR 3891 from upstream to imx fork, which addressed compilation
+failure when GCC10 is used.
+
+Additional changes ported fixed cc-options macro, which allows to query
+compiler used if the desired option exists before it could be set. This
+solves also the build issues when GCC9 is used to build this component.
+
+Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/3891]
+
+Signed-off-by: Andrey Zhizhikin <andrey.z@gmail.com>
+---
+ core/arch/arm/arm.mk | 21 ++++++++++++++++-----
+ core/core.mk         |  5 +----
+ mk/cc-option.mk      |  9 +++++++++
+ mk/gcc.mk            |  2 +-
+ ta/mk/ta_dev_kit.mk  |  3 +++
+ ta/ta.mk             |  1 +
+ 6 files changed, 31 insertions(+), 10 deletions(-)
+ create mode 100644 mk/cc-option.mk
+
+diff --git a/core/arch/arm/arm.mk b/core/arch/arm/arm.mk
+index 0a95b1ec..bfcbe896 100644
+--- a/core/arch/arm/arm.mk
++++ b/core/arch/arm/arm.mk
+@@ -1,3 +1,16 @@
++# Setup compiler for the core module
++ifeq ($(CFG_ARM64_core),y)
++arch-bits-core := 64
++else
++arch-bits-core := 32
++endif
++CROSS_COMPILE_core := $(CROSS_COMPILE$(arch-bits-core))
++COMPILER_core := $(COMPILER)
++include mk/$(COMPILER_core).mk
++
++# Defines the cc-option macro using the compiler set for the core module
++include mk/cc-option.mk
++
+ CFG_LTC_OPTEE_THREAD ?= y
+ # Size of emulated TrustZone protected SRAM, 448 kB.
+ # Only applicable when paging is enabled.
+@@ -95,7 +108,7 @@ arm32-platform-aflags-no-hard-float ?=
+ 
+ arm64-platform-cflags-no-hard-float ?= -mgeneral-regs-only
+ arm64-platform-cflags-hard-float ?=
+-arm64-platform-cflags-generic ?= -mstrict-align
++arm64-platform-cflags-generic := -mstrict-align $(call cc-option,-mno-outline-atomics,)
+ 
+ ifeq ($(DEBUG),1)
+ # For backwards compatibility
+@@ -124,14 +137,12 @@ core-platform-aflags += $(platform-aflags-generic)
+ core-platform-aflags += $(platform-aflags-debug-info)
+ 
+ ifeq ($(CFG_ARM64_core),y)
+-arch-bits-core := 64
+ core-platform-cppflags += $(arm64-platform-cppflags)
+ core-platform-cflags += $(arm64-platform-cflags)
+ core-platform-cflags += $(arm64-platform-cflags-generic)
+ core-platform-cflags += $(arm64-platform-cflags-no-hard-float)
+ core-platform-aflags += $(arm64-platform-aflags)
+ else
+-arch-bits-core := 32
+ core-platform-cppflags += $(arm32-platform-cppflags)
+ core-platform-cflags += $(arm32-platform-cflags)
+ core-platform-cflags += $(arm32-platform-cflags-no-hard-float)
+@@ -217,8 +228,8 @@ ta-mk-file-export-add-ta_arm64 += CROSS_COMPILE64 ?= $$(CROSS_COMPILE)_nl_
+ ta-mk-file-export-add-ta_arm64 += CROSS_COMPILE_ta_arm64 ?= $$(CROSS_COMPILE64)_nl_
+ endif
+ 
+-# Set cross compiler prefix for each submodule
+-$(foreach sm, core $(ta-targets), $(eval CROSS_COMPILE_$(sm) ?= $(CROSS_COMPILE$(arch-bits-$(sm)))))
++# Set cross compiler prefix for each TA target
++$(foreach sm, $(ta-targets), $(eval CROSS_COMPILE_$(sm) ?= $(CROSS_COMPILE$(arch-bits-$(sm)))))
+ 
+ arm32-sysreg-txt = core/arch/arm/kernel/arm32_sysreg.txt
+ arm32-sysregs-$(arm32-sysreg-txt)-h := arm32_sysreg.h
+diff --git a/core/core.mk b/core/core.mk
+index 37906792..4eec217a 100644
+--- a/core/core.mk
++++ b/core/core.mk
+@@ -8,6 +8,7 @@ arch-dir	:= core/arch/$(ARCH)
+ platform-dir	:= $(arch-dir)/plat-$(PLATFORM)
+ include $(platform-dir)/conf.mk
+ include mk/config.mk
++# $(ARCH).mk also sets the compiler for the core module
+ include core/arch/$(ARCH)/$(ARCH).mk
+ 
+ PLATFORM_$(PLATFORM) := y
+@@ -16,10 +17,6 @@ PLATFORM_FLAVOR_$(PLATFORM_FLAVOR) := y
+ $(call cfg-depends-all,CFG_PAGED_USER_TA,CFG_WITH_PAGER CFG_WITH_USER_TA)
+ include core/crypto.mk
+ 
+-# Setup compiler for this sub module
+-COMPILER_$(sm)		?= $(COMPILER)
+-include mk/$(COMPILER_$(sm)).mk
+-
+ cppflags$(sm)	+= -D__KERNEL__
+ 
+ cppflags$(sm)	+= -Icore/include
+diff --git a/mk/cc-option.mk b/mk/cc-option.mk
+new file mode 100644
+index 00000000..4699fbcc
+--- /dev/null
++++ b/mk/cc-option.mk
+@@ -0,0 +1,9 @@
++_cc-option-supported = $(if $(shell $(CC$(sm)) $(1) -c -x c /dev/null -o /dev/null 2>/dev/null >/dev/null || echo "Not supported"),,1)
++_cc-opt-cached-var-name = $(subst =,~,$(strip cached-cc-option-$(1)-$(subst $(empty) $(empty),,$(CC$(sm)))))
++define _cc-option
++$(eval _var_name := $(call _cc-opt-cached-var-name,$(1)))
++$(eval $(_var_name) := $(if $(filter $(origin $(_var_name)),undefined),$(call _cc-option-supported,$(1)),$($(_var_name))))
++$(if $($(_var_name)),$(1),$(2))
++endef
++cc-option = $(strip $(call _cc-option,$(1),$(2)))
++
+diff --git a/mk/gcc.mk b/mk/gcc.mk
+index c516c731..330b200a 100644
+--- a/mk/gcc.mk
++++ b/mk/gcc.mk
+@@ -12,7 +12,7 @@ nostdinc$(sm)	:= -nostdinc -isystem $(shell $(CC$(sm)) \
+ 			-print-file-name=include 2> /dev/null)
+ 
+ # Get location of libgcc from gcc
+-libgcc$(sm)  	:= $(shell $(CC$(sm)) $(LIBGCC_LOCATE_CFLAGS) $(CFLAGS$(arch-bits-$(sm))) $(comp-cflags$(sm)) \
++libgcc$(sm)  	:= $(shell $(CC$(sm)) $(LIBGCC_LOCATE_CFLAGS) $(CFLAGS$(arch-bits-$(sm))) \
+ 			-print-libgcc-file-name 2> /dev/null)
+ 
+ # Define these to something to discover accidental use
+diff --git a/ta/mk/ta_dev_kit.mk b/ta/mk/ta_dev_kit.mk
+index 8473c6df..40e77c3e 100644
+--- a/ta/mk/ta_dev_kit.mk
++++ b/ta/mk/ta_dev_kit.mk
+@@ -86,6 +86,9 @@ clean:
+ 	@$(cmd-echo-silent) '  CLEAN   $(O)'
+ 	${q}if [ -d "$(O)" ]; then $(RMDIR) $(O); fi
+ 
++include  $(ta-dev-kit-dir$(sm))/mk/$(COMPILER_$(sm)).mk
++include  $(ta-dev-kit-dir$(sm))/mk/cc-option.mk
++
+ subdirs = .
+ include  $(ta-dev-kit-dir$(sm))/mk/subdir.mk
+ 
+diff --git a/ta/ta.mk b/ta/ta.mk
+index 1b7e999d..e0915d18 100644
+--- a/ta/ta.mk
++++ b/ta/ta.mk
+@@ -105,6 +105,7 @@ $(foreach f, $(libfiles), \
+ 
+ # Copy .mk files
+ ta-mkfiles = mk/compile.mk mk/subdir.mk mk/gcc.mk mk/cleandirs.mk \
++	mk/cc-option.mk \
+ 	ta/arch/$(ARCH)/link.mk ta/arch/$(ARCH)/link_shlib.mk \
+ 	ta/mk/ta_dev_kit.mk
+ 
+-- 
+2.17.1
+
