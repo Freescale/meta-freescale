@@ -3,9 +3,7 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 DEPENDS_append_imxgpu2d = " virtual/libg2d"
 DEPENDS_append_mx8 = " libdrm"
 
-PACKAGECONFIG_append_mx6q = " opencv"
-PACKAGECONFIG_append_mx6qp = " opencv"
-PACKAGECONFIG_append_mx8 = " opencv kms"
+PACKAGECONFIG_append_mx8 = " kms"
 
 DEFAULT_PREFERENCE = "-1"
 
