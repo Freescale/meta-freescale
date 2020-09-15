@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.64
+#    tag: v5.4.65
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -44,6 +44,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    bffbf24c88a7 fbdev: fix fbinfo flag dropped upstream
 #    fd34d250e9a5 arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
 #    4e0a3bc7b1af arm64: dts: imx8mn: Use "fsl,imx8mm-ocotp" as ocotp's fallback compatible
 #    66af62de926c arm64: dts: imx8mm: Remove incorrect fallback compatible for ocotp
@@ -78,14 +79,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-1.0.0-imx"
-SRCREV = "8fad04b9ebd8ba2a776b657c37df81b5c803ee64"
+SRCREV = "a5efa25ffaf3e3efd1aa41a5aca9ae8b7ac125bd"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.64"
+LINUX_VERSION = "5.4.65"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-lf-5.4.y"
