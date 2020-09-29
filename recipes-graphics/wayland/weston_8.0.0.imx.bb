@@ -144,7 +144,7 @@ PACKAGECONFIG_OPENGL              = "opengl"
 PACKAGECONFIG_OPENGL_imxgpu2d     = ""
 PACKAGECONFIG_OPENGL_imxgpu3d     = "opengl"
 
-PACKAGECONFIG_remove = "wayland x11"
+PACKAGECONFIG_remove = "wayland x11 xwayland"
 PACKAGECONFIG_append = " ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)}"
 
 PACKAGECONFIG_remove_imxfbdev = "kms"
