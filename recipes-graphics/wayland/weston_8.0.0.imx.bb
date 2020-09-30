@@ -65,7 +65,7 @@ PACKAGECONFIG[webp] = "-Dimage-webp=true,-Dimage-webp=false,libwebp"
 # Weston with systemd-login support
 PACKAGECONFIG[systemd] = "-Dsystemd=true -Dlauncher-logind=true,-Dsystemd=false -Dlauncher-logind=false,systemd dbus"
 # Weston with Xwayland support (requires X11 and Wayland)
-PACKAGECONFIG[xwayland] = "-Dxwayland=true,-Dxwayland=false"
+PACKAGECONFIG[xwayland] = "-Dxwayland=true,-Dxwayland=false,libxcursor"
 # colord CMS support
 PACKAGECONFIG[colord] = "-Dcolor-management-colord=true,-Dcolor-management-colord=false,colord"
 # Clients support
@@ -144,7 +144,7 @@ PACKAGECONFIG_OPENGL              = "opengl"
 PACKAGECONFIG_OPENGL_imxgpu2d     = ""
 PACKAGECONFIG_OPENGL_imxgpu3d     = "opengl"
 
-PACKAGECONFIG_remove = "wayland x11 xwayland"
+PACKAGECONFIG_remove = "wayland x11"
 PACKAGECONFIG_append = " ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)}"
 
 PACKAGECONFIG_remove_imxfbdev = "kms"
