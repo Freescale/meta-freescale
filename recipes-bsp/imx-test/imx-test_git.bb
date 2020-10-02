@@ -49,6 +49,9 @@ PACKAGECONFIG_append_imxvpu = " vpu"
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 PACKAGECONFIG[vpu] = "HAS_VPU=true,HAS_VPU=false,virtual/imxvpu"
 
+# FIXME: Fail to build due to misuse of printf
+SECURITY_STRINGFORMAT = ""
+
 do_compile() {
     CFLAGS="${TOOLCHAIN_OPTIONS}"
     oe_runmake V=1 VERBOSE='' \
