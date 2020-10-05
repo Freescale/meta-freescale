@@ -126,6 +126,9 @@ compile_mx8x() {
     fi
 }
 do_compile() {
+    # mkimage_uboot requires libssl.so.1.1 from ${STAGING_LIBDIR_NATIVE}
+    export LD_LIBRARY_PATH=${STAGING_LIBDIR_NATIVE}:$LD_LIBRARY_PATH
+
     # mkimage for i.MX8
     # Copy TEE binary to SoC target folder to mkimage
     if ${DEPLOY_OPTEE}; then
