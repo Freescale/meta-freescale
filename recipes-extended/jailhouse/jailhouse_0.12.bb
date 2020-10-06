@@ -13,8 +13,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
                  file://driver/jailhouse.h;beginline=9;endline=36;md5=2825581c1666c44a17955dc574cfbfb3 \
 "
 
-SRCBRANCH = "lf-5.4.y"
-SRCREV = "82d5698945eafaffa58bab3b4d6da320bf56289c"
+SRCBRANCH = "imx_5.4.47_2.2.0"
+SRCREV = "8bbe203ee7c1fc16198ce1bf964e54c90606c3c2"
 
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-jailhouse.git;protocol=ssh;branch=${SRCBRANCH} \
            file://0001-tools-scripts-update-shebang-to-python3.patch \
