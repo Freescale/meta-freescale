@@ -14,8 +14,8 @@ do_install() {
     install -d ${D}${nonarch_base_libdir}/firmware/imx
 
     # SDMA Firmware section
-    install -d ${D}${nonarch_base_libdir}/firmware/sdma
-    install -m 0644 ${S}/firmware/sdma/* ${D}${nonarch_base_libdir}/firmware/sdma
+    install -d ${D}${nonarch_base_libdir}/firmware/imx/sdma
+    install -m 0644 ${S}/firmware/sdma/* ${D}${nonarch_base_libdir}/firmware/imx/sdma
 
     # EASRC Firmware section
     install -d ${D}${nonarch_base_libdir}/firmware/imx/easrc
@@ -83,7 +83,7 @@ python populate_packages_prepend() {
                       extra_depends='',
                       prepend=True)
 
-    sdmadir = bb.data.expand('${nonarch_base_libdir}/firmware/sdma', d)
+    sdmadir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/sdma', d)
     do_split_packages(d, sdmadir, '^sdma-([^-]*).*\.bin',
                       output_pattern='firmware-imx-sdma-%s',
                       description='Freescale IMX SDMA Firmware [%s]',
