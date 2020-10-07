@@ -303,8 +303,10 @@ ALLOW_EMPTY_${PN} = "1"
 FILES_libclc-imx = "${libdir}/libCLC${SOLIBS}"
 FILES_libclc-imx-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 
-FILES_libegl-imx = "${libdir}/libEGL${REALSOLIBS}"
-FILES_libegl-imx-dev = "${libdir}/libEGL${SOLIBSDEV} ${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
+# libEGL.so is used by some demo apps from Freescale
+INSANE_SKIP_libegl-imx += "dev-so"
+FILES_libegl-imx = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
+FILES_libegl-imx-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 
 FILES_libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES_libgal-imx-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
@@ -323,22 +325,26 @@ FILES_libvulkan-imx = "${libdir}/libvulkan_VSI${REALSOLIBS} ${libdir}/libSPIRV_v
 FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 
 FILES_libopenvx-imx = " \
-        ${libdir}/libOpenVX${REALSOLIBS} \
-        ${libdir}/libOpenVXU${SOLIBS} \
+        ${libdir}/libOpenVX*${SOLIBS} \
         ${libdir}/libOvx*${SOLIBS} \
+        ${libdir}/libovx*${SOLIBS} \
         "
-FILES_libopenvx-imx-dev = "${libdir}/libOpenVX${SOLIBSDEV} ${includedir}/VX ${includedir}/OVXLIB"
+FILES_libopenvx-imx-dev = "${includedir}/VX ${includedir}/OVXLIB"
 RDEPENDS_libopenvx-imx = "libnn-imx"
 
 FILES_libgl-imx = "${libdir}/libGL${REALSOLIBS}"
 FILES_libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL"
 
-FILES_libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLES_*${REALSOLIBS}"
-FILES_libgles1-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBSDEV} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
+# libEGL needs to open libGLESv1.so
+INSANE_SKIP_libgles1-imx += "dev-so"
+FILES_libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
+FILES_libgles1-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
 RPROVIDES_libgles1-imx = "libgles-imx"
 RPROVIDES_libgles1-imx-dev = "libgles-imx-dev"
 
-FILES_libgles2-imx = "${libdir}/libGLESv2${REALSOLIBS}"
+# libEGL needs to open libGLESv2.so
+INSANE_SKIP_libgles2-imx += "dev-so"
+FILES_libgles2-imx = "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
 FILES_libgles2-imx-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV} ${libdir}/pkgconfig/glesv2.pc"
 RDEPENDS_libgles2-imx = "libglslc-imx"
 
@@ -350,7 +356,7 @@ RDEPENDS_libgles2-imx-dev += "libgles3-imx-dev"
 FILES_libglslc-imx = "${libdir}/libGLSLC${SOLIBS}"
 FILES_libglslc-imx-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
 
-FILES_libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
+FILES_libopencl-imx = "${libdir}/libOpenCL${SOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \
                        ${libdir}/libLLVM_viv${SOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
@@ -382,7 +388,7 @@ FILES_imx-gpu-viv-tools = "${bindir}/gmem_info"
 FILES_imx-gpu-viv-demos = "/opt"
 INSANE_SKIP_imx-gpu-viv-demos += "rpaths dev-deps"
 
-FILES_libnn-imx = "${libdir}/libNN*${SOLIBS} ${libdir}/libneuralnetworks${SOLIBS}"
+FILES_libnn-imx = "${libdir}/libNN*${SOLIBS} ${libdir}/libnn*${SOLIBS} ${libdir}/libneuralnetworks${SOLIBS}"
 FILES_libnn-imx-dev = "${includedir}/nnrt"
 
 # COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx8)"
