@@ -325,7 +325,8 @@ FILES_libvulkan-imx = "${libdir}/libvulkan_VSI${REALSOLIBS} ${libdir}/libSPIRV_v
 FILES_libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 
 FILES_libopenvx-imx = " \
-        ${libdir}/libOpenVX*${SOLIBS} \
+        ${libdir}/libOpenVX*${REALSOLIBS} \
+        ${libdir}/libOpenVXU${SOLIBS} \
         ${libdir}/libOvx*${SOLIBS} \
         ${libdir}/libovx*${SOLIBS} \
         "
@@ -356,7 +357,7 @@ RDEPENDS_libgles2-imx-dev += "libgles3-imx-dev"
 FILES_libglslc-imx = "${libdir}/libGLSLC${SOLIBS}"
 FILES_libglslc-imx-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
 
-FILES_libopencl-imx = "${libdir}/libOpenCL${SOLIBS} \
+FILES_libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \
                        ${libdir}/libLLVM_viv${SOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
