@@ -10,7 +10,7 @@ DEPENDS += "bison-native"
 
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH}"
 
-SRCREV = "a266838009e02b369b51f4139c6ac64facb12d34"
+SRCREV = "c28472955be341458dd2d4fdb863eba3c1df2fd3"
 SRCBRANCH = "2020.04+fslc"
 
 PV = "v2020.04+git${SRCPV}"
