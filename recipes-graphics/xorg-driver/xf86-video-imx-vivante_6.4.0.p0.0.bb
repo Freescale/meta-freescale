@@ -18,7 +18,7 @@ SRCBRANCH = "imx_exa_viv6_g2d"
 SRC_URI = "git://source.codeaurora.org/external/imx/xf86-video-imx-vivante.git;protocol=https;branch=${SRCBRANCH} \
            file://rc.autohdmi"
 
-S = "${WORKDIR}/git/"
+S = "${WORKDIR}/git"
 
 INITSCRIPT_PACKAGES = "xserver-xorg-extension-viv-autohdmi"
 INITSCRIPT_NAME = "rc.autohdmi"
