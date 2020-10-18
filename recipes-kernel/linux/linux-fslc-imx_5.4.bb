@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.71
+#    tag: v5.4.72
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -43,7 +43,6 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 #    55abb34c9faf arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
 #    df1f59fb613e arm64: dts: imx8mn: Use "fsl,imx8mm-ocotp" as ocotp's fallback compatible
 #    7ad2a7f3fd6f arm64: dts: imx8mm: Remove incorrect fallback compatible for ocotp
-#    959ad6073277 perf cs-etm: Move definition of 'traceid_list' global variable from header file
 #    129a6fad43b8 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
 #    e85ce3157725 arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
 #    4f49200132e6 arm: imx: enable HAVE_IMX_BUSFREQ for i.MX6
@@ -73,14 +72,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-2.1.x-imx"
-SRCREV = "4236f3c63f99cbd22601f4158f8a6166688af5b3"
+SRCREV = "4f8cdaa273f3e18a2ef7470c961cd2b1211dd041"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.71"
+LINUX_VERSION = "5.4.72"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-imx-5.4.24-2.1.0"
