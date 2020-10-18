@@ -22,11 +22,19 @@ EXTRA_OECONF = "--imx-linux-headers-path=${STAGING_INCDIR_IMX} \
                 --libdir=${libdir} \
                 ${PACKAGECONFIG_CONFARGS}"
 
+# If imxdpu is in use, the DPU is also used for implementing
+# libg2d. However, that implementation's g2d_alloc() function
+# is broken, so we cannot use it.
+LIBG2D_PACKAGECONFIG = "g2d"
+LIBG2D_PACKAGECONFIG_imxdpu = ""
+
 PACKAGECONFIG ?= " "
-PACKAGECONFIG_append_imxgpu2d = " g2d"
+PACKAGECONFIG_append_imxgpu2d = " ${LIBG2D_PACKAGECONFIG}"
 PACKAGECONFIG_append_imxipu   = " ipu"
 PACKAGECONFIG_append_imxpxp   = " pxp"
-PACKAGECONFIG_append_mx8m     = " dwl ion"
+PACKAGECONFIG_append_mx8m     = " ion dwl"
+PACKAGECONFIG_append_mx8qm    = " ion"
+PACKAGECONFIG_append_mx8qxp   = " ion"
 
 HANTRO_CONF = "--hantro-headers-path=${STAGING_INCDIR}/hantro_dec --hantro-decoder-version=G2"
 
