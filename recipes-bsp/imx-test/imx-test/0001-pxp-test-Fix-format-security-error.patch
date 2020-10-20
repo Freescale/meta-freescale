@@ -1,0 +1,32 @@
+From 97a55fe4b1e02b9a4992517234a8b24f8f9f0009 Mon Sep 17 00:00:00 2001
+From: "i.MX Yocto Project Build" <imx.build@nxp.com>
+Date: Mon, 27 Jan 2020 13:43:47 -0600
+Subject: [PATCH] pxp test: Fix format-security error
+
+| pxp_lib_test/pxp_test.c: In function 'main':
+| pxp_lib_test/pxp_test.c:541:2: error: format not a string literal and no format arguments [-Werror=format-security]
+|   541 |  printf(usage);
+|       |  ^~~~~~
+
+Upstream-Status: Pending
+
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ test/pxp_lib_test/pxp_test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/pxp_lib_test/pxp_test.c b/test/pxp_lib_test/pxp_test.c
+index 107198f..72c984d 100644
+--- a/test/pxp_lib_test/pxp_test.c
++++ b/test/pxp_lib_test/pxp_test.c
+@@ -538,6 +538,6 @@ int main(int argc, char *argv[])
+ 
+ 	return 0;
+ usage:
+-	printf(usage);
++	printf("%s", usage);
+ 	return -1;
+ }
+-- 
+2.17.1
+

@@ -16,13 +16,13 @@ DEPENDS_append_imxvpu = " virtual/imxvpu"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "lf-5.4.y"
+SRCBRANCH = "imx_5.4.47_2.2.0"
 SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-mxc_v4l2_test-fix-compilation-error-produced-by-gcc9.patch \
+    file://0001-pxp-test-Fix-format-security-error.patch \
     file://memtool_profile \
 "
-SRCREV = "6d20e84f2dbe5940fe6d629c2839e1390994ee1f"
+SRCREV = "31623a4972bf6f2f4239b4667aeb33baba07a3c8"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers
@@ -48,9 +48,6 @@ PACKAGECONFIG_append_imxvpu = " vpu"
 
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 PACKAGECONFIG[vpu] = "HAS_VPU=true,HAS_VPU=false,virtual/imxvpu"
-
-# FIXME: Fail to build due to misuse of printf
-SECURITY_STRINGFORMAT = ""
 
 do_compile() {
     CFLAGS="${TOOLCHAIN_OPTIONS}"
