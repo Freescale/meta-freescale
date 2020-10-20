@@ -7,12 +7,12 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 
 PV .= "+git${SRCPV}"
 
-SRCBRANCH = "imx_5.4.24_2.1.0"
+SRCBRANCH = "imx_5.4.47_2.2.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-imx-Fix-missing-inclusion-of-cdefs.h.patch \
            file://0001-imx-Fix-multiple-definition-of-ipc_handle.patch \
 "
-SRCREV = "b0a00f22b09c13572d3e87902a1069dee34763bd"
+SRCREV = "c949a888e909811db191500c51456391dff61284"
 
 S = "${WORKDIR}/git"
 
