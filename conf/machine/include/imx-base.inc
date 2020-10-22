@@ -174,6 +174,7 @@ MACHINE_SOCARCH_FILTER_append_imxgpu = " \
     libdrm \
     cairo \
     libgal-imx \
+    opencv \
     pango \
 "
 MACHINE_SOCARCH_FILTER_append_imxgpu2d = " \
