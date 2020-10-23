@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v11 February 2020
+LA_OPT_NXP_Software_License v15 August 2020
 
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
@@ -72,13 +72,13 @@ and to which different license terms may apply.
 
 2.       LICENSE GRANT.
 
-2.1.         If you are not expressly granted the production use license in
+2.1.         If you are not expressly granted the distribution license in
 Section 2.3 in the Software Content Register, then you are only granted the
 rights in Section 2.2 and not in 2.3.  If you are expressly granted the
-production use license in Section 2.3 in the Software Content Register, then
-you are granted the rights in both Section 2.2 and 2.3.
+distribution license in Section 2.3 in the Software Content Register, then you
+are granted the rights in both Section 2.2 and 2.3.
 
-2.2.      Internal Use License.  Subject to the terms and conditions of this
+2.2.      Standard License.  Subject to the terms and conditions of this
 Agreement, NXP grants you a worldwide, personal, non-transferable,
 non-exclusive, non-sublicensable license, solely for the development of an
 Authorized System:
@@ -92,11 +92,11 @@ readable), to prepare Derivative Works of the Licensed Software.
 You may not distribute or sublicense the Licensed Software to others under the
 license granted in this Section 2.2.
 
-2.3.        Production Use License.  If expressly authorized in the Software
-Content Register, subject to the terms and conditions of this Agreement, NXP
-grants you a worldwide, personal, non-transferable, non-exclusive,
-non-sublicensable license solely in connection with your manufacturing and
-distribution of an Authorized System:
+2.3.        Additional Distribution License.  If expressly authorized in the
+Software Content Register, subject to the terms and conditions of this
+Agreement, NXP grants you a worldwide, personal, non-transferable,
+non-exclusive, non-sublicensable license solely in connection with your
+manufacturing and distribution of an Authorized System:
 
 (a)            to manufacture (or have manufactured), distribute, and market
 the Licensed Software (and its Derivative Works prepared under the license in
@@ -168,11 +168,11 @@ combined and/or distributed with the software be (i) disclosed or distributed
 in source code form; (ii) licensed for the purpose of making Derivative Works;
 or (iii) redistributable at no charge.
 
-3.8.         You may not publish or distribute information, results or data
-associated with the use of the Licensed Software to anyone other than NXP;
-however, you must advise NXP of any results obtained including any problems or
-suggested improvements thereof.  NXP retains the right to use such results and
-related information in any manner it deems appropriate
+3.8.         You may not publish or distribute reports associated with the use
+of the Licensed Software to anyone other than NXP.  You may advise NXP of any
+results obtained from your use of the Licensed Software, including any problems
+or suggested improvements thereof, and NXP retains the right to use such
+results and related information in any manner it deems appropriate.
 
 4.       OPEN SOURCE.         Open source software included in the Licensed
 Software is not licensed under the terms of this Agreement but is instead
@@ -268,17 +268,19 @@ SOFTWARE PROVIDED UNDER THIS AGREEMENT TO WHICH LOSSES OR DAMAGES ARE CLAIMED.
 
 12.        EXPORT COMPLIANCE. Each party shall comply with all applicable
 export and import control laws and regulations including but not limited to the
-US Export Administration Regulation (including prohibited party lists issued by
-other federal governments), Catch-all regulations and all national and
-international embargoes. Each party further agrees that it will not knowingly
-transfer, divert, export or re-export, directly or indirectly, any product,
-software, including software source code, or technology restricted by such
-regulations or by other applicable national regulations, received from the
-other party under this Agreement, or any direct product of such software or
-technical data to any person, firm, entity, country or destination to which
-such transfer, diversion, export or re-export is restricted or prohibited,
-without obtaining prior written authorization from the applicable competent
-government authorities to the extent required by those laws.
+US Export Administration Regulation (including restrictions on certain military
+end uses and military end users as specified in Section 15 C.F.R. § 744.21 and
+prohibited party lists issued by other federal governments), Catch-all
+regulations and all national and international embargoes. Each party further
+agrees that it will not knowingly transfer, divert, export or re-export,
+directly or indirectly, any product, software, including software source code,
+or technology restricted by such regulations or by other applicable national
+regulations, received from the other party under this Agreement, or any direct
+product of such software or technical data to any person, firm, entity, country
+or destination to which such transfer, diversion, export or re-export is
+restricted or prohibited, without obtaining prior written authorization from
+the applicable competent government authorities to the extent required by those
+laws.
 
 13.   GOVERNMENT CONTRACT COMPLIANCE
 
@@ -380,10 +382,10 @@ examination or audit.
 Agreement will be made in writing, and will be effective when received at the
 following addresses:
 
-          NXP:      NXP B.V.
-                    High Tech Campus 60
-                    5656 AG Eindhoven
-                    The Netherlands
+          NXP:          NXP B.V.
+                        High Tech Campus 60
+                        5656 AG Eindhoven
+                        The Netherlands
 
                     ATTN: Legal Department
 
@@ -559,29 +561,6 @@ manufacturer in good standing with a current license with Real Networks for the
 commercial use and distribution of products containing the GStreamer Optimized
 Real Format Client Code implementation or OpenMax Optimized Real Format Client
 Code
-
-Real Time Engineers Ltd.:  Any FreeRTOS source code, whether modified or in its
-original release form, or whether in whole or in part, can only be distributed
-by you under the terms of version 2 of the GNU General Public License plus this
-exception.  An independent module is a module which is not derived from or
-based on FreeRTOS.
-
-Clause 1: Linking FreeRTOS with other modules is making a combined work based
-on FreeRTOS. Thus, the terms and conditions of the GNU General Public License
-V2 cover the whole combination.
-
-As a special exception, the copyright holders of FreeRTOS give you permission
-to link FreeRTOS with independent modules to produce a statically linked
-executable, regardless of the license terms of these independent modules, and
-to copy and distribute the resulting executable under terms of your choice,
-provided that you also meet, for each linked independent module, the terms and
-conditions of the license of that module.  An independent module is a module
-which is not derived from or based on FreeRTOS.
-
-Clause 2:  FreeRTOS may not be used for any competitive or comparative purpose,
-including the publication of any form of run time or compile time metric,
-without the express permission of Real Time Engineers Ltd. (this is the norm
-within the industry and is intended to ensure information accuracy).
 
 RivieraWaves SAS (a member of the CEVA, Inc. family of companies): You may not
 use the RivieraWaves intellectual property licensed under this Agreement if you
