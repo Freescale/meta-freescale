@@ -2,7 +2,7 @@
 
 DESCRIPTION = "i.MX Hantro VPU library"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=228c72f2a91452b8a03c4cab30f30ef9"
+LIC_FILES_CHKSUM = "file://COPYING;md5=983e4c77621568488dd902b27e0c2143"
 
 PROVIDES = "virtual/imxvpu"
 
@@ -10,8 +10,8 @@ SRC_URI = " \
     ${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
     file://0001-decoder_sw-resolve-compilation-error-with-fcommon.patch \
 "
-SRC_URI[md5sum] = "78034de7ed74363eb793d29894bba5e3"
-SRC_URI[sha256sum] = "bebd82649d00d6dd8236b77b8677b1cc6ac46dc474200502df7797a75dc8f568"
+SRC_URI[md5sum] = "05a2c37fddcabdadd5fa37d3a38914c6"
+SRC_URI[sha256sum] = "261cab83954bd66e95b1650a737cb36261a2098597d904e517da638097ed4fd2"
 
 inherit fsl-eula-unpack use-imx-headers
 
