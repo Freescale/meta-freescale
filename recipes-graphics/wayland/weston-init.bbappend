@@ -15,6 +15,12 @@ SRC_URI_append_mx6sl = " file://weston.config"
 INI_UNCOMMENT_ASSIGNMENTS_append_imx = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland=true', '', d)} \
 "
+INI_UNCOMMENT_ASSIGNMENTS_append_mx6dl = " \
+    use-g2d=1 \
+"
+INI_UNCOMMENT_ASSIGNMENTS_append_mx6q = " \
+    use-g2d=1 \
+"
 INI_UNCOMMENT_ASSIGNMENTS_append_mx7ulp = " \
     use-g2d=1 \
 "
