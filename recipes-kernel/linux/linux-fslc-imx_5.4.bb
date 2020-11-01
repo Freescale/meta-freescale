@@ -13,7 +13,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # This recipe (and corresponding kernel repository and branch) receives updates
 # from 3 different sources:
 # 1. Stable [linux-5.4.y] branch updates of korg;
-# 2. NXP-specific updates via branch [5.4-2.1.x-imx] shared via CodeAurora forum;
+# 2. NXP-specific updates via branch [5.4-2.2.x-imx] shared via CodeAurora forum;
 # 3. Critical patches, which are not (yet) integrated into either of 2 above
 #    sources, but are required to be applied to the kernel tree.
 #
@@ -28,12 +28,18 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.80
+#    tag: v5.4.74
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: rel_imx_5.4.24_2.1.0
+#    tag: rel_imx_5.4.47_2.2.0
+#
+#    5ec03d06f54e MLK-24836 ARM: imx: Refresh wdog should consider the CMD mode on i.MX7ULP
+#    bba6ff64f0df MLK-24824-3 ARM: imx: Refresh wdog1 to make sure it is NOT timeout before disabled
+#    bad81140da7c MLK-24828 ARM: imx: Add revision support for i.MX7ULP rev 2.2
+#    99fb4d4619ff MLK-24824-2 watchdog: imx7ulp: Move suspend/resume to noirq phase
+#    8c8859e1c5b5 MLK-24824-1 watchdog: imx7ulp: Strictly follow the sequence for wdog operations
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -72,18 +78,18 @@ include linux-fslc.inc
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-SRCBRANCH = "5.4-2.1.x-imx"
-SRCREV = "5d0d8d6f195dbd50ec4790df32896bdc87cf8b33"
+SRCBRANCH = "5.4-2.2.x-imx"
+SRCREV = "10865293a7cc3ebca17a1ed9e2d3dff6a8882097"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.80"
+LINUX_VERSION = "5.4.74"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-imx-5.4.24-2.1.0"
+LOCALVERSION = "-imx-5.4.47-2.2.0"
 
 DEFAULT_PREFERENCE = "1"
 
