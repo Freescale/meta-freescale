@@ -14,7 +14,7 @@ python() {
 }
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cryptodev-linux;protocol=https;nobranch=1"
-SRCREV = "2299d39475e91392abd050ea09f2d20feecb4adf"
+SRCREV = "fabe5989a3dc9fba0cd0a40b612247cdde351c01"
 
 S = "${WORKDIR}/git"
 
