@@ -19,6 +19,7 @@ SRC_URI = " \
     file://0001-meson-build-gir-even-when-cross-compiling-if-introsp.patch \
     file://opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
     file://0001-opencv-allow-compilation-against-4.4.x.patch \
+    file://0001-vulkan-Drop-use-of-VK_RESULT_BEGIN_RANGE.patch \
     file://fix-maybe-uninitialized-warnings-when-compiling-with-Os.patch \
     file://avoid-including-sys-poll.h-directly.patch \
     file://ensure-valid-sentinels-for-gst_structure_get-etc.patch \
