@@ -41,7 +41,7 @@ PACKAGECONFIG ??= " \
 
 OPENGL_APIS = 'opengl gles2'
 OPENGL_PLATFORMS = 'egl'
-OPENGL_WINSYS = 'x11 wayland gbm'
+OPENGL_WINSYS = 'x11 wayland gbm viv-fb'
 
 X11DEPENDS = "virtual/libx11 libsm libxrender libxv"
 X11ENABLEOPTS = "-Dx11=enabled -Dxvideo=enabled -Dxshm=enabled"
@@ -70,6 +70,7 @@ PACKAGECONFIG[egl]          = ",,virtual/egl"
 # OpenGL window systems (except for X11)
 PACKAGECONFIG[gbm]          = ",,virtual/libgbm libgudev libdrm"
 PACKAGECONFIG[wayland]      = ",,wayland-native wayland wayland-protocols libdrm"
+PACKAGECONFIG[viv-fb]       = ",,virtual/libgles2 virtual/libg2d"
 
 EXTRA_OEMESON += " \
     -Dgl-graphene=disabled \
