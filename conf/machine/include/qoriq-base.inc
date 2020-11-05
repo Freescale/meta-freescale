@@ -1,7 +1,4 @@
 # common providers of QorIQ targets
-PREFERRED_PROVIDER_cryptodev-linux = "cryptodev-qoriq-linux"
-PREFERRED_PROVIDER_cryptodev-module = "cryptodev-qoriq-module"
-PREFERRED_PROVIDER_cryptodev-tests = "cryptodev-qoriq-tests"
 PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
 PREFERRED_PROVIDER_virtual/bootloader ?= "${PREFERRED_PROVIDER_u-boot}"
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
@@ -35,6 +32,5 @@ MACHINE_SOCARCH_SUFFIX ?= ""
 MACHINE_SOCARCH_SUFFIX_qoriq = "-qoriq"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER_append_qoriq = " cryptodev-qoriq-linux cryptodev-qoriq-module cryptodev-qoriq-test"
 
 INHERIT += "fsl-dynamic-packagearch"
