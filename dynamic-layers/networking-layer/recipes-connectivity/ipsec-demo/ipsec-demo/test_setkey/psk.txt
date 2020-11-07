@@ -1,2 +1,0 @@
-200.200.200.20 secretkeyracoon
-200.200.200.10 secretkeyracoon

@@ -1,4 +1,0 @@
-#!/usr/sbin/setkey -f
-
-flush;
-spdflush;
