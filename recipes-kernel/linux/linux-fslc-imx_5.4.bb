@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.74
+#    tag: v5.4.75
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -44,7 +44,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-#    391a7c6dfd13 irq-imx-irqsteer: fix compile error if CONFIG_PM_SLEEP is not set
+#    7642303e41c1 irq-imx-irqsteer: fix compile error if CONFIG_PM_SLEEP is not set
 #    b3d088d2f8fa fbdev: fix fbinfo flag dropped upstream
 #    c874333fa0be arm64: dts: imx8mp: Add fallback compatible to ocotp node
 #    55abb34c9faf arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
@@ -79,14 +79,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 SRCBRANCH = "5.4-2.2.x-imx"
-SRCREV = "10865293a7cc3ebca17a1ed9e2d3dff6a8882097"
+SRCREV = "4bca0fec0e84f43539060e608867297533b0e09c"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.74"
+LINUX_VERSION = "5.4.75"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-imx-5.4.47-2.2.0"
