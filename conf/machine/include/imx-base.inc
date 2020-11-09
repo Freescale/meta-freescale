@@ -236,10 +236,9 @@ MACHINE_FIRMWARE_append_mx8mm  = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE_append_mx8mn  = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE_append_mx8mp  = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn firmware-imx-xcvr-imx8mp firmware-sof-imx"
 MACHINE_FIRMWARE_append_mx8mq  = " linux-firmware-imx-sdma-imx7d"
+MACHINE_FIRMWARE_append_mx8qm  = " firmware-imx-vpu-imx8"
+MACHINE_FIRMWARE_append_mx8qxp = " firmware-imx-vpu-imx8"
 MACHINE_FIRMWARE_append_use-mainline-bsp = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
-
-# FIXME: Needs addition of firmware-imx of official BSPs
-#MACHINE_FIRMWARE_append_mx8qxp = " firmware-imx-vpu-imx8qxp"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
