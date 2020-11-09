@@ -40,4 +40,4 @@ do_preconfigure() {
 		printf "%s%s" +g $head > ${S}/.scmversion
 	fi
 }
-addtask preconfigure before do_configure after do_unpack do_patch
+addtask preconfigure before do_configure after do_unpack do_patch do_kernel_metadata
