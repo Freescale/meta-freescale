@@ -51,12 +51,7 @@ do_install() {
     # Do the same thing as above for HDMI - only install a pre-defined list of firmware files,
     # as some of other files are provided by packages from other recipes.
     install -d ${D}${nonarch_base_libdir}/firmware/vpu
-    install -m 0644 ${S}/firmware/vpu/vpu_fw_imx27_TO1.bin ${D}${nonarch_base_libdir}/firmware/vpu
-    install -m 0644 ${S}/firmware/vpu/vpu_fw_imx27_TO2.bin ${D}${nonarch_base_libdir}/firmware/vpu
-    install -m 0644 ${S}/firmware/vpu/vpu_fw_imx51.bin ${D}${nonarch_base_libdir}/firmware/vpu
-    install -m 0644 ${S}/firmware/vpu/vpu_fw_imx53.bin ${D}${nonarch_base_libdir}/firmware/vpu
-    install -m 0644 ${S}/firmware/vpu/vpu_fw_imx6d.bin ${D}${nonarch_base_libdir}/firmware/vpu
-    install -m 0644 ${S}/firmware/vpu/vpu_fw_imx6q.bin ${D}${nonarch_base_libdir}/firmware/vpu
+    install -m 0644 ${S}/firmware/vpu/vpu_fw_imx*.bin ${D}${nonarch_base_libdir}/firmware/vpu
 }
 
 #
