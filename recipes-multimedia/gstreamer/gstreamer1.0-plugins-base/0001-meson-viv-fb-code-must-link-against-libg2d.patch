@@ -1,0 +1,44 @@
+From 8153e86dac04076fb80fc272c8374d4ba019fa3c Mon Sep 17 00:00:00 2001
+From: Zan Dobersek <zdobersek@igalia.com>
+Date: Wed, 4 Nov 2020 14:02:10 +0100
+Subject: [PATCH] meson: viv-fb code must link against libg2d
+
+Find the libg2d library and link against it, if necessary, avoiding
+linking errors for couple of libg2d symbols.
+
+Upstream-Status: Pending
+
+Signed-off-by: Zan Dobersek <zdobersek@igalia.com>
+---
+ gst-libs/gst/gl/meson.build | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/gst-libs/gst/gl/meson.build b/gst-libs/gst/gl/meson.build
+index 6f6c6866d..fb6a9aabf 100644
+--- a/gst-libs/gst/gl/meson.build
++++ b/gst-libs/gst/gl/meson.build
+@@ -818,9 +818,11 @@ if need_win_gbm != 'no'
+ endif
+ 
+ if need_platform_egl != 'no' and need_win_viv_fb != 'no'
+-  if egl_dep.found() and cc.has_function ('fbGetDisplay', dependencies : egl_dep)
++  g2d_dep = cc.find_library('g2d', required : false)
++  if egl_dep.found() and g2d_dep.found() and cc.has_function ('fbGetDisplay', dependencies : egl_dep)
+     if cc.has_function ('glTexDirectVIV', dependencies : gles2_dep)
+       enabled_gl_winsys += 'viv-fb'
++      gl_winsys_deps += [g2d_dep]
+       glconf.set10('GST_GL_HAVE_WINDOW_VIV_FB', 1)
+       glconf.set10('GST_GL_HAVE_VIV_DIRECTVIV', 1)
+       glconf.set10('GST_GL_HAVE_PHYMEM', 1)
+@@ -834,6 +836,8 @@ if need_platform_egl != 'no' and need_win_viv_fb != 'no'
+       ]
+       gl_cpp_args += ['-DEGL_API_FB']
+     endif
++  else
++    g2d_dep = unneeded_dep
+   endif
+ endif
+ 
+-- 
+2.28.0
+
