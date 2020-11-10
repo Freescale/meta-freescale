@@ -14,6 +14,8 @@ SRC_URI = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
            file://0005-viv-fb-Make-sure-config.h-is-included.patch \
            file://0009-glimagesink-Downrank-to-marginal.patch \
            file://0001-gst-libs-gst-gl-wayland-fix-meson-build.patch \
+           file://0001-glupload-Add-VideoMetas-and-GLSyncMeta-to-the-raw-up.patch \
+           file://0001-meson-viv-fb-code-must-link-against-libg2d.patch \
            "
 
 S = "${WORKDIR}/git"
