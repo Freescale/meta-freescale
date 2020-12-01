@@ -39,6 +39,13 @@ EXTRA_OEMAKE = " \
     OPTEE_OPENSSL_EXPORT=${STAGING_INCDIR}/ \
     -C ${S} O=${B} \
 "
+do_compile() {
+    cd ${S}
+    # Top level makefile doesn't seem to handle parallel make gracefully
+    oe_runmake xtest
+    oe_runmake ta
+}
+do_compile[cleandirs] = "${B}"
 
 do_install () {
 	install -d ${D}/usr/bin
