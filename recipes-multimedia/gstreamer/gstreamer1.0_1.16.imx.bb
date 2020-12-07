@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
 
 # Use i.MX fork of GST for customizations
 GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.05.05_2005_L5.4.24"
+SRCBRANCH = "MM_04.05.06_2008_L5.4.47"
 
 SRC_URI = " \
     ${GST1.0_SRC};branch=${SRCBRANCH} \
@@ -25,7 +25,7 @@ SRC_URI = " \
     file://0004-meson-Add-option-for-installed-tests.patch \
     file://capfix.patch \
 "
-SRCREV = "beca1b382febc2ba38a21fcb8f5092209773eb7f"
+SRCREV = "8514bc61ccab208a65e387eab9347276a8e770e7"
 
 S = "${WORKDIR}/git"
 
