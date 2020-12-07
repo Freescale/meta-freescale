@@ -5,8 +5,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.05.05_2005_L5.4.24"
-SRCREV = "cad00a3c4318c787c9661990e8f9328e4a69a329"
+SRCBRANCH = "MM_04.05.06_2008_L5.4.47"
+SRCREV = "3c4aa2a58576d68f6e684efa58609665679c9969"
 SRC_URI = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
            file://0001-meson-build-gir-even-when-cross-compiling-if-introsp.patch \
            file://0001-gstreamer-plugins-base-fix-meson-build-in-nxp-fork.patch \
@@ -14,7 +14,6 @@ SRC_URI = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
            file://0005-viv-fb-Make-sure-config.h-is-included.patch \
            file://0009-glimagesink-Downrank-to-marginal.patch \
            file://0001-gst-libs-gst-gl-wayland-fix-meson-build.patch \
-           file://0001-glupload-Add-VideoMetas-and-GLSyncMeta-to-the-raw-up.patch \
            file://0001-meson-viv-fb-code-must-link-against-libg2d.patch \
            "
 
