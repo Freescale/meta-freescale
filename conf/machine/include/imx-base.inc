@@ -5,10 +5,6 @@ include conf/machine/include/fsl-default-versions.inc
 
 require conf/machine/include/utilities.inc
 
-# Set specific make target and binary suffix
-IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
-IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
-
 # Machines or distros can define which BSP it should use by default. We are
 # intending to default for mainline BSP by default and specific machines or
 # DISTROs might change it if need.
@@ -21,6 +17,11 @@ IMX_DEFAULT_BSP_mxs ?= "mainline"
 IMX_DEFAULT_BSP_mx5 ?= "mainline"
 
 MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
+
+# Set specific make target and binary suffix
+IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
+IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
@@ -364,9 +365,12 @@ WKS_FILE_DEPENDS ?= " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_WKS_FILE_DEPENDS}', '', d)} \
 "
 
-WKS_FILE_DEPENDS_append_mx8 = " imx-boot "
+WKS_FILE_DEPENDS_append_mx8 = " imx-boot"
+WKS_FILE_DEPENDS_append_use-mainline-bsp = " imx-boot"
 
 SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE_mx8m ?= "imx-imx-boot-bootpart.wks.in"
+
 SOC_DEFAULT_WKS_FILE_mx8 ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
 
