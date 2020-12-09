@@ -106,6 +106,7 @@ MACHINEOVERRIDES_EXTENDER_mx8mn  = "imxdrm:imxgpu:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8mp  = "imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8mq  = "imxdrm:imxvpu:imxgpu:imxgpu3d"
 MACHINEOVERRIDES_EXTENDER_mx8qxp = "imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER_mx8dxl = "imxfbdev"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     imx \
@@ -132,6 +133,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx8mp \
     mx8mq \
     mx8qxp \
+    mx8dxl \
 "
 
 # Sub-architecture support
@@ -154,6 +156,7 @@ MACHINE_SOCARCH_SUFFIX_mx8mn  = "-mx8mn"
 MACHINE_SOCARCH_SUFFIX_mx8mp  = "-mx8mp"
 MACHINE_SOCARCH_SUFFIX_mx8mq  = "-mx8m"
 MACHINE_SOCARCH_SUFFIX_mx8qxp = "-mx8"
+MACHINE_SOCARCH_SUFFIX_mx8dxl = "-mx8dxl"
 MACHINE_SOCARCH_SUFFIX_use-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
