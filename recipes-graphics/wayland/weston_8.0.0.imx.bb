@@ -133,7 +133,7 @@ SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=http
            file://xwayland.weston-start \
            file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
 "
-SRCREV = "f6a7d35650121fbe7c20d4cbe0eaac730fab3b2a"
+SRCREV = "f13d40a3a0504a00baf2f28abe83b65dab8b2e10"
 S = "${WORKDIR}/git"
 
 # Disable OpenGL for parts with GPU support for 2D but not 3D
