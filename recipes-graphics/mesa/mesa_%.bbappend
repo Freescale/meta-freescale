@@ -17,17 +17,10 @@ python () {
 # Enable Etnaviv and Freedreno support
 PACKAGECONFIG_append_use-mainline-bsp = " gallium etnaviv kmsro freedreno"
 
-USE_OSMESA_ONLY ?= "no"
-
-# Etnaviv support state for i.MX8 is unknown, therefore only enable OSMesa and
-# disable Gallium for now. If you still want to enable Etnaviv, just set
-# USE_OSMESA_ONLY_mx8 = "no" in your bbappend.
-USE_OSMESA_ONLY_mx8 ?= "yes"
-
 # Enable OSMesa which also requires dri (classic) swrast
-PACKAGECONFIG_append = " ${@oe.utils.conditional('USE_OSMESA_ONLY', 'yes', ' osmesa', '', d)}"
-PACKAGECONFIG_remove = " ${@oe.utils.conditional('USE_OSMESA_ONLY', 'yes', 'gallium', '', d)}"
-DRIDRIVERS_append = "${@oe.utils.conditional('USE_OSMESA_ONLY', 'yes', 'swrast', '', d)}"
+PACKAGECONFIG_remove_use-nxp-bsp = "gallium"
+PACKAGECONFIG_append_use-nxp-bsp = " osmesa"
+DRIDRIVERS_use-nxp-bsp = "swrast"
 
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
