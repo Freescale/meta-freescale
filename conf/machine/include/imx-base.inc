@@ -366,7 +366,6 @@ WKS_FILE_DEPENDS ?= " \
 "
 
 WKS_FILE_DEPENDS_append_mx8 = " imx-boot"
-WKS_FILE_DEPENDS_append_use-mainline-bsp = " imx-boot"
 
 SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mx8m ?= "imx-imx-boot-bootpart.wks.in"
