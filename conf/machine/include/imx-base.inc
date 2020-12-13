@@ -127,6 +127,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT_use-mainline-bsp = " \
     mx7ulp \
     \
     mx8 \
+    mx8m \
     mx8qm \
     mx8mm \
     mx8mn \
