@@ -65,7 +65,9 @@ SOC_FAMILY_mx8m = "mx8m"
 SOC_FAMILY_mx8x = "mx8x"
 
 REV_OPTION ?= ""
-REV_OPTION_mx8qxpc0 = "REV=C0"
+REV_OPTION_mx8qxp = \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', '', \
+                                                           'REV=C0', d)}"
 
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
