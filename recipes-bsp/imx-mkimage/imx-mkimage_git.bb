@@ -13,7 +13,9 @@ inherit native deploy
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR} -L ${STAGING_LIBDIR}"
 
 REV_CHIP ?= "B0"
-REV_CHIP_mx8qxpc0 = "C0"
+REV_CHIP_mx8qxp = \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', 'B0', \
+                                                           'C0', d)}"
 
 do_compile () {
     cd ${S}
