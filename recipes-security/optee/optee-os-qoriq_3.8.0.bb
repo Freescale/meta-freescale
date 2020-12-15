@@ -2,24 +2,26 @@ SUMMARY = "OP-TEE Trusted OS"
 DESCRIPTION = "OPTEE OS"
 
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=69663ab153298557a59c67a60a743e5b"
+LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
-DEPENDS = "python3-pycrypto-native"
+PV = "3.8+git${SRCPV}"
+
+DEPENDS += "python3-pyelftools-native python3-pycryptodome-native python3-pycryptodomex-native dtc-native"
 
 inherit deploy python3native
 
-SRCREV = "4e8d2e5307b99a91a0cac3ea3560ecb7d62898d6"
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;nobranch=1 \
            file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
-           file://0001-Fix-alignment-of-data-for-mempool_alloc_pool.patch \
-           file://0001-use-python3-instead-of-python.patch \
-           file://0001-optee-os-fix-gcc10-compilation-issue-and-missing-cc-.patch \
+           file://0001-arm64-Disable-outline-atomics-when-compiling.patch \
           "
+SRCREV = "0cb01f7f6aee552ead49990c06f69f73f459cc65"
+
 S = "${WORKDIR}/git"
 
 OPTEEMACHINE ?= "${MACHINE}"
 OPTEEMACHINE_ls1088ardb-pb = "ls1088ardb"
 OPTEEMACHINE_ls1046afrwy = "ls1046ardb"
+OPTEEMACHINE_lx2162aqds = "lx2160aqds"
 
 EXTRA_OEMAKE = "PLATFORM=ls-${OPTEEMACHINE} CFG_ARM64_core=y \
                 ARCH=arm \
@@ -29,6 +31,7 @@ EXTRA_OEMAKE = "PLATFORM=ls-${OPTEEMACHINE} CFG_ARM64_core=y \
                 LDFLAGS= \
                 LIBGCC_LOCATE_CFLAGS=--sysroot=${STAGING_DIR_HOST} \
         "
+EXTRA_OEMAKE_append_lx2162aqds = " CFG_EMBED_DTB_SOURCE_FILE=fsl-lx2160a-qds.dts CFG_EMBED_DT=y"
 
 OPTEE_ARCH_armv7a = "arm32"
 OPTEE_ARCH_aarch64 = "arm64"
