@@ -18,8 +18,10 @@ MC_CFG ?= ""
 MC_CFG_ls1088a = "ls1088a"
 MC_CFG_ls2088a = "ls2088a"
 MC_CFG_lx2160a = "lx2160a"
+MC_CFG_lx2162aqds = "lx2162aqds"
 
 MC_FLAVOUR ?= "RDB"
+MC_FLAVOUR_lx2162a = ""
 
 do_compile () {
 	oe_runmake -C config 
