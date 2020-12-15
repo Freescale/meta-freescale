@@ -7,11 +7,9 @@ SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobr
            file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
            file://0001-add-Wno-cast-function-type.patch \
            file://0001-Add-RTE_KERNELDIR_OUT.patch \
-           file://0004-update-WERROR_FLAGS.patch \
-           file://0001-examples-ipsec-gw-fix-gcc-10-maybe-uninitialized-war.patch \
            file://0005-use-python3-instead-of-python.patch \
 "
-SRCREV = "4110a5fed09fa034963cfc246a6285911ecbd540"
+SRCREV = "7071c27f6f5aefb57de1cffab3484707b1e82e2b"
 
 include dpdk.inc
 
