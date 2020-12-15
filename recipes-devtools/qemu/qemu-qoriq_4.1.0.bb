@@ -16,7 +16,7 @@ SRC_URI = "gitsm://source.codeaurora.org/external/qoriq/qoriq-components/qemu;no
            file://0001-linux-user-remove-host-stime-syscall.patch \
            "
 
-SRCREV = "521a0dcf59f1ca11e7d9e2f4e1ef3d2dfaebc0e4"
+SRCREV = "0b88a503e43ca629d6e8165638ac6b312e5c66bd"
 
 S = "${WORKDIR}/git"
 
