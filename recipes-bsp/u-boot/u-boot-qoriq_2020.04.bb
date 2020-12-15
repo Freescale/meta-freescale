@@ -14,17 +14,8 @@ LIC_FILES_CHKSUM = " \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;nobranch=1 \
-    file://0001-patman-Drop-binary-parameter.patch \
-    file://0001-patman-Update-command.Run-to-handle-failure-better.patch \
-    file://0001-patman-Adjust-command-to-return-strings-instead-of-b.patch \
-    file://0001-pylibfdt-Convert-to-Python-3.patch \
-    file://0001-binman-Convert-a-few-tests-to-Python-3.patch \
-    file://0001-binman-Move-to-use-Python-3.patch \
-    file://0001-buildman-Convert-to-Python-3.patch \
-    file://0001-Remove-redundant-YYLOC-global-declaration.patch \
-"
-SRCREV= "1e55b2f9e7f56b76569089b9e950f49c1579580e"
+SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;nobranch=1"
+SRCREV= "f46a944f715f284aff1d42c009680ffe0be4058f"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
