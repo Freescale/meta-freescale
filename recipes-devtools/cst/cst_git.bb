@@ -19,7 +19,7 @@ inherit kernel-arch
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cst;nobranch=1 \
            file://0001-tools-Mark-struct-input_field-file_field-extern.patch \
 "
-SRCREV = "9aafbdf2441858ceca2779279b6876c6bdc2d3ed"
+SRCREV = "dfe30d3f05cfe281896482839e57ed49c52f2088"
 
 S = "${WORKDIR}/git"
 
