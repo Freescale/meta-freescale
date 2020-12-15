@@ -1,0 +1,90 @@
+From e8e566a4b4d589cbdf2613c78cac75ecbea86d3b Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@nxp.com>
+Date: Wed, 30 Sep 2020 10:24:14 +0530
+Subject: [PATCH] fix multiple definition error
+
+gcc10 default to -fno-common, which results in error:
+| ../aarch64-fsl-linux/10.2.0/ld: /tmp/ccaL5AXA.o:.../libpkcs11/git-r0/git/app/pkcs11_app.c:23: multiple definition of `funcs'; /tmp/ccvGV0xB.o:.../app/utils.c:18: first defined here
+| collect2: error: ld returned 1 exit status
+| Makefile:66: recipe for target 'app' failed
+| make: *** [app] Error 1
+
+Upstream-Status: Pending
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+---
+ app/gen_test.c                 | 2 +-
+ app/pkcs11_app.c               | 2 +-
+ app/sign_digest_update_final.c | 2 +-
+ app/thread_test.c              | 2 +-
+ app/utils.c                    | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/app/gen_test.c b/app/gen_test.c
+index fbd3429..2476e18 100644
+--- a/app/gen_test.c
++++ b/app/gen_test.c
+@@ -17,7 +17,7 @@
+ #include <openssl/pem.h>
+ #include <openssl/md5.h>
+ 
+-CK_FUNCTION_LIST  *funcs;
++static CK_FUNCTION_LIST  *funcs;
+ 
+ #define err2str(X)     case X: return #X
+ 
+diff --git a/app/pkcs11_app.c b/app/pkcs11_app.c
+index 2b4a70d..3883dab 100644
+--- a/app/pkcs11_app.c
++++ b/app/pkcs11_app.c
+@@ -20,7 +20,7 @@
+ #include <openssl/pem.h>
+ #include "utils.h"
+ 
+-CK_FUNCTION_LIST  *funcs;
++static CK_FUNCTION_LIST  *funcs;
+ 
+ struct getOptValue_t {
+ 	uint32_t main_option;
+diff --git a/app/sign_digest_update_final.c b/app/sign_digest_update_final.c
+index b3367ed..49fee20 100644
+--- a/app/sign_digest_update_final.c
++++ b/app/sign_digest_update_final.c
+@@ -20,7 +20,7 @@
+ #include <openssl/pem.h>
+ #include "utils.h"
+ 
+-CK_FUNCTION_LIST  *funcs;
++static CK_FUNCTION_LIST  *funcs;
+ 
+ struct getOptValue_t {
+ 	uint32_t main_option;
+diff --git a/app/thread_test.c b/app/thread_test.c
+index 19d03ee..a574074 100644
+--- a/app/thread_test.c
++++ b/app/thread_test.c
+@@ -20,7 +20,7 @@
+ #include <sched.h>
+ #include <pthread.h>
+ 
+-CK_FUNCTION_LIST  *funcs;
++static CK_FUNCTION_LIST  *funcs;
+ 
+ #define err2str(X)     case X: return #X
+ #define MAX_THREADS	10
+diff --git a/app/utils.c b/app/utils.c
+index 7afad95..9f9e143 100644
+--- a/app/utils.c
++++ b/app/utils.c
+@@ -15,7 +15,7 @@
+ #include <tee_slot.h>
+ #include "utils.h"
+ 
+-CK_FUNCTION_LIST  *funcs;
++static CK_FUNCTION_LIST  *funcs;
+ 
+ #define err2str(X)     case X: return #X
+ 
+-- 
+2.17.1
+
