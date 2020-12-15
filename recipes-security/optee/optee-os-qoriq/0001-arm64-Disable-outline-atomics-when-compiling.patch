@@ -1,0 +1,41 @@
+From f94d9558d9eae48e92ce8d651539b6cf69eb4394 Mon Sep 17 00:00:00 2001
+From: Joshua Watt <JPEWhacker@gmail.com>
+Date: Mon, 18 May 2020 20:00:00 -0500
+Subject: [PATCH] arm64: Disable outline-atomics when compiling
+
+Disables the automatic detection of LSE (Large System Extension)
+instructions when compiling AArch64 code. GCC 10 implements this
+detection in libgcc using __getauxval(), which optee doesn't implement.
+This requires that the proper -mcpu is passed to GCC so that the code
+can be correctly compiled to use either LSE or load-store-exclusive.
+
+Fixes linker errors like the following when compiling with GCC 10:
+
+ aarch64-linux-ld.bfd: libgcc.a(lse-init.o):
+    in function `init_have_lse_atomics':
+ lse-init.c:44: undefined reference to `__getauxval'
+ core/arch/arm/kernel/link.mk:38:
+    recipe for target 'build/core/all_objs.o' failed
+
+Signed-off-by: Joshua Watt <JPEWhacker@gmail.com>
+Upstream-Status: Submitted [https://github.com/OP-TEE/optee_os/pull/3874]
+---
+ core/arch/arm/arm.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/arm.mk b/core/arch/arm/arm.mk
+index a18eda3b..07069c66 100644
+--- a/core/arch/arm/arm.mk
++++ b/core/arch/arm/arm.mk
+@@ -115,7 +115,7 @@ arm32-platform-aflags-no-hard-float ?=
+ 
+ arm64-platform-cflags-no-hard-float ?= -mgeneral-regs-only
+ arm64-platform-cflags-hard-float ?=
+-arm64-platform-cflags-generic ?= -mstrict-align
++arm64-platform-cflags-generic ?= -mstrict-align $(call cc-option,-mno-outline-atomics,)
+ 
+ ifeq ($(DEBUG),1)
+ # For backwards compatibility
+-- 
+2.17.1
+
