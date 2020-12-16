@@ -1,0 +1,36 @@
+From e506c4ea7e576e713fa64569b6784bdc22b3205f Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@nxp.com>
+Date: Fri, 9 Oct 2020 13:13:13 +0530
+Subject: [PATCH] add -fcommon to fix gcc 10 build issue
+
+Fix:
+| ...ld: src/aiop_logger.o:(.bss+0x0): multiple definition of `_debug_flag'; src/aiop_tool.o:(.bss+0x0): first defined here
+| ...ld: src/aiop_logger.o:(.bss+0x2): multiple definition of `_verbose_flag'; src/aiop_tool.o:(.bss+0x2): first defined here
+
+Reference: https://gcc.gnu.org/gcc-10/porting_to.html
+As a workaround, legacy C code where all tentative definitions should be
+placed into a common block can be compiled with -fcommon.
+
+Upstream-Status: Pending
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+---
+ Makefile             | 2 +-
+ 1 files changed, 1 insertion(+), 1 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index f10dda2..f568788 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,7 +23,7 @@ BINDIR	= bin
+ 
+ 
+ # FLAGS
+-CFLAGS = -Wall
++CFLAGS = -Wall -fcommon
+ #CFLAGS += -g -O0   # Enable for Debugging
+ CFLAGS += -I$(top_builddir)/include
+ CFLAGS += -I$(top_builddir)/src
+-- 
+2.17.1
+
