@@ -22,6 +22,7 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 do_install () {
     oe_runmake install DESTDIR=${D}
+    chown -R root:root ${D}${bindir}/aiop_tool
 }
 
 COMPATIBLE_MACHINE = "(ls2088a|ls1088a)"
