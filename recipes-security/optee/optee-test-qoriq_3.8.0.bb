@@ -4,7 +4,7 @@ HOMEPAGE = "https://github.com/OP-TEE/optee_test"
 LICENSE = "BSD & GPLv2"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
-DEPENDS = "optee-client-qoriq optee-os-qoriq python3-pycryptodome-native"
+DEPENDS = "optee-client-qoriq optee-os-qoriq python3-pycryptodome-native python3-pycryptodomex-native"
 
 inherit python3native
 
