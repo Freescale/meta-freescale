@@ -1,4 +1,4 @@
-require atf-${PV}.inc
+require qoriq-atf-${PV}.inc
 
 DESCRIPTION = "ARM Trusted Firmware"
 

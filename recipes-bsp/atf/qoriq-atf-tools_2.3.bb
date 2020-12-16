@@ -1,4 +1,4 @@
-require atf-${PV}.inc
+require qoriq-atf-${PV}.inc
 
 SUMMARY = "Tools for ARM Trusted Firmware, e.g. FIP image creation tool"
 
