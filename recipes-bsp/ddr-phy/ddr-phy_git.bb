@@ -9,7 +9,7 @@ SRCREV = "fbc036b88acb6c06ffed02c898cbae9856ec75ba"
 
 S = "${WORKDIR}/git"
 
-REGLEX_lx2160a = "lx2160a"
+REGLEX = "lx2160a"
 
 DEPENDS += "atf-tools-native"
 
@@ -40,5 +40,5 @@ addtask deploy before do_populate_sysroot after do_install
 PACKAGES += "${PN}-image"
 FILES_${PN}-image += "/boot"
 
-COMPATIBLE_MACHINE = "(lx2160a)"
+COMPATIBLE_MACHINE = "(lx2160a|lx2162a)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
