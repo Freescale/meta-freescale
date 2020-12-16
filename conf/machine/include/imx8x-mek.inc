@@ -1,9 +1,4 @@
-#@TYPE: Machine
-#@NAME: i.MX 8QXP MEK
-#@DESCRIPTION: i.MX 8QXP Multisensory Enablement Kit (MEK) board
-#@MAINTAINER: Lauren Post <lauren.post@nxp.com>
-
-MACHINEOVERRIDES =. "mx8:mx8x:mx8qxp:"
+MACHINEOVERRIDES =. "mx8:mx8x:"
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa35.inc
@@ -26,34 +21,24 @@ SERIAL_CONSOLES = "115200;ttyAMA0"
 USE_VT = "0"
 
 KERNEL_DEVICETREE = " \
-	freescale/imx8qxp-mek.dtb \
-	freescale/imx8qxp-mek-a0.dtb \
-	freescale/imx8qxp-mek-dom0.dtb \
-	freescale/imx8qxp-mek-dpu-lcdif.dtb \
-	freescale/imx8qxp-mek-dpu-lcdif-rpmsg.dtb \
-	freescale/imx8qxp-mek-dsi-rm67191.dtb \
-	freescale/imx8qxp-mek-dsi-rm67191-rpmsg.dtb \
-	freescale/imx8qxp-mek-dsp.dtb \
-	freescale/imx8qxp-mek-enet2-tja1100.dtb \
-	freescale/imx8qxp-mek-enet2.dtb \
-	freescale/imx8qxp-mek-inmate.dtb \
-	freescale/imx8qxp-mek-it6263-lvds0-dual-channel.dtb \
-	freescale/imx8qxp-mek-it6263-lvds0-dual-channel-rpmsg.dtb \
-	freescale/imx8qxp-mek-it6263-lvds1-dual-channel.dtb \
-	freescale/imx8qxp-mek-it6263-lvds1-dual-channel-rpmsg.dtb \
-	freescale/imx8qxp-mek-jdi-wuxga-lvds0-panel.dtb \
-	freescale/imx8qxp-mek-jdi-wuxga-lvds0-panel-rpmsg.dtb \
-	freescale/imx8qxp-mek-jdi-wuxga-lvds1-panel.dtb \
-	freescale/imx8qxp-mek-jdi-wuxga-lvds1-panel-rpmsg.dtb \
-	freescale/imx8qxp-mek-lcdif.dtb \
-	freescale/imx8qxp-mek-lcdif-rpmsg.dtb \
-	freescale/imx8qxp-mek-ov5640.dtb \
-	freescale/imx8qxp-mek-ov5640-rpmsg.dtb \
-	freescale/imx8qxp-mek-pcie-ep.dtb \
-	freescale/imx8qxp-mek-root.dtb \
-	freescale/imx8qxp-mek-rpmsg.dtb \
-	freescale/imx8qxp-mek-sof-cs42888.dtb \
-	freescale/imx8qxp-mek-sof-wm8960.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
+"
+KERNEL_DEVICETREE_append_use-nxp-bsp = " \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-dsi-rm67191.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-dsi-rm67191-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-dsp.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-enet2-tja1100.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-it6263-lvds0-dual-channel.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-it6263-lvds0-dual-channel-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-it6263-lvds1-dual-channel.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-it6263-lvds1-dual-channel-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds0-panel.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds0-panel-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds1-panel.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds1-panel-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-ov5640.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-ov5640-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-rpmsg.dtb \
 "
 
 UBOOT_MAKE_TARGET = \
@@ -64,8 +49,8 @@ SPL_BINARY = \
                                                        '', d)}"
 
 UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd]   = "imx8qxp_mek_defconfig,sdcard"
-UBOOT_CONFIG[fspi] = "imx8qxp_mek_fspi_defconfig"
+UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
+UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_fspi_defconfig"
 
 IMX_BOOT_SEEK = "32"
 
