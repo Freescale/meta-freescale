@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 
 REGLEX = "lx2160a"
 
-DEPENDS += "atf-tools-native"
+DEPENDS += "qoriq-atf-tools-native"
 
 do_compile() {
     cd ${S}/${REGLEX}
