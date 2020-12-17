@@ -53,7 +53,7 @@ do_install_ptest() {
 }
 
 PACKAGECONFIG ??= " \
-    fdt sdl kvm aio libusb \
+    fdt sdl kvm aio libusb vhost \
     ${@bb.utils.filter('DISTRO_FEATURES', 'alsa xen', d)} \
 "
 PACKAGECONFIG_class-nativesdk ??= "fdt sdl kvm"
