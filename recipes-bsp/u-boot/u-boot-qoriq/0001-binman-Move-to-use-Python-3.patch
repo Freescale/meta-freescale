@@ -1,0 +1,30 @@
+From 388560134b99dc4cc752627d3a7e9f8c8c2a89a7 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Thu, 31 Oct 2019 07:43:05 -0600
+Subject: [PATCH] binman: Move to use Python 3
+
+Update this tool to use Python 3 to meet the 2020 deadline.
+
+Unfortunately this introduces a test failure due to a problem in pylibfdt
+on Python 3. I will investigate.
+
+Upstream-Status: Backport
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tools/binman/binman.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/binman/binman.py b/tools/binman/binman.py
+index 8bd5868df2..9e6fd72117 100755
+--- a/tools/binman/binman.py
++++ b/tools/binman/binman.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python2
++#!/usr/bin/env python3
+ # SPDX-License-Identifier: GPL-2.0+
+ 
+ # Copyright (c) 2016 Google, Inc
+-- 
+2.24.0
+
