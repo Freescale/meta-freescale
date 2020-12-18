@@ -57,6 +57,12 @@ UBOOT_ENTRYPOINT_mx7ulp = "0x60008000"
 UBOOT_ENTRYPOINT_mx8m   = "0x40480000"
 UBOOT_ENTRYPOINT_vf = "0x80008000"
 
+# Some derivates can utilize the boot container provided by U-Boot,
+# below variable sets that those machines which have a imx-boot-container
+# in their MACHINEOVERRIDES can inherit a imx-boot-container class
+UBOOT_PROVIDES_BOOT_CONTAINER = "0"
+UBOOT_PROVIDES_BOOT_CONTAINER_imx-boot-container = "1"
+
 PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
 XSERVER_DRIVER                  = "xf86-video-fbdev"
 XSERVER_DRIVER_imxgpu2d         = "xf86-video-imx-vivante"
@@ -390,13 +396,37 @@ WKS_FILE_DEPENDS_append_mx8 = " imx-boot"
 WKS_FILE_DEPENDS_append_mx8m = " imx-boot"
 
 # We need to restrict the append so we don't add this for other i.MX SoC's.
-WKS_FILE_DEPENDS_append_use-mainline-bsp_aarch64 = " imx-boot"
+# Derivatives that are not yet adopted the usage of boot container provided
+# by U-Boot build are still targeted to use 'imx-boot' package provided by
+# NXP. Moving those derivatives to mainline BSP would require to define an
+# 'imx-boot-container' override, and test if the U-Boot built 'flash.bin'
+# binary is used a replacement.
+# Note, that the results binary name of the boot container is set to 'imx-boot'
+# for both NXP and Mainline BSP.
+# For Mainline BSP: the 'flash.bin' boot container is renamed during the
+# deployment task extesion execution defined in imx-boot-container class.
+# For NXP BSP: rename is done in 'imx-boot' recipe at the execution of compile
+# task.
+WKS_FILE_DEPENDS_append_use-mainline-bsp_aarch64 = " \
+    ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
+"
 
 SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mx8m ?= "imx-imx-boot-bootpart.wks.in"
 
 SOC_DEFAULT_WKS_FILE_mx8 ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
+
+# Boot container built as a part of mainline U-Boot uses the same WKS
+# file as the entire mx8m series, as it renames flash.bin binary to
+# imx-boot before it is packed into the boot partition.
+# This operation is performed in imx-boot-container class as a part of
+# delopyment task.
+# flash.bin binary is produced by U-Boot build itself, and is serves as a
+# direct replacement of imx-boot from NXP.
+# Creation of the flash.bin is controlled by UBOOT_PROVIDES_BOOT_CONTAINER
+# variable defined above
+SOC_DEFAULT_WKS_FILE_imx-boot-container ?= "imx-imx-boot-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
