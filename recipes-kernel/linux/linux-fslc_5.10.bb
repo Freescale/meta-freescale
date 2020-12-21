@@ -19,9 +19,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.10-rc7"
+LINUX_VERSION = "5.10.2"
 
 SRCBRANCH = "5.10.x+fslc"
-SRCREV = "2b929f3dcf6caa89edb5c37f497b036d8964347f"
+SRCREV = "f263d1928d7d52dae2889284c20f303b569dd6ad"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
