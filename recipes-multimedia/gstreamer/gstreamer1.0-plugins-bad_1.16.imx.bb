@@ -36,12 +36,15 @@ DEPENDS += "gstreamer1.0-plugins-base"
 
 inherit gobject-introspection
 
+PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gl', '', d)}"
+PACKAGECONFIG_GL_imxpxp = "gles2"
+
 PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'directfb vulkan', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gl', '', d)} \
+    ${PACKAGECONFIG_GL} \
     bz2 closedcaption curl dash dtls hls rsvg sbc smoothstreaming sndfile \
     ttml uvch264 webp \
 "
@@ -63,6 +66,7 @@ PACKAGECONFIG[hls]             = "-Dhls=enabled -Dhls-crypto=nettle,-Dhls=disabl
 # to -base yet. They depend on the gstgl library in -base, so we do
 # not add GL dependencies here, since these are taken care of in -base.
 PACKAGECONFIG[gl]              = "-Dgl=enabled,-Dgl=disabled,"
+PACKAGECONFIG[gles2]           = ",,virtual/libgles2"
 PACKAGECONFIG[kms]             = "-Dkms=enabled,-Dkms=disabled,libdrm"
 PACKAGECONFIG[libde265]        = "-Dlibde265=enabled,-Dlibde265=disabled,libde265"
 PACKAGECONFIG[libmms]          = "-Dlibmms=enabled,-Dlibmms=disabled,libmms"
