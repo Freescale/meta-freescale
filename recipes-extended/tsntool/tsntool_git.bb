@@ -8,7 +8,7 @@ DEPENDS = "cjson libnl readline"
 inherit pkgconfig
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/tsntool;protocol=https;nobranch=1"
-SRCREV = "b74987c855fb5605d2e384d355d101c68c4d6eaf"
+SRCREV = "1d1686e83c8f83472055189c278b837434990dcc"
 
 S = "${WORKDIR}/git"
 
