@@ -39,12 +39,6 @@ do_compile[depends] += " \
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
-ATF_MACHINE_NAME_mx8qm = "bl31-imx8qm.bin"
-ATF_MACHINE_NAME_mx8x  = "bl31-imx8qx.bin"
-ATF_MACHINE_NAME_mx8mq = "bl31-imx8mq.bin"
-ATF_MACHINE_NAME_mx8phantomdxl = "bl31-imx8qx.bin"
-ATF_MACHINE_NAME_mx8dxl = "bl31-imx8dxl.bin"
-ATF_MACHINE_NAME_mx8dx = "bl31-imx8dx.bin"
 ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
@@ -53,12 +47,6 @@ BOOT_CONFIG_MACHINE = "${BOOT_NAME}-${MACHINE}-${UBOOT_CONFIG}.bin"
 TOOLS_NAME ?= "mkimage_imx8"
 
 IMX_BOOT_SOC_TARGET       ?= "INVALID"
-IMX_BOOT_SOC_TARGET_mx8qm  = "iMX8QM"
-IMX_BOOT_SOC_TARGET_mx8x   = "iMX8QX"
-IMX_BOOT_SOC_TARGET_mx8mq  = "iMX8M"
-IMX_BOOT_SOC_TARGET_mx8dxl = "iMX8DXL"
-IMX_BOOT_SOC_TARGET_mx8phantomdxl = "iMX8QX"
-IMX_BOOT_SOC_TARGET_mx8dx  = "iMX8DX"
 
 DEPLOY_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
