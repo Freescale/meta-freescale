@@ -6,7 +6,9 @@ order to provide support for some backported features and fixes, or because it \
 was submitted for revision and it takes some time to become part of a stable \
 version, or because it is not applicable for upstreaming."
 
-DEPENDS_append = " bc-native dtc-native lzop-native"
+inherit ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '1', 'imx-boot-container', '')}
+
+DEPENDS += "bc-native dtc-native lzop-native"
 
 # Location known to imx-boot component, where U-Boot artifacts
 # should be additionally deployed.
@@ -38,6 +40,14 @@ EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
 # it is required that the U-Boot dtb files are to be deployed into
 # a location known by imx-boot so they could be picked up and
 # inserted into the boot container.
+#
+# NOTE: This is only applicable to those derivatives of mx8m family,
+# which did not adopt the boot container mechanism provided by U-Boot
+# build system itself. U-Boot is capable of producing a result binary,
+# which includes all those deployed pieces below, hence once derivative
+# starts to use it - below append would not be necessary.
+# Once all mx8m derivatives are migrated to use the 'flash.bin' boot
+# container - this append can be dropped completely.
 do_deploy_append_mx8m() {
     # Deploy the mkimage, u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
     if [ -n "${UBOOT_CONFIG}" ]; then
