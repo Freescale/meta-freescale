@@ -28,7 +28,7 @@ SRCREV_FORMAT = "armada_etna"
 PV = "0.1+git${SRCPV}"
 
 SRC_URI = " \
-    git://git.arm.linux.org.uk/cgit/xf86-video-armada.git;branch=unstable-devel;protocol=http;name=armada \
+    git://git.armlinux.org.uk/cgit/xf86-video-armada.git;branch=unstable-devel;protocol=http;name=armada \
     git://github.com/etnaviv/etna_viv.git;protocol=https;name=etna;destsuffix=etna_viv \
     "
 
