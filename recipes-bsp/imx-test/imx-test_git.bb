@@ -16,13 +16,12 @@ DEPENDS_append_imxvpu = " virtual/imxvpu"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "imx_5.4.47_2.2.0"
+SRCBRANCH = "imx_5.4.70_2.3.0"
 SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-pxp-test-Fix-format-security-error.patch \
     file://memtool_profile \
 "
-SRCREV = "31623a4972bf6f2f4239b4667aeb33baba07a3c8"
+SRCREV = "90fd7168fe5f15de9b2b1992a719024fc73a185a"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers
@@ -48,6 +47,7 @@ PACKAGECONFIG_append_imxvpu = " vpu"
 
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 PACKAGECONFIG[vpu] = "HAS_VPU=true,HAS_VPU=false,virtual/imxvpu"
+PACKAGECONFIG[swpdm] = "HAS_IMX_SW_PDM=true,HAS_IMX_SW_PDM=false,imx-sw-pdm"
 
 do_compile() {
     CFLAGS="${TOOLCHAIN_OPTIONS}"
