@@ -302,6 +302,8 @@ PREFERRED_PROVIDER_virtual/libgles1_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles2_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d            ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d_imxdpu     ?= "imx-dpu-g2d"
+PREFERRED_PROVIDER_opencl-headers_imxgpu     ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_opencl-icd-loader_imxgpu  ?= "imx-gpu-viv"
 
 PREFERRED_VERSION_weston_imx ?= "8.0.0.imx"
 PREFERRED_VERSION_weston_use-mainline-bsp = ""
