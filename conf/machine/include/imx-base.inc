@@ -382,18 +382,6 @@ SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
-# Certain machines are set to use the mainline u-boot by default
-# to encourage syncronization with mainline. Undo that here for
-# machines that don't work with mainline.
-UBOOT_MAKE_TARGET_use-nxp-bsp_mx6 = "u-boot.imx"
-UBOOT_SUFFIX_use-nxp-bsp_mx6 = "imx"
-SPL_BINARY_use-nxp-bsp_mx6 = ""
-WKS_FILE_use-nxp-bsp_mx6 = "imx-uboot-bootpart.wks.in"
-UBOOT_MAKE_TARGET_use-nxp-bsp_mx7 = "u-boot.imx"
-UBOOT_SUFFIX_use-nxp-bsp_mx7 = "imx"
-SPL_BINARY_use-nxp-bsp_mx7 = ""
-WKS_FILE_use-nxp-bsp_mx7 = "imx-uboot-bootpart.wks.in"
-
 SERIAL_CONSOLES = "115200;ttymxc0"
 SERIAL_CONSOLES_mxs = "115200;ttyAMA0"
 
