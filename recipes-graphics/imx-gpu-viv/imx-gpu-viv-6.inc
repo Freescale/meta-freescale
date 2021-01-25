@@ -43,10 +43,9 @@ PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
     opencl-headers \
+    opencl-icd-loader \
     virtual/egl \
     virtual/libopenvg \
-    virtual/opencl-headers \
-    virtual/opencl-icd \
     ${PROVIDES_OPENVX} \
     ${EXTRA_PROVIDES} \
 "
