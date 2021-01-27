@@ -33,39 +33,31 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: rel_imx_5.4.47_2.2.0
-#
-#    5ec03d06f54e MLK-24836 ARM: imx: Refresh wdog should consider the CMD mode on i.MX7ULP
-#    bba6ff64f0df MLK-24824-3 ARM: imx: Refresh wdog1 to make sure it is NOT timeout before disabled
-#    bad81140da7c MLK-24828 ARM: imx: Add revision support for i.MX7ULP rev 2.2
-#    99fb4d4619ff MLK-24824-2 watchdog: imx7ulp: Move suspend/resume to noirq phase
-#    8c8859e1c5b5 MLK-24824-1 watchdog: imx7ulp: Strictly follow the sequence for wdog operations
+#    tag: rel_imx_5.4.70_2.3.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-#    7642303e41c1 irq-imx-irqsteer: fix compile error if CONFIG_PM_SLEEP is not set
-#    b3d088d2f8fa fbdev: fix fbinfo flag dropped upstream
-#    c874333fa0be arm64: dts: imx8mp: Add fallback compatible to ocotp node
-#    55abb34c9faf arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
-#    df1f59fb613e arm64: dts: imx8mn: Use "fsl,imx8mm-ocotp" as ocotp's fallback compatible
-#    7ad2a7f3fd6f arm64: dts: imx8mm: Remove incorrect fallback compatible for ocotp
-#    129a6fad43b8 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
-#    e85ce3157725 arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
-#    4f49200132e6 arm: imx: enable HAVE_IMX_BUSFREQ for i.MX6
-#    5d229c51b5a5 arm: imx: do not build busfreq without HAVE_IMX_BUSFREQ
-#    285869ec9087 ARM: dts: imx6ul-kontron-n6x1x-s: Remove an obsolete comment and fix indentation
-#    f03791085754 ARM: dts: imx6ul-kontron-n6x1x-s: Add vbus-supply and overcurrent polarity to usb nodes
-#    67e44952c670 ARM: dts: imx6ul-kontron-n6x1x: Add 'chosen' node with 'stdout-path'
-#    d4b105f930e2 ARM: dts: Add support for two more Kontron evalkit boards 'N6311 S' and 'N6411 S'
-#    e778467f65d0 ARM: dts: imx6ul-kontron-n6310-s: Move common nodes to a separate file
-#    8b39f5e53831 ARM: dts: Add support for two more Kontron SoMs N6311 and N6411
-#    3bee262233eb ARM: dts: imx6ul-kontron-n6310: Move common SoM nodes to a separate file
-#    40a6a98b3f38 ARM: imx: Fix boot crash if ocotp is not found
-#    8aad5031be00 ARM: imx: Correct ocotp id for serial number support of i.MX6ULL/ULZ SoCs
-#    564409aa3b33 soc: imx-scu: Using existing serial_number instead of UID
-#    0ee8e005bbfc soc: imx8: Using existing serial_number instead of UID
-#    134cbb845fc7 ARM: imx: Add serial number support for i.MX6/7 SoCs
+#    b598b85172f7 irq-imx-irqsteer: fix compile error if CONFIG_PM_SLEEP is not set
+#    845099bfd0b8 fbdev: fix fbinfo flag dropped upstream
+#    847bfb09bb3b arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
+#    d7ca6973c6d4 arm64: dts: imx8mm: Remove incorrect fallback compatible for ocotp
+#    539d19f12066 arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL
+#    169b71ce3f8a arm: imx: do not include smp_wfe_imx6.S for i.MX6SX
+#    60be4c625594 arm: imx: enable HAVE_IMX_BUSFREQ for i.MX6
+#    f393781fa575 arm: imx: do not build busfreq without HAVE_IMX_BUSFREQ
+#    e0e74faf6af4 ARM: dts: imx6ul-kontron-n6x1x-s: Remove an obsolete comment and fix indentation
+#    ad24781aecc3 ARM: dts: imx6ul-kontron-n6x1x-s: Add vbus-supply and overcurrent polarity to usb nodes
+#    d56aa09ed0e0 ARM: dts: imx6ul-kontron-n6x1x: Add 'chosen' node with 'stdout-path'
+#    923bc9e57b24 ARM: dts: Add support for two more Kontron evalkit boards 'N6311 S' and 'N6411 S'
+#    f952a6404d10 ARM: dts: imx6ul-kontron-n6310-s: Move common nodes to a separate file
+#    1fdb6565a632 ARM: dts: Add support for two more Kontron SoMs N6311 and N6411
+#    4fb833f01c30 ARM: dts: imx6ul-kontron-n6310: Move common SoM nodes to a separate file
+#    54c975dabcde ARM: imx: Fix boot crash if ocotp is not found
+#    1041cd02b33c ARM: imx: Correct ocotp id for serial number support of i.MX6ULL/ULZ SoCs
+#    974b100d789c soc: imx-scu: Using existing serial_number instead of UID
+#    6fbfed9afe99 soc: imx8: Using existing serial_number instead of UID
+#    64d8ea803af5 ARM: imx: Add serial number support for i.MX6/7 SoCs
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -78,8 +70,8 @@ include linux-fslc.inc
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-SRCBRANCH = "5.4-2.2.x-imx"
-SRCREV = "9335a2fd4a7f8f789838c5198ca6da5944c44fa5"
+SRCBRANCH = "5.4-2.3.x-imx"
+SRCREV = "2d26ac7ea809b04c354b4ea966f44e4f6a480f00"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
@@ -89,7 +81,7 @@ SRCREV = "9335a2fd4a7f8f789838c5198ca6da5944c44fa5"
 LINUX_VERSION = "5.4.92"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-imx-5.4.47-2.2.0"
+LOCALVERSION = "-imx-5.4.70-2.3.0"
 
 DEFAULT_PREFERENCE = "1"
 
