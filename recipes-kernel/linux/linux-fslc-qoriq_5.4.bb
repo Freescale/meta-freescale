@@ -10,8 +10,8 @@ require recipes-kernel/linux/linux-qoriq.inc
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-LINUX_VERSION = "5.4.64"
+LINUX_VERSION = "5.4.92"
 
 SRCBRANCH = "5.4.y+qoriq+fslc"
-SRCREV = "4c04c442c0e91e7cf01f830aca524f09b5613f29"
+SRCREV = "11d4722c637a77c6e1c9a8eeec091f1588f6b3f3"
 SRC_URI := "git://github.com/Freescale/linux-fslc.git;branch=${SRCBRANCH}"
