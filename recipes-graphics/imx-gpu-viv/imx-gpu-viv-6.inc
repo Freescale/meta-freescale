@@ -47,6 +47,7 @@ PROVIDES += " \
     opencl-icd-loader \
     virtual/egl \
     virtual/libopenvg \
+    virtual/opencl-icd \
     ${PROVIDES_OPENVX} \
     ${EXTRA_PROVIDES} \
 "
