@@ -8,8 +8,8 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENCE;md5=0f00d99239d922ffd13cabef83b33444"
 
 SRC_URI = "${FSL_MIRROR}/sof-imx-${PV}.tar.gz"
-SRC_URI[md5sum] = "15fecc1da50ea94bc84c183f8a25e897"
-SRC_URI[sha256sum] = "39eb281ac9805fe4e07f5d156aafbf39ef6365ca8a6fa4114703961cffca6712"
+SRC_URI[md5sum] = "4deaf1bc81238ef57be29cec3cf5f636"
+SRC_URI[sha256sum] = "14394ffcf145536569bcc20910cda7c8b58a99fdb3a04b125453146739541da9"
 
 S = "${WORKDIR}/sof-imx-${PV}"
 
