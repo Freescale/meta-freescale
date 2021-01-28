@@ -1,5 +1,5 @@
 # Copyright (C) 2014,2016 Freescale Semiconductor
-# Copyright 2017-2018 NXP
+# Copyright 2017-2019 NXP
 # Copyright (C) 2012-2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -20,13 +20,12 @@ RCONFLICTS_${PN} = "gst1.0-fsl-plugin"
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
-SRCBRANCH = "MM_04.05.06_2008_L5.4.47"
+SRCBRANCH = "MM_04.05.07_2011_L5.4.70"
 
 SRC_URI = " \
 	git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
-	file://0001-fsl_parser.h-fix-compiler-error-with-fcommon.patch \
 "
-SRCREV = "a4373418f5884de7d2da63581d3905f0e3a5d842"
+SRCREV = "659ec4947d6b1903d26e4ec9e40ae251a659935d"
 
 S = "${WORKDIR}/git"
 
