@@ -11,7 +11,7 @@ PACKAGE_ARCH_imxpxp = "${MACHINE_SOCARCH}"
 PACKAGE_ARCH_mx8 = "${MACHINE_SOCARCH}"
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.05.06_2008_L5.4.47"
+SRCBRANCH = "MM_04.05.07_2011_L5.4.70"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
@@ -24,7 +24,7 @@ SRC_URI = " \
     file://avoid-including-sys-poll.h-directly.patch \
     file://ensure-valid-sentinels-for-gst_structure_get-etc.patch \
 "
-SRCREV = "3f6c1ccbabe46a709680b32ce7d5bc521854e08e"
+SRCREV = "cf7f2d0125424ce0d63ddc7f1eadc9ef71d10db1"
 
 S = "${WORKDIR}/git"
 
