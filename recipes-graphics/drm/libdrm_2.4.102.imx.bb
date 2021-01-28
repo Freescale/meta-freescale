@@ -11,14 +11,14 @@ PROVIDES = "drm"
 DEPENDS = "libpthread-stubs"
 
 IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https;nobranch=1"
-IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.99"
+IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.102"
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
-           file://musl-ioctl.patch \
            file://0001-meson-add-libdrm-vivante-to-the-meson-meta-data.patch "
-SRCREV = "f421c9c8c4b8fe48d9e6ef43910e98569c94a4b2"
+SRCREV = "f525ae649cd6e81e5d4e459799b0f7a120c4e174"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
 
 inherit meson pkgconfig manpages
 
