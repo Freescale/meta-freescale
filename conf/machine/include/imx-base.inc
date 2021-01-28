@@ -203,10 +203,12 @@ MACHINE_SOCARCH_FILTER_append_use-mainline-bsp = " \
 "
 MACHINE_SOCARCH_FILTER_append_mx6q = " \
     opencl-icd-loader \
+    opencl-clhpp \
     opencl-headers \
 "
 MACHINE_SOCARCH_FILTER_append_mx8 = " \
     opencl-icd-loader \
+    opencl-clhpp \
     opencl-headers \
 "
 MACHINE_SOCARCH_FILTER_append_mx8qm = " \
@@ -315,20 +317,21 @@ PREFERRED_PROVIDER_virtual/libgles1_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgles2_imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d            ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d_imxdpu     ?= "imx-dpu-g2d"
+PREFERRED_PROVIDER_opencl-clhpp_imxgpu       ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-headers_imxgpu     ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader_imxgpu  ?= "imx-gpu-viv"
 
-PREFERRED_VERSION_weston_imx ?= "8.0.0.imx"
+PREFERRED_VERSION_weston_imx ?= "9.0.0.imx"
 PREFERRED_VERSION_weston_use-mainline-bsp = ""
 
-PREFERRED_VERSION_wayland-protocols_mx6 ?= "1.18.imx"
-PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.18.imx"
-PREFERRED_VERSION_wayland-protocols_mx8 ?= "1.18.imx"
+PREFERRED_VERSION_wayland-protocols_mx6 ?= "1.20.imx"
+PREFERRED_VERSION_wayland-protocols_mx7 ?= "1.20.imx"
+PREFERRED_VERSION_wayland-protocols_mx8 ?= "1.20.imx"
 
 # Use i.MX libdrm Version
-PREFERRED_VERSION_libdrm_mx6 ?= "2.4.99.imx"
-PREFERRED_VERSION_libdrm_mx7 ?= "2.4.99.imx"
-PREFERRED_VERSION_libdrm_mx8 ?= "2.4.99.imx"
+PREFERRED_VERSION_libdrm_mx6 ?= "2.4.102.imx"
+PREFERRED_VERSION_libdrm_mx7 ?= "2.4.102.imx"
+PREFERRED_VERSION_libdrm_mx8 ?= "2.4.102.imx"
 
 # Use i.MX optee Version
 PREFERRED_VERSION_optee-os_mx8     ?= "3.7.0.imx"
