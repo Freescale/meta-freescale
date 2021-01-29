@@ -18,8 +18,10 @@ python () {
 PACKAGECONFIG_append_use-mainline-bsp = " gallium etnaviv kmsro freedreno"
 
 # For NXP BSP, enable OSMesa for parts with DRM
+# Also enable swrast for its dri driver
 PACKAGECONFIG_remove_use-nxp-bsp_imxdrm = "gallium"
 PACKAGECONFIG_append_use-nxp-bsp_imxdrm = " osmesa"
+DRIDRIVERS_use-nxp-bsp_imxdrm = "swrast"
 
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
