@@ -16,7 +16,6 @@ KERNEL_DEVICETREE = " \
 "
 KERNEL_DEVICETREE_append_use-nxp-bsp = " \
 	freescale/${KERNEL_DEVICETREE_BASENAME}-pcie-ep.dtb \
-	freescale/${KERNEL_DEVICETREE_BASENAME}-revb.dtb \
 	freescale/${KERNEL_DEVICETREE_BASENAME}-rm67191.dtb \
 "
 UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
