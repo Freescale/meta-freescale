@@ -7,7 +7,8 @@ require conf/machine/include/utilities.inc
 
 # Set specific make target and binary suffix
 IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
-IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
+IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER_use-nxp-bsp = "u-boot-imx"
 
 # Machines or distros can define which BSP it should use by default. We are
 # intending to default for mainline BSP by default and specific machines or
