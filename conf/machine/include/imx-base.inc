@@ -20,8 +20,8 @@ MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
 
 # Set specific make target and binary suffix
 IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
-IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER_use-nxp-bsp = "u-boot-imx"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
