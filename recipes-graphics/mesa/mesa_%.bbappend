@@ -17,10 +17,15 @@ python () {
 # Enable Etnaviv and Freedreno support
 PACKAGECONFIG_append_use-mainline-bsp = " gallium etnaviv kmsro freedreno"
 
-# For NXP BSP, enable OSMesa for parts with DRM
-# Also enable swrast for its dri driver
-PACKAGECONFIG_remove_use-nxp-bsp_imxdrm = "gallium"
-PACKAGECONFIG_append_use-nxp-bsp_imxdrm = " osmesa"
+# For NXP BSP, disable dri for parts without DRM.
+# Disable gallium and enable OSMesa for parts with DRM.
+# Also enable swrast for its dri driver for parts with DRM.
+PACKAGECONFIG_REMOVE_NXPBSP        = "dri"
+PACKAGECONFIG_APPEND_NXPBSP        = ""
+PACKAGECONFIG_REMOVE_NXPBSP_imxdrm = "gallium"
+PACKAGECONFIG_APPEND_NXPBSP_imxdrm = "osmesa"
+PACKAGECONFIG_remove_use-nxp-bsp   = "${PACKAGECONFIG_REMOVE_NXPBSP}"
+PACKAGECONFIG_append_use-nxp-bsp   = " ${PACKAGECONFIG_APPEND_NXPBSP}"
 DRIDRIVERS_use-nxp-bsp_imxdrm = "swrast"
 
 BACKEND = \
