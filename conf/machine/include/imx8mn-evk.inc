@@ -3,10 +3,12 @@ MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mn:"
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa53.inc
 
-MACHINE_FEATURES += "wifi bluetooth optee bcm43455 bcm4356"
+MACHINE_FEATURES += "wifi bluetooth bcm43455 bcm4356"
 
 # NXP BSP can consume proprietary jailhouse and Broadcom drivers
-MACHINE_FEATURES_append_use-nxp-bsp = " jailhouse bcm4359"
+# OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
+# a full support for it yet.
+MACHINE_FEATURES_append_use-nxp-bsp = " optee jailhouse bcm4359"
 
 KERNEL_DEVICETREE = " \
 	freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
