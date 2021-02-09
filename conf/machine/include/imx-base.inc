@@ -24,6 +24,7 @@ IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
+PREFERRED_PROVIDER_u-boot-mfgtool ??= "${IMX_DEFAULT_BOOTLOADER}-mfgtool"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
 PREFERRED_PROVIDER_nativesdk-u-boot-tools ??= "nativesdk-${IMX_DEFAULT_BOOTLOADER}-tools"
 PREFERRED_PROVIDER_u-boot-mkimage-native ??= "${IMX_DEFAULT_BOOTLOADER}-tools-native"
