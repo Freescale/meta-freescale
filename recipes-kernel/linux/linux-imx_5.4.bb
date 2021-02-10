@@ -17,16 +17,16 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 DEPENDS += "lzop-native bc-native"
 
-SRCBRANCH = "imx_5.4.70_2.3.0"
-LOCALVERSION = "-2.3.0"
-SRCREV = "4f2631b022d843c1f2a5d34eae2fd98927a1a6c7"
+SRCBRANCH = "imx_5.4.94_2.2.0"
+LOCALVERSION = "-2.2.0"
+SRCREV = "739c2edfa2b2179fb1db65017830f2af8fd6d627"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.70"
+LINUX_VERSION = "5.4.94"
 
 DEFAULT_PREFERENCE = "1"
 
