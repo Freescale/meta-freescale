@@ -24,6 +24,9 @@ INI_UNCOMMENT_ASSIGNMENTS_append_mx6q = " \
 INI_UNCOMMENT_ASSIGNMENTS_append_mx7ulp = " \
     use-g2d=1 \
 "
+INI_UNCOMMENT_ASSIGNMENTS_append_mx8 = " \
+    repaint-window=16 \
+"
 INI_UNCOMMENT_ASSIGNMENTS_append_mx8mm = " \
     use-g2d=1 \
 "
