@@ -5215,7 +5215,7 @@ state.wm8958audio {
 		}
 	}
 }
-state.cs42888audio {
+state.imxcs42888 {
 	control.1 {
 		iface MIXER
 		name 'DAC1 Playback Volume'
