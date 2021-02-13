@@ -1,0 +1,34 @@
+From 59608dcb0f0a6f6d8154b1d331c2403d7c1143eb Mon Sep 17 00:00:00 2001
+From: Cristinel Panfir <cristinel.panfir@nxp.com>
+Date: Fri, 5 Feb 2021 19:27:00 +0200
+Subject: [PATCH] Makefile: Fix install to clear host-user-contaminated
+ warnings [HSM-483]
+
+WARNING: imx-seco-libs-git-r0 do_package_qa: QA Issue:
+imx-seco-libs: /usr/lib/hsm_lib.a is owned by uid 26292, which is the same as the user running bitbake. This may be due to host contamination
+imx-seco-libs: /usr/lib/she_lib.a is owned by uid 26292, which is the same as the user running bitbake. This may be due to host contamination
+imx-seco-libs: /usr/lib/seco_nvm_manager.a is owned by uid 26292, which is the same as the user running bitbake.
+This may be due to host contamination [host-user-contaminated]
+
+Upstream-Status: Pending
+
+Signed-off-by: Cristinel Panfir <cristinel.panfir@nxp.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 492d700..25ad333 100644
+--- a/Makefile
++++ b/Makefile
+@@ -63,7 +63,7 @@ hsm_doc: include/hsm/hsm_api.h
+ 
+ install: hsm_test she_test she_lib.a seco_nvm_manager.a hsm_lib.a
+ 	mkdir -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
+-	cp -a seco_nvm_manager.a hsm_lib.a she_lib.a $(DESTDIR)$(LIBDIR)
++	cp seco_nvm_manager.a hsm_lib.a she_lib.a $(DESTDIR)$(LIBDIR)
+ 	cp hsm_test she_test $(DESTDIR)$(BINDIR)
+ 	cp -a include/* $(DESTDIR)$(INCLUDEDIR)
+ 
+-- 
+2.25.1
