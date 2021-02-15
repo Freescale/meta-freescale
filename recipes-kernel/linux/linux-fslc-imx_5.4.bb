@@ -70,7 +70,7 @@ include linux-fslc.inc
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
-SRCBRANCH = "5.4-2.3.x-imx"
+KBRANCH = "5.4-2.3.x-imx"
 SRCREV = "c789925f9aa01b54630ef32fcd0b5f1804f85ff9"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
