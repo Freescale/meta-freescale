@@ -1,0 +1,46 @@
+From 708f25cfe522df162c3e2c7c56cbe2f7000cb5e4 Mon Sep 17 00:00:00 2001
+From: Gary Bisson <gary.bisson@boundarydevices.com>
+Date: Mon, 14 Dec 2020 14:26:01 +0100
+Subject: [PATCH] start_isp.sh: fix test to be generic
+
+So that it works on EVK and any other i.MX 8M Plus platform.
+
+Signed-off-by: Gary Bisson <gary.bisson@boundarydevices.com>
+---
+ imx/start_isp.sh | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/imx/start_isp.sh b/imx/start_isp.sh
+index 02ee7d3b5..fee0492ad 100755
+--- a/imx/start_isp.sh
++++ b/imx/start_isp.sh
+@@ -7,21 +7,18 @@
+ #
+ 
+ RUNTIME_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+-DEVICE_TREE_BASLER=$(grep basler-camera-vvcam /sys/firmware/devicetree/base/soc@0/*/i2c@*/*/compatible -l 2> /dev/null)
+-
++BASLER=`dmesg | grep Basler`
+ 
+ # check if the basler device has been enabled in the device tree
+-if [ -f "$DEVICE_TREE_BASLER" ]; then
+-
++if [ ! -z "$BASLER" ]; then
+ 	echo "Starting isp_media_server for Basler daA3840-30mc"
+-
+ 	cd $RUNTIME_DIR
+ 	# Default configuration for Basler daA3840-30mc: basler_4k
+ 	# Available configurations: basler_4k, basler_1080p60, basler_4khdr, basler_1080p60hdr
+-	exec ./run.sh -c basler_4k -lm
+-
++	#exec ./run.sh -c basler_4k
++	exec ./run.sh -c basler_1080p60
+ else
+ 	# no device tree found exit with code no device or address
+-	echo "No device tree found for Basler, check dtb file!" >&2
++	echo "Basler camera not found!" >&2
+ 	exit 6
+ fi
+-- 
+2.29.2
+
