@@ -8,8 +8,9 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/${PN}-${PV}/COPYING;md5=cf3f9b8d09bc3926b1
 inherit fsl-eula-unpack cmake systemd
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
-           file://0001-start_isp.sh-fix-test-to-be-generic.patch;patchdir=.. \
 	   file://0001-BufferManager.h-add-missing-header-file.patch;patchdir=.. \
+	   file://0001-run.sh-fix-bashism.patch;patchdir=.. \
+	   file://0001-start_isp.sh-fix-test-to-be-generic.patch;patchdir=.. \
 "
 
 SRC_URI[md5sum] = "2246009411af32b1e02fbb0b242a0fc0"
@@ -69,7 +70,7 @@ do_install() {
     fi
 }
 
-RDEPENDS_${PN} = "libdrm libpython3 bash"
+RDEPENDS_${PN} = "libdrm libpython3"
 
 PACKAGES = "${PN} ${PN}-dev ${PN}-dbg"
 
