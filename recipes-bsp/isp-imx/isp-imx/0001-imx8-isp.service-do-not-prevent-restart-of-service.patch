@@ -1,0 +1,26 @@
+From ce8dd8db37de85952419a5b28a48ec20d1310cf7 Mon Sep 17 00:00:00 2001
+From: Chris Dimich <Chris.Dimich@boundarydevices.com>
+Date: Wed, 17 Feb 2021 14:09:39 -0800
+Subject: [PATCH 1/1] imx8-isp.service: do not prevent restart of service
+
+Signed-off-by: Chris Dimich <Chris.Dimich@boundarydevices.com>
+---
+ imx/imx8-isp.service | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/imx/imx8-isp.service b/imx/imx8-isp.service
+index 93d2e9b3a..4f0cd88ca 100644
+--- a/imx/imx8-isp.service
++++ b/imx/imx8-isp.service
+@@ -10,7 +10,7 @@ StartLimitBurst=5
+ Restart=on-failure
+ RestartSec=5s
+ # ENXIO            
+-RestartPreventExitStatus=6
++#RestartPreventExitStatus=6
+ ExecStart=/opt/imx8-isp/bin/start_isp.sh
+ 
+ [Install]
+-- 
+2.29.0
+
