@@ -9,6 +9,7 @@ inherit fsl-eula-unpack cmake systemd
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
 	   file://0001-BufferManager.h-add-missing-header-file.patch;patchdir=.. \
+	   file://0001-imx8-isp.service-do-not-prevent-restart-of-service.patch;patchdir=.. \
 	   file://0001-run.sh-fix-bashism.patch;patchdir=.. \
 	   file://0001-start_isp.sh-fix-test-to-be-generic.patch;patchdir=.. \
 "
