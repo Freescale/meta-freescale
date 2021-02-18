@@ -80,3 +80,5 @@ FILES_${PN}-dbg += "${libdir}/.debug"
 
 INSANE_SKIP_${PN} += "rpaths dev-deps dev-so"
 INSANE_SKIP_${PN}-dev += "rpaths dev-elf"
+
+COMPATIBLE_MACHINE = "(imx|use-nxp-bsp)"
