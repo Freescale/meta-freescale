@@ -15,3 +15,5 @@ SRCREV = "9824e601d336bcef2dc6284ff3605e0b1d32d63d"
 S = "${WORKDIR}/git/vvcam/v4l2"
 
 inherit module
+
+COMPATIBLE_MACHINE = "(imx|use-nxp-bsp)"
