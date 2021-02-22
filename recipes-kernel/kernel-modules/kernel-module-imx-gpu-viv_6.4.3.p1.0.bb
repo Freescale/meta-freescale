@@ -5,7 +5,7 @@ SUMMARY = "Kernel loadable module for Vivante GPU"
 DESCRIPTION = "Builds the Vivante GPU kernel driver as a loadable kernel module, \
 allowing flexibility to use a newer graphics release with an older kernel."
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 SRCBRANCH = "imx_5.4.70_2.3.0"
 LOCALVERSION = "-${SRCBRANCH}"
