@@ -1,4 +1,4 @@
-From 015e048d3662b9f82e9aa5cd04d7c9de4eadb68d Mon Sep 17 00:00:00 2001
+From 33022867d76c91fe4e60699c1b7ebbc8feb4ee93 Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <shengjiu.wang@freescale.com>
 Date: Mon, 30 Mar 2015 10:26:14 +0800
 Subject: [PATCH] pulseaudio: remove the control for speaker/headphone widget
@@ -12,15 +12,15 @@ Upstream-Status: Inappropriate [i.MX specific]
 
 Signed-off-by: Shengjiu Wang <shengjiu.wang@freescale.com>
 ---
- .../alsa/mixer/paths/analog-output-headphones.conf |    8 ++++----
- .../alsa/mixer/paths/analog-output-speaker.conf    |    8 ++++----
+ .../alsa/mixer/paths/analog-output-headphones.conf        | 8 ++++----
+ src/modules/alsa/mixer/paths/analog-output-speaker.conf   | 8 ++++----
  2 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/src/modules/alsa/mixer/paths/analog-output-headphones.conf b/src/modules/alsa/mixer/paths/analog-output-headphones.conf
-index b6ee70b..a617976 100644
+index 88907f0..7598d2f 100644
 --- a/src/modules/alsa/mixer/paths/analog-output-headphones.conf
 +++ b/src/modules/alsa/mixer/paths/analog-output-headphones.conf
-@@ -81,8 +81,8 @@ override-map.2 = all-left,all-right
+@@ -88,8 +88,8 @@ override-map.2 = all-left,all-right
  
  [Element Headphone]
  required-any = any
@@ -31,7 +31,7 @@ index b6ee70b..a617976 100644
  override-map.1 = all
  override-map.2 = all-left,all-right
  
-@@ -105,8 +105,8 @@ switch = mute
+@@ -119,8 +119,8 @@ switch = mute
  volume = zero
  
  [Element Speaker]
@@ -43,10 +43,10 @@ index b6ee70b..a617976 100644
  [Element Desktop Speaker]
  switch = off
 diff --git a/src/modules/alsa/mixer/paths/analog-output-speaker.conf b/src/modules/alsa/mixer/paths/analog-output-speaker.conf
-index 39193dd..34bbb85 100644
+index fcf2f5c..6f6f898 100644
 --- a/src/modules/alsa/mixer/paths/analog-output-speaker.conf
 +++ b/src/modules/alsa/mixer/paths/analog-output-speaker.conf
-@@ -73,8 +73,8 @@ volume = off
+@@ -91,8 +91,8 @@ volume = off
  ; This profile path is intended to control the speaker, let's mute headphones
  ; else there will be a spike when plugging in headphones
  [Element Headphone]
@@ -55,9 +55,9 @@ index 39193dd..34bbb85 100644
 +switch = on
 +volume = ignore
  
- [Element Headphone2]
+ [Element Headphone,1]
  switch = off
-@@ -93,8 +93,8 @@ override-map.2 = all-left,all-right
+@@ -115,8 +115,8 @@ override-map.2 = all-left,all-right
  
  [Element Speaker]
  required-any = any
@@ -69,5 +69,5 @@ index 39193dd..34bbb85 100644
  override-map.2 = all-left,all-right
  
 -- 
-1.7.9.5
+2.20.1
 
