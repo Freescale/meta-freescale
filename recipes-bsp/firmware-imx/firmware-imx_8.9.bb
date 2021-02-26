@@ -16,6 +16,8 @@ do_install() {
     # SDMA Firmware section
     install -d ${D}${nonarch_base_libdir}/firmware/imx/sdma
     install -m 0644 ${S}/firmware/sdma/* ${D}${nonarch_base_libdir}/firmware/imx/sdma
+    rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx6q.bin
+    rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx7d.bin
 
     # EASRC Firmware section
     install -d ${D}${nonarch_base_libdir}/firmware/imx/easrc
