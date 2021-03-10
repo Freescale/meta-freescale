@@ -199,4 +199,4 @@ addtask deploy before do_build after do_compile
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILES_${PN} = "/boot"
 
-COMPATIBLE_MACHINE = "(mx8|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(mx8)"
