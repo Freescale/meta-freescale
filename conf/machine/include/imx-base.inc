@@ -18,10 +18,8 @@ IMX_DEFAULT_BSP_mx5 ?= "mainline"
 
 MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
 
-# Set specific make target and binary suffix
 IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
 IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
-IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
 IMX_DEFAULT_UBOOTTOOLS = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-tools', 'u-boot-tools', d)}"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
@@ -34,6 +32,7 @@ PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
 
+# Set specific make target and binary suffix
 UBOOT_BINARY ?= "u-boot.${UBOOT_SUFFIX}"
 UBOOT_MAKE_TARGET ?= "u-boot.${UBOOT_SUFFIX}"
 UBOOT_MAKE_TARGET_mxs ?= "u-boot.sb"
