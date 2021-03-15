@@ -22,6 +22,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 LINUX_VERSION = "5.10.22"
 
 KBRANCH = "5.10.x+fslc"
-SRCREV = "d8293dcef6e771d75f0ed2f5b4b3bbd4e978b489"
+SRCREV = "ad7cbaf354ee8e1f5cf9cec63c5fe41acaf91983"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
