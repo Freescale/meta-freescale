@@ -6,20 +6,20 @@ HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
-inherit deploy python3native autotools
-DEPENDS = "python3-pycrypto-native python3-pyelftools-native u-boot-mkimage-native"
+DEPENDS = "python3-pycrypto-native python3-pycryptodomex-native python3-pyelftools-native u-boot-mkimage-native"
 
-SRCBRANCH = "imx_5.4.24_2.1.0"
+SRCBRANCH = "imx_5.4.70_2.3.0"
 
 SRC_URI = "\
 	git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
-	file://0001-optee-os-fix-gcc10-compilation-issue-and-missing-cc-.patch \
 "
 
-SRCREV = "7a49776de59265500f10a247125429fde1555ac1"
+SRCREV = "a991c90475bb1c715651e5fe27f7f32cbe61aef9"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build.${PLATFORM_FLAVOR}"
+
+inherit deploy python3native autotools
 
 # The platform flavor corresponds to the Yocto machine without the leading 'i'.
 PLATFORM_FLAVOR                   = "${@d.getVar('MACHINE')[1:]}"
@@ -51,7 +51,6 @@ EXTRA_OEMAKE = " \
 	PLATFORM_FLAVOR=${PLATFORM_FLAVOR} \
 	CROSS_COMPILE=${HOST_PREFIX} \
 	CROSS_COMPILE64=${HOST_PREFIX} \
-	NOWERROR=1 \
 	LDFLAGS= \
 	O=${B} \
 "
@@ -68,7 +67,7 @@ do_deploy () {
     ${TARGET_PREFIX}objcopy -O binary ${B}/core/tee.elf ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin
 
     if [ "${OPTEE_ARCH}" != "arm64" ]; then
-        IMX_LOAD_ADDR=`cat ${B}/core/tee-init_load_addr.txt` && \
+        IMX_LOAD_ADDR=`${TARGET_PREFIX}readelf -h ${B}/core/tee.elf | grep "Entry point address" | awk '{print $4}'`
         uboot-mkimage -A arm -O linux -C none -a ${IMX_LOAD_ADDR} -e ${IMX_LOAD_ADDR} \
             -d ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin ${DEPLOYDIR}/uTee-${OPTEE_BIN_EXT}
     fi

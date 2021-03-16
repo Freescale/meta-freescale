@@ -1,23 +1,23 @@
-# Copyright (C) 2017-2018 NXP
+# Copyright (C) 2017-2020 NXP
 
 SUMMARY = "OPTEE Client libs"
 HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=69663ab153298557a59c67a60a743e5b"
 
-inherit python3native systemd
-
-SRCBRANCH = "imx_5.4.24_2.1.0"
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-optee-client.git;protocol=https;branch=${SRCBRANCH}"
-
-SRCREV = "bc0ec8ce1e4dc5ae23f4737ef659338b7cd408fe"
-
-SRC_URI += "file://tee-supplicant.service \
-            file://0001-flags-do-not-override-CFLAGS-from-host.patch \
+SRCBRANCH = "imx_5.4.70_2.3.0"
+SRC_URI = " \
+    git://source.codeaurora.org/external/imx/imx-optee-client.git;protocol=https;branch=${SRCBRANCH} \
+    file://tee-supplicant.service \
 "
+
+SRCREV = "2a77cf88d956c34cb4a1c191bea6113e327f5fe0"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
+
+inherit python3native systemd
+
 SYSTEMD_SERVICE_${PN} = "tee-supplicant.service"
 
 OPTEE_ARCH ?= "arm32"
