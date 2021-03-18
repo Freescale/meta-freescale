@@ -17,7 +17,6 @@ SRC_URI = "\
 SRCREV = "a991c90475bb1c715651e5fe27f7f32cbe61aef9"
 
 S = "${WORKDIR}/git"
-B = "${WORKDIR}/build.${PLATFORM_FLAVOR}"
 
 inherit deploy python3native autotools
 
@@ -51,30 +50,25 @@ EXTRA_OEMAKE = " \
 	PLATFORM_FLAVOR=${PLATFORM_FLAVOR} \
 	CROSS_COMPILE=${HOST_PREFIX} \
 	CROSS_COMPILE64=${HOST_PREFIX} \
-	LDFLAGS= \
-	O=${B} \
+	CFG_TEE_TA_LOG_LEVEL=0 \
+	CFG_TEE_CORE_LOG_LEVEL=0 \
+	-C ${S} O=${B}\
 "
 
-do_compile () {
-    unset LDFLAGS
-    export CFLAGS="${CFLAGS} --sysroot=${STAGING_DIR_HOST}"
-    oe_runmake -C ${S} all CFG_TEE_TA_LOG_LEVEL=0 CFG_TEE_CORE_LOG_LEVEL=0
-}
-
+LDFLAGS = ""
+CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
+CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
 do_deploy () {
     install -d ${DEPLOYDIR}
     ${TARGET_PREFIX}objcopy -O binary ${B}/core/tee.elf ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin
+    ln -sf tee.${PLATFORM_FLAVOR}.bin ${DEPLOYDIR}/tee.bin
 
     if [ "${OPTEE_ARCH}" != "arm64" ]; then
         IMX_LOAD_ADDR=`${TARGET_PREFIX}readelf -h ${B}/core/tee.elf | grep "Entry point address" | awk '{print $4}'`
         uboot-mkimage -A arm -O linux -C none -a ${IMX_LOAD_ADDR} -e ${IMX_LOAD_ADDR} \
             -d ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin ${DEPLOYDIR}/uTee-${OPTEE_BIN_EXT}
     fi
-
-    cd ${DEPLOYDIR}
-    ln -sf tee.${PLATFORM_FLAVOR}.bin tee.bin
-    cd -
 }
 
 do_install () {
