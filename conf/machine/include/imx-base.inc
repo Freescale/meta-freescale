@@ -32,13 +32,10 @@ PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
 
-# Set specific make target and binary suffix
+# UBOOT_BINARY is used inside the wks files to dynamically find the required
+# U-Boot file.
 UBOOT_BINARY ?= "u-boot.${UBOOT_SUFFIX}"
-UBOOT_MAKE_TARGET ?= "u-boot.${UBOOT_SUFFIX}"
-UBOOT_MAKE_TARGET_mxs ?= "u-boot.sb"
-UBOOT_MAKE_TARGET_mx8 ?= ""
 
-UBOOT_SUFFIX ?= "imx"
 UBOOT_SUFFIX_mxs ?= "sb"
 UBOOT_SUFFIX_mx8 ?= "bin"
 
