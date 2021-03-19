@@ -18,7 +18,50 @@ IMX_DEFAULT_BSP_mx5 ?= "mainline"
 
 MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
 
+# UBOOT_BINARY is used inside the wks files to dynamically find the required
+# U-Boot file.
+UBOOT_BINARY ?= "u-boot.${UBOOT_SUFFIX}"
+
+# Using the 'IMX_DEFAULT_BOOTLOADER' the machine can support multiple bootloader
+# versions. This is done for NXP reference board where we support 'u-boot-fslc'
+# and 'u-boot-imx'.
+#
+# So, for example in imx6qdlsabresd, we support both flavor and for this we
+# define:
+#
+# ,----[ imx6qdlsabresd.conf ]
+# | ### u-boot-fslc settings ###
+# |
+# | SPL_BINARY_pn-u-boot-fslc = "SPL"
+# | UBOOT_MACHINE_pn-u-boot-fslc ?= "mx6sabresd_defconfig"
+# | UBOOT_SUFFIX_pn-u-boot-fslc = "img"
+# |
+# | ### u-boot-imx settings ###
+# |
+# | # The u-boot-imx does not provide unified functionality for DL/Q/QP SoC
+# | # variants. Change the defconfig to the targeted SoC variant.
+# | UBOOT_MACHINE_pn-u-boot-imx ?= "mx6qsabresd_defconfig"
+# | UBOOT_SUFFIX_pn-u-boot-imx = "imx"
+# `----
+#
+# As result, the 'UBOOT_SUFFIX' is dynamically set based on the preferred U-Boot
+# flavor to use.
+#
+# For machines where one of the flavors is required, we can force it. An example
+# is the imx53qsb, which we define:
+#
+# ,----[ imx53qsb.conf ]
+# | # This machine is not supported by u-boot-imx as it is not tested by NXP on this
+# | # board. So we force it to use u-boot-fslc which is based on mainline here.
+# | IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
+# |
+# | UBOOT_MAKE_TARGET = "u-boot.imx"
+# | UBOOT_SUFFIX = "imx"
+# |
+# | UBOOT_MACHINE = "mx53loco_config"
+# `----
 IMX_DEFAULT_BOOTLOADER ??= "u-boot-fslc"
+UBOOT_SUFFIX ?= "${UBOOT_SUFFIX_pn-${IMX_DEFAULT_BOOTLOADER}}"
 
 IMX_DEFAULT_UBOOTTOOLS = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-tools', 'u-boot-tools', d)}"
 
@@ -31,16 +74,6 @@ PREFERRED_PROVIDER_nativesdk-u-boot-mkimage ??= "nativesdk-${IMX_DEFAULT_UBOOTTO
 PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
-
-# Set specific make target and binary suffix
-UBOOT_BINARY ?= "u-boot.${UBOOT_SUFFIX}"
-UBOOT_MAKE_TARGET ?= "u-boot.${UBOOT_SUFFIX}"
-UBOOT_MAKE_TARGET_mxs ?= "u-boot.sb"
-UBOOT_MAKE_TARGET_mx8 ?= ""
-
-UBOOT_SUFFIX ?= "imx"
-UBOOT_SUFFIX_mxs ?= "sb"
-UBOOT_SUFFIX_mx8 ?= "bin"
 
 UBOOT_ENTRYPOINT_mxs    = "0x40008000"
 UBOOT_ENTRYPOINT_mx51   = "0x90008000"
