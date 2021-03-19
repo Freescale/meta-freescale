@@ -18,7 +18,7 @@ IMX_DEFAULT_BSP_mx5 ?= "mainline"
 
 MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
 
-IMX_DEFAULT_BOOTLOADER = "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER ?= "u-boot-fslc"
 IMX_DEFAULT_BOOTLOADER_mx8 = "u-boot-imx"
 IMX_DEFAULT_UBOOTTOOLS = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-tools', 'u-boot-tools', d)}"
 
