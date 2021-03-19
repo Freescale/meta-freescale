@@ -54,6 +54,11 @@ UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_fspi_defconfig"
 
 IMX_BOOT_SEEK = "32"
 
+# This machine is not supported by u-boot-fslc, so we force it to use
+# u-boot-imx here.
+IMX_DEFAULT_BOOTLOADER = "u-boot-imx"
+UBOOT_SUFFIX = "bin"
+
 # Set ATF platform name
 ATF_PLATFORM = "imx8qx"
 

@@ -22,6 +22,11 @@ KERNEL_DEVICETREE_append_use-nxp-bsp = " \
 "
 UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
 
+IMX_DEFAULT_BOOTLOADER_use-nxp-bsp = "u-boot-imx"
+IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
+
+UBOOT_SUFFIX = "bin"
+
 UBOOT_CONFIG ??= "sd"
 UBOOT_CONFIG[sd]       = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
 UBOOT_CONFIG[mfgtool]  = "${UBOOT_CONFIG_BASENAME}_defconfig"
