@@ -6,7 +6,7 @@ HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
-DEPENDS = "python3-pycrypto-native python3-pycryptodomex-native python3-pyelftools-native u-boot-mkimage-native"
+DEPENDS = "python3-pycryptodomex-native python3-pyelftools-native u-boot-mkimage-native"
 
 SRCBRANCH = "imx_5.4.70_2.3.0"
 
