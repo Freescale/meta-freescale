@@ -20,6 +20,9 @@ PACKAGECONFIG_append_use-mainline-bsp = " gallium etnaviv kmsro freedreno"
 # For NXP BSP, GPU drivers don't support dri
 PACKAGECONFIG_remove_imxgpu_use-nxp-bsp = "dri"
 
+# mainline/etnaviv:
+RRECOMMENDS_${PN}-megadriver_append_use-mainline-bsp = " libdrm-etnaviv mesa-etnaviv-env"
+
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
         bb.utils.contains('DISTRO_FEATURES',     'x11',     'x11', \
