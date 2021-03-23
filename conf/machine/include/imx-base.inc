@@ -101,7 +101,11 @@ XSERVER_DRIVER                  = "xf86-video-fbdev"
 XSERVER_DRIVER_imxgpu2d         = "xf86-video-imx-vivante"
 XSERVER_DRIVER_vf               = "xf86-video-modesetting"
 XSERVER_DRIVER_append_mx8       = " xf86-video-modesetting"
-XSERVER_DRIVER_use-mainline-bsp = "xf86-video-armada"
+XSERVER_DRIVER_use-mainline-bsp = " \
+    xf86-video-fbdev \
+    xf86-video-modesetting \
+    xserver-xorg-extension-glx \
+"
 XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
