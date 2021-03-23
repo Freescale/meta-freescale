@@ -38,6 +38,9 @@ PACKAGECONFIG_remove_use-nxp-bsp = "${PACKAGECONFIG_REMOVE_NXPBSP}"
 PACKAGECONFIG_append_use-nxp-bsp = " ${PACKAGECONFIG_APPEND_NXPBSP}"
 DRIDRIVERS_use-nxp-bsp           = "${DRIDRIVERS_NXPBSP}"
 
+# mainline/etnaviv:
+RRECOMMENDS_${PN}-megadriver_append_use-mainline-bsp = " libdrm-etnaviv mesa-etnaviv-env"
+
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
         bb.utils.contains('DISTRO_FEATURES',     'x11',     'x11', \
