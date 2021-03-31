@@ -1,0 +1,49 @@
+From a99ff39b3b6095a16977fbb13b2b453a7359850f Mon Sep 17 00:00:00 2001
+From: Xianzhong <xianzhong.li@nxp.com>
+Date: Mon, 11 Jan 2021 11:53:29 +0800
+Subject: [PATCH] prefer to use GLES2 for glamor EGL config
+
+created the initial patch for xorg/xserver 1.20.8
+
+Upstream-Status: Pending
+Signed-off-by: Xianzhong <xianzhong.li@nxp.com>
+---
+ hw/xwayland/xwayland-glamor-gbm.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/hw/xwayland/xwayland-glamor-gbm.c b/hw/xwayland/xwayland-glamor-gbm.c
+index dce782fc3..1fdf45490 100644
+--- a/hw/xwayland/xwayland-glamor-gbm.c
++++ b/hw/xwayland/xwayland-glamor-gbm.c
+@@ -912,13 +912,8 @@ xwl_glamor_gbm_init_egl(struct xwl_screen *xwl_screen)
+     struct xwl_gbm_private *xwl_gbm = xwl_gbm_get(xwl_screen);
+     EGLint major, minor;
+     Bool egl_initialized = FALSE;
+-    static const EGLint config_attribs_core[] = {
+-        EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,
+-        EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
+-        EGL_CONTEXT_MAJOR_VERSION_KHR,
+-        GLAMOR_GL_CORE_VER_MAJOR,
+-        EGL_CONTEXT_MINOR_VERSION_KHR,
+-        GLAMOR_GL_CORE_VER_MINOR,
++    static const EGLint config_attribs_gles2[] = {
++        EGL_CONTEXT_CLIENT_VERSION, 2,
+         EGL_NONE
+     };
+     const GLubyte *renderer;
+@@ -947,10 +942,10 @@ xwl_glamor_gbm_init_egl(struct xwl_screen *xwl_screen)
+         goto error;
+     }
+ 
+-    eglBindAPI(EGL_OPENGL_API);
++    eglBindAPI(EGL_OPENGL_ES_API);
+ 
+     xwl_screen->egl_context = eglCreateContext(
+-        xwl_screen->egl_display, NULL, EGL_NO_CONTEXT, config_attribs_core);
++        xwl_screen->egl_display, NULL, EGL_NO_CONTEXT, config_attribs_gles2);
+     if (xwl_screen->egl_context == EGL_NO_CONTEXT) {
+         xwl_screen->egl_context = eglCreateContext(
+             xwl_screen->egl_display, NULL, EGL_NO_CONTEXT, NULL);
+-- 
+2.17.1
+

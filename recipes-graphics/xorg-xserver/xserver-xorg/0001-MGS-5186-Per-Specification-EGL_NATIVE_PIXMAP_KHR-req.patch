@@ -1,0 +1,30 @@
+From ed3c55fa6260ad125a32f9ac67f9e44a9bce7cf1 Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@nxp.com>
+Date: Mon, 11 May 2020 19:12:51 -0500
+Subject: [PATCH] MGS-5186 Per Specification EGL_NATIVE_PIXMAP_KHR requires
+ EGL_NO_CONTEXT
+
+https://www.khronos.org/registry/EGL/extensions/KHR/EGL_KHR_image_pixmap.txt
+
+Per Specification EGL_NATIVE_PIXMAP_KHR requires EGL_NO_CONTEXT.
+So passing context will result in error.
+
+Upstream-Status: Pending
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@nxp.com>
+---
+ hw/xwayland/xwayland-glamor-gbm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: xorg-server-1.20.8/hw/xwayland/xwayland-glamor-gbm.c
+===================================================================
+--- xorg-server-1.20.8.orig/hw/xwayland/xwayland-glamor-gbm.c
++++ xorg-server-1.20.8/hw/xwayland/xwayland-glamor-gbm.c
+@@ -167,7 +167,7 @@ xwl_glamor_gbm_create_pixmap_for_bo(Scre
+     xwl_pixmap->bo = bo;
+     xwl_pixmap->buffer = NULL;
+     xwl_pixmap->image = eglCreateImageKHR(xwl_screen->egl_display,
+-                                          xwl_screen->egl_context,
++                                          EGL_NO_CONTEXT,
+                                           EGL_NATIVE_PIXMAP_KHR,
+                                           xwl_pixmap->bo, NULL);
+     if (xwl_pixmap->image == EGL_NO_IMAGE_KHR)
