@@ -1,0 +1,119 @@
+From 00add4be8620175ccc69869e22479962dacdce9d Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Fri, 13 Nov 2020 14:38:41 +0100
+Subject: [PATCH 2/6] dri: bring back use flags for createImageWithModifiers
+
+createImageWithModifiers dropped the use flags that were present with
+the createImage interface as it was believed at the time that all those
+use flags could be expressed as a modifier. This turned out to be untrue,
+as there are some use flags like SCANOUT and the BACKBUFFER hint that
+won't ever get a eqivalent modifier expression.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603]
+---
+ include/GL/internal/dri_interface.h      | 1 +
+ src/egl/drivers/dri2/platform_wayland.c  | 4 ++--
+ src/gallium/frontends/dri/dri2.c         | 5 ++---
+ src/gbm/backends/dri/gbm_dri.c           | 2 +-
+ src/loader/loader_dri3_helper.c          | 3 +++
+ src/mesa/drivers/dri/i965/intel_screen.c | 2 +-
+ 6 files changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 39d5dd07533..222821428d0 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1678,6 +1678,7 @@ struct __DRIimageExtensionRec {
+                                            int width, int height, int format,
+                                            const uint64_t *modifiers,
+                                            const unsigned int modifier_count,
++                                           unsigned int use,
+                                            void *loaderPrivate);
+ 
+    /*
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index c0b26c4b623..bb508cbe421 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -595,7 +595,7 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+                                                       dri2_surf->base.Height,
+                                                       linear_dri_image_format,
+                                                       &linear_mod,
+-                                                      1,
++                                                      1, use_flags,
+                                                       NULL);
+       } else {
+          dri2_surf->back->linear_copy =
+@@ -624,7 +624,7 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+                                                      dri2_surf->base.Height,
+                                                      dri_image_format,
+                                                      modifiers,
+-                                                     num_modifiers,
++                                                     num_modifiers, use_flags,
+                                                      NULL);
+       } else {
+          dri2_surf->back->dri_image =
+diff --git a/src/gallium/frontends/dri/dri2.c b/src/gallium/frontends/dri/dri2.c
+index 1cd42cd8114..1f1e7a9a65e 100644
+--- a/src/gallium/frontends/dri/dri2.c
++++ b/src/gallium/frontends/dri/dri2.c
+@@ -1074,12 +1074,11 @@ static __DRIimage *
+ dri2_create_image_with_modifiers(__DRIscreen *dri_screen,
+                                  int width, int height, int format,
+                                  const uint64_t *modifiers,
+-                                 const unsigned count,
++                                 const unsigned count, unsigned int use,
+                                  void *loaderPrivate)
+ {
+    return dri2_create_image_common(dri_screen, width, height, format,
+-                                   __DRI_IMAGE_USE_SHARE, modifiers, count,
+-                                   loaderPrivate);
++                                   use, modifiers, count, loaderPrivate);
+ }
+ 
+ static bool
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index b5634741554..aff3a107e7d 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -1173,7 +1173,7 @@ gbm_dri_bo_create(struct gbm_device *gbm,
+                                               width, height,
+                                               dri_format,
+                                               modifiers, count,
+-                                              bo);
++                                              dri_use, bo);
+ 
+       if (bo->image) {
+          /* The client passed in a list of invalid modifiers */
+diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
+index ccf8d1795e7..6fc6a2b705a 100644
+--- a/src/loader/loader_dri3_helper.c
++++ b/src/loader/loader_dri3_helper.c
+@@ -1407,6 +1407,9 @@ dri3_alloc_render_buffer(struct loader_dri3_drawable *draw, unsigned int format,
+                                                                        format,
+                                                                        modifiers,
+                                                                        count,
++                                                                       __DRI_IMAGE_USE_SHARE |
++                                                                       __DRI_IMAGE_USE_SCANOUT |
++                                                                       __DRI_IMAGE_USE_BACKBUFFER,
+                                                                        buffer);
+          }
+ 
+diff --git a/src/mesa/drivers/dri/i965/intel_screen.c b/src/mesa/drivers/dri/i965/intel_screen.c
+index 4492d43c040..4511b962eef 100644
+--- a/src/mesa/drivers/dri/i965/intel_screen.c
++++ b/src/mesa/drivers/dri/i965/intel_screen.c
+@@ -893,7 +893,7 @@ static __DRIimage *
+ intel_create_image_with_modifiers(__DRIscreen *dri_screen,
+                                   int width, int height, int format,
+                                   const uint64_t *modifiers,
+-                                  const unsigned count,
++                                  const unsigned count, unsigned int use,
+                                   void *loaderPrivate)
+ {
+    return intel_create_image_common(dri_screen, width, height, format, 0,
+-- 
+2.26.2
+

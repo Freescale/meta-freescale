@@ -1,0 +1,52 @@
+From 570908323e02c4558f5a9abc2d82621056cd65ab Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Tue, 17 Nov 2020 12:08:13 +0100
+Subject: [PATCH 5/6] etnaviv: compact etna_state_updates
+
+Just reclaim a bit of screen real estate, purely cosmetic change.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603]
+---
+ src/gallium/drivers/etnaviv/etnaviv_state.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
+
+diff --git a/src/gallium/drivers/etnaviv/etnaviv_state.c b/src/gallium/drivers/etnaviv/etnaviv_state.c
+index 1b4a7040b50..84fea58ecb5 100644
+--- a/src/gallium/drivers/etnaviv/etnaviv_state.c
++++ b/src/gallium/drivers/etnaviv/etnaviv_state.c
+@@ -749,24 +749,18 @@ struct etna_state_updater {
+ static const struct etna_state_updater etna_state_updates[] = {
+    {
+       etna_shader_update_vertex, ETNA_DIRTY_SHADER | ETNA_DIRTY_VERTEX_ELEMENTS,
+-   },
+-   {
++   }, {
+       etna_shader_link, ETNA_DIRTY_SHADER,
+-   },
+-   {
++   }, {
+       etna_update_blend, ETNA_DIRTY_BLEND | ETNA_DIRTY_FRAMEBUFFER
+-   },
+-   {
++   }, {
+       etna_update_blend_color, ETNA_DIRTY_BLEND_COLOR | ETNA_DIRTY_FRAMEBUFFER,
+-   },
+-   {
++   }, {
+       etna_update_ts_config, ETNA_DIRTY_DERIVE_TS,
+-   },
+-   {
++   }, {
+       etna_update_clipping, ETNA_DIRTY_SCISSOR | ETNA_DIRTY_FRAMEBUFFER |
+                             ETNA_DIRTY_RASTERIZER | ETNA_DIRTY_VIEWPORT,
+-   },
+-   {
++   }, {
+       etna_update_zsa, ETNA_DIRTY_ZSA | ETNA_DIRTY_SHADER,
+    }
+ };
+-- 
+2.26.2
+

@@ -1,0 +1,31 @@
+From 59f74212bbb5e28badd0775929e42856c9a01d35 Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Fri, 13 Nov 2020 15:03:37 +0100
+Subject: [PATCH 4/6] etnaviv: remove double assigment of surface->texture
+
+surf->base.texture is already assigned earlier via a proper
+pipe_resource_reference call. Remove the superfluous assignement.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603]
+---
+ src/gallium/drivers/etnaviv/etnaviv_surface.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/gallium/drivers/etnaviv/etnaviv_surface.c b/src/gallium/drivers/etnaviv/etnaviv_surface.c
+index c78973bdb09..52a937652d2 100644
+--- a/src/gallium/drivers/etnaviv/etnaviv_surface.c
++++ b/src/gallium/drivers/etnaviv/etnaviv_surface.c
+@@ -112,7 +112,6 @@ etna_create_surface(struct pipe_context *pctx, struct pipe_resource *prsc,
+       etna_screen_resource_alloc_ts(pctx->screen, rsc);
+    }
+ 
+-   surf->base.texture = &rsc->base;
+    surf->base.format = templat->format;
+    surf->base.width = rsc->levels[level].width;
+    surf->base.height = rsc->levels[level].height;
+-- 
+2.26.2
+
