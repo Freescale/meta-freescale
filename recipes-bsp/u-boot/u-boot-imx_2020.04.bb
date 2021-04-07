@@ -29,4 +29,4 @@ do_deploy_append_mx8m() {
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8|use-mainline-bsp)"
