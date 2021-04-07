@@ -30,9 +30,9 @@ PACKAGECONFIG_REMOVE_NXPBSP_imxgpu        = "dri"
 DRIDRIVERS_NXPBSP_imxgpu                  = ""
 #
 # For parts with GPU and DRM, use osmesa, dri, and swrast
-PACKAGECONFIG_REMOVE_NXPBSP_imxgpu_imxdrm = "gallium"
-PACKAGECONFIG_APPEND_NXPBSP_imxgpu_imxdrm = "osmesa"
-DRIDRIVERS_NXPBSP_imxgpu_imxdrm           = "swrast"
+PACKAGECONFIG_REMOVE_NXPBSP_imxgpu = "gallium"
+PACKAGECONFIG_APPEND_NXPBSP_imxgpu = "osmesa"
+DRIDRIVERS_NXPBSP_imxgpu           = "swrast"
 #
 PACKAGECONFIG_remove_use-nxp-bsp = "${PACKAGECONFIG_REMOVE_NXPBSP}"
 PACKAGECONFIG_append_use-nxp-bsp = " ${PACKAGECONFIG_APPEND_NXPBSP}"
