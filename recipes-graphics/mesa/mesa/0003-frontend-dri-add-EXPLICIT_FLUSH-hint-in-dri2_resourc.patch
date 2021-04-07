@@ -1,0 +1,46 @@
+From 587aac46dbadf2aca1489aadd4216e592e11e17b Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Fri, 13 Nov 2020 14:59:52 +0100
+Subject: [PATCH 3/6] frontend/dri: add EXPLICIT_FLUSH hint in
+ dri2_resource_get_param
+
+dri2_resource_get_param() is called from two different places right now.
+Only one of them adds the EXPLICIT_FLUSH hint to the handle usage, which
+may disable the optimizations provided by this hint without a reason.
+
+Make sure to always add this hint when appropriate.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603]
+---
+ src/gallium/frontends/dri/dri2.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/gallium/frontends/dri/dri2.c b/src/gallium/frontends/dri/dri2.c
+index 1f1e7a9a65e..7851ebceb3e 100644
+--- a/src/gallium/frontends/dri/dri2.c
++++ b/src/gallium/frontends/dri/dri2.c
+@@ -1198,6 +1198,9 @@ dri2_resource_get_param(__DRIimage *image, enum pipe_resource_param param,
+    if (!pscreen->resource_get_param)
+       return false;
+ 
++   if (image->use & __DRI_IMAGE_USE_BACKBUFFER)
++      handle_usage |= PIPE_HANDLE_USAGE_EXPLICIT_FLUSH;
++
+    return pscreen->resource_get_param(pscreen, NULL, image->texture,
+                                       image->plane, 0, 0, param, handle_usage,
+                                       value);
+@@ -1242,9 +1245,6 @@ dri2_query_image_by_resource_param(__DRIimage *image, int attrib, int *value)
+ 
+    handle_usage = PIPE_HANDLE_USAGE_FRAMEBUFFER_WRITE;
+ 
+-   if (image->use & __DRI_IMAGE_USE_BACKBUFFER)
+-      handle_usage |= PIPE_HANDLE_USAGE_EXPLICIT_FLUSH;
+-
+    if (!dri2_resource_get_param(image, param, handle_usage, &res_param))
+       return false;
+ 
+-- 
+2.26.2
+
