@@ -1,3 +1,13 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+SRC_URI_append_use-mainline-bsp = " \
+    file://0001-frontend-dri-copy-image-use-in-dup_image.patch \
+    file://0002-dri-bring-back-use-flags-for-createImageWithModifier.patch \
+    file://0003-frontend-dri-add-EXPLICIT_FLUSH-hint-in-dri2_resourc.patch \
+    file://0004-etnaviv-remove-double-assigment-of-surface-texture.patch \
+    file://0005-etnaviv-compact-etna_state_updates.patch \
+    file://0006-etnaviv-flush-used-render-buffers-on-context-flush-w.patch \
+"
+
 PROVIDES_remove_imxgpu   = "virtual/egl"
 PROVIDES_remove_imxgpu3d = "virtual/libgl virtual/libgles1 virtual/libgles2"
 
