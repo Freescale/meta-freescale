@@ -1,8 +1,3 @@
-#@TYPE: Machine
-#@NAME: i.MX 8DXL EVK
-#@DESCRIPTION: i.MX 8DXLite Evaluation Kit (EVK) board
-#@MAINTAINER: Lauren Post <lauren.post@nxp.com>
-
 MACHINEOVERRIDES =. "mx8:mx8x:mx8dxl:"
 
 require conf/machine/include/imx-base.inc
@@ -25,16 +20,11 @@ SERIAL_CONSOLES = "115200;ttyLP0"
 # auto-serial-console there
 USE_VT = "0"
 
-KERNEL_DEVICETREE = "freescale/imx8dxl-evk.dtb"
+KERNEL_DEVICETREE = " \
+    freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
+"
 KERNEL_DEVICETREE_append_use-nxp-bsp = " \
-    freescale/imx8dxl-evk-enet0.dtb \
-    freescale/imx8dxl-evk-enet0-tja1100.dtb \
-    freescale/imx8dxl-evk-inmate.dtb \
-    freescale/imx8dxl-evk-lcdif.dtb \
-    freescale/imx8dxl-evk-lpspi-slave.dtb \
-    freescale/imx8dxl-evk-pcie-ep.dtb \
-    freescale/imx8dxl-evk-root.dtb \
-    freescale/imx8dxl-evk-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-rpmsg.dtb \
 "
 
 ATF_PLATFORM = "imx8dxl"
@@ -49,8 +39,7 @@ SPL_BINARY = "spl/u-boot-spl.bin"
 UBOOT_SUFFIX = "bin"
 
 UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd]   = "imx8dxl_evk_defconfig,sdcard"
-UBOOT_CONFIG[fspi] = "imx8dxl_evk_fspi_defconfig"
+UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
 
 IMX_BOOT_SEEK = "32"
 
@@ -60,8 +49,14 @@ IMXBOOT_TARGETS_SD = \
 IMXBOOT_TARGETS_FSPI = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl_flexspi', \
                                                        'flash_flexspi', d)}"
+IMXBOOT_TARGETS_NAND = \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl_nand', \
+                                                       'flash_nand flash_nand_fw', d)}"
 IMXBOOT_TARGETS = \
     "${@bb.utils.contains('UBOOT_CONFIG',        'sd', '${IMXBOOT_TARGETS_SD}', \
-                                                       '${IMXBOOT_TARGETS_FSPI}', d)}"
+        bb.utils.contains('UBOOT_CONFIG',      'fspi', '${IMXBOOT_TARGETS_FSPI}', \
+        bb.utils.contains('UBOOT_CONFIG',      'nand', '${IMXBOOT_TARGETS_NAND}', \
+                                                                       'INVALID', d), d), d)}"
+
 
 BOARD_TYPE = "evk"
