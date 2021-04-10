@@ -22,7 +22,8 @@ kernel_conf_variable() {
 	fi
 }
 
-do_preconfigure() {
+do_kernel_localversion[dirs] += "${S} ${B}"
+do_kernel_localversion() {
 	mkdir -p ${B}
 	echo "" > ${B}/.config
 	CONF_SED_SCRIPT=""
@@ -40,4 +41,5 @@ do_preconfigure() {
 		printf "%s%s" +g $head > ${S}/.scmversion
 	fi
 }
-addtask preconfigure before do_configure after do_unpack do_patch do_kernel_metadata
+
+addtask kernel_localversion before do_configure after do_patch do_kernel_configme
