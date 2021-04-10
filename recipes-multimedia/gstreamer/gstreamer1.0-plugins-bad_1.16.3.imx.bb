@@ -37,7 +37,7 @@ DEPENDS += "gstreamer1.0-plugins-base"
 inherit gobject-introspection
 
 PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gl', '', d)}"
-PACKAGECONFIG_GL_imxpxp = "gles2"
+PACKAGECONFIG_GL_imxpxp = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2', '', d)}"
 
 PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
