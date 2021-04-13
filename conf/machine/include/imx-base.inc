@@ -63,6 +63,10 @@ UBOOT_BINARY ?= "u-boot.${UBOOT_SUFFIX}"
 IMX_DEFAULT_BOOTLOADER ??= "u-boot-fslc"
 UBOOT_SUFFIX ?= "${UBOOT_SUFFIX_pn-${IMX_DEFAULT_BOOTLOADER}}"
 
+# We need to export the original variable to allow it to be used when generating
+# wic based images.
+SPL_BINARY ?= "${SPL_BINARY_pn-${IMX_DEFAULT_BOOTLOADER}}"
+
 IMX_DEFAULT_UBOOTTOOLS = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-tools', 'u-boot-tools', d)}"
 IMX_DEFAULT_MFGTOOL = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-mfgtool', 'u-boot-fslc', d)}"
 
