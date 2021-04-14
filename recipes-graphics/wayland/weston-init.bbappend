@@ -41,7 +41,7 @@ INI_UNCOMMENT_ASSIGNMENTS_append_mx8mq = " \
 
 uncomment() {
     if ! grep -q "^#$1" $2 && ! grep -q "^$1" $2; then
-        bbfatal "Commented setting '#$1' not found in file $2"
+        bbwarn "Commented setting '#$1' not found in file $2"
     fi
     sed -i -e 's,^#'"$1"','"$1"',g' $2
 }
