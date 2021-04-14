@@ -20,3 +20,9 @@ def make_dtb_boot_files(d):
         return os.path.basename(dtb)
 
     return ' '.join([transform(dtb) for dtb in alldtbs.split() if dtb])
+
+def get_spl_binary(d):
+    imx_default_bootloader = d.get('IMX_DEFAULT_BOOTLOADER')
+    spl_binary = d.getVar("SPL_BINARY_pn-%s" % imx_default_bootloader)
+
+    return spl_binary or ""
