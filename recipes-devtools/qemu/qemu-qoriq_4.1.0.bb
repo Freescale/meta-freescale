@@ -1,6 +1,6 @@
 BBCLASSEXTEND = ""
 
-require recipes-devtools/qemu/qemu.inc
+require qemu.inc
 
 COMPATIBLE_MACHINE = "(qoriq)"
 
