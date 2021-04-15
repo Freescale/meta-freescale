@@ -8,7 +8,7 @@ DEPENDS += "tcl-native"
 inherit deploy siteinfo
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/rcw;nobranch=1"
-SRCREV = "bd6675518e6cb22f731c53407cc0631aa240f49f"
+SRCREV = "1caebba96b6fd8eac9ef4246c181f2b47c448c4f"
 
 S = "${WORKDIR}/git"
 
