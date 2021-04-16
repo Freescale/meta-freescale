@@ -67,15 +67,10 @@ UBOOT_SUFFIX ?= "${UBOOT_SUFFIX_pn-${IMX_DEFAULT_BOOTLOADER}}"
 # wic based images.
 SPL_BINARY ??= "${@get_spl_binary(d)}"
 
-IMX_DEFAULT_UBOOTTOOLS = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-tools', 'u-boot-tools', d)}"
 IMX_DEFAULT_MFGTOOL = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-mfgtool', 'u-boot-fslc', d)}"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-mfgtool ??= "${IMX_DEFAULT_MFGTOOL}"
-PREFERRED_PROVIDER_u-boot-tools-native ??= "${IMX_DEFAULT_UBOOTTOOLS}-native"
-PREFERRED_PROVIDER_nativesdk-u-boot-tools ??= "nativesdk-${IMX_DEFAULT_UBOOTTOOLS}"
-PREFERRED_PROVIDER_u-boot-mkimage-native ??= "${IMX_DEFAULT_UBOOTTOOLS}-native"
-PREFERRED_PROVIDER_nativesdk-u-boot-mkimage ??= "nativesdk-${IMX_DEFAULT_UBOOTTOOLS}"
 PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
