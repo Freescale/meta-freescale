@@ -42,4 +42,4 @@ do_kernel_localversion() {
 	fi
 }
 
-addtask kernel_localversion before do_configure after do_patch do_kernel_configme
+addtask kernel_localversion before do_configure after do_patch do_kernel_metadata
