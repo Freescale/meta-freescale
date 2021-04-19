@@ -1,0 +1,2 @@
+export MESA_GL_VERSION_OVERRIDE=2.1
+export ETNA_MESA_DEBUG=nir
