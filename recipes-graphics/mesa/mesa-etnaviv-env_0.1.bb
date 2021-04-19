@@ -4,12 +4,15 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "file://mesa-etnaviv.conf"
+SRC_URI = "\
+    file://mesa-etnaviv.conf \
+    file://mesa-etnaviv.sh \
+"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
-do_install() {
+do_install_use-mainline-bsp() {
     # MESA global envirronment variables
 
     # systemd
@@ -18,7 +21,11 @@ do_install() {
             ${D}${sysconfdir}/systemd/system.conf.d/mesa-etnaviv.conf
     fi
 
-    # sysvinit - TODO
+    # sysvinit
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'true', 'false', d)}; then
+        install -D -m 644 ${WORKDIR}/mesa-etnaviv.sh \
+            ${D}${sysconfdir}/profile.d/mesa-etnaviv.sh
+    fi
 }
 
 ALLOW_EMPTY_${PN} = "1"
