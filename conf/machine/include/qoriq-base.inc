@@ -9,6 +9,8 @@ PREFERRED_PROVIDER_nativesdk-u-boot-mkimage ??= "nativesdk-u-boot-tools"
 PREFERRED_VERSION_testfloat = "2a"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz"
+SOC_DEFAULT_IMAGE_FSTYPES_append_ls1043a = " wic.bz2"
+SOC_DEFAULT_IMAGE_FSTYPES_append_ls1046a = " wic.bz2"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
 # Composite Image Layout (in KBytes)
