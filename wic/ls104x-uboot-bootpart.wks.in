@@ -1,0 +1,21 @@
+# short-description: Create SD card image with a boot partition
+# long-description:
+# Create an image that can be written onto a SD card using dd for use
+# with Layerscape lx1043a/ls1046a family.
+# It uses u-boot.
+#
+# The disk layout used is:
+#  - ----- --------- -------------- --------------------
+# | | PBL | FIP     |  FMAN-UCODE  |  boot +  rootfs    |
+#  - ----- --------- -------------- --------------------
+# ^ ^     ^         ^              ^
+# | |     |         |              |
+# 0 4kiB  1MiB    9MiB           16MiB
+#
+part PBL --source rawcopy --sourceparams="file=${IMAGE_FILE_PBL_SD}" --ondisk mmcblk --no-table --align ${IMAGE_OFFSET_PBL}
+part FIP --source rawcopy --sourceparams="file=${IMAGE_FILE_FIP_UBOOT}" --ondisk mmcblk --no-table --align ${IMAGE_OFFSET_FIP}
+part FMAN-UCODE --source rawcopy --sourceparams="file=${FMAN_UCODE}" --ondisk mmcblk --no-table --align ${IMAGE_OFFSET_FMAN_UCODE}
+part /boot --source bootimg-partition --ondisk mmcblk --fstype=ext4 --label boot --active --align 16384 --extra-space 0
+part / --source rootfs --ondisk mmcblk --fstype=ext4 --label rootfs --align 16384
+
+bootloader --ptable msdos
