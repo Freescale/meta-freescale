@@ -8,7 +8,7 @@ DEPENDS = "virtual/imxvpu libimxdmabuffer"
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "49cb1b34d759aa7a51269ca0f58fcc1f9647da5b"
+SRCREV = "29c90975dcbb52ca09512693af417d73ab2800a9"
 SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
