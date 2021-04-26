@@ -1,5 +1,5 @@
 # Copyright 2013-2016 (C) Freescale Semiconductor
-# Copyright 2017-2020 (C) NXP
+# Copyright 2017-2021 (C) NXP
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 #
@@ -18,8 +18,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 DEPENDS += "lzop-native bc-native"
 
 SRCBRANCH = "imx_5.4.70_2.3.0"
-LOCALVERSION = "-2.3.0"
-SRCREV = "4f2631b022d843c1f2a5d34eae2fd98927a1a6c7"
+LOCALVERSION = "-2.3.2"
+SRCREV = "5f2220e87dd8a8fb86f524ea7945ab1d4155bc73"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
