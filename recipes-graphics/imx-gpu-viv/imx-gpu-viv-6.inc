@@ -284,7 +284,6 @@ FILES_libegl-imx-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/
 
 FILES_libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES_libgal-imx-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
-RDEPENDS_libgal-imx += "kernel-module-imx-gpu-viv"
 RDEPENDS_libgal-imx += "${@bb.utils.contains('PACKAGECONFIG', 'valgrind', 'valgrind', '', d)}"
 RPROVIDES_libgal-imx += "libgal-imx"
 INSANE_SKIP_libgal-imx += "build-deps"
