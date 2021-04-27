@@ -70,12 +70,16 @@ do_install() {
 
 RDEPENDS_${PN} = "libdrm libpython3"
 
-PACKAGES = "${PN} ${PN}-dev ${PN}-dbg"
+# The build contains a mix of versioned and unversioned libraries, so
+# the default packaging configuration needs some modifications
+FILES_SOLIBSDEV = ""
+FILES_${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
+FILES_${PN}-dev += " \
+    ${libdir}/libjsoncpp.so \
+    ${libdir}/libos08a20.so \
+    ${libdir}/libov2775.so \
+"
 
-FILES_${PN} = "${libdir} /opt ${systemd_system_unitdir}/imx8-isp.service"
-FILES_${PN}-dbg += "${libdir}/.debug"
-
-INSANE_SKIP_${PN} += "rpaths dev-deps dev-so"
-INSANE_SKIP_${PN}-dev += "rpaths dev-elf"
+INSANE_SKIP_${PN} = "rpaths"
 
 COMPATIBLE_MACHINE = "(imx|use-nxp-bsp)"
