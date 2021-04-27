@@ -1,6 +1,6 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2018 (C) O.S. Systems Software LTDA.
-# Copyright (C) 2017-2020 NXP
+# Copyright (C) 2017-2021 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common.inc
