@@ -1,21 +1,17 @@
-# Copyright 2020 NXP
+# Copyright 2020-2021 NXP
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://${WORKDIR}/${PN}-${PV}/COPYING;md5=cf3f9b8d09bc3926b1004ea71f7a248a"
-
+LIC_FILES_CHKSUM = "file://${WORKDIR}/${PN}-${PV}/COPYING;md5=3c3fe2b904fd694f28d2f646ee16dddb"
 
 inherit fsl-eula-unpack cmake systemd
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
-	   file://0001-BufferManager.h-add-missing-header-file.patch;patchdir=.. \
-	   file://0001-imx8-isp.service-do-not-prevent-restart-of-service.patch;patchdir=.. \
-	   file://0001-run.sh-fix-bashism.patch;patchdir=.. \
 	   file://0001-start_isp.sh-fix-test-to-be-generic.patch;patchdir=.. \
 "
 
-SRC_URI[md5sum] = "2246009411af32b1e02fbb0b242a0fc0"
-SRC_URI[sha256sum] = "7a245abb5fee23319f59b970db0bb014a2932fd6d5bd44f16f7dd31bbe25003a"
+SRC_URI[md5sum] = "75f79ba556c47172b9a0cbc3a877e604"
+SRC_URI[sha256sum] = "28e2ee909f29a256c4eac87ef8336932d90a88a2a183389ac0868212954af42c"
 
 S = "${WORKDIR}/${PN}-${PV}/appshell"
 
