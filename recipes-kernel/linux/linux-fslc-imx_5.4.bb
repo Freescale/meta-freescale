@@ -33,7 +33,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: rel_imx_5.4.70_2.3.0
+#    tag: rel_imx_5.4.70_2.3.2
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -71,7 +71,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 KBRANCH = "5.4-2.3.x-imx"
-SRCREV = "e67919750cd7d48b9321b79dbbc6d0709e5b53df"
+SRCREV = "f5b1a0c923d04cd49158bfb94fcfc5273474c076"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
