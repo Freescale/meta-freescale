@@ -3,21 +3,21 @@
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=3c3fe2b904fd694f28d2f646ee16dddb"
+DEPENDS = "python3 libdrm"
 
-inherit fsl-eula-unpack cmake systemd
-
-SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
+SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
 	   file://0001-start_isp.sh-fix-test-to-be-generic.patch \
 "
 
 SRC_URI[md5sum] = "75f79ba556c47172b9a0cbc3a877e604"
 SRC_URI[sha256sum] = "28e2ee909f29a256c4eac87ef8336932d90a88a2a183389ac0868212954af42c"
 
-DEPENDS = "python3 libdrm"
+inherit fsl-eula-unpack cmake systemd
 
 # Build the sub-folder appshell
 OECMAKE_SOURCEPATH = "${S}/appshell"
 
+# Use make instead of ninja
 OECMAKE_GENERATOR = "Unix Makefiles"
 
 SYSTEMD_SERVICE_${PN} = "imx8-isp.service"
@@ -52,23 +52,21 @@ do_install() {
     cp -r ${WORKDIR}/build/generated/release/bin/*2775* ${D}/opt/imx8-isp/bin
     cp -r ${WORKDIR}/build/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
     cp -r ${WORKDIR}/build/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
-    cp -r ${WORKDIR}/${PN}-${PV}/mediacontrol/case/ ${D}/opt/imx8-isp/bin
+    cp -r ${WORKDIR}/${BP}/mediacontrol/case/ ${D}/opt/imx8-isp/bin
     cp -r ${WORKDIR}/build/generated/release/lib/*.so* ${D}/${libdir}
     cp -r ${WORKDIR}/build/generated/release/include/* ${D}/${includedir}
 
-    cp ${WORKDIR}/${PN}-${PV}/imx/run.sh ${D}/opt/imx8-isp/bin
-    cp ${WORKDIR}/${PN}-${PV}/imx/start_isp.sh ${D}/opt/imx8-isp/bin
+    cp ${WORKDIR}/${BP}/imx/run.sh ${D}/opt/imx8-isp/bin
+    cp ${WORKDIR}/${BP}/imx/start_isp.sh ${D}/opt/imx8-isp/bin
 
     chmod +x ${D}/opt/imx8-isp/bin/run.sh
     chmod +x ${D}/opt/imx8-isp/bin/start_isp.sh
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
       install -d ${D}${systemd_system_unitdir}
-      install -m 0644 ${WORKDIR}/${PN}-${PV}/imx/imx8-isp.service ${D}${systemd_system_unitdir}
+      install -m 0644 ${WORKDIR}/${BP}/imx/imx8-isp.service ${D}${systemd_system_unitdir}
     fi
 }
-
-RDEPENDS_${PN} = "libdrm libpython3"
 
 # The build contains a mix of versioned and unversioned libraries, so
 # the default packaging configuration needs some modifications
@@ -81,5 +79,7 @@ FILES_${PN}-dev += " \
 "
 
 INSANE_SKIP_${PN} = "rpaths"
+
+RDEPENDS_${PN} = "libdrm libpython3"
 
 COMPATIBLE_MACHINE = "(imx|use-nxp-bsp)"
