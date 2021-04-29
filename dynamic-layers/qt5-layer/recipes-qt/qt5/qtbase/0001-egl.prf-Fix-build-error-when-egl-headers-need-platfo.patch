@@ -6,7 +6,7 @@ Subject: [PATCH] egl.prf: Fix build error when egl headers need platform
 
 Gain the value through pkg-config and pass it through QMAKE_CFLAGS_EGL.
 
-Upstream-Status: Pending
+Upstream-Status: Pending [https://bugreports.qt.io/browse/QTBUG-61712]
 
 Signed-off-by: Yuqing Zhu <carol.zhu@nxp.com>
 ---
