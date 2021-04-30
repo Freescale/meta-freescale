@@ -21,7 +21,7 @@ SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://memtool_profile \
 "
-SRCREV = "90fd7168fe5f15de9b2b1992a719024fc73a185a"
+SRCREV = "7468ce4b6477f8687e67fd03cb51b0fefa168a27"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers
