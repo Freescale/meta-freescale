@@ -8,20 +8,21 @@ SUMMARY = "Opencv : The Open Computer Vision Library"
 HOMEPAGE = "http://opencv.org/"
 SECTION = "libs"
 
-LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=19598330421859a6dd353a4318091ac7"
+LICENSE = "Apache-2.0"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 ARM_INSTRUCTION_SET_armv4 = "arm"
 ARM_INSTRUCTION_SET_armv5 = "arm"
 
 DEPENDS = "libtool swig-native bzip2 zlib glib-2.0 libwebp"
 
-SRCREV_opencv = "c3bb57afeaf030f10939204d48d7c2a3842f4293"
-SRCREV_contrib = "5fae4082cc493efa5cb7a7486f9e009618a5198b"
+SRCREV_opencv = "69357b1e88680658a07cffde7678a4d697469f03"
+SRCREV_contrib = "f5d7f6712d4ff229ba4f45cf79dfd11c557d56fd"
 SRCREV_ipp = "a56b6ac6f030c312b2dce17430eef13aed9af274"
 SRCREV_boostdesc = "34e4206aef44d50e6bbcd0ab06354b52e7466d26"
 SRCREV_vgg = "fccf7cd6a4b12079f73bbfb21745f9babcd4eb1d"
 SRCREV_face = "8afa57abc8229d611c4937165d20e2a2d9fc5a12"
+SRCREV_wechat-qrcode = "a8b69ccc738421293254aec5ddb38bd523503252"
 
 def ipp_filename(d):
     import re
@@ -49,12 +50,14 @@ SRC_URI = "git://github.com/opencv/opencv.git;name=opencv \
            git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_boostdesc_20161012;destsuffix=boostdesc;name=boostdesc \
            git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_vgg_20160317;destsuffix=vgg;name=vgg \
            git://github.com/opencv/opencv_3rdparty.git;branch=contrib_face_alignment_20170818;destsuffix=face;name=face \
+           git://github.com/WeChatCV/opencv_3rdparty.git;branch=wechat_qrcode;destsuffix=wechat_qrcode;name=wechat-qrcode \
            file://0001-3rdparty-ippicv-Use-pre-downloaded-ipp.patch \
            file://0003-To-fix-errors-as-following.patch \
            file://0001-Temporarliy-work-around-deprecated-ffmpeg-RAW-functi.patch \
            file://0001-Dont-use-isystem.patch \
            file://download.patch \
            file://0001-Make-ts-module-external.patch \
+           file://0001-sfm-link-with-Glog_LIBS.patch;patchdir=../contrib \
            "
 SRC_URI_append_riscv64 = " file://0001-Use-Os-to-compile-tinyxml2.cpp.patch;patchdir=../contrib"
 
@@ -83,6 +86,8 @@ do_unpack_extra() {
     cache xfeatures2d/boostdesc ${WORKDIR}/boostdesc/*.i
     cache xfeatures2d/vgg ${WORKDIR}/vgg/*.i
     cache data ${WORKDIR}/face/*.dat
+    cache wechat_qrcode ${WORKDIR}/wechat_qrcode/*.caffemodel
+    cache wechat_qrcode ${WORKDIR}/wechat_qrcode/*.prototxt
 }
 addtask unpack_extra after do_unpack before do_patch
 
@@ -128,6 +133,7 @@ PACKAGECONFIG[python2] = "-DPYTHON2_NUMPY_INCLUDE_DIRS:PATH=${STAGING_LIBDIR}/${
 PACKAGECONFIG[python3] = "-DPYTHON3_NUMPY_INCLUDE_DIRS:PATH=${STAGING_LIBDIR}/${PYTHON_DIR}/site-packages/numpy/core/include,,python3-numpy,"
 PACKAGECONFIG[samples] = "-DBUILD_EXAMPLES=ON -DINSTALL_PYTHON_EXAMPLES=ON,-DBUILD_EXAMPLES=OFF,,"
 PACKAGECONFIG[tbb] = "-DWITH_TBB=ON,-DWITH_TBB=OFF,tbb,"
+PACKAGECONFIG[tests] = "-DBUILD_TESTS=ON,-DBUILD_TESTS=OFF,,"
 PACKAGECONFIG[text] = "-DBUILD_opencv_text=ON,-DBUILD_opencv_text=OFF,tesseract,"
 PACKAGECONFIG[tiff] = "-DWITH_TIFF=ON,-DWITH_TIFF=OFF,tiff,"
 PACKAGECONFIG[v4l] = "-DWITH_V4L=ON,-DWITH_V4L=OFF,v4l-utils,"
@@ -218,6 +224,11 @@ do_install_append() {
         mv ${D}/usr/lib/* ${D}/${libdir}/
         rm -rf ${D}/usr/lib
     fi
+    # remove build host path to improve reproducibility
+    if [ -f ${D}${libdir}/cmake/opencv4/OpenCVModules.cmake ]; then
+        sed -e 's@${STAGING_DIR_HOST}@@g' \
+            -i ${D}${libdir}/cmake/opencv4/OpenCVModules.cmake
+    fi
 }
 
 TOOLCHAIN = "gcc"
@@ -228,17 +239,17 @@ TOOLCHAIN = "gcc"
 
 SUMMARY = "Opencv : The Open Computer Vision Library, i.MX Fork"
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=19598330421859a6dd353a4318091ac7"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
-SRCREV_opencv = "e39e6eded2d365a5dc370e1a72717e132166cf07"
-SRCREV_contrib = "5fae4082cc493efa5cb7a7486f9e009618a5198b"
-SRCREV_extra = "65796edadce27ed013e3deeedb3c081ff527e4ec"
+SRCREV_opencv = "5423d53ae0d116ee5bbe52f8b5503f0cd8586998"
+SRCREV_contrib = "f5d7f6712d4ff229ba4f45cf79dfd11c557d56fd"
+SRCREV_extra = "855c4528402e563283f86f28c6393f57eb5dcf62"
 SRC_URI[tinydnn.md5sum] = "adb1c512e09ca2c7a6faef36f9c53e59"
 SRC_URI[tinydnn.sha256sum] = "e2c61ce8c5debaa644121179e9dbdcf83f497f39de853f8dd5175846505aa18b"
 SRCREV_FORMAT_append = "_extra"
 
 OPENCV_SRC ?= "git://source.codeaurora.org/external/imx/opencv-imx.git;protocol=https"
-SRCBRANCH = "4.4.0_imx"
+SRCBRANCH = "4.5.2_imx"
 SRC_URI = "${OPENCV_SRC};branch=${SRCBRANCH};name=opencv \
 	   git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra \
 	   git://github.com/opencv/opencv_contrib.git;destsuffix=contrib;name=contrib \
@@ -256,7 +267,6 @@ SRC_URI = "${OPENCV_SRC};branch=${SRCBRANCH};name=opencv \
    	   file://OpenCV_DNN_examples.patch \
     	   file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=../extra \
            "
-PV = "4.4.0.imx"
 
 PACKAGECONFIG_remove        = "eigen"
 PACKAGECONFIG_append_mx8    = " dnn text"
@@ -270,7 +280,7 @@ PACKAGECONFIG_append        = " ${PACKAGECONFIG_OPENCL}"
 
 PACKAGECONFIG[openvx] = "-DWITH_OPENVX=ON -DOPENVX_ROOT=${STAGING_LIBDIR} -DOPENVX_LIB_CANDIDATES='OpenVX;OpenVXU',-DWITH_OPENVX=OFF,virtual/libopenvx,"
 PACKAGECONFIG[qt5] = "-DWITH_QT=ON -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE} -DCMAKE_PREFIX_PATH=${STAGING_BINDIR_NATIVE}/cmake,-DWITH_QT=OFF,qtbase qtbase-native,"
-PACKAGECONFIG[test] = "-DBUILD_TESTS=ON -DINSTALL_TESTS=ON -DOPENCV_TEST_DATA_PATH=${S}/../extra/testdata, -DBUILD_TESTS=OFF -DINSTALL_TESTS=OFF,"
+PACKAGECONFIG[tests-imx] = "-DINSTALL_TESTS=ON -DOPENCV_TEST_DATA_PATH=${S}/../extra/testdata, -DINSTALL_TESTS=OFF,"
 
 do_unpack_extra_append() {
     mkdir -p ${S}/3rdparty/tinydnn/
@@ -283,7 +293,7 @@ do_install_append() {
     cp -r ${S}/samples/data/* ${D}${datadir}/OpenCV/samples/data
     install -d ${D}${datadir}/OpenCV/samples/bin/
     cp -f bin/example_* ${D}${datadir}/OpenCV/samples/bin/
-    if ${@bb.utils.contains('PACKAGECONFIG', 'test', 'true', 'false', d)}; then
+    if ${@bb.utils.contains('PACKAGECONFIG', 'tests-imx', 'true', 'false', d)}; then
         cp -r share/opencv4/testdata/cv/face/* ${D}${datadir}/opencv4/testdata/cv/face/
     fi
 }
