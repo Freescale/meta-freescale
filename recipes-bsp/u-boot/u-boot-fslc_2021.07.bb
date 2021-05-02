@@ -8,7 +8,7 @@ version, or because it is not applicable for upstreaming."
 
 inherit ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '1', 'imx-boot-container', '')}
 
-DEPENDS += "bc-native dtc-native lzop-native"
+DEPENDS += "bc-native dtc-native python3-setuptools-native"
 
 # Location known to imx-boot component, where U-Boot artifacts
 # should be additionally deployed.
