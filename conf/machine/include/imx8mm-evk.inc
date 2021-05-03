@@ -45,6 +45,25 @@ IMX_BOOT_SOC_TARGET = "iMX8MM"
 
 SERIAL_CONSOLES = "115200;ttymxc1"
 
+# Add support for Syslinux to mainline BSP.
+# U-Boot has the Distro Boot mode enabled by default, which
+# require that either Syslinux to be enabled, or a boot script
+# to be used to define the boot process.
+# We opt-in for Syslinux, since it is designated as a preferred
+# distro boot mode according to the U-Boot documentation.
+UBOOT_EXTLINUX_use-mainline-bsp = "1"
+UBOOT_EXTLINUX_LABELS_use-mainline-bsp = "default"
+UBOOT_EXTLINUX_DEFAULT_LABEL_use-mainline-bsp = "i.MX8M Mini EVK"
+
+UBOOT_EXTLINUX_MENU_DESCRIPTION_default_use-mainline-bsp = "i.MX8M Mini EVK"
+UBOOT_EXTLINUX_FDT_default_use-mainline-bsp     = "../${KERNEL_DEVICETREE_BASENAME}.dtb"
+UBOOT_EXTLINUX_CONSOLE_default_use-mainline-bsp = "console=${console}"
+UBOOT_EXTLINUX_ROOT_default_use-mainline-bsp    = "root=/dev/mmcblk1p2"
+
+# Add extlinux.conf to the lis of files, which are deployed onto the
+# boot partition
+IMAGE_BOOT_FILES_append_use-mainline-bsp = " extlinux.conf;extlinux/extlinux.conf"
+
 LOADADDR = ""
 UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = "all"
