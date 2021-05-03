@@ -454,16 +454,15 @@ SOC_DEFAULT_WKS_FILE_mx8m ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mx8 ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_mxs ?= "imx-uboot-mxs-bootpart.wks.in"
 
-# Boot container built as a part of mainline U-Boot uses the same WKS
-# file as the entire mx8m series, as it renames flash.bin binary to
-# imx-boot before it is packed into the boot partition.
-# This operation is performed in imx-boot-container class as a part of
-# delopyment task.
-# flash.bin binary is produced by U-Boot build itself, and is serves as a
-# direct replacement of imx-boot from NXP.
-# Creation of the flash.bin is controlled by UBOOT_PROVIDES_BOOT_CONTAINER
-# variable defined above
-SOC_DEFAULT_WKS_FILE_imx-boot-container ?= "imx-imx-boot-bootpart.wks.in"
+# Boot container built as a part of mainline U-Boot uses different WKS
+# file as the entire mx8m series, as U-Boot versions later than 2021.04 are
+# providing two separate binaries, namely flash.bin and u-boot.itb. Those
+# files are packed into the boot partition.
+# Binaries produced by U-Boot build itself are serving as a direct
+# replacement of imx-boot from NXP.
+# Creation of those binary files is controlled by UBOOT_PROVIDES_BOOT_CONTAINER
+# variable defined above.
+SOC_DEFAULT_WKS_FILE_imx-boot-container ?= "imx-boot-container-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
