@@ -18,7 +18,7 @@ Index: git/samples/cpp/logistic_regression.cpp
 ===================================================================
 --- git.orig/samples/cpp/logistic_regression.cpp
 +++ git/samples/cpp/logistic_regression.cpp
-@@ -83,7 +83,7 @@ static float calculateAccuracyPercent(co
+@@ -28,7 +28,7 @@ static float calculateAccuracyPercent(co
  
  int main()
  {
@@ -32,14 +32,14 @@ Index: git/samples/dnn/classification.cpp
 --- git.orig/samples/dnn/classification.cpp
 +++ git/samples/dnn/classification.cpp
 @@ -11,6 +11,7 @@ std::string keys =
-     "{ help  h     | | Print help message. }"
-     "{ @alias      | | An alias name of model to extract preprocessing parameters from models.yml file. }"
-     "{ zoo         | models.yml | An optional path to file with preprocessing parameters }"
-+    "{ device      |  0 | camera device number. }"
-     "{ input i     | | Path to input image or video file. Skip this argument to capture frames from a camera.}"
-     "{ framework f | | Optional name of an origin framework of the model. Detect it automatically if it does not set. }"
-     "{ classes     | | Optional path to a text file with names of classes. }"
-@@ -94,7 +95,7 @@ int main(int argc, char** argv)
+     "{ help  h          | | Print help message. }"
+     "{ @alias           | | An alias name of model to extract preprocessing parameters from models.yml file. }"
+     "{ zoo              | models.yml | An optional path to file with preprocessing parameters }"
++    "{ device           | 0 | camera device number. }"
+     "{ input i          | | Path to input image or video file. Skip this argument to capture frames from a camera.}"
+     "{ initial_width    | 0 | Preprocess input image by initial resizing to a specific width.}"
+     "{ initial_height   | 0 | Preprocess input image by initial resizing to a specific height.}"
+@@ -102,7 +103,7 @@ int main(int argc, char** argv)
      if (parser.has("input"))
          cap.open(parser.get<String>("input"));
      else
@@ -48,7 +48,7 @@ Index: git/samples/dnn/classification.cpp
      //! [Open a video file or an image file or a camera stream]
  
      // Process frames.
-@@ -131,13 +132,13 @@ int main(int argc, char** argv)
+@@ -151,13 +152,13 @@ int main(int argc, char** argv)
          double freq = getTickFrequency() / 1000;
          double t = net.getPerfProfile(layersTimes) / freq;
          std::string label = format("Inference time: %.2f ms", t);
@@ -120,15 +120,15 @@ Index: git/samples/dnn/text_detection.cpp
 ===================================================================
 --- git.orig/samples/dnn/text_detection.cpp
 +++ git/samples/dnn/text_detection.cpp
-@@ -25,6 +25,7 @@ using namespace cv::dnn;
+@@ -30,6 +30,7 @@ using namespace cv::dnn;
  const char* keys =
-     "{ help  h     | | Print help message. }"
-     "{ input i     | | Path to input image or video file. Skip this argument to capture frames from a camera.}"
-+    "{ device      |  0 | camera device number. }"
-     "{ model m     | | Path to a binary .pb file contains trained detector network.}"
-     "{ ocr         | | Path to a binary .pb or .onnx file contains trained recognition network.}"
-     "{ width       | 320 | Preprocess input image by resizing to a specific width. It should be multiple by 32. }"
-@@ -75,7 +76,7 @@ int main(int argc, char** argv)
+     "{ help  h              | | Print help message. }"
+     "{ input i              | | Path to input image or video file. Skip this argument to capture frames from a camera.}"
++    "{ device               | 0 | camera device number. }"
+     "{ detModel dmp         | | Path to a binary .pb file contains trained detector network.}"
+     "{ width                | 320 | Preprocess input image by resizing to a specific width. It should be multiple by 32. }"
+     "{ height               | 320 | Preprocess input image by resizing to a specific height. It should be multiple by 32. }"
+@@ -106,7 +107,7 @@ int main(int argc, char** argv)
  
      // Open a video file or an image file or a camera stream.
      VideoCapture cap;
@@ -137,12 +137,3 @@ Index: git/samples/dnn/text_detection.cpp
      CV_Assert(openSuccess);
  
      static const std::string kWinName = "EAST: An Efficient and Accurate Scene Text Detector";
-@@ -156,7 +157,7 @@ int main(int argc, char** argv)
- 
-         // Put efficiency information.
-         std::string label = format("Inference time: %.2f ms", tickMeter.getTimeMilli());
--        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
-+        putText(frame, label, Point(0, 20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 255), 2, 8, false);
- 
-         imshow(kWinName, frame);
- 
