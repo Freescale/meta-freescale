@@ -21,10 +21,6 @@
 # base machine include file (imx-base.inc), and is set to "1" when the
 # 'imx-boot-container' is present in MACHINEOVERRIDES.
 
-# Extend the UBOOT_MAKE_TARGET with additional target for U-Boot build
-# system to produce the boot container
-UBOOT_MAKE_TARGET += "flash.bin"
-
 # Define ATF binary file to be deployed to the U-Boot build folder
 ATF_MACHINE_NAME = "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
@@ -54,14 +50,8 @@ do_resolve_and_populate_binaries() {
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]; then
                     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-                        # Sanitize the FW name as U-Boot expects it to be without version
-                        if [ -n "${DDR_FIRMWARE_VERSION}" ]; then
-                            ddr_firmware_name=$(echo $ddr_firmware | sed s/_${DDR_FIRMWARE_VERSION}//)
-                        else
-                            ddr_firmware_name="$ddr_firmware"
-                        fi
                         bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${B}/${config}/${ddr_firmware_name}"
-                        cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${config}/${ddr_firmware_name}
+                        cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${config}/
                     done
                     if [ -n "${ATF_MACHINE_NAME}" ]; then
                         cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
@@ -95,8 +85,9 @@ do_deploy_append() {
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]
                 then
+                    install -m 0644 ${B}/${config}/u-boot.itb  ${DEPLOYDIR}/u-boot.itb-${MACHINE}-${UBOOT_CONFIG}
                     install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}-${UBOOT_CONFIG}
-                    ln -sf flash.bin-${MACHINE}-${UBOOT_CONFIG} imx-boot
+                    ln -sf u-boot.itb-${MACHINE}-${UBOOT_CONFIG} u-boot.itb
                     ln -sf flash.bin-${MACHINE}-${UBOOT_CONFIG} flash.bin
                 fi
             done
