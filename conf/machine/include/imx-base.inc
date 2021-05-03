@@ -383,7 +383,7 @@ PREFERRED_VERSION_optee-client_mx8 ?= "3.10.0.imx"
 PREFERRED_VERSION_optee-test_mx8   ?= "3.10.0.imx"
 
 #Use i.MX opencv Version for mx8
-PREFERRED_VERSION_opencv_mx8 ?= "4.4.0.imx"
+PREFERRED_VERSION_opencv_mx8 ?= "4.5.2.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL = "linux-fslc-imx"
