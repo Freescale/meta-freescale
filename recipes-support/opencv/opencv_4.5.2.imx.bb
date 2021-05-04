@@ -241,32 +241,28 @@ SUMMARY = "Opencv : The Open Computer Vision Library, i.MX Fork"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
+# Replace the opencv URL with the fork
 SRCREV_opencv = "5423d53ae0d116ee5bbe52f8b5503f0cd8586998"
-SRCREV_contrib = "f5d7f6712d4ff229ba4f45cf79dfd11c557d56fd"
-SRCREV_extra = "855c4528402e563283f86f28c6393f57eb5dcf62"
-SRC_URI[tinydnn.md5sum] = "adb1c512e09ca2c7a6faef36f9c53e59"
-SRC_URI[tinydnn.sha256sum] = "e2c61ce8c5debaa644121179e9dbdcf83f497f39de853f8dd5175846505aa18b"
-SRCREV_FORMAT_append = "_extra"
-
 OPENCV_SRC ?= "git://source.codeaurora.org/external/imx/opencv-imx.git;protocol=https"
 SRCBRANCH = "4.5.2_imx"
-SRC_URI = "${OPENCV_SRC};branch=${SRCBRANCH};name=opencv \
-	   git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra \
-	   git://github.com/opencv/opencv_contrib.git;destsuffix=contrib;name=contrib \
-           git://github.com/opencv/opencv_3rdparty.git;branch=ippicv/master_20191018;destsuffix=ipp;name=ipp \
-           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_boostdesc_20161012;destsuffix=boostdesc;name=boostdesc \
-           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_vgg_20160317;destsuffix=vgg;name=vgg \
-           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_face_alignment_20170818;destsuffix=face;name=face \
-	   https://github.com/tiny-dnn/tiny-dnn/archive/v1.0.0a3.tar.gz;destsuffix=git/3rdparty/tinydnn/tiny-dnn-1.0.0a3;name=tinydnn;unpack=false \
-           file://0001-3rdparty-ippicv-Use-pre-downloaded-ipp.patch \
-           file://0003-To-fix-errors-as-following.patch \
-           file://0001-Temporarliy-work-around-deprecated-ffmpeg-RAW-functi.patch \
-           file://0001-Dont-use-isystem.patch \
-           file://download.patch \
-           file://0001-Make-ts-module-external.patch \
-   	   file://OpenCV_DNN_examples.patch \
-    	   file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=../extra \
-           "
+SRC_URI_remove = "git://github.com/opencv/opencv.git;name=opencv"
+SRC_URI =+ "${OPENCV_SRC};branch=${SRCBRANCH};name=opencv"
+
+# Add opencv_extra
+SRCREV_extra = "855c4528402e563283f86f28c6393f57eb5dcf62"
+SRC_URI += " \
+    git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra \
+    file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=../extra \
+"
+SRCREV_FORMAT_append = "_extra"
+
+# Add tiny-dnn
+SRC_URI[tinydnn.md5sum] = "adb1c512e09ca2c7a6faef36f9c53e59"
+SRC_URI[tinydnn.sha256sum] = "e2c61ce8c5debaa644121179e9dbdcf83f497f39de853f8dd5175846505aa18b"
+SRC_URI += " \
+    https://github.com/tiny-dnn/tiny-dnn/archive/v1.0.0a3.tar.gz;destsuffix=git/3rdparty/tinydnn/tiny-dnn-1.0.0a3;name=tinydnn;unpack=false \
+    file://OpenCV_DNN_examples.patch \
+"
 
 PACKAGECONFIG_remove        = "eigen"
 PACKAGECONFIG_append_mx8    = " dnn text"
