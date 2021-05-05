@@ -7,7 +7,7 @@ that produces a Manufacturing Tool compatible Linux Kernel to be used in updater
 environment"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-fslc:"
-require linux-fslc_${PV}.bb
+require linux-fslc-lts_${PV}.bb
 require linux-mfgtool.inc
 
 KERNEL_IMAGE_BASE_NAME[vardepsexclude] = "DATETIME"
