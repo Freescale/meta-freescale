@@ -83,4 +83,4 @@ INSANE_SKIP_${PN} = "rpaths"
 
 RDEPENDS_${PN} = "libdrm libpython3"
 
-COMPATIBLE_MACHINE = "(imx|use-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx8mp)"
