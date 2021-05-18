@@ -15,28 +15,23 @@ SRC_URI_append_mx6sl = " file://weston.config"
 INI_UNCOMMENT_ASSIGNMENTS_append_imx = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland=true', '', d)} \
 "
-INI_UNCOMMENT_ASSIGNMENTS_append_mx6dl = " \
-    use-g2d=1 \
-"
-INI_UNCOMMENT_ASSIGNMENTS_append_mx6q = " \
-    use-g2d=1 \
-"
-INI_UNCOMMENT_ASSIGNMENTS_append_mx7ulp = " \
-    use-g2d=1 \
-"
 INI_UNCOMMENT_ASSIGNMENTS_append_mx8 = " \
     repaint-window=16 \
-"
-INI_UNCOMMENT_ASSIGNMENTS_append_mx8mm = " \
-    use-g2d=1 \
-"
-INI_UNCOMMENT_ASSIGNMENTS_append_mx8mp = " \
-    use-g2d=1 \
 "
 INI_UNCOMMENT_ASSIGNMENTS_append_mx8mq = " \
     gbm-format=argb8888 \
     \\[shell\\] \
     size=1920x1080 \
+"
+
+# FIXME: The 8QM and 8QXP SoCs have better performance without G2D so don't enable it
+# Ideally, this should be seamless and Vivante ought to handle it internally and take the fastest
+# rendering code.
+INI_UNCOMMENT_USE_G2D_imxgpu2d ?= "use-g2d=1"
+INI_UNCOMMENT_USE_G2D_mx8qm = ""
+INI_UNCOMMENT_USE_G2D_mx8qxp = ""
+INI_UNCOMMENT_ASSIGNMENTS_append_imxgpu2d = " \
+    ${INI_UNCOMMENT_USE_G2D} \
 "
 
 uncomment() {
