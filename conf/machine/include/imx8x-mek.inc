@@ -59,9 +59,6 @@ IMX_BOOT_SEEK = "32"
 IMX_DEFAULT_BOOTLOADER = "u-boot-imx"
 UBOOT_SUFFIX = "bin"
 
-# Set ATF platform name
-ATF_PLATFORM = "imx8qx"
-
 IMXBOOT_TARGETS_SD = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl', \
                                                        'flash', d)}"
@@ -71,8 +68,6 @@ IMXBOOT_TARGETS_FSPI = \
 IMXBOOT_TARGETS = \
     "${@bb.utils.contains('UBOOT_CONFIG',        'sd', '${IMXBOOT_TARGETS_SD}', \
                                                        '${IMXBOOT_TARGETS_FSPI}', d)}"
-IMX_BOOT_SOC_TARGET = "iMX8QX"
-
 BOARD_TYPE = "mek"
 
 # Add additional firmware
