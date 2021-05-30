@@ -1,22 +1,23 @@
-From 96106df17897b862b87937d6222a3e6483f45480 Mon Sep 17 00:00:00 2001
+From 3701cb9439058e71c1981bd80c5a9e1383815b08 Mon Sep 17 00:00:00 2001
 From: Lucas Stach <l.stach@pengutronix.de>
 Date: Fri, 13 Nov 2020 14:26:23 +0100
-Subject: [PATCH 1/6] frontend/dri: copy image use in dup_image
+Subject: [PATCH] gallium/dri: copy image use in dup_image
 
 Don't lose the use flags when dup'ing an image.
 
 Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-
-Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603]
+Reviewed-by: Daniel Stone <daniels@collabora.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8106>
+Upstream-Status: Applied [https://gitlab.freedesktop.org/mesa/mesa/-/commit/3701cb9439058e71c1981bd80c5a9e1383815b08]
 ---
  src/gallium/frontends/dri/dri2.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/src/gallium/frontends/dri/dri2.c b/src/gallium/frontends/dri/dri2.c
-index 0c0168497a2..1cd42cd8114 100644
+index 9999b31b022..08a9ed9693c 100644
 --- a/src/gallium/frontends/dri/dri2.c
 +++ b/src/gallium/frontends/dri/dri2.c
-@@ -1312,6 +1312,7 @@ dri2_dup_image(__DRIimage *image, void *loaderPrivate)
+@@ -1326,6 +1326,7 @@ dri2_dup_image(__DRIimage *image, void *loaderPrivate)
     img->dri_format = image->dri_format;
     /* This should be 0 for sub images, but dup is also used for base images. */
     img->dri_components = image->dri_components;
@@ -24,3 +25,6 @@ index 0c0168497a2..1cd42cd8114 100644
     img->loader_private = loaderPrivate;
     img->sPriv = image->sPriv;
  
+-- 
+2.31.1
+

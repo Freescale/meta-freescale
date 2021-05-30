@@ -1,7 +1,7 @@
-From 587aac46dbadf2aca1489aadd4216e592e11e17b Mon Sep 17 00:00:00 2001
+From 3824429da0e0e68b78534b1e0ab7e386bcb2b2e2 Mon Sep 17 00:00:00 2001
 From: Lucas Stach <l.stach@pengutronix.de>
 Date: Fri, 13 Nov 2020 14:59:52 +0100
-Subject: [PATCH 3/6] frontend/dri: add EXPLICIT_FLUSH hint in
+Subject: [PATCH] frontend/dri: add EXPLICIT_FLUSH hint in
  dri2_resource_get_param
 
 dri2_resource_get_param() is called from two different places right now.
@@ -11,17 +11,17 @@ may disable the optimizations provided by this hint without a reason.
 Make sure to always add this hint when appropriate.
 
 Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-
-Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603]
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603>
+Upstream-Status: Applied [https://gitlab.freedesktop.org/mesa/mesa/-/commit/3824429da0e0e68b78534b1e0ab7e386bcb2b2e2]
 ---
  src/gallium/frontends/dri/dri2.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/gallium/frontends/dri/dri2.c b/src/gallium/frontends/dri/dri2.c
-index 1f1e7a9a65e..7851ebceb3e 100644
+index 0220513368e..8ed47c25825 100644
 --- a/src/gallium/frontends/dri/dri2.c
 +++ b/src/gallium/frontends/dri/dri2.c
-@@ -1198,6 +1198,9 @@ dri2_resource_get_param(__DRIimage *image, enum pipe_resource_param param,
+@@ -1252,6 +1252,9 @@ dri2_resource_get_param(__DRIimage *image, enum pipe_resource_param param,
     if (!pscreen->resource_get_param)
        return false;
  
@@ -31,7 +31,7 @@ index 1f1e7a9a65e..7851ebceb3e 100644
     return pscreen->resource_get_param(pscreen, NULL, image->texture,
                                        image->plane, 0, 0, param, handle_usage,
                                        value);
-@@ -1242,9 +1245,6 @@ dri2_query_image_by_resource_param(__DRIimage *image, int attrib, int *value)
+@@ -1296,9 +1299,6 @@ dri2_query_image_by_resource_param(__DRIimage *image, int attrib, int *value)
  
     handle_usage = PIPE_HANDLE_USAGE_FRAMEBUFFER_WRITE;
  
@@ -42,5 +42,5 @@ index 1f1e7a9a65e..7851ebceb3e 100644
        return false;
  
 -- 
-2.26.2
+2.31.1
 

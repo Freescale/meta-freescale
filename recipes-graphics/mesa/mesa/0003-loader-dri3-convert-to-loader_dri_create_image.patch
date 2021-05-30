@@ -1,0 +1,93 @@
+From 8fd5b16efc60ad666b05ec745109d0a482b6157b Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Tue, 15 Dec 2020 14:52:28 +0100
+Subject: [PATCH] loader/dri3: convert to loader_dri_create_image
+
+Get rid of the code duplication and makes it easier to hook in a
+new createImageWithModifiers2, but obscures the code flow a bit.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Daniel Stone <daniels@collabora.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8106>
+Upstream-Status: Applied [https://gitlab.freedesktop.org/mesa/mesa/-/commit/8fd5b16efc60ad666b05ec745109d0a482b6157b]
+---
+ src/loader/loader_dri3_helper.c | 40 ++++++++++-----------------------
+ 1 file changed, 12 insertions(+), 28 deletions(-)
+
+diff --git a/src/loader/loader_dri3_helper.c b/src/loader/loader_dri3_helper.c
+index 6c4b704ae5b..c5e340e6942 100644
+--- a/src/loader/loader_dri3_helper.c
++++ b/src/loader/loader_dri3_helper.c
+@@ -34,6 +34,7 @@
+ 
+ #include <X11/Xlib-xcb.h>
+ 
++#include "loader_dri_helper.h"
+ #include "loader_dri3_helper.h"
+ #include "util/macros.h"
+ #include "drm-uapi/drm_fourcc.h"
+@@ -1314,6 +1315,8 @@ dri3_alloc_render_buffer(struct loader_dri3_drawable *draw, unsigned int format,
+    struct xshmfence *shm_fence;
+    int buffer_fds[4], fence_fd;
+    int num_planes = 0;
++   uint64_t *modifiers = NULL;
++   uint32_t count = 0;
+    int i, mod;
+    int ret;
+ 
+@@ -1348,8 +1351,6 @@ dri3_alloc_render_buffer(struct loader_dri3_drawable *draw, unsigned int format,
+          xcb_dri3_get_supported_modifiers_cookie_t mod_cookie;
+          xcb_dri3_get_supported_modifiers_reply_t *mod_reply;
+          xcb_generic_error_t *error = NULL;
+-         uint64_t *modifiers = NULL;
+-         uint32_t count = 0;
+ 
+          mod_cookie = xcb_dri3_get_supported_modifiers(draw->conn,
+                                                        draw->window,
+@@ -1395,34 +1396,17 @@ dri3_alloc_render_buffer(struct loader_dri3_drawable *draw, unsigned int format,
+          }
+ 
+          free(mod_reply);
+-
+-         /* don't use createImageWithModifiers() if we have no
+-          * modifiers, other things depend on the use flags when
+-          * there are no modifiers to know that a buffer can be
+-          * shared.
+-          */
+-         if (modifiers) {
+-            buffer->image = draw->ext->image->createImageWithModifiers(draw->dri_screen,
+-                                                                       width, height,
+-                                                                       format,
+-                                                                       modifiers,
+-                                                                       count,
+-                                                                       buffer);
+-         }
+-
+-         free(modifiers);
+       }
+ #endif
+-      if (!buffer->image)
+-         buffer->image = draw->ext->image->createImage(draw->dri_screen,
+-                                                       width, height,
+-                                                       format,
+-                                                       __DRI_IMAGE_USE_SHARE |
+-                                                       __DRI_IMAGE_USE_SCANOUT |
+-                                                       __DRI_IMAGE_USE_BACKBUFFER |
+-                                                       (draw->is_protected_content ?
+-                                                         __DRI_IMAGE_USE_PROTECTED : 0),
+-                                                       buffer);
++      buffer->image = loader_dri_create_image(draw->dri_screen, draw->ext->image,
++                                              width, height, format,
++                                              __DRI_IMAGE_USE_SHARE |
++                                              __DRI_IMAGE_USE_SCANOUT |
++                                              __DRI_IMAGE_USE_BACKBUFFER |
++                                              (draw->is_protected_content ?
++                                               __DRI_IMAGE_USE_PROTECTED : 0),
++                                              modifiers, count, buffer);
++      free(modifiers);
+ 
+       pixmap_buffer = buffer->image;
+ 
+-- 
+2.31.1
+
