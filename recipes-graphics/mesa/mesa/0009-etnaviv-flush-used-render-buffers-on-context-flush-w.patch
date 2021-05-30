@@ -1,7 +1,7 @@
-From 537c7a6ea3fd2e5a6433e52b406ba39b89f520d9 Mon Sep 17 00:00:00 2001
+From 7b9d8d1936d72af6fd1bfd30afed354bb76b4c0c Mon Sep 17 00:00:00 2001
 From: Lucas Stach <l.stach@pengutronix.de>
 Date: Fri, 13 Nov 2020 15:05:55 +0100
-Subject: [PATCH 6/6] etnaviv: flush used render buffers on context flush when
+Subject: [PATCH] etnaviv: flush used render buffers on context flush when
  neccessary
 
 Some resources like backbuffers are explicitly flushed by the frontend
@@ -16,21 +16,22 @@ when a buffer handle is exported/imported without the
 PIPE_HANDLE_USAGE_EXPLICIT_FLUSH flag set.
 
 Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-
-Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603]
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/7603>
+Upstream-Status: Applied [https://gitlab.freedesktop.org/mesa/mesa/-/commit/7b9d8d1936d72af6fd1bfd30afed354bb76b4c0c]
 ---
  src/gallium/drivers/etnaviv/etnaviv_context.c  | 16 ++++++++++++++++
  src/gallium/drivers/etnaviv/etnaviv_context.h  |  3 +++
  src/gallium/drivers/etnaviv/etnaviv_resource.c |  7 +++++++
  src/gallium/drivers/etnaviv/etnaviv_resource.h |  2 ++
- src/gallium/drivers/etnaviv/etnaviv_state.c    | 17 +++++++++++++++++
- 5 files changed, 45 insertions(+)
+ src/gallium/drivers/etnaviv/etnaviv_state.c    | 18 ++++++++++++++++++
+ 5 files changed, 46 insertions(+)
 
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_context.c b/src/gallium/drivers/etnaviv/etnaviv_context.c
-index 9c334a450c6..80c5d430419 100644
+index 4dd9e427ea1..581edc78d2f 100644
 --- a/src/gallium/drivers/etnaviv/etnaviv_context.c
 +++ b/src/gallium/drivers/etnaviv/etnaviv_context.c
-@@ -128,6 +128,9 @@ etna_context_destroy(struct pipe_context *pctx)
+@@ -129,6 +129,9 @@ etna_context_destroy(struct pipe_context *pctx)
        _mesa_set_destroy(ctx->used_resources_write, NULL);
  
     }
@@ -40,7 +41,7 @@ index 9c334a450c6..80c5d430419 100644
     mtx_unlock(&ctx->lock);
  
     if (ctx->dummy_desc_bo)
-@@ -475,6 +478,14 @@ etna_flush(struct pipe_context *pctx, struct pipe_fence_handle **fence,
+@@ -490,6 +493,14 @@ etna_flush(struct pipe_context *pctx, struct pipe_fence_handle **fence,
     list_for_each_entry(struct etna_acc_query, aq, &ctx->active_acc_queries, node)
        etna_acc_query_suspend(aq, ctx);
  
@@ -55,7 +56,7 @@ index 9c334a450c6..80c5d430419 100644
     etna_cmd_stream_flush(ctx->stream, ctx->in_fence_fd,
                            (flags & PIPE_FLUSH_FENCE_FD) ? &out_fence_fd : NULL);
  
-@@ -581,6 +592,11 @@ etna_context_create(struct pipe_screen *pscreen, void *priv, unsigned flags)
+@@ -596,6 +607,11 @@ etna_context_create(struct pipe_screen *pscreen, void *priv, unsigned flags)
     if (!ctx->used_resources_write)
        goto fail;
  
@@ -68,7 +69,7 @@ index 9c334a450c6..80c5d430419 100644
  
     /* context ctxate setup */
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_context.h b/src/gallium/drivers/etnaviv/etnaviv_context.h
-index dd6af3d93e6..112902aac8a 100644
+index 72000f2122b..21e4d3f33ca 100644
 --- a/src/gallium/drivers/etnaviv/etnaviv_context.h
 +++ b/src/gallium/drivers/etnaviv/etnaviv_context.h
 @@ -206,6 +206,9 @@ struct etna_context {
@@ -127,10 +128,10 @@ index cb83e891d34..167cf4ed069 100644
     enum etna_resource_status status;
  
 diff --git a/src/gallium/drivers/etnaviv/etnaviv_state.c b/src/gallium/drivers/etnaviv/etnaviv_state.c
-index 84fea58ecb5..5848735ab14 100644
+index 44b1c4f8fab..1ad839799f2 100644
 --- a/src/gallium/drivers/etnaviv/etnaviv_state.c
 +++ b/src/gallium/drivers/etnaviv/etnaviv_state.c
-@@ -741,6 +741,21 @@ etna_update_zsa(struct etna_context *ctx)
+@@ -753,6 +753,21 @@ etna_update_zsa(struct etna_context *ctx)
     return true;
  }
  
@@ -152,15 +153,16 @@ index 84fea58ecb5..5848735ab14 100644
  struct etna_state_updater {
     bool (*update)(struct etna_context *ctx);
     uint32_t dirty;
-@@ -762,6 +777,8 @@ static const struct etna_state_updater etna_state_updates[] = {
-                             ETNA_DIRTY_RASTERIZER | ETNA_DIRTY_VIEWPORT,
-    }, {
+@@ -780,6 +795,9 @@ static const struct etna_state_updater etna_state_updates[] = {
+    },
+    {
        etna_update_zsa, ETNA_DIRTY_ZSA | ETNA_DIRTY_SHADER,
-+   }, {
++   },
++   {
 +      etna_record_flush_resources, ETNA_DIRTY_FRAMEBUFFER,
     }
  };
  
 -- 
-2.26.2
+2.31.1
 

@@ -1,0 +1,36 @@
+From 77fcf700826d6637e4e407c73c209f3b1718a26e Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Thu, 20 May 2021 18:07:12 +0200
+Subject: [PATCH] dri: don't call modifier interfaces when modifiers_count is 0
+
+The wayland EGL platform sets the modifier count to 0 in some cases
+to signal that modifiers should not be used, even if a list of modifiers
+is present. The loader_dri_create_image helper didn't handle this case
+properly and called the modifierful driver interface with a 0 modifier
+count, leading to the obvious outcome of the driver being unable to
+allocate an image.
+
+Fixes: cb9ae4273d68 ("dri: add loader_dri_create_image helper")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/10903>
+Upstream-Status: Applied [https://gitlab.freedesktop.org/mesa/mesa/-/commit/77fcf700826d6637e4e407c73c209f3b1718a26e]
+---
+ src/loader/loader_dri_helper.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/loader/loader_dri_helper.c b/src/loader/loader_dri_helper.c
+index 972ca2da26a..ff6ce35953f 100644
+--- a/src/loader/loader_dri_helper.c
++++ b/src/loader/loader_dri_helper.c
+@@ -37,7 +37,7 @@ __DRIimage *loader_dri_create_image(__DRIscreen *screen,
+                                     unsigned int modifiers_count,
+                                     void *loaderPrivate)
+ {
+-   if (modifiers &&
++   if (modifiers && modifiers_count > 0 &&
+        image->base.version > 14 && image->createImageWithModifiers) {
+       bool has_valid_modifier = false;
+       int i;
+-- 
+2.31.1
+

@@ -1,0 +1,336 @@
+From cb9ae4273d680ab34fc2ca933c4f960e7f086275 Mon Sep 17 00:00:00 2001
+From: Lucas Stach <l.stach@pengutronix.de>
+Date: Tue, 15 Dec 2020 14:39:32 +0100
+Subject: [PATCH] dri: add loader_dri_create_image helper
+
+The DRI image extension already has two different ways to allocate an
+image (with and without a modifier) and will soon grow a third one.
+Add a helper, which handles calling the appropriate implementation to
+get rid of code duplication in the winsys.
+
+This convert the two obvious call sites (GBM dri and EGL wayland)
+that profit from the code dedup.
+
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Daniel Stone <daniels@collabora.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/8106>
+Upstream-Status: Applied [https://gitlab.freedesktop.org/mesa/mesa/-/commit/cb9ae4273d680ab34fc2ca933c4f960e7f086275]
+---
+ src/egl/drivers/dri2/platform_wayland.c | 60 +++++++---------------
+ src/gbm/backends/dri/gbm_dri.c          | 53 +++++--------------
+ src/loader/Makefile.sources             |  2 +
+ src/loader/loader_dri_helper.c          | 68 +++++++++++++++++++++++++
+ src/loader/loader_dri_helper.h          | 33 ++++++++++++
+ src/loader/meson.build                  |  2 +-
+ 6 files changed, 134 insertions(+), 84 deletions(-)
+ create mode 100644 src/loader/loader_dri_helper.c
+ create mode 100644 src/loader/loader_dri_helper.h
+
+diff --git a/src/egl/drivers/dri2/platform_wayland.c b/src/egl/drivers/dri2/platform_wayland.c
+index 26b6711952c..180380b4c4c 100644
+--- a/src/egl/drivers/dri2/platform_wayland.c
++++ b/src/egl/drivers/dri2/platform_wayland.c
+@@ -40,6 +40,7 @@
+ #include <sys/mman.h>
+ 
+ #include "egl_dri2.h"
++#include "loader_dri_helper.h"
+ #include "loader.h"
+ #include "util/u_vector.h"
+ #include "util/anon_file.h"
+@@ -578,28 +579,16 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+        dri2_surf->back->linear_copy == NULL) {
+       /* The LINEAR modifier should be a perfect alias of the LINEAR use
+        * flag; try the new interface first before the old, then fall back. */
+-      if (dri2_dpy->image->base.version >= 15 &&
+-           dri2_dpy->image->createImageWithModifiers) {
+-         uint64_t linear_mod = DRM_FORMAT_MOD_LINEAR;
+-
+-         dri2_surf->back->linear_copy =
+-            dri2_dpy->image->createImageWithModifiers(dri2_dpy->dri_screen,
+-                                                      dri2_surf->base.Width,
+-                                                      dri2_surf->base.Height,
+-                                                      linear_dri_image_format,
+-                                                      &linear_mod,
+-                                                      1,
+-                                                      NULL);
+-      } else {
+-         dri2_surf->back->linear_copy =
+-            dri2_dpy->image->createImage(dri2_dpy->dri_screen,
+-                                         dri2_surf->base.Width,
+-                                         dri2_surf->base.Height,
+-                                         linear_dri_image_format,
+-                                         use_flags |
+-                                         __DRI_IMAGE_USE_LINEAR,
+-                                         NULL);
+-      }
++      uint64_t linear_mod = DRM_FORMAT_MOD_LINEAR;
++
++      dri2_surf->back->linear_copy =
++            loader_dri_create_image(dri2_dpy->dri_screen, dri2_dpy->image,
++                                    dri2_surf->base.Width,
++                                    dri2_surf->base.Height,
++                                    linear_dri_image_format,
++                                    use_flags | __DRI_IMAGE_USE_LINEAR,
++                                    &linear_mod, 1, NULL);
++
+       if (dri2_surf->back->linear_copy == NULL)
+           return -1;
+    }
+@@ -609,26 +598,13 @@ get_back_bo(struct dri2_egl_surface *dri2_surf)
+        * createImageWithModifiers, then fall back to the old createImage,
+        * and hope it allocates an image which is acceptable to the winsys.
+         */
+-      if (num_modifiers && dri2_dpy->image->base.version >= 15 &&
+-          dri2_dpy->image->createImageWithModifiers) {
+-         dri2_surf->back->dri_image =
+-           dri2_dpy->image->createImageWithModifiers(dri2_dpy->dri_screen,
+-                                                     dri2_surf->base.Width,
+-                                                     dri2_surf->base.Height,
+-                                                     dri_image_format,
+-                                                     modifiers,
+-                                                     num_modifiers,
+-                                                     NULL);
+-      } else {
+-         dri2_surf->back->dri_image =
+-            dri2_dpy->image->createImage(dri2_dpy->dri_screen,
+-                                         dri2_surf->base.Width,
+-                                         dri2_surf->base.Height,
+-                                         dri_image_format,
+-                                         dri2_dpy->is_different_gpu ?
+-                                              0 : use_flags,
+-                                         NULL);
+-      }
++      dri2_surf->back->dri_image =
++            loader_dri_create_image(dri2_dpy->dri_screen, dri2_dpy->image,
++                                    dri2_surf->base.Width,
++                                    dri2_surf->base.Height,
++                                    dri_image_format,
++                                    dri2_dpy->is_different_gpu ? 0 : use_flags,
++                                    modifiers, num_modifiers, NULL);
+ 
+       dri2_surf->back->age = 0;
+    }
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index 751b2e56497..dff0b3c7ecf 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -47,6 +47,7 @@
+ #include "gbm_driint.h"
+ 
+ #include "gbmint.h"
++#include "loader_dri_helper.h"
+ #include "loader.h"
+ #include "util/debug.h"
+ #include "util/macros.h"
+@@ -1151,8 +1152,7 @@ gbm_dri_bo_create(struct gbm_device *gbm,
+    struct gbm_dri_device *dri = gbm_dri_device(gbm);
+    struct gbm_dri_bo *bo;
+    int dri_format;
+-   unsigned dri_use = 0, i;
+-   bool has_valid_modifier;
++   unsigned dri_use = 0;
+ 
+    /* Callers of this may specify a modifier, or a dri usage, but not both. The
+     * newer modifier interface deprecates the older usage flags.
+@@ -1191,50 +1191,21 @@ gbm_dri_bo_create(struct gbm_device *gbm,
+    /* Gallium drivers requires shared in order to get the handle/stride */
+    dri_use |= __DRI_IMAGE_USE_SHARE;
+ 
+-   if (modifiers) {
+-      if (!dri->image || dri->image->base.version < 14 ||
+-          !dri->image->createImageWithModifiers) {
+-         errno = ENOSYS;
+-         goto failed;
+-      }
+-
+-      /* It's acceptable to create an image with INVALID modifier in the list,
+-       * but it cannot be on the only modifier (since it will certainly fail
+-       * later). While we could easily catch this after modifier creation, doing
+-       * the check here is a convenient debug check likely pointing at whatever
+-       * interface the client is using to build its modifier list.
+-       */
+-      has_valid_modifier = false;
+-      for (i = 0; i < count; i++) {
+-         if (modifiers[i] != DRM_FORMAT_MOD_INVALID) {
+-            has_valid_modifier = true;
+-            break;
+-         }
+-      }
+-      if (!has_valid_modifier) {
+-         errno = EINVAL;
+-         goto failed;
+-      }
+-
+-      bo->image =
+-         dri->image->createImageWithModifiers(dri->screen,
+-                                              width, height,
+-                                              dri_format,
+-                                              modifiers, count,
+-                                              bo);
+-
+-      if (bo->image) {
+-         /* The client passed in a list of invalid modifiers */
+-         assert(gbm_dri_bo_get_modifier(&bo->base) != DRM_FORMAT_MOD_INVALID);
+-      }
+-   } else {
+-      bo->image = dri->image->createImage(dri->screen, width, height,
+-                                          dri_format, dri_use, bo);
++   if (modifiers && (dri->image->base.version < 14 ||
++       !dri->image->createImageWithModifiers)) {
++      errno = ENOSYS;
++      return NULL;
+    }
+ 
++   bo->image = loader_dri_create_image(dri->screen, dri->image, width, height,
++                                       dri_format, dri_use, modifiers, count,
++                                       bo);
+    if (bo->image == NULL)
+       goto failed;
+ 
++   if (modifiers)
++      assert(gbm_dri_bo_get_modifier(&bo->base) != DRM_FORMAT_MOD_INVALID);
++
+    dri->image->queryImage(bo->image, __DRI_IMAGE_ATTRIB_HANDLE,
+                           &bo->base.handle.s32);
+    dri->image->queryImage(bo->image, __DRI_IMAGE_ATTRIB_STRIDE,
+diff --git a/src/loader/Makefile.sources b/src/loader/Makefile.sources
+index b61ef1cd943..6627222ac30 100644
+--- a/src/loader/Makefile.sources
++++ b/src/loader/Makefile.sources
+@@ -1,4 +1,6 @@
+ LOADER_C_FILES := \
++	loader_dri_helper.c \
++	loader_dri_helper.h \
+ 	loader.c \
+ 	loader.h \
+ 	pci_id_driver_map.c \
+diff --git a/src/loader/loader_dri_helper.c b/src/loader/loader_dri_helper.c
+new file mode 100644
+index 00000000000..21419f087d6
+--- /dev/null
++++ b/src/loader/loader_dri_helper.c
+@@ -0,0 +1,68 @@
++/*
++ * Permission to use, copy, modify, distribute, and sell this software and its
++ * documentation for any purpose is hereby granted without fee, provided that
++ * the above copyright notice appear in all copies and that both that copyright
++ * notice and this permission notice appear in supporting documentation, and
++ * that the name of the copyright holders not be used in advertising or
++ * publicity pertaining to distribution of the software without specific,
++ * written prior permission.  The copyright holders make no representations
++ * about the suitability of this software for any purpose.  It is provided "as
++ * is" without express or implied warranty.
++ *
++ * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
++ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
++ * EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
++ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++ * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
++ * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
++ * OF THIS SOFTWARE.
++ */
++
++#include <errno.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <sys/types.h>
++
++#include <GL/gl.h> /* dri_interface needs GL types */
++#include <GL/internal/dri_interface.h>
++
++#include "drm-uapi/drm_fourcc.h"
++#include "loader_dri_helper.h"
++
++__DRIimage *loader_dri_create_image(__DRIscreen *screen,
++                                    const __DRIimageExtension *image,
++                                    uint32_t width, uint32_t height,
++                                    uint32_t dri_format, uint32_t dri_usage,
++                                    const uint64_t *modifiers,
++                                    unsigned int modifiers_count,
++                                    void *loaderPrivate)
++{
++   if (modifiers &&
++       image->base.version > 14 && image->createImageWithModifiers) {
++      bool has_valid_modifier = false;
++      int i;
++
++      /* It's acceptable to create an image with INVALID modifier in the list,
++       * but it cannot be on the only modifier (since it will certainly fail
++       * later). While we could easily catch this after modifier creation, doing
++       * the check here is a convenient debug check likely pointing at whatever
++       * interface the client is using to build its modifier list.
++       */
++      for (i = 0; i < modifiers_count; i++) {
++         if (modifiers[i] != DRM_FORMAT_MOD_INVALID) {
++            has_valid_modifier = true;
++            break;
++         }
++      }
++      if (!has_valid_modifier)
++         return NULL;
++
++      return image->createImageWithModifiers(screen, width, height,
++                                             dri_format, modifiers,
++                                             modifiers_count, loaderPrivate);
++   }
++
++   /* No modifier given or fallback to the legacy createImage allowed */
++   return image->createImage(screen, width, height, dri_format, dri_usage,
++                             loaderPrivate);
++}
+diff --git a/src/loader/loader_dri_helper.h b/src/loader/loader_dri_helper.h
+new file mode 100644
+index 00000000000..e0aae69477b
+--- /dev/null
++++ b/src/loader/loader_dri_helper.h
+@@ -0,0 +1,33 @@
++/*
++ * Permission to use, copy, modify, distribute, and sell this software and its
++ * documentation for any purpose is hereby granted without fee, provided that
++ * the above copyright notice appear in all copies and that both that copyright
++ * notice and this permission notice appear in supporting documentation, and
++ * that the name of the copyright holders not be used in advertising or
++ * publicity pertaining to distribution of the software without specific,
++ * written prior permission.  The copyright holders make no representations
++ * about the suitability of this software for any purpose.  It is provided "as
++ * is" without express or implied warranty.
++ *
++ * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
++ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
++ * EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
++ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++ * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
++ * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
++ * OF THIS SOFTWARE.
++ */
++
++#include <stdbool.h>
++#include <sys/types.h>
++
++#include <GL/gl.h> /* dri_interface needs GL types */
++#include <GL/internal/dri_interface.h>
++
++__DRIimage *loader_dri_create_image(__DRIscreen *screen,
++                                    const __DRIimageExtension *image,
++                                    uint32_t width, uint32_t height,
++                                    uint32_t dri_format, uint32_t dri_usage,
++                                    const uint64_t *modifiers,
++                                    unsigned int modifiers_count,
++                                    void *loaderPrivate);
+diff --git a/src/loader/meson.build b/src/loader/meson.build
+index 34a43e33f09..57a93c3aa17 100644
+--- a/src/loader/meson.build
++++ b/src/loader/meson.build
+@@ -47,7 +47,7 @@ endif
+ 
+ libloader = static_library(
+   'loader',
+-  ['loader.c', 'pci_id_driver_map.c'],
++  ['loader_dri_helper.c', 'loader.c', 'pci_id_driver_map.c'],
+   c_args : loader_c_args,
+   gnu_symbol_visibility : 'hidden',
+   include_directories : [inc_include, inc_src, inc_util],
+-- 
+2.31.1
+
