@@ -5,8 +5,10 @@ LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=3c3fe2b904fd694f28d2f646ee16dddb"
 DEPENDS = "python3 libdrm virtual/libg2d"
 
-SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
-	   file://0001-start_isp.sh-fix-test-to-be-generic.patch \
+SRC_URI = " \
+    ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
+    file://0001-start_isp.sh-fix-test-to-be-generic.patch \
+    file://0001-isp-imx-drop-use-of-__TIME__-__DATE__.patch \
 "
 
 SRC_URI[md5sum] = "75f79ba556c47172b9a0cbc3a877e604"

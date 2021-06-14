@@ -1,0 +1,72 @@
+From accaeb1ae77eb40b89e70df3efcb00d0dc2af758 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Mon, 14 Jun 2021 08:20:48 +0000
+Subject: [PATCH] isp-imx: drop use of __TIME__, __DATE__
+
+With reproducible build enabled the compiler is configured to throw
+an error if __TIME__, __DATE__ preprocessor macros are used.
+
+| isp-imx-4.2.2.11.0/mediacontrol/daemon/main_v4l2.cpp:99:44: error: macro "__DATE__" might prevent reproducible builds [-Werror=date-time]
+|    99 |              std::cout << "Build Time : "<<__DATE__<<", "<<__TIME__<<std::endl;
+|       |                                            ^~~~~~~~
+
+Fix this by replacing __DATE__, __TIME__ with BUILD_DATE and setting
+BUILD_DATE from CMakeLists.txt to either SOURCE_DATE_EPOCH if present
+or the local time otherwise.
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ mediacontrol/CMakeLists.txt       | 3 +++
+ mediacontrol/daemon/main_v4l2.cpp | 8 ++++----
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/mediacontrol/CMakeLists.txt b/mediacontrol/CMakeLists.txt
+index 48cd7633e..f587758e0 100755
+--- a/mediacontrol/CMakeLists.txt
++++ b/mediacontrol/CMakeLists.txt
+@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.1.0)
+ 
+ project(ISP_MEDIA_CONTROL)
+ 
++string(TIMESTAMP BUILD_DATE "%b %d %Y" UTC)
++add_compile_definitions(BUILD_DATE="${BUILD_DATE}")
++
+ if( NOT DEFINED APPSHELL_TOP_COMPILE)
+     if(DEFINED PLATFORM)
+         if(${PLATFORM} STREQUAL ARM64)
+diff --git a/mediacontrol/daemon/main_v4l2.cpp b/mediacontrol/daemon/main_v4l2.cpp
+index a3033cf83..d08dee127 100644
+--- a/mediacontrol/daemon/main_v4l2.cpp
++++ b/mediacontrol/daemon/main_v4l2.cpp
+@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
+     if (argc ==  2){
+          if(!(string2Version.find(argv[1])==string2Version.end())){
+              std::cout << "Version : "<<MEDIA_SERVER_VERSION<<std::endl;
+-             std::cout << "Build Time : "<<__DATE__<<", "<<__TIME__<<std::endl;
++             std::cout << "Build Time : "<<BUILD_DATE<<std::endl;
+              return 0;
+          }
+     }
+@@ -105,8 +105,8 @@ int main(int argc, char* argv[]) {
+     if(fd_running >= 0)
+     {
+         ALOGI("******************************************************************");
+-        ALOGI("VIV ISP Media Control Framework V%s (%s, %s)",
+-              MEDIA_SERVER_VERSION, __DATE__, __TIME__);
++        ALOGI("VIV ISP Media Control Framework V%s (%s)",
++              MEDIA_SERVER_VERSION, BUILD_DATE);
+         ALOGI("******************************************************************\n");
+ 
+         if (argc < 2) {
+@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
+         while( i < argc ){
+                 if(!(string2Version.find(argv[i])==string2Version.end())){
+                     std::cout << "Version : "<<MEDIA_SERVER_VERSION<<std::endl;
+-                    std::cout << "Build Time : "<<__DATE__<<", "<<__TIME__<<std::endl;
++                    std::cout << "Build Time : "<<BUILD_DATE<<std::endl;
+                     i++;
+                     continue;
+                  }
+-- 
+2.20.1
+
