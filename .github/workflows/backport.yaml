@@ -1,23 +1,38 @@
-name: Backport
+name: Backport labeled merged pull requests
 on:
-  pull_request_target:
-    types: [closed, labeled]
+  pull_request:
+    types: [closed]
+  issue_comment:
+    types: [created]
 jobs:
-  backport:
-    name: Backport Pull Request
-    if: github.repository_owner == 'Freescale' && github.event.pull_request.merged == true
+  build:
+    name: Create backport PRs
     runs-on: ubuntu-latest
+    # Only run when pull request is merged
+    # or when a comment containing `/backport` is created
+    if: >
+      (
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.merged
+      ) || (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        contains(github.event.comment.body, '/backport')
+      )
     steps:
       - uses: actions/checkout@v2
         with:
-          # required to find all branches
+          # Required to find all branches
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: Create backport PRs
-        # should be kept in sync with `version`
-        uses: zeebe-io/backport-action@9b8949dcd4295d364b0939f07d0c7593598d26cd
+        # Should be kept in sync with `version`
+        uses: zeebe-io/backport-action@v0.0.4
         with:
+          # Required
+          # Version of the backport-action
+          # Must equal the version in `uses`
+          # Recommended: latest tag or `master`
+          version: v0.0.4
+
           github_token: ${{ secrets.GITHUB_TOKEN }}
           github_workspace: ${{ github.workspace }}
-          # should be kept in sync with `uses`
-          version: 9b8949dcd4295d364b0939f07d0c7593598d26cd
