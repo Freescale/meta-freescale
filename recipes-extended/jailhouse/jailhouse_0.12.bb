@@ -101,7 +101,7 @@ do_install() {
 
 PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse"
 
-FILES_${PN} += "${base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
+FILES_${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
 FILES_pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}/pyjailhouse"
 
 RDEPENDS_${PN} += " \
