@@ -5,12 +5,12 @@ SUMMARY = "Installs i.MX-specific kernel headers"
 DESCRIPTION = "Installs i.MX-specific kernel headers to userspace. \
 New headers are installed in ${includedir}/imx."
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-SRCBRANCH = "imx_5.4.70_2.3.0"
-LOCALVERSION = "-2.3.2"
+SRCBRANCH = "lf-5.10.y"
+LOCALVERSION = "-5.10.35-2.0.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "dea2fede7e024ee7029b13e8d82a00ec14427777"
+SRCREV = "ef3f2cfc6010c13feb40cfb7fd7490832cf86f45"
 
 S = "${WORKDIR}/git"
 
@@ -25,6 +25,7 @@ IMX_UAPI_HEADERS = " \
     ion.h \
     ipu.h \
     isl29023.h \
+    imx_vpu.h \
     mxc_asrc.h \
     mxc_dcic.h \
     mxc_mlb.h \
