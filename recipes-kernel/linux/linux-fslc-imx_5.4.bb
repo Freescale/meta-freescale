@@ -81,7 +81,7 @@ SRCREV = "05c302bdd5fe7eb75c22eeb4ab2b669d4849a9df"
 LINUX_VERSION = "5.4.129"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-imx-5.4.70-2.3.0"
+LOCALVERSION = "-5.4.70-2.3.0"
 
 DEFAULT_PREFERENCE = "1"
 
