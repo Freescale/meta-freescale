@@ -3,7 +3,7 @@
 # Copyright (C) 2017-2021 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
-require u-boot-imx-common.inc
+require u-boot-imx-common_${PV}.inc
 
 PROVIDES += "u-boot"
 
