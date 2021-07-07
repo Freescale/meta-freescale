@@ -1,6 +1,6 @@
 name: Backport labeled merged pull requests
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
   issue_comment:
     types: [created]
@@ -12,11 +12,11 @@ jobs:
     # or when a comment containing `/backport` is created
     if: >
       (
-        github.event_name == 'pull_request' &&
-        github.event.pull_request.merged
+        github.event_name == 'pull_request_target' &&
+        github.event.pull_request_target.merged
       ) || (
         github.event_name == 'issue_comment' &&
-        github.event.issue.pull_request &&
+        github.event.issue.pull_request_target &&
         contains(github.event.comment.body, '/backport')
       )
     steps:
