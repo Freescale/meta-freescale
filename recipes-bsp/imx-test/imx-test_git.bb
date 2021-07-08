@@ -21,7 +21,7 @@ SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://memtool_profile \
 "
-SRCREV = "90fd7168fe5f15de9b2b1992a719024fc73a185a"
+SRCREV = "7468ce4b6477f8687e67fd03cb51b0fefa168a27"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers
@@ -44,6 +44,7 @@ EXTRA_OEMAKE += "${PACKAGECONFIG_CONFARGS}"
 
 PACKAGECONFIG = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
 PACKAGECONFIG_append_imxvpu = " vpu"
+PACKAGECONFIG_append_mx8m   = " swpdm"
 
 PACKAGECONFIG[x11] = ",,libx11 libxdamage libxrender libxrandr"
 PACKAGECONFIG[vpu] = "HAS_VPU=true,HAS_VPU=false,virtual/imxvpu"
