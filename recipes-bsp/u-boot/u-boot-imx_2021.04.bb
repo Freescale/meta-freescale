@@ -8,7 +8,7 @@ require u-boot-imx-common_${PV}.inc
 PROVIDES += "u-boot"
 
 do_deploy_append_mx8m() {
-    # Deploy the mkimage, u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
+    # Deploy u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
     if [ -n "${UBOOT_CONFIG}" ]
     then
         for config in ${UBOOT_MACHINE}; do
