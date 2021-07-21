@@ -6,7 +6,6 @@ SRC_URI_append_imxgpu = " \
     file://0001-MGS-5186-Per-Specification-EGL_NATIVE_PIXMAP_KHR-req.patch \
     file://0001-glamor-glamor_egl.c-EGL_NATIVE_PIXMAP_KHR-do-not-req.patch \
     file://0001-prefer-to-use-GLES2-for-glamor-EGL-config.patch \
-    file://0001-hw-xwayland-Makefile.am-fix-build-without-glx.patch \
 "
 
 IMX_OPENGL_PKGCONFIGS_REMOVE        = ""
