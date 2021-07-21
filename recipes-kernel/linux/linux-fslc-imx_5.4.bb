@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.4.114
+#    tag: v5.4.134
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -38,6 +38,21 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    48afde5dc8ee LF-2692: clk: imx: scu: Do not enable runtime PM for CPU clks
+#    dc760ca6a531 MLK-25468: seco_mu: hook v2x reset event
+#    fee1ade052eb MPSDK-172 remoteproc: imx_rproc: Re-building communication channels when a remote crashes
+#    b93083071e9f MLK-23277: 8qm: Fix SW workaround for i.MX8QM TKT340553
+#    edfc37d93d8d MLK-25444: arch: arm64: dts: imx8dxl: Fix lcdif nodes
+#    319f1755edf3 MLK-25105-2: dts: arm64: imx8mp-ab2: use AK5552 compatible for sound card
+#    1e306d7fbb17 MLK-25105-1: dts: arm64: imx8mp-ab2: ensure SAI3 RX not in sync with TX
+#    67355ffc4af7 MLK-25103: ASoC: wm8524: avoid EPROBE_DEFER log
+#    090f71d23f8f clk: imx: add mux ops for i.MX8M composite clk
+#    a7466010c566 LF-3623: media: imx8: isi: fix Can't match soc version
+#    398435ef11d7 MLK-25427 arm64: dts: imx8mp: add power-domains to irqsteer hdmi
+#    3125360c70f2 LF-3132: dmaengine: imx-sdma: raise up channel0 priority after resume
+#    eddc2ac1d148 MLK-25116-2: dmaengine: imx-sdma: correct iram_pool check point
+#    c53ff3924c06 MLK-25116-1: dmaengine: imx-sdma: save iram pool for bd allocated
+#    09370995212a MLK-25426 remoteproc: imx_rproc: fix firmware reload
 #    b598b85172f7 irq-imx-irqsteer: fix compile error if CONFIG_PM_SLEEP is not set
 #    845099bfd0b8 fbdev: fix fbinfo flag dropped upstream
 #    847bfb09bb3b arm64: dts: imx8m: change ocotp node name on i.MX8M SoCs
@@ -71,17 +86,17 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 KBRANCH = "5.4-2.3.x-imx"
-SRCREV = "f5b1a0c923d04cd49158bfb94fcfc5273474c076"
+SRCREV = "e3b082933caab27829e775606708381fe1b7c3ba"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.4.114"
+LINUX_VERSION = "5.4.134"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-imx-5.4.70-2.3.0"
+LOCALVERSION = "-5.4.70-2.3.0"
 
 DEFAULT_PREFERENCE = "1"
 
