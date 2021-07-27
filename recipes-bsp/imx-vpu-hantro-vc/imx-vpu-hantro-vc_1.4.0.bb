@@ -1,8 +1,8 @@
-# Copyright (C) 2019-2020 NXP
+# Copyright (C) 2019-2021 NXP
 
 DESCRIPTION = "i.MX VC8000E Encoder library"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=cf3f9b8d09bc3926b1004ea71f7a248a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=417b82f17fc02b88125331ed312f6f1b"
 
 inherit fsl-eula-unpack
 
@@ -10,8 +10,8 @@ SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
-SRC_URI[md5sum] = "37c61718602ff08041b81319cfd6a8d9"
-SRC_URI[sha256sum] = "8425796fc63d7107f2f57c51497281c4d54c883b2670817347fbe55f39dc2b8c"
+SRC_URI[md5sum] = "b5270450ba2da5b7468b67ae8c0bcdca"
+SRC_URI[sha256sum] = "d5efae484c4271c098286d007590d6bf40c272d4f35702ff65625f2362715ab3"
 
 # SCR is the location and name of the Software Content Register file
 # relative to ${D}${D_SUBDIR}.
