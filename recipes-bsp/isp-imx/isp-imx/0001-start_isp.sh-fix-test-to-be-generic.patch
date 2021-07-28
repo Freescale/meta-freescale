@@ -10,20 +10,20 @@ Signed-off-by: Gary Bisson <gary.bisson@boundarydevices.com>
  imx/start_isp.sh | 13 +++++--------
  1 file changed, 5 insertions(+), 8 deletions(-)
 
-Index: isp-imx-4.2.2.11.0/imx/start_isp.sh
+Index: isp-imx-4.2.2.13.0/imx/start_isp.sh
 ===================================================================
---- isp-imx-4.2.2.11.0.orig/imx/start_isp.sh
-+++ isp-imx-4.2.2.11.0/imx/start_isp.sh
-@@ -8,6 +8,7 @@
- 
+--- isp-imx-4.2.2.13.0.orig/imx/start_isp.sh
++++ isp-imx-4.2.2.13.0/imx/start_isp.sh
+@@ -9,6 +9,7 @@
  RUNTIME_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
  NR_DEVICE_TREE_BASLER=$(grep basler-camera-vvcam /sys/firmware/devicetree/base/soc@0/*/i2c@*/*/compatible -l | wc -l 2> /dev/null)
+ NR_DEVICE_TREE_OV5640=$(grep ov5640 /sys/firmware/devicetree/base/soc@0/*/i2c@*/*/compatible -l | wc -l 2> /dev/null)
 +DMESG_BASLER=`dmesg | grep Basler`
  
  # check if the basler device has been enabled in the device tree
  if [ $NR_DEVICE_TREE_BASLER -eq 1 ]; then
-@@ -28,8 +29,15 @@ elif [ $NR_DEVICE_TREE_BASLER -eq 2 ]; t
- 	# Available configurations: dual_basler_1080p60, dual_basler_1080p60hdr
+@@ -40,8 +41,15 @@ elif [ $NR_DEVICE_TREE_BASLER -eq 2 ]; t
+ 	# Available configurations: dual_basler_1080p60, dual_basler_1080p60hdr, dual_basler_1080p25hdr
  	exec ./run.sh -c dual_basler_1080p60 -lm
  
 +elif [ ! -z "$DMESG_BASLER" ]; then
