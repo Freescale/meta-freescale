@@ -5,13 +5,13 @@ require conf/machine/include/tune-cortexa53.inc
 
 MACHINE_FEATURES += "pci wifi bluetooth bcm43455 bcm4356"
 
-# NXP BSP can consume BCM4359 and QCA9377 driver and firmware
+# NXP BSP can consume proprietary jailhouse, BCM4359, and QCA9377 driver and firmware
 # Since the firmware is not available publicly, and rather distributed
 # under "Proprietary" license - we opt-out from using it in all BSPs
 # and pin it to NXP BSP only
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
 # a full support for it yet.
-MACHINE_FEATURES_append_use-nxp-bsp = " optee bcm4359 qca9377"
+MACHINE_FEATURES_append_use-nxp-bsp = " optee jailhouse bcm4359 qca9377"
 
 KERNEL_DEVICETREE = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
