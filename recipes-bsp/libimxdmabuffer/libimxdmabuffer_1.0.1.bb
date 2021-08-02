@@ -29,12 +29,12 @@ LIBG2D_PACKAGECONFIG = "g2d"
 LIBG2D_PACKAGECONFIG_imxdpu = ""
 
 PACKAGECONFIG ?= " "
-PACKAGECONFIG_append_imxgpu2d = " ${LIBG2D_PACKAGECONFIG}"
-PACKAGECONFIG_append_imxipu   = " ipu"
-PACKAGECONFIG_append_imxpxp   = " pxp"
-PACKAGECONFIG_append_mx8m     = " ion dwl"
-PACKAGECONFIG_append_mx8qm    = " ion"
-PACKAGECONFIG_append_mx8qxp   = " ion"
+PACKAGECONFIG:append:imxgpu2d = " ${LIBG2D_PACKAGECONFIG}"
+PACKAGECONFIG:append:imxipu   = " ipu"
+PACKAGECONFIG:append:imxpxp   = " pxp"
+PACKAGECONFIG:append:mx8m     = " ion dwl"
+PACKAGECONFIG:append:mx8qm    = " ion"
+PACKAGECONFIG:append:mx8qxp   = " ion"
 
 HANTRO_CONF = "--hantro-headers-path=${STAGING_INCDIR}/hantro_dec --hantro-decoder-version=G2"
 

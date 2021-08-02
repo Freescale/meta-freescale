@@ -18,7 +18,7 @@ S = "${WORKDIR}/git"
 inherit allarch
 
 CLEANBROKEN = "1"
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
 do_compile() {
 	:
@@ -38,9 +38,9 @@ PACKAGES =+ " \
     ${PN}-bcm4359-pcie \
 "
 
-FILES_${PN}-bcm4359-pcie = " \
+FILES:${PN}-bcm4359-pcie = " \
     ${nonarch_base_libdir}/firmware/brcm/brcmfmac4359-pcie.* \
     ${sysconfdir}/firmware/BCM4349B1_*.hcd \
 "
 
-RPROVIDES_${PN}-bcm4359-pcie = "linux-firmware-bcm4359-pcie"
+RPROVIDES:${PN}-bcm4359-pcie = "linux-firmware-bcm4359-pcie"

@@ -41,15 +41,15 @@ python fsl_vivante_kernel_driver_handler () {
         return
 
     if use_vivante_kernel_driver_module != "1":
-        e.data.appendVar('RPROVIDES_${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
-        e.data.appendVar('RREPLACES_${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
-        e.data.appendVar('RCONFLICTS_${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
+        e.data.appendVar('RPROVIDES:${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
+        e.data.appendVar('RREPLACES:${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
+        e.data.appendVar('RCONFLICTS:${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
 }
 
 addhandler fsl_vivante_kernel_driver_handler
 fsl_vivante_kernel_driver_handler[eventmask] = "bb.event.RecipePreFinalise"
 
-do_configure_append () {
+do_configure:append () {
     if [ "${MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}" = "1" ]; then
         config="${B}/.config"
 

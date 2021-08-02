@@ -17,9 +17,9 @@ export PYTHON = "${USRBINPATH}/python3"
 M="${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
 BOARD_TARGETS="${M}"
-BOARD_TARGETS_ls2088ardb="${M} ${M}_rev1.1"
-BOARD_TARGETS_ls1088ardb-pb="ls1088ardb"
-BOARD_TARGETS_lx2160ardb = "${M} ${M}_rev2"
+BOARD_TARGETS:ls2088ardb="${M} ${M}_rev1.1"
+BOARD_TARGETS:ls1088ardb-pb="ls1088ardb"
+BOARD_TARGETS:lx2160ardb = "${M} ${M}_rev2"
 
 do_compile () {
     oe_runmake BOARDS="${BOARD_TARGETS}" DESTDIR=${D}/boot/rcw/
@@ -36,7 +36,7 @@ do_deploy () {
 addtask deploy after do_install
 
 PACKAGES += "${PN}-image"
-FILES_${PN}-image += "/boot"
+FILES:${PN}-image += "/boot"
 
 COMPATIBLE_MACHINE = "(qoriq)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"

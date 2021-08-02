@@ -21,14 +21,14 @@ EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8
                    bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d), d)}"
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_imxvpu = "vpu"
+PACKAGECONFIG:imxvpu = "vpu"
 
 # We need to ensure we don't have '-src' package overrided
 PACKAGE_DEBUG_SPLIT_STYLE = 'debug-without-src'
 
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 
-do_install_append() {
+do_install:append() {
     # LTIB move the files around or gst-fsl-plugin won't find them
     for p in $(find ${D}${libdir}/imx-mm -mindepth 2 -maxdepth 2 -not -type d); do
             mv $p ${D}${libdir}
@@ -46,15 +46,15 @@ python __set_insane_skip() {
     for p in d.getVar('PACKAGES').split():
         # Even though we are packaging libraries those are plugins so we
         # shouldn't rename the packages to follow its sonames.
-        d.setVar("DEBIAN_NOAUTONAME_%s" % p, "1")
+        d.setVar("DEBIAN_NOAUTONAME:%s" % p, "1")
 
         # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
         # the source we cannot fix it. Disable the insane check for now.
         if p == 'imx-codec-test-bin':
             # FIXME: includes the DUT .so files so we need to deploy those
-            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel libdir file-rdeps")
+            d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel libdir file-rdeps")
         else:
-            d.setVar("INSANE_SKIP_%s" % p, "ldflags textrel")
+            d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel")
 }
 
 do_package_qa[prefuncs] += "__set_insane_skip"
@@ -70,13 +70,13 @@ python __split_libfslcodec_plugins() {
     for pkg in pkgs:
         meta = pkg[10:]
         if meta != '':
-            d.setVar('RREPLACES_%s' % pkg, ' libfslcodec-%s' % meta)
-            d.setVar('RPROVIDES_%s' % pkg, ' libfslcodec-%s' % meta)
-            d.setVar('RCONFLICTS_%s' % pkg, ' libfslcodec-%s' % meta)
+            d.setVar('RREPLACES:%s' % pkg, ' libfslcodec-%s' % meta)
+            d.setVar('RPROVIDES:%s' % pkg, ' libfslcodec-%s' % meta)
+            d.setVar('RCONFLICTS:%s' % pkg, ' libfslcodec-%s' % meta)
         else :
-            d.setVar('RREPLACES_%s' % pkg, ' libfslcodec')
-            d.setVar('RPROVIDES_%s' % pkg, ' libfslcodec')
-            d.setVar('RCONFLICTS_%s' % pkg, ' libfslcodec')
+            d.setVar('RREPLACES:%s' % pkg, ' libfslcodec')
+            d.setVar('RPROVIDES:%s' % pkg, ' libfslcodec')
+            d.setVar('RCONFLICTS:%s' % pkg, ' libfslcodec')
 }
 
 python __set_metapkg_rdepends() {
@@ -85,7 +85,7 @@ python __set_metapkg_rdepends() {
     codec_pkgs = oe.utils.packages_filter_out_system(d)
     codec_pkgs = filter(lambda x: x not in ['imx-codec-test-bin', 'imx-codec-test-source'],
                         codec_pkgs)
-    d.appendVar('RDEPENDS_imx-codec-meta', ' ' + ' '.join(codec_pkgs))
+    d.appendVar('RDEPENDS:imx-codec-meta', ' ' + ' '.join(codec_pkgs))
 }
 
 PACKAGESPLITFUNCS =+ "__split_libfslcodec_plugins __set_metapkg_rdepends"
@@ -96,24 +96,24 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 PACKAGES += "${PN}-meta ${PN}-test-bin ${PN}-test-source"
 
-ALLOW_EMPTY_${PN} = "1"
-ALLOW_EMPTY_${PN}-meta = "1"
+ALLOW_EMPTY:${PN} = "1"
+ALLOW_EMPTY:${PN}-meta = "1"
 
 # Ensure we get warnings if we miss something
-FILES_${PN} = ""
+FILES:${PN} = ""
 
-FILES_${PN}-dev += "${libdir}/imx-mm/*/*${SOLIBSDEV} \
+FILES:${PN}-dev += "${libdir}/imx-mm/*/*${SOLIBSDEV} \
                     ${libdir}/imx-mm/*/*/*${SOLIBSDEV} \
                     ${libdir}/pkgconfig/*.pc ${includedir}/imx-mm/*"
 
-FILES_${PN}-test-bin += "${datadir}/imx-mm/*/examples/*/bin"
+FILES:${PN}-test-bin += "${datadir}/imx-mm/*/examples/*/bin"
 
-FILES_${PN}-test-source += "${datadir}/imx-mm/*"
+FILES:${PN}-test-source += "${datadir}/imx-mm/*"
 
 # FIXME: The wrap and lib names does not match
-FILES_${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm*_elinux.so.*"
-FILES_${PN}-nb += "${libdir}/imx-mm/audio-codec/wrap/lib_nbamrd_wrap_arm*_elinux.so.*"
-FILES_${PN}-wb += "${libdir}/imx-mm/audio-codec/wrap/lib_wbamrd_wrap_arm*_elinux.so.*"
+FILES:${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm*_elinux.so.*"
+FILES:${PN}-nb += "${libdir}/imx-mm/audio-codec/wrap/lib_nbamrd_wrap_arm*_elinux.so.*"
+FILES:${PN}-wb += "${libdir}/imx-mm/audio-codec/wrap/lib_wbamrd_wrap_arm*_elinux.so.*"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"

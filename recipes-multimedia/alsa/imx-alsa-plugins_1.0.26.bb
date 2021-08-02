@@ -9,9 +9,9 @@ DEPENDS = "alsa-lib"
 
 # For backwards compatibility
 PROVIDES += "fsl-alsa-plugins"
-RREPLACES_${PN} = "fsl-alsa-plugins"
-RPROVIDES_${PN} = "fsl-alsa-plugins"
-RCONFLICTS_${PN} = "fsl-alsa-plugins"
+RREPLACES:${PN} = "fsl-alsa-plugins"
+RPROVIDES:${PN} = "fsl-alsa-plugins"
+RCONFLICTS:${PN} = "fsl-alsa-plugins"
 
 LIC_FILES_CHKSUM = "file://COPYING.GPL;md5=94d55d512a9ba36caa9b7df079bae19f"
 
@@ -27,10 +27,10 @@ INCLUDE_DIR = "-I${STAGING_INCDIR_IMX}"
 
 EXTRA_OECONF = "CFLAGS="${INCLUDE_DIR}""
 
-INSANE_SKIP_${PN} = "dev-so"
+INSANE_SKIP:${PN} = "dev-so"
 
-FILES_${PN} += "${libdir}/alsa-lib/libasound_*.so"
-FILES_${PN}-dbg += "${libdir}/alsa-lib/.debug"
-FILES_${PN}-dev += "${libdir}/alsa-lib/*.la"
+FILES:${PN} += "${libdir}/alsa-lib/libasound_*.so"
+FILES:${PN}-dbg += "${libdir}/alsa-lib/.debug"
+FILES:${PN}-dev += "${libdir}/alsa-lib/*.la"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"

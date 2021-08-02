@@ -12,7 +12,7 @@ SRC_URI = "\
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
-do_install_use-mainline-bsp() {
+do_install:use-mainline-bsp() {
     # MESA global envirronment variables
 
     # systemd
@@ -28,4 +28,4 @@ do_install_use-mainline-bsp() {
     fi
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"

@@ -27,8 +27,8 @@ do_deploy () {
 
 addtask deploy after do_install
 
-FILES_${PN} += "/lib/firmware /boot/"
-INSANE_SKIP_${PN} += "arch already-stripped"
+FILES:${PN} += "/lib/firmware /boot/"
+INSANE_SKIP:${PN} += "arch already-stripped"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 

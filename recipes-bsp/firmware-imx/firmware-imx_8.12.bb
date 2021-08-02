@@ -65,7 +65,7 @@ do_install() {
 # as second one, and for every file match - it creates a separate package,
 # which contains only files that matches the pattern.
 #
-python populate_packages_prepend() {
+python populate_packages:prepend() {
     easrcdir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/easrc', d)
     do_split_packages(d, easrcdir, '^easrc-([^_]*).*\.bin',
                       output_pattern='firmware-imx-easrc-%s',
@@ -123,7 +123,7 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-* ${PN}-easrc-* ${PN}-xcvr-* ${PN}-xu
 # files it makes no sense.
 PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi"
 
-FILES_${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
-FILES_${PN}-hdmi = "${nonarch_base_libdir}/firmware/imx/hdmi/"
+FILES:${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
+FILES:${PN}-hdmi = "${nonarch_base_libdir}/firmware/imx/hdmi/"
 
 COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"

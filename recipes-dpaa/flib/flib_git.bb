@@ -12,4 +12,4 @@ do_install(){
     oe_runmake install DESTDIR=${D}
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"

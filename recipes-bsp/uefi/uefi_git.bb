@@ -28,7 +28,7 @@ do_deploy () {
 addtask deploy before do_build after do_install
 
 PACKAGES += "${PN}-image"
-FILES_${PN}-image += "/uefi/*"
+FILES:${PN}-image += "/uefi/*"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 

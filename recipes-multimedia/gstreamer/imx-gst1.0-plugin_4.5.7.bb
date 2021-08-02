@@ -8,14 +8,14 @@ LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 
 DEPENDS = "imx-codec imx-parser gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
-DEPENDS_append_mx6 = " imx-lib"
-DEPENDS_append_mx7 = " imx-lib"
-DEPENDS_append_imxvpu = " imx-vpuwrap libdrm"
+DEPENDS:append:mx6 = " imx-lib"
+DEPENDS:append:mx7 = " imx-lib"
+DEPENDS:append:imxvpu = " imx-vpuwrap libdrm"
 
 # For backwards compatibility
-RREPLACES_${PN} = "gst1.0-fsl-plugin"
-RPROVIDES_${PN} = "gst1.0-fsl-plugin"
-RCONFLICTS_${PN} = "gst1.0-fsl-plugin"
+RREPLACES:${PN} = "gst1.0-fsl-plugin"
+RPROVIDES:${PN} = "gst1.0-fsl-plugin"
+RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
@@ -31,14 +31,14 @@ S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig use-imx-headers
 
-PLATFORM_mx6 = "MX6"
-PLATFORM_mx6sl = "MX6SL"
-PLATFORM_mx6sx = "MX6SX"
-PLATFORM_mx6ul = "MX6UL"
-PLATFORM_mx6sll = "MX6SLL"
-PLATFORM_mx7= "MX7D"
-PLATFORM_mx7ulp= "MX7ULP"
-PLATFORM_mx8 = "MX8"
+PLATFORM:mx6 = "MX6"
+PLATFORM:mx6sl = "MX6SL"
+PLATFORM:mx6sx = "MX6SX"
+PLATFORM:mx6ul = "MX6UL"
+PLATFORM:mx6sll = "MX6SLL"
+PLATFORM:mx7= "MX7D"
+PLATFORM:mx7ulp= "MX7ULP"
+PLATFORM:mx8 = "MX8"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OECONF = "PLATFORM=${PLATFORM} \
@@ -50,12 +50,12 @@ PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN
 
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
-RDEPENDS_${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
+RDEPENDS:${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
 
 # overlaysink rely on G2D,
 # cannot be supported on i.MX6SLL & i.MX6UL & i.MX6ULL & i.MX7D
 PACKAGECONFIG ?= ""
-PACKAGECONFIG_imxgpu2d = "overlaysink"
+PACKAGECONFIG:imxgpu2d = "overlaysink"
 
 
 # FIXME: Add all features
@@ -69,16 +69,16 @@ PACKAGECONFIG[wma8enc] += "--enable-wma8enc,--disable-wma8enc,${MSDEPENDS},${MSD
 OVDEPENDS = "virtual/libg2d"
 PACKAGECONFIG[overlaysink] += "--enable-overlaysink,--disable-overlaysink, ${OVDEPENDS}"
 
-FILES_${PN} = "${libdir}/gstreamer-1.0/*.so ${datadir}"
+FILES:${PN} = "${libdir}/gstreamer-1.0/*.so ${datadir}"
 
-FILES_${PN}-dbg += "${libdir}/gstreamer-1.0/.debug"
-FILES_${PN}-dev += "${libdir}/gstreamer-1.0/*.la ${libdir}/pkgconfig/*.pc"
-FILES_${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
-FILES_${PN}-gplay = "${bindir}/gplay-1.0"
-FILES_${PN}-libgplaycore = "${libdir}/libgplaycore-1.0${SOLIBS}"
-FILES_${PN}-libgstfsl = "${libdir}/libgstfsl-1.0${SOLIBS}"
-FILES_${PN}-grecorder = "${bindir}/grecorder-1.0"
-FILES_${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
-FILES_${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
+FILES:${PN}-dbg += "${libdir}/gstreamer-1.0/.debug"
+FILES:${PN}-dev += "${libdir}/gstreamer-1.0/*.la ${libdir}/pkgconfig/*.pc"
+FILES:${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
+FILES:${PN}-gplay = "${bindir}/gplay-1.0"
+FILES:${PN}-libgplaycore = "${libdir}/libgplaycore-1.0${SOLIBS}"
+FILES:${PN}-libgstfsl = "${libdir}/libgstfsl-1.0${SOLIBS}"
+FILES:${PN}-grecorder = "${bindir}/grecorder-1.0"
+FILES:${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
+FILES:${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"

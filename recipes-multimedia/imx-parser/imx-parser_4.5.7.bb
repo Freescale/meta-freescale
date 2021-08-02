@@ -9,9 +9,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=cf3f9b8d09bc3926b1004ea71f7a248a"
 
 # For backwards compatibility
 PROVIDES += "libfslparser"
-RREPLACES_${PN} = "libfslparser"
-RPROVIDES_${PN} = "libfslparser"
-RCONFLICTS_${PN} = "libfslparser"
+RREPLACES:${PN} = "libfslparser"
+RPROVIDES:${PN} = "libfslparser"
+RCONFLICTS:${PN} = "libfslparser"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 SRC_URI[md5sum] = "dd34e4e2d1384af27d370964ebbd05fd"
@@ -31,13 +31,13 @@ python __set_insane_skip() {
     # the source we cannot fix it. Disable the insane check for now.
     # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
     for p in d.getVar('PACKAGES').split():
-        d.setVar("INSANE_SKIP_%s" % p, "ldflags dev-so textrel")
+        d.setVar("INSANE_SKIP:%s" % p, "ldflags dev-so textrel")
 }
 
 do_package_qa[prefuncs] += "__set_insane_skip"
 
 # FIXME: gst-fsl-plugin looks for the .so files so we need to deploy those
-FILES_${PN} += "${libdir}/imx-mm/*/*${SOLIBS} ${libdir}/imx-mm/*/*${SOLIBSDEV}"
+FILES:${PN} += "${libdir}/imx-mm/*/*${SOLIBS} ${libdir}/imx-mm/*/*${SOLIBSDEV}"
 
 INHIBIT_SYSROOT_STRIP = "1"
 

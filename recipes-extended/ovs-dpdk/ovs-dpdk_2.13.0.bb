@@ -3,7 +3,7 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ce5d23a6429dff345518758f13aaeab"
 
 DEPENDS = "dpdk python3-six-native coreutils-native"
-RDEPENDS_${PN} = "bash libcrypto libssl python3"
+RDEPENDS:${PN} = "bash libcrypto libssl python3"
 
 inherit python3native
 
@@ -42,7 +42,7 @@ do_install() {
 	chmod 777 -R ${D}${bindir}/ovs-dpdk/*
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"

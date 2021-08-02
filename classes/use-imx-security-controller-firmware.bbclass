@@ -18,11 +18,11 @@
 
 SECO_FIRMWARE_NAME              ?= ""
 
-SECO_FIRMWARE_NAME_mx8qm         = "mx8qmb0-ahab-container.img"
-SECO_FIRMWARE_NAME_mx8qxp        = \
+SECO_FIRMWARE_NAME:mx8qm         = "mx8qmb0-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8qxp        = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', 'mx8qxb0-ahab-container.img', \
                                                            'mx8qxc0-ahab-container.img', d)}"
-SECO_FIRMWARE_NAME_mx8dxl        = "mx8dxla1-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8dxl        = "mx8dxla1-ahab-container.img"
 
 python () {
     if "mx8m" in d.getVar('MACHINEOVERRIDES').split(":"):

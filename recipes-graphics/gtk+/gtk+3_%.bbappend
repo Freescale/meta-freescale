@@ -1,5 +1,5 @@
-DEPENDS_append_imxgpu2d = " virtual/egl"
+DEPENDS:append:imxgpu2d = " virtual/egl"
 
-PACKAGECONFIG_remove_imxgpu2d = " \
+PACKAGECONFIG:remove:imxgpu2d = " \
     ${@bb.utils.contains("DISTRO_FEATURES", "wayland", "x11", "", d)} \
 "

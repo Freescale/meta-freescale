@@ -5,10 +5,10 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e959d5d617e33779d0e90ce1d9043eff"
 
 DEPENDS += "openssl cst-native"
-RDEPENDS_${PN} = "bash"
+RDEPENDS:${PN} = "bash"
 
 GENKEYS ?= "${STAGING_BINDIR_NATIVE}/cst/gen_keys"
-GENKEYS_class-native = "./gen_keys"
+GENKEYS:class-native = "./gen_keys"
 
 inherit kernel-arch
 
@@ -38,5 +38,5 @@ do_install () {
     fi
 }
 
-FILES_${PN}-dbg += "${bindir}/cst/.debug"
+FILES:${PN}-dbg += "${bindir}/cst/.debug"
 BBCLASSEXTEND = "native nativesdk"

@@ -6,7 +6,7 @@ SECTION = "console/network"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ca6103dc75397fb6bec596187d6b7829"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/odp:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/odp:"
 
 SRC_URI = " \
 git://source.codeaurora.org/external/qoriq/qoriq-components/odp;nobranch=1 \

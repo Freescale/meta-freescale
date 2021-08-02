@@ -14,7 +14,7 @@ do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
 DEMOS_PATH_ls2088a = "LS2088A"
-DEMOS_PATH_ls1088a = "LS1088A"
+DEMOS_PATH:ls1088a = "LS1088A"
 
 do_install () {
     install -d ${D}/usr/aiop/bin
@@ -24,8 +24,8 @@ do_install () {
     cp -rf ${S}/misc/setup/traffic_files/ ${D}/usr/aiop/
 }
 
-FILES_${PN} += "/usr/aiop/*"
-INSANE_SKIP_${PN} += "arch"
+FILES:${PN} += "/usr/aiop/*"
+INSANE_SKIP:${PN} += "arch"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 COMPATIBLE_MACHINE = "(ls2088a|ls1088a)"

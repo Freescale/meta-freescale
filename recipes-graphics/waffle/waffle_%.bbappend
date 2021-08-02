@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += " \
     file://0001-meson-Add-missing-wayland-dependency-on-EGL.patch \
@@ -6,11 +6,11 @@ SRC_URI += " \
 "
 
 PACKAGECONFIG_IMXGPU_X11          = ""
-PACKAGECONFIG_IMXGPU_X11_imxgpu3d = "x11-egl glx"
+PACKAGECONFIG_IMXGPU_X11:imxgpu3d = "x11-egl glx"
 PACKAGECONFIG_IMXGPU_GBM          = "gbm"
-PACKAGECONFIG_IMXGPU_GBM_mx6      = ""
-PACKAGECONFIG_IMXGPU_GBM_mx7      = ""
-PACKAGECONFIG_imxgpu = " \
+PACKAGECONFIG_IMXGPU_GBM:mx6      = ""
+PACKAGECONFIG_IMXGPU_GBM:mx7      = ""
+PACKAGECONFIG:imxgpu = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland',                     'wayland', \
        bb.utils.contains('DISTRO_FEATURES',     'x11', '${PACKAGECONFIG_IMXGPU_X11}', \
                                                                                   '', d), d)} \

@@ -9,4 +9,4 @@ BUILD_64BIT_KERNEL = "1"
 
 require conf/multilib.conf
 MULTILIBS ?= "multilib:lib64"
-DEFAULTTUNE_virtclass-multilib-lib64 ?= "ppc64e6500"
+DEFAULTTUNE:virtclass-multilib-lib64 ?= "ppc64e6500"

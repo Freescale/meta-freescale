@@ -6,10 +6,10 @@ require conf/machine/include/tune-cortexa35.inc
 IMX_DEFAULT_BSP = "nxp"
 
 MACHINE_FEATURES += "pci optee bcm43455 bcm4356"
-MACHINE_FEATURES_append_use-nxp-bsp = " bcm4359"
+MACHINE_FEATURES:append:use-nxp-bsp = " bcm4359"
 
 # Don't include kernels in standard images
-RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
+RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
 LOADADDR = ""
 
@@ -23,7 +23,7 @@ USE_VT = "0"
 KERNEL_DEVICETREE = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
 "
-KERNEL_DEVICETREE_append_use-nxp-bsp = " \
+KERNEL_DEVICETREE:append:use-nxp-bsp = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}-dsi-rm67191.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-dsi-rm67191-rpmsg.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-dsp.dtb \
@@ -71,4 +71,4 @@ IMXBOOT_TARGETS = \
 BOARD_TYPE = "mek"
 
 # Add additional firmware
-MACHINE_FIRMWARE_append = " linux-firmware-ath10k"
+MACHINE_FIRMWARE:append = " linux-firmware-ath10k"

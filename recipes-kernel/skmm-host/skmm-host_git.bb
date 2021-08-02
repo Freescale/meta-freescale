@@ -12,7 +12,7 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE='KERNEL_DIR="${STAGING_KERNEL_DIR}" PREFIX="${D}"'
 
-FILES_${PN} += "/etc/skmm/ /usr/bin/"
+FILES:${PN} += "/etc/skmm/ /usr/bin/"
 
 COMPATIBLE_MACHINE = "(p4080ds|t4240qds)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"

@@ -19,22 +19,22 @@ SRCREV = "0cb01f7f6aee552ead49990c06f69f73f459cc65"
 S = "${WORKDIR}/git"
 
 OPTEEMACHINE ?= "${MACHINE}"
-OPTEEMACHINE_ls1088ardb-pb = "ls1088ardb"
-OPTEEMACHINE_ls1046afrwy = "ls1046ardb"
-OPTEEMACHINE_lx2162aqds = "lx2160aqds"
+OPTEEMACHINE:ls1088ardb-pb = "ls1088ardb"
+OPTEEMACHINE:ls1046afrwy = "ls1046ardb"
+OPTEEMACHINE:lx2162aqds = "lx2160aqds"
 
 EXTRA_OEMAKE = "PLATFORM=ls-${OPTEEMACHINE} CFG_ARM64_core=y \
                 ARCH=arm \
                 CROSS_COMPILE_core=${HOST_PREFIX} \
-                CROSS_COMPILE_ta_arm64=${HOST_PREFIX} \
+                CROSS_COMPILE_ta:arm64=${HOST_PREFIX} \
                 NOWERROR=1 \
                 LDFLAGS= \
                 LIBGCC_LOCATE_CFLAGS=--sysroot=${STAGING_DIR_HOST} \
         "
-EXTRA_OEMAKE_append_lx2162aqds = " CFG_EMBED_DTB_SOURCE_FILE=fsl-lx2160a-qds.dts CFG_EMBED_DT=y"
+EXTRA_OEMAKE:append:lx2162aqds = " CFG_EMBED_DTB_SOURCE_FILE=fsl-lx2160a-qds.dts CFG_EMBED_DT=y"
 
-OPTEE_ARCH_armv7a = "arm32"
-OPTEE_ARCH_aarch64 = "arm64"
+OPTEE_ARCH:armv7a = "arm32"
+OPTEE_ARCH:aarch64 = "arm64"
 
 do_compile() {
     unset LDFLAGS
@@ -74,10 +74,10 @@ do_deploy() {
 
 addtask deploy before do_build after do_install
 
-FILES_${PN} = "/lib/firmware/"
-FILES_${PN}-dev = "/usr/include/optee"
+FILES:${PN} = "/lib/firmware/"
+FILES:${PN}-dev = "/usr/include/optee"
 
-INSANE_SKIP_${PN}-dev = "staticdev"
+INSANE_SKIP:${PN}-dev = "staticdev"
 
 INHIBIT_PACKAGE_STRIP = "1"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"

@@ -40,7 +40,7 @@ do_install () {
     install -D -p -m0444 ${S}/out/ta/*/*.ta ${D}/lib/optee_armtz/
 }
 
-FILES_${PN} += "/lib/optee_armtz/"
+FILES:${PN} += "/lib/optee_armtz/"
 
 # Imports machine specific configs from staging to build
 PACKAGE_ARCH = "${MACHINE_ARCH}"

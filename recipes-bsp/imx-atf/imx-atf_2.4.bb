@@ -27,7 +27,7 @@ EXTRA_OEMAKE += " \
 
 BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
-CFLAGS_remove_mx8mq = "-O2"
+CFLAGS:remove:mx8mq = "-O2"
 
 do_compile() {
     # Clear LDFLAGS to avoid the option -Wl recognize issue

@@ -8,9 +8,9 @@ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base libimxdmabuffer"
 # for the uniaudio decoder, videoparsersbad for the VPU video decoder
 # the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
 # built (it is not a compile-time dependency however, hence RDEPENDS and not DEPENDS)
-RDEPENDS_gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
-RDEPENDS_gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
-RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
+RDEPENDS:gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
+RDEPENDS:gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
+RDEPENDS:gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 PV .= "+git${SRCPV}"
 
@@ -34,16 +34,16 @@ LIBG2D_DEPENDENCIES_imxdpu = "virtual/libg2d libdrm"
 EXTRA_OEMESON += "-Dimx-headers-path=${STAGING_INCDIR_IMX}"
 
 PACKAGECONFIG ?= "uniaudiodec"
-PACKAGECONFIG_append_imxgpu2d = " g2d"
-PACKAGECONFIG_append_imxvpu   = " vpu"
-PACKAGECONFIG_append_imxipu   = " ipu"
-PACKAGECONFIG_append_imxpxp   = " pxp"
+PACKAGECONFIG:append:imxgpu2d = " g2d"
+PACKAGECONFIG:append:imxvpu   = " vpu"
+PACKAGECONFIG:append:imxipu   = " ipu"
+PACKAGECONFIG:append:imxpxp   = " pxp"
 # The custom imxv4l2 elements are only available on the i.MX6.
 # The 2D blitter sinks require an MXC framebuffer, which
 # is not available anymore on the i.MX8 (since these SoCs
 # now use KMS instead of the old Linux framebuffer).
-PACKAGECONFIG_append_mx6      = " imx2dvideosink v4l2"
-PACKAGECONFIG_append_mx7      = " imx2dvideosink"
+PACKAGECONFIG:append:mx6      = " imx2dvideosink v4l2"
+PACKAGECONFIG:append:mx7      = " imx2dvideosink"
 
 PACKAGECONFIG[g2d] = "-Dg2d=enabled ${LIBG2D_DPU_OPTION},-Dg2d=disabled,${LIBG2D_DEPENDENCIES}"
 PACKAGECONFIG[pxp] = "-Dpxp=enabled,-Dpxp=disabled,"

@@ -47,7 +47,7 @@ do_compile() {
     if [ "${NXP_COT}" = "true" -a "${ARM_COT}" = "true" ]; then
         bbfatal " \
         Error!, Both ARM CoT and NXP CoT are enabled. Only one CoT is built in a yocto build, \
-        Don't add nxp-cot and arm-cot into DISTRO_FEATURES_append at the same time."
+        Don't add nxp-cot and arm-cot into DISTRO_FEATURES:append at the same time."
     fi
 
     if [ "${NXP_COT}" = "true" ]; then
@@ -160,7 +160,7 @@ do_install() {
 
 do_deploy() {
     if [ "${ARM_COT}" = "true" ]; then
-        outputdir="atf_arm-cot"
+        outputdir="atf:arm-cot"
     elif [ "${NXP_COT}" = "true" ]; then
         outputdir="atf_nxp-cot"
     else
@@ -171,5 +171,5 @@ do_deploy() {
     cp -fr ${D}/boot/atf/* ${DEPLOYDIR}/${outputdir}/
 }
 addtask deploy after do_install
-FILES_${PN} += "/boot"
+FILES:${PN} += "/boot"
 COMPATIBLE_MACHINE = "(lx2160a|lx2162a)"

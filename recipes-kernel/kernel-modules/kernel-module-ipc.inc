@@ -11,7 +11,7 @@ SRCREV = "74d662707558290f070f9589177db730444bc435"
 S = "${WORKDIR}/git"
 
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
-do_compile_prepend () {
+do_compile:prepend () {
     cd ${S}/kernel
 }
 

@@ -38,7 +38,7 @@ do_deploy () {
 addtask deploy before do_populate_sysroot after do_install
 
 PACKAGES += "${PN}-image"
-FILES_${PN}-image += "/boot"
+FILES:${PN}-image += "/boot"
 
 COMPATIBLE_MACHINE = "(lx2160a|lx2162a)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"

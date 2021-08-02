@@ -34,6 +34,6 @@ do_install(){
 }
 
 PARALLEL_MAKE = ""
-INSANE_SKIP_${PN} = "ldflags dev-deps"
-INSANE_SKIP_${PN}-dev = "ldflags dev-elf"
+INSANE_SKIP:${PN} = "ldflags dev-deps"
+INSANE_SKIP:${PN}-dev = "ldflags dev-elf"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"

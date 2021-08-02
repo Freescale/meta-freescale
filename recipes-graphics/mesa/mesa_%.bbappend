@@ -1,5 +1,5 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
-SRC_URI_append_use-mainline-bsp = " \
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+SRC_URI:append:use-mainline-bsp = " \
     file://0001-dri-add-createImageWithModifiers2-interface.patch \
     file://0002-dri-add-loader_dri_create_image-helper.patch \
     file://0003-loader-dri3-convert-to-loader_dri_create_image.patch \
@@ -11,11 +11,11 @@ SRC_URI_append_use-mainline-bsp = " \
     file://0009-etnaviv-flush-used-render-buffers-on-context-flush-w.patch \
 "
 
-PROVIDES_remove_imxgpu   = "virtual/egl"
-PROVIDES_remove_imxgpu3d = "virtual/libgl virtual/libgles1 virtual/libgles2"
+PROVIDES:remove:imxgpu   = "virtual/egl"
+PROVIDES:remove:imxgpu3d = "virtual/libgl virtual/libgles1 virtual/libgles2"
 
-PACKAGECONFIG_remove_imxgpu   = "egl gbm"
-PACKAGECONFIG_remove_imxgpu3d = "gles"
+PACKAGECONFIG:remove:imxgpu   = "egl gbm"
+PACKAGECONFIG:remove:imxgpu3d = "gles"
 
 # FIXME: mesa should support 'x11-no-tls' option
 python () {
@@ -28,13 +28,13 @@ python () {
 }
 
 # Enable Etnaviv and Freedreno support
-PACKAGECONFIG_append_use-mainline-bsp = " gallium etnaviv kmsro freedreno"
+PACKAGECONFIG:append:use-mainline-bsp = " gallium etnaviv kmsro freedreno"
 
 # For NXP BSP, GPU drivers don't support dri
-PACKAGECONFIG_remove_imxgpu_use-nxp-bsp = "dri"
+PACKAGECONFIG:remove:imxgpu:use-nxp-bsp = "dri"
 
 # mainline/etnaviv:
-RRECOMMENDS_${PN}-megadriver_append_use-mainline-bsp = " libdrm-etnaviv mesa-etnaviv-env"
+RRECOMMENDS:${PN}-megadriver:append:use-mainline-bsp = " libdrm-etnaviv mesa-etnaviv-env"
 
 BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -42,7 +42,7 @@ BACKEND = \
                                                              'fb', d), d)}"
 
 # FIXME: Dirty hack to allow use of Vivante GPU libGL binary
-do_install_append_imxgpu3d () {
+do_install:append:imxgpu3d () {
     rm -f ${D}${libdir}/libGL.* \
           ${D}${includedir}/GL/gl.h \
           ${D}${includedir}/GL/glcorearb.h \
@@ -54,6 +54,6 @@ do_install_append_imxgpu3d () {
     fi
 }
 
-do_install_append_imxgpu () {
+do_install:append:imxgpu () {
     rm -rf ${D}${includedir}/KHR
 }

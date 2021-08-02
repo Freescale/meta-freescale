@@ -12,7 +12,7 @@ DEPENDS += "bc-native dtc-native python3-setuptools-native"
 
 # Location known to imx-boot component, where U-Boot artifacts
 # should be additionally deployed.
-# See below note above do_deploy_append_mx8m for the purpose of
+# See below note above do_deploy:append:mx8m for the purpose of
 # this delopyment location
 BOOT_TOOLS = "imx-boot-tools"
 
@@ -48,7 +48,7 @@ EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
 # starts to use it - below append would not be necessary.
 # Once all mx8m derivatives are migrated to use the 'flash.bin' boot
 # container - this append can be dropped completely.
-do_deploy_append_mx8m() {
+do_deploy:append:mx8m() {
     # Deploy the mkimage, u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
     if [ -n "${UBOOT_CONFIG}" ]; then
         for config in ${UBOOT_MACHINE}; do

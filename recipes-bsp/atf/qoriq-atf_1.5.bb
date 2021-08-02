@@ -8,7 +8,7 @@ PV = "1.5+git${SRCPV}"
 inherit deploy
 
 DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native mbedtls rcw cst-native"
-DEPENDS_append_lx2160a = " ddr-phy"
+DEPENDS:append:lx2160a = " ddr-phy"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 
 S = "${WORKDIR}/git"
@@ -21,12 +21,12 @@ COMPATIBLE_MACHINE = "(qoriq)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PLATFORM = "${MACHINE}"
-PLATFORM_ls1088ardb-pb = "ls1088ardb"
+PLATFORM:ls1088ardb-pb = "ls1088ardb"
 PLATFORM_ADDITIONAL_TARGET ??= ""
-PLATFORM_ADDITIONAL_TARGET_ls1012afrwy = "ls1012afrwy_512mb"
+PLATFORM_ADDITIONAL_TARGET:ls1012afrwy = "ls1012afrwy_512mb"
 
 RCW_FOLDER ?= "${MACHINE}"
-RCW_FOLDER_ls1088ardb-pb = "ls1088ardb"
+RCW_FOLDER:ls1088ardb-pb = "ls1088ardb"
 
 # requires CROSS_COMPILE set by hand as there is no configure script
 export CROSS_COMPILE="${TARGET_PREFIX}"
@@ -56,16 +56,16 @@ PACKAGECONFIG[optee] = ",,optee-os-qoriq"
 uboot_boot_sec ?= "${DEPLOY_DIR_IMAGE}/u-boot.bin-tfa-secure-boot"
 uboot_boot ?= "${DEPLOY_DIR_IMAGE}/u-boot.bin-tfa"
 rcw ?= ""
-rcw_ls1012a = "_default"
+rcw:ls1012a = "_default"
 rcwsec ?= "_sben"
 
 chassistype ?= "ls2088_1088"
-chassistype_ls1012a = "ls104x_1012"
-chassistype_ls1043a = "ls104x_1012"
-chassistype_ls1046a = "ls104x_1012"
+chassistype:ls1012a = "ls104x_1012"
+chassistype:ls1043a = "ls104x_1012"
+chassistype:ls1046a = "ls104x_1012"
 
 ddrphyopt ?= ""
-ddrphyopt_lx2160a = "fip_ddr_sec"
+ddrphyopt:lx2160a = "fip_ddr_sec"
 
 do_configure[noexec] = "1"
 
@@ -242,5 +242,5 @@ do_deploy() {
     fi
 }
 addtask deploy after do_install
-FILES_${PN} += "/boot"
+FILES:${PN} += "/boot"
 BBCLASSEXTEND = "native nativesdk"

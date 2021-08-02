@@ -19,7 +19,7 @@ do_install () {
     cp -r ${S}/1CQ_QCA6174A_LEA_2.0/lib/firmware ${D}${base_libdir}
 }
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/bluetooth/firmware.conf \
     ${base_libdir}/firmware/qca6174 \
     ${base_libdir}/firmware/wlan \

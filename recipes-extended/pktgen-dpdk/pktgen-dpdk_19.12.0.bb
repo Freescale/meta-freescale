@@ -26,7 +26,7 @@ do_install() {
         cp -f  ${S}/Pktgen.lua ${D}${bindir}/
 }
 
-INSANE_SKIP_${PN} = "ldflags"
+INSANE_SKIP:${PN} = "ldflags"
 INHIBIT_PACKAGE_STRIP = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 PARALLEL_MAKE = ""

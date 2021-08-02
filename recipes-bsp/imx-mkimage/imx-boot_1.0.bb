@@ -10,8 +10,8 @@ SECTION = "BSP"
 inherit use-imx-security-controller-firmware
 
 IMX_EXTRA_FIRMWARE      = "firmware-imx-8 imx-sc-firmware imx-seco"
-IMX_EXTRA_FIRMWARE_mx8m = "firmware-imx-8m"
-IMX_EXTRA_FIRMWARE_mx8x = "imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE:mx8m = "firmware-imx-8m"
+IMX_EXTRA_FIRMWARE:mx8x = "imx-sc-firmware imx-seco"
 DEPENDS += " \
     u-boot \
     ${IMX_EXTRA_FIRMWARE} \
@@ -20,7 +20,7 @@ DEPENDS += " \
 "
 # xxd is a dependency of fspi_packer.sh
 DEPENDS += "xxd-native"
-DEPENDS_append_mx8m = " u-boot-mkimage-native dtc-native"
+DEPENDS:append:mx8m = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot"
 PROVIDES = "${BOOT_NAME}"
 
@@ -41,7 +41,7 @@ do_compile[depends] += " \
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
-ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
+ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
 BOOT_CONFIG_MACHINE = "${BOOT_NAME}-${MACHINE}-${UBOOT_CONFIG}.bin"
@@ -58,16 +58,16 @@ IMXBOOT_TARGETS ?= \
                                                   'flash_multi_cores flash_dcd', d), d)}"
 
 BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
-BOOT_STAGING_mx8m  = "${S}/iMX8M"
-BOOT_STAGING_mx8dx = "${S}/iMX8QX"
+BOOT_STAGING:mx8m  = "${S}/iMX8M"
+BOOT_STAGING:mx8dx = "${S}/iMX8QX"
 
 SOC_FAMILY      = "INVALID"
-SOC_FAMILY_mx8  = "mx8"
-SOC_FAMILY_mx8m = "mx8m"
-SOC_FAMILY_mx8x = "mx8x"
+SOC_FAMILY:mx8  = "mx8"
+SOC_FAMILY:mx8m = "mx8m"
+SOC_FAMILY:mx8x = "mx8x"
 
 REV_OPTION ?= ""
-REV_OPTION_mx8qxp = \
+REV_OPTION:mx8qxp = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', '', \
                                                            'REV=C0', d)}"
 
@@ -199,6 +199,6 @@ do_deploy() {
 addtask deploy before do_build after do_compile
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-FILES_${PN} = "/boot"
+FILES:${PN} = "/boot"
 
 COMPATIBLE_MACHINE = "(mx8)"
