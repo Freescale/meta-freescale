@@ -6,6 +6,6 @@ IMX_PATCH = " \
     file://0005-add-ak4458-conf-for-multichannel-support.patch \
     file://0006-add-conf-for-iMX-XCVR-sound-card.patch \
 "
-SRC_URI:append_imx = "${IMX_PATCH}"
+SRC_URI:append:imx = "${IMX_PATCH}"
 
-PACKAGE_ARCH_imx = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:imx = "${MACHINE_SOCARCH}"

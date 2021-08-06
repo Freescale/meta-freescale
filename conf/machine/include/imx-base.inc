@@ -204,7 +204,7 @@ MACHINE_SOCARCH_SUFFIX:mx8dxl = "-mx8dxl"
 MACHINE_SOCARCH_SUFFIX:use-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER:append_imx = " \
+MACHINE_SOCARCH_FILTER:append:imx = " \
     alsa-lib \
     gstreamer1.0 \
     weston \
@@ -355,17 +355,17 @@ PREFERRED_PROVIDER_virtual/libgl    ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles1 ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles2 ?= "mesa"
 
-PREFERRED_PROVIDER_virtual/egl_imxgpu        ?= "imx-gpu-viv"
-PREFERRED_PROVIDER_virtual/libgl_imxgpu3d    ?= "imx-gpu-viv"
-PREFERRED_PROVIDER_virtual/libgles1_imxgpu3d ?= "imx-gpu-viv"
-PREFERRED_PROVIDER_virtual/libgles2_imxgpu3d ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/egl:imxgpu        ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libgl:imxgpu3d    ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libgles1:imxgpu3d ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libgles2:imxgpu3d ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d            ?= "imx-gpu-g2d"
-PREFERRED_PROVIDER_virtual/libg2d_imxdpu     ?= "imx-dpu-g2d"
+PREFERRED_PROVIDER_virtual/libg2d:imxdpu     ?= "imx-dpu-g2d"
 PREFERRED_PROVIDER_opencl-clhpp:imxgpu       ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-headers:imxgpu     ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxgpu  ?= "imx-gpu-viv"
 
-PREFERRED_VERSION_weston_imx ?= "9.0.0.imx"
+PREFERRED_VERSION_weston:imx ?= "9.0.0.imx"
 PREFERRED_VERSION_weston:use-mainline-bsp = ""
 
 PREFERRED_VERSION_wayland-protocols:mx6 ?= "1.20.imx"
@@ -474,7 +474,7 @@ KERNEL_IMAGETYPE:aarch64 = "Image"
 
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
 
-# Add the ability to specify _imx machines
+# Add the ability to specify imx machines
 MACHINEOVERRIDES =. "imx:"
 
 HOSTTOOLS_NONFATAL:append:mx8 = " sha384sum"

@@ -26,7 +26,7 @@ EXTRA_OECONF = "--imx-linux-headers-path=${STAGING_INCDIR_IMX} \
 # libg2d. However, that implementation's g2d_alloc() function
 # is broken, so we cannot use it.
 LIBG2D_PACKAGECONFIG = "g2d"
-LIBG2D_PACKAGECONFIG_imxdpu = ""
+LIBG2D_PACKAGECONFIG:imxdpu = ""
 
 PACKAGECONFIG ?= " "
 PACKAGECONFIG:append:imxgpu2d = " ${LIBG2D_PACKAGECONFIG}"

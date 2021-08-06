@@ -17,7 +17,7 @@ DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES',     'x11', 'libxcb libxshmfence libxxf86vm', \
                                                        '', d)} \
 "
-DEPENDS:append_imxdrm = " libdrm wayland"
+DEPENDS:append:imxdrm = " libdrm wayland"
 DEPENDS:append:mx8 = " patchelf-native"
 
 # imx-gpu-viv does not provide everything it needs to for virtual/libgl

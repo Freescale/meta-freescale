@@ -28,8 +28,8 @@ inherit pkgconfig meson use-imx-headers
 # is needed to improve performance.
 LIBG2D_DPU_OPTION = "-Dg2d-based-on-dpu=false"
 LIBG2D_DEPENDENCIES = "virtual/libg2d"
-LIBG2D_DPU_OPTION_imxdpu = "-Dg2d-based-on-dpu=true"
-LIBG2D_DEPENDENCIES_imxdpu = "virtual/libg2d libdrm"
+LIBG2D_DPU_OPTION:imxdpu = "-Dg2d-based-on-dpu=true"
+LIBG2D_DEPENDENCIES:imxdpu = "virtual/libg2d libdrm"
 
 EXTRA_OEMESON += "-Dimx-headers-path=${STAGING_INCDIR_IMX}"
 

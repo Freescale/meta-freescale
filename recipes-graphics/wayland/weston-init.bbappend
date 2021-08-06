@@ -12,7 +12,7 @@ SRC_URI:append:mx6sl = " file://weston.config"
 # commented out. For example:
 #     #xwayland=true
 # Then add the assignment to INI_UNCOMMENT_ASSIGNMENTS.
-INI_UNCOMMENT_ASSIGNMENTS:append_imx = " \
+INI_UNCOMMENT_ASSIGNMENTS:append:imx = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland=true', '', d)} \
 "
 INI_UNCOMMENT_ASSIGNMENTS:append:mx8 = " \
