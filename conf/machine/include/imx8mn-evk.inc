@@ -56,10 +56,10 @@ UBOOT_EXTLINUX:use-mainline-bsp = "1"
 UBOOT_EXTLINUX_LABELS:use-mainline-bsp = "default"
 UBOOT_EXTLINUX_DEFAULT_LABEL:use-mainline-bsp = "i.MX8M Nano EVK"
 
-UBOOT_EXTLINUX_MENU_DESCRIPTION_default:use-mainline-bsp = "i.MX8M Nano EVK"
-UBOOT_EXTLINUX_FDT_default:use-mainline-bsp     = "../${KERNEL_DEVICETREE_BASENAME}.dtb"
-UBOOT_EXTLINUX_CONSOLE_default:use-mainline-bsp = "console=${console}"
-UBOOT_EXTLINUX_ROOT_default:use-mainline-bsp    = "root=/dev/mmcblk1p2"
+UBOOT_EXTLINUX_MENU_DESCRIPTION:default:use-mainline-bsp = "i.MX8M Nano EVK"
+UBOOT_EXTLINUX_FDT:default:use-mainline-bsp     = "../${KERNEL_DEVICETREE_BASENAME}.dtb"
+UBOOT_EXTLINUX_CONSOLE:default:use-mainline-bsp = "console=${console}"
+UBOOT_EXTLINUX_ROOT:default:use-mainline-bsp    = "root=/dev/mmcblk1p2"
 
 # Add extlinux.conf to the lis of files, which are deployed onto the
 # boot partition
