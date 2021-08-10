@@ -101,10 +101,11 @@ python __anonymous () {
 USE_X11 = "${@bb.utils.contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
 USE_WL = "${@bb.utils.contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
 
-# Inhibit warnings about files being stripped.
-INHIBIT_PACKAGE_STRIP = "1"
+# The packaged binaries have been stripped of debug info, so disable
+# operations accordingly.
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-INSANE_SKIP:${BPN} += "already-stripped"
+INHIBIT_PACKAGE_STRIP = "1"
+INHIBIT_SYSROOT_STRIP = "1"
 
 # FIXME: The provided binary doesn't provide soname. If in future BSP
 # release the libraries are fixed, we can drop this hack.
