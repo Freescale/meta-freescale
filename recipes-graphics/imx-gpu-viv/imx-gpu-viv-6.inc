@@ -275,7 +275,7 @@ do_install () {
 
 ALLOW_EMPTY:${PN} = "1"
 
-FILES:libclc-imx = "${libdir}/libCLC${SOLIBS}"
+FILES:libclc-imx = "${libdir}/libCLC${SOLIBS} ${includedir}/CL/cl_viv_vx_ext.h"
 FILES:libclc-imx-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 
 # libEGL.so is used by some demo apps from Freescale
