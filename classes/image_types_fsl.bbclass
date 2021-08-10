@@ -9,7 +9,7 @@ UBOOT_SUFFIX ?= "bin"
 MXSBOOT_NAND_ARGS ?= ""
 
 # U-Boot mxsboot generation for uSD
-do_image_uboot:mxsboot_sdcard[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
+do_image_uboot_mxsboot_sdcard[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                            u-boot:do_deploy"
 IMAGE_CMD:uboot-mxsboot-sdcard() {
     mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
@@ -19,7 +19,7 @@ IMAGE_CMD:uboot-mxsboot-sdcard() {
 }
 
 # U-Boot mxsboot generation for NAND
-do_image_uboot:mxsboot_nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
+do_image_uboot_mxsboot_nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                          u-boot:do_deploy"
 IMAGE_CMD:uboot-mxsboot-nand() {
     mxsboot ${MXSBOOT_NAND_ARGS} nand \
@@ -33,7 +33,7 @@ IMAGE_CMD:uboot-mxsboot-nand() {
 # image stream built before the wic generation
 do_image_wic[depends] += " \
     ${@bb.utils.contains('IMAGE_FSTYPES', 'uboot-mxsboot-sdcard', \
-                                          '${IMAGE_BASENAME}:do_image_uboot:mxsboot_sdcard', '', d)} \
+                                          '${IMAGE_BASENAME}:do_image_uboot_mxsboot_sdcard', '', d)} \
 "
 
 # We need to apply a fixup inside of the partition table
