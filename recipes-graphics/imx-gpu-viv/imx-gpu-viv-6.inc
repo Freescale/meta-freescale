@@ -90,7 +90,7 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	imx-gpu-viv-demos \
 	libvulkan-imx libvulkan-imx-dev \
 	libopenvx-imx libopenvx-imx-dev \
-	libnn-imx libnn-imx-dev \
+	libnn-imx \
 "
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
@@ -363,7 +363,6 @@ FILES:imx-gpu-viv-tools = "${bindir}/gmem_info"
 FILES:imx-gpu-viv-demos = "/opt"
 INSANE_SKIP:imx-gpu-viv-demos += "rpaths dev-deps"
 
-FILES:libnn-imx = "${libdir}/libNN*${SOLIBS} ${libdir}/libnn*${SOLIBS} ${libdir}/libneuralnetworks${SOLIBS}"
-FILES:libnn-imx-dev = "${includedir}/nnrt"
+FILES:libnn-imx = "${libdir}/libNN*${SOLIBS}"
 
 # COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx8)"
