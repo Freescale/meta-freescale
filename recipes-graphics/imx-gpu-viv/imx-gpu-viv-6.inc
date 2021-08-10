@@ -84,8 +84,6 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libvivante-dri-imx \
 	libvsc-imx \
 	${IMX_PACKAGES_GBM} \
-	libwayland-viv-imx libwayland-viv-imx-dev \
-	libgc-wayland-protocol-imx libgc-wayland-protocol-imx-dev \
 	imx-gpu-viv-tools \
 	imx-gpu-viv-demos \
 	libvulkan-imx libvulkan-imx-dev \
@@ -241,12 +239,6 @@ do_install () {
         rm -f ${D}${includedir}/GLES3/${header}
     done
 
-    # skip packaging wayland libraries if no support is requested
-    if [ "${USE_WL}" = "no" ]; then
-        find ${D}${libdir} -name "libgc_wayland_protocol.*" -exec rm '{}' ';'
-        find ${D}${libdir} -name "libwayland-viv.*" -exec rm '{}' ';'
-    fi
-
     # FIXME: MX6SL does not have 3D support; hack it for now
     if [ "${IS_MX6SL}" = "1" ]; then
         rm -rf ${D}${libdir}/libCLC* ${D}${includedir}/CL \
@@ -349,15 +341,6 @@ FILES:libvdk-imx-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
 
 FILES:libvivante-dri-imx = "${libdir}/dri/vivante_dri.so"
 RDEPENDS:libvivante-dri-imx = "libdrm"
-
-INSANE_SKIP:libwayland-viv-imx += "dev-so"
-FILES:libwayland-viv-imx =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"
-FILES:libwayland-viv-imx-dev = "${includedir}/wayland-viv ${libdir})/libwayland-viv${SOLIBSDEV} ${libdir}/pkgconfig/wayland-viv.pc"
-RPROVIDES:libwayland-viv-imx += "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'xf86-video-imx-vivante', '', d)}"
-
-INSANE_SKIP:libgc-wayland-protocol-imx += "dev-so"
-FILES:libgc-wayland-protocol-imx = "${libdir}/libgc_wayland_protocol${REALSOLIBS} ${libdir}/libgc_wayland_protocol${SOLIBS}"
-FILES:libgc-wayland-protocol-imx-dev = "${libdir}/libgc_wayland_protocol${SOLIBSDEV} ${libdir}/pkgconfig/gc_wayland_protocol.pc"
 
 FILES:imx-gpu-viv-tools = "${bindir}/gmem_info"
 
