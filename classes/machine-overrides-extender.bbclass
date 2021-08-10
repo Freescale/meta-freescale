@@ -5,12 +5,12 @@
 #
 # To indicate that a SoC contains following set of overrides, you can use:
 #
-# MACHINEOVERRIDES_EXTENDER_soc = "group1:group2"
+# MACHINEOVERRIDES_EXTENDER:soc = "group1:group2"
 #
 # However to indicate that an override replaces a set of other
 # overrides, you can use:
 #
-# MACHINEOVERRIDES_EXTENDER_FILTER_OUT_override = "group1 group2"
+# MACHINEOVERRIDES_EXTENDER_FILTER_OUT:override = "group1 group2"
 #
 # Copyright 2016-2018 (C) O.S. Systems Software LTDA.
 
@@ -20,13 +20,13 @@ def machine_overrides_extender(d):
     # Gather the list of overrides to filter out
     machine_overrides_filter_out = []
     for override in machine_overrides:
-        machine_overrides_filter_out += (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT_%s' % override) or '').split()
+        machine_overrides_filter_out += (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT:%s' % override) or '').split()
 
     # Drop any overrides of filter_out prior extending
     machine_overrides = [o for o in machine_overrides if o not in machine_overrides_filter_out]
 
     for override in machine_overrides:
-        extender = d.getVar('MACHINEOVERRIDES_EXTENDER_%s' % override)
+        extender = d.getVar('MACHINEOVERRIDES_EXTENDER:%s' % override)
 
         if extender:
             extender = extender.split(':')
