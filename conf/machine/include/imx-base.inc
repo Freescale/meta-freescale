@@ -272,7 +272,7 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS:append = " \
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE:append:mx25 = " firmware-imx-sdma-imx25"
-MACHINE_FIRMWARE:append_mx27 = " firmware-imx-vpu-imx27"
+MACHINE_FIRMWARE:append:mx27 = " firmware-imx-vpu-imx27"
 MACHINE_FIRMWARE:append:mx7d = " linux-firmware-imx-sdma-imx7d firmware-imx-epdc"
 MACHINE_FIRMWARE:append:mx6 = " linux-firmware-imx-sdma-imx6q"
 MACHINE_FIRMWARE:append:mx6q = " firmware-imx-vpu-imx6q"
