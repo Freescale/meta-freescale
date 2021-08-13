@@ -7,7 +7,7 @@ do_install(){
     install -m 755 ${S}/kernel/*.ko ${D}/usr/driver/IPC/multi_rat
 }
 
-FILES_${PN} += "/usr/driver/IPC/multi_rat/*.ko"
-FILES_${PN}-dbg += "/usr/driver/IPC/multi_rat/.debug"
+FILES:${PN} += "/usr/driver/IPC/multi_rat/*.ko"
+FILES:${PN}-dbg += "/usr/driver/IPC/multi_rat/.debug"
 
 COMPATIBLE_MACHINE = "(b4860qds|b4420qds)"

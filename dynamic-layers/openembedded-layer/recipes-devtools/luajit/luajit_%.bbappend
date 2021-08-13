@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-SRC_URI_append_qoriq-ppc = " file://ppc-fixplt.patch "
+SRC_URI:append:qoriq-ppc = " file://ppc-fixplt.patch "
 

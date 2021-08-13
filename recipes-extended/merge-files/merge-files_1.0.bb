@@ -17,6 +17,6 @@ do_install () {
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
-FILES_${PN} = "/*"
-ALLOW_EMPTY_${PN} = "1"
-INSANE_SKIP_${PN} = "debug-files dev-so"
+FILES:${PN} = "/*"
+ALLOW_EMPTY:${PN} = "1"
+INSANE_SKIP:${PN} = "debug-files dev-so"

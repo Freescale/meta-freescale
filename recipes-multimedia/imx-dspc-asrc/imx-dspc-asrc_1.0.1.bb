@@ -17,6 +17,6 @@ INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT  = "1"
 
-FILES_${PN} += "/unit_tests ${datadir}/imx-mm"
+FILES:${PN} += "/unit_tests ${datadir}/imx-mm"
 
 COMPATIBLE_MACHINE = "(mx8)"

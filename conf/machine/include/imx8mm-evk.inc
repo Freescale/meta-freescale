@@ -11,19 +11,19 @@ MACHINE_FEATURES += "pci wifi bluetooth bcm43455 bcm4356"
 # and pin it to NXP BSP only
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
 # a full support for it yet.
-MACHINE_FEATURES_append_use-nxp-bsp = " optee jailhouse bcm4359 qca9377"
+MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse bcm4359 qca9377"
 
 KERNEL_DEVICETREE = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
 "
-KERNEL_DEVICETREE_append_use-nxp-bsp = " \
+KERNEL_DEVICETREE:append:use-nxp-bsp = " \
 	freescale/${KERNEL_DEVICETREE_BASENAME}-pcie-ep.dtb \
 	freescale/${KERNEL_DEVICETREE_BASENAME}-rm67191.dtb \
 "
 UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
 
-IMX_DEFAULT_BOOTLOADER_use-nxp-bsp = "u-boot-imx"
-IMX_DEFAULT_BOOTLOADER_use-mainline-bsp = "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-imx"
+IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-fslc"
 
 UBOOT_SUFFIX = "bin"
 
@@ -51,18 +51,18 @@ SERIAL_CONSOLES = "115200;ttymxc1"
 # to be used to define the boot process.
 # We opt-in for Syslinux, since it is designated as a preferred
 # distro boot mode according to the U-Boot documentation.
-UBOOT_EXTLINUX_use-mainline-bsp = "1"
-UBOOT_EXTLINUX_LABELS_use-mainline-bsp = "default"
-UBOOT_EXTLINUX_DEFAULT_LABEL_use-mainline-bsp = "i.MX8M Mini EVK"
+UBOOT_EXTLINUX:use-mainline-bsp = "1"
+UBOOT_EXTLINUX_LABELS:use-mainline-bsp = "default"
+UBOOT_EXTLINUX_DEFAULT_LABEL:use-mainline-bsp = "i.MX8M Mini EVK"
 
-UBOOT_EXTLINUX_MENU_DESCRIPTION_default_use-mainline-bsp = "i.MX8M Mini EVK"
-UBOOT_EXTLINUX_FDT_default_use-mainline-bsp     = "../${KERNEL_DEVICETREE_BASENAME}.dtb"
-UBOOT_EXTLINUX_CONSOLE_default_use-mainline-bsp = "console=${console}"
-UBOOT_EXTLINUX_ROOT_default_use-mainline-bsp    = "root=/dev/mmcblk1p2"
+UBOOT_EXTLINUX_MENU_DESCRIPTION:default:use-mainline-bsp = "i.MX8M Mini EVK"
+UBOOT_EXTLINUX_FDT:default:use-mainline-bsp     = "../${KERNEL_DEVICETREE_BASENAME}.dtb"
+UBOOT_EXTLINUX_CONSOLE:default:use-mainline-bsp = "console=${console}"
+UBOOT_EXTLINUX_ROOT:default:use-mainline-bsp    = "root=/dev/mmcblk1p2"
 
 # Add extlinux.conf to the lis of files, which are deployed onto the
 # boot partition
-IMAGE_BOOT_FILES_append_use-mainline-bsp = " extlinux.conf;extlinux/extlinux.conf"
+IMAGE_BOOT_FILES:append:use-mainline-bsp = " extlinux.conf;extlinux/extlinux.conf"
 
 LOADADDR = ""
 UBOOT_SUFFIX = "bin"
@@ -73,4 +73,4 @@ OPTEE_BIN_EXT = "8mm"
 TEE_LOAD_ADDR = "0xbe000000"
 
 # Add additional firmware
-MACHINE_FIRMWARE_append = " linux-firmware-ath10k"
+MACHINE_FIRMWARE:append = " linux-firmware-ath10k"

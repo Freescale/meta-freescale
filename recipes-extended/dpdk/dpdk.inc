@@ -1,25 +1,25 @@
 DESCRIPTION = "Data Plane Development Kit"
 HOMEPAGE = "http://dpdk.org"
 
-RDEPENDS_${PN} += "python3-core"
+RDEPENDS:${PN} += "python3-core"
 DEPENDS = "virtual/kernel openssl"
-DEPENDS_append_x86-64 = " numactl"
+DEPENDS:append:x86-64 = " numactl"
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 inherit module
 
 COMPATIBLE_HOST = '(aarch64|arm|i.86|x86_64).*-linux'
-COMPATIBLE_HOST_libc-musl = 'null'
-COMPATIBLE_HOST_armv4 = 'null'
-COMPATIBLE_HOST_armv5 = 'null'
-COMPATIBLE_HOST_armv6 = 'null'
+COMPATIBLE_HOST:libc-musl = 'null'
+COMPATIBLE_HOST:armv4 = 'null'
+COMPATIBLE_HOST:armv5 = 'null'
+COMPATIBLE_HOST:armv6 = 'null'
 
 COMPATIBLE_MACHINE = "(imx|qoriq)"
 
-DPDK_RTE_TARGET_x86-64 = "x86_64-native-linuxapp-gcc"
-DPDK_RTE_TARGET_x86 = "i686-native-linuxapp-gcc"
-DPDK_RTE_TARGET_armv7a = "${ARCH}-armv7a-linuxapp-gcc"
-DPDK_RTE_TARGET_armv7ve = "${ARCH}-armv7a-linuxapp-gcc"
+DPDK_RTE_TARGET:x86-64 = "x86_64-native-linuxapp-gcc"
+DPDK_RTE_TARGET:x86 = "i686-native-linuxapp-gcc"
+DPDK_RTE_TARGET:armv7a = "${ARCH}-armv7a-linuxapp-gcc"
+DPDK_RTE_TARGET:armv7ve = "${ARCH}-armv7a-linuxapp-gcc"
 DPDK_RTE_TARGET ?= "${ARCH}-dpaa-linuxapp-gcc"
 
 export RTE_TARGET = "${DPDK_RTE_TARGET}"
@@ -93,13 +93,13 @@ do_install () {
 
 PACKAGES += "${PN}-examples"
 
-FILES_${PN}-dbg += " \
+FILES:${PN}-dbg += " \
 	${datadir}/dpdk/.debug \
 	${datadir}/dpdk/examples/*/.debug \
 	"
-FILES_${PN}-staticdev += "${datadir}/dpdk/cmdif/lib/*.a \
+FILES:${PN}-staticdev += "${datadir}/dpdk/cmdif/lib/*.a \
 "
-FILES_${PN}-dev += " \
+FILES:${PN}-dev += " \
 	${datadir}/dpdk/${RTE_TARGET}/.config \
 	${includedir} \
 	${includedir}/exec-env \
@@ -109,11 +109,11 @@ FILES_${PN}-dev += " \
 	${datadir}/dpdk/mk \
 	"
 
-FILES_${PN} += " ${datadir}/ \
+FILES:${PN} += " ${datadir}/ \
 		 ${prefix}/sbin/ \
 		 ${prefix}/bin/ \
 		 ${libdir}/ \
 		 "
-FILES_${PN}-examples += " \
+FILES:${PN}-examples += " \
 	${datadir}/examples/* \
 	"

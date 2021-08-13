@@ -14,4 +14,4 @@ EXTRA_OEMAKE += " \
     SAP_AUTH_OFFLOAD=1 \
 "
 
-RDEPENDS_${PN} += "firmware-qca9377"
+RDEPENDS:${PN} += "firmware-qca9377"

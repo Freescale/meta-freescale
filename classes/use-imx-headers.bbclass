@@ -13,14 +13,14 @@
 #
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 
-DEPENDS_append_imx = " linux-imx-headers"
+DEPENDS:append:imx = " linux-imx-headers"
 
 # Set runtime dependency of -dev for package inheriting this class to
 # linux-imx-headers-dev package. This is required in order to propagate
 # headers into the SDK
-RDEPENDS_${PN}-dev += "linux-imx-headers-dev"
+RDEPENDS:${PN}-dev += "linux-imx-headers-dev"
 
-PACKAGE_ARCH_imx ?= "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:imx ?= "${MACHINE_SOCARCH}"
 
 STAGING_INCDIR_IMX = "${STAGING_INCDIR}/imx"
 
@@ -34,4 +34,4 @@ STAGING_INCDIR_IMX = "${STAGING_INCDIR}/imx"
 # Typical example here would be imx-vpu-hantro recipe, which requires NXP
 # BSP and is not compatible with mainline.
 COMPATIBLE_HOST = '(null)'
-COMPATIBLE_HOST_use-nxp-bsp = '.*'
+COMPATIBLE_HOST:use-nxp-bsp = '.*'

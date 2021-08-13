@@ -2,7 +2,7 @@
 # Copyright (C) 2014-2016 Freescale Semiconductor
 # Copyright 2017-2019 NXP
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/u-boot-imx:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot-imx:"
 
 require u-boot-imx_${PV}.bb
 require u-boot-mfgtool.inc

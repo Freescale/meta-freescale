@@ -17,5 +17,5 @@ do_install () {
     oe_runmake install DESTDIR=${D}
 }
 
-INSANE_SKIP_${PN} = "ldflags"
+INSANE_SKIP:${PN} = "ldflags"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"

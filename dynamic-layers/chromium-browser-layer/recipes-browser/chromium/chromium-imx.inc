@@ -1,4 +1,4 @@
-DEPENDS_append_imxvpu = " imx-vpuwrap"
+DEPENDS:append:imxvpu = " imx-vpuwrap"
 
 # Additional imx code and patches are included in the chromium-imx git repository.
 # The code below fetches this repository, copies the extra source over to the main
@@ -26,7 +26,7 @@ do_patch[prefuncs] =+ "add_chromium_imx_patches"
 # * Lost context problems are not known to happen with Vivante GPUs,
 #   so it is safe to use ignore-lost-context
 # * Proprietary codecs need to be enabled for h.264 and MP4 support
-PACKAGECONFIG_append = " ignore-lost-context proprietary-codecs"
+PACKAGECONFIG:append = " ignore-lost-context proprietary-codecs"
 
 copy_chromium_imx_files() {
 	# sources in src/ are already organized in a manner

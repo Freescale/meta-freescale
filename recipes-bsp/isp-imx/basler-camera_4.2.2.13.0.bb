@@ -21,7 +21,7 @@ do_install() {
 
 SYSTEMD_AUTO_ENABLE = "enable"
 
-FILES_${PN} = "${libdir} /opt"
-INSANE_SKIP_${PN} = "file-rdeps already-stripped"
+FILES:${PN} = "${libdir} /opt"
+INSANE_SKIP:${PN} = "file-rdeps already-stripped"
 
 COMPATIBLE_MACHINE = "(mx8mp)"

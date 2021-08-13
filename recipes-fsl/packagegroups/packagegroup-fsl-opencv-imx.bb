@@ -7,6 +7,6 @@ OPENCV_PKGS = " \
     opencv-samples \
     python3-opencv \
 "
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
     ${OPENCV_PKGS} \
 "

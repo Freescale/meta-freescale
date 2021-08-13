@@ -6,7 +6,7 @@ DESCRIPTION = "Linux Kernel provided and supported by the Freescale Community \
 that produces a Manufacturing Tool compatible Linux Kernel to be used in updater \
 environment"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/linux-fslc:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/linux-fslc:"
 require linux-fslc_${PV}.bb
 require linux-mfgtool.inc
 

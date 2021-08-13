@@ -14,4 +14,4 @@ do_install () {
        oe_runmake install  DESTDIR=${D}
 }
 
-FILES_${PN} += "/share/man/*  ${libdir}/* ${sbindir}/*"
+FILES:${PN} += "/share/man/*  ${libdir}/* ${sbindir}/*"

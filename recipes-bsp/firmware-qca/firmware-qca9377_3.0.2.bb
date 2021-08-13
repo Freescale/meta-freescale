@@ -19,7 +19,7 @@ do_install () {
     cp -r ${S}/1PJ_QCA9377-3_LEA_3.0/lib/firmware ${D}${base_libdir}
 }
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${sysconfdir}/bluetooth/firmware.conf \
     ${base_libdir}/firmware/qca \
     ${base_libdir}/firmware/qca9377 \

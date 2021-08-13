@@ -2,7 +2,7 @@ DESCRIPTION = "Secure Object"
 LICENSE = "BSD"
 
 DEPENDS = "openssl optee-os-qoriq optee-client-qoriq"
-RDEPENDS_${PN} = "bash libcrypto libssl"
+RDEPENDS:${PN} = "bash libcrypto libssl"
 
 DEPENDS += "python3-pycryptodomex-native"
 
@@ -20,9 +20,9 @@ export OPTEE_CLIENT_EXPORT = "${RECIPE_SYSROOT}/usr"
 
 EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}"'
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 PARALLEL_MAKE = ""
-INSANE_SKIP_${PN} = "ldflags"
+INSANE_SKIP:${PN} = "ldflags"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
 DEBUG_BUILD = "1"

@@ -40,12 +40,12 @@ do_install () {
     install ${S}/fsl_shm/lib/*.h ${D}${includedir}/ipc/fsl_shm/lib
 }
 
-FILES_${PN} += "${base_libdir}/*.so /ipc/*"
-FILES_${PN}-dev = "${includedir}"
-FILES_${PN}-dbg += "/ipc/.debug"
+FILES:${PN} += "${base_libdir}/*.so /ipc/*"
+FILES:${PN}-dev = "${includedir}"
+FILES:${PN}-dbg += "/ipc/.debug"
 
-INSANE_SKIP_${PN} += "file-rdeps"
-INSANE_SKIP_${PN}-dev += "dev-elf"
+INSANE_SKIP:${PN} += "file-rdeps"
+INSANE_SKIP:${PN}-dev += "dev-elf"
 
 COMPATIBLE_MACHINE = "(b4860qds|b4420qds)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"

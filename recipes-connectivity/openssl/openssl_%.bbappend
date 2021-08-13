@@ -1,8 +1,8 @@
-FILESEXTRAPATHS_append := "${THISDIR}/${PN}-qoriq:"
+FILESEXTRAPATHS:append := "${THISDIR}/${PN}-qoriq:"
 
-SRC_URI_append_qoriq = " \
+SRC_URI:append:qoriq = " \
 	file://0001-eng_devcrypto-add-support-for-TLS-algorithms-offload.patch \
 	file://0002-eng_devcrypto-add-support-for-TLS1.2-algorithms-offl.patch \
 "
 
-PACKAGECONFIG_append_qoriq = " cryptodev-linux"
+PACKAGECONFIG:append:qoriq = " cryptodev-linux"

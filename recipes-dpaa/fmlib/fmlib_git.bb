@@ -14,15 +14,15 @@ EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
         CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
 TARGET_ARCH_FMLIB = "${DEFAULTTUNE}"
-TARGET_ARCH_FMLIB_qoriq-arm = "arm"
-TARGET_ARCH_FMLIB_qoriq-arm64 = "arm"
-TARGET_ARCH_FMLIB_e5500 = "ppc32e5500"
-TARGET_ARCH_FMLIB_e6500 = "ppc32e6500"
-TARGET_ARCH_FMLIB_e500mc = "ppce500mc"
-TARGET_ARCH_FMLIB_e500v2 = "ppce500v2"
+TARGET_ARCH_FMLIB:qoriq-arm = "arm"
+TARGET_ARCH_FMLIB:qoriq-arm64 = "arm"
+TARGET_ARCH_FMLIB:e5500 = "ppc32e5500"
+TARGET_ARCH_FMLIB:e6500 = "ppc32e6500"
+TARGET_ARCH_FMLIB:e500mc = "ppce500mc"
+TARGET_ARCH_FMLIB:e500v2 = "ppce500v2"
 
 FMLIB_TARGET = "libfm-${TARGET_ARCH_FMLIB}"
-FMLIB_TARGET_t1 = "libfm-${TARGET_ARCH_FMLIB}-fmv3l"
+FMLIB_TARGET:t1 = "libfm-${TARGET_ARCH_FMLIB}-fmv3l"
 
 do_compile () {
     oe_runmake ${FMLIB_TARGET}.a
@@ -34,7 +34,7 @@ do_install () {
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

@@ -32,6 +32,6 @@ do_configure () {
     ${S}/configure ${EXTRA_OECONF}
 }
 
-FILES_${PN} += "/usr/ofp/bin"
-FILES_${PN}-dbg += "/usr/ofp/bin/.debug"
+FILES:${PN} += "/usr/ofp/bin"
+FILES:${PN}-dbg += "/usr/ofp/bin/.debug"
 COMPATIBLE_MACHINE = "(ls2088a|ls1088a)"

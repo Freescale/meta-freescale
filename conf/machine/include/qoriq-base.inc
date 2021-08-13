@@ -9,8 +9,8 @@ PREFERRED_PROVIDER_nativesdk-u-boot-mkimage ??= "nativesdk-u-boot-tools"
 PREFERRED_VERSION_testfloat = "2a"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz"
-SOC_DEFAULT_IMAGE_FSTYPES_append_ls1043a = " wic.bz2"
-SOC_DEFAULT_IMAGE_FSTYPES_append_ls1046a = " wic.bz2"
+SOC_DEFAULT_IMAGE_FSTYPES:append:ls1043a = " wic.bz2"
+SOC_DEFAULT_IMAGE_FSTYPES:append:ls1046a = " wic.bz2"
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
 # Composite Image Layout (in KBytes)
@@ -31,8 +31,8 @@ IMAGE_BOOT_FILES ?= " \
 "
 
 SOC_DEFAULT_WKS_FILE ?= ""
-SOC_DEFAULT_WKS_FILE_ls1043a ?= "ls104x-uboot-bootpart.wks.in"
-SOC_DEFAULT_WKS_FILE_ls1046a ?= "ls104x-uboot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:ls1043a ?= "ls104x-uboot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:ls1046a ?= "ls104x-uboot-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
@@ -54,7 +54,7 @@ MACHINEOVERRIDES =. "use-${QORIQ_DEFAULT_BSP}-bsp:"
 
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
-MACHINE_SOCARCH_SUFFIX_qoriq = "-qoriq"
+MACHINE_SOCARCH_SUFFIX:qoriq = "-qoriq"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
 

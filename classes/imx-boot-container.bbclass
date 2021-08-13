@@ -23,7 +23,7 @@
 
 # Define ATF binary file to be deployed to the U-Boot build folder
 ATF_MACHINE_NAME = "bl31-${ATF_PLATFORM}.bin"
-ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
+ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 # This package aggregates output deployed by other packages, so set the
 # appropriate dependencies for populate binaries task
@@ -76,7 +76,7 @@ addtask do_resolve_and_populate_binaries before do_compile after do_configure
 # This effectively would allow the usage of the same WKS file for those
 # derivatives that are using the boot container from U-Boot and those
 # that are not yet have support for it enabled.
-do_deploy_append() {
+do_deploy:append() {
     # Deploy the resulted flash.bin for WIC to pick it up
     if [ -n "${UBOOT_CONFIG}" ]; then
         for config in ${UBOOT_MACHINE}; do

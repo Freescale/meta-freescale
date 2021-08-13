@@ -22,7 +22,7 @@ OECMAKE_SOURCEPATH = "${S}/appshell"
 # Use make instead of ninja
 OECMAKE_GENERATOR = "Unix Makefiles"
 
-SYSTEMD_SERVICE_${PN} = "imx8-isp.service"
+SYSTEMD_SERVICE:${PN} = "imx8-isp.service"
 
 EXTRA_OECMAKE += " \
     -DCMAKE_BUILD_TYPE=release \
@@ -42,7 +42,7 @@ EXTRA_OECMAKE += " \
     -Wno-dev \
 "
 
-do_configure_prepend() {
+do_configure:prepend() {
     export SDKTARGETSYSROOT=${STAGING_DIR_HOST}
 }
 
@@ -74,15 +74,15 @@ do_install() {
 # The build contains a mix of versioned and unversioned libraries, so
 # the default packaging configuration needs some modifications
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
-FILES_${PN}-dev += " \
+FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
+FILES:${PN}-dev += " \
     ${libdir}/libjsoncpp.so \
     ${libdir}/libos08a20.so \
     ${libdir}/libov2775.so \
 "
 
-INSANE_SKIP_${PN} = "rpaths"
+INSANE_SKIP:${PN} = "rpaths"
 
-RDEPENDS_${PN} = "libdrm libpython3"
+RDEPENDS:${PN} = "libdrm libpython3"
 
 COMPATIBLE_MACHINE = "(mx8mp)"

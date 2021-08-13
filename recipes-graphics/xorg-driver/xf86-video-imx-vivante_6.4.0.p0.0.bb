@@ -34,7 +34,7 @@ TARGET_CC_ARCH += "${LDFLAGS}"
 
 PACKAGES =+ "xserver-xorg-extension-viv-autohdmi"
 
-do_install_append () {
+do_install:append () {
     install -d ${D}${includedir}
     cp -axr ${S}/EXA/src/vivante_gal/vivante_priv.h ${D}${includedir}
     cp -axr ${S}/EXA/src/vivante_gal/vivante_gal.h ${D}${includedir}
@@ -45,7 +45,7 @@ do_install_append () {
     find ${D}${includedir} -type f -exec chmod 660 {} \;
 }
 
-RDEPENDS_${PN} += "libvivante-dri-imx \
+RDEPENDS:${PN} += "libvivante-dri-imx \
                    xserver-xorg-module-exa \
                    mesa-driver-swrast \
                    xserver-xorg-extension-dri \
@@ -55,11 +55,11 @@ RDEPENDS_${PN} += "libvivante-dri-imx \
 REALSOLIBS := "${SOLIBS}"
 SOLIBS = "${SOLIBSDEV}"
 
-FILES_${PN} = "${libdir}/*/*/*/vivante_drv${SOLIBS}"
-FILES_${PN}-dev = "${includedir} /usr/src ${libdir}/libfsl_x11_ext${SOLIBSDEV}"
-FILES_${PN}-dbg = "${libdir}/*/*/*/.debug ${libdir}/.debug/libfsl_x11_ext${SOLIBS} ${exec_prefix}/bin/.debug/autohdmi"
+FILES:${PN} = "${libdir}/*/*/*/vivante_drv${SOLIBS}"
+FILES:${PN}-dev = "${includedir} /usr/src ${libdir}/libfsl_x11_ext${SOLIBSDEV}"
+FILES:${PN}-dbg = "${libdir}/*/*/*/.debug ${libdir}/.debug/libfsl_x11_ext${SOLIBS} ${exec_prefix}/bin/.debug/autohdmi"
 
-FILES_xserver-xorg-extension-viv-autohdmi = " ${libdir}/libfsl_x11_ext${SOLIBS} ${exec_prefix}/bin/autohdmi ${sysconfdir}/init.d/rc.autohdmi"
+FILES:xserver-xorg-extension-viv-autohdmi = " ${libdir}/libfsl_x11_ext${SOLIBS} ${exec_prefix}/bin/autohdmi ${sysconfdir}/init.d/rc.autohdmi"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx6|mx7ulp)"

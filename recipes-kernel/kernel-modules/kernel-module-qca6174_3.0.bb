@@ -11,4 +11,4 @@ EXTRA_OEMAKE += " \
     CONFIG_WLAN_FEATURE_DSRC=y \
 "
 
-RDEPENDS_${PN} += "firmware-qca6174"
+RDEPENDS:${PN} += "firmware-qca6174"

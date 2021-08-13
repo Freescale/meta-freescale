@@ -13,7 +13,7 @@ SRCREV = "7071c27f6f5aefb57de1cffab3484707b1e82e2b"
 
 include dpdk.inc
 
-do_install_append () {
+do_install:append () {
     # Remove the unneeded dir
     rm -rf ${D}/${datadir}/${RTE_TARGET}/app
 }

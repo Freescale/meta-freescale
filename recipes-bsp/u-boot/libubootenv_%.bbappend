@@ -29,8 +29,8 @@ def fixup_uboot_config_dependency(d):
        # |     Signed-off-by: Ming Liu <liu.ming50@gmail.com>
        # |     Signed-off-by: Richard Purdie <richard.purdie@linuxfoundation.org>
        # `----
-       ubootmachine = d.getVar("UBOOT_MACHINE_pn-%s" % imx_default_bootloader)
-       ubootconfig = (d.getVar("UBOOT_CONFIG_pn-%s" % imx_default_bootloader) or "").split()
+       ubootmachine = d.getVar("UBOOT_MACHINE:pn-%s" % imx_default_bootloader)
+       ubootconfig = (d.getVar("UBOOT_CONFIG:pn-%s" % imx_default_bootloader) or "").split()
 
        d.setVar("UBOOT_CONFIG", ubootconfig)
        d.setVar("UBOOT_MACHINE", ubootmachine)

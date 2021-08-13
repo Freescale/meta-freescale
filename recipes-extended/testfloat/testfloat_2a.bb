@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://testfloat/testfloat.txt;beginline=87;endline=95;md5=b
 SRC_URI = " http://www.jhauser.us/arithmetic/TestFloat-2a.tar.Z;name=TestFloat \
             http://www.jhauser.us/arithmetic/SoftFloat-2b.tar.Z;name=SoftFloat \
           "
-SRC_URI_append_qoriq-ppc = " file://SoftFloat-powerpc-1.patch \
+SRC_URI:append:qoriq-ppc = " file://SoftFloat-powerpc-1.patch \
                               file://TestFloat-powerpc-E500v2-SPE-1.patch \
                               file://Yocto-replace-COMPILE_PREFIX-gcc.patch \
                             "
@@ -40,6 +40,6 @@ do_install(){
     install testfloat/powerpc-linux-gcc/testsoftfloat ${D}/${bindir}
 }
 
-COMPATIBLE_HOST_e500v2 = ".*"
+COMPATIBLE_HOST:e500v2 = ".*"
 COMPATIBLE_HOST ?= "(none)"
 

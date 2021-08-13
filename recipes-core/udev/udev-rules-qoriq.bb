@@ -12,17 +12,17 @@ SRC_URI = "\
 S = "${WORKDIR}"
 
 RULE = "71-fsl-dpaa-persistent-networking.rules"
-RULE_e6500 = "72-fsl-dpaa-persistent-networking.rules"
-RULE_e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
-RULE_t1024 = "72-fsl-dpaa-persistent-networking.rules"
-RULE_qoriq-arm64 = "73-fsl-dpaa-persistent-networking.rules \
+RULE:e6500 = "72-fsl-dpaa-persistent-networking.rules"
+RULE:e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
+RULE:t1024 = "72-fsl-dpaa-persistent-networking.rules"
+RULE:qoriq-arm64 = "73-fsl-dpaa-persistent-networking.rules \
     73-fsl-enetc-networking.rules \
 "
-RULE_ls1046a = "73-fsl-dpaa-persistent-networking.rules \
+RULE:ls1046a = "73-fsl-dpaa-persistent-networking.rules \
     74-ls1046a-xfi2-networking.rules \
 "
-RULE_ls1012a = ""
-RULE_ls2080a = ""
+RULE:ls1012a = ""
+RULE:ls2080a = ""
 
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d/
@@ -31,7 +31,7 @@ do_install () {
     done
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
 COMPATIBLE_MACHINE = "(qoriq)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"

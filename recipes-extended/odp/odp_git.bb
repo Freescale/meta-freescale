@@ -6,17 +6,17 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 DEPENDS = "openssl cunit libxml2"
 
-RDEPENDS_${PN} = "bash libcrypto libssl odp-module odp-counters"
+RDEPENDS:${PN} = "bash libcrypto libssl odp-module odp-counters"
 
 ODP_SOC ?= ""
-ODP_SOC_ls1043ardb = "LS1043"
-ODP_SOC_ls1046ardb = "LS1046"
+ODP_SOC:ls1043ardb = "LS1043"
+ODP_SOC:ls1046ardb = "LS1046"
 ODP_PLATFORM ?= "linux-dpaa2"
 ODP_BUILD_TYPE ?= "ls2088"
-ODP_BUILD_TYPE_ls1043ardb = "ls1043"
-ODP_BUILD_TYPE_ls1046ardb = "ls1046"
-ODP_BUILD_TYPE_ls2080ardb = "ls2080"
-ODP_BUILD_TYPE_ls1088ardb = "ls1088"
+ODP_BUILD_TYPE:ls1043ardb = "ls1043"
+ODP_BUILD_TYPE:ls1046ardb = "ls1046"
+ODP_BUILD_TYPE:ls2080ardb = "ls2080"
+ODP_BUILD_TYPE:ls1088ardb = "ls1088"
 
 EXTRA_OECONF = "--with-platform=${ODP_PLATFORM} \
                 --enable-test-vald \
@@ -34,17 +34,17 @@ CFLAGS += "-Wno-format-truncation -Wno-maybe-uninitialized -Wno-implicit-fallthr
 
 PACKAGECONFIG[perf] = "--enable-test-perf,,,"
 
-do_configure_prepend () {
+do_configure:prepend () {
     export SOC=${ODP_SOC}
     ${S}/bootstrap
 }
 
-do_compile_prepend () {
+do_compile:prepend () {
     export SOC=${ODP_SOC}
     export ARCH=${TUNE_ARCH}
 }
 
-do_install_append () {
+do_install:append () {
     install -d ${D}${includedir}/odp/kni
     install -d ${D}${includedir}/odp/kern
     install -d ${D}${includedir}/odp/flib/mc
@@ -58,6 +58,6 @@ do_install_append () {
     sed -i -e 's#platform/linux-dpaa2/##g' ${D}${includedir}/odp/kern/*.h
 }
 
-FILES_${PN}-staticdev += "${datadir}/opendataplane/*.la"
-FILES_${PN} += "/usr/odp/bin /usr/odp/scripts /usr/odp/debug /usr/odp/test/validation /usr/odp/test/performance /usr/odp/test/miscellaneous /usr/odp/test/api_test"
-FILES_${PN}-dbg += "/usr/odp/bin/.debug /usr/odp/debug/.debug /usr/odp/test/validation/.debug /usr/odp/test/performance/.debug /usr/odp/test/miscellaneous/.debug /usr/odp/test/api_test/.debug"
+FILES:${PN}-staticdev += "${datadir}/opendataplane/*.la"
+FILES:${PN} += "/usr/odp/bin /usr/odp/scripts /usr/odp/debug /usr/odp/test/validation /usr/odp/test/performance /usr/odp/test/miscellaneous /usr/odp/test/api_test"
+FILES:${PN}-dbg += "/usr/odp/bin/.debug /usr/odp/debug/.debug /usr/odp/test/validation/.debug /usr/odp/test/performance/.debug /usr/odp/test/miscellaneous/.debug /usr/odp/test/api_test/.debug"

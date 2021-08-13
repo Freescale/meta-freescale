@@ -79,11 +79,11 @@ FSL_EULA_FILE_MD5SUM ?= \
 
 LIC_FILES_CHKSUM_LAYER ?= "file://${FSL_EULA_FILE};md5=${FSL_EULA_FILE_MD5SUM}"
 LIC_FILES_CHKSUM_LAYER[vardepsexclude] += "FSL_EULA_FILE"
-LIC_FILES_CHKSUM_append = " ${LIC_FILES_CHKSUM_LAYER}"
+LIC_FILES_CHKSUM:append = " ${LIC_FILES_CHKSUM_LAYER}"
 
 LIC_FILES_CHKSUM[vardepsexclude] += "FSL_EULA_FILE"
 
-do_fetch_prepend() {
+do_fetch:prepend() {
     if "Proprietary" not in d.getVar("LICENSE"):
         bb.fatal("The recipe LICENSE should include Proprietary but is " + d.getVar("LICENSE") + ".")
 }

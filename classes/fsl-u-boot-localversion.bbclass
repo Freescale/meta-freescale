@@ -14,7 +14,7 @@ LOCALVERSION ??= "+fslc"
 
 UBOOT_LOCALVERSION = "${LOCALVERSION}"
 
-do_compile_prepend() {
+do_compile:prepend() {
 	if [ "${SCMVERSION}" = "y" ]; then
 		# Add GIT revision to the local version
 		head=`cd ${S} ; git rev-parse --verify --short HEAD 2> /dev/null`

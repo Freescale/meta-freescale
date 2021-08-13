@@ -14,9 +14,9 @@ inherit fsl-eula-unpack use-imx-headers
 
 PARALLEL_MAKE="-j 1"
 
-PLATFORM_mx8mm = "IMX8MM"
-PLATFORM_mx8mq = "IMX8MQ"
-PLATFORM_mx8mp = "IMX8MP"
+PLATFORM:mx8mm = "IMX8MM"
+PLATFORM:mx8mq = "IMX8MQ"
+PLATFORM:mx8mp = "IMX8MP"
 
 EXTRA_OEMAKE = " \
     CROSS_COMPILE="${HOST_PREFIX}" \
@@ -28,8 +28,8 @@ do_install () {
     oe_runmake install DEST_DIR="${D}"
 }
 
-FILES_${PN} += "/unit_tests"
+FILES:${PN} += "/unit_tests"
 
-RDEPENDS_${PN} += "imx-vpu-hantro-daemon"
+RDEPENDS:${PN} += "imx-vpu-hantro-daemon"
 
 COMPATIBLE_MACHINE = "(mx8mq|mx8mm|mx8mp)"

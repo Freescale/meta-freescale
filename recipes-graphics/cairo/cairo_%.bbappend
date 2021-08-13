@@ -1,2 +1,2 @@
-PACKAGECONFIG_append_imxgpu3d = " egl glesv2"
-PACKAGECONFIG_remove_imxgpu3d = "opengl"
+PACKAGECONFIG:append:imxgpu3d = " egl glesv2"
+PACKAGECONFIG:remove:imxgpu3d = "opengl"

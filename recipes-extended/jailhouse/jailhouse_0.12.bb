@@ -39,9 +39,9 @@ CELLCONF_DIR ?= "${JH_DATADIR}/configs"
 INMATES_DIR ?= "${JH_DATADIR}/inmates"
 
 JH_CONFIG ?= "${S}/ci/jailhouse-config-x86.h"
-JH_CONFIG_x86 ?= "${S}/ci/jailhouse-config-x86.h"
-JH_CONFIG_x86-64 ?= "${S}/ci/jailhouse-config-x86.h"
-JH_CONFIG_arm ?= "${S}/ci/jailhouse-config-banana-pi.h"
+JH_CONFIG:x86 ?= "${S}/ci/jailhouse-config-x86.h"
+JH_CONFIG:x86-64 ?= "${S}/ci/jailhouse-config-x86.h"
+JH_CONFIG:arm ?= "${S}/ci/jailhouse-config-banana-pi.h"
 
 do_configure() {
    if [ -d ${STAGING_DIR_HOST}/${CELLCONF_DIR} ];
@@ -101,22 +101,22 @@ do_install() {
 
 PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse"
 
-FILES_${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
-FILES_pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}/pyjailhouse"
+FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
+FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}/pyjailhouse"
 
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     python3-curses \
     python3-datetime \
     python3-mmap \
 "
 
-RDEPENDS_pyjailhouse = " \
+RDEPENDS:pyjailhouse = " \
     python3-core \
     python3-ctypes \
     python3-fcntl \
     python3-shell \
 "
 
-INSANE_SKIP_${PN} = "ldflags"
+INSANE_SKIP:${PN} = "ldflags"
 
 COMPATIBLE_MACHINE = "(mx8m)"

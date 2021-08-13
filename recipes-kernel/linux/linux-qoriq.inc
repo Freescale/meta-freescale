@@ -7,12 +7,12 @@ LICENSE = "GPLv2"
 
 S = "${WORKDIR}/git"
 
-DEPENDS_append = " libgcc"
+DEPENDS:append = " libgcc"
 # not put Images into /boot of rootfs, install kernel-image if needed
-RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
+RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
-KERNEL_CC_append = " ${TOOLCHAIN_OPTIONS}"
-KERNEL_LD_append = " ${TOOLCHAIN_OPTIONS}"
+KERNEL_CC:append = " ${TOOLCHAIN_OPTIONS}"
+KERNEL_LD:append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
 
 ZIMAGE_BASE_NAME = "zImage-${PKGE}-${PKGV}-${PKGR}-${MACHINE}-${DATETIME}"
@@ -24,9 +24,9 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 SCMVERSION ?= "y"
 LOCALVERSION = ""
 DELTA_KERNEL_DEFCONFIG ?= ""
-DELTA_KERNEL_DEFCONFIG_prepend_qoriq-arm64 = "lsdk.config "
-DELTA_KERNEL_DEFCONFIG_prepend_fsl-lsch2-32b = "multi_v7_lpae.config multi_v8.config lsdk.config "
-DELTA_KERNEL_DEFCONFIG_prepend_ls102xa = "multi_v7_lpae.config lsdk.config "
+DELTA_KERNEL_DEFCONFIG:prepend:qoriq-arm64 = "lsdk.config "
+DELTA_KERNEL_DEFCONFIG:prepend:fsl-lsch2-32b = "multi_v7_lpae.config multi_v8.config lsdk.config "
+DELTA_KERNEL_DEFCONFIG:prepend:ls102xa = "multi_v7_lpae.config lsdk.config "
 
 do_merge_delta_config[depends] += "virtual/${TARGET_PREFIX}gcc:do_populate_sysroot bison-native:do_populate_sysroot"
 do_merge_delta_config[dirs] = "${B}"
@@ -56,13 +56,13 @@ do_merge_delta_config() {
 addtask merge_delta_config before do_kernel_localversion after do_patch
 
 # The link of dts folder is needed for 32b compile of aarch64 targets(e.g. ls1043ardb-32b)
-do_compile_prepend_fsl-lsch2-32b() {
+do_compile:prepend:fsl-lsch2-32b() {
     ln -sfT ${STAGING_KERNEL_DIR}/arch/arm64/boot/dts/freescale ${STAGING_KERNEL_DIR}/arch/arm/boot/dts/freescale
 }
 
-do_install_prepend_fsl-lsch2-32b() {
+do_install:prepend:fsl-lsch2-32b() {
     rm -f ${STAGING_KERNEL_DIR}/arch/arm/boot/dts/freescale
 }
 
-FILES_${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
+FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
 COMPATIBLE_MACHINE = "(qoriq)"

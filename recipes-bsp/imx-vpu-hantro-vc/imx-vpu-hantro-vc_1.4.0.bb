@@ -30,6 +30,6 @@ do_install () {
     rm ${D}${D_SUBDIR}/${SCR}
 }
 
-FILES_${PN} = "/"
+FILES:${PN} = "/"
 
 COMPATIBLE_MACHINE = "(mx8mp)"

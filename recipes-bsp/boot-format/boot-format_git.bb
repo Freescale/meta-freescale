@@ -15,6 +15,6 @@ do_install(){
 }
 
 PACKAGES =+ "${PN}-config"
-FILES_${PN}-config += "${datadir}/*"
+FILES:${PN}-config += "${datadir}/*"
 
 BBCLASSEXTEND = "native nativesdk"

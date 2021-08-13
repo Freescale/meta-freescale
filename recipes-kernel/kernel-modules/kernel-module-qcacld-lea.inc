@@ -20,4 +20,4 @@ EXTRA_OEMAKE += " \
 "
 
 COMPATIBLE_MACHINE = "(imx)"
-COMPATIBLE_HOST_libc-musl = 'null'
+COMPATIBLE_HOST:libc-musl = 'null'

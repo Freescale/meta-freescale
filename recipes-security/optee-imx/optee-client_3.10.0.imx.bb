@@ -18,11 +18,11 @@ B = "${WORKDIR}/build"
 
 inherit python3native systemd
 
-SYSTEMD_SERVICE_${PN} = "tee-supplicant.service"
+SYSTEMD_SERVICE:${PN} = "tee-supplicant.service"
 
 OPTEE_ARCH ?= "arm32"
-OPTEE_ARCH_armv7a = "arm32"
-OPTEE_ARCH_aarch64 = "arm64"
+OPTEE_ARCH:armv7a = "arm32"
+OPTEE_ARCH:aarch64 = "arm64"
 
 EXTRA_OEMAKE = "ARCH=${OPTEE_ARCH} O=${B}"
 
@@ -42,11 +42,11 @@ do_install () {
 }
 
 PACKAGES += "tee-supplicant"
-FILES_${PN} += "${libdir}/* ${includedir}/*"
-FILES_tee-supplicant += "${bindir}/tee-supplicant"
+FILES:${PN} += "${libdir}/* ${includedir}/*"
+FILES:tee-supplicant += "${bindir}/tee-supplicant"
 
-INSANE_SKIP_${PN} = "ldflags dev-elf"
-INSANE_SKIP_${PN}-dev = "ldflags dev-elf"
-INSANE_SKIP_tee-supplicant = "ldflags"
+INSANE_SKIP:${PN} = "ldflags dev-elf"
+INSANE_SKIP:${PN}-dev = "ldflags dev-elf"
+INSANE_SKIP:tee-supplicant = "ldflags"
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"

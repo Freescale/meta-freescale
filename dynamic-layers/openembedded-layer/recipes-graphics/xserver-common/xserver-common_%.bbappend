@@ -1,8 +1,8 @@
 # i.MX extra configuration 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI_append_imxgpu3d = " \
+SRC_URI:append:imxgpu3d = " \
     file://0016-xserver-common-enable-iglx-module.patch \
 "
 
-PACKAGE_ARCH_imxgpu3d = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:imxgpu3d = "${MACHINE_SOCARCH}"

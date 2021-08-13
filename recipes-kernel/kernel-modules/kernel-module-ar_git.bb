@@ -14,7 +14,7 @@ export KERNEL_PATH
 
 INHIBIT_PACKAGE_STRIP = "1"
 
-do_compile_prepend() {
+do_compile:prepend() {
     sed -i -e 's,EXTRA_CFLAGS += -I$(PWD),EXTRA_CFLAGS += -I${S},' ${S}/armodule/source/Makefile
 }
 
@@ -25,8 +25,8 @@ do_install(){
 	cp -f ${S}/bin/ar_* ${D}${bindir}/ 
 }
 
-FILES_${PN} += "${bindir}/"
-INSANE_SKIP_${PN} = "ldflags"
+FILES:${PN} += "${bindir}/"
+INSANE_SKIP:${PN} = "ldflags"
 COMPATIBLE_MACHINE = "(t1040|t1042)"
 
 CLEANBROKEN = "1"

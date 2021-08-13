@@ -9,7 +9,7 @@ LICENSE = "Proprietary"
 DEPENDS = "libnl zlib"
 
 FCC_TOOLS_FOLDER ?= "qca9377_qca6174_arm32"
-FCC_TOOLS_FOLDER_aarch64 = "qca9377_qca6174_arm64"
+FCC_TOOLS_FOLDER:aarch64 = "qca9377_qca6174_arm64"
 
 do_install() {
     install -d ${D}${sbindir}/fcc_tools
@@ -17,4 +17,4 @@ do_install() {
 }
 
 COMPATIBLE_HOST = '(aarch64|arm).*-linux'
-COMPATIBLE_HOST_libc-musl = 'null'
+COMPATIBLE_HOST:libc-musl = 'null'
