@@ -1,0 +1,287 @@
+From 3a03576d672d24f19fdb930b08afde9a3a3f55da Mon Sep 17 00:00:00 2001
+From: Eric Anholt <eric@anholt.net>
+Date: Tue, 26 Mar 2019 15:02:38 -0700
+Subject: [PATCH 7/8] glamor: Switch the gl_flavor to a boolean is_gles.
+
+There are only 2 flavors we are distinguishing -- GL versions are
+handled separately.
+
+Upstream-Status: Backport
+Signed-off-by: Eric Anholt <eric@anholt.net>
+---
+ glamor/glamor.c         | 20 +++++++++-----------
+ glamor/glamor_picture.c | 22 +++++++++++-----------
+ glamor/glamor_pixmap.c  |  2 +-
+ glamor/glamor_priv.h    |  7 +------
+ glamor/glamor_program.c |  2 +-
+ glamor/glamor_render.c  |  2 +-
+ glamor/glamor_utils.h   |  6 +++---
+ 7 files changed, 27 insertions(+), 34 deletions(-)
+
+diff --git a/glamor/glamor.c b/glamor/glamor.c
+index f618c2128..019edbbb1 100644
+--- a/glamor/glamor.c
++++ b/glamor/glamor.c
+@@ -505,10 +505,8 @@ glamor_init(ScreenPtr screen, unsigned int flags)
+ 
+     glamor_make_current(glamor_priv);
+ 
+-    if (epoxy_is_desktop_gl())
+-        glamor_priv->gl_flavor = GLAMOR_GL_DESKTOP;
+-    else
+-        glamor_priv->gl_flavor = GLAMOR_GL_ES2;
++    if (!epoxy_is_desktop_gl())
++        glamor_priv->is_gles = TRUE;
+ 
+     gl_version = epoxy_gl_version();
+ 
+@@ -540,7 +538,7 @@ glamor_init(ScreenPtr screen, unsigned int flags)
+     }
+     glamor_priv->glsl_version = glsl_major * 100 + glsl_minor;
+ 
+-    if (glamor_priv->gl_flavor == GLAMOR_GL_ES2) {
++    if (glamor_priv->is_gles) {
+         /* Force us back to the base version of our programs on an ES
+          * context, anyway.  Basically glamor only uses desktop 1.20
+          * or 1.30 currently.  1.30's new features are also present in
+@@ -564,7 +562,7 @@ glamor_init(ScreenPtr screen, unsigned int flags)
+      * have support for it, with most of the ones lacking it being on
+      * Windows with Intel 4-series (G45) graphics or older.
+      */
+-    if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++    if (!glamor_priv->is_gles) {
+         if (gl_version < 21) {
+             ErrorF("Require OpenGL version 2.1 or later.\n");
+             goto fail;
+@@ -610,7 +608,7 @@ glamor_init(ScreenPtr screen, unsigned int flags)
+     }
+ 
+     glamor_priv->has_rw_pbo = FALSE;
+-    if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP)
++    if (!glamor_priv->is_gles)
+         glamor_priv->has_rw_pbo = TRUE;
+ 
+     glamor_priv->has_khr_debug = epoxy_has_gl_extension("GL_KHR_debug");
+@@ -628,11 +626,11 @@ glamor_init(ScreenPtr screen, unsigned int flags)
+     glamor_priv->has_nv_texture_barrier =
+         epoxy_has_gl_extension("GL_NV_texture_barrier");
+     glamor_priv->has_unpack_subimage =
+-        glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP ||
++        !glamor_priv->is_gles ||
+         epoxy_gl_version() >= 30 ||
+         epoxy_has_gl_extension("GL_EXT_unpack_subimage");
+     glamor_priv->has_pack_subimage =
+-        glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP ||
++        !glamor_priv->is_gles ||
+         epoxy_gl_version() >= 30 ||
+         epoxy_has_gl_extension("GL_NV_pack_subimage");
+     glamor_priv->has_dual_blend =
+@@ -643,7 +641,7 @@ glamor_init(ScreenPtr screen, unsigned int flags)
+ 
+     glamor_setup_debug_output(screen);
+ 
+-    glamor_priv->use_quads = (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) &&
++    glamor_priv->use_quads = !glamor_priv->is_gles &&
+                              !glamor_priv->is_core_profile;
+ 
+     /* Driver-specific hack: Avoid using GL_QUADS on VC4, where
+@@ -665,7 +663,7 @@ glamor_init(ScreenPtr screen, unsigned int flags)
+ 
+     glamor_priv->has_texture_swizzle =
+         (epoxy_has_gl_extension("GL_ARB_texture_swizzle") ||
+-         (glamor_priv->gl_flavor != GLAMOR_GL_DESKTOP && gl_version >= 30));
++         (glamor_priv->is_gles && gl_version >= 30));
+ 
+     glamor_priv->one_channel_format = GL_ALPHA;
+     if (epoxy_has_gl_extension("GL_ARB_texture_rg") &&
+diff --git a/glamor/glamor_picture.c b/glamor/glamor_picture.c
+index e6d387d42..ed2decc83 100644
+--- a/glamor/glamor_picture.c
++++ b/glamor/glamor_picture.c
+@@ -90,7 +90,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+ 
+     case PICT_b8g8r8x8:
+     case PICT_b8g8r8a8:
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_format = GL_BGRA;
+             *tex_type = GL_UNSIGNED_INT_8_8_8_8;
+         } else {
+@@ -109,7 +109,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+ 
+     case PICT_x8r8g8b8:
+     case PICT_a8r8g8b8:
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_format = GL_BGRA;
+             *tex_type = GL_UNSIGNED_INT_8_8_8_8_REV;
+         } else {
+@@ -128,7 +128,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+     case PICT_x8b8g8r8:
+     case PICT_a8b8g8r8:
+         *tex_format = GL_RGBA;
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_type = GL_UNSIGNED_INT_8_8_8_8_REV;
+         } else {
+             *tex_format = GL_RGBA;
+@@ -141,7 +141,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+ 
+     case PICT_x2r10g10b10:
+     case PICT_a2r10g10b10:
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_format = GL_BGRA;
+             *tex_type = GL_UNSIGNED_INT_2_10_10_10_REV;
+         } else {
+@@ -151,7 +151,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+ 
+     case PICT_x2b10g10r10:
+     case PICT_a2b10g10r10:
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_format = GL_RGBA;
+             *tex_type = GL_UNSIGNED_INT_2_10_10_10_REV;
+         } else {
+@@ -165,7 +165,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+         break;
+     case PICT_b5g6r5:
+         *tex_format = GL_RGB;
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_type = GL_UNSIGNED_SHORT_5_6_5_REV;
+         } else {
+             *tex_type = GL_UNSIGNED_SHORT_5_6_5;
+@@ -177,7 +177,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+     case PICT_x1b5g5r5:
+     case PICT_a1b5g5r5:
+         *tex_format = GL_RGBA;
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_type = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+         } else {
+             return FALSE;
+@@ -186,7 +186,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+ 
+     case PICT_x1r5g5b5:
+     case PICT_a1r5g5b5:
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_format = GL_BGRA;
+             *tex_type = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+         } else {
+@@ -201,7 +201,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+ 
+     case PICT_x4r4g4b4:
+     case PICT_a4r4g4b4:
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_format = GL_BGRA;
+             *tex_type = GL_UNSIGNED_SHORT_4_4_4_4_REV;
+         } else {
+@@ -213,7 +213,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
+ 
+     case PICT_x4b4g4r4:
+     case PICT_a4b4g4r4:
+-        if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP) {
++        if (!glamor_priv->is_gles) {
+             *tex_format = GL_RGBA;
+             *tex_type = GL_UNSIGNED_SHORT_4_4_4_4_REV;
+         } else {
+@@ -335,7 +335,7 @@ glamor_upload_picture_to_texture(PicturePtr picture)
+         stride = pixman_image_get_stride(converted_image);
+     }
+ 
+-    if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP)
++    if (!glamor_priv->is_gles)
+         iformat = gl_iformat_for_pixmap(pixmap);
+     else
+         iformat = format;
+diff --git a/glamor/glamor_pixmap.c b/glamor/glamor_pixmap.c
+index 166bde509..9aa169cdc 100644
+--- a/glamor/glamor_pixmap.c
++++ b/glamor/glamor_pixmap.c
+@@ -124,7 +124,7 @@ glamor_set_alu(ScreenPtr screen, unsigned char alu)
+ {
+     glamor_screen_private *glamor_priv = glamor_get_screen_private(screen);
+ 
+-    if (glamor_priv->gl_flavor == GLAMOR_GL_ES2) {
++    if (glamor_priv->is_gles) {
+         if (alu != GXcopy)
+             return FALSE;
+         else
+diff --git a/glamor/glamor_priv.h b/glamor/glamor_priv.h
+index a87caec9b..8e8433ff3 100644
+--- a/glamor/glamor_priv.h
++++ b/glamor/glamor_priv.h
+@@ -155,11 +155,6 @@ enum gradient_shader {
+ struct glamor_screen_private;
+ struct glamor_pixmap_private;
+ 
+-enum glamor_gl_flavor {
+-    GLAMOR_GL_DESKTOP,          // OPENGL API
+-    GLAMOR_GL_ES2               // OPENGL ES2.0 API
+-};
+-
+ #define GLAMOR_COMPOSITE_VBO_VERT_CNT (64*1024)
+ 
+ struct glamor_saved_procs {
+@@ -185,7 +180,7 @@ struct glamor_saved_procs {
+ };
+ 
+ typedef struct glamor_screen_private {
+-    enum glamor_gl_flavor gl_flavor;
++    Bool is_gles;
+     int glsl_version;
+     Bool has_pack_invert;
+     Bool has_fbo_blit;
+diff --git a/glamor/glamor_program.c b/glamor/glamor_program.c
+index 830deb38b..b0a9d07a4 100644
+--- a/glamor/glamor_program.c
++++ b/glamor/glamor_program.c
+@@ -459,7 +459,7 @@ glamor_set_blend(CARD8 op, glamor_program_alpha alpha, PicturePtr dst)
+         break;
+     }
+ 
+-    if (glamor_priv->gl_flavor != GLAMOR_GL_ES2)
++    if (!glamor_priv->is_gles)
+         glDisable(GL_COLOR_LOGIC_OP);
+ 
+     if (op == PictOpSrc)
+diff --git a/glamor/glamor_render.c b/glamor/glamor_render.c
+index 6db6bfbc3..d3859e4d1 100644
+--- a/glamor/glamor_render.c
++++ b/glamor/glamor_render.c
+@@ -1091,7 +1091,7 @@ glamor_composite_set_shader_blend(glamor_screen_private *glamor_priv,
+         }
+     }
+ 
+-    if (glamor_priv->gl_flavor != GLAMOR_GL_ES2)
++    if (!glamor_priv->is_gles)
+         glDisable(GL_COLOR_LOGIC_OP);
+ 
+     if (op_info->source_blend == GL_ONE && op_info->dest_blend == GL_ZERO) {
+diff --git a/glamor/glamor_utils.h b/glamor/glamor_utils.h
+index 8a147ca7e..cbb808294 100644
+--- a/glamor/glamor_utils.h
++++ b/glamor/glamor_utils.h
+@@ -615,13 +615,13 @@ gl_iformat_for_pixmap(PixmapPtr pixmap)
+         glamor_get_screen_private((pixmap)->drawable.pScreen);
+     glamor_pixmap_private *pixmap_priv = glamor_get_pixmap_private(pixmap);
+ 
+-    if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP &&
++    if (!glamor_priv->is_gles &&
+         ((pixmap)->drawable.depth == 1 || (pixmap)->drawable.depth == 8)) {
+         return glamor_priv->one_channel_format;
+-    } else if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP &&
++    } else if (!glamor_priv->is_gles &&
+                (pixmap)->drawable.depth == 16 && pixmap_priv->is_cbcr) {
+         return GL_RG;
+-    } else if (glamor_priv->gl_flavor == GLAMOR_GL_DESKTOP &&
++    } else if (!glamor_priv->is_gles &&
+                (pixmap)->drawable.depth == 30) {
+         return GL_RGB10_A2;
+     } else {
+-- 
+2.17.1
+
