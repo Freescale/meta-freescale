@@ -1,0 +1,31 @@
+From 69892ca6a623057ed4e3be0c22cb7fd812425024 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Michel=20D=C3=A4nzer?= <michel.daenzer@amd.com>
+Date: Wed, 19 Dec 2018 10:11:22 +0100
+Subject: [PATCH 4/8] glamor: Remove unused format_for_pixmap helper
+
+Upstream-Status: Backport
+Reviewed-by: Eric Anholt <eric@anholt.net>
+---
+ glamor/glamor_utils.h | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/glamor/glamor_utils.h b/glamor/glamor_utils.h
+index 1890c1fe5..8a147ca7e 100644
+--- a/glamor/glamor_utils.h
++++ b/glamor/glamor_utils.h
+@@ -629,12 +629,6 @@ gl_iformat_for_pixmap(PixmapPtr pixmap)
+     }
+ }
+ 
+-static inline CARD32
+-format_for_pixmap(PixmapPtr pixmap)
+-{
+-    return format_for_depth((pixmap)->drawable.depth);
+-}
+-
+ #define REVERT_NONE       		0
+ #define REVERT_NORMAL     		1
+ #define REVERT_UPLOADING_A1		3
+-- 
+2.17.1
+
