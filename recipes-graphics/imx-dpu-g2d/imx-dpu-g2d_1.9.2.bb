@@ -1,15 +1,15 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright 2017-2019 NXP
+# Copyright 2017-2021 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU G2D library and apps for i.MX with 2D GPU and DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=a632fefd1c359980434f9389833cab3a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=417b82f17fc02b88125331ed312f6f1b"
 PROVIDES += "virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "51b1a54f303bea31325549e9fb1f0d04"
-SRC_URI[sha256sum] = "360012a32353bde233a548f25a8f99b18660059ea2655ab15335a967843ce3b9"
+SRC_URI[md5sum] = "a267c87677d600ecf07d4c8f42941532"
+SRC_URI[sha256sum] = "02e4e649f2af6c867cb666df10f032af48b0907e1529fa6c5958dad7e38aebbe"
 
 inherit fsl-eula-unpack
 
