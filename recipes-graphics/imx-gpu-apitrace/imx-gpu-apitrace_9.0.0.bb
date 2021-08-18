@@ -44,3 +44,6 @@ FILES:${PN} += " \
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxgpu)"
+
+# see https://github.com/apitrace/apitrace/issues/756
+PNBLACKLIST[imx-gpu-apitrace] ?= "Upstream needs porting to glibc 2.34+"
