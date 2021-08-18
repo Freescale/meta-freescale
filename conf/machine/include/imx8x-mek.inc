@@ -1,7 +1,7 @@
 MACHINEOVERRIDES =. "mx8:mx8x:"
 
 require conf/machine/include/imx-base.inc
-require conf/machine/include/tune-cortexa35.inc
+require conf/machine/include/arm/armv8a/tune-cortexa35.inc
 
 IMX_DEFAULT_BSP = "nxp"
 
