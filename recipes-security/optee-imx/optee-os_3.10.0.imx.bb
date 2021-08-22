@@ -22,6 +22,8 @@ inherit deploy python3native autotools
 
 # The platform flavor corresponds to the Yocto machine without the leading 'i'.
 PLATFORM_FLAVOR                   = "${@d.getVar('MACHINE')[1:]}"
+PLATFORM_FLAVOR:imx6qdlsabresd    = "mx6qsabresd"
+PLATFORM_FLAVOR:imx6qdlsabreauto  = "mx6qsabreauto"
 PLATFORM_FLAVOR:imx6qpdlsolox     = "mx6qsabresd"
 PLATFORM_FLAVOR:imx6ul7d          = "mx6ulevk"
 PLATFORM_FLAVOR:imx6ull14x14evk   = "mx6ullevk"
