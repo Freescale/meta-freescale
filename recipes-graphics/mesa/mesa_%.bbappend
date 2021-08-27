@@ -1,16 +1,3 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
-SRC_URI:append:use-mainline-bsp = " \
-    file://0001-dri-add-createImageWithModifiers2-interface.patch \
-    file://0002-dri-add-loader_dri_create_image-helper.patch \
-    file://0003-loader-dri3-convert-to-loader_dri_create_image.patch \
-    file://0004-loader-dri-hook-up-createImageWithModifiers2.patch \
-    file://0005-gallium-dri-copy-image-use-in-dup_image.patch \
-    file://0006-dri-don-t-call-modifier-interfaces-when-modifiers_co.patch \
-    file://0007-frontend-dri-add-EXPLICIT_FLUSH-hint-in-dri2_resourc.patch \
-    file://0008-etnaviv-remove-double-assigment-of-surface-texture.patch \
-    file://0009-etnaviv-flush-used-render-buffers-on-context-flush-w.patch \
-"
-
 PROVIDES:remove:imxgpu   = "virtual/egl"
 PROVIDES:remove:imxgpu3d = "virtual/libgl virtual/libgles1 virtual/libgles2"
 
