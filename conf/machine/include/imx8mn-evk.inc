@@ -3,6 +3,11 @@ MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mn:"
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
+# Mainline BSP defaults to "generic" cortexa53 configuration,
+# adjust it here to include crypto extension which enables
+# inline NEON and FPU code generation
+DEFAULTTUNE:use-mainline-bsp = "cortexa53-crypto"
+
 MACHINE_FEATURES += "wifi bluetooth bcm43455 bcm4356"
 
 # NXP BSP can consume proprietary jailhouse and Broadcom drivers
