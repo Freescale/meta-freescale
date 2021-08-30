@@ -1,28 +1,26 @@
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
+DESCRIPTION = "'Base' GStreamer plugins and helper libraries"
+HOMEPAGE = "https://gstreamer.freedesktop.org/"
+BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/-/issues"
 LICENSE = "GPLv2+ & LGPLv2+"
-LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
-                    file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.05.06_2008_L5.4.47"
-SRCREV = "3c4aa2a58576d68f6e684efa58609665679c9969"
+SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
 SRC_URI = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
-           file://0001-meson-build-gir-even-when-cross-compiling-if-introsp.patch \
-           file://0001-gstreamer-plugins-base-fix-meson-build-in-nxp-fork.patch \
-           file://0002-meson-Add-variables-for-gir-files.patch \
-           file://0005-viv-fb-Make-sure-config.h-is-included.patch \
-           file://0009-glimagesink-Downrank-to-marginal.patch \
-           file://0001-gst-libs-gst-gl-wayland-fix-meson-build.patch \
-           file://0001-meson-viv-fb-code-must-link-against-libg2d.patch \
+           file://0003-viv-fb-Make-sure-config.h-is-included.patch \
+           file://0004-glimagesink-Downrank-to-marginal.patch \
+           file://4ef5c91697a141fea7317aff7f0f28e5a861db99.patch \
            "
+SRCREV = "69554a26c932481acb7c5691038c367eca60e5bc"
 
 S = "${WORKDIR}/git"
 
 DEPENDS += "iso-codes util-linux zlib"
 DEPENDS:append:imxgpu2d = " virtual/libg2d"
 
-inherit use-imx-headers gobject-introspection gtk-doc
+inherit gobject-introspection use-imx-headers
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -36,7 +34,7 @@ PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
     ${PACKAGECONFIG_GL} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'alsa x11', d)} \
-    ogg pango png theora vorbis \
+    jpeg ogg pango png theora vorbis \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland egl', '', d)} \
 "
 
@@ -71,24 +69,22 @@ PACKAGECONFIG[egl]          = ",,virtual/egl"
 # OpenGL window systems (except for X11)
 PACKAGECONFIG[gbm]          = ",,virtual/libgbm libgudev libdrm"
 PACKAGECONFIG[wayland]      = ",,wayland-native wayland wayland-protocols libdrm"
+PACKAGECONFIG[dispmanx]     = ",,virtual/libomxil"
 PACKAGECONFIG[viv-fb]       = ",,virtual/libgles2 virtual/libg2d"
 
+OPENGL_WINSYS = "${@bb.utils.filter('PACKAGECONFIG', 'x11 gbm wayland dispmanx egl viv-fb', d)}"
+
 EXTRA_OEMESON += " \
+    -Ddoc=disabled \
     -Dgl-graphene=disabled \
     ${@get_opengl_cmdline_list('gl_api', d.getVar('OPENGL_APIS'), d)} \
     ${@get_opengl_cmdline_list('gl_platform', d.getVar('OPENGL_PLATFORMS'), d)} \
     ${@get_opengl_cmdline_list('gl_winsys', d.getVar('OPENGL_WINSYS'), d)} \
-    -Dextra_imx_incdir=${STAGING_INCDIR_IMX} \
+    -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
 
-GTKDOC_MESON_OPTION = "gtk_doc"
-GTKDOC_MESON_ENABLE_FLAG = "enabled"
-GTKDOC_MESON_DISABLE_FLAG = "disabled"
-
-FILES:${PN} += "${libdir}/gstreamer-1.0/include"
+FILES:${PN}-dev += "${libdir}/gstreamer-1.0/include/gst/gl/gstglconfig.h"
 FILES:${MLPREFIX}libgsttag-1.0 += "${datadir}/gst-plugins-base/1.0/license-translations.dict"
-
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
 
 def get_opengl_cmdline_list(switch_name, options, d):
     selected_options = []
@@ -100,3 +96,7 @@ def get_opengl_cmdline_list(switch_name, options, d):
         return '-D' + switch_name + '=' + ','.join(selected_options)
     else:
         return ''
+
+CVE_PRODUCT += "gst-plugins-base"
+
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
