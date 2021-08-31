@@ -1,13 +1,12 @@
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
-
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.05.07_2011_L5.4.70"
+SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} \
 "
-SRCREV = "6005e8199ea19878f269b058ffbbbcaa314472d8"
+SRCREV = "3160acd37304f67238b8ceae2a95ee4951f9c718"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -15,7 +14,6 @@ S = "${WORKDIR}/git"
 
 LICENSE = "GPLv2+ & LGPLv2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
-                    file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607 \
                     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
 
 DEPENDS += "gstreamer1.0-plugins-base libcap zlib"
