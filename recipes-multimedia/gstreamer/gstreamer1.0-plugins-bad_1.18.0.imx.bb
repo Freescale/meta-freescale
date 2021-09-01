@@ -3,7 +3,7 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 DEPENDS_append_imxgpu2d = " virtual/libg2d"
 DEPENDS_append_mx8 = " libdrm"
 
-PACKAGECONFIG_append_mx8 = " kms"
+PACKAGECONFIG_append_mx8 = " kms tinycompress"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -11,20 +11,12 @@ PACKAGE_ARCH_imxpxp = "${MACHINE_SOCARCH}"
 PACKAGE_ARCH_mx8 = "${MACHINE_SOCARCH}"
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.05.07_2011_L5.4.70"
+SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
 
 SRC_URI = " \
     ${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} \
-    file://0001-ext-wayland-fix-meson-build-in-nxp-fork.patch \
-    file://0001-meson-build-gir-even-when-cross-compiling-if-introsp.patch \
-    file://opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
-    file://0001-opencv-allow-compilation-against-4.4.x.patch \
-    file://0001-vulkan-Drop-use-of-VK_RESULT_BEGIN_RANGE.patch \
-    file://fix-maybe-uninitialized-warnings-when-compiling-with-Os.patch \
-    file://avoid-including-sys-poll.h-directly.patch \
-    file://ensure-valid-sentinels-for-gst_structure_get-etc.patch \
 "
-SRCREV = "cf7f2d0125424ce0d63ddc7f1eadc9ef71d10db1"
+SRCREV = "227af57d23cb6b3564fc94446ab2c9fe8c8cff22"
 
 S = "${WORKDIR}/git"
 
@@ -42,7 +34,7 @@ PACKAGECONFIG_GL_imxpxp = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gl
 PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
-    ${@bb.utils.filter('DISTRO_FEATURES', 'directfb vulkan', d)} \
+    ${@bb.utils.filter('DISTRO_FEATURES', 'directfb', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
     ${PACKAGECONFIG_GL} \
     bz2 closedcaption curl dash dtls hls rsvg sbc smoothstreaming sndfile \
@@ -91,6 +83,7 @@ PACKAGECONFIG[smoothstreaming] = "-Dsmoothstreaming=enabled,-Dsmoothstreaming=di
 PACKAGECONFIG[sndfile]         = "-Dsndfile=enabled,-Dsndfile=disabled,libsndfile1"
 PACKAGECONFIG[srtp]            = "-Dsrtp=enabled,-Dsrtp=disabled,libsrtp"
 PACKAGECONFIG[tinyalsa]        = "-Dtinyalsa=enabled,-Dtinyalsa=disabled,tinyalsa"
+PACKAGECONFIG[tinycompress]    = "-Dtinycompress=enabled,-Dtinycompress=disabled,tinycompress"
 PACKAGECONFIG[ttml]            = "-Dttml=enabled,-Dttml=disabled,libxml2 pango cairo"
 PACKAGECONFIG[uvch264]         = "-Duvch264=enabled,-Duvch264=disabled,libusb1 libgudev"
 PACKAGECONFIG[voaacenc]        = "-Dvoaacenc=enabled,-Dvoaacenc=disabled,vo-aacenc"
@@ -101,9 +94,6 @@ PACKAGECONFIG[webp]            = "-Dwebp=enabled,-Dwebp=disabled,libwebp"
 PACKAGECONFIG[webrtc]          = "-Dwebrtc=enabled,-Dwebrtc=disabled,libnice"
 PACKAGECONFIG[webrtcdsp]       = "-Dwebrtcdsp=enabled,-Dwebrtcdsp=disabled,webrtc-audio-processing"
 PACKAGECONFIG[zbar]            = "-Dzbar=enabled,-Dzbar=disabled,zbar"
-
-# Following package config in not available in NXP fork:
-#PACKAGECONFIG[lcms2]           = "-Dcolormanagement=enabled,-Dcolormanagement=disabled,lcms"
 
 # these plugins currently have no corresponding library in OE-core or meta-openembedded:
 #   aom androidmedia applemedia bs2b chromaprint d3dvideosink
@@ -139,8 +129,6 @@ EXTRA_OEMESON += " \
     -Dmplex=disabled \
     -Dmsdk=disabled \
     -Dmusepack=disabled \
-    -Dnvdec=disabled \
-    -Dnvenc=disabled \
     -Dofa=disabled \
     -Dopenexr=disabled \
     -Dopenmpt=disabled \
@@ -150,7 +138,6 @@ EXTRA_OEMESON += " \
     -Dspandsp=disabled \
     -Dsrt=disabled \
     -Dteletext=disabled \
-    -Dvdpau=disabled \
     -Dwasapi=disabled \
     -Dwildmidi=disabled \
     -Dwinks=disabled \
@@ -168,6 +155,7 @@ ARM_INSTRUCTION_SET_armv5 = "arm"
 
 FILES_${PN}-freeverb += "${datadir}/gstreamer-1.0/presets/GstFreeverb.prs"
 FILES_${PN}-opencv += "${datadir}/gst-plugins-bad/1.0/opencv*"
+FILES_${PN}-transcode += "${datadir}/gstreamer-1.0/encoding-profiles"
 FILES_${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
 # include fragment shaders
 FILES_${PN}-opengl += "/usr/share/*.fs"
