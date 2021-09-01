@@ -1,4 +1,4 @@
-From cfbe756d55a303803805d3e8e3d3cf3b97866964 Mon Sep 17 00:00:00 2001
+From dec68918e07d6a7f4397b55b35dd5bed9c114ea9 Mon Sep 17 00:00:00 2001
 From: Viorel Suman <viorel.suman@nxp.com>
 Date: Mon, 9 Mar 2020 14:25:46 +0200
 Subject: [PATCH] add conf for iMX XCVR sound card
@@ -104,7 +104,7 @@ index 34fa5a3..70b9bab 100644
  if BUILD_ALISP
  cfg_files += aliases.alisp
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index 2f0a22a..e824145 100644
+index e41f89e..d9bfcd6 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
 @@ -60,6 +60,7 @@ VC4-HDMI cards.vc4-hdmi
@@ -113,5 +113,5 @@ index 2f0a22a..e824145 100644
  ak4458-audio cards.AK4458
 +imx-audio-xcvr cards.IMX-XCVR
  
- <confdir:ctl/default.conf>
  <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>

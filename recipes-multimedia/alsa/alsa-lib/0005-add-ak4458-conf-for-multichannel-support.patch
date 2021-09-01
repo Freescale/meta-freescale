@@ -1,7 +1,11 @@
-From d78b7e2b964c9713c2e9889f4ec85922528ba971 Mon Sep 17 00:00:00 2001
+From bbfa5f555f8d2c448c9f36fbea11ea3e32dcdcc6 Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <shengjiu.wang@nxp.com>
 Date: Wed, 31 Jan 2018 15:06:53 +0800
 Subject: [PATCH] add ak4458 conf for multichannel support
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -115,7 +119,7 @@ index fbf0697..34fa5a3 100644
  if BUILD_ALISP
  cfg_files += aliases.alisp
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index a9e6d76..2f0a22a 100644
+index 7a4f444..e41f89e 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
 @@ -59,6 +59,7 @@ pistachio cards.pistachio-card
@@ -124,5 +128,5 @@ index a9e6d76..2f0a22a 100644
  imx-hdmi-soc cards.IMX-HDMI
 +ak4458-audio cards.AK4458
  
- <confdir:ctl/default.conf>
  <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>

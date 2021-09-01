@@ -1,4 +1,4 @@
-From 09c1a959e7d007e00741606f69444c1f865a4beb Mon Sep 17 00:00:00 2001
+From 754e0c6112a181b30bd46aa13812f37db01c3387 Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <shengjiu.wang@freescale.com>
 Date: Tue, 10 May 2016 15:09:26 +0800
 Subject: [PATCH] pcm: Don't store the state for SND_PCM_STATE_SUSPENDED
@@ -21,7 +21,7 @@ Signed-off-by: Shengjiu Wang <shengjiu.wang@freescale.com>
  3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/pcm/pcm_dmix.c b/src/pcm/pcm_dmix.c
-index 608593f..3d068c7 100644
+index 5b7472d..e08e46f 100644
 --- a/src/pcm/pcm_dmix.c
 +++ b/src/pcm/pcm_dmix.c
 @@ -460,9 +460,9 @@ static snd_pcm_state_t snd_pcm_dmix_state(snd_pcm_t *pcm)
@@ -36,7 +36,7 @@ index 608593f..3d068c7 100644
  	case SND_PCM_STATE_XRUN:
  		if ((err = snd_pcm_direct_slave_recover(dmix)) < 0)
 diff --git a/src/pcm/pcm_dshare.c b/src/pcm/pcm_dshare.c
-index a918512..18071fb 100644
+index 8a67257..8ba61b4 100644
 --- a/src/pcm/pcm_dshare.c
 +++ b/src/pcm/pcm_dshare.c
 @@ -258,9 +258,9 @@ static snd_pcm_state_t snd_pcm_dshare_state(snd_pcm_t *pcm)
@@ -51,10 +51,10 @@ index a918512..18071fb 100644
  	case SND_PCM_STATE_XRUN:
  		if ((err = snd_pcm_direct_slave_recover(dshare)) < 0)
 diff --git a/src/pcm/pcm_dsnoop.c b/src/pcm/pcm_dsnoop.c
-index 2c3b9f4..3b711ab 100644
+index c6e8cd2..9610482 100644
 --- a/src/pcm/pcm_dsnoop.c
 +++ b/src/pcm/pcm_dsnoop.c
-@@ -209,9 +209,9 @@ static snd_pcm_state_t snd_pcm_dsnoop_state(snd_pcm_t *pcm)
+@@ -208,9 +208,9 @@ static snd_pcm_state_t snd_pcm_dsnoop_state(snd_pcm_t *pcm)
  	snd_pcm_state_t state;
  	state = snd_pcm_state(dsnoop->spcm);
  	switch (state) {

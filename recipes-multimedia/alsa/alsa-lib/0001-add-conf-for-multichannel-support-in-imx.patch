@@ -1,4 +1,4 @@
-From 49a7eac8e02c33cae8a168e6d22d9ff8aaf86d44 Mon Sep 17 00:00:00 2001
+From e6cea74cad98963d3b0b1c267d4988be4263215c Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <b02247@freescale.com>
 Date: Thu, 5 Jun 2014 17:37:47 +0800
 Subject: [PATCH] add conf for multichannel support in imx
@@ -205,7 +205,7 @@ index 00999f0..fbf0697 100644
  if BUILD_ALISP
  cfg_files += aliases.alisp
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index 7e352f7..a9e6d76 100644
+index 18a920f..7a4f444 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
 @@ -57,6 +57,8 @@ CMI8786 cards.CMI8788
@@ -215,5 +215,5 @@ index 7e352f7..a9e6d76 100644
 +imx-cs42888 cards.CS42888
 +imx-hdmi-soc cards.IMX-HDMI
  
- <confdir:ctl/default.conf>
  <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>
