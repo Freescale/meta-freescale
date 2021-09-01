@@ -1,0 +1,40 @@
+From a2892bf5db7520689fa9cb1d1589fa804bd9dc1a Mon Sep 17 00:00:00 2001
+From: Bing Song <bing.song@nxp.com>
+Date: Tue, 18 Aug 2020 15:26:51 +0800
+Subject: [PATCH] tinycompress: pass NULL buffer with 0 size to driver.
+
+The NULL buffer with 0 size to indecate driver drain input data with
+non-block mode. The defaul drain is block mode.
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Bing Song <bing.song@nxp.com>
+---
+ src/lib/compress.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/lib/compress.c b/src/lib/compress.c
+index bba4fcf..d66df0b 100644
+--- a/src/lib/compress.c
++++ b/src/lib/compress.c
+@@ -315,7 +315,8 @@ int compress_write(struct compress *compress, const void *buf, unsigned int size
+ 	fds.events = POLLOUT;
+ 
+ 	/*TODO: treat auto start here first */
+-	while (size) {
++	/* NULL buffer with 0 size for non-block drain */
++	do {
+ 		if (ioctl(compress->fd, SNDRV_COMPRESS_AVAIL, &avail))
+ 			return oops(compress, errno, "cannot get avail");
+ 
+@@ -357,7 +358,7 @@ int compress_write(struct compress *compress, const void *buf, unsigned int size
+ 		size -= written;
+ 		cbuf += written;
+ 		total += written;
+-	}
++	} while (size);
+ 	return total;
+ }
+ 
+-- 
+2.17.1
+
