@@ -1,0 +1,251 @@
+From 2912f8573cea25fbd38ac7a8b68af2ea6a05e599 Mon Sep 17 00:00:00 2001
+From: Zhang Peng <peng.zhang_8@nxp.com>
+Date: Wed, 28 Oct 2020 19:08:53 +0800
+Subject: [PATCH] cplay: Support aac streams
+
+Support run aac format streams for cplay.
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Zhang Peng <peng.zhang_8@nxp.com>
+---
+ src/utils/cplay.c | 210 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 210 insertions(+)
+
+diff --git a/src/utils/cplay.c b/src/utils/cplay.c
+index 8e3dcbb..2a1464a 100644
+--- a/src/utils/cplay.c
++++ b/src/utils/cplay.c
+@@ -245,6 +245,190 @@ static int parse_wav_header(FILE *file, unsigned int *num_channels, unsigned int
+ 	return 0;
+ }
+ 
++int find_adts_header(FILE *file, unsigned int *num_channels, unsigned int *sample_rate, unsigned int *format)
++{
++	int ret;
++	unsigned char buf[5];
++
++	ret = fread(buf, sizeof(buf), 1, file);
++	if (ret < 0) {
++		fprintf(stderr, "open file error: %d\n", ret);
++		return 0;
++	}
++	fseek(file, 0, SEEK_SET);
++
++	if ((buf[0] != 0xff) || (buf[1] & 0xf0 != 0xf0))
++		return 0;
++	/* mpeg id */
++	switch (buf[1]>>3 & 0x1) {
++	case 0x0:
++		*format = SND_AUDIOSTREAMFORMAT_MP4ADTS;
++		break;
++	case 0x1:
++		*format = SND_AUDIOSTREAMFORMAT_MP2ADTS;
++		break;
++	default:
++		fprintf(stderr, "can't find stream format\n");
++		break;
++	}
++	/* sample_rate */
++	switch (buf[2]>>2 & 0xf) {
++	case 0x0:
++		*sample_rate = 96000;
++		break;
++	case 0x1:
++		*sample_rate = 88200;
++		break;
++	case 0x2:
++		*sample_rate = 64000;
++		break;
++	case 0x3:
++		*sample_rate = 48000;
++		break;
++	case 0x4:
++		*sample_rate = 44100;
++		break;
++	case 0x5:
++		*sample_rate = 32000;
++		break;
++	case 0x6:
++		*sample_rate = 24000;
++		break;
++	case 0x7:
++		*sample_rate = 22050;
++		break;
++	case 0x8:
++		*sample_rate = 16000;
++		break;
++	case 0x9:
++		*sample_rate = 12000;
++		break;
++	case 0xa:
++		*sample_rate = 11025;
++		break;
++	case 0xb:
++		*sample_rate = 8000;
++		break;
++	case 0xc:
++		*sample_rate = 7350;
++		break;
++	default:
++		break;
++	}
++	/* channel */
++	switch (((buf[2]&0x1) << 2) | (buf[3]>>6)) {
++	case 1:
++		*num_channels = 1;
++		break;
++	case 2:
++		*num_channels = 2;
++		break;
++	case 3:
++		*num_channels = 3;
++		break;
++	case 4:
++		*num_channels = 4;
++		break;
++	case 5:
++		*num_channels = 5;
++		break;
++	case 6:
++		*num_channels = 6;
++		break;
++	case 7:
++		*num_channels = 7;
++		break;
++	default:
++		break;
++	}
++	return 1;
++}
++
++static const int aac_sample_rates[] = { 96000, 88200, 64000, 48000, 44100,
++  32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350
++};
++
++#define MAX_SR_NUM sizeof(aac_sample_rates)/sizeof(aac_sample_rates[0])
++
++static int get_sample_rate_from_index(int sr_index)
++{
++	if (sr_index >= 0 && sr_index < MAX_SR_NUM)
++		return aac_sample_rates[sr_index];
++
++	return 0;
++}
++
++int find_adif_header(FILE *file, unsigned int *num_channels, unsigned int *sample_rate, unsigned int *format)
++{
++	int ret;
++	unsigned char adif_id[4];
++	unsigned char adif_header[20];
++	int bitstream_type;
++	int bitrate;
++	int object_type;
++	int sr_index;
++	int skip_size = 0;
++
++	ret = fread(adif_id, sizeof(unsigned char), 4, file);
++	if (ret < 0) {
++		fprintf(stderr, "read data from file err: %d\n", ret);
++		return 0;
++	}
++	/* adif id */
++	if ((adif_id[0] != 0x41) || (adif_id[1] != 0x44) ||
++		(adif_id[2] != 0x49) || (adif_id[3] != 0x46))
++		return 0;
++
++	fread(adif_header, sizeof(unsigned char), 20, file);
++
++	/* copyright string */
++	if (adif_header[0] & 0x80)
++		skip_size = 9;
++
++	bitstream_type = adif_header[0 + skip_size] & 0x10;
++	bitrate =
++		 ((unsigned int) (adif_header[0 + skip_size] & 0x0f) << 19) |
++		 ((unsigned int) adif_header[1 + skip_size] << 11) |
++		 ((unsigned int) adif_header[2 + skip_size] << 3) |
++		 ((unsigned int) adif_header[3 + skip_size] & 0xe0);
++
++	if (bitstream_type == 0) {
++		object_type = ((adif_header[6 + skip_size] & 0x01) << 1) |
++			((adif_header[7 + skip_size] & 0x80) >> 7);
++		sr_index = (adif_header[7 + skip_size] & 0x78) >> 3;
++	}
++	/* VBR */
++	else {
++		object_type = (adif_header[4 + skip_size] & 0x18) >> 3;
++		sr_index = ((adif_header[4 + skip_size] & 0x07) << 1) |
++			((adif_header[5 + skip_size] & 0x80) >> 7);
++	}
++
++	/* sample rate */
++	*sample_rate = get_sample_rate_from_index(sr_index);
++
++	/* FIXME: assume channels is 2 */
++	*num_channels = 2;
++
++	*format = SND_AUDIOSTREAMFORMAT_ADIF;
++	fseek(file, 0, SEEK_SET);
++	return 1;
++}
++
++static int parse_aac_header(FILE *file, unsigned int *num_channels, unsigned int *sample_rate, unsigned int *format)
++{
++	if (find_adts_header(file, num_channels, sample_rate, format))
++		return 1;
++	else if (find_adif_header(file, num_channels, sample_rate, format))
++		return 1;
++	else {
++		fprintf(stderr, "can't find streams format\n");
++		return 0;
++	}
++
++	return 1;
++}
++
+ static int print_time(struct compress *compress)
+ {
+ 	unsigned int avail;
+@@ -513,6 +697,29 @@ void get_codec_pcm(FILE *file, struct compr_config *config,
+ 	codec->format = format;
+ }
+ 
++void get_codec_aac(FILE *file, struct compr_config *config,
++		struct snd_codec *codec)
++{
++	unsigned int channels, rate, format;
++
++	if (parse_aac_header(file, &channels, &rate, &format) == 0) {
++		fclose(file);
++		exit(EXIT_FAILURE);
++	};
++	fseek(file, 0, SEEK_SET);
++
++	codec->id = SND_AUDIOCODEC_AAC;
++	codec->ch_in = channels;
++	codec->ch_out = channels;
++	codec->sample_rate = rate;
++	codec->bit_rate = 0;
++	codec->rate_control = 0;
++	codec->profile = SND_AUDIOPROFILE_AAC;
++	codec->level = 0;
++	codec->ch_mode = 0;
++	codec->format = format;
++
++}
+ void play_samples(char *name, unsigned int card, unsigned int device,
+ 		unsigned long buffer_size, unsigned int frag,
+ 		unsigned long codec_id, int pause_count, int pause_block,
+@@ -544,6 +751,9 @@ void play_samples(char *name, unsigned int card, unsigned int device,
+ 	case SND_AUDIOCODEC_PCM:
+ 		get_codec_pcm(file, &config, &codec);
+ 		break;
++	case SND_AUDIOCODEC_AAC:
++		get_codec_aac(file, &config, &codec);
++		break;
+ 	default:
+ 		fprintf(stderr, "codec ID %ld is not supported\n", codec_id);
+ 		exit(EXIT_FAILURE);
+-- 
+2.17.1
+
