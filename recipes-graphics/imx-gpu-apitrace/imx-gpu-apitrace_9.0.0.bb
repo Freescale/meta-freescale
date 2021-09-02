@@ -4,7 +4,9 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
 DEPENDS = "imx-gpu-viv zlib libpng procps"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/apitrace-imx.git;protocol=https;branch=imx_9.0"
+SRC_URI = "git://source.codeaurora.org/external/imx/apitrace-imx.git;protocol=https;branch=imx_9.0 \
+           file://0001-dlsym-workaround-glibc-2.34-build-failure.patch \
+"
 SRCREV = "c50e6a954e44998f2e3793a8de863e961f8008c6"
 
 S = "${WORKDIR}/git"
@@ -44,6 +46,3 @@ FILES:${PN} += " \
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxgpu)"
-
-# see https://github.com/apitrace/apitrace/issues/756
-PNBLACKLIST[imx-gpu-apitrace] ?= "Upstream needs porting to glibc 2.34+"

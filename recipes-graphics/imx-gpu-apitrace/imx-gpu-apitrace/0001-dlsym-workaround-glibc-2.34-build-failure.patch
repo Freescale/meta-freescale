@@ -1,0 +1,33 @@
+From d11884c88eac803c174f759414d0162154450b6a Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.z@gmail.com>
+Date: Thu, 2 Sep 2021 09:43:33 +0000
+Subject: [PATCH] dlsym: workaround glibc 2.34 build failure
+
+As suggested in [1], upstream component does not have a solution for the
+issue, and therefore for glibc version >= 2.34 dlsym wrappers should be
+skipped.
+
+Link: [1]: https://github.com/apitrace/apitrace/issues/756
+
+Upstream-Status: Pending
+Signed-off-by: Andrey Zhizhikin <andrey.z@gmail.com>
+---
+ wrappers/dlsym.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wrappers/dlsym.cpp b/wrappers/dlsym.cpp
+index cdf5cfdb..4061afc4 100644
+--- a/wrappers/dlsym.cpp
++++ b/wrappers/dlsym.cpp
+@@ -34,7 +34,7 @@
+ #include "os.hpp"
+ 
+ 
+-#ifdef __GLIBC__
++#if defined(__GLIBC__) && !(__GLIBC__ == 2 && __GLIBC_MINOR__ >= 34)
+ 
+ 
+ #include <dlfcn.h>
+-- 
+2.17.1
+
