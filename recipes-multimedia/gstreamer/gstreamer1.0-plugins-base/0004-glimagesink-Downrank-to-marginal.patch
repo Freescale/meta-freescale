@@ -1,4 +1,4 @@
-From f18f1206ec44f4154e60546ecb82823f7a6569d7 Mon Sep 17 00:00:00 2001
+From b975be9c4630536ec1315773be29900371d21930 Mon Sep 17 00:00:00 2001
 From: Alexander Kanavin <alex.kanavin@gmail.com>
 Date: Thu, 24 Sep 2015 19:47:32 +0300
 Subject: [PATCH] glimagesink: Downrank to marginal

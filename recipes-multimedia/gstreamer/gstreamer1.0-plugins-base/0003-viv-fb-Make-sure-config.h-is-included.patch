@@ -1,4 +1,4 @@
-From 616cf194dfd26818ed7b776321582b8e0ff9b3f1 Mon Sep 17 00:00:00 2001
+From 70a702af3a3a4afcadbc53d61c4c45f31f96b2cc Mon Sep 17 00:00:00 2001
 From: Carlos Rafael Giani <crg7475@mailbox.org>
 Date: Tue, 21 May 2019 14:01:11 +0200
 Subject: [PATCH] viv-fb: Make sure config.h is included

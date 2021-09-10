@@ -1,0 +1,146 @@
+From 6f778c21ee357a662cdd758cff578a3e4b85eedf Mon Sep 17 00:00:00 2001
+From: Zhang Peng <peng.zhang_8@nxp.com>
+Date: Tue, 4 Aug 2020 15:29:29 +0800
+Subject: [PATCH] cplay: Add pause feature
+
+Add option: -p pause
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Zhang Peng <peng.zhang_8@nxp.com>
+---
+ src/utils/cplay.c | 56 +++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 52 insertions(+), 4 deletions(-)
+
+diff --git a/src/utils/cplay.c b/src/utils/cplay.c
+index 8882f4d..8e3dcbb 100644
+--- a/src/utils/cplay.c
++++ b/src/utils/cplay.c
+@@ -117,6 +117,9 @@ static void usage(void)
+ 		"-f\tfragments\n\n"
+ 		"-v\tverbose mode\n"
+ 		"-h\tPrints this help list\n\n"
++		"-p\tpause\n"
++		"-m\tpause blocks\n"
++		"-n\tpause time duration\n"
+ 		"Example:\n"
+ 		"\tcplay -c 1 -d 2 test.mp3\n"
+ 		"\tcplay -f 5 test.mp3\n\n"
+@@ -133,7 +136,8 @@ static void usage(void)
+ 
+ void play_samples(char *name, unsigned int card, unsigned int device,
+ 		unsigned long buffer_size, unsigned int frag,
+-		unsigned long codec_id);
++		unsigned long codec_id, int pause_count, int pause_block,
++		int pause_duration);
+ 
+ struct mp3_header {
+ 	uint16_t sync;
+@@ -262,12 +266,15 @@ int main(int argc, char **argv)
+ 	int c, i;
+ 	unsigned int card = 0, device = 0, frag = 0;
+ 	unsigned int codec_id = SND_AUDIOCODEC_MP3;
++	int pause_count = 0;
++	int pause_block = 6;
++	int pause_duration = 10;
+ 
+ 	if (argc < 2)
+ 		usage();
+ 
+ 	verbose = 0;
+-	while ((c = getopt(argc, argv, "hvb:f:c:d:I:")) != -1) {
++	while ((c = getopt(argc, argv, "hvb:f:c:d:I:p:m:n:")) != -1) {
+ 		switch (c) {
+ 		case 'h':
+ 			usage();
+@@ -306,6 +313,23 @@ int main(int argc, char **argv)
+ 		case 'v':
+ 			verbose = 1;
+ 			break;
++		case 'p':
++			pause_count = strtol(optarg, NULL, 10);
++			break;
++		case 'm':
++			pause_block = strtol(optarg, NULL, 10);
++			if (pause_duration < 0) {
++				printf("Set wrong paramter! Set duration default 6.\n");
++				pause_duration = 6;
++			}
++			break;
++		case 'n':
++			pause_duration = strtol(optarg, NULL, 10);
++			if (pause_duration < 0) {
++				printf("Set wrong paramter! Set duration default 10.\n");
++				pause_duration = 10;
++			}
++			break;
+ 		default:
+ 			exit(EXIT_FAILURE);
+ 		}
+@@ -315,7 +339,7 @@ int main(int argc, char **argv)
+ 
+ 	file = argv[optind];
+ 
+-	play_samples(file, card, device, buffer_size, frag, codec_id);
++	play_samples(file, card, device, buffer_size, frag, codec_id, pause_count, pause_block, pause_duration);
+ 
+ 	fprintf(stderr, "Finish Playing.... Close Normally\n");
+ 	exit(EXIT_SUCCESS);
+@@ -491,7 +515,8 @@ void get_codec_pcm(FILE *file, struct compr_config *config,
+ 
+ void play_samples(char *name, unsigned int card, unsigned int device,
+ 		unsigned long buffer_size, unsigned int frag,
+-		unsigned long codec_id)
++		unsigned long codec_id, int pause_count, int pause_block,
++		int pause_duration)
+ {
+ 	struct compr_config config;
+ 	struct snd_codec codec;
+@@ -499,6 +524,7 @@ void play_samples(char *name, unsigned int card, unsigned int device,
+ 	FILE *file;
+ 	char *buffer;
+ 	int size, num_read, wrote;
++	int write_count = 0;
+ 
+ 	if (verbose)
+ 		printf("%s: entry\n", __func__);
+@@ -574,6 +600,13 @@ void play_samples(char *name, unsigned int card, unsigned int device,
+ 	if (verbose)
+ 		printf("%s: You should hear audio NOW!!!\n", __func__);
+ 
++	if (pause_count > 0) {
++		printf("sleep...\n");
++		compress_pause(compress);
++		sleep(pause_duration);
++		compress_resume(compress);
++	}
++
+ 	do {
+ 		num_read = fread(buffer, 1, size, file);
+ 		if (num_read > 0) {
+@@ -592,8 +625,23 @@ void play_samples(char *name, unsigned int card, unsigned int device,
+ 				printf("%s: wrote %d\n", __func__, wrote);
+ 			}
+ 		}
++		write_count++;
++		if ((pause_count > 0) && (write_count % pause_block == 0)) {
++				printf("pause...\n");
++				compress_pause(compress);
++				sleep(pause_duration);
++				printf("pause release...\n");
++				compress_resume(compress);
++				pause_count--;
++		}
+ 	} while (num_read > 0);
+ 
++	if (pause_count > 0) {
++		compress_pause(compress);
++		sleep(5);
++		compress_resume(compress);
++	}
++
+ 	if (verbose)
+ 		printf("%s: exit success\n", __func__);
+ 	/* issue drain if it supports */
+-- 
+2.17.1
+

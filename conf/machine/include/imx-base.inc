@@ -334,11 +334,13 @@ MACHINE_GSTREAMER_1_0_PLUGIN:mx8mq  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qm  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qxp ?= "imx-gst1.0-plugin"
 
-PREFERRED_VERSION_gstreamer1.0:mx8 ?= "1.16.2.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8 ?= "1.16.2.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good:mx8 ?= "1.16.3.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8 ?= "1.16.3.imx"
-PREFERRED_VERSION_gstreamer1.0-libav:mx8 ?= "1.16.0"
+PREFERRED_VERSION_gstreamer1.0:mx8              ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8 ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good:mx8 ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8  ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8 ?= "1.18.0"
+PREFERRED_VERSION_gstreamer1.0-libav:mx8        ?= "1.18.0"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8  ?= "1.18.0"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
