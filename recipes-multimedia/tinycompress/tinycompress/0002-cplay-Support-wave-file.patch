@@ -15,14 +15,13 @@ Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
  2 files changed, 158 insertions(+)
  create mode 100644 include/tinycompress/wave_formats.h
 
-diff --git a/include/tinycompress/wave_formats.h b/include/tinycompress/wave_formats.h
-new file mode 100644
-index 000000000000..4e2e009206cf
 --- /dev/null
 +++ b/include/tinycompress/wave_formats.h
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,53 @@
 +#ifndef WAVE_FORMATS_H
 +#define WAVE_FORMATS_H		1
++
++#include <sys/types.h>
 +
 +#define COMPOSE_ID(a,b,c,d)	((a) | ((b)<<8) | ((c)<<16) | ((d)<<24))
 +
@@ -72,8 +71,6 @@ index 000000000000..4e2e009206cf
 +
 +
 +#endif				/* FORMATS */
-diff --git a/src/utils/cplay.c b/src/utils/cplay.c
-index 5b749419e731..8882f4d9746d 100644
 --- a/src/utils/cplay.c
 +++ b/src/utils/cplay.c
 @@ -1,4 +1,6 @@
@@ -92,7 +89,7 @@ index 5b749419e731..8882f4d9746d 100644
  
  static int verbose;
  static const unsigned int DEFAULT_CODEC_ID = SND_AUDIOCODEC_PCM;
-@@ -166,6 +170,77 @@ static int parse_mp3_header(struct mp3_header *header, unsigned int *num_channel
+@@ -166,6 +170,77 @@ static int parse_mp3_header(struct mp3_h
  	return 0;
  }
  
@@ -170,7 +167,7 @@ index 5b749419e731..8882f4d9746d 100644
  static int print_time(struct compress *compress)
  {
  	unsigned int avail;
-@@ -385,6 +460,35 @@ void get_codec_iec(FILE *file, struct compr_config *config,
+@@ -385,6 +460,35 @@ void get_codec_iec(FILE *file, struct co
  	codec->format = 0;
  }
  
@@ -206,7 +203,7 @@ index 5b749419e731..8882f4d9746d 100644
  void play_samples(char *name, unsigned int card, unsigned int device,
  		unsigned long buffer_size, unsigned int frag,
  		unsigned long codec_id)
-@@ -411,6 +515,9 @@ void play_samples(char *name, unsigned int card, unsigned int device,
+@@ -411,6 +515,9 @@ void play_samples(char *name, unsigned i
  	case SND_AUDIOCODEC_IEC61937:
  		get_codec_iec(file, &config, &codec);
  		break;
@@ -216,6 +213,3 @@ index 5b749419e731..8882f4d9746d 100644
  	default:
  		fprintf(stderr, "codec ID %ld is not supported\n", codec_id);
  		exit(EXIT_FAILURE);
--- 
-2.27.0
-
