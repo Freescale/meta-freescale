@@ -3,11 +3,12 @@ MACHINEOVERRIDES =. "imx-boot-container:mx8:mx8m:mx8mp:"
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa53.inc
 
-MACHINE_FEATURES += "pci wifi bluetooth jailhouse"
+MACHINE_FEATURES += "pci wifi bluetooth"
 
+# NXP BSP can consume proprietary jailhouse and Marvell drivers
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
 # a full support for it yet.
-MACHINE_FEATURES_append_use-nxp-bsp = " optee mrvl8997"
+MACHINE_FEATURES_append_use-nxp-bsp = " optee jailhouse mrvl8997"
 
 # Mainline kernel contains only one DTB file for
 # imx8mpevk machine

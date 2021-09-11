@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v22 April 2021
+LA_OPT_NXP_Software_License v24 June 2021
 
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
@@ -96,7 +96,7 @@ in combination with a NXP Product.
 You may not distribute or sublicense the Licensed Software to others under the
 license granted in this Section 2.2.
 
-You may demonstrate the Licensed Software to your direct costumers as part of
+You may demonstrate the Licensed Software to your direct customers as part of
 an Authorized System so long as such demonstration is directly controlled by
 you and without prior approval by NXP; however, to all other third parties only
 if NXP has provided its advance, written approval (e.g. email approval) of your
@@ -405,14 +405,14 @@ examination or audit.
 Agreement will be made in writing, and will be effective when received at the
 following addresses:
 
-          NXP:          NXP B.V.
-                        High Tech Campus 60
-                        5656 AG Eindhoven
-                        The Netherlands
+          NXP:      NXP B.V.
+                    High Tech Campus 60
+                    5656 AG Eindhoven
+                    The Netherlands
 
-                        ATTN: Legal Department
+                    ATTN: Legal Department
 
-          You:          The address provided at registration will be used.
+          You:      The address provided at registration will be used.
 
 23.        RELATIONSHIP OF THE PARTIES.     The parties are independent
 contractors. Nothing in this Agreement will be construed to create any
@@ -475,6 +475,9 @@ or embedded within, Authorized Systems that include an Amphion Video Decoder.
 Aquantia Corp.: You may use Aquantia's API binaries solely to flash the API
 software to an NXP Product which mates with an Aquantia device.
 
+Argus Cyber Security: The Argus software may only be used in object code and
+only for evaluation and demonstration purposes.
+
 Atheros: Use of Atheros software is limited to evaluation and demonstration
 only.  Permitted distributions must be similarly limited. Further rights must
 be obtained directly from Atheros.
@@ -486,8 +489,11 @@ Au-Zone Technologies: eIQ Portal, Model Tool, DeepViewRT and ModelRunner are
 distributed by NXP under license from Au-Zone Technologies.  Your use of the
 Licensed Software, examples and related documentation is subject to the
 following:
+
 (1)          Use of Software is limited to Authorized System only
+
 (2)          In no event may Licensee Sublicense OR distribute the Software
+
 (3)          AU-ZONE TECHNOLOGIES SHALL NOT BE LIABLE FOR USE OF LICENSED
 SOFTWARE IN CRITICAL APPLICATIONS BY LICENSEE
 
@@ -524,6 +530,14 @@ rights must be obtained directly from Crank Software Inc.
 Cypress Semiconductor Corporation: WWD RTOS source code may only be used in
 accordance with the Cypress IOT Community License Agreement obtained directly
 from Cypress Semiconductor Corporation.
+
+Elektrobit Automotive GmbH (“EB”): EB software must be used consistent with
+the EB License Terms and Conditions, Version 1.4 (Dec 2019) found here:
+https://www.elektrobit.com/legal-notice/ .  Licensee is only granted an
+evaluation license for the EB software, defined as license to use the EB
+software internally for own evaluation purposes, limited to three (3) months.
+Production deployment of the EB software using this license is prohibited. See
+additionally Section 2.1.1 EB EULA.
 
 Embedded Systems Academy GmbH (EmSA):  Any use of Micro CANopen Plus is subject
 to the acceptance of the license conditions described in the LICENSE.INFO file

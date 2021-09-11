@@ -1,6 +1,6 @@
 # Copyright (C) 2012-2016 O.S. Systems Software LTDA.
 # Copyright (C) 2013-2016 Freescale Semiconductor
-# Copyright (C) 2017-2019 NXP
+# Copyright (C) 2017-2021 NXP
 
 SUMMARY = "Test programs for i.MX BSP"
 DESCRIPTION = "Unit tests for the i.MX BSP"
@@ -16,12 +16,12 @@ DEPENDS_append_imxvpu = " virtual/imxvpu"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "imx_5.4.70_2.3.0"
+SRCBRANCH = "lf-5.10.y_2.0.0"
 SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://memtool_profile \
 "
-SRCREV = "90fd7168fe5f15de9b2b1992a719024fc73a185a"
+SRCREV = "e55c83b939dbb1989181f48b2b3f3e32f7b5b380"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers

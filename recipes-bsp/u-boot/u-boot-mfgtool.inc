@@ -17,5 +17,5 @@ UBOOT_CONFIG = "mfgtool"
 # Add 'mfgtool' suffix
 UBOOT_IMAGE = "u-boot-${MACHINE}-mfgtool-${PV}-${PR}.${UBOOT_SUFFIX}"
 UBOOT_SYMLINK = "u-boot-${MACHINE}-mfgtool.${UBOOT_SUFFIX}"
-SPL_IMAGE = "${SPL_BINARY}-${MACHINE}-mfgtool-${PV}-${PR}"
-SPL_SYMLINK = "${SPL_BINARY}-mfgtool-${MACHINE}"
+SPL_IMAGE = "${SPL_BINARYNAME}-${MACHINE}-mfgtool-${PV}-${PR}"
+SPL_SYMLINK = "${SPL_BINARYNAME}-mfgtool-${MACHINE}"

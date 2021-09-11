@@ -1,12 +1,12 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
-# Copyright 2017-2020 NXP
+# Copyright 2017-2021 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=a632fefd1c359980434f9389833cab3a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=417b82f17fc02b88125331ed312f6f1b"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -82,13 +82,11 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libvivante-dri-imx \
 	libvsc-imx \
 	${IMX_PACKAGES_GBM} \
-	libwayland-viv-imx libwayland-viv-imx-dev \
-	libgc-wayland-protocol-imx libgc-wayland-protocol-imx-dev \
 	imx-gpu-viv-tools \
 	imx-gpu-viv-demos \
 	libvulkan-imx libvulkan-imx-dev \
 	libopenvx-imx libopenvx-imx-dev \
-	libnn-imx libnn-imx-dev \
+	libnn-imx \
 "
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
@@ -99,10 +97,11 @@ python __anonymous () {
 USE_X11 = "${@bb.utils.contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
 USE_WL = "${@bb.utils.contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
 
-# Inhibit warnings about files being stripped.
-INHIBIT_PACKAGE_STRIP = "1"
+# The packaged binaries have been stripped of debug info, so disable
+# operations accordingly.
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-INSANE_SKIP_${BPN} += "already-stripped"
+INHIBIT_PACKAGE_STRIP = "1"
+INHIBIT_SYSROOT_STRIP = "1"
 
 # FIXME: The provided binary doesn't provide soname. If in future BSP
 # release the libraries are fixed, we can drop this hack.
@@ -238,12 +237,6 @@ do_install () {
         rm -f ${D}${includedir}/GLES3/${header}
     done
 
-    # skip packaging wayland libraries if no support is requested
-    if [ "${USE_WL}" = "no" ]; then
-        find ${D}${libdir} -name "libgc_wayland_protocol.*" -exec rm '{}' ';'
-        find ${D}${libdir} -name "libwayland-viv.*" -exec rm '{}' ';'
-    fi
-
     # FIXME: MX6SL does not have 3D support; hack it for now
     if [ "${IS_MX6SL}" = "1" ]; then
         rm -rf ${D}${libdir}/libCLC* ${D}${includedir}/CL \
@@ -272,7 +265,7 @@ do_install () {
 
 ALLOW_EMPTY_${PN} = "1"
 
-FILES_libclc-imx = "${libdir}/libCLC${SOLIBS}"
+FILES_libclc-imx = "${libdir}/libCLC${SOLIBS} ${includedir}/CL/cl_viv_vx_ext.h"
 FILES_libclc-imx-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 
 # libEGL.so is used by some demo apps from Freescale
@@ -347,21 +340,11 @@ FILES_libvdk-imx-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
 FILES_libvivante-dri-imx = "${libdir}/dri/vivante_dri.so"
 RDEPENDS_libvivante-dri-imx = "libdrm"
 
-INSANE_SKIP_libwayland-viv-imx += "dev-so"
-FILES_libwayland-viv-imx =  "${libdir}/libwayland-viv${REALSOLIBS}  ${libdir}/libwayland-viv${SOLIBS}"
-FILES_libwayland-viv-imx-dev = "${includedir}/wayland-viv ${libdir})/libwayland-viv${SOLIBSDEV} ${libdir}/pkgconfig/wayland-viv.pc"
-RPROVIDES_libwayland-viv-imx += "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'xf86-video-imx-vivante', '', d)}"
-
-INSANE_SKIP_libgc-wayland-protocol-imx += "dev-so"
-FILES_libgc-wayland-protocol-imx = "${libdir}/libgc_wayland_protocol${REALSOLIBS} ${libdir}/libgc_wayland_protocol${SOLIBS}"
-FILES_libgc-wayland-protocol-imx-dev = "${libdir}/libgc_wayland_protocol${SOLIBSDEV} ${libdir}/pkgconfig/gc_wayland_protocol.pc"
-
 FILES_imx-gpu-viv-tools = "${bindir}/gmem_info"
 
 FILES_imx-gpu-viv-demos = "/opt"
 INSANE_SKIP_imx-gpu-viv-demos += "rpaths dev-deps"
 
-FILES_libnn-imx = "${libdir}/libNN*${SOLIBS} ${libdir}/libnn*${SOLIBS} ${libdir}/libneuralnetworks${SOLIBS}"
-FILES_libnn-imx-dev = "${includedir}/nnrt"
+FILES_libnn-imx = "${libdir}/libNN*${SOLIBS}"
 
 # COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx8)"

@@ -1,0 +1,132 @@
+From 2498f6712c3b551c4d8104628aff78246b5cd6c8 Mon Sep 17 00:00:00 2001
+From: Eric Anholt <eric@anholt.net>
+Date: Tue, 26 Mar 2019 15:58:59 -0700
+Subject: [PATCH 5/8] glamor: Stop trying to store the pixmap's "format" in
+ glamor_pixmap_fbo.
+
+"format" is a bit of a confused term (internalformat vs GL format),
+and all we really needed was "is this GL_RED?"
+
+Upstream-Status: Backport
+Signed-off-by: Eric Anholt <eric@anholt.net>
+---
+ glamor/glamor.c          |  3 +--
+ glamor/glamor_fbo.c      |  7 ++++---
+ glamor/glamor_priv.h     | 13 ++-----------
+ glamor/glamor_render.c   |  2 +-
+ glamor/glamor_transfer.c |  2 +-
+ 5 files changed, 9 insertions(+), 18 deletions(-)
+
+diff --git a/glamor/glamor.c b/glamor/glamor.c
+index 3e9cf284c..c36b6ea74 100644
+--- a/glamor/glamor.c
++++ b/glamor/glamor.c
+@@ -184,8 +184,7 @@ glamor_bind_texture(glamor_screen_private *glamor_priv, GLenum texture,
+     /* Is the operand a GL_RED fbo?
+      */
+ 
+-    if (glamor_fbo_red_is_alpha(glamor_priv, fbo)) {
+-
++    if (fbo->is_red) {
+         /* If destination is also GL_RED, then preserve the bits in
+          * the R channel */
+ 
+diff --git a/glamor/glamor_fbo.c b/glamor/glamor_fbo.c
+index f939a6c2f..58eb97bf4 100644
+--- a/glamor/glamor_fbo.c
++++ b/glamor/glamor_fbo.c
+@@ -95,7 +95,7 @@ glamor_pixmap_ensure_fb(glamor_screen_private *glamor_priv,
+ 
+ glamor_pixmap_fbo *
+ glamor_create_fbo_from_tex(glamor_screen_private *glamor_priv,
+-                           int w, int h, GLenum format, GLint tex, int flag)
++                           int w, int h, Bool is_red, GLint tex, int flag)
+ {
+     glamor_pixmap_fbo *fbo;
+ 
+@@ -106,7 +106,7 @@ glamor_create_fbo_from_tex(glamor_screen_private *glamor_priv,
+     fbo->tex = tex;
+     fbo->width = w;
+     fbo->height = h;
+-    fbo->format = format;
++    fbo->is_red = is_red;
+ 
+     if (flag != GLAMOR_CREATE_FBO_NO_FBO) {
+         if (glamor_pixmap_ensure_fb(glamor_priv, fbo) != 0) {
+@@ -163,7 +163,8 @@ glamor_create_fbo(glamor_screen_private *glamor_priv,
+     if (!tex) /* Texture creation failed due to GL_OUT_OF_MEMORY */
+         return NULL;
+ 
+-    return glamor_create_fbo_from_tex(glamor_priv, w, h, format, tex, flag);
++    return glamor_create_fbo_from_tex(glamor_priv, w, h, format == GL_RED,
++                                      tex, flag);
+ }
+ 
+ /**
+diff --git a/glamor/glamor_priv.h b/glamor/glamor_priv.h
+index a14aaf624..e70d349da 100644
+--- a/glamor/glamor_priv.h
++++ b/glamor/glamor_priv.h
+@@ -317,8 +317,7 @@ typedef struct glamor_pixmap_fbo {
+     GLuint fb; /**< GL FBO name */
+     int width; /**< width in pixels */
+     int height; /**< height in pixels */
+-    GLenum format; /**< GL format used to create the texture. */
+-    GLenum type; /**< GL type used to create the texture. */
++    Bool is_red;
+ } glamor_pixmap_fbo;
+ 
+ typedef struct glamor_pixmap_clipped_regions {
+@@ -533,7 +532,7 @@ glamor_pixmap_fbo *glamor_pixmap_detach_fbo(glamor_pixmap_private *
+ void glamor_pixmap_attach_fbo(PixmapPtr pixmap, glamor_pixmap_fbo *fbo);
+ glamor_pixmap_fbo *glamor_create_fbo_from_tex(glamor_screen_private *
+                                               glamor_priv, int w, int h,
+-                                              GLenum format, GLint tex,
++                                              Bool is_red, GLint tex,
+                                               int flag);
+ glamor_pixmap_fbo *glamor_create_fbo(glamor_screen_private *glamor_priv, int w,
+                                      int h, GLenum format, int flag);
+@@ -549,14 +548,6 @@ static inline Bool glamor_picture_is_alpha(PicturePtr picture)
+     return picture->format == PICT_a1 || picture->format == PICT_a8;
+ }
+ 
+-/* Return whether 'fbo' is storing alpha bits in the red channel */
+-static inline Bool
+-glamor_fbo_red_is_alpha(glamor_screen_private *glamor_priv, glamor_pixmap_fbo *fbo)
+-{
+-    /* True when the format is GL_RED (that can only happen when our one channel format is GL_RED */
+-    return fbo->format == GL_RED;
+-}
+-
+ /* Return whether 'picture' is storing alpha bits in the red channel */
+ static inline Bool
+ glamor_picture_red_is_alpha(PicturePtr picture)
+diff --git a/glamor/glamor_render.c b/glamor/glamor_render.c
+index d5737018f..6db6bfbc3 100644
+--- a/glamor/glamor_render.c
++++ b/glamor/glamor_render.c
+@@ -529,7 +529,7 @@ glamor_set_composite_texture(glamor_screen_private *glamor_priv, int unit,
+      * sometimes get zero bits in the R channel, which is harmless.
+      */
+     glamor_bind_texture(glamor_priv, GL_TEXTURE0 + unit, fbo,
+-                        glamor_fbo_red_is_alpha(glamor_priv, dest_priv->fbo));
++                        dest_priv->fbo->is_red);
+     repeat_type = picture->repeatType;
+     switch (picture->repeatType) {
+     case RepeatNone:
+diff --git a/glamor/glamor_transfer.c b/glamor/glamor_transfer.c
+index 421ed3a5f..215752d7b 100644
+--- a/glamor/glamor_transfer.c
++++ b/glamor/glamor_transfer.c
+@@ -40,7 +40,7 @@ glamor_format_for_pixmap(PixmapPtr pixmap, GLenum *format, GLenum *type)
+         break;
+     case 16:
+         if (priv->is_cbcr) {
+-          *format = priv->fbo->format;
++          *format = GL_RG;
+           *type = GL_UNSIGNED_BYTE;
+         } else {
+           *format = GL_RGB;
+-- 
+2.17.1
+

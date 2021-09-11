@@ -1,0 +1,221 @@
+From 4d4bc0a958fe254531920095fbabc241aad88113 Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
+Date: Tue, 28 Jul 2020 13:00:36 +0800
+Subject: [PATCH] cplay: Support wave file
+
+The supported format is mono/stereo, S16_LE/S32_LE, 8kHz-192kHz.
+Command is:
+cplay  -c x -I PCM test.wav
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ include/tinycompress/wave_formats.h |  51 +++++++++++++
+ src/utils/cplay.c                   | 107 ++++++++++++++++++++++++++++
+ 2 files changed, 158 insertions(+)
+ create mode 100644 include/tinycompress/wave_formats.h
+
+diff --git a/include/tinycompress/wave_formats.h b/include/tinycompress/wave_formats.h
+new file mode 100644
+index 000000000000..4e2e009206cf
+--- /dev/null
++++ b/include/tinycompress/wave_formats.h
+@@ -0,0 +1,51 @@
++#ifndef WAVE_FORMATS_H
++#define WAVE_FORMATS_H		1
++
++#define COMPOSE_ID(a,b,c,d)	((a) | ((b)<<8) | ((c)<<16) | ((d)<<24))
++
++#define WAV_RIFF		COMPOSE_ID('R','I','F','F')
++#define WAV_RIFX		COMPOSE_ID('R','I','F','X')
++#define WAV_WAVE		COMPOSE_ID('W','A','V','E')
++#define WAV_FMT			COMPOSE_ID('f','m','t',' ')
++#define WAV_DATA		COMPOSE_ID('d','a','t','a')
++
++/* WAVE fmt block constants from Microsoft mmreg.h header */
++#define WAV_FMT_PCM             0x0001
++#define WAV_FMT_IEEE_FLOAT      0x0003
++#define WAV_FMT_DOLBY_AC3_SPDIF 0x0092
++#define WAV_FMT_EXTENSIBLE      0xfffe
++
++/* Used with WAV_FMT_EXTENSIBLE format */
++#define WAV_GUID_TAG		"\x00\x00\x00\x00\x10\x00\x80\x00\x00\xAA\x00\x38\x9B\x71"
++
++typedef struct {
++	u_int magic;		/* 'RIFF' */
++	u_int length;		/* filelen */
++	u_int type;		/* 'WAVE' */
++} WaveHeader;
++
++typedef struct {
++	u_short format;		/* see WAV_FMT_* */
++	u_short channels;
++	u_int sample_fq;	/* frequence of sample */
++	u_int byte_p_sec;
++	u_short byte_p_spl;	/* samplesize; 1 or 2 bytes */
++	u_short bit_p_spl;	/* 8, 12 or 16 bit */
++} WaveFmtBody;
++
++typedef struct {
++	WaveFmtBody format;
++	u_short ext_size;
++	u_short bit_p_spl;
++	u_int channel_mask;
++	u_short guid_format;	/* WAV_FMT_* */
++	u_char guid_tag[14];	/* WAV_GUID_TAG */
++} WaveFmtExtensibleBody;
++
++typedef struct {
++	u_int type;		/* 'data' */
++	u_int length;		/* samplecount */
++} WaveChunkHeader;
++
++
++#endif				/* FORMATS */
+diff --git a/src/utils/cplay.c b/src/utils/cplay.c
+index 5b749419e731..8882f4d9746d 100644
+--- a/src/utils/cplay.c
++++ b/src/utils/cplay.c
+@@ -1,4 +1,6 @@
+ /*
++ * Copyright 2020 NXP
++ *
+  * This file is provided under a dual BSD/LGPLv2.1 license.  When using or
+  * redistributing this file, you may do so under either license.
+  *
+@@ -73,6 +75,8 @@
+ #include "tinycompress/tinycompress.h"
+ #include "tinycompress/tinymp3.h"
+ #include "tinycompress/id3_tag_decode.h"
++#include "tinycompress/wave_formats.h"
++#include <alsa/asoundlib.h>
+ 
+ static int verbose;
+ static const unsigned int DEFAULT_CODEC_ID = SND_AUDIOCODEC_PCM;
+@@ -166,6 +170,77 @@ static int parse_mp3_header(struct mp3_header *header, unsigned int *num_channel
+ 	return 0;
+ }
+ 
++static int parse_wav_header(FILE *file, unsigned int *num_channels, unsigned int *sample_rate,
++		      unsigned int *format) {
++	WaveHeader wave_header;
++	WaveChunkHeader chunk_header;
++	WaveFmtBody fmt_body;
++	int more_chunks = 1;
++
++	fread(&wave_header, sizeof(WaveHeader), 1, file);
++	if ((wave_header.magic != WAV_RIFF) ||
++	    (wave_header.type != WAV_WAVE)) {
++		fprintf(stderr, "Error: it is not a riff/wave file\n");
++		return -1;
++	}
++
++	do {
++		fread(&chunk_header, sizeof(WaveChunkHeader), 1, file);
++		switch (chunk_header.type) {
++		case WAV_FMT:
++			fread(&fmt_body, sizeof(WaveFmtBody), 1, file);
++			/* If the format header is larger, skip the rest */
++			if (chunk_header.length > sizeof(WaveFmtBody))
++				fseek(file, chunk_header.length - sizeof(WaveFmtBody), SEEK_CUR);
++
++			*num_channels = fmt_body.channels;
++			*sample_rate = fmt_body.sample_fq;
++
++			switch (fmt_body.bit_p_spl) {
++			case 8:
++				*format = SND_PCM_FORMAT_U8;
++				break;
++			case 16:
++				*format = SND_PCM_FORMAT_S16_LE;
++				break;
++			case 24:
++				switch (fmt_body.byte_p_spl / fmt_body.channels) {
++				case 3:
++					*format = SND_PCM_FORMAT_S24_3LE;
++					break;
++				case 4:
++					*format = SND_PCM_FORMAT_S24_LE;
++					break;
++				default:
++					fprintf(stderr, "format error\n");
++					return -1;
++				}
++				break;
++			case 32:
++				if (fmt_body.format == WAV_FMT_PCM) {
++					*format = SND_PCM_FORMAT_S32_LE;
++				} else if (fmt_body.format == WAV_FMT_IEEE_FLOAT) {
++					*format = SND_PCM_FORMAT_FLOAT_LE;
++				}
++				break;
++			default:
++				fprintf(stderr, "format error\n");
++				return -1;
++			}
++			break;
++		case WAV_DATA:
++			/* Stop looking for chunks */
++			more_chunks = 0;
++			break;
++		default:
++			/* Unknown chunk, skip bytes */
++			fseek(file, chunk_header.length, SEEK_CUR);
++		}
++	} while (more_chunks);
++
++	return 0;
++}
++
+ static int print_time(struct compress *compress)
+ {
+ 	unsigned int avail;
+@@ -385,6 +460,35 @@ void get_codec_iec(FILE *file, struct compr_config *config,
+ 	codec->format = 0;
+ }
+ 
++void get_codec_pcm(FILE *file, struct compr_config *config,
++		struct snd_codec *codec)
++{
++	unsigned int channels, rate, format;
++
++	if (parse_wav_header(file, &channels, &rate, &format) == -1) {
++		fclose(file);
++		exit(EXIT_FAILURE);
++	}
++
++	if (channels > 2 || (format != SND_PCM_FORMAT_S16_LE && format != SND_PCM_FORMAT_S32_LE) ||
++	    rate > 192000) {
++		fprintf(stderr, "unsupported wave file\n");
++		fclose(file);
++		exit(EXIT_FAILURE);
++	}
++
++	codec->id = SND_AUDIOCODEC_PCM;
++	codec->ch_in = channels;
++	codec->ch_out = channels;
++	codec->sample_rate = rate;
++	codec->bit_rate = 0;
++	codec->rate_control = 0;
++	codec->profile = SND_AUDIOPROFILE_PCM;
++	codec->level = 0;
++	codec->ch_mode = 0;
++	codec->format = format;
++}
++
+ void play_samples(char *name, unsigned int card, unsigned int device,
+ 		unsigned long buffer_size, unsigned int frag,
+ 		unsigned long codec_id)
+@@ -411,6 +515,9 @@ void play_samples(char *name, unsigned int card, unsigned int device,
+ 	case SND_AUDIOCODEC_IEC61937:
+ 		get_codec_iec(file, &config, &codec);
+ 		break;
++	case SND_AUDIOCODEC_PCM:
++		get_codec_pcm(file, &config, &codec);
++		break;
+ 	default:
+ 		fprintf(stderr, "codec ID %ld is not supported\n", codec_id);
+ 		exit(EXIT_FAILURE);
+-- 
+2.27.0
+
