@@ -315,7 +315,7 @@ MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
 
 # Jailhouse
 MACHINE_EXTRA_RRECOMMENDS += " \
-    ${@bb.utils.contains('COMBINED_FEATURES', 'jailhouse', 'jailhouse', '', d)} \
+    ${@bb.utils.filter('COMBINED_FEATURES', 'jailhouse', d)} \
 "
 
 # GStreamer 1.0 plugins
@@ -334,13 +334,13 @@ MACHINE_GSTREAMER_1_0_PLUGIN_mx8mq  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN_mx8qm  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN_mx8qxp ?= "imx-gst1.0-plugin"
 
-+PREFERRED_VERSION_gstreamer1.0_mx8              ?= "1.18.0.imx"
-+PREFERRED_VERSION_gstreamer1.0-plugins-base_mx8 ?= "1.18.0.imx"
-+PREFERRED_VERSION_gstreamer1.0-plugins-good_mx8 ?= "1.18.0.imx"
-+PREFERRED_VERSION_gstreamer1.0-plugins-bad_mx8  ?= "1.18.0.imx"
-+PREFERRED_VERSION_gstreamer1.0-plugins-ugly_mx8 ?= "1.18.0"
-+PREFERRED_VERSION_gstreamer1.0-libav_mx8        ?= "1.18.0"
-+PREFERRED_VERSION_gstreamer1.0-rtsp-server_mx8  ?= "1.18.0"
+PREFERRED_VERSION_gstreamer1.0_mx8              ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-base_mx8 ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good_mx8 ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad_mx8  ?= "1.18.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly_mx8 ?= "1.18.0"
+PREFERRED_VERSION_gstreamer1.0-libav_mx8        ?= "1.18.0"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server_mx8  ?= "1.18.0"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
@@ -476,9 +476,6 @@ KERNEL_IMAGETYPE = "zImage"
 KERNEL_IMAGETYPE_aarch64 = "Image"
 
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
-
-SOC_MACHINE_FEATURES_BACKFILL_mx8m = "jailhouse"
-MACHINE_FEATURES_BACKFILL_append = " ${SOC_MACHINE_FEATURES_BACKFILL}"
 
 # Add the ability to specify _imx machines
 MACHINEOVERRIDES =. "imx:"
