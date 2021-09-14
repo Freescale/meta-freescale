@@ -25,3 +25,5 @@ KBRANCH = "5.14.x+fslc"
 SRCREV = "35f3f4421d3d7878593eef83e1093db8de60a37e"
 
 COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
+
+SRC_URI:append:mx53 = " file://drm_msm_Do_not_run_snapshot_on_non-DPU_devices.patch"

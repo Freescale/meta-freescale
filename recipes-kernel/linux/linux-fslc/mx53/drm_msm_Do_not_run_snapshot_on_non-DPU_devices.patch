@@ -1,0 +1,53 @@
+drm/msm: Do not run snapshot on non-DPU devices
+
+Since commit 98659487b845 ("drm/msm: add support to take dpu snapshot")
+the following NULL pointer dereference is seen on i.MX53:
+
+[ 3.275493] msm msm: bound 30000000.gpu (ops a3xx_ops)
+[ 3.287174] [drm] Initialized msm 1.8.0 20130625 for msm on minor 0
+[ 3.293915] 8<--- cut here ---
+[ 3.297012] Unable to handle kernel NULL pointer dereference at virtual address 00000028
+[ 3.305244] pgd = (ptrval)
+[ 3.307989] [00000028] *pgd=00000000
+[ 3.311624] Internal error: Oops: 805 [#1] SMP ARM
+[ 3.316430] Modules linked in:
+[ 3.319503] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.14.0+g682d702b426b #1
+[ 3.326652] Hardware name: Freescale i.MX53 (Device Tree Support)
+[ 3.332754] PC is at __mutex_init+0x14/0x54
+[ 3.336969] LR is at msm_disp_snapshot_init+0x24/0xa0
+
+i.MX53 does not use the DPU controller.
+
+Fix the problem by only calling msm_disp_snapshot_init() on platforms that
+use the DPU controller.
+
+Upstream-Status: Submitted [https://lists.freedesktop.org/archives/dri-devel/2021-September/323297.html]
+Cc: stable at vger.kernel.org <https://lists.freedesktop.org/mailman/listinfo/dri-devel>
+Fixes: 98659487b845 ("drm/msm: add support to take dpu snapshot")
+Signed-off-by: Fabio Estevam <festevam at gmail.com <https://lists.freedesktop.org/mailman/listinfo/dri-devel>>
+---
+ drivers/gpu/drm/msm/msm_drv.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index 2e6fc185e54d..2aa2266454b7 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -630,10 +630,11 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
+ 	if (ret)
+ 		goto err_msm_uninit;
+ 
+-	ret = msm_disp_snapshot_init(ddev);
+-	if (ret)
+-		DRM_DEV_ERROR(dev, "msm_disp_snapshot_init failed ret = %d\n", ret);
+-
++	if (kms) {
++		ret = msm_disp_snapshot_init(ddev);
++		if (ret)
++			DRM_DEV_ERROR(dev, "msm_disp_snapshot_init failed ret = %d\n", ret);
++	}
+ 	drm_mode_config_reset(ddev);
+ 
+ #ifdef CONFIG_DRM_FBDEV_EMULATION
+-- 
+2.25.1
