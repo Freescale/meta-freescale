@@ -7,7 +7,7 @@ DEPENDS = "python3 libdrm virtual/libg2d"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
-    file://0001-start_isp.sh-fix-test-to-be-generic.patch \
+    file://0001-start_isp.sh-fix-NR_DEVICE_TREE_BASLER-variable.patch \
     file://0001-isp-imx-drop-use-of-__TIME__-__DATE__.patch \
 "
 
