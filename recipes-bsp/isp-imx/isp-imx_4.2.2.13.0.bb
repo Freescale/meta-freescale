@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=417b82f17fc02b88125331ed312f6f1b"
 DEPENDS = "python3 libdrm virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
-	   file://0001-start_isp.sh-fix-test-to-be-generic.patch \
+           file://0001-start_isp.sh-fix-NR_DEVICE_TREE_BASLER-variable.patch \
 "
 
 SRC_URI[md5sum] = "123feed48302fea2a1be8572e913ae47"
