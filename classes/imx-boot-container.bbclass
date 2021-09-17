@@ -85,10 +85,17 @@ do_deploy_append() {
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]
                 then
-                    install -m 0644 ${B}/${config}/u-boot.itb  ${DEPLOYDIR}/u-boot.itb-${MACHINE}-${UBOOT_CONFIG}
-                    install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}-${UBOOT_CONFIG}
-                    ln -sf u-boot.itb-${MACHINE}-${UBOOT_CONFIG} u-boot.itb
-                    ln -sf flash.bin-${MACHINE}-${UBOOT_CONFIG} flash.bin
+                    install -m 0644 ${B}/${config}/u-boot.itb  ${DEPLOYDIR}/u-boot.itb-${MACHINE}-${type}
+                    install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}-${type}
+                    # When there's more than one word in UBOOT_CONFIG,
+                    # this will overwrite the links created in
+                    # previous loop iterations, effectively making
+                    # u-boot.itb and flash.bin correspond to the _last_
+                    # word in UBOOT_CONFIG. This is also how all other
+                    # artifacts handled by oe-core's u-boot.inc are
+                    # treated.
+                    ln -sf u-boot.itb-${MACHINE}-${type} u-boot.itb
+                    ln -sf flash.bin-${MACHINE}-${type} flash.bin
                 fi
             done
             unset  j
