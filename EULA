@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v24 June 2021
+LA_OPT_NXP_Software_License v27 July 2021
 
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
@@ -492,7 +492,7 @@ following:
 
 (1)          Use of Software is limited to Authorized System only
 
-(2)          In no event may Licensee Sublicense OR distribute the Software
+(2)          In no event may Licensee Sublicense the Software
 
 (3)          AU-ZONE TECHNOLOGIES SHALL NOT BE LIABLE FOR USE OF LICENSED
 SOFTWARE IN CRITICAL APPLICATIONS BY LICENSEE
@@ -507,7 +507,9 @@ herein to the Cadence Design Systems HiFi aacPlus Audio Decoder software does
 not include a license to the AAC family of technologies which you or your
 customer may need to obtain. Configuration tool outputs may only be distributed
 by licensees of the relevant Cadence SDK and distribution is limited to
-distribution of one copy embedded in a single NXP Product.
+distribution of one copy embedded in a single NXP Product. Your use of Cadence
+NatureDSP Libraries whether in source code or in binary is restricted to NXP
+SoC based systems or emulation enablement based on NXP SoC.
 
 Cirque Corporation: Use of Cirque Corporation technology is limited to
 evaluation, demonstration, or certification testing only. Permitted
@@ -547,6 +549,11 @@ additional clause described below.
 Clause 1: Micro CANopen Plus may not be used for any competitive or comparative
 purpose, including the publication of any form of run time or compile time
 metric, without the express permission of EmSA.
+
+Fenopix Technologies Private Limited: Under no circumstances may the CanvasJS
+software product be used in any way that would compete with any product from
+Fenopix.  License to the CanvasJS software will terminate immediately without
+notice if Licensee fail to comply with any provision of this Agreement.
 
 Future Technology Devices International Ltd.: Future Technology Devices
 International software must be used consistent with the terms found here:
