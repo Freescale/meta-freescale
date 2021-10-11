@@ -7,7 +7,9 @@ LIC_FILES_CHKSUM = "file://LICENSE.bsd3;md5=1fbcd66ae51447aa94da10cbf6271530"
 
 DEPENDS = "byacc-native flex-native openssl"
 
-SRC_URI = "git://gitlab.apertis.org/pkg/imx-code-signing-tool.git;protocol=https;tag=debian/3.3.1+dfsg-2;nobranch=1"
+# tag=debian/3.3.1+dfsg-2
+SRCREV = "e2c687a856e6670e753147aacef42d0a3c07891a"
+SRC_URI = "git://gitlab.apertis.org/pkg/imx-code-signing-tool.git;protocol=https;branch=apertis/v2022pre"
 
 S = "${WORKDIR}/git"
 
