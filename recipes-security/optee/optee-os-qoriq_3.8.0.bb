@@ -26,7 +26,7 @@ OPTEEMACHINE:lx2162aqds = "lx2160aqds"
 EXTRA_OEMAKE = "PLATFORM=ls-${OPTEEMACHINE} CFG_ARM64_core=y \
                 ARCH=arm \
                 CROSS_COMPILE_core=${HOST_PREFIX} \
-                CROSS_COMPILE_ta:arm64=${HOST_PREFIX} \
+                CROSS_COMPILE_ta_arm64=${HOST_PREFIX} \
                 NOWERROR=1 \
                 LDFLAGS= \
                 LIBGCC_LOCATE_CFLAGS=--sysroot=${STAGING_DIR_HOST} \
