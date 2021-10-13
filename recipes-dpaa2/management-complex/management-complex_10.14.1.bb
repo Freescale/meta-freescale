@@ -11,7 +11,7 @@ SRCREV = "408110ee632f6291545b0b156cd74e7e3b4612cc"
 
 S = "${WORKDIR}/git"
 
-REGLEX_ls2088a = "ls2088a"
+REGLEX:ls2088a = "ls2088a"
 REGLEX:ls2080a = "ls2080a"
 REGLEX:ls1088a = "ls1088a"
 REGLEX:lx2160a = "lx2160a"

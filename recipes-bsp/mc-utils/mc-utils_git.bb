@@ -16,7 +16,7 @@ S = "${WORKDIR}/git"
 
 MC_CFG ?= ""
 MC_CFG:ls1088a = "ls1088a"
-MC_CFG_ls2088a = "ls2088a"
+MC_CFG:ls2088a = "ls2088a"
 MC_CFG:lx2160a = "lx2160a"
 MC_CFG:lx2162aqds = "lx2162aqds"
 

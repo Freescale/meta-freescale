@@ -13,7 +13,7 @@ SRCREV = "87d83d8e99770325cc7ad9e10965c9959e7cb828"
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
-DEMOS_PATH_ls2088a = "LS2088A"
+DEMOS_PATH:ls2088a = "LS2088A"
 DEMOS_PATH:ls1088a = "LS1088A"
 
 do_install () {
