@@ -1,0 +1,72 @@
+From 530fbb2e2deb6b9214466933df221910c2c50b7c Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@nxp.com>
+Date: Fri, 15 Oct 2021 08:01:15 +0530
+Subject: [PATCH] fix gcc11 mismatched-dealloc error
+
+Fix build error with gcc 11:
+| FAILED: lib/common/libcommon.a.p/lscpu.c.o
+| aarch64-poky-linux-gcc -fstack-protector-strong -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Werror=format-security -Wdate-time --sysroot=/opt/ci/yocto/honister/build-lx2162aqds/tmp/work/lx2162aqds-poky-linux/pktgen-dpdk/21.05.0-r0/recipe-sysroot -Ilib/common/libcommon.a.p -Ilib/common -I../git/lib/common -fdiagnostics-color=always -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wextra -Wpedantic -Werror -O3 -DALLOW_EXPERIMENTAL_API -D_GNU_SOURCE -Wno-pedantic -Wno-format-truncation -DRTE_FORCE_INTRINSICS -fPIC -include rte_config.h -march=armv8-a+crc -moutline-atomics -MD -MQ lib/common/libcommon.a.p/lscpu.c.o -MF lib/common/libcommon.a.p/lscpu.c.o.d -o lib/common/libcommon.a.p/lscpu.c.o -c ../git/lib/common/lscpu.c
+| In function 'lscpu_info_get',
+|     inlined from 'lscpu_info' at ../git/lib/common/lscpu.c:210:2:
+| ../git/lib/common/lscpu.c:167:9: error: 'fclose' called on pointer returned from a mismatched allocation function [-Werror=mismatched-dealloc]
+|   167 |         fclose(f);
+|       |         ^~~~~~~~~
+| ../git/lib/common/lscpu.c: In function 'lscpu_info':
+| ../git/lib/common/lscpu.c:146:22: note: returned from 'popen'
+|   146 |         FILE    *f = popen(lscpu_path, "r");
+|       |                      ^~~~~~~~~~~~~~~~~~~~~~
+| In function 'cpu_proc_info',
+|     inlined from 'lscpu_info' at ../git/lib/common/lscpu.c:211:2:
+| ../git/lib/common/lscpu.c:195:9: error: 'fclose' called on pointer returned from a mismatched allocation function [-Werror=mismatched-dealloc]
+|   195 |         fclose(f);
+|       |         ^~~~~~~~~
+| ../git/lib/common/lscpu.c: In function 'lscpu_info':
+| ../git/lib/common/lscpu.c:174:22: note: returned from 'popen'
+|   174 |         FILE    *f = popen(proc_path, "r");
+|       |                      ^~~~~~~~~~~~~~~~~~~~~
+| cc1: all warnings being treated as errors
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+---
+ app/pktgen.h       | 2 +-
+ lib/common/lscpu.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/app/pktgen.h b/app/pktgen.h
+index 7c61fc8..2f24c65 100644
+--- a/app/pktgen.h
++++ b/app/pktgen.h
+@@ -531,7 +531,7 @@ do_command(const char *cmd, int (*display)(char *, int)) {
+ 		i = display(line, i);
+ 
+ 	if (f)
+-		fclose(f);
++		pclose(f);
+ 	if (line)
+ 		free(line);
+ 
+diff --git a/lib/common/lscpu.c b/lib/common/lscpu.c
+index 8b56ccd..912c601 100644
+--- a/lib/common/lscpu.c
++++ b/lib/common/lscpu.c
+@@ -164,7 +164,7 @@ lscpu_info_get(const char *lscpu_path)
+ 		}
+ 	}
+ 
+-	fclose(f);
++	pclose(f);
+ 	free(line);
+ }
+ 
+@@ -192,7 +192,7 @@ cpu_proc_info(const char *proc_path)
+ 		}
+ 	}
+ 
+-	fclose(f);
++	pclose(f);
+ 	free(line);
+ }
+ 
+-- 
+2.25.1
+
