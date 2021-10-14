@@ -1,0 +1,135 @@
+From 96ed03b04cb9a94043e44c5f5caa8825a0e89f3a Mon Sep 17 00:00:00 2001
+From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Date: Wed, 13 Oct 2021 10:18:50 +0200
+Subject: [PATCH] remove unnecessary libzip dependency
+
+It seems that the libzip dependency has been added by mistake. See
+full analysis in https://github.com/NXPmicro/mfgtools/issues/294 .
+
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Upstream-Status: Backport [https://github.com/NXPmicro/mfgtools/pull/295]
+---
+ .travis.yml           | 1 -
+ README.md             | 4 ++--
+ appveyor.yml          | 4 ++--
+ libuuu/CMakeLists.txt | 1 -
+ snap/snapcraft.yaml   | 2 --
+ uuu/CMakeLists.txt    | 5 ++---
+ 6 files changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/.travis.yml b/.travis.yml
+index 9138aff..1d2d235 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -33,7 +33,6 @@ addons:
+         packages:
+             - cmake
+             - libusb
+-            - libzip
+             - openssl
+             - pkg-config
+ 
+diff --git a/README.md b/README.md
+index 20c3f97..6910276 100644
+--- a/README.md
++++ b/README.md
+@@ -68,7 +68,7 @@ Note that, since uuu is an OSI compliant Open Source project, you are entitled t
+ ## Linux
+ - `git clone https://github.com/NXPmicro/mfgtools.git`
+ - `cd mfgtools`
+-- `sudo apt-get install libusb-1.0-0-dev libzip-dev libbz2-dev pkg-config cmake libssl-dev g++`
++- `sudo apt-get install libusb-1.0-0-dev libbz2-dev pkg-config cmake libssl-dev g++`
+ - `cmake . && make`
+ 
+ The above commands build mfgtools in source. To build it out of source
+@@ -83,7 +83,7 @@ For cmake prior 3.13:
+ ## macOS
+ - `git clone https://github.com/NXPmicro/mfgtools.git`
+ - `cd mfgtools`
+-- `brew install cmake libusb libzip openssl pkg-config`
++- `brew install cmake libusb openssl pkg-config`
+ - `cmake -DOPENSSL_ROOT_DIR=$(brew --prefix)/opt/openssl . && make`
+ 
+ Note that we assume [brew](https://brew.sh) is installed and can be used to resolve dependencies as shown above. The remaining dependency `libbz2` can be resolved via the XCode supplied libraries.
+diff --git a/appveyor.yml b/appveyor.yml
+index 9e1c74a..e679f84 100644
+--- a/appveyor.yml
++++ b/appveyor.yml
+@@ -28,11 +28,11 @@ install:
+     
+ - cmd:    cd ..
+  
+-- sh: if [ "${APPVEYOR_BUILD_WORKER_IMAGE}" = "macOS" ]; then brew install libusb libzip pkg-config; fi
++- sh: if [ "${APPVEYOR_BUILD_WORKER_IMAGE}" = "macOS" ]; then brew install libusb pkg-config; fi
+ 
+ - sh: if [ "${APPVEYOR_BUILD_WORKER_IMAGE}" != "macOS" ]; then sudo apt-get update; fi
+ 
+-- sh: if [ "${APPVEYOR_BUILD_WORKER_IMAGE}" != "macOS" ]; then sudo DEBIAN_FRONTEND=noninteractive apt-get  --yes --force-yes install libusb-1.0-0-dev libzip-dev libbz2-dev asciidoc rename; fi
++- sh: if [ "${APPVEYOR_BUILD_WORKER_IMAGE}" != "macOS" ]; then sudo DEBIAN_FRONTEND=noninteractive apt-get  --yes --force-yes install libusb-1.0-0-dev libbz2-dev asciidoc rename; fi
+ 
+ build_script:
+ 
+diff --git a/libuuu/CMakeLists.txt b/libuuu/CMakeLists.txt
+index f4390a7..2ace072 100644
+--- a/libuuu/CMakeLists.txt
++++ b/libuuu/CMakeLists.txt
+@@ -7,7 +7,6 @@ set(CMAKE_SKIP_RPATH ON)
+ find_package(BZip2 REQUIRED)
+ find_package(PkgConfig REQUIRED)
+ pkg_check_modules(LIBUSB REQUIRED libusb-1.0>=1.0.16)
+-pkg_check_modules(LIBZIP REQUIRED libzip)
+ find_package(Threads)
+ 
+ if (STATIC)
+diff --git a/snap/snapcraft.yaml b/snap/snapcraft.yaml
+index 09b9065..8a98cca 100644
+--- a/snap/snapcraft.yaml
++++ b/snap/snapcraft.yaml
+@@ -103,14 +103,12 @@ parts:
+       - libbz2-dev
+       - libusb-1.0-0-dev
+       - libssl-dev
+-      - libzip-dev
+       - pkg-config
+     plugin: cmake
+     stage-packages:
+       - libbz2-1.0
+       - libusb-1.0-0
+       - libssl1.0.0
+-      - libzip4
+     filesets:
+       docs-copyright:
+       - usr/share/doc/*/copyright
+diff --git a/uuu/CMakeLists.txt b/uuu/CMakeLists.txt
+index b57a67e..ab78529 100644
+--- a/uuu/CMakeLists.txt
++++ b/uuu/CMakeLists.txt
+@@ -6,7 +6,6 @@ set(CMAKE_SKIP_RPATH ON)
+ 
+ find_package(PkgConfig REQUIRED)
+ pkg_check_modules(LIBUSB REQUIRED libusb-1.0>=1.0.16)
+-pkg_check_modules(LIBZIP REQUIRED libzip)
+ pkg_check_modules(LIBZ REQUIRED zlib)
+ find_package(Threads)
+ 
+@@ -34,7 +33,7 @@ set(LSTS
+ 	nand_burn_loader.lst
+ )
+ 
+-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libuuu ${LIBUSB_LIBRARY_DIRS} ${LIBZIP_LIBRARY_DIRS} ${LIBZ_LIBRARY_DIRS})
++link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libuuu ${LIBUSB_LIBRARY_DIRS} ${LIBZ_LIBRARY_DIRS})
+ 
+ set(CLIST_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/gen_txt_include.sh)
+ set(generated_files_dir "${CMAKE_BINARY_DIR}/uuu/gen")
+@@ -70,7 +69,7 @@ set(SOURCES
+ )
+ 
+ add_executable(uuu ${SOURCES})
+-target_link_libraries(uuu uuc_s ${OPENSSL_LIBRARIES} ${LIBUSB_LIBRARIES} ${LIBZIP_LIBRARIES} ${LIBZ_LIBRARIES} dl bz2)
++target_link_libraries(uuu uuc_s ${OPENSSL_LIBRARIES} ${LIBUSB_LIBRARIES} ${LIBZ_LIBRARIES} dl bz2)
+ 
+ install(TARGETS uuu DESTINATION bin)
+ target_compile_definitions(uuu
+-- 
+2.31.1
+
