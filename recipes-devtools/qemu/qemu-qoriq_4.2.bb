@@ -13,10 +13,9 @@ SRC_URI = "gitsm://source.codeaurora.org/external/qoriq/qoriq-components/qemu;no
            file://powerpc_rom.bin \
            file://run-ptest \
            file://0002-Add-subpackage-ptest-which-runs-all-unit-test-cases-.patch \
-           file://0001-linux-user-remove-host-stime-syscall.patch \
            "
 
-SRCREV = "0b88a503e43ca629d6e8165638ac6b312e5c66bd"
+SRCREV = "14fda5a42df6c72e890d6a97ff88c5852172604b"
 
 S = "${WORKDIR}/git"
 
@@ -53,7 +52,7 @@ do_install_ptest() {
 }
 
 PACKAGECONFIG ??= " \
-    fdt sdl kvm aio libusb vhost \
+    fdt sdl kvm aio libusb vhost numa \
     ${@bb.utils.filter('DISTRO_FEATURES', 'alsa xen', d)} \
 "
 PACKAGECONFIG:class-nativesdk ??= "fdt sdl kvm"
