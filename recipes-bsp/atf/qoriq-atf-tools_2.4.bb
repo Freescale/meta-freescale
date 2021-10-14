@@ -1,6 +1,4 @@
-require qoriq-atf-${PV}.inc
-
-SUMMARY = "Tools for ARM Trusted Firmware, e.g. FIP image creation tool"
+require recipes-bsp/atf/qoriq-atf-2.4.inc
 
 DEPENDS += "openssl"
 
@@ -12,3 +10,4 @@ do_install () {
 }
 
 BBCLASSEXTEND = "native"
+
