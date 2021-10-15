@@ -1,0 +1,35 @@
+From 308409d72671b7978b20d40748ad985a235b6c86 Mon Sep 17 00:00:00 2001
+From: Mohamad Noor Alim Hussin <mohamad.noor.alim.hussin@intel.com>
+Date: Thu, 24 Jun 2021 11:30:09 +0800
+Subject: [PATCH] ifpga/meson: Fix finding librt using find_library()
+
+Finding with "librt" keyword would give the output
+with full path of librt such as /usr/lib/librt.so
+instead of -lrt.
+
+Assume find_library() will prepend "lib", thus remove
+"lib" from "librt" keyword. The output will shows as
+-lrt.
+
+Upstream-Status: Submitted [https://mails.dpdk.org/archives/stable/2021-June/031840.html]
+
+Signed-off-by: Mohamad Noor Alim Hussin <mohamad.noor.alim.hussin@intel.com>
+---
+ drivers/raw/ifpga/base/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/raw/ifpga/base/meson.build b/drivers/raw/ifpga/base/meson.build
+index da2d6e33c..949f7f127 100644
+--- a/drivers/raw/ifpga/base/meson.build
++++ b/drivers/raw/ifpga/base/meson.build
+@@ -25,7 +25,7 @@ sources = [
+
+ rtdep = dependency('librt', required: false)
+ if not rtdep.found()
+-	rtdep = cc.find_library('librt', required: false)
++	rtdep = cc.find_library('rt', required: false)
+ endif
+ if not rtdep.found()
+	build = false
+--
+2.32.0

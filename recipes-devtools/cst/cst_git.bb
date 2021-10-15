@@ -24,6 +24,7 @@ SRCREV = "dfe30d3f05cfe281896482839e57ed49c52f2088"
 S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}"'
+CFLAGS:append = ' -Wno-deprecated-declarations'
 
 PARALLEL_MAKE = ""
 

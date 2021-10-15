@@ -13,6 +13,7 @@ export CROSS_COMPILE_HOST = "${CROSS_COMPILE}"
 export CROSS_COMPILE_TA = "${CROSS_COMPILE}"
 ARCH:qoriq-arm64 = "aarch64"
 ARCH:qoriq-arm = "arm"
+CFLAGS += "${TOOLCHAIN_OPTIONS}"
 
 do_compile() {
         unset LDFLAGS

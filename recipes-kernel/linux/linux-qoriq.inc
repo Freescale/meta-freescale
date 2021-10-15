@@ -25,8 +25,7 @@ SCMVERSION ?= "y"
 LOCALVERSION = ""
 DELTA_KERNEL_DEFCONFIG ?= ""
 DELTA_KERNEL_DEFCONFIG:prepend:qoriq-arm64 = "lsdk.config "
-DELTA_KERNEL_DEFCONFIG:prepend:fsl-lsch2-32b = "multi_v7_lpae.config multi_v8.config lsdk.config "
-DELTA_KERNEL_DEFCONFIG:prepend:ls102xa = "multi_v7_lpae.config lsdk.config "
+DELTA_KERNEL_DEFCONFIG:prepend:qoriq-arm = "multi_v7_lpae.config lsdk.config "
 
 do_merge_delta_config[depends] += "virtual/${TARGET_PREFIX}gcc:do_populate_sysroot bison-native:do_populate_sysroot"
 do_merge_delta_config[dirs] = "${B}"
@@ -54,15 +53,6 @@ do_merge_delta_config() {
     cp .config ${WORKDIR}/defconfig
 }
 addtask merge_delta_config before do_kernel_localversion after do_patch
-
-# The link of dts folder is needed for 32b compile of aarch64 targets(e.g. ls1043ardb-32b)
-do_compile:prepend:fsl-lsch2-32b() {
-    ln -sfT ${STAGING_KERNEL_DIR}/arch/arm64/boot/dts/freescale ${STAGING_KERNEL_DIR}/arch/arm/boot/dts/freescale
-}
-
-do_install:prepend:fsl-lsch2-32b() {
-    rm -f ${STAGING_KERNEL_DIR}/arch/arm/boot/dts/freescale
-}
 
 FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
 COMPATIBLE_MACHINE = "(qoriq)"

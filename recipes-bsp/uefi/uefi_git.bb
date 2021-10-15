@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://NXP-Binary-EULA;md5=343ec8f06efc37467a6de53686fa6315"
 inherit deploy
 
 SRC_URI = "git://github.com/NXP/qoriq-uefi-binary.git;nobranch=1"
-SRCREV= "06e960829ba204f35979440364b9ac7e51ed996b"
+SRCREV= "1b28cad962a3f7b61baae2229cb3b84926941cfa"
 
 S = "${WORKDIR}/git"
 

@@ -1,0 +1,30 @@
+From 6fe85f3a12d15e25345ef0547035a929351a179c Mon Sep 17 00:00:00 2001
+From: Ting Liu <ting.liu@nxp.com>
+Date: Fri, 17 Sep 2021 12:53:53 +0530
+Subject: [PATCH] drivers/net/enetfec/enet_uio.c: fix multiple definition
+
+.../drivers/net/enetfec/enet_uio.c:22: multiple definition of `count';
+.../examples/flow_classify/flow_classify.c:170: first defined here
+collect2: error: ld returned 1 exit status
+
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+---
+ drivers/net/enetfec/enet_uio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/enetfec/enet_uio.c b/drivers/net/enetfec/enet_uio.c
+index b64dc522e8..9e09f9beb6 100644
+--- a/drivers/net/enetfec/enet_uio.c
++++ b/drivers/net/enetfec/enet_uio.c
+@@ -19,7 +19,7 @@
+ #include "enet_uio.h"
+ 
+ static struct uio_job enetfec_uio_job;
+-int count;
++static int count;
+ 
+ /** @brief Reads first line from a file.
+  * Composes file name as: root/subdir/filename
+-- 
+2.25.1
+

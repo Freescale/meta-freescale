@@ -1,0 +1,74 @@
+From 768cef60957d5e840071d1d6514d4add3f3c2904 Mon Sep 17 00:00:00 2001
+From: Naveen Saini <naveen.kumar.saini@intel.com>
+Date: Wed, 14 Apr 2021 17:25:53 +0800
+Subject: [PATCH] Makefile: add makefile
+
+Current meson build for kernel module build does not fit in Yocto.
+So added Makefile to build rte_kni.ko
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Naveen Saini <naveen.kumar.saini@intel.com>
+---
+ kernel/linux/kni/Kbuild   |  6 ------
+ kernel/linux/kni/Makefile | 35 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+), 6 deletions(-)
+ delete mode 100644 kernel/linux/kni/Kbuild
+ create mode 100644 kernel/linux/kni/Makefile
+
+diff --git a/kernel/linux/kni/Kbuild b/kernel/linux/kni/Kbuild
+deleted file mode 100644
+index e5452d6c00..0000000000
+--- a/kernel/linux/kni/Kbuild
++++ /dev/null
+@@ -1,6 +0,0 @@
+-# SPDX-License-Identifier: BSD-3-Clause
+-# Copyright(c) 2018 Luca Boccassi <bluca@debian.org>
+-
+-ccflags-y := $(MODULE_CFLAGS)
+-obj-m := rte_kni.o
+-rte_kni-y := $(patsubst $(src)/%.c,%.o,$(wildcard $(src)/*.c))
+diff --git a/kernel/linux/kni/Makefile b/kernel/linux/kni/Makefile
+new file mode 100644
+index 0000000000..19897ee06e
+--- /dev/null
++++ b/kernel/linux/kni/Makefile
+@@ -0,0 +1,35 @@
++#
++# Makefile for building rte_kni.ko
++#
++MODULE_CFLAGS += -include $(S)/config/rte_config.h
++MODULE_CFLAGS += -I$(S)/lib/librte_eal/include
++MODULE_CFLAGS += -I$(S)/lib/librte_kni
++MODULE_CFLAGS += -I$(S)/kernel/linux/kni
++MODULE_CFLAGS += -I$(S)
++MODULE_CFLAGS += -I$(STAGING_INCDIR)
++
++rte_kni-objs = kni_misc.o kni_net.o
++
++ccflags-y := $(MODULE_CFLAGS)
++cflags-y := $(MODULE_CFLAGS)
++obj-m := rte_kni.o
++
++
++KERNEL_MAKE_OPTS := -C $(STAGING_KERNEL_DIR) M=$(CURDIR)
++ifneq ($(ARCH),)
++KERNEL_MAKE_OPTS += ARCH=$(ARCH)
++endif
++ifneq ($(CROSS_COMPILE),)
++KERNEL_MAKE_OPTS += CROSS_COMPILE=$(CROSS_COMPILE)
++endif
++
++build:
++	$(MAKE) $(KERNEL_MAKE_OPTS) modules
++
++install: modules_install
++
++modules_install:
++	$(MAKE) $(KERNEL_MAKE_OPTS) modules_install
++
++clean:
++	$(MAKE) $(KERNEL_MAKE_OPTS) clean
+-- 
+2.17.1
+

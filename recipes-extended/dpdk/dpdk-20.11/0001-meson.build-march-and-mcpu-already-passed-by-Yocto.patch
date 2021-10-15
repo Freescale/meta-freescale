@@ -1,0 +1,38 @@
+From cf8f15824dc2dd306d9c7e111641bef045d623c2 Mon Sep 17 00:00:00 2001
+From: Naveen Saini <naveen.kumar.saini@intel.com>
+Date: Wed, 14 Apr 2021 16:03:10 +0800
+Subject: [PATCH] meson.build:-march and -mcpu already passed by Yocto
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Naveen Saini <naveen.kumar.saini@intel.com>
+---
+ config/meson.build | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/config/meson.build b/config/meson.build
+index 2f150de3b8..41bb3e9ec4 100644
+--- a/config/meson.build
++++ b/config/meson.build
+@@ -94,12 +94,12 @@ dpdk_conf.set('RTE_MACHINE', machine)
+ machine_args = []
+ 
+ # ppc64 does not support -march= at all, use -mcpu and -mtune for that
+-if host_machine.cpu_family().startswith('ppc')
+-	machine_args += '-mcpu=' + machine
+-	machine_args += '-mtune=' + machine
+-else
+-	machine_args += '-march=' + machine
+-endif
++#if host_machine.cpu_family().startswith('ppc')
++#	machine_args += '-mcpu=' + machine
++#	machine_args += '-mtune=' + machine
++#else
++#	machine_args += '-march=' + machine
++#endif
+ 
+ toolchain = cc.get_id()
+ dpdk_conf.set_quoted('RTE_TOOLCHAIN', toolchain)
+-- 
+2.17.1
+
