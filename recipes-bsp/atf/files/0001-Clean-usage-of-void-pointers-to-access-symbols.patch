@@ -1,0 +1,709 @@
+From 9f85f9e3796f1c351bbc4c8436dc66d83c140b71 Mon Sep 17 00:00:00 2001
+From: Joel Hutton <Joel.Hutton@Arm.com>
+Date: Wed, 21 Mar 2018 11:40:57 +0000
+Subject: [PATCH] Clean usage of void pointers to access symbols
+
+Void pointers have been used to access linker symbols, by declaring an
+extern pointer, then taking the address of it. This limits symbols
+values to aligned pointer values. To remove this restriction an
+IMPORT_SYM macro has been introduced, which declares it as a char
+pointer and casts it to the required type.
+
+Upstream-Status: Backport
+
+Change-Id: I89877fc3b13ed311817bb8ba79d4872b89bfd3b0
+Signed-off-by: Joel Hutton <Joel.Hutton@Arm.com>
+---
+ bl1/bl1_private.h                            | 12 +++----
+ common/runtime_svc.c                         |  4 +--
+ drivers/auth/img_parser_mod.c                |  9 +++---
+ include/common/bl_common.h                   | 32 ++++++++++++-------
+ include/common/runtime_svc.h                 |  4 +--
+ include/lib/utils_def.h                      | 19 ++++++++++-
+ include/plat/common/common_def.h             | 24 ++------------
+ include/services/secure_partition.h          | 12 +++----
+ lib/locks/bakery/bakery_lock_normal.c        |  6 ++--
+ lib/pmf/pmf_main.c                           | 19 +++++------
+ plat/hisilicon/hikey/hikey_bl1_setup.c       | 21 ++-----------
+ plat/hisilicon/hikey960/hikey960_bl1_setup.c | 16 ++--------
+ plat/hisilicon/poplar/bl1_plat_setup.c       | 13 ++------
+ plat/mediatek/mt6795/bl31_plat_setup.c       | 11 +++----
+ plat/mediatek/mt8173/bl31_plat_setup.c       | 28 +++--------------
+ plat/nvidia/tegra/common/tegra_bl31_setup.c  | 33 +++++++-------------
+ plat/rockchip/common/bl31_plat_setup.c       | 13 ++------
+ services/std_svc/spm/spm_shim_private.h      | 14 +++------
+ 18 files changed, 103 insertions(+), 187 deletions(-)
+
+diff --git a/bl1/bl1_private.h b/bl1/bl1_private.h
+index 6ac3b8c67..42a74d22f 100644
+--- a/bl1/bl1_private.h
++++ b/bl1/bl1_private.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2013-2016, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2013-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -8,18 +8,16 @@
+ #define __BL1_PRIVATE_H__
+ 
+ #include <types.h>
++#include <utils_def.h>
+ 
+ /*******************************************************************************
+  * Declarations of linker defined symbols which will tell us where BL1 lives
+  * in Trusted ROM and RAM
+  ******************************************************************************/
+-extern uintptr_t __BL1_ROM_END__;
+-#define BL1_ROM_END (uintptr_t)(&__BL1_ROM_END__)
++IMPORT_SYM(uintptr_t, __BL1_ROM_END__,   BL1_ROM_END);
+ 
+-extern uintptr_t __BL1_RAM_START__;
+-extern uintptr_t __BL1_RAM_END__;
+-#define BL1_RAM_BASE (uintptr_t)(&__BL1_RAM_START__)
+-#define BL1_RAM_LIMIT (uintptr_t)(&__BL1_RAM_END__)
++IMPORT_SYM(uintptr_t, __BL1_RAM_START__, BL1_RAM_BASE);
++IMPORT_SYM(uintptr_t, __BL1_RAM_END__,   BL1_RAM_LIMIT);
+ 
+ /******************************************
+  * Function prototypes
+diff --git a/common/runtime_svc.c b/common/runtime_svc.c
+index 0ea4cd093..de80f30c2 100644
+--- a/common/runtime_svc.c
++++ b/common/runtime_svc.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2013-2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2013-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -19,8 +19,6 @@
+  * 'rt_svc_descs_indices' array. This gives the index of the descriptor in the
+  * 'rt_svc_descs' array which contains the SMC handler.
+  ******************************************************************************/
+-#define RT_SVC_DESCS_START	((uintptr_t) (&__RT_SVC_DESCS_START__))
+-#define RT_SVC_DESCS_END	((uintptr_t) (&__RT_SVC_DESCS_END__))
+ uint8_t rt_svc_descs_indices[MAX_RT_SVCS];
+ static rt_svc_desc_t *rt_svc_descs;
+ 
+diff --git a/drivers/auth/img_parser_mod.c b/drivers/auth/img_parser_mod.c
+index 6a0107115..63160141d 100644
+--- a/drivers/auth/img_parser_mod.c
++++ b/drivers/auth/img_parser_mod.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2015, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -12,11 +12,10 @@
+ #include <limits.h>
+ #include <stdint.h>
+ #include <string.h>
++#include <utils_def.h>
+ 
+-extern uintptr_t __PARSER_LIB_DESCS_START__;
+-extern uintptr_t __PARSER_LIB_DESCS_END__;
+-#define PARSER_LIB_DESCS_START	((uintptr_t) (&__PARSER_LIB_DESCS_START__))
+-#define PARSER_LIB_DESCS_END	((uintptr_t) (&__PARSER_LIB_DESCS_END__))
++IMPORT_SYM(uintptr_t, __PARSER_LIB_DESCS_START__,	PARSER_LIB_DESCS_START);
++IMPORT_SYM(uintptr_t, __PARSER_LIB_DESCS_END__,		PARSER_LIB_DESCS_END);
+ static unsigned int parser_lib_indices[IMG_MAX_TYPES];
+ static img_parser_lib_desc_t *parser_lib_descs;
+ 
+diff --git a/include/common/bl_common.h b/include/common/bl_common.h
+index 4ef916f53..09a394dd1 100644
+--- a/include/common/bl_common.h
++++ b/include/common/bl_common.h
+@@ -64,33 +64,41 @@
+ #include <types.h>
+ #include <utils_def.h> /* To retain compatibility */
+ 
++
+ /*
+  * Declarations of linker defined symbols to help determine memory layout of
+  * BL images
+  */
+ #if SEPARATE_CODE_AND_RODATA
+-extern uintptr_t __TEXT_START__;
+-extern uintptr_t __TEXT_END__;
+-extern uintptr_t __RODATA_START__;
+-extern uintptr_t __RODATA_END__;
++IMPORT_SYM(unsigned long, __TEXT_START__,	BL_CODE_BASE);
++IMPORT_SYM(unsigned long, __TEXT_END__,		BL_CODE_END);
++IMPORT_SYM(unsigned long, __RODATA_START__,	BL_RO_DATA_BASE);
++IMPORT_SYM(unsigned long, __RODATA_END__,	BL_RO_DATA_END);
+ #else
+-extern uintptr_t __RO_START__;
+-extern uintptr_t __RO_END__;
++IMPORT_SYM(unsigned long, __RO_START__,		BL_CODE_BASE);
++IMPORT_SYM(unsigned long, __RO_END__,		BL_CODE_END);
+ #endif
+ 
+ #if defined(IMAGE_BL2)
+-extern uintptr_t __BL2_END__;
++IMPORT_SYM(unsigned long, __BL2_END__,		BL2_END);
+ #elif defined(IMAGE_BL2U)
+-extern uintptr_t __BL2U_END__;
++IMPORT_SYM(unsigned long, __BL2U_END__,		BL2U_END);
+ #elif defined(IMAGE_BL31)
+-extern uintptr_t __BL31_END__;
++IMPORT_SYM(unsigned long, __BL31_END__,		BL31_END);
+ #elif defined(IMAGE_BL32)
+-extern uintptr_t __BL32_END__;
++IMPORT_SYM(unsigned long, __BL32_END__,		BL32_END);
+ #endif /* IMAGE_BLX */
+ 
++/*
++ * The next 2 constants identify the extents of the coherent memory region.
++ * These addresses are used by the MMU setup code and therefore they must be
++ * page-aligned.  It is the responsibility of the linker script to ensure that
++ * __COHERENT_RAM_START__ and __COHERENT_RAM_END__ linker symbols refer to
++ * page-aligned addresses.
++ */
+ #if USE_COHERENT_MEM
+-extern uintptr_t __COHERENT_RAM_START__;
+-extern uintptr_t __COHERENT_RAM_END__;
++IMPORT_SYM(unsigned long, __COHERENT_RAM_START__,	BL_COHERENT_RAM_BASE);
++IMPORT_SYM(unsigned long, __COHERENT_RAM_END__,		BL_COHERENT_RAM_END);
+ #endif
+ 
+ /*******************************************************************************
+diff --git a/include/common/runtime_svc.h b/include/common/runtime_svc.h
+index d12af227e..5d9fa3908 100644
+--- a/include/common/runtime_svc.h
++++ b/include/common/runtime_svc.h
+@@ -122,8 +122,8 @@ CASSERT(RT_SVC_DESC_HANDLE == __builtin_offsetof(rt_svc_desc_t, handle), \
+ void runtime_svc_init(void);
+ uintptr_t handle_runtime_svc(uint32_t smc_fid, void *cookie, void *handle,
+ 						unsigned int flags);
+-extern uintptr_t __RT_SVC_DESCS_START__;
+-extern uintptr_t __RT_SVC_DESCS_END__;
++IMPORT_SYM(uintptr_t, __RT_SVC_DESCS_START__,		RT_SVC_DESCS_START);
++IMPORT_SYM(uintptr_t, __RT_SVC_DESCS_END__,		RT_SVC_DESCS_END);
+ void init_crash_reporting(void);
+ 
+ extern uint8_t rt_svc_descs_indices[MAX_RT_SVCS];
+diff --git a/include/lib/utils_def.h b/include/lib/utils_def.h
+index 4a5c3e0bc..8abc73c09 100644
+--- a/include/lib/utils_def.h
++++ b/include/lib/utils_def.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2016-2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2016-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -99,4 +99,21 @@
+ 	((ARM_ARCH_MAJOR > _maj) || \
+ 	 ((ARM_ARCH_MAJOR == _maj) && (ARM_ARCH_MINOR >= _min)))
+ 
++/*
++ * Import an assembly or linker symbol as a C expression with the specified
++ * type
++ */
++#define IMPORT_SYM(type, sym, name) \
++	extern char sym[];\
++	static const __attribute__((unused)) type name = (type) sym;
++
++/*
++ * When the symbol is used to hold a pointer, its alignment can be asserted
++ * with this macro. For example, if there is a linker symbol that is going to
++ * be used as a 64-bit pointer, the value of the linker symbol must also be
++ * aligned to 64 bit. This macro makes sure this is the case.
++ */
++#define ASSERT_SYM_PTR_ALIGN(sym) assert(((size_t)(sym) % __alignof__(*(sym))) == 0)
++
++
+ #endif /* __UTILS_DEF_H__ */
+diff --git a/include/plat/common/common_def.h b/include/plat/common/common_def.h
+index a841c3dbf..84923b9a7 100644
+--- a/include/plat/common/common_def.h
++++ b/include/plat/common/common_def.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2015-2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -74,33 +74,13 @@
+  * page of it with the right memory attributes.
+  */
+ #if SEPARATE_CODE_AND_RODATA
+-#define BL_CODE_BASE		(unsigned long)(&__TEXT_START__)
+-#define BL_CODE_END		(unsigned long)(&__TEXT_END__)
+-#define BL_RO_DATA_BASE		(unsigned long)(&__RODATA_START__)
+-#define BL_RO_DATA_END		(unsigned long)(&__RODATA_END__)
+ 
+ #define BL1_CODE_END		BL_CODE_END
+-#define BL1_RO_DATA_BASE	(unsigned long)(&__RODATA_START__)
++#define BL1_RO_DATA_BASE	BL_RO_DATA_BASE
+ #define BL1_RO_DATA_END		round_up(BL1_ROM_END, PAGE_SIZE)
+ #else
+-#define BL_CODE_BASE		(unsigned long)(&__RO_START__)
+-#define BL_CODE_END		(unsigned long)(&__RO_END__)
+ #define BL_RO_DATA_BASE		0
+ #define BL_RO_DATA_END		0
+-
+ #define BL1_CODE_END		round_up(BL1_ROM_END, PAGE_SIZE)
+-#define BL1_RO_DATA_BASE	0
+-#define BL1_RO_DATA_END		0
+ #endif /* SEPARATE_CODE_AND_RODATA */
+-
+-/*
+- * The next 2 constants identify the extents of the coherent memory region.
+- * These addresses are used by the MMU setup code and therefore they must be
+- * page-aligned.  It is the responsibility of the linker script to ensure that
+- * __COHERENT_RAM_START__ and __COHERENT_RAM_END__ linker symbols refer to
+- * page-aligned addresses.
+- */
+-#define BL_COHERENT_RAM_BASE	(unsigned long)(&__COHERENT_RAM_START__)
+-#define BL_COHERENT_RAM_END	(unsigned long)(&__COHERENT_RAM_END__)
+-
+ #endif /* __COMMON_DEF_H__ */
+diff --git a/include/services/secure_partition.h b/include/services/secure_partition.h
+index 93df2a137..f68f711be 100644
+--- a/include/services/secure_partition.h
++++ b/include/services/secure_partition.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2017-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -11,15 +11,11 @@
+ #include <types.h>
+ #include <utils_def.h>
+ 
+-/* Linker symbols */
+-extern uintptr_t __SP_IMAGE_XLAT_TABLES_START__;
+-extern uintptr_t __SP_IMAGE_XLAT_TABLES_END__;
++/* Import linker symbols */
++IMPORT_SYM(uintptr_t, __SP_IMAGE_XLAT_TABLES_START__,	SP_IMAGE_XLAT_TABLES_START);
++IMPORT_SYM(uintptr_t, __SP_IMAGE_XLAT_TABLES_END__,	SP_IMAGE_XLAT_TABLES_END);
+ 
+ /* Definitions */
+-#define SP_IMAGE_XLAT_TABLES_START	\
+-	(uintptr_t)(&__SP_IMAGE_XLAT_TABLES_START__)
+-#define SP_IMAGE_XLAT_TABLES_END	\
+-	(uintptr_t)(&__SP_IMAGE_XLAT_TABLES_END__)
+ #define SP_IMAGE_XLAT_TABLES_SIZE	\
+ 	(SP_IMAGE_XLAT_TABLES_END - SP_IMAGE_XLAT_TABLES_START)
+ 
+diff --git a/lib/locks/bakery/bakery_lock_normal.c b/lib/locks/bakery/bakery_lock_normal.c
+index 8f59215e3..37697f521 100644
+--- a/lib/locks/bakery/bakery_lock_normal.c
++++ b/lib/locks/bakery/bakery_lock_normal.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2015-2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -10,6 +10,7 @@
+ #include <cpu_data.h>
+ #include <platform.h>
+ #include <string.h>
++#include <utils_def.h>
+ 
+ /*
+  * Functions in this file implement Bakery Algorithm for mutual exclusion with the
+@@ -49,8 +50,7 @@ CASSERT((PLAT_PERCPU_BAKERY_LOCK_SIZE & (CACHE_WRITEBACK_GRANULE - 1)) == 0, \
+  * Use the linker defined symbol which has evaluated the size reqiurement.
+  * This is not as efficient as using a platform defined constant
+  */
+-extern void *__PERCPU_BAKERY_LOCK_SIZE__;
+-#define PERCPU_BAKERY_LOCK_SIZE ((uintptr_t)&__PERCPU_BAKERY_LOCK_SIZE__)
++IMPORT_SYM(uintptr_t, __PERCPU_BAKERY_LOCK_SIZE__, PERCPU_BAKERY_LOCK_SIZE);
+ #endif
+ 
+ #define get_bakery_info(cpu_ix, lock)	\
+diff --git a/lib/pmf/pmf_main.c b/lib/pmf/pmf_main.c
+index 2cf260ec1..0208948fe 100644
+--- a/lib/pmf/pmf_main.c
++++ b/lib/pmf/pmf_main.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2016, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2016-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -11,6 +11,7 @@
+ #include <platform.h>
+ #include <pmf.h>
+ #include <string.h>
++#include <utils_def.h>
+ 
+ /*******************************************************************************
+  * The 'pmf_svc_descs' array holds the PMF service descriptors exported by
+@@ -21,16 +22,12 @@
+  * index of the descriptor in the 'pmf_svc_descs' array  which contains the
+  * service function pointers.
+  ******************************************************************************/
+-extern uintptr_t __PMF_SVC_DESCS_START__;
+-extern uintptr_t __PMF_SVC_DESCS_END__;
+-#define PMF_SVC_DESCS_START		((uintptr_t)(&__PMF_SVC_DESCS_START__))
+-#define PMF_SVC_DESCS_END		((uintptr_t)(&__PMF_SVC_DESCS_END__))
+-extern void *__PERCPU_TIMESTAMP_SIZE__;
+-#define PMF_PERCPU_TIMESTAMP_SIZE	((uintptr_t)&__PERCPU_TIMESTAMP_SIZE__)
+-extern uintptr_t __PMF_TIMESTAMP_START__;
+-#define PMF_TIMESTAMP_ARRAY_START	((uintptr_t)&__PMF_TIMESTAMP_START__)
+-extern uintptr_t __PMF_TIMESTAMP_END__;
+-#define PMF_TIMESTAMP_ARRAY_END		((uintptr_t)&__PMF_TIMESTAMP_END__)
++
++IMPORT_SYM(uintptr_t, __PMF_SVC_DESCS_START__,		PMF_SVC_DESCS_START);
++IMPORT_SYM(uintptr_t, __PMF_SVC_DESCS_END__,		PMF_SVC_DESCS_END);
++IMPORT_SYM(uintptr_t, __PERCPU_TIMESTAMP_SIZE__,	PMF_PERCPU_TIMESTAMP_SIZE);
++IMPORT_SYM(intptr_t,  __PMF_TIMESTAMP_START__,		PMF_TIMESTAMP_ARRAY_START);
++IMPORT_SYM(uintptr_t, __PMF_TIMESTAMP_END__,		PMF_TIMESTAMP_ARRAY_END);
+ 
+ #define PMF_SVC_DESCS_MAX		10
+ 
+diff --git a/plat/hisilicon/hikey/hikey_bl1_setup.c b/plat/hisilicon/hikey/hikey_bl1_setup.c
+index 69b194a53..9ede1dbc7 100644
+--- a/plat/hisilicon/hikey/hikey_bl1_setup.c
++++ b/plat/hisilicon/hikey/hikey_bl1_setup.c
+@@ -23,23 +23,6 @@
+ #include "hikey_def.h"
+ #include "hikey_private.h"
+ 
+-/*
+- * Declarations of linker defined symbols which will help us find the layout
+- * of trusted RAM
+- */
+-extern unsigned long __COHERENT_RAM_START__;
+-extern unsigned long __COHERENT_RAM_END__;
+-
+-/*
+- * The next 2 constants identify the extents of the coherent memory region.
+- * These addresses are used by the MMU setup code and therefore they must be
+- * page-aligned.  It is the responsibility of the linker script to ensure that
+- * __COHERENT_RAM_START__ and __COHERENT_RAM_END__ linker symbols refer to
+- * page-aligned addresses.
+- */
+-#define BL1_COHERENT_RAM_BASE (unsigned long)(&__COHERENT_RAM_START__)
+-#define BL1_COHERENT_RAM_LIMIT (unsigned long)(&__COHERENT_RAM_END__)
+-
+ /* Data structure which holds the extents of the trusted RAM for BL1 */
+ static meminfo_t bl1_tzram_layout;
+ 
+@@ -103,8 +86,8 @@ void bl1_plat_arch_setup(void)
+ 			   bl1_tzram_layout.total_size,
+ 			   BL1_RO_BASE,
+ 			   BL1_RO_LIMIT,
+-			   BL1_COHERENT_RAM_BASE,
+-			   BL1_COHERENT_RAM_LIMIT);
++			   BL_COHERENT_RAM_BASE,
++			   BL_COHERENT_RAM_END);
+ }
+ 
+ /*
+diff --git a/plat/hisilicon/hikey960/hikey960_bl1_setup.c b/plat/hisilicon/hikey960/hikey960_bl1_setup.c
+index 9cadba0bb..6a07f0924 100644
+--- a/plat/hisilicon/hikey960/hikey960_bl1_setup.c
++++ b/plat/hisilicon/hikey960/hikey960_bl1_setup.c
+@@ -37,18 +37,6 @@ enum {
+  * Declarations of linker defined symbols which will help us find the layout
+  * of trusted RAM
+  */
+-extern unsigned long __COHERENT_RAM_START__;
+-extern unsigned long __COHERENT_RAM_END__;
+-
+-/*
+- * The next 2 constants identify the extents of the coherent memory region.
+- * These addresses are used by the MMU setup code and therefore they must be
+- * page-aligned.  It is the responsibility of the linker script to ensure that
+- * __COHERENT_RAM_START__ and __COHERENT_RAM_END__ linker symbols refer to
+- * page-aligned addresses.
+- */
+-#define BL1_COHERENT_RAM_BASE (unsigned long)(&__COHERENT_RAM_START__)
+-#define BL1_COHERENT_RAM_LIMIT (unsigned long)(&__COHERENT_RAM_END__)
+ 
+ /* Data structure which holds the extents of the trusted RAM for BL1 */
+ static meminfo_t bl1_tzram_layout;
+@@ -131,8 +119,8 @@ void bl1_plat_arch_setup(void)
+ 			      bl1_tzram_layout.total_size,
+ 			      BL1_RO_BASE,
+ 			      BL1_RO_LIMIT,
+-			      BL1_COHERENT_RAM_BASE,
+-			      BL1_COHERENT_RAM_LIMIT);
++			      BL_COHERENT_RAM_BASE,
++			      BL_COHERENT_RAM_END);
+ }
+ 
+ static void hikey960_ufs_reset(void)
+diff --git a/plat/hisilicon/poplar/bl1_plat_setup.c b/plat/hisilicon/poplar/bl1_plat_setup.c
+index 39551135f..25eed5938 100644
+--- a/plat/hisilicon/poplar/bl1_plat_setup.c
++++ b/plat/hisilicon/poplar/bl1_plat_setup.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2017-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -23,13 +23,6 @@
+ #include "hi3798cv200.h"
+ #include "plat_private.h"
+ 
+-/* Symbols from link script for conherent section */
+-extern unsigned long __COHERENT_RAM_START__;
+-extern unsigned long __COHERENT_RAM_END__;
+-
+-#define BL1_COHERENT_RAM_BASE	(unsigned long)(&__COHERENT_RAM_START__)
+-#define BL1_COHERENT_RAM_LIMIT	(unsigned long)(&__COHERENT_RAM_END__)
+-
+ /* Data structure which holds the extents of the trusted RAM for BL1 */
+ static meminfo_t bl1_tzram_layout;
+ 
+@@ -92,8 +85,8 @@ void bl1_plat_arch_setup(void)
+ 			       bl1_tzram_layout.total_size,
+ 			       BL1_RO_BASE, /* l-loader and BL1 ROM */
+ 			       BL1_RO_LIMIT,
+-			       BL1_COHERENT_RAM_BASE,
+-			       BL1_COHERENT_RAM_LIMIT);
++			       BL_COHERENT_RAM_BASE,
++			       BL_COHERENT_RAM_END);
+ }
+ 
+ void bl1_platform_setup(void)
+diff --git a/plat/mediatek/mt6795/bl31_plat_setup.c b/plat/mediatek/mt6795/bl31_plat_setup.c
+index 803f1ed85..32f015721 100644
+--- a/plat/mediatek/mt6795/bl31_plat_setup.c
++++ b/plat/mediatek/mt6795/bl31_plat_setup.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2016-2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2016-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -21,22 +21,21 @@
+ #include <plat_private.h>
+ #include <platform.h>
+ #include <string.h>
++#include <utils_def.h>
+ #include <xlat_tables.h>
++
+ /*******************************************************************************
+  * Declarations of linker defined symbols which will help us find the layout
+  * of trusted SRAM
+  ******************************************************************************/
+-unsigned long __RO_START__;
+-unsigned long __RO_END__;
+-
+ /*
+  * The next 2 constants identify the extents of the code & RO data region.
+  * These addresses are used by the MMU setup code and therefore they must be
+  * page-aligned.  It is the responsibility of the linker script to ensure that
+  * __RO_START__ and __RO_END__ linker symbols refer to page-aligned addresses.
+  */
+-#define BL31_RO_BASE (unsigned long)(&__RO_START__)
+-#define BL31_RO_LIMIT (unsigned long)(&__RO_END__)
++IMPORT_SYM(unsigned long, __RO_START__,	BL31_RO_BASE);
++IMPORT_SYM(unsigned long, __RO_END__,	BL31_RO_LIMIT);
+ 
+ /*
+  * Placeholder variables for copying the arguments that have been passed to
+diff --git a/plat/mediatek/mt8173/bl31_plat_setup.c b/plat/mediatek/mt8173/bl31_plat_setup.c
+index 7b2930771..e51bdbb9e 100644
+--- a/plat/mediatek/mt8173/bl31_plat_setup.c
++++ b/plat/mediatek/mt8173/bl31_plat_setup.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2013-2016, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2013-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -17,24 +17,6 @@
+ #include <platform.h>
+ #include <spm.h>
+ 
+-/*******************************************************************************
+- * Declarations of linker defined symbols which will help us find the layout
+- * of trusted SRAM
+- ******************************************************************************/
+-unsigned long __RO_START__;
+-unsigned long __RO_END__;
+-
+-/*
+- * The next 3 constants identify the extents of the code, RO data region and the
+- * limit of the BL31 image.  These addresses are used by the MMU setup code and
+- * therefore they must be page-aligned.  It is the responsibility of the linker
+- * script to ensure that __RO_START__, __RO_END__ & __BL31_END__ linker symbols
+- * refer to page-aligned addresses.
+- */
+-#define BL31_RO_BASE (unsigned long)(&__RO_START__)
+-#define BL31_RO_LIMIT (unsigned long)(&__RO_END__)
+-#define BL31_END (unsigned long)(&__BL31_END__)
+-
+ static entry_point_info_t bl32_ep_info;
+ static entry_point_info_t bl33_ep_info;
+ 
+@@ -156,10 +138,10 @@ void bl31_plat_arch_setup(void)
+ 	plat_cci_init();
+ 	plat_cci_enable();
+ 
+-	plat_configure_mmu_el3(BL31_RO_BASE,
+-			       BL_COHERENT_RAM_END - BL31_RO_BASE,
+-			       BL31_RO_BASE,
+-			       BL31_RO_LIMIT,
++	plat_configure_mmu_el3(BL_CODE_BASE,
++			       BL_COHERENT_RAM_END - BL_CODE_BASE,
++			       BL_CODE_BASE,
++			       BL_CODE_END,
+ 			       BL_COHERENT_RAM_BASE,
+ 			       BL_COHERENT_RAM_END);
+ }
+diff --git a/plat/nvidia/tegra/common/tegra_bl31_setup.c b/plat/nvidia/tegra/common/tegra_bl31_setup.c
+index d89ad7b94..2fe4e7dbc 100644
+--- a/plat/nvidia/tegra/common/tegra_bl31_setup.c
++++ b/plat/nvidia/tegra/common/tegra_bl31_setup.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2015-2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -23,6 +23,7 @@
+ #include <string.h>
+ #include <tegra_def.h>
+ #include <tegra_private.h>
++#include <utils_def.h>
+ 
+ /* length of Trusty's input parameters (in bytes) */
+ #define TRUSTY_PARAMS_LEN_BYTES	(4096*2)
+@@ -33,29 +34,17 @@ extern void zeromem16(void *mem, unsigned int length);
+  * Declarations of linker defined symbols which will help us find the layout
+  * of trusted SRAM
+  ******************************************************************************/
+-extern unsigned long __TEXT_START__;
+-extern unsigned long __TEXT_END__;
+-extern unsigned long __RW_START__;
+-extern unsigned long __RW_END__;
+-extern unsigned long __RODATA_START__;
+-extern unsigned long __RODATA_END__;
+-extern unsigned long __BL31_END__;
++
++IMPORT_SYM(unsigned long, __RW_START__,		BL31_RW_START);
++IMPORT_SYM(unsigned long, __RW_END__,		BL31_RW_END);
++IMPORT_SYM(unsigned long, __RODATA_START__,	BL31_RODATA_BASE);
++IMPORT_SYM(unsigned long, __RODATA_END__,	BL31_RODATA_END);
++IMPORT_SYM(unsigned long, __TEXT_START__,	TEXT_START);
++IMPORT_SYM(unsigned long, __TEXT_END__,		TEXT_END);
+ 
+ extern uint64_t tegra_bl31_phys_base;
+ extern uint64_t tegra_console_base;
+ 
+-/*
+- * The next 3 constants identify the extents of the code, RO data region and the
+- * limit of the BL3-1 image.  These addresses are used by the MMU setup code and
+- * therefore they must be page-aligned.  It is the responsibility of the linker
+- * script to ensure that __RO_START__, __RO_END__ & __BL31_END__ linker symbols
+- * refer to page-aligned addresses.
+- */
+-#define BL31_RW_START (unsigned long)(&__RW_START__)
+-#define BL31_RW_END (unsigned long)(&__RW_END__)
+-#define BL31_RODATA_BASE (unsigned long)(&__RODATA_START__)
+-#define BL31_RODATA_END (unsigned long)(&__RODATA_END__)
+-#define BL31_END (unsigned long)(&__BL31_END__)
+ 
+ static entry_point_info_t bl33_image_ep_info, bl32_image_ep_info;
+ static plat_params_from_bl2_t plat_bl31_params_from_bl2 = {
+@@ -311,8 +300,8 @@ void bl31_plat_arch_setup(void)
+ 	unsigned long rw_size = BL31_RW_END - BL31_RW_START;
+ 	unsigned long rodata_start = BL31_RODATA_BASE;
+ 	unsigned long rodata_size = BL31_RODATA_END - BL31_RODATA_BASE;
+-	unsigned long code_base = (unsigned long)(&__TEXT_START__);
+-	unsigned long code_size = (unsigned long)(&__TEXT_END__) - code_base;
++	unsigned long code_base = TEXT_START;
++	unsigned long code_size = TEXT_END - TEXT_START;
+ 	const mmap_region_t *plat_mmio_map = NULL;
+ #if USE_COHERENT_MEM
+ 	unsigned long coh_start, coh_size;
+diff --git a/plat/rockchip/common/bl31_plat_setup.c b/plat/rockchip/common/bl31_plat_setup.c
+index 6199edae2..e5ee68f14 100644
+--- a/plat/rockchip/common/bl31_plat_setup.c
++++ b/plat/rockchip/common/bl31_plat_setup.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2016, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2016-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -17,21 +17,14 @@
+ #include <platform_def.h>
+ #include <uart_16550.h>
+ 
+-/*******************************************************************************
+- * Declarations of linker defined symbols which will help us find the layout
+- * of trusted SRAM
+- ******************************************************************************/
+-unsigned long __RO_START__;
+-unsigned long __RO_END__;
+-
+ /*
+  * The next 2 constants identify the extents of the code & RO data region.
+  * These addresses are used by the MMU setup code and therefore they must be
+  * page-aligned.  It is the responsibility of the linker script to ensure that
+  * __RO_START__ and __RO_END__ linker symbols refer to page-aligned addresses.
+  */
+-#define BL31_RO_BASE (unsigned long)(&__RO_START__)
+-#define BL31_RO_LIMIT (unsigned long)(&__RO_END__)
++IMPORT_SYM(unsigned long, __RO_START__,	BL31_RO_BASE);
++IMPORT_SYM(unsigned long, __RO_END__,	BL31_RO_LIMIT);
+ 
+ static entry_point_info_t bl32_ep_info;
+ static entry_point_info_t bl33_ep_info;
+diff --git a/services/std_svc/spm/spm_shim_private.h b/services/std_svc/spm/spm_shim_private.h
+index ad953cde7..8408d1e04 100644
+--- a/services/std_svc/spm/spm_shim_private.h
++++ b/services/std_svc/spm/spm_shim_private.h
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2017, ARM Limited and Contributors. All rights reserved.
++ * Copyright (c) 2017-2018, ARM Limited and Contributors. All rights reserved.
+  *
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+@@ -8,21 +8,17 @@
+ #define __SPM_SHIM_PRIVATE__
+ 
+ #include <types.h>
++#include <utils_def.h>
+ 
+ /* Assembly source */
+-extern uintptr_t spm_shim_exceptions_ptr;
++IMPORT_SYM(uintptr_t, spm_shim_exceptions_ptr,		SPM_SHIM_EXCEPTIONS_PTR);
+ 
+ /* Linker symbols */
+-extern uintptr_t __SPM_SHIM_EXCEPTIONS_START__;
+-extern uintptr_t __SPM_SHIM_EXCEPTIONS_END__;
++IMPORT_SYM(uintptr_t, __SPM_SHIM_EXCEPTIONS_START__,	SPM_SHIM_EXCEPTIONS_START);
++IMPORT_SYM(uintptr_t, __SPM_SHIM_EXCEPTIONS_END__,	SPM_SHIM_EXCEPTIONS_END);
+ 
+ /* Definitions */
+-#define SPM_SHIM_EXCEPTIONS_PTR		(uintptr_t)(&spm_shim_exceptions_ptr)
+ 
+-#define SPM_SHIM_EXCEPTIONS_START	\
+-	(uintptr_t)(&__SPM_SHIM_EXCEPTIONS_START__)
+-#define SPM_SHIM_EXCEPTIONS_END		\
+-	(uintptr_t)(&__SPM_SHIM_EXCEPTIONS_END__)
+ #define SPM_SHIM_EXCEPTIONS_SIZE	\
+ 	(SPM_SHIM_EXCEPTIONS_END - SPM_SHIM_EXCEPTIONS_START)
+ 
+-- 
+2.25.1
+
