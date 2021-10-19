@@ -38,6 +38,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    351c82388784 ("arch/arm64/boot/dts/freescale: fix file permissions on dts files")
 #    fb3e7593ee84 ("irq-imx-irqsteer: fix compile error if CONFIG_PM_SLEEP is not set")
 #    96613ac4e960 ("arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL")
 #    36fea22d04f4 ("arm: imx: do not include smp_wfe_imx6.S for i.MX6SX")
@@ -56,7 +57,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"
-SRCREV = "94446b0f424a28803fda4bbfbdeda6006143d794"
+SRCREV = "d104abae22e109f942a3bb42ba4460e610c21965"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
