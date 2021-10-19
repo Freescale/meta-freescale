@@ -38,6 +38,15 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    9d957f4a4a32 ("PCI: dwc: PCI_IMX6 must depend on PCIE_DW")
+#    983b1aa2a2ea ("usb: chipidea: fix missing chipidea.h include")
+#    bacde482ab6f ("ARM: imx: select MAILBOX with IMX_MBOX")
+#    5fd63d48755a ("gpu: drm: allow enabling DRM_IMX on Layerscape SoCs")
+#    b06df4cec270 ("ARM: dts: imx7s: revert LCDIF AXI clock to IMX7D_LCDIF_PIXEL_ROOT_CLK")
+#    bdf733608e50 ("ARM: imx: add missing debug_ll_io_init to i.MX6UL map_io")
+#    302f8a6d262a ("i2c: imx: remove unneeded libata include")
+#    107dc9bc6283 ("i2c: imx: fix lockdep issue")
+#    681f2d40b114 ("i2c: imx: avoid taking clk_prepare mutex in PM callbacks (again)")
 #    351c82388784 ("arch/arm64/boot/dts/freescale: fix file permissions on dts files")
 #    fb3e7593ee84 ("irq-imx-irqsteer: fix compile error if CONFIG_PM_SLEEP is not set")
 #    96613ac4e960 ("arm: imx: include i.MX6SX DDR freq implementation for i.MX6UL")
@@ -57,7 +66,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"
-SRCREV = "d104abae22e109f942a3bb42ba4460e610c21965"
+SRCREV = "1d450504bfade8c4a60ae6e0de11639a7a038647"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
