@@ -38,6 +38,9 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    8b20421b2b61 ("staging: fsl_ppfe: reduce MAC address filtering loglevel to debug")
+#    16ea8f2ab906 ("staging: fsl_ppfe: assign correct OF nodes to individual ports")
+#    9d0f521803cd ("staging: fsl_ppfe: handle all RGMII modes in pfe_eth_adjust_link")
 #    9d957f4a4a32 ("PCI: dwc: PCI_IMX6 must depend on PCIE_DW")
 #    983b1aa2a2ea ("usb: chipidea: fix missing chipidea.h include")
 #    bacde482ab6f ("ARM: imx: select MAILBOX with IMX_MBOX")
@@ -66,7 +69,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"
-SRCREV = "3485dced8f9c272e44b70c2df74ed58ae8bacac7"
+SRCREV = "b0d74a58e223ab3e125a170c48bc1904d5a656ed"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
