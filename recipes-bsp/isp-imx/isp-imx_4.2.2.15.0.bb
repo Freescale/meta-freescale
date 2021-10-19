@@ -2,8 +2,8 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=417b82f17fc02b88125331ed312f6f1b"
-DEPENDS = "python3 libdrm virtual/libg2d"
+LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa" 
+DEPENDS = "python3 libdrm virtual/libg2d libtinyxml2"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
@@ -11,8 +11,8 @@ SRC_URI = " \
     file://0001-isp-imx-drop-use-of-__TIME__-__DATE__.patch \
 "
 
-SRC_URI[md5sum] = "123feed48302fea2a1be8572e913ae47"
-SRC_URI[sha256sum] = "e775975684aab4211f0bf8c5e2c6604ba46b83c5586937000675e044a50d77b8"
+SRC_URI[md5sum] = "e9e0943b9f4923c767d07901e550c41c"
+SRC_URI[sha256sum] = "13274c0fd442da4b3b9900a7568c59872ffa6408f5699d35eebc6760a8e51297"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
