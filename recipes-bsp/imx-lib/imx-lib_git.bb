@@ -10,11 +10,12 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24
 
 PE = "1"
 
-PV = "5.8+${SRCPV}"
+PV = "5.9+${SRCPV}"
 
-SRCBRANCH = "master"
+SRCBRANCH = "lf-5.10.52_2.1.0"
+
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "3f777974c0c146817e2ff5cb0340ca66a1f99e57"
+SRCREV = "87ddd80953835eb29027d1d5a12044a08e809e40"
 
 S = "${WORKDIR}/git"
 
@@ -29,6 +30,7 @@ PLATFORM:mx6ul = "IMX6UL"
 PLATFORM:mx6ull = "IMX6UL"
 PLATFORM:mx7d  = "IMX7"
 PLATFORM:mx7ulp = "IMX7"
+PLATFORM:mx8ulp = "IMX8ULP"
 
 PARALLEL_MAKE="-j 1"
 EXTRA_OEMAKE = ""
@@ -42,4 +44,4 @@ do_install () {
     oe_runmake PLATFORM="${PLATFORM}" DEST_DIR="${D}" install
 }
 
-COMPATIBLE_MACHINE = "(mx6|mx7)"
+COMPATIBLE_MACHINE = "(mx6|mx7|mx8ulp)"
