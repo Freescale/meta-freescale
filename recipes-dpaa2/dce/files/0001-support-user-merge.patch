@@ -1,0 +1,31 @@
+From d4aa7f64db5841242257c5b30dd652afd0f6ff68 Mon Sep 17 00:00:00 2001
+From: Hongxu Jia <hongxu.jia@windriver.com>
+Date: Wed, 20 Oct 2021 14:00:35 +0800
+Subject: [PATCH] support user merge
+
+Use Yocto base_sbindir to replace hardcode ./sbin
+
+Upstream-Status: Inappropriate [oe specific]
+
+Signed-off-by: Hongxu Jia <hongxu.jia@windriver.com>
+---
+ Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 62eff25..18b79b1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -25,7 +25,8 @@ CFLAGS += -fdiagnostics-color
+ 
+ LDFLAGS = -static -Wl,--hash-style=gnu ${EXTRA_CFLAGS}
+ 
+-PREFIX = $(DESTDIR)/sbin
++base_sbindir ?= ./sbin
++PREFIX = $(DESTDIR)/${base_sbindir}
+ 
+ HEADER_DEPENDENCIES = $(subst .o,.d,$(OBJS))
+ 
+-- 
+2.27.0
+
