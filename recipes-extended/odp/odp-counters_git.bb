@@ -9,6 +9,6 @@ do_compile:prepend () {
 }
 
 do_install () {
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/odp
-    install -m 755 ${S}/test/debug/perf_counters/odpfsl_perfcounters.ko ${D}/lib/modules/${KERNEL_VERSION}/odp
+    install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/odp
+    install -m 755 ${S}/test/debug/perf_counters/odpfsl_perfcounters.ko ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/odp
 }

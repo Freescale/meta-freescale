@@ -9,8 +9,8 @@ do_compile:prepend () {
 }
 
 do_install () {
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/odp
-    install -m 755 ${S}/kern/odpfsl_kni.ko ${D}/lib/modules/${KERNEL_VERSION}/odp
+    install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/odp
+    install -m 755 ${S}/kern/odpfsl_kni.ko ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/odp
 }
 
 PKG:${PN} = "kernel-module-${PN}"
