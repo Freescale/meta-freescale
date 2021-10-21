@@ -4,12 +4,12 @@
 
 DESCRIPTION = "GPU G2D library and apps for i.MX with 2D GPU and DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=417b82f17fc02b88125331ed312f6f1b"
+LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
 PROVIDES += "virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "a267c87677d600ecf07d4c8f42941532"
-SRC_URI[sha256sum] = "02e4e649f2af6c867cb666df10f032af48b0907e1529fa6c5958dad7e38aebbe"
+SRC_URI[md5sum] = "0b7fc529b3af3ecc3087a99cca0c627d"
+SRC_URI[sha256sum] = "42d470373fd72b2e2aa8d8a226e133c61b0a88e4e5bddbfec9509f7d2764f206"
 
 inherit fsl-eula-unpack
 
@@ -25,7 +25,7 @@ FILES:${PN} = "${libdir}/libg2d* /opt"
 FILES:${PN}-dev = "${libdir}/libg2d${SOLIBSDEV} ${includedir}"
 INSANE_SKIP:${PN} += "ldflags"
 
-RDEPENDS:${PN} = "libgal-imx libdrm"
+RDEPENDS:${PN} = "libgal-imx libdrm libopencl-imx"
 
 # This is required to provide support for VPU Amphion HEVC tile format
 # From NXP [MGS-5547] (commit e175d6b4f78deab24d319b852998bef55cdecc99):
