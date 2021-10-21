@@ -4,13 +4,13 @@ DESCRIPTION = "Kernel loadable module for ISP"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/git/vvcam/LICENSE;md5=64381a6ea83b48c39fe524c85f65fb44"
 
-SRCBRANCH = "imx_5.10_2.0.0"
+SRCBRANCH = "lf-5.10.52_2.1.0"
 ISP_KERNEL_SRC ?= "git://source.codeaurora.org/external/imx/isp-vvcam.git;protocol=https"
 
 SRC_URI = " \
     ${ISP_KERNEL_SRC};branch=${SRCBRANCH} \
 "
-SRCREV = "47588cb88cc75400b5d2c35a17527e99b752d9be"
+SRCREV = "39bfc64f09f8da3c41df3bdada5becb88bf5bb5f"
 
 S = "${WORKDIR}/git/vvcam/v4l2"
 
