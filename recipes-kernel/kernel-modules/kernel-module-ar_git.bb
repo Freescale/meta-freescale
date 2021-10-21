@@ -19,9 +19,9 @@ do_compile:prepend() {
 }
 
 do_install(){
-	install -d ${D}/lib/modules/${KERNEL_VERSION}
+	install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}
 	install -d ${D}${bindir}
-	install -m 644 ${B}/bin/ar.ko ${D}/lib/modules/${KERNEL_VERSION}/
+	install -m 644 ${B}/bin/ar.ko ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/
 	cp -f ${S}/bin/ar_* ${D}${bindir}/ 
 }
 
