@@ -6,7 +6,7 @@
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=417b82f17fc02b88125331ed312f6f1b"
+LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -300,8 +300,12 @@ FILES:libopenvx-imx = " \
 FILES:libopenvx-imx-dev = "${includedir}/VX ${libdir}/libOpenVX${SOLIBSDEV}"
 RDEPENDS:libopenvx-imx = "libnn-imx"
 
+# libGL is only targeting X11 backend, and in case if Wayland-only is used -
+# package QA complains on missing RDEPENDS, which are only available for X11.
+# Skip "file-rdeps" QA for this package.
 FILES:libgl-imx = "${libdir}/libGL${REALSOLIBS}"
 FILES:libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL"
+INSANE_SKIP:libgl-imx += "file-rdeps"
 
 # libEGL needs to open libGLESv1.so
 INSANE_SKIP:libgles1-imx += "dev-so"
