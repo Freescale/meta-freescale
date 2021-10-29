@@ -14,19 +14,17 @@ Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
  meson.build | 6 ++++--
  1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/meson.build b/meson.build
-index ca8b127..efb51f4 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -65,6 +65,7 @@ dep_gl = _dep_null
+@@ -63,6 +63,7 @@ dep_gl = _dep_null
  dep_egl = _dep_null
  dep_wayland_client = _dep_null
  dep_wayland_egl = _dep_null
 +dep_wayland_wayland_egl = _dep_null
+ dep_wayland_scanner = _dep_null
+ dep_wayland_proto = _dep_null
  dep_x11_xcb = _dep_null
- dep_gbm = _dep_null
- dep_udev = _dep_null
-@@ -90,7 +91,8 @@ else
+@@ -104,7 +105,8 @@ else
    dep_wayland_client = dependency(
      'wayland-client', version : '>= 1.10', required : get_option('wayland'),
    )
@@ -35,13 +33,13 @@ index ca8b127..efb51f4 100644
 +  dep_wayland_wayland_egl = dependency(
      'wayland-egl', version : '>= 9.1', required : get_option('wayland'),
    )
-   dep_x11_xcb = dependency('x11-xcb', required : get_option('glx'))
-@@ -101,7 +103,7 @@ else
-   dep_udev = dependency('libudev', required : get_option('gbm'))
+   dep_wayland_scanner = dependency(
+@@ -120,7 +122,7 @@ else
+     wayland_xdg_shell_xml = join_paths(dep_wayland_proto.get_pkgconfig_variable('pkgdatadir'),
+     'stable/xdg-shell/xdg-shell.xml')
+   endif
+-  build_wayland = dep_egl.found() and dep_wayland_client.found() and dep_wayland_egl.found() and dep_wayland_scanner.found() and dep_wayland_proto.found()
++  build_wayland = dep_egl.found() and dep_wayland_client.found() and dep_wayland_egl.found() and dep_wayland_scanner.found() and dep_wayland_proto.found() and dep_wayland_wayland_egl.found()
  
-   build_x11_egl = dep_egl.found()
--  build_wayland = dep_wayland_client.found() and dep_wayland_egl.found()
-+  build_wayland = dep_wayland_client.found() and dep_wayland_egl.found() and dep_wayland_wayland_egl.found()
-   build_glx = dep_gl.found()
-   build_gbm = dep_gbm.found() and dep_udev.found()
-   build_surfaceless = dep_egl.found()
+   # We're interested only in the headers provided
+   # FINISHME: make x11_xcb and udev compile-only dependency
