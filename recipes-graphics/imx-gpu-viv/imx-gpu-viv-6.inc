@@ -147,6 +147,13 @@ PACKAGE_FP_TYPE = "hardfp"
 HAS_GBM     = "false"
 HAS_GBM:mx8 = "true"
 
+IMX_SOC        = "IMX_SOC_NOT_SET"
+IMX_SOC:mx8qm  = "mx8qm"
+IMX_SOC:mx8mp  = "mx8mp"
+IMX_SOC:mx8mq  = "mx8mq"
+IMX_SOC:mx8qxp = "mx8qxp"
+IMX_SOC:mx8mn  = "mx8mn"
+IMX_SOC:mx8ulp = "mx8ulp"
 
 do_install () {
     install -d ${D}${libdir}
@@ -160,6 +167,10 @@ do_install () {
 
     # Use vulkan header from vulkan-headers recipe to support vkmark
     rm -rf ${D}${includedir}/vulkan/
+
+    if [ -d ${S}/gpu-core/usr/lib/${IMX_SOC} ]; then
+        cp -r ${S}/gpu-core/usr/lib/${IMX_SOC}/* ${D}${libdir}
+    fi
 
     install -d ${D}${libdir}/pkgconfig
     if ${HAS_GBM}; then
