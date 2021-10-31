@@ -42,6 +42,9 @@ do_compile () {
 
 do_install () {
     oe_runmake PLATFORM="${PLATFORM}" DEST_DIR="${D}" install
+
+    # Remove .go file for Android
+    find ${D}/ -name *.go -exec rm {} \;
 }
 
 COMPATIBLE_MACHINE = "(mx6|mx7|mx8ulp)"
