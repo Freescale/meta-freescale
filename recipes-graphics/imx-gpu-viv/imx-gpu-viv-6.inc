@@ -153,6 +153,9 @@ GLES3_HEADER_REMOVALS:mx8mm  = "gl31.h gl32.h"
 GLES3_HEADER_REMOVALS:mx8qxp = ""
 GLES3_HEADER_REMOVALS:mx8qm  = ""
 
+LIBVULKAN_VERSION_MAJOR = "1"
+LIBVULKAN_VERSION = "${LIBVULKAN_VERSION_MAJOR}.1.6"
+
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
@@ -224,8 +227,8 @@ do_install () {
     if [ "${IS_MX8}" = "1" ]; then
         # Rename the vulkan implementation library which is wrapped by the vulkan-loader
         # library of the same name
-        MAJOR=1
-        FULL=$MAJOR.1.6
+        MAJOR=${LIBVULKAN_VERSION_MAJOR}
+        FULL=${LIBVULKAN_VERSION}
         mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
         patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
         rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
