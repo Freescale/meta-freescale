@@ -16,12 +16,12 @@ DEPENDS:append:imxvpu = " virtual/imxvpu"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "lf-5.10.y_2.0.0"
+SRCBRANCH = "lf-5.10.52_2.1.0"
 SRC_URI = " \
     git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://memtool_profile \
 "
-SRCREV = "e55c83b939dbb1989181f48b2b3f3e32f7b5b380"
+SRCREV = "2dcb987a91183770f328258b424d9ad2fdfdc17a"
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers

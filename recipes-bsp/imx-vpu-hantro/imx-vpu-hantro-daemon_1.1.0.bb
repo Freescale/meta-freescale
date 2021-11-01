@@ -8,10 +8,9 @@ DEPENDS:append:mx8mp = " imx-vpu-hantro-vc"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.tar.gz \
-    file://0001-Makefile-Honor-LDFLAGS-from-toolchain.patch \
 "
-SRC_URI[md5sum] = "65417710ef22214523c37f50f34b6ab2"
-SRC_URI[sha256sum] = "897d174c4c0818f31012d8a60ed51fc83fdfc55fca2d2b0fc24a0db3e9f3b6e8"
+SRC_URI[md5sum] = "980237589af195c2c4b852a7aad175ee"
+SRC_URI[sha256sum] = "a5d915fefd3637e68d693638edd1161c30e75011a6312251b914f04546fd0fc9"
 
 PLATFORM:mx8mm = "IMX8MM"
 PLATFORM:mx8mq = "IMX8MQ"
