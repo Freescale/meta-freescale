@@ -3,7 +3,7 @@
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
-DEPENDS = "python3 libdrm virtual/libg2d libtinyxml2"
+DEPENDS = "python3 libdrm virtual/libg2d libtinyxml2-8"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
@@ -45,6 +45,10 @@ EXTRA_OECMAKE += " \
 
 do_configure:prepend() {
     export SDKTARGETSYSROOT=${STAGING_DIR_HOST}
+}
+
+do_compile:prepend() {
+    ln -sf ${RECIPE_SYSROOT}/${libdir}/libtinyxml2.so.?.?.? ${RECIPE_SYSROOT}/${libdir}/libtinyxml2.so
 }
 
 do_install() {
