@@ -1,6 +1,6 @@
-From accaeb1ae77eb40b89e70df3efcb00d0dc2af758 Mon Sep 17 00:00:00 2001
+From ea5ce303fa5bc7b6a17c522b4caf49d349adb12b Mon Sep 17 00:00:00 2001
 From: Max Krummenacher <max.krummenacher@toradex.com>
-Date: Mon, 14 Jun 2021 08:20:48 +0000
+Date: Sat, 30 Oct 2021 17:26:42 +0200
 Subject: [PATCH] isp-imx: drop use of __TIME__, __DATE__
 
 With reproducible build enabled the compiler is configured to throw
@@ -21,7 +21,7 @@ Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
  2 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/mediacontrol/CMakeLists.txt b/mediacontrol/CMakeLists.txt
-index 48cd7633e..f587758e0 100755
+index 5849c163e..8a8e1a4a0 100755
 --- a/mediacontrol/CMakeLists.txt
 +++ b/mediacontrol/CMakeLists.txt
 @@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.1.0)
@@ -35,38 +35,38 @@ index 48cd7633e..f587758e0 100755
      if(DEFINED PLATFORM)
          if(${PLATFORM} STREQUAL ARM64)
 diff --git a/mediacontrol/daemon/main_v4l2.cpp b/mediacontrol/daemon/main_v4l2.cpp
-index a3033cf83..d08dee127 100644
+index d3d1c2423..dd0514358 100644
 --- a/mediacontrol/daemon/main_v4l2.cpp
 +++ b/mediacontrol/daemon/main_v4l2.cpp
-@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
-     if (argc ==  2){
+@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
           if(!(string2Version.find(argv[1])==string2Version.end())){
               std::cout << "Version : "<<MEDIA_SERVER_VERSION<<std::endl;
+ #ifndef ANDROID
 -             std::cout << "Build Time : "<<__DATE__<<", "<<__TIME__<<std::endl;
 +             std::cout << "Build Time : "<<BUILD_DATE<<std::endl;
+ #endif
               return 0;
           }
-     }
-@@ -105,8 +105,8 @@ int main(int argc, char* argv[]) {
-     if(fd_running >= 0)
+@@ -116,8 +116,8 @@ int main(int argc, char* argv[]) {
      {
          ALOGI("******************************************************************");
+ #ifndef ANDROID
 -        ALOGI("VIV ISP Media Control Framework V%s (%s, %s)",
 -              MEDIA_SERVER_VERSION, __DATE__, __TIME__);
 +        ALOGI("VIV ISP Media Control Framework V%s (%s)",
 +              MEDIA_SERVER_VERSION, BUILD_DATE);
-         ALOGI("******************************************************************\n");
- 
-         if (argc < 2) {
-@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
-         while( i < argc ){
+ #else
+         ALOGI("VIV ISP Media Control Framework V%s", MEDIA_SERVER_VERSION);
+ #endif
+@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
                  if(!(string2Version.find(argv[i])==string2Version.end())){
                      std::cout << "Version : "<<MEDIA_SERVER_VERSION<<std::endl;
+ #ifndef ANDROID
 -                    std::cout << "Build Time : "<<__DATE__<<", "<<__TIME__<<std::endl;
 +                    std::cout << "Build Time : "<<BUILD_DATE<<std::endl;
+ #endif
                      i++;
                      continue;
-                  }
 -- 
 2.20.1
 
