@@ -1,6 +1,6 @@
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
-GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
+GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https;branch=master"
 SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
 
 SRC_URI = " \

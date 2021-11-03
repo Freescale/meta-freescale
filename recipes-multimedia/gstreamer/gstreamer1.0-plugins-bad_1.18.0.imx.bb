@@ -10,7 +10,7 @@ DEFAULT_PREFERENCE = "-1"
 PACKAGE_ARCH:imxpxp = "${MACHINE_SOCARCH}"
 PACKAGE_ARCH:mx8 = "${MACHINE_SOCARCH}"
 
-GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
+GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https;branch=master"
 SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
 
 SRC_URI = " \

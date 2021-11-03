@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
 S = "${WORKDIR}/git"
 
 # Use i.MX fork of GST for customizations
-GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https"
+GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https;branch=master"
 SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
 SRC_URI = "${GST1.0_SRC};branch=${SRCBRANCH} \
            file://run-ptest \

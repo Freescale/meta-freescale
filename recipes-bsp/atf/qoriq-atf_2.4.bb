@@ -7,7 +7,7 @@ DEPENDS:append:lx2160a += "ddr-phy"
 DEPENDS:append:lx2162a += "ddr-phy"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 
-SRC_URI += "git://github.com/ARMmbed/mbedtls;nobranch=1;destsuffix=git/mbedtls;name=mbedtls"
+SRC_URI += "git://github.com/ARMmbed/mbedtls;nobranch=1;destsuffix=git/mbedtls;name=mbedtls;protocol=https"
 SRCREV_mbedtls = "0795874acdf887290b2571b193cafd3c4041a708"
 SRCREV_FORMAT = "atf"
 
