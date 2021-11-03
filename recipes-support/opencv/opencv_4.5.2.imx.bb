@@ -44,13 +44,13 @@ IPP_FILENAME = "${@ipp_filename(d)}"
 IPP_MD5 = "${@ipp_md5sum(d)}"
 
 SRCREV_FORMAT = "opencv_contrib_ipp_boostdesc_vgg"
-SRC_URI = "git://github.com/opencv/opencv.git;name=opencv \
-           git://github.com/opencv/opencv_contrib.git;destsuffix=contrib;name=contrib \
-           git://github.com/opencv/opencv_3rdparty.git;branch=ippicv/master_20191018;destsuffix=ipp;name=ipp \
-           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_boostdesc_20161012;destsuffix=boostdesc;name=boostdesc \
-           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_vgg_20160317;destsuffix=vgg;name=vgg \
-           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_face_alignment_20170818;destsuffix=face;name=face \
-           git://github.com/WeChatCV/opencv_3rdparty.git;branch=wechat_qrcode;destsuffix=wechat_qrcode;name=wechat-qrcode \
+SRC_URI = "git://github.com/opencv/opencv.git;name=opencv;branch=master;protocol=https \
+           git://github.com/opencv/opencv_contrib.git;destsuffix=contrib;name=contrib;branch=master;protocol=https \
+           git://github.com/opencv/opencv_3rdparty.git;branch=ippicv/master_20191018;destsuffix=ipp;name=ipp;protocol=https \
+           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_boostdesc_20161012;destsuffix=boostdesc;name=boostdesc;protocol=https \
+           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_xfeatures2d_vgg_20160317;destsuffix=vgg;name=vgg;protocol=https \
+           git://github.com/opencv/opencv_3rdparty.git;branch=contrib_face_alignment_20170818;destsuffix=face;name=face;protocol=https \
+           git://github.com/WeChatCV/opencv_3rdparty.git;branch=wechat_qrcode;destsuffix=wechat_qrcode;name=wechat-qrcode;protocol=https \
            file://0001-3rdparty-ippicv-Use-pre-downloaded-ipp.patch \
            file://0003-To-fix-errors-as-following.patch \
            file://0001-Temporarliy-work-around-deprecated-ffmpeg-RAW-functi.patch \
@@ -243,15 +243,15 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 # Replace the opencv URL with the fork
 SRCREV_opencv = "5423d53ae0d116ee5bbe52f8b5503f0cd8586998"
-OPENCV_SRC ?= "git://source.codeaurora.org/external/imx/opencv-imx.git;protocol=https"
+OPENCV_SRC ?= "git://source.codeaurora.org/external/imx/opencv-imx.git;protocol=https;branch=master"
 SRCBRANCH = "4.5.2_imx"
-SRC_URI:remove = "git://github.com/opencv/opencv.git;name=opencv"
+SRC_URI:remove = "git://github.com/opencv/opencv.git;name=opencv;branch=master;protocol=https"
 SRC_URI =+ "${OPENCV_SRC};branch=${SRCBRANCH};name=opencv"
 
 # Add opencv_extra
 SRCREV_extra = "855c4528402e563283f86f28c6393f57eb5dcf62"
 SRC_URI += " \
-    git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra \
+    git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra;branch=master;protocol=https \
     file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=../extra \
 "
 SRCREV_FORMAT:append = "_extra"
