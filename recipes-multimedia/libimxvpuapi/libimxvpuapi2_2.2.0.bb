@@ -9,7 +9,7 @@ PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
 SRCREV = "a650f13fb5de94e0c7c9e77f4d07ea275ea80dac"
-SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH};protocol=https"
 
 S = "${WORKDIR}/git"
 

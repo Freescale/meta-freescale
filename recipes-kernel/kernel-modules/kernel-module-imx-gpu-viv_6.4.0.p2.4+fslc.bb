@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
 PV .= "+git${SRCPV}"
 
 SRCREV = "f2e8483fbda59bf2482f77efb0804c014848f749"
-SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=https"
+SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=https;branch=master"
 
 S = "${WORKDIR}/git"
 

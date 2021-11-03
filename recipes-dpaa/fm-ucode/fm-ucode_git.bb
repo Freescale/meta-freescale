@@ -7,7 +7,7 @@ PR = "r1"
 
 inherit deploy
 
-SRC_URI = "git://github.com/NXP/qoriq-fm-ucode.git;nobranch=1"
+SRC_URI = "git://github.com/NXP/qoriq-fm-ucode.git;nobranch=1;protocol=https"
 SRCREV = "c275e91392e2adab1ed22f3867b8269ca3c54014"
 
 S = "${WORKDIR}/git"
