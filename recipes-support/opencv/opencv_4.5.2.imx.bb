@@ -58,6 +58,7 @@ SRC_URI = "git://github.com/opencv/opencv.git;name=opencv \
            file://download.patch \
            file://0001-Make-ts-module-external.patch \
            file://0001-sfm-link-with-Glog_LIBS.patch;patchdir=../contrib \
+           file://0001-Use-the-one-argument-version-of-SetTotalBytesLimit.patch \
            "
 SRC_URI:append:riscv64 = " file://0001-Use-Os-to-compile-tinyxml2.cpp.patch;patchdir=../contrib"
 
@@ -111,6 +112,12 @@ EXTRA_OECMAKE:append:x86 = " -DX86=ON"
 PACKAGECONFIG ??= "gapi python3 eigen jpeg png tiff v4l libv4l gstreamer samples tbb gphoto2 \
     ${@bb.utils.contains("DISTRO_FEATURES", "x11", "gtk", "", d)} \
     ${@bb.utils.contains("LICENSE_FLAGS_WHITELIST", "commercial", "libav", "", d)}"
+
+# TBB does not build for powerpc so disable that package config
+PACKAGECONFIG:remove:powerpc = "tbb"
+# tbb now needs getcontect/setcontext which is not there for all arches on musl
+PACKAGECONFIG:remove:libc-musl:riscv64 = "tbb"
+PACKAGECONFIG:remove:libc-musl:riscv32 = "tbb"
 
 PACKAGECONFIG[gapi] = "-DWITH_ADE=ON -Dade_DIR=${STAGING_LIBDIR},-DWITH_ADE=OFF,ade"
 PACKAGECONFIG[amdblas] = "-DWITH_OPENCLAMDBLAS=ON,-DWITH_OPENCLAMDBLAS=OFF,libclamdblas,"
@@ -229,9 +236,11 @@ do_install:append() {
         sed -e 's@${STAGING_DIR_HOST}@@g' \
             -i ${D}${libdir}/cmake/opencv4/OpenCVModules.cmake
     fi
+    # remove setup_vars_opencv4.sh as its content is confusing and useless
+    if [ -f ${D}${bindir}/setup_vars_opencv4.sh ]; then
+        rm -rf ${D}${bindir}/setup_vars_opencv4.sh
+    fi
 }
-
-TOOLCHAIN = "gcc"
 
 ########## End of meta-openembedded copy ##########
 
