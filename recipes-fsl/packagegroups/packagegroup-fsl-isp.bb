@@ -1,5 +1,7 @@
 DESCRIPTION = "Add packages for ISP build"
 
+# basler-camera* gets dynamically renamed
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 inherit packagegroup
 
 ISP_PKGS      ?= ""
