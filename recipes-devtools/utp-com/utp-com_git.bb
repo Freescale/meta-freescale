@@ -6,7 +6,7 @@ DEPENDS = "sg3-utils"
 
 SRCREV = "dee512ced1e9367d223d22f10797fbf9aeacfab6"
 SRC_URI = " \
-    git://github.com/Freescale/utp_com;protocol=https \
+    git://github.com/Freescale/utp_com;protocol=https;branch=master \
 "
 
 PV = "1.0+git${SRCPV}"

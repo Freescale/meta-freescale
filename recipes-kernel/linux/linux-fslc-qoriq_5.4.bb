@@ -14,4 +14,4 @@ LINUX_VERSION = "5.4.64"
 
 SRCBRANCH = "5.4.y+qoriq+fslc"
 SRCREV = "4c04c442c0e91e7cf01f830aca524f09b5613f29"
-SRC_URI := "git://github.com/Freescale/linux-fslc.git;branch=${SRCBRANCH}"
+SRC_URI := "git://github.com/Freescale/linux-fslc.git;branch=${SRCBRANCH};protocol=https"
