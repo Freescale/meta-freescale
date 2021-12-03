@@ -36,6 +36,17 @@ DEPENDS:remove = "virtual/${TARGET_PREFIX}compilerlibs virtual/libc"
 
 BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
+# CC and LD introduce arguments which conflict with those otherwise provided by
+# this recipe. The heads of these variables excluding those arguments
+# are therefore used instead.
+def remove_options_tail (in_string):
+    from itertools import takewhile
+    return ' '.join(takewhile(lambda x: not x.startswith('-'), in_string.split(' ')))
+
+EXTRA_OEMAKE += "LD=${@remove_options_tail(d.getVar('LD'))}"
+
+EXTRA_OEMAKE += "CC=${@remove_options_tail(d.getVar('CC'))}"
+
 do_compile() {
     # Clear LDFLAGS to avoid the option -Wl recognize issue
     oe_runmake bl31
