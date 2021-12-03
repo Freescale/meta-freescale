@@ -24,7 +24,7 @@ KERNEL_DEVICETREE = " \
 UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
 
 IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-imx"
-IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-fslc"
+IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot"
 
 UBOOT_SUFFIX = "bin"
 
