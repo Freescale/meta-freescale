@@ -25,13 +25,16 @@ EXTRA_OEMAKE += " \
     PLAT=${ATF_PLATFORM} \
 "
 
-BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
+# Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is a standalone application
+CFLAGS[unexport] = "1"
+LDFLAGS[unexport] = "1"
+AS[unexport] = "1"
+LD[unexport] = "1"
 
-CFLAGS:remove:mx8mq = "-O2"
+BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
 do_compile() {
     # Clear LDFLAGS to avoid the option -Wl recognize issue
-    unset LDFLAGS
     oe_runmake bl31
     if ${BUILD_OPTEE}; then
        oe_runmake clean BUILD_BASE=build-optee
