@@ -31,6 +31,9 @@ LDFLAGS[unexport] = "1"
 AS[unexport] = "1"
 LD[unexport] = "1"
 
+# Baremetal, just need a compiler
+DEPENDS:remove = "virtual/${TARGET_PREFIX}compilerlibs virtual/libc"
+
 BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
 do_compile() {
