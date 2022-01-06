@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.10.79
+#    tag: v5.10.90
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -38,6 +38,10 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    8ef27ae9f200 ("gpio: fix enabling GPIO_VF610")
+#    12099c38577a ("ASoC: fsl_sai: Correct the clock source for mclk0")
+#    db172377e6e2 ("Revert "MLK-12786-2: ASoC: fsl_sai: correct the clock source for mclk0"")
+#    372825d96a29 ("ARM: dts: imx7s: fix ARM timer definition")
 #    8b20421b2b61 ("staging: fsl_ppfe: reduce MAC address filtering loglevel to debug")
 #    16ea8f2ab906 ("staging: fsl_ppfe: assign correct OF nodes to individual ports")
 #    9d0f521803cd ("staging: fsl_ppfe: handle all RGMII modes in pfe_eth_adjust_link")
@@ -69,14 +73,14 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"
-SRCREV = "cdf10f101ab7e0112a285ab86e1a62d80e7d2104"
+SRCREV = "e730e691a1edb8c38004d81b070529224e8df714"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.10.79"
+LINUX_VERSION = "5.10.90"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-5.10.52-2.1.0"
