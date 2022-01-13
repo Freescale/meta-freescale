@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v27 July 2021
+LA_OPT_NXP_Software_License v30 October 2021
 
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
@@ -409,7 +409,6 @@ following addresses:
                     High Tech Campus 60
                     5656 AG Eindhoven
                     The Netherlands
-
                     ATTN: Legal Department
 
           You:      The address provided at registration will be used.
@@ -446,6 +445,10 @@ Party Software or specific components of the NXP proprietary software, the
 following terms apply to the extent they deviate from the terms in the
 Agreement:
 
+Airbiquity Inc.: The Airbiquity software may only be used in object code and
+Licensee may not sublicense the Airbiquity software to any third party.
+Licensee’s license to use the Airbiquity software expires on June 30, 2023.
+
 Amazon: Use of the Amazon software constitutes your acceptance of the terms of
 the Amazon Program Materials License Agreement (including the AVS Component
 Schedule, if applicable), located at
@@ -471,6 +474,10 @@ assert claims in small claims court if your claims qualify.
 
 Amphion Semiconductor Ltd.: Distribution of Amphion software must be a part of,
 or embedded within, Authorized Systems that include an Amphion Video Decoder.
+
+Apple MFi Software Development Kit: Use of Apple MFi Software and associated
+documentation is restricted to current Apple MFi licensees in accordance with
+the terms of their own valid and in-effect license from Apple.
 
 Aquantia Corp.: You may use Aquantia's API binaries solely to flash the API
 software to an NXP Product which mates with an Aquantia device.
@@ -554,6 +561,10 @@ Fenopix Technologies Private Limited: Under no circumstances may the CanvasJS
 software product be used in any way that would compete with any product from
 Fenopix.  License to the CanvasJS software will terminate immediately without
 notice if Licensee fail to comply with any provision of this Agreement.
+
+Fraunhofer IIS: Fraunhofer MPEG Audio Decoder (Fraunhofer copyright) - If you
+are provided MPEG-H decoding functionality, you understand that NXP will
+provide Fraunhofer your name and contact information.
 
 Future Technology Devices International Ltd.: Future Technology Devices
 International software must be used consistent with the terms found here:
