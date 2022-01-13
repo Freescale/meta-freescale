@@ -7,6 +7,15 @@ require u-boot-imx-common_${PV}.inc
 
 PROVIDES += "u-boot"
 
+inherit uuu_bootloader_tag
+
+UUU_BOOTLOADER            = ""
+UUU_BOOTLOADER:mx6        = "${UBOOT_BINARY}"
+UUU_BOOTLOADER:mx7        = "${UBOOT_BINARY}"
+UUU_BOOTLOADER_TAGGED     = ""
+UUU_BOOTLOADER_TAGGED:mx6 = "u-boot-tagged.${UBOOT_SUFFIX}"
+UUU_BOOTLOADER_TAGGED:mx7 = "u-boot-tagged.${UBOOT_SUFFIX}"
+
 do_deploy:append:mx8m() {
     # Deploy u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
     if [ -n "${UBOOT_CONFIG}" ]
