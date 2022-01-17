@@ -49,6 +49,10 @@ PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
 RDEPENDS_${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
+RDEPENDS_${PN}_append_mx8qm = " imx-dsp"
+RDEPENDS_${PN}_append_mx8qxp = " imx-dsp"
+RDEPENDS_${PN}_append_mx8mp = " imx-dsp"
+RDEPENDS_${PN}_append_mx8ulp = " imx-dsp"
 
 # overlaysink rely on G2D,
 # cannot be supported on i.MX6SLL & i.MX6UL & i.MX6ULL & i.MX7D
