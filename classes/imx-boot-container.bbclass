@@ -85,7 +85,6 @@ do_deploy:append() {
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]
                 then
-                    install -m 0644 ${B}/${config}/u-boot.itb  ${DEPLOYDIR}/u-boot.itb-${MACHINE}-${type}
                     install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}-${type}
                     # When there's more than one word in UBOOT_CONFIG,
                     # this will overwrite the links created in
@@ -94,7 +93,6 @@ do_deploy:append() {
                     # word in UBOOT_CONFIG. This is also how all other
                     # artifacts handled by oe-core's u-boot.inc are
                     # treated.
-                    ln -sf u-boot.itb-${MACHINE}-${type} u-boot.itb
                     ln -sf flash.bin-${MACHINE}-${type} flash.bin
                 fi
             done
