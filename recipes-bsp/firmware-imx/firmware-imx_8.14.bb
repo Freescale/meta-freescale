@@ -1,5 +1,5 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright (C) 2017-2020 NXP
+# Copyright (C) 2017-2021 NXP
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 SUMMARY = "Freescale i.MX firmware"
 DESCRIPTION = "Freescale i.MX firmware such as for the VPU"
@@ -43,10 +43,9 @@ do_install() {
     # NOTE:
     # Only install pre-defined list of firmware files, since the source archive contains
     # also HDMI binary files for imx8m derivatives, which are taken care of by another recipe
-    install -d ${D}${nonarch_base_libdir}/firmware/imx/hdmi
-    install -m 0644 ${S}/firmware/hdmi/cadence/hdmitxfw.bin ${D}${nonarch_base_libdir}/firmware/imx/hdmi
-    install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${D}${nonarch_base_libdir}/firmware/imx/hdmi
-    install -m 0644 ${S}/firmware/hdmi/cadence/dpfw.bin ${D}${nonarch_base_libdir}/firmware/imx/hdmi
+    install -m 0644 ${S}/firmware/hdmi/cadence/hdmitxfw.bin ${D}${nonarch_base_libdir}/firmware
+    install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${D}${nonarch_base_libdir}/firmware
+    install -m 0644 ${S}/firmware/hdmi/cadence/dpfw.bin ${D}${nonarch_base_libdir}/firmware
 
     # VPU Firmware section
     # NOTE:
@@ -124,6 +123,10 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-* ${PN}-easrc-* ${PN}-xcvr-* ${PN}-xu
 PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi"
 
 FILES:${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
-FILES:${PN}-hdmi = "${nonarch_base_libdir}/firmware/imx/hdmi/"
+FILES:${PN}-hdmi = " \
+    ${nonarch_base_libdir}/firmware/hdmitxfw.bin \
+    ${nonarch_base_libdir}/firmware/hdmirxfw.bin \
+    ${nonarch_base_libdir}/firmware/dpfw.bin \
+"
 
 COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"

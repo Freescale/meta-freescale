@@ -3,14 +3,14 @@
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 SECTION = "base"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
+LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
 
 SRC_URI = " \
     ${FSL_MIRROR}/firmware-imx-${PV}.bin;fsl-eula=true \
 "
 
-SRC_URI[md5sum] = "97eb12ba899bc29a5375993889708bfb"
-SRC_URI[sha256sum] = "8b7aa9b41a0389e5f40bdf91cb1224f79ea4c2e7fc36292f27ad4bef7044d7f0"
+SRC_URI[md5sum] = "3357c84e48fdc220984a9642d1e808f6"
+SRC_URI[sha256sum] = "bfe9c57857e8442e7eb26ba3e1020733b09a7c9b83952ad4822980546c58a7f4"
 
 S = "${WORKDIR}/firmware-imx-${PV}"
 

@@ -24,7 +24,10 @@ DEPENDS:append:mx8m = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot"
 PROVIDES = "${BOOT_NAME}"
 
-inherit deploy
+inherit deploy uuu_bootloader_tag
+
+UUU_BOOTLOADER        = "${BOOT_NAME}"
+UUU_BOOTLOADER_TAGGED = "${BOOT_NAME}-tagged"
 
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
@@ -190,9 +193,8 @@ do_deploy() {
         fi
         install -m 0644 ${S}/${BOOT_CONFIG_MACHINE}-${target} ${DEPLOYDIR}
     done
-    cd ${DEPLOYDIR}
-    ln -sf ${BOOT_CONFIG_MACHINE}-${IMAGE_IMXBOOT_TARGET} ${BOOT_NAME}
-    cd -
+
+    ln -sf ${BOOT_CONFIG_MACHINE}-${IMAGE_IMXBOOT_TARGET}    ${DEPLOYDIR}/${BOOT_NAME}
 }
 addtask deploy before do_build after do_compile
 

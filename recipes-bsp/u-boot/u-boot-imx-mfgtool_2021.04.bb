@@ -6,3 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/u-boot-imx:"
 
 require u-boot-imx_${PV}.bb
 require u-boot-mfgtool.inc
+
+UUU_BOOTLOADER_TAGGED     = ""
+UUU_BOOTLOADER_TAGGED:mx6 = "u-boot-mfgtool-tagged.${UBOOT_SUFFIX}"
+UUU_BOOTLOADER_TAGGED:mx7 = "u-boot-mfgtool-tagged.${UBOOT_SUFFIX}"
