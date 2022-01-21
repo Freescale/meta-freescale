@@ -111,7 +111,10 @@ XSERVER = "xserver-xorg \
            ${XSERVER_DRIVER}"
 
 # Ship kernel modules
-MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
+MACHINE_EXTRA_RRECOMMENDS = "kernel-modules \
+    ${@bb.utils.contains('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT', '1', \
+       bb.utils.contains('MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE', '1', 'kernel-module-imx-gpu-viv', '', d), '', d)} \
+"
 
 # Tunes for hard/soft float-point selection. Note that we allow building for
 # thumb support giving distros the chance to enable thumb by setting

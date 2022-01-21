@@ -282,7 +282,6 @@ FILES:libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 FILES:libgal-imx-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
 RDEPENDS:libgal-imx += "${@bb.utils.contains('PACKAGECONFIG', 'valgrind', 'valgrind', '', d)}"
 RPROVIDES:libgal-imx += "libgal-imx"
-RRECOMMENDS:libgal-imx += "kernel-module-imx-gpu-viv"
 INSANE_SKIP:libgal-imx += "build-deps"
 
 FILES:libvsc-imx = "${libdir}/libVSC${SOLIBS}"
