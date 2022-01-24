@@ -18,6 +18,8 @@ DEPENDS += " \
     imx-atf \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
+# xxd is a dependency of fspi_packer.sh
+DEPENDS += "xxd-native"
 DEPENDS_append_mx8m = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot"
 PROVIDES = "${BOOT_NAME}"
