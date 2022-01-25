@@ -41,9 +41,9 @@ python fsl_vivante_kernel_driver_handler () {
         return
 
     if use_vivante_kernel_driver_module != "1":
-        e.data.appendVar('RPROVIDES:${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
-        e.data.appendVar('RREPLACES:${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
-        e.data.appendVar('RCONFLICTS:${KERNEL_PACKAGE_NAME}-base', ' kernel-module-imx-gpu-viv')
+        e.data.appendVar('RPROVIDES:${KERNEL_PACKAGE_NAME}-base', ' ${MLPREFIX}kernel-module-imx-gpu-viv')
+        e.data.appendVar('RREPLACES:${KERNEL_PACKAGE_NAME}-base', ' ${MLPREFIX}kernel-module-imx-gpu-viv')
+        e.data.appendVar('RCONFLICTS:${KERNEL_PACKAGE_NAME}-base', ' ${MLPREFIX}kernel-module-imx-gpu-viv')
 }
 
 addhandler fsl_vivante_kernel_driver_handler
