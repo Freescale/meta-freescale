@@ -11,10 +11,10 @@ PROVIDES = "drm"
 DEPENDS = "libpthread-stubs"
 
 IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https;nobranch=1"
-IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.102"
+IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.107"
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
            file://0001-meson-add-libdrm-vivante-to-the-meson-meta-data.patch "
-SRCREV = "40ea53973b99b7df07f472318918a8c2b310e4a7"
+SRCREV = "a7316e7d67b7708f40ffe469858dae07f14fe21a"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
@@ -40,7 +40,7 @@ PACKAGECONFIG[valgrind] = "-Dvalgrind=true,-Dvalgrind=false,valgrind"
 PACKAGECONFIG[install-test-programs] = "-Dinstall-test-programs=true,-Dinstall-test-programs=false"
 PACKAGECONFIG[cairo-tests] = "-Dcairo-tests=true,-Dcairo-tests=false"
 PACKAGECONFIG[udev] = "-Dudev=true,-Dudev=false,udev"
-PACKAGECONFIG[manpages] = "-Dman-pages=true,-Dman-pages=false,libxslt-native xmlto-native"
+PACKAGECONFIG[manpages] = "-Dman-pages=true,-Dman-pages=false,libxslt-native xmlto-native python3-docutils-native"
 
 ALLOW_EMPTY:${PN}-drivers = "1"
 PACKAGES =+ "${PN}-tests ${PN}-drivers ${PN}-radeon ${PN}-nouveau ${PN}-omap \
