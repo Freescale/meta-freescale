@@ -149,12 +149,10 @@ SUMMARY = "Weston, a Wayland compositor, i.MX fork"
 DEFAULT_PREFERENCE = "-1"
 
 SRCBRANCH = "weston-imx-9.0"
-SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
-           file://weston.png \
-           file://weston.desktop \
-           file://xwayland.weston-start \
-           file://0001-weston-launch-Provide-a-default-version-that-doesn-t.patch \
+SRC_URI:remove = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz \
+           file://0001-tests-include-fcntl.h-for-open-O_RDWR-O_CLOEXEC-and-.patch \
 "
+SRC_URI:prepend = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} "
 SRCREV = "230e9bc3d647e511e0601e3d45034f22495ed3c7"
 S = "${WORKDIR}/git"
 
