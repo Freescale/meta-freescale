@@ -3,15 +3,15 @@
 
 DESCRIPTION = "i.MX System Controller Firmware"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
+LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
 SECTION = "BSP"
 
 inherit fsl-eula-unpack pkgconfig deploy
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "5c2b9d35e526136042a84e8d8f6c116e"
-SRC_URI[sha256sum] = "0adc3d2c2df250a873232f1b62b14674694b50a4e01dd6ceae479e4ff2b2276b"
+SRC_URI[md5sum] = "95f1b0a148c323968c0741e807995948"
+SRC_URI[sha256sum] = "4ad2999088098c7d95837b7dc88adceda319c2102c8bdf55bf6e9453653fba00"
 
 BOARD_TYPE ?= "mek"
 SC_FIRMWARE_NAME ?= "INVALID"

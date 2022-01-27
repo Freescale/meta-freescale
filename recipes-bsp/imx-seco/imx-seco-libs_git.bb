@@ -4,14 +4,14 @@ SUMMARY = "NXP i.MX SECO library"
 DESCRIPTION = "NXP i.MX Security Controller library"
 SECTION = "base"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://EULA.txt;md5=85d06b38f17b935ca11784d67075b846"
+LIC_FILES_CHKSUM = "file://EULA.txt;md5=76871788f27c28af824e2ec1ca187832"
 
 DEPENDS = "zlib"
 
-SRCBRANCH = "lf-5.10.y_2.0.0"
+SRCBRANCH = "lf-5.10.72_2.2.0"
 SRC_URI = "git://github.com/NXP/imx-seco-libs.git;protocol=https;branch=${SRCBRANCH} \
            file://0002-Makefile-Fix-install-to-clear-host-user-contaminated.patch"
-SRCREV = "44caf511023012e9eda93f8bf64c90eaff1bade6"
+SRCREV = "3e8ad6b168f23a8c6ecd75edabc18d2673403e24"
 
 S = "${WORKDIR}/git"
 

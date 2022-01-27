@@ -2,17 +2,16 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa" 
-DEPENDS = "python3 libdrm virtual/libg2d libtinyxml2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
+DEPENDS = "python3 libdrm virtual/libg2d libtinyxml2-8"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
     file://0001-start_isp.sh-fix-NR_DEVICE_TREE_BASLER-variable.patch \
-    file://0001-isp-imx-drop-use-of-__TIME__-__DATE__.patch \
 "
 
-SRC_URI[md5sum] = "e9e0943b9f4923c767d07901e550c41c"
-SRC_URI[sha256sum] = "13274c0fd442da4b3b9900a7568c59872ffa6408f5699d35eebc6760a8e51297"
+SRC_URI[md5sum] = "f490153dbec234a04416ad41834806b2"
+SRC_URI[sha256sum] = "83b24b9d1f7a40a506a45a1c5c2ef2ca2313fe9b23fde591e3b7dce77ea359ca"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -25,6 +24,7 @@ OECMAKE_GENERATOR = "Unix Makefiles"
 SYSTEMD_SERVICE:${PN} = "imx8-isp.service"
 
 EXTRA_OECMAKE += " \
+    -DSDKTARGETSYSROOT=${STAGING_DIR_HOST} \
     -DCMAKE_BUILD_TYPE=release \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
@@ -46,6 +46,10 @@ do_configure:prepend() {
     export SDKTARGETSYSROOT=${STAGING_DIR_HOST}
 }
 
+do_compile:prepend() {
+    ln -sf ${RECIPE_SYSROOT}/${libdir}/libtinyxml2.so.?.?.? ${RECIPE_SYSROOT}/${libdir}/libtinyxml2.so
+}
+
 do_install() {
     install -d ${D}/${libdir}
     install -d ${D}/${includedir}
@@ -55,7 +59,6 @@ do_install() {
     cp -r ${WORKDIR}/build/generated/release/bin/*2775* ${D}/opt/imx8-isp/bin
     cp -r ${WORKDIR}/build/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
     cp -r ${WORKDIR}/build/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
-    cp -r ${WORKDIR}/${BP}/dewarp/dewarp_config/ ${D}/opt/imx8-isp/bin
     cp -r ${WORKDIR}/build/generated/release/lib/*.so* ${D}/${libdir}
     cp -r ${WORKDIR}/build/generated/release/include/* ${D}/${includedir}
 
