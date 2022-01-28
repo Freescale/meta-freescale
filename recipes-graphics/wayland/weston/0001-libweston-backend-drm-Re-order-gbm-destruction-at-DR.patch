@@ -1,7 +1,8 @@
-From c8bfa1f8d576cdc6d515dbbac36c48c6166be0d5 Mon Sep 17 00:00:00 2001
+From 4be82f75a47bd456452ab713d7d57a75d844f42a Mon Sep 17 00:00:00 2001
 From: Marius Vlad <marius.vlad@collabora.com>
 Date: Thu, 1 Apr 2021 00:12:00 +0300
-Subject: [PATCH] libweston/backend-drm: Re-order gbm destruction at DRM-backend tear down
+Subject: [PATCH] libweston/backend-drm: Re-order gbm destruction at
+ DRM-backend tear down
 
 Tearing down the drm-backend when there are no input devices, would call
 for the gbm device destruction before compositor shutdown. The latter
@@ -21,13 +22,13 @@ Upstream-Status: Backport [https://gitlab.freedesktop.org/wayland/weston/-/commi
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/libweston/backend-drm/drm.c b/libweston/backend-drm/drm.c
-index 2780f3b..fbcfeca 100644
+index 9d3b5dcc..67834d3e 100644
 --- a/libweston/backend-drm/drm.c
 +++ b/libweston/backend-drm/drm.c
-@@ -3025,10 +3025,6 @@ err_drm_source:
+@@ -3402,10 +3402,6 @@ err_drm_source:
+ 	wl_event_source_remove(b->drm_source);
  err_udev_input:
  	udev_input_destroy(&b->input);
- err_sprite:
 -#ifdef BUILD_DRM_GBM
 -	if (b->gbm)
 -		gbm_device_destroy(b->gbm);
@@ -35,7 +36,7 @@ index 2780f3b..fbcfeca 100644
  	destroy_sprites(b);
  err_udev_dev:
  	udev_device_unref(drm_device);
-@@ -3038,6 +3034,10 @@ err_launcher:
+@@ -3415,6 +3411,10 @@ err_launcher:
  	weston_launcher_destroy(compositor->launcher);
  err_compositor:
  	weston_compositor_shutdown(compositor);
@@ -46,5 +47,6 @@ index 2780f3b..fbcfeca 100644
  	free(b);
  	return NULL;
  }
---
-2.33.0
+-- 
+2.17.1
+
