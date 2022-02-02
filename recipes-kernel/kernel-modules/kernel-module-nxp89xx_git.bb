@@ -12,3 +12,6 @@ S = "${WORKDIR}/git/mxm_wifiex/wlan_src"
 inherit module
 
 EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_BUILDDIR} -C ${STAGING_KERNEL_BUILDDIR} M=${S}"
+
+COMPATIBLE_MACHINE = "(imx)"
+
