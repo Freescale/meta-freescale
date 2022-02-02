@@ -23,8 +23,8 @@ OPTEE_ARCH ?= "arm32"
 OPTEE_ARCH:armv7a = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
 
-TA_DEV_KIT_DIR:arm = "${STAGING_INCDIR}/optee/export-user_ta:arm32/"
-TA_DEV_KIT_DIR:aarch64 = "${STAGING_INCDIR}/optee/export-user_ta:arm64/"
+TA_DEV_KIT_DIR:arm = "${STAGING_INCDIR}/optee/export-user_ta_arm32/"
+TA_DEV_KIT_DIR:aarch64 = "${STAGING_INCDIR}/optee/export-user_ta_arm64/"
 
 CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"

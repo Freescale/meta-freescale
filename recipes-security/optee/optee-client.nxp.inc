@@ -17,7 +17,7 @@ S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 OPTEE_ARCH ?= "arm32"
-OPTEE_ARCH_armv7a = "arm32"
+OPTEE_ARCH:armv7a = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
 
 EXTRA_OEMAKE = "ARCH=${OPTEE_ARCH} O=${B}"

@@ -18,7 +18,7 @@ B = "${WORKDIR}/build.${PLATFORM_FLAVOR}"
 PLATFORM_FLAVOR ?= "${MACHINE}"
 
 OPTEE_ARCH ?= "arm64"
-OPTEE_ARCH_armv7a = "arm32"
+OPTEE_ARCH:armv7a = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
 
 OPTEE_CORE_LOG_LEVEL ?= "1"
@@ -73,4 +73,3 @@ FILES:${PN}-staticdev = "/usr/include/optee/"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-
