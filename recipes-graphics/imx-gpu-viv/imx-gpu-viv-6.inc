@@ -6,7 +6,7 @@
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
+LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -56,6 +56,11 @@ PE = "1"
 
 inherit fsl-eula-unpack features_check
 
+# For i.MX 6 & 7, support Wayland and Framebuffer
+CONFLICT_DISTRO_FEATURES:mx6 = \
+    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', 'x11', d)}"
+CONFLICT_DISTRO_FEATURES:mx7 = "${CONFLICT_DISTRO_FEATURES:mx6}"
+# For i.MX 8, support Wayland only
 REQUIRED_DISTRO_FEATURES:mx8 = "wayland"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
@@ -79,7 +84,6 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libvdk-imx libvdk-imx-dev \
 	libegl-imx libegl-imx-dev \
 	libgal-imx libgal-imx-dev \
-	libvivante-dri-imx \
 	libvsc-imx \
 	${IMX_PACKAGES_GBM} \
 	imx-gpu-viv-tools \
@@ -94,8 +98,7 @@ python __anonymous () {
                 raise bb.parse.SkipPackage('The kernel of machine needs to have Vivante kernel driver support for this recipe to be used.')
 }
 
-USE_X11 = "${@bb.utils.contains("DISTRO_FEATURES", "x11", "yes", "no", d)}"
-USE_WL = "${@bb.utils.contains("DISTRO_FEATURES", "wayland", "yes", "no", d)}"
+BACKEND = "${@bb.utils.contains("DISTRO_FEATURES", "wayland", "wayland", "fb", d)}"
 
 # The packaged binaries have been stripped of debug info, so disable
 # operations accordingly.
@@ -180,44 +183,16 @@ do_install () {
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gbm.pc ${D}${libdir}/pkgconfig/gbm.pc
     fi
 
-    # The preference order, based in DISTRO_FEATURES, is Wayland (with or without X11), X11 and fb
-    if [ "${USE_WL}" = "yes" ]; then
-
-        backend=wayland
-
+    if [ "${BACKEND}" = "wayland" ]; then
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg.pc ${D}${libdir}/pkgconfig/vg.pc
-
-       if [ "${USE_X11}" = "yes" ]; then
-
-        cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
-
-       fi
-
-    elif [ "${USE_X11}" = "yes" ]; then
-
-        cp -r ${S}/gpu-core/usr/lib/dri ${D}${libdir}
-
-        backend=x11
-
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gl_x11.pc ${D}${libdir}/pkgconfig/gl.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_x11.pc ${D}${libdir}/pkgconfig/egl.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm_x11.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2_x11.pc ${D}${libdir}/pkgconfig/glesv2.pc
-        install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg_x11.pc ${D}${libdir}/pkgconfig/vg.pc
-
     else
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv1_cm.pc ${D}${libdir}/pkgconfig/glesv1_cm.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/glesv2.pc ${D}${libdir}/pkgconfig/glesv2.pc
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/vg.pc ${D}${libdir}/pkgconfig/vg.pc
-
-        # Regular framebuffer
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_linuxfb.pc ${D}${libdir}/pkgconfig/egl.pc
-
-        backend=fb
-
     fi
 
     # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
@@ -225,8 +200,8 @@ do_install () {
     install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
     # Handle backend specific drivers
-    cp -r ${S}/gpu-core/usr/lib/${backend}/* ${D}${libdir}
-    if [ "${USE_WL}" = "yes" ]; then
+    cp -r ${S}/gpu-core/usr/lib/${BACKEND}/* ${D}${libdir}
+    if [ "${BACKEND}" = "wayland" ] && [ "${IS_MX8}" != "1" ]; then
         # Special case for libVDK on Wayland backend, deliver fb library as well.
         cp ${S}/gpu-core/usr/lib/fb/libVDK.so.1.2.0 ${D}${libdir}/libVDK-fb.so.1.2.0
     fi
@@ -345,9 +320,6 @@ FILES:libopenvg-imx-dev = "${includedir}/VG ${libdir}/libOpenVG*${SOLIBSDEV} ${l
 
 FILES:libvdk-imx = "${libdir}/libVDK*${REALSOLIBS}"
 FILES:libvdk-imx-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
-
-FILES:libvivante-dri-imx = "${libdir}/dri/vivante_dri.so"
-RDEPENDS:libvivante-dri-imx = "libdrm"
 
 FILES:imx-gpu-viv-tools = "${bindir}/gmem_info"
 
