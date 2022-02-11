@@ -13,5 +13,3 @@ S = "${WORKDIR}/git"
 do_install () {
        oe_runmake install  DESTDIR=${D}
 }
-
-FILES:${PN} += "/share/man/*  ${libdir}/* ${sbindir}/*"
