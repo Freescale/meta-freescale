@@ -48,4 +48,5 @@ do_install:append() {
     for assignment in ${INI_UNCOMMENT_ASSIGNMENTS}; do
         uncomment "$assignment" ${D}${sysconfdir}/xdg/weston/weston.ini
     done
+    sed -i -e 's,@bindir@,${bindir},g' ${D}${sysconfdir}/xdg/weston/weston.ini
 }
