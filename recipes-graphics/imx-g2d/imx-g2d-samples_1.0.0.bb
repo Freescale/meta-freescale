@@ -20,3 +20,6 @@ do_install() {
 }
 
 FILES:${PN} += "/opt"
+
+COMPATIBLE_MACHINE = "(imxgpu2d)"
+
