@@ -430,7 +430,7 @@ PREFERRED_VERSION_libdrm:mx8-nxp-bsp ?= "2.4.107.imx"
 # Use i.MX optee Version
 PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ?= "3.15.0.imx"
 PREFERRED_VERSION_optee-client:mx8-nxp-bsp ?= "3.15.0.imx"
-PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ?= "3.10.0.imx"
+PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ?= "3.15.0.imx"
 
 #Use i.MX opencv Version for mx8
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ?= "4.5.2.imx"
