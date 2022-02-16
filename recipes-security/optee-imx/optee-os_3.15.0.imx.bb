@@ -82,12 +82,18 @@ do_install () {
     for f in ${B}/export-ta_${OPTEE_ARCH}/*; do
         cp -aR $f ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
     done
+
+    # Install embedded TAs
+    install -d ${D}${nonarch_base_libdir}/optee_armtz
+    find ${B}/ta -name '*.ta' | while read name; do
+        install -m 444 $name ${D}${nonarch_base_libdir}/optee_armtz/
+    done
 }
 
 addtask deploy after do_compile before do_install
 
 
-FILES:${PN} = "${nonarch_base_libdir}/firmware/"
+FILES:${PN} = "${nonarch_base_libdir}/firmware/ ${nonarch_base_libdir}/optee_armtz/"
 FILES:${PN}-staticdev = "/usr/include/optee/"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
 
