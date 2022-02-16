@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 NXP
+# Copyright (C) 2017-2021 NXP
 
 SUMMARY = "OPTEE Client libs"
 HOMEPAGE = "http://www.optee.org/"
@@ -16,7 +16,9 @@ SRCREV = "182874320395787a389e5b0f7df02b32f3c0a1b0"
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
-inherit python3native systemd
+inherit python3native systemd features_check
+
+REQUIRED_MACHINE_FEATURES = "optee"
 
 SYSTEMD_SERVICE:${PN} = "tee-supplicant.service"
 

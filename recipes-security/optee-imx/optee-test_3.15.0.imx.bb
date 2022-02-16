@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 NXP
+# Copyright (C) 2017-2021 NXP
 
 SUMMARY = "OPTEE test"
 HOMEPAGE = "http://www.optee.org/"
@@ -17,7 +17,9 @@ B = "${WORKDIR}/build"
 
 SRCREV = "4d81b964a72e89a62d04187b3f055d8346b383c9"
 
-inherit python3native
+inherit python3native features_check
+
+REQUIRED_MACHINE_FEATURES = "optee"
 
 OPTEE_ARCH ?= "arm32"
 OPTEE_ARCH:armv7a = "arm32"

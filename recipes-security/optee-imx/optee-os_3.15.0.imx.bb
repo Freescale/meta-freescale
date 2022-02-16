@@ -17,7 +17,9 @@ SRCREV = "c939619d64dea014ad1b8382356eee4d1cbfbb22"
 
 S = "${WORKDIR}/git"
 
-inherit deploy python3native autotools
+inherit deploy python3native autotools features_check
+
+REQUIRED_MACHINE_FEATURES = "optee"
 
 # The platform flavor corresponds to the Yocto machine without the leading 'i'.
 PLATFORM_FLAVOR                   = "${@d.getVar('MACHINE')[1:]}"
