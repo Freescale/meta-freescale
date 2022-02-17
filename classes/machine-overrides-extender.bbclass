@@ -12,13 +12,13 @@
 #
 # MACHINEOVERRIDES_EXTENDER_FILTER_OUT:override = "group1 group2"
 #
-# Copyright 2016-2018 (C) O.S. Systems Software LTDA.
+# Copyright 2016-2018, 2022 (C) O.S. Systems Software LTDA.
 
 def machine_overrides_extender(d):
     machine_overrides = (d.getVar('PRISTINE_MACHINEOVERRIDES') or '').split(':')
 
     # Gather the list of overrides to filter out
-    machine_overrides_filter_out = []
+    machine_overrides_filter_out = (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT') or '').split()
     for override in machine_overrides:
         machine_overrides_filter_out += (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT:%s' % override) or '').split()
 
