@@ -87,4 +87,4 @@ LOCALVERSION = "-5.10.52-2.1.0"
 
 DEFAULT_PREFERENCE = "1"
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp)"

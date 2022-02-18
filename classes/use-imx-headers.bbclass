@@ -13,14 +13,14 @@
 #
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 
-DEPENDS:append:imx = " linux-imx-headers"
+DEPENDS:append:imx-nxp-bsp = " linux-imx-headers"
 
 # Set runtime dependency of -dev for package inheriting this class to
 # linux-imx-headers-dev package. This is required in order to propagate
 # headers into the SDK
 RDEPENDS:${PN}-dev += "linux-imx-headers-dev"
 
-PACKAGE_ARCH:imx ?= "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:imx-nxp-bsp ?= "${MACHINE_SOCARCH}"
 
 STAGING_INCDIR_IMX = "${STAGING_INCDIR}/imx"
 

@@ -21,16 +21,16 @@ S = "${WORKDIR}/git"
 
 inherit use-imx-headers
 
-PLATFORM:mx6q  = "IMX6Q"
-PLATFORM:mx6dl = "IMX6Q"
-PLATFORM:mx6sl = "IMX6S"
-PLATFORM:mx6sll = "IMX6UL"
-PLATFORM:mx6sx = "IMX6S"
-PLATFORM:mx6ul = "IMX6UL"
-PLATFORM:mx6ull = "IMX6UL"
-PLATFORM:mx7d  = "IMX7"
-PLATFORM:mx7ulp = "IMX7"
-PLATFORM:mx8ulp = "IMX8ULP"
+PLATFORM:mx6q-nxp-bsp  = "IMX6Q"
+PLATFORM:mx6dl-nxp-bsp = "IMX6Q"
+PLATFORM:mx6sl-nxp-bsp = "IMX6S"
+PLATFORM:mx6sll-nxp-bsp = "IMX6UL"
+PLATFORM:mx6sx-nxp-bsp = "IMX6S"
+PLATFORM:mx6ul-nxp-bsp = "IMX6UL"
+PLATFORM:mx6ull-nxp-bsp = "IMX6UL"
+PLATFORM:mx7d-nxp-bsp  = "IMX7"
+PLATFORM:mx7ulp-nxp-bsp = "IMX7"
+PLATFORM:mx8ulp-nxp-bsp = "IMX8ULP"
 
 PARALLEL_MAKE="-j 1"
 EXTRA_OEMAKE = ""
@@ -47,4 +47,4 @@ do_install () {
     find ${D}/ -name *.go -exec rm {} \;
 }
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8ulp)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8ulp-nxp-bsp)"

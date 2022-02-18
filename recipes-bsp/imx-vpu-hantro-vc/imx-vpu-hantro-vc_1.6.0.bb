@@ -32,4 +32,4 @@ do_install () {
 
 FILES:${PN} = "/"
 
-COMPATIBLE_MACHINE = "(mx8mp)"
+COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

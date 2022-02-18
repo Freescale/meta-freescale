@@ -17,4 +17,4 @@ S = "${WORKDIR}/git"
 inherit module
 
 KERNEL_MODULE_AUTOLOAD = "galcore"
-COMPATIBLE_MACHINE = "(imx)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

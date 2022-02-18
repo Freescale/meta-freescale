@@ -6,19 +6,19 @@ IMX_REQUIRED_DISTRO_FEATURES_REMOVE:imxgpu2d = "opengl"
 IMX_REQUIRED_DISTRO_FEATURES_REMOVE:imxgpu3d = ""
 REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 
-SRC_URI:append:mx6sl = " file://weston.config"
+SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
 # To customize weston.ini, start by setting the desired assignment in weston.ini,
 # commented out. For example:
 #     #xwayland=true
 # Then add the assignment to INI_UNCOMMENT_ASSIGNMENTS.
-INI_UNCOMMENT_ASSIGNMENTS:append:imx = " \
+INI_UNCOMMENT_ASSIGNMENTS:append:imx-nxp-bsp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland=true', '', d)} \
 "
-INI_UNCOMMENT_ASSIGNMENTS:append:mx8 = " \
+INI_UNCOMMENT_ASSIGNMENTS:append:mx8-nxp-bsp = " \
     repaint-window=16 \
 "
-INI_UNCOMMENT_ASSIGNMENTS:append:mx8mq = " \
+INI_UNCOMMENT_ASSIGNMENTS:append:mx8mq-nxp-bsp = " \
     gbm-format=argb8888 \
     \\[shell\\] \
     size=1920x1080 \
@@ -28,8 +28,8 @@ INI_UNCOMMENT_ASSIGNMENTS:append:mx8mq = " \
 # Ideally, this should be seamless and Vivante ought to handle it internally and take the fastest
 # rendering code.
 INI_UNCOMMENT_USE_G2D:imxgpu2d ?= "use-g2d=1"
-INI_UNCOMMENT_USE_G2D:mx8qm = ""
-INI_UNCOMMENT_USE_G2D:mx8qxp = ""
+INI_UNCOMMENT_USE_G2D:mx8qm-nxp-bsp = ""
+INI_UNCOMMENT_USE_G2D:mx8qxp-nxp-bsp = ""
 INI_UNCOMMENT_ASSIGNMENTS:append:imxgpu2d = " \
     ${INI_UNCOMMENT_USE_G2D} \
 "

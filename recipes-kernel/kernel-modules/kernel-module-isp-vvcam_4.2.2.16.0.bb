@@ -16,4 +16,4 @@ S = "${WORKDIR}/git/vvcam/v4l2"
 
 inherit module
 
-COMPATIBLE_MACHINE = "(mx8mp)"
+COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

@@ -14,7 +14,7 @@ COMPATIBLE_HOST:armv4 = 'null'
 COMPATIBLE_HOST:armv5 = 'null'
 COMPATIBLE_HOST:armv6 = 'null'
 
-COMPATIBLE_MACHINE = "(imx|qoriq)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp|qoriq)"
 
 DPDK_RTE_TARGET:x86-64 = "x86_64-native-linuxapp-gcc"
 DPDK_RTE_TARGET:x86 = "i686-native-linuxapp-gcc"

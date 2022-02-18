@@ -24,4 +24,4 @@ SYSTEMD_AUTO_ENABLE = "enable"
 FILES:${PN} = "${libdir} /opt"
 INSANE_SKIP:${PN} = "file-rdeps already-stripped"
 
-COMPATIBLE_MACHINE = "(mx8mp)"
+COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

@@ -99,4 +99,4 @@ def get_opengl_cmdline_list(switch_name, options, d):
 
 CVE_PRODUCT += "gst-plugins-base"
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp)"

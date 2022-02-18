@@ -1,14 +1,14 @@
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 DEPENDS:append:imxgpu2d = " virtual/libg2d"
-DEPENDS:append:mx8 = " libdrm"
+DEPENDS:append:mx8-nxp-bsp = " libdrm"
 
-PACKAGECONFIG:append:mx8 = " kms tinycompress"
+PACKAGECONFIG:append:mx8-nxp-bsp = " kms tinycompress"
 
 DEFAULT_PREFERENCE = "-1"
 
 PACKAGE_ARCH:imxpxp = "${MACHINE_SOCARCH}"
-PACKAGE_ARCH:mx8 = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:mx8-nxp-bsp = "${MACHINE_SOCARCH}"
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https;branch=master"
 SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
@@ -160,4 +160,4 @@ FILES:${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
 # include fragment shaders
 FILES:${PN}-opengl += "/usr/share/*.fs"
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp)"

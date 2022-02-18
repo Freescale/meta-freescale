@@ -18,7 +18,7 @@ DEPENDS += " \
                                                        '', d)} \
 "
 DEPENDS:append:imxdrm = " libdrm wayland"
-DEPENDS:append:mx8 = " patchelf-native"
+DEPENDS:append:mx8-nxp-bsp = " patchelf-native"
 
 # imx-gpu-viv does not provide everything it needs to for virtual/libgl
 # on x11 backend or on Wayland backend with XWayland support.
@@ -31,12 +31,12 @@ EXTRA_PROVIDES:append:imxgpu3d = " \
     virtual/libgles1 \
     virtual/libgles2 \
 "
-EXTRA_PROVIDES:append:mx8 = " \
+EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
     virtual/libgbm \
 "
 PROVIDES_OPENVX       = ""
-PROVIDES_OPENVX:mx8   = "virtual/libopenvx"
-PROVIDES_OPENVX:mx8mm = ""
+PROVIDES_OPENVX:mx8-nxp-bsp   = "virtual/libopenvx"
+PROVIDES_OPENVX:mx8mm-nxp-bsp = ""
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
@@ -56,12 +56,7 @@ PE = "1"
 
 inherit fsl-eula-unpack features_check
 
-# For i.MX 6 & 7, support Wayland and Framebuffer
-CONFLICT_DISTRO_FEATURES:mx6 = \
-    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', 'x11', d)}"
-CONFLICT_DISTRO_FEATURES:mx7 = "${CONFLICT_DISTRO_FEATURES:mx6}"
-# For i.MX 8, support Wayland only
-REQUIRED_DISTRO_FEATURES:mx8 = "wayland"
+REQUIRED_DISTRO_FEATURES:mx8-nxp-bsp = "wayland"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
@@ -72,7 +67,7 @@ PACKAGECONFIG[valgrind] = ""
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
 IMX_PACKAGES_GBM     = ""
-IMX_PACKAGES_GBM:mx8 = "libgbm-imx libgbm-imx-dev"
+IMX_PACKAGES_GBM:mx8-nxp-bsp = "libgbm-imx libgbm-imx-dev"
 PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libgl-imx libgl-imx-dev \
 	libgles1-imx libgles1-imx-dev \
@@ -140,23 +135,23 @@ python __anonymous() {
 }
 
 IS_MX6SL = "0"
-IS_MX6SL:mx6sl = "1"
+IS_MX6SL:mx6sl-nxp-bsp = "1"
 
 IS_MX8 = "0"
-IS_MX8:mx8 = "1"
+IS_MX8:mx8-nxp-bsp = "1"
 
 PACKAGE_FP_TYPE = "hardfp"
 
 HAS_GBM     = "false"
-HAS_GBM:mx8 = "true"
+HAS_GBM:mx8-nxp-bsp = "true"
 
 IMX_SOC        = "IMX_SOC_NOT_SET"
-IMX_SOC:mx8qm  = "mx8qm"
-IMX_SOC:mx8mp  = "mx8mp"
-IMX_SOC:mx8mq  = "mx8mq"
-IMX_SOC:mx8qxp = "mx8qxp"
-IMX_SOC:mx8mn  = "mx8mn"
-IMX_SOC:mx8ulp = "mx8ulp"
+IMX_SOC:mx8qm-nxp-bsp  = "mx8qm"
+IMX_SOC:mx8mp-nxp-bsp  = "mx8mp"
+IMX_SOC:mx8mq-nxp-bsp  = "mx8mq"
+IMX_SOC:mx8qxp-nxp-bsp = "mx8qxp"
+IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
+IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
 LIBVULKAN_VERSION_MAJOR = "1"
 LIBVULKAN_VERSION = "${LIBVULKAN_VERSION_MAJOR}.1.6"
@@ -262,9 +257,9 @@ INSANE_SKIP:libgal-imx += "build-deps"
 
 FILES:libvsc-imx = "${libdir}/libVSC${SOLIBS}"
 
-FILES:libgbm-imx:mx8           = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBSDEV} ${libdir}/libgbm_viv${SOLIBSDEV}"
-FILES:libgbm-imx-dev:mx8       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
-RDEPENDS:libgbm-imx:append:mx8 = " libdrm"
+FILES:libgbm-imx:mx8-nxp-bsp           = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBSDEV} ${libdir}/libgbm_viv${SOLIBSDEV}"
+FILES:libgbm-imx-dev:mx8-nxp-bsp       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
+RDEPENDS:libgbm-imx:append:mx8-nxp-bsp = " libdrm"
 INSANE_SKIP:libgbm-imx += "dev-so"
 
 FILES:libvulkan-imx = "${libdir}/libvulkan_VSI${REALSOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
@@ -328,4 +323,4 @@ INSANE_SKIP:imx-gpu-viv-demos += "rpaths dev-deps"
 
 FILES:libnn-imx = "${libdir}/libNN*${SOLIBS}"
 
-# COMPATIBLE_MACHINE = "(mx6q|mx6dl|mx6sx|mx6sl|mx8)"
+# COMPATIBLE_MACHINE = "(mx6q-nxp-bsp|mx6dl-nxp-bsp|mx6sx-nxp-bsp|mx6sl-nxp-bsp|mx8-nxp-bsp)"

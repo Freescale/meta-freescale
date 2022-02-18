@@ -119,4 +119,4 @@ RDEPENDS:pyjailhouse = " \
 
 INSANE_SKIP:${PN} = "ldflags"
 
-COMPATIBLE_MACHINE = "(mx8m)"
+COMPATIBLE_MACHINE = "(mx8m-nxp-bsp)"

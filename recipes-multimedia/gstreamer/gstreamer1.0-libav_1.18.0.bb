@@ -23,4 +23,4 @@ inherit meson pkgconfig upstream-version-is-even
 FILES:${PN} += "${libdir}/gstreamer-1.0/*.so"
 FILES:${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
 
-COMPATIBLE_MACHINE = "(imx)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

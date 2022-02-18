@@ -10,13 +10,13 @@ PROVIDES += "u-boot"
 inherit uuu_bootloader_tag
 
 UUU_BOOTLOADER            = ""
-UUU_BOOTLOADER:mx6        = "${UBOOT_BINARY}"
-UUU_BOOTLOADER:mx7        = "${UBOOT_BINARY}"
+UUU_BOOTLOADER:mx6-nxp-bsp        = "${UBOOT_BINARY}"
+UUU_BOOTLOADER:mx7-nxp-bsp        = "${UBOOT_BINARY}"
 UUU_BOOTLOADER_TAGGED     = ""
-UUU_BOOTLOADER_TAGGED:mx6 = "u-boot-tagged.${UBOOT_SUFFIX}"
-UUU_BOOTLOADER_TAGGED:mx7 = "u-boot-tagged.${UBOOT_SUFFIX}"
+UUU_BOOTLOADER_TAGGED:mx6-nxp-bsp = "u-boot-tagged.${UBOOT_SUFFIX}"
+UUU_BOOTLOADER_TAGGED:mx7-nxp-bsp = "u-boot-tagged.${UBOOT_SUFFIX}"
 
-do_deploy:append:mx8m() {
+do_deploy:append:mx8m-nxp-bsp() {
     # Deploy u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
     if [ -n "${UBOOT_CONFIG}" ]
     then
@@ -38,4 +38,4 @@ do_deploy:append:mx8m() {
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp|use-mainline-bsp)"

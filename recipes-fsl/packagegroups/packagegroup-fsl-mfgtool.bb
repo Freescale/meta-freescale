@@ -46,4 +46,4 @@ RDEPENDS:${PN}-extfs = " \
     e2fsprogs-mke2fs \
     e2fsprogs-e2fsck \
 "
-COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp|use-mainline-bsp)"

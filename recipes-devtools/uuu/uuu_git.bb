@@ -17,6 +17,6 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "libusb zlib bzip2 openssl"
 
-COMPATIBLE_MACHINE   = "(imx)"
+COMPATIBLE_MACHINE   = "(imx-nxp-bsp)"
 
 BBCLASSEXTEND = "native nativesdk"
