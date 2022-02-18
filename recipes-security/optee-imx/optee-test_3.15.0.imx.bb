@@ -3,7 +3,7 @@
 SUMMARY = "OPTEE test"
 HOMEPAGE = "http://www.optee.org/"
 
-LICENSE = "BSD-2-Clause"
+LICENSE = "BSD-2-Clause & GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
 DEPENDS = "python3-pycryptodome-native python3-pycryptodomex-native optee-os optee-client openssl"
