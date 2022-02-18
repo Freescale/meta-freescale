@@ -49,15 +49,15 @@ do_compile() {
 do_compile[cleandirs] = "${B}"
 
 do_install () {
-	install -d ${D}/usr/bin
-	install ${B}/xtest/xtest ${D}/usr/bin/
+	install -d ${D}${bindir}
+	install ${B}/xtest/xtest ${D}${bindir}
 
-	install -d ${D}/lib/optee_armtz
+	install -d ${D}${nonarch_base_libdir}/optee_armtz
 	find ${B}/ta -name '*.ta' | while read name; do
-		install -m 444 $name ${D}/lib/optee_armtz/
+		install -m 444 $name ${D}${nonarch_base_libdir}/optee_armtz/
 	done
 }
 
-FILES:${PN} = "/usr/bin/ /lib*/optee_armtz/"
+FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
