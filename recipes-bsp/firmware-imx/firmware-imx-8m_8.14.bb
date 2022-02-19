@@ -21,4 +21,4 @@ addtask deploy after do_install before do_build
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
-COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|imx-boot-container)"
+COMPATIBLE_MACHINE = "(mx8m-generic-bsp)"
