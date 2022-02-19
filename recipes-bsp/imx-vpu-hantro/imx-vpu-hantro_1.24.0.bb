@@ -32,4 +32,5 @@ FILES:${PN} += "/unit_tests"
 
 RDEPENDS:${PN} += "imx-vpu-hantro-daemon"
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx8mq-nxp-bsp|mx8mm-nxp-bsp|mx8mp-nxp-bsp)"
