@@ -322,5 +322,3 @@ FILES:imx-gpu-viv-demos = "/opt"
 INSANE_SKIP:imx-gpu-viv-demos += "rpaths dev-deps"
 
 FILES:libnn-imx = "${libdir}/libNN*${SOLIBS}"
-
-# COMPATIBLE_MACHINE = "(mx6q-nxp-bsp|mx6dl-nxp-bsp|mx6sx-nxp-bsp|mx6sl-nxp-bsp|mx8-nxp-bsp)"
