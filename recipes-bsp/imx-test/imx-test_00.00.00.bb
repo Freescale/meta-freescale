@@ -7,4 +7,4 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ad
 ALLOW_EMPTY:${PN} = "1"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mxs-generic-bsp|mx5-generic-bsp|mx6-nxp-bsp|vf50-generic-bsp|vf60-generic-bsp)"
+COMPATIBLE_MACHINE = "(imx-generic-bsp)"

@@ -28,4 +28,4 @@ EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
                  HOSTSTRIP=true'
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mxs-generic-bsp|mx5-generic-bsp|mx6-nxp-bsp|mx7-nxp-bsp|vf-generic-bsp|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(imx-generic-bsp)"
