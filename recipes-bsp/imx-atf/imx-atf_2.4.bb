@@ -67,4 +67,4 @@ do_deploy() {
 addtask deploy after do_compile
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-COMPATIBLE_MACHINE = "(mx8-nxp-bsp|imx-boot-container)"
+COMPATIBLE_MACHINE = "(mx8-generic-bsp)"
