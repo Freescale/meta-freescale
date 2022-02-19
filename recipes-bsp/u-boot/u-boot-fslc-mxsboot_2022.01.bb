@@ -27,6 +27,6 @@ do_install () {
     ln -sf uboot-mxsboot ${D}${bindir}/mxsboot
 }
 
-COMPATIBLE_MACHINE:class-target = "(mxs-generic-bsp|mx5-generic-bsp|mx6-nxp-bsp|mx7-nxp-bsp|vf-generic-bsp|use-mainline-bsp)"
+COMPATIBLE_MACHINE:class-target = "(mxs-generic-bsp)"
 
 BBCLASSEXTEND = "native nativesdk"
