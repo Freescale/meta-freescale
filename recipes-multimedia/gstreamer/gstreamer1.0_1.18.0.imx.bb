@@ -79,4 +79,4 @@ CVE_PRODUCT = "gstreamer"
 
 PTEST_BUILD_HOST_FILES = ""
 
-COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

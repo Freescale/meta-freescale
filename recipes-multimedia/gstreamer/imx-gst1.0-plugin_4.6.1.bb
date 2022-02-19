@@ -82,4 +82,4 @@ FILES:${PN}-grecorder = "${bindir}/grecorder-1.0"
 FILES:${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
 FILES:${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
 
-COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

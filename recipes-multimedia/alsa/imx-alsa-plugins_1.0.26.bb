@@ -33,4 +33,4 @@ FILES:${PN} += "${libdir}/alsa-lib/libasound_*.so"
 FILES:${PN}-dbg += "${libdir}/alsa-lib/.debug"
 FILES:${PN}-dev += "${libdir}/alsa-lib/*.la"
 
-COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

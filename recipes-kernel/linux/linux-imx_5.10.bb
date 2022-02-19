@@ -30,4 +30,4 @@ LINUX_VERSION = "5.10.72"
 
 DEFAULT_PREFERENCE = "1"
 
-COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
