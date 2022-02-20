@@ -101,7 +101,7 @@ XSERVER_DRIVER                          = "xf86-video-fbdev"
 XSERVER_DRIVER:imxgpu2d                 = "xf86-video-imx-vivante"
 XSERVER_DRIVER:vf-generic-bsp           = "xf86-video-modesetting"
 XSERVER_DRIVER:append:mx8-generic-bsp   = " xf86-video-modesetting"
-XSERVER_DRIVER:use-mainline-bsp = " \
+XSERVER_DRIVER:imx-mainline-bsp = " \
     xf86-video-fbdev \
     xf86-video-modesetting \
     xserver-xorg-extension-glx \
@@ -245,10 +245,12 @@ MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp  = "-mx8mp"
 MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp  = "-mx8m"
 MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8dxl"
-MACHINE_SOCARCH_SUFFIX:use-mainline-bsp = "-imx"
+
+# For Mainline we use a single SoC suffix as we don't have different build options
+MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
 
 MACHINE_ARCH_FILTER = "virtual/kernel"
-MACHINE_SOCARCH_FILTER:append:use-nxp-bsp = " \
+MACHINE_SOCARCH_FILTER:append:imx-nxp-bsp = " \
     alsa-lib \
     gstreamer1.0 \
     weston \
@@ -277,7 +279,7 @@ MACHINE_SOCARCH_FILTER:append:imxgpu3d = " \
     virtual/libgles1 \
     virtual/libgles2 \
 "
-MACHINE_SOCARCH_FILTER:append:use-mainline-bsp = " \
+MACHINE_SOCARCH_FILTER:append:imx-mainline-bsp = " \
     virtual/egl \
     virtual/libopenvg \
     virtual/libg2d \
@@ -331,13 +333,13 @@ MACHINE_FIRMWARE:append:mx8mp-generic-bsp  = " linux-firmware-imx-sdma-imx7d fir
 MACHINE_FIRMWARE:append:mx8mq-generic-bsp  = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE:append:mx8qm-generic-bsp  = " firmware-imx-vpu-imx8"
 MACHINE_FIRMWARE:append:mx8qxp-generic-bsp = " firmware-imx-vpu-imx8"
-MACHINE_FIRMWARE:append:use-mainline-bsp   = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
+MACHINE_FIRMWARE:append:imx-mainline-bsp   = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
 # Extra audio support
 IMX_ALSA_EXTRA = ""
-IMX_ALSA_EXTRA:use-nxp-bsp = "imx-alsa-plugins"
+IMX_ALSA_EXTRA:imx-nxp-bsp = "imx-alsa-plugins"
 MACHINE_EXTRA_RRECOMMENDS:append:mx6-nxp-bsp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', '${IMX_ALSA_EXTRA}', '', d)}"
 MACHINE_EXTRA_RRECOMMENDS:append:mx7-nxp-bsp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', '${IMX_ALSA_EXTRA}', '', d)}"
 MACHINE_EXTRA_RRECOMMENDS:append:mx8-nxp-bsp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', '${IMX_ALSA_EXTRA}', '', d)}"
@@ -413,8 +415,8 @@ PREFERRED_PROVIDER_opencl-clhpp:imxgpu       ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-headers:imxgpu     ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxgpu  ?= "imx-gpu-viv"
 
-PREFERRED_VERSION_weston:use-nxp-bsp     ?= "9.0.0.imx"
-PREFERRED_VERSION_weston:use-mainline-bsp = ""
+PREFERRED_VERSION_weston:imx-nxp-bsp     ?= "9.0.0.imx"
+PREFERRED_VERSION_weston:imx-mainline-bsp = ""
 
 PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp ?= "1.22.imx"
 PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp ?= "1.22.imx"
@@ -434,17 +436,8 @@ PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ?= "3.10.0.imx"
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ?= "4.5.2.imx"
 
 # Handle default kernel
-IMX_DEFAULT_KERNEL                  = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:mxs-generic-bsp  = "linux-fslc"
-IMX_DEFAULT_KERNEL:mx5-generic-bsp  = "linux-fslc"
-IMX_DEFAULT_KERNEL:mx6-nxp-bsp      = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:mx7-nxp-bsp      = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:mx8-nxp-bsp      = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:mx7ulp-nxp-bsp   = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:mx6sll-nxp-bsp   = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:mx6ul-nxp-bsp    = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:mx6ull-nxp-bsp   = "linux-fslc-imx"
-IMX_DEFAULT_KERNEL:use-mainline-bsp = "linux-fslc"
+IMX_DEFAULT_KERNEL:imx-mainline-bsp = "linux-fslc"
+IMX_DEFAULT_KERNEL:imx-nxp-bsp      = "linux-fslc-imx"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
@@ -493,7 +486,7 @@ WKS_FILE_DEPENDS:append:mx8m-nxp-bsp = " imx-boot"
 # deployment task extesion execution defined in imx-boot-container class.
 # For NXP BSP: rename is done in 'imx-boot' recipe at the execution of compile
 # task.
-WKS_FILE_DEPENDS:append:use-mainline-bsp:aarch64 = " \
+WKS_FILE_DEPENDS:append:imx-mainline-bsp:aarch64 = " \
     ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
 "
 
