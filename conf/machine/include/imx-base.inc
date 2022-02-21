@@ -98,7 +98,6 @@ UBOOT_PROVIDES_BOOT_CONTAINER:imx-boot-container = "1"
 
 PREFERRED_PROVIDER_virtual/xserver      = "xserver-xorg"
 XSERVER_DRIVER                          = "xf86-video-fbdev"
-XSERVER_DRIVER:imxgpu2d                 = "xf86-video-imx-vivante"
 XSERVER_DRIVER:vf-generic-bsp           = "xf86-video-modesetting"
 XSERVER_DRIVER:append:mx8-generic-bsp   = " xf86-video-modesetting"
 XSERVER_DRIVER:imx-mainline-bsp = " \
