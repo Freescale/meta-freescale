@@ -47,12 +47,4 @@ do_install () {
 	install -D -p -m0644 ${WORKDIR}/tee-supplicant.service ${D}${systemd_system_unitdir}/tee-supplicant.service
 }
 
-PACKAGES += "tee-supplicant"
-FILES:${PN} += "${libdir}/* ${includedir}/*"
-FILES:tee-supplicant += "${bindir}/tee-supplicant"
-
-INSANE_SKIP:${PN} = "ldflags dev-elf"
-INSANE_SKIP:${PN}-dev = "ldflags dev-elf"
-INSANE_SKIP:tee-supplicant = "ldflags"
-
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
