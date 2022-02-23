@@ -32,4 +32,5 @@ do_install () {
 
 FILES:${PN} = "/"
 
-COMPATIBLE_MACHINE = "(mx8mp)"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

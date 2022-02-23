@@ -16,6 +16,6 @@ S = "${WORKDIR}/git"
 
 inherit waf pkgconfig
 
-COMPATIBLE_MACHINE = "(mx6q|mx6dl)"
+COMPATIBLE_MACHINE = "(mx6q-nxp-bsp|mx6dl-nxp-bsp)"
 
 EXTRA_OECONF = "--libdir=${libdir}"

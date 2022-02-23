@@ -29,4 +29,4 @@ GIR_MESON_DISABLE_FLAG = "disabled"
 # Starting with 1.8.0 gst-rtsp-server includes dependency-less plugins as well
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
-COMPATIBLE_MACHINE = "(imx)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

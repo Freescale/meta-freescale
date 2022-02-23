@@ -74,4 +74,4 @@ EXTRA_OEMESON += " \
 
 FILES:${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

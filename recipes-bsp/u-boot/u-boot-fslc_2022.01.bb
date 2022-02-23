@@ -12,7 +12,7 @@ DEPENDS += "bc-native dtc-native python3-setuptools-native lzop-native"
 
 # Location known to imx-boot component, where U-Boot artifacts
 # should be additionally deployed.
-# See below note above do_deploy:append:mx8m for the purpose of
+# See below note above do_deploy:append:mx8m-nxp-bsp for the purpose of
 # this delopyment location
 BOOT_TOOLS = "imx-boot-tools"
 
@@ -28,4 +28,4 @@ EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
                  HOSTSTRIP=true'
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mxs|mx5|mx6|mx7|vf|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(imx-generic-bsp)"

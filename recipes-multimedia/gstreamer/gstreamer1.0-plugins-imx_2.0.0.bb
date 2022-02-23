@@ -42,8 +42,8 @@ PACKAGECONFIG:append:imxpxp   = " pxp"
 # The 2D blitter sinks require an MXC framebuffer, which
 # is not available anymore on the i.MX8 (since these SoCs
 # now use KMS instead of the old Linux framebuffer).
-PACKAGECONFIG:append:mx6      = " imx2dvideosink v4l2"
-PACKAGECONFIG:append:mx7      = " imx2dvideosink"
+PACKAGECONFIG:append:mx6-nxp-bsp      = " imx2dvideosink v4l2"
+PACKAGECONFIG:append:mx7-nxp-bsp      = " imx2dvideosink"
 
 PACKAGECONFIG[g2d] = "-Dg2d=enabled ${LIBG2D_DPU_OPTION},-Dg2d=disabled,${LIBG2D_DEPENDENCIES}"
 PACKAGECONFIG[pxp] = "-Dpxp=enabled,-Dpxp=disabled,"
@@ -59,4 +59,4 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 # the following line is required to produce one package for each plugin
 PACKAGES_DYNAMIC = "^${PN}-.*"
 
-COMPATIBLE_MACHINE = "(mx6dl|mx6q|mx6sl|mx6sx|mx6ul|mx6ull|mx7d|mx8)"
+COMPATIBLE_MACHINE = "(mx6dl-nxp-bsp|mx6q-nxp-bsp|mx6sl-nxp-bsp|mx6sx-nxp-bsp|mx6ul-nxp-bsp|mx6ull-nxp-bsp|mx7d-nxp-bsp|mx8-nxp-bsp)"

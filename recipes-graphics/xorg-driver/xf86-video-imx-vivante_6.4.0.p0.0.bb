@@ -62,4 +62,4 @@ FILES:${PN}-dbg = "${libdir}/*/*/*/.debug ${libdir}/.debug/libfsl_x11_ext${SOLIB
 FILES:xserver-xorg-extension-viv-autohdmi = " ${libdir}/libfsl_x11_ext${SOLIBS} ${exec_prefix}/bin/autohdmi ${sysconfdir}/init.d/rc.autohdmi"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-COMPATIBLE_MACHINE = "(mx6|mx7ulp)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7ulp-nxp-bsp)"

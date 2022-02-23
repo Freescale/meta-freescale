@@ -13,13 +13,13 @@ S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig perlnative python3native
 
-PACKAGECONFIG_BACKEND:mx6 = " \
+PACKAGECONFIG_BACKEND:mx6-nxp-bsp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'waffle', \
        bb.utils.contains('DISTRO_FEATURES',     'x11',    'x11', \
                                                              '', d), d)} \
 "
-PACKAGECONFIG_BACKEND:mx7 = "${PACKAGECONFIG_BACKEND:mx6}"
-PACKAGECONFIG_BACKEND:mx8 = "waffle"
+PACKAGECONFIG_BACKEND:mx7-nxp-bsp = "${PACKAGECONFIG_BACKEND:mx6-nxp-bsp}"
+PACKAGECONFIG_BACKEND:mx8-nxp-bsp = "waffle"
 
 PACKAGECONFIG_GPU2D          = ""
 PACKAGECONFIG_GPU2D:imxgpu2d = "vivante"

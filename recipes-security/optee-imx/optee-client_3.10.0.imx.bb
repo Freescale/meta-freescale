@@ -49,4 +49,4 @@ INSANE_SKIP:${PN} = "ldflags dev-elf"
 INSANE_SKIP:${PN}-dev = "ldflags dev-elf"
 INSANE_SKIP:tee-supplicant = "ldflags"
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

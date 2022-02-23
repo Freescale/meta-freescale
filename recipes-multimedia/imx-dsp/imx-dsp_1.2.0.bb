@@ -19,8 +19,8 @@ EXTRA_OECONF += " \
 RDEPENDS:${PN} += " imx-dsp-codec-ext"
 
 HIFI4_BIN ?= "hifi4_imx8qmqxp.bin"
-HIFI4_BIN:mx8mp = "hifi4_imx8mp.bin"
-HIFI4_BIN:mx8ulp = "hifi4_imx8ulp.bin"
+HIFI4_BIN:mx8mp-nxp-bsp = "hifi4_imx8mp.bin"
+HIFI4_BIN:mx8ulp-nxp-bsp = "hifi4_imx8ulp.bin"
 
 do_install:append () {
     # Rename DSP Firmware into hifi4.bin and remove unneeded binary
@@ -42,4 +42,4 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx8qm|mx8qxp|mx8mp|mx8ulp)"
+COMPATIBLE_MACHINE = "(mx8qm-nxp-bsp|mx8qxp-nxp-bsp|mx8mp-nxp-bsp|mx8ulp-nxp-bsp)"

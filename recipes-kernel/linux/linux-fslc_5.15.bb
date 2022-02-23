@@ -24,4 +24,4 @@ LINUX_VERSION = "5.15.16"
 KBRANCH = "5.15.x+fslc"
 SRCREV = "d084d166324389d09f73d8f2e91b989d69432335"
 
-COMPATIBLE_MACHINE = "(mxs|mx5|mx6|vf|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(imx-generic-bsp)"

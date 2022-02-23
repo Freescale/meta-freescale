@@ -129,4 +129,4 @@ FILES:${PN}-hdmi = " \
     ${nonarch_base_libdir}/firmware/dpfw.bin \
 "
 
-COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(imx-generic-bsp)"

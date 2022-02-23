@@ -15,4 +15,4 @@ S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
 
-COMPATIBLE_MACHINE = "(imx|use-mainline-bsp)"
+COMPATIBLE_MACHINE = "(imx-generic-bsp)"

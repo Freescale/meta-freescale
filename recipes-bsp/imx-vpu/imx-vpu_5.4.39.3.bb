@@ -29,4 +29,4 @@ do_install() {
 }
 
 # Compatible only for i.MX with Chips&Media VPU
-COMPATIBLE_MACHINE = "(mx6q|mx6dl)"
+COMPATIBLE_MACHINE = "(mx6q-nxp-bsp|mx6dl-nxp-bsp)"

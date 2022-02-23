@@ -271,12 +271,12 @@ SRC_URI += " \
 "
 
 PACKAGECONFIG:remove        = "eigen"
-PACKAGECONFIG:append:mx8    = " dnn text"
+PACKAGECONFIG:append:mx8-nxp-bsp    = " dnn text"
 PACKAGECONFIG_OPENCL        = ""
-PACKAGECONFIG_OPENCL:mx8    = "opencl"
-PACKAGECONFIG_OPENCL:mx8dxl = ""
-PACKAGECONFIG_OPENCL:mx8mm  = ""
-PACKAGECONFIG_OPENCL:mx8mnlite  = ""
+PACKAGECONFIG_OPENCL:mx8-nxp-bsp    = "opencl"
+PACKAGECONFIG_OPENCL:mx8dxl-nxp-bsp = ""
+PACKAGECONFIG_OPENCL:mx8mm-nxp-bsp  = ""
+PACKAGECONFIG_OPENCL:mx8mnlite-nxp-bsp  = ""
 PACKAGECONFIG:append        = " ${PACKAGECONFIG_OPENCL}"
 
 PACKAGECONFIG[openvx] = "-DWITH_OPENVX=ON -DOPENVX_ROOT=${STAGING_LIBDIR} -DOPENVX_LIB_CANDIDATES='OpenVX;OpenVXU',-DWITH_OPENVX=OFF,virtual/libopenvx,"
@@ -296,6 +296,6 @@ do_install:append() {
 
 FILES:${PN}-samples += "${datadir}/OpenCV/samples"
 
-COMPATIBLE_MACHINE = "(mx8)"
+COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
 
 ########## End of i.MX overrides ##########

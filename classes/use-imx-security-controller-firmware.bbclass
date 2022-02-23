@@ -18,14 +18,14 @@
 
 SECO_FIRMWARE_NAME              ?= ""
 
-SECO_FIRMWARE_NAME:mx8qm         = "mx8qmb0-ahab-container.img"
-SECO_FIRMWARE_NAME:mx8qxp        = \
+SECO_FIRMWARE_NAME:mx8qm-nxp-bsp         = "mx8qmb0-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8qxp-nxp-bsp        = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', 'mx8qxb0-ahab-container.img', \
                                                            'mx8qxc0-ahab-container.img', d)}"
-SECO_FIRMWARE_NAME:mx8dxl        = "mx8dxla1-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8dxl-nxp-bsp        = "mx8dxla1-ahab-container.img"
 
 python () {
-    if "mx8m" in d.getVar('MACHINEOVERRIDES').split(":"):
+    if "mx8m-nxp-bsp" in d.getVar('MACHINEOVERRIDES').split(":"):
         return # We need to allow the recipes to be parsed for this case
 
     seco_firmware = d.getVar('SECO_FIRMWARE_NAME')

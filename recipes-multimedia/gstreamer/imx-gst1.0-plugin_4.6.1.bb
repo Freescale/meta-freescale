@@ -8,8 +8,8 @@ LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
 SECTION = "multimedia"
 
 DEPENDS = "imx-codec imx-parser gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
-DEPENDS:append:mx6 = " imx-lib"
-DEPENDS:append:mx7 = " imx-lib"
+DEPENDS:append:mx6-nxp-bsp = " imx-lib"
+DEPENDS:append:mx7-nxp-bsp = " imx-lib"
 DEPENDS:append:imxvpu = " imx-vpuwrap libdrm"
 
 # For backwards compatibility
@@ -30,14 +30,14 @@ S = "${WORKDIR}/git"
 
 inherit meson pkgconfig use-imx-headers
 
-PLATFORM:mx6 = "MX6"
-PLATFORM:mx6sl = "MX6SL"
-PLATFORM:mx6sx = "MX6SX"
-PLATFORM:mx6ul = "MX6UL"
-PLATFORM:mx6sll = "MX6SLL"
-PLATFORM:mx7= "MX7D"
-PLATFORM:mx7ulp= "MX7ULP"
-PLATFORM:mx8 = "MX8"
+PLATFORM:mx6-nxp-bsp = "MX6"
+PLATFORM:mx6sl-nxp-bsp = "MX6SL"
+PLATFORM:mx6sx-nxp-bsp = "MX6SX"
+PLATFORM:mx6ul-nxp-bsp = "MX6UL"
+PLATFORM:mx6sll-nxp-bsp = "MX6SLL"
+PLATFORM:mx7-nxp-bsp= "MX7D"
+PLATFORM:mx7ulp-nxp-bsp= "MX7ULP"
+PLATFORM:mx8-nxp-bsp = "MX8"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OEMESON = "-Dplatform=${PLATFORM} \
@@ -49,10 +49,10 @@ PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
 RDEPENDS:${PN} += "imx-parser ${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux "
-RDEPENDS:${PN}:append:mx8qm = " imx-dsp"
-RDEPENDS:${PN}:append:mx8qxp = " imx-dsp"
-RDEPENDS:${PN}:append:mx8mp = " imx-dsp"
-RDEPENDS:${PN}:append:mx8ulp = " imx-dsp"
+RDEPENDS:${PN}:append:mx8qm-nxp-bsp = " imx-dsp"
+RDEPENDS:${PN}:append:mx8qxp-nxp-bsp = " imx-dsp"
+RDEPENDS:${PN}:append:mx8mp-nxp-bsp = " imx-dsp"
+RDEPENDS:${PN}:append:mx8ulp-nxp-bsp = " imx-dsp"
 
 # overlaysink rely on G2D,
 # cannot be supported on i.MX6SLL & i.MX6UL & i.MX6ULL & i.MX7D
@@ -82,4 +82,4 @@ FILES:${PN}-grecorder = "${bindir}/grecorder-1.0"
 FILES:${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
 FILES:${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

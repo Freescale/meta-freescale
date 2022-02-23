@@ -32,9 +32,9 @@ PACKAGECONFIG ?= " "
 PACKAGECONFIG:append:imxgpu2d = " ${LIBG2D_PACKAGECONFIG}"
 PACKAGECONFIG:append:imxipu   = " ipu"
 PACKAGECONFIG:append:imxpxp   = " pxp"
-PACKAGECONFIG:append:mx8m     = " ion dwl"
-PACKAGECONFIG:append:mx8qm    = " ion"
-PACKAGECONFIG:append:mx8qxp   = " ion"
+PACKAGECONFIG:append:mx8m-nxp-bsp     = " ion dwl"
+PACKAGECONFIG:append:mx8qm-nxp-bsp    = " ion"
+PACKAGECONFIG:append:mx8qxp-nxp-bsp   = " ion"
 
 HANTRO_CONF = "--hantro-headers-path=${STAGING_INCDIR}/hantro_dec --hantro-decoder-version=G2"
 
@@ -51,4 +51,4 @@ do_install_ptest_base() {
     install -m 0755 ${B}/test-alloc ${D}${PTEST_PATH}
 }
 
-COMPATIBLE_MACHINE = "(mx6|mx7|mx8)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

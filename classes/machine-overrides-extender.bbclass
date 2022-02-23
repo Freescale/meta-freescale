@@ -12,19 +12,17 @@
 #
 # MACHINEOVERRIDES_EXTENDER_FILTER_OUT:override = "group1 group2"
 #
-# Copyright 2016-2018 (C) O.S. Systems Software LTDA.
+# Copyright 2016-2018, 2022 (C) O.S. Systems Software LTDA.
 
 def machine_overrides_extender(d):
     machine_overrides = (d.getVar('PRISTINE_MACHINEOVERRIDES') or '').split(':')
 
     # Gather the list of overrides to filter out
-    machine_overrides_filter_out = []
+    machine_overrides_filter_out = (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT') or '').split()
     for override in machine_overrides:
         machine_overrides_filter_out += (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT:%s' % override) or '').split()
 
-    # Drop any overrides of filter_out prior extending
-    machine_overrides = [o for o in machine_overrides if o not in machine_overrides_filter_out]
-
+    # Extend the overrides
     for override in machine_overrides:
         extender = d.getVar('MACHINEOVERRIDES_EXTENDER:%s' % override)
 
@@ -39,6 +37,9 @@ def machine_overrides_extender(d):
                 index = machine_overrides.index(override)
                 for e in extender:
                     machine_overrides.insert(index, e)
+
+    # Drop any overrides of filter_out after extending
+    machine_overrides = [o for o in machine_overrides if o not in machine_overrides_filter_out]
 
     return ':'.join(machine_overrides)
 
