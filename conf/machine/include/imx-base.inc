@@ -517,3 +517,6 @@ KERNEL_IMAGETYPE:aarch64 = "Image"
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
 
 HOSTTOOLS_NONFATAL:append:mx8-nxp-bsp = " sha384sum"
+
+# Allow meta-imx to add NIP devices information until upstreamed.
+include conf/machine/include/imx-base-extend.inc
