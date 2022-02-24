@@ -1,4 +1,4 @@
-MACHINEOVERRIDES =. "mx8:mx8x:mx8dxl:"
+MACHINEOVERRIDES =. "mx8dxl:"
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa35.inc
