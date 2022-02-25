@@ -33,6 +33,7 @@ IMX_UAPI_HEADERS = " \
     mxcfb.h \
     pxp_device.h \
     pxp_dma.h \
+    version.h \
     videodev2.h \
 "
 
