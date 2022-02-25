@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 NXP
+# Copyright (C) 2017-2021 NXP
 
 SUMMARY = "OPTEE OS"
 DESCRIPTION = "OPTEE OS"
@@ -8,17 +8,18 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
 DEPENDS = "python3-pycryptodomex-native python3-pyelftools-native u-boot-mkimage-native"
 
-SRCBRANCH = "imx_5.4.70_2.3.0"
-
+SRCBRANCH = "lf-5.10.72_2.2.0"
 SRC_URI = "\
 	git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
 "
 
-SRCREV = "a991c90475bb1c715651e5fe27f7f32cbe61aef9"
+SRCREV = "c939619d64dea014ad1b8382356eee4d1cbfbb22"
 
 S = "${WORKDIR}/git"
 
-inherit deploy python3native autotools
+inherit deploy python3native autotools features_check
+
+REQUIRED_MACHINE_FEATURES = "optee"
 
 # The platform flavor corresponds to the Yocto machine without the leading 'i'.
 PLATFORM_FLAVOR                   = "${@d.getVar('MACHINE')[1:]}"
@@ -63,7 +64,7 @@ CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
 do_deploy () {
     install -d ${DEPLOYDIR}
-    ${TARGET_PREFIX}objcopy -O binary ${B}/core/tee.elf ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin
+    cp ${B}/core/tee-raw.bin ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin
     ln -sf tee.${PLATFORM_FLAVOR}.bin ${DEPLOYDIR}/tee.bin
 
     if [ "${OPTEE_ARCH}" != "arm64" ]; then
@@ -78,17 +79,23 @@ do_install () {
     install -m 644 ${B}/core/*.bin ${D}${nonarch_base_libdir}/firmware/
 
     # Install the TA devkit
-    install -d ${D}/usr/include/optee/export-user_ta_${OPTEE_ARCH}/
+    install -d ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
 
     for f in ${B}/export-ta_${OPTEE_ARCH}/*; do
-        cp -aR $f ${D}/usr/include/optee/export-user_ta_${OPTEE_ARCH}/
+        cp -aR $f ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
+    done
+
+    # Install embedded TAs
+    install -d ${D}${nonarch_base_libdir}/optee_armtz
+    find ${B}/ta -name '*.ta' | while read name; do
+        install -m 444 $name ${D}${nonarch_base_libdir}/optee_armtz/
     done
 }
 
 addtask deploy after do_compile before do_install
 
 
-FILES:${PN} = "${nonarch_base_libdir}/firmware/"
+FILES:${PN} = "${nonarch_base_libdir}/firmware/ ${nonarch_base_libdir}/optee_armtz/"
 FILES:${PN}-staticdev = "/usr/include/optee/"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
 
