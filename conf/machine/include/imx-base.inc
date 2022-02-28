@@ -16,7 +16,7 @@ IMX_DEFAULT_BSP ?= "mainline"
 IMX_DEFAULT_BSP:mxs ?= "mainline"
 IMX_DEFAULT_BSP:mx5 ?= "mainline"
 
-MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
+MACHINEOVERRIDES =. "imx-generic-bsp:use-${IMX_DEFAULT_BSP}-bsp:"
 
 # UBOOT_BINARY is used inside the wks files to dynamically find the required
 # U-Boot file.
@@ -137,30 +137,30 @@ INHERIT += "machine-overrides-extender"
 ### NXP BSP specific overrides
 #######
 
-MACHINEOVERRIDES_EXTENDER:mx6q:use-nxp-bsp   = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6q-generic-bsp:mx6q-nxp-bsp:imxfbdev:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER:mx6dl:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6dl-generic-bsp:mx6dl-nxp-bsp:imxfbdev:imxpxp:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxepdc"
+MACHINEOVERRIDES_EXTENDER:mx6q:use-nxp-bsp   = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6q-generic-bsp:mx6q-nxp-bsp:imxfbdev:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx6dl:use-nxp-bsp  = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6dl-generic-bsp:mx6dl-nxp-bsp:imxfbdev:imxpxp:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxepdc"
 
-MACHINEOVERRIDES_EXTENDER:mx6sx:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6sx-generic-bsp:mx6sx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx6sx:use-nxp-bsp  = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6sx-generic-bsp:mx6sx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d"
 
-MACHINEOVERRIDES_EXTENDER:mx6sl:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxepdc"
-MACHINEOVERRIDES_EXTENDER:mx6sll:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp:mx6sll-generic-bsp:mx6sll-nxp-bsp:imxfbdev:imxpxp:imxepdc"
+MACHINEOVERRIDES_EXTENDER:mx6sl:use-nxp-bsp  = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxepdc"
+MACHINEOVERRIDES_EXTENDER:mx6sll:use-nxp-bsp = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp:mx6sll-generic-bsp:mx6sll-nxp-bsp:imxfbdev:imxpxp:imxepdc"
 
-MACHINEOVERRIDES_EXTENDER:mx6ul:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:imxfbdev:imxpxp"
-MACHINEOVERRIDES_EXTENDER:mx6ull:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp:imxfbdev:imxpxp:imxepdc"
-MACHINEOVERRIDES_EXTENDER:mx6ulz:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp:mx6ulz-generic-bsp:mx6ulz-nxp-bsp:imxfbdev:imxpxp:imxepdc"
+MACHINEOVERRIDES_EXTENDER:mx6ul:use-nxp-bsp  = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:imxfbdev:imxpxp"
+MACHINEOVERRIDES_EXTENDER:mx6ull:use-nxp-bsp = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp:imxfbdev:imxpxp:imxepdc"
+MACHINEOVERRIDES_EXTENDER:mx6ulz:use-nxp-bsp = "imx-nxp-bsp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp:mx6ulz-generic-bsp:mx6ulz-nxp-bsp:imxfbdev:imxpxp:imxepdc"
 
-MACHINEOVERRIDES_EXTENDER:mx7d:use-nxp-bsp   = "imx-generic-bsp:imx-nxp-bsp:mx7-generic-bsp:mx7-nxp-bsp:mx7d-generic-bsp:mx7d-nxp-bsp:imxfbdev:imxpxp:imxepdc"
-MACHINEOVERRIDES_EXTENDER:mx7ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx7-generic-bsp:mx7-nxp-bsp:mx7ulp-generic-bsp:mx7ulp-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx7d:use-nxp-bsp   = "imx-nxp-bsp:mx7-generic-bsp:mx7-nxp-bsp:mx7d-generic-bsp:mx7d-nxp-bsp:imxfbdev:imxpxp:imxepdc"
+MACHINEOVERRIDES_EXTENDER:mx7ulp:use-nxp-bsp = "imx-nxp-bsp:mx7-generic-bsp:mx7-nxp-bsp:mx7ulp-generic-bsp:mx7ulp-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d"
 
-MACHINEOVERRIDES_EXTENDER:mx8qm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8qm-generic-bsp:mx8qm-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx8qm:use-nxp-bsp  = "imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8qm-generic-bsp:mx8qm-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
 
-MACHINEOVERRIDES_EXTENDER:mx8mm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mm-generic-bsp:mx8mm-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER:mx8mn:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mn-generic-bsp:mx8mn-nxp-bsp:imxdrm:imxgpu:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER:mx8mp:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mq-generic-bsp:mx8mq-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx8mm:use-nxp-bsp  = "imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mm-generic-bsp:mx8mm-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx8mn:use-nxp-bsp  = "imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mn-generic-bsp:mx8mn-nxp-bsp:imxdrm:imxgpu:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx8mp:use-nxp-bsp  = "imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mq-generic-bsp:mx8mq-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu3d"
 
-MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
-MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-generic-bsp:mx8dxl-nxp-bsp:imxfbdev"
+MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp = "imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d"
+MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-generic-bsp:mx8dxl-nxp-bsp:imxfbdev"
 
 #######
 ### Mainline BSP specific overrides
