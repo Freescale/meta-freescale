@@ -1,0 +1,87 @@
+#!/bin/sh
+# Convert old-style NXP overrides to new style BSP overides
+#
+# Essentially, we extend the overrides to a generic-bsp, nxp-bsp, and mainline-bsp.
+#
+# So, for example, the mx8mq override is split into:
+#
+# - imx-generic-bsp: compatible with every i.MX SoC and both BSP variants
+# - imx-nxp-bsp: compatible with every i.MX SoC but specific to NXP BSP
+# - imx-mainline-bsp: compatible with every i.MX SoC but specific to Mainline BSP
+#
+# - mx8-generic-bsp: compatible with every i.MX8 SoC and both BSP variants
+# - mx8-nxp-bsp: compatible with every i.MX8 SoC but specific to NXP BSP
+# - mx8-mainline-bsp: compatible with every i.MX8 SoC but specific to Mainline BSP
+#
+# - mx8m-generic-bsp: compatible with every i.MX8M SoC and both BSP variants
+# - mx8m-nxp-bsp: compatible with every i.MX8M SoC but specific to NXP BSP
+# - mx8m-mainline-bsp: compatible with every i.MX8M SoC but specific to Mainline BSP
+#
+# - mx8mq-generic-bsp: compatible with every i.MX8MQ SoC and both BSP variants
+# - mx8mq-nxp-bsp: compatible with every i.MX8MQ SoC8 but specific to NXP BSP
+# - mx8mq-mainline-bsp: compatible with every i.MX8MQ SoC but specific to Mainline BSP
+#
+# The extender mechanism is responsible for extending the override list to include the generic
+# overrides. We can then use the three different variants to handle the metadata correctly.
+#
+# WARN: This script is intended to be run only once in a layer.
+#
+# Copyright 2022 (C) O.S. Systems Software LTDA.
+
+# Error out if the layer looks as already converted.
+if git ls-files \
+        | grep -v 'conf/machine/' \
+        | xargs egrep -q '(mx[5-8s]|vf\w+)-(nxp|generic|mainline)-bsp'; then
+    echo "ERROR: The $0 should be used once in a layer. The layer seems already converted."
+    exit 1
+fi
+
+# Convert the recipes to use the new BSP-specific overrides.
+git ls-files \
+    | grep -v 'conf/machine/' \
+    | xargs sed -i \
+            -e 's,:\(mx[6-8]\w*\),:\1-nxp-bsp,g' \
+            -e 's,(\(mx[6-8]\w*\)),(\1-nxp-bsp),g' \
+            -e 's,\(mx[6-8]\w*\)|,\1-nxp-bsp|,g' \
+            -e 's,|\(mx[6-8]\w*\)),|\1-nxp-bsp),g' \
+            \
+            -e 's,:\(mx[5s]\w*\),:\1-generic-bsp,g' \
+            -e 's,(\(mx[5s]\w*\)),(\1-generic-bsp),g' \
+            -e 's,\(mx[5s]\w*\)|,\1-generic-bsp|,g' \
+            -e 's,|\(mx[5s]\w*\)),|\1-generic-bsp),g' \
+            \
+            -e 's,:\(vf\w*\),:\1-generic-bsp,g' \
+            -e 's,:\(vf[56]0\w*\),:\1-generic-bsp,g' \
+            -e 's,\(vf\w*\)|,\1-generic-bsp|,g' \
+            -e 's,|\(vf\w*\)),|\1-generic-bsp),g' \
+            -e 's,\(vf[56]0\w*\)|,\1-generic-bsp|,g' \
+            -e 's,|\(vf[56]0\w*\)),|\1-generic-bsp),g' \
+            \
+            -e 's,:\(imx\) ,:\1-nxp-bsp ,g' \
+            -e 's,(\(imx\)),(\1-nxp-bsp),g' \
+            -e 's,\(imx\)|,\1-nxp-bsp|,g' \
+            -e 's,|\(imx\)),|\1-nxp-bsp),g'
+
+# Convert the folders old overrides to the new BSP-specific overrides.
+for d in $(find -type d | egrep '/mx[6-8]w*'); do
+    git mv $d $d-nxp-bsp
+done
+
+for d in $(find -type d | egrep '/imx$'); do
+    git mv $d $d-nxp-bsp
+done
+
+for d in $(find -type d | egrep '/mx[5s]w*'); do
+    git mv $d $d-generic-bsp
+done
+
+# Rework machine overrides to simplify them.
+git ls-files conf \
+    | xargs sed -i \
+            -e 's,mx6:mx6,mx6,g' \
+            -e 's,mx6ul:mx6ull:,mx6ull:,g' \
+            -e 's,mx6dl:mx6q:,mx6q:mx6dl:,g' \
+            \
+            -e 's,mx8:mx8m,mx8m,g' \
+            -e 's,mx8m:mx8m,mx8m,g' \
+            -e 's,mx8:mx8x:mx8,mx8,g'
