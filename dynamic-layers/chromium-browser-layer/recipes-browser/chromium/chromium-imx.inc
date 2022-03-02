@@ -41,4 +41,4 @@ python add_chromium_imx_patches() {
     d.appendVar('OZONE_WAYLAND_EXTRA_PATCHES', ' ' + d.getVar('CHROMIUM_IMX_WAYLAND_PATCHES', 1))
 }
 
-COMPATIBLE_MACHINE = "(mx6)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp)"
