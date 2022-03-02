@@ -22,7 +22,7 @@ QT_CONFIG_FLAGS:append:imxgpu2d = " -I${STAGING_KERNEL_DIR}/include/uapi \
                                -DQT_QPA_EXPERIMENTAL_TOUCHEVENT=1"
 
 # The QT_CONFIG_FLAGS can pollute *.la files with -Dxxx
-do_compile:append:mx6 () {
+do_compile:append:mx6-nxp-bsp () {
     find lib -name "*.la" | xargs -n1 sed -i 's/-D.*=1//g'
 }
 
