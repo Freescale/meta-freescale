@@ -4,7 +4,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Gstreamer freescale plugins"
-LICENSE = "GPLv2 & LGPLv2 & LGPLv2.1"
+LICENSE = "GPL-2.0-only & LGPL-2.0-only & LGPL-2.1-only"
 SECTION = "multimedia"
 
 DEPENDS = "imx-codec imx-parser gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"

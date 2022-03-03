@@ -1,5 +1,5 @@
 SUMMARY = "NXP Wi-Fi driver for module 88w8997/8987"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://gpl-2.0.txt;md5=ab04ac0f249af12befccb94447c08b77"
 
 SRCBRANCH = "lf-5.10.72_2.2.0"

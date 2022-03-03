@@ -1,6 +1,6 @@
 DESCRIPTION = "Ethernet Configuration Files"
 SECTION = "eth-config"
-LICENSE = "BSD & GPLv2+"
+LICENSE = "BSD & GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=47716bd5b656aa5e298a132a64d2d1e4"
 
 PR = "r2"

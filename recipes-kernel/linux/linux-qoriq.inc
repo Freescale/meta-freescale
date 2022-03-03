@@ -3,7 +3,7 @@ inherit fsl-kernel-localversion
 
 SUMMARY = "Linux Kernel for NXP QorIQ platforms"
 SECTION = "kernel"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 
 S = "${WORKDIR}/git"
 

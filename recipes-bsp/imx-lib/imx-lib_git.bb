@@ -3,7 +3,7 @@
 # Copyright 2017 NXP
 
 DESCRIPTION = "Platform specific libraries for imx platform"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 SECTION = "multimedia"
 
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"

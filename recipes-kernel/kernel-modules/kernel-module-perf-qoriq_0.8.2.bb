@@ -1,5 +1,5 @@
 DESCRIPTION = "QorIQ extension to Perf for supporting non core counters"
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e29234dd5d40dc352cc60cc0c93437ba"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/qoriq-perf;branch=nxp/master"

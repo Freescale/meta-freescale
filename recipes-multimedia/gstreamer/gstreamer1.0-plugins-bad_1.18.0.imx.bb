@@ -20,7 +20,7 @@ SRCREV = "227af57d23cb6b3564fc94446ab2c9fe8c8cff22"
 
 S = "${WORKDIR}/git"
 
-LICENSE = "GPLv2+ & LGPLv2+ & LGPLv2.1+"
+LICENSE = "GPL-2.0-or-later & LGPL-2.0-or-later & LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
                     file://COPYING.LIB;md5=21682e4e8fea52413fd26c60acb907e5 "
 

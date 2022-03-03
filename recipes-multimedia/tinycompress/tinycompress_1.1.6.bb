@@ -1,5 +1,5 @@
 DESCRIPTION = "A library to handle compressed formats like MP3 etc."
-LICENSE = "LGPLv2.1 | BSD-3-Clause"
+LICENSE = "LGPL-2.1-only | BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=cf9105c1a2d4405cbe04bbe3367373a0"
 DEPENDS = "alsa-lib"
 
