@@ -55,3 +55,22 @@ python machine_overrides_extender_handler() {
 
 machine_overrides_extender_handler[eventmask] = "bb.event.ConfigParsed"
 addhandler machine_overrides_extender_handler
+
+python machineoverrides_filtered_out_qa_handler() {
+    filtered_out = (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT') or "").split()
+    qa_error = d.getVar('MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR')
+
+    for var in d.overridedata:
+        # We need to allow the overrides being used in the extender
+        # so avoid processing it.
+        if 'MACHINEOVERRIDES_EXTENDER' in var:
+            continue
+
+        for (r, o) in d.overridedata[var]:
+            common = list(set(o.split(":")).intersection(filtered_out))
+            if len(common) > 0:
+                raise bb.parse.SkipRecipe(qa_error % common)
+}
+
+machineoverrides_filtered_out_qa_handler[eventmask] = "bb.event.RecipeParsed"
+addhandler machineoverrides_filtered_out_qa_handler

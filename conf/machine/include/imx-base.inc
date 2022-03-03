@@ -224,6 +224,8 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8dxl \
 "
 
+MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR = "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
+
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
 MACHINE_SOCARCH_SUFFIX:mx6q-nxp-bsp = "-mx6qdl"
