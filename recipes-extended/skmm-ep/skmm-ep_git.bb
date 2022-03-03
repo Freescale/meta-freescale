@@ -1,6 +1,6 @@
 DESCRIPTION = "SKMM application for PCIe endpoint"
 SECTION = "skmm-ep"
-LICENSE = "BSD & GPLv2"
+LICENSE = "BSD & GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=39e58bedc879163c9338596e52df5b1f"
 
 DEPENDS = "libedit openssl virtual/kernel"

@@ -1,6 +1,6 @@
 SUMMARY = "Configure TSN funtionalitie"
 DESCRIPTION = "A tool to configure TSN funtionalities in user space"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ef58f855337069acd375717db0dbbb6d"
 
 DEPENDS = "cjson libnl readline"

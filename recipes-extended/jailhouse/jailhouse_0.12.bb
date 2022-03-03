@@ -1,7 +1,7 @@
 SUMMARY = "Jailhouse, i.MX fork"
 HOMEPAGE = "https://github.com/siemens/jailhouse"
 SECTION = "jailhouse"
-LICENSE = "GPL-2.0"
+LICENSE = "GPL-2.0-only"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
                  file://tools/root-cell-config.c.tmpl;beginline=6;endline=33;md5=2825581c1666c44a17955dc574cfbfb3 \

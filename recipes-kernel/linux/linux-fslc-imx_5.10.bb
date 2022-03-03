@@ -69,7 +69,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 include linux-fslc.inc
 
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"

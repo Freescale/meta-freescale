@@ -2,7 +2,7 @@ SUMMARY = "Freescale TLU(Table Lookup Unit) test package"
 DESCRIPTION = "This package includes the TLU(Table Lookup Unit) test scripts \
 and configuration files."
 
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=8a71d0475d08eee76d8b6d0c6dbec543"
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/fsl-tlu;protocol=https;nobranch=1"

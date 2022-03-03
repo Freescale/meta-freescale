@@ -1,6 +1,6 @@
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 DESCRIPTION = "GStreamer 1.0 plugins for i.MX platforms"
-LICENSE = "LGPLv2+"
+LICENSE = "LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
 SECTION = "multimedia"
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base libimxdmabuffer"

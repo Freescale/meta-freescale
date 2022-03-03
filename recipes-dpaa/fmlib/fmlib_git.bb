@@ -1,6 +1,6 @@
 DESCRIPTION = "Frame Manager User Space Library"
 SECTION = "fman"
-LICENSE = "BSD & GPLv2"
+LICENSE = "BSD & GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=9c7bd5e45d066db084bdb3543d55b1ac"
 
 PR = "r1"
