@@ -33,16 +33,9 @@ do_resolve_and_populate_binaries[depends] += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
-# Append make flags to include ATF load address
-EXTRA_OEMAKE += "ATF_LOAD_ADDR=${ATF_LOAD_ADDR}"
-
 # Define an additional task that collects binary output from dependent packages
 # and deploys them into the U-Boot build folder
 do_resolve_and_populate_binaries() {
-    if [ ! -n "${ATF_LOAD_ADDR}" ]; then
-        bberror "ATF_LOAD_ADDR is undefined, result binary would be unusable!"
-    fi
-
     if [ -n "${UBOOT_CONFIG}" ]; then
         for config in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
