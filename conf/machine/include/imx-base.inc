@@ -165,9 +165,10 @@ MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx8-
 ### Mainline BSP specific overrides
 #######
 
-MACHINEOVERRIDES_EXTENDER:mx27:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx27-generic-bsp:mx27-mainline-bsp"
-
+MACHINEOVERRIDES_EXTENDER:mx23:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx23-generic-bsp:mx23-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx28:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx28-generic-bsp:mx28-mainline-bsp"
+
+MACHINEOVERRIDES_EXTENDER:mx27:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx27-generic-bsp:mx27-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx51:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx51-generic-bsp:mx51-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx53:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx53-generic-bsp:mx53-mainline-bsp"
