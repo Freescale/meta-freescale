@@ -1,0 +1,29 @@
+From d965393256e32a93dae41765543523598fca5d00 Mon Sep 17 00:00:00 2001
+From: Clement Faure <clement.faure@nxp.com>
+Date: Mon, 7 Mar 2022 10:21:04 -0600
+Subject: [PATCH] arm: imx: fix RPMB header include
+
+Replace <drivers/imx_snvs.h> by <drivers/nxp_snvs.h>
+
+Upstream-Status: Backport from NXP 5.15.5-1.0.0
+Signed-off-by: Clement Faure <clement.faure@nxp.com>
+---
+ core/arch/arm/plat-imx/imx_rpmb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/arch/arm/plat-imx/imx_rpmb.c b/core/arch/arm/plat-imx/imx_rpmb.c
+index 9f0eb384d..2dd41105e 100644
+--- a/core/arch/arm/plat-imx/imx_rpmb.c
++++ b/core/arch/arm/plat-imx/imx_rpmb.c
+@@ -2,7 +2,7 @@
+ /*
+  * Copyright 2020 Pengutronix, Rouven Czerwinski <entwicklung@pengutronix.de>
+  */
+-#include <drivers/imx_snvs.h>
++#include <drivers/nxp_snvs.h>
+ #include <imx.h>
+ #include <tee/tee_fs.h>
+ 
+-- 
+2.17.1
+
