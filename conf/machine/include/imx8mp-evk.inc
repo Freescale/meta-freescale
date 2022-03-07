@@ -36,7 +36,6 @@ UBOOT_CONFIG[mfgtool] = "${UBOOT_CONFIG_BASENAME}_defconfig"
 SPL_BINARY = "spl/u-boot-spl.bin"
 
 ATF_PLATFORM = "imx8mp"
-ATF_LOAD_ADDR = "0x970000"
 
 # Extra firmware package name, that is required to build boot container for fslc bsp
 IMX_EXTRA_FIRMWARE = "firmware-imx-8m"
