@@ -7,7 +7,7 @@ DEPENDS = "python3 libdrm virtual/libg2d libtinyxml2-8"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
-    file://0001-start_isp.sh-fix-NR_DEVICE_TREE_BASLER-variable.patch \
+    file://0001-start_isp.sh-fix-NR_DEVICE_TREE_BASLER-variable-and.patch \
 "
 
 SRC_URI[md5sum] = "f490153dbec234a04416ad41834806b2"

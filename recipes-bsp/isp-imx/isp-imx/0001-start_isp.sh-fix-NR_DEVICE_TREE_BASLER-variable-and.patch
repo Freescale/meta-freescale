@@ -1,0 +1,55 @@
+From cdc852d9298c6341f0398ad2d6ebb33e1a324409 Mon Sep 17 00:00:00 2001
+From: Chris Dimich <chris.dimich@boundarydevices.com>
+Date: Tue, 8 Mar 2022 13:49:05 -0800
+Subject: [PATCH 1/1] start_isp.sh: fix NR_DEVICE_TREE_BASLER variable and
+ remove 4k
+
+The NR_DEVICE_TREE_BASLER variable has the wrong path and 4k is not
+supported on basler and causes unexpected issues. Also remove uneeded
+-lm option from run.sh script.
+
+Signed-off-by: Chris Dimich <chris.dimich@boundarydevices.com>
+---
+ imx/start_isp.sh | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
+
+diff --git a/imx/start_isp.sh b/imx/start_isp.sh
+index 6daabc59c..962876115 100755
+--- a/imx/start_isp.sh
++++ b/imx/start_isp.sh
+@@ -7,7 +7,7 @@
+ #
+ 
+ RUNTIME_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+-NR_DEVICE_TREE_BASLER=$(grep basler-camera-vvcam /sys/firmware/devicetree/base/soc@0/*/i2c@*/*/compatible -l | wc -l 2> /dev/null)
++NR_DEVICE_TREE_BASLER=$(grep basler-camera-vvcam `find /sys/firmware/devicetree/base/soc@0/ -name compatible | grep i2c` -l | wc -l 2> /dev/null)
+ NR_DEVICE_TREE_OV5640=$(grep ov5640 /sys/firmware/devicetree/base/soc@0/*/i2c@*/*/compatible -l | wc -l 2> /dev/null)
+ 
+ # check if the basler device has been enabled in the device tree
+@@ -16,20 +16,9 @@ if [ $NR_DEVICE_TREE_BASLER -eq 1 ]; then
+ 	echo "Starting isp_media_server for Single Basler daA3840-30mc"
+ 
+ 	cd $RUNTIME_DIR
+-
+-	if [ $NR_DEVICE_TREE_OV5640 -eq 0 ]; then
+-
+-		# Default configuration for Basler daA3840-30mc: basler_4k
+-		# Available configurations: basler_4k, basler_1080p60, basler_4khdr, basler_1080p60hdr
+-		exec ./run.sh -c basler_4k -lm
+-
+-	elif [ $NR_DEVICE_TREE_OV5640 -eq 1 ]; then
+-
+-		# Default configuration for Basler daA3840-30mc: basler_1080p60
+-		# Available configurations: basler_1080p60, basler_1080p60hdr
+-		exec ./run.sh -c basler_1080p60 -lm
+-
+-	fi
++	# Default configuration for Basler daA3840-30mc: basler_1080p60
++	# Available configurations: basler_1080p60, basler_1080p60hdr
++	exec ./run.sh -c basler_1080p60
+ 
+ elif [ $NR_DEVICE_TREE_BASLER -eq 2 ]; then
+ 
+-- 
+2.31.1
+
