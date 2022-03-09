@@ -1,17 +1,17 @@
-From 9c65e20b82cfd9e82b849b3140eec7b8c18922dc Mon Sep 17 00:00:00 2001
-From: Chris Dimich <Chris.Dimich@boundarydevices.com>
-Date: Mon, 13 Sep 2021 17:56:02 -0700
+From a48c605b9f3860ee7abaca1a37add444a1b4001a Mon Sep 17 00:00:00 2001
+From: Chris Dimich <chris.dimich@boundarydevices.com>
+Date: Tue, 8 Mar 2022 14:45:28 -0800
 Subject: [PATCH 1/1] start_isp.sh: fix NR_DEVICE_TREE_BASLER variable
 
-Also remove uneeded -lm option from run.sh script.
+The NR_DEVICE_TREE_BASLER variable has the wrong path.
 
-Signed-off-by: Chris Dimich <Chris.Dimich@boundarydevices.com>
+Signed-off-by: Chris Dimich <chris.dimich@boundarydevices.com>
 ---
- imx/start_isp.sh | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ imx/start_isp.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/imx/start_isp.sh b/imx/start_isp.sh
-index 6daabc59c..250226935 100755
+index 6daabc59c..8a07acfed 100755
 --- a/imx/start_isp.sh
 +++ b/imx/start_isp.sh
 @@ -7,7 +7,7 @@
@@ -23,31 +23,6 @@ index 6daabc59c..250226935 100755
  NR_DEVICE_TREE_OV5640=$(grep ov5640 /sys/firmware/devicetree/base/soc@0/*/i2c@*/*/compatible -l | wc -l 2> /dev/null)
  
  # check if the basler device has been enabled in the device tree
-@@ -21,13 +21,13 @@ if [ $NR_DEVICE_TREE_BASLER -eq 1 ]; then
- 
- 		# Default configuration for Basler daA3840-30mc: basler_4k
- 		# Available configurations: basler_4k, basler_1080p60, basler_4khdr, basler_1080p60hdr
--		exec ./run.sh -c basler_4k -lm
-+		exec ./run.sh -c basler_4k
- 
- 	elif [ $NR_DEVICE_TREE_OV5640 -eq 1 ]; then
- 
- 		# Default configuration for Basler daA3840-30mc: basler_1080p60
- 		# Available configurations: basler_1080p60, basler_1080p60hdr
--		exec ./run.sh -c basler_1080p60 -lm
-+		exec ./run.sh -c basler_1080p60
- 
- 	fi
- 
-@@ -38,7 +38,7 @@ elif [ $NR_DEVICE_TREE_BASLER -eq 2 ]; then
- 	cd $RUNTIME_DIR
- 	# Default configuration for Basler daA3840-30mc: dual_basler_1080p60
- 	# Available configurations: dual_basler_1080p60, dual_basler_1080p60hdr, dual_basler_1080p25hdr
--	exec ./run.sh -c dual_basler_1080p60 -lm
-+	exec ./run.sh -c dual_basler_1080p60
- 
- else
- 	# no device tree found exit with code no device or address
 -- 
 2.31.1
 
