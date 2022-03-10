@@ -38,6 +38,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    27b6c760cc7f ("thermal: imx: fix a merging issue")
 #    8ef27ae9f200 ("gpio: fix enabling GPIO_VF610")
 #    12099c38577a ("ASoC: fsl_sai: Correct the clock source for mclk0")
 #    db172377e6e2 ("Revert "MLK-12786-2: ASoC: fsl_sai: correct the clock source for mclk0"")
@@ -73,7 +74,7 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"
-SRCREV = "2c5ae913f94c3aef3b2ba5480444eef5b28409e6"
+SRCREV = "185a13076e02ee241bc1149b90f0fed051bf2649"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
