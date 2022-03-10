@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.10.96
+#    tag: v5.10.98
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -74,14 +74,14 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"
-SRCREV = "185a13076e02ee241bc1149b90f0fed051bf2649"
+SRCREV = "13d6a9ec4e27f0d6567ca4e2c027e6652575aab0"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.10.96"
+LINUX_VERSION = "5.10.98"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-5.10.52-2.1.0"
