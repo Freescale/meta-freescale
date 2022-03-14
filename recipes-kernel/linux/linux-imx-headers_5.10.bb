@@ -75,5 +75,4 @@ PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 # Restrict this recipe to NXP BSP only, this recipe is not compatible
 # with mainline BSP
-COMPATIBLE_HOST = '(null)'
-COMPATIBLE_HOST:use-nxp-bsp = '.*'
+COMPATIBLE_MACHINE = "(use-nxp-bsp)"

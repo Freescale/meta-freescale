@@ -25,13 +25,10 @@ PACKAGE_ARCH:imx-nxp-bsp ?= "${MACHINE_SOCARCH}"
 STAGING_INCDIR_IMX = "${STAGING_INCDIR}/imx"
 
 # Recipes that inherit this class are contracted to use NXP BSP only.
-# This is done by overriding the COMPATIBLE_HOST, as this would effectively
-# cause recipes to be skipped in case if 'use-nxp-bsp' override is not
-# defined for them. This effectively marks recipes that should only be
-# built using NXP BSP, and gives an indication to mainline BSP creators
-# that recipe is not compatible with mainline.
-#
-# Typical example here would be imx-vpu-hantro recipe, which requires NXP
-# BSP and is not compatible with mainline.
-COMPATIBLE_HOST = '(null)'
-COMPATIBLE_HOST:use-nxp-bsp = '.*'
+# This is done by explicitly overriding the COMPATIBLE_MACHINE, as this
+# would effectively cause recipes to be skipped in case if 'use-nxp-bsp'
+# override is not defined in MACHINEOVERRIDES for them. This effectively
+# marks recipes that should only be built using NXP BSP, and gives an
+# indication to mainline BSP creators that recipe is not compatible with
+# mainline.
+COMPATIBLE_MACHINE:forcevariable = "(use-nxp-bsp)"
