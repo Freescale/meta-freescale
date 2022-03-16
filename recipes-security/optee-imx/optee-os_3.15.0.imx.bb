@@ -11,6 +11,7 @@ DEPENDS = "python3-pycryptodomex-native python3-pyelftools-native u-boot-mkimage
 SRCBRANCH = "lf-5.10.72_2.2.0"
 SRC_URI = "\
 	git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
+	file://0001-arm-imx-fix-RPMB-header-include.patch \
 "
 
 SRCREV = "c939619d64dea014ad1b8382356eee4d1cbfbb22"
