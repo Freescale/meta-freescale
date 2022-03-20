@@ -128,7 +128,7 @@ DEFAULTTUNE:vf-generic-bsp     ?= "cortexa5thf-neon"
 
 DEFAULTTUNE:mx8m-generic-bsp   ?= "cortexa53-crypto"
 DEFAULTTUNE:mx8qm-generic-bsp  ?= "cortexa72-cortexa53-crypto"
-DEFAULTTUNE:mx8qxp-generic-bsp ?= "cortexa35-crypto"
+DEFAULTTUNE:mx8x-generic-bsp   ?= "cortexa35-crypto"
 
 INHERIT += "machine-overrides-extender"
 
