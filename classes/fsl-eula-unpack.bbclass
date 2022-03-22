@@ -172,3 +172,12 @@ python do_unpack() {
 }
 
 do_unpack[vardepsexclude] += "FSL_EULA_FILE"
+
+do_install:append() {
+    if [ "${base_libdir}" != "/lib" ] && [ -d "${D}/lib" ]; then
+        mv ${D}/lib ${D}${base_libdir}
+    fi
+    if [ "${libdir}" != "/usr/lib" ] && [ -d "${D}/usr/lib" ]; then
+        mv ${D}/usr/lib ${D}${libdir}
+    fi
+}
