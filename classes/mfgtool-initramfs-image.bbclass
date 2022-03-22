@@ -12,7 +12,8 @@ FEATURE_PACKAGES_mtd = "packagegroup-fsl-mfgtool-mtd"
 FEATURE_PACKAGES_extfs = "packagegroup-fsl-mfgtool-extfs"
 FEATURE_PACKAGES_f2fs = "packagegroup-fsl-mfgtool-f2fs"
 
-IMAGE_FSTYPES = "cpio.gz.u-boot"
+ZSTD_COMPRESSION_LEVEL ?= "-10"
+IMAGE_FSTYPES = "cpio.zst.u-boot"
 IMAGE_FSTYPES:mxs-generic-bsp = "cpio.gz.u-boot"
 IMAGE_ROOTFS_SIZE ?= "8192"
 
