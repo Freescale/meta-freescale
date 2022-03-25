@@ -9,11 +9,17 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c7b12b6702da38ca028ace54aae3d484 \
                     file://stable/presentation-time/presentation-time.xml;endline=26;md5=4646cd7d9edc9fa55db941f2d3a7dc53"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/wayland-protocols-imx.git;protocol=https;branch=wayland-protocols-imx-1.22"
-SRCREV = "0f71ffe59cf4c3f050ff79ea18f96345fcf0061e"
+SRC_URI = "git://source.codeaurora.org/external/imx/wayland-protocols-imx.git;protocol=https;branch=wayland-protocols-imx-1.25"
+SRCREV = "a104fb66d1b899dc04077422c2204638675ee4a6"
 S = "${WORKDIR}/git"
 
-inherit autotools pkgconfig
+UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
+
+# NOTE: For i.MX drop allarch since the recipe is SOCARCH
+#inherit meson pkgconfig allarch
+inherit meson pkgconfig
+
+EXTRA_OEMESON += "-Dtests=false"
 
 PACKAGES = "${PN}"
 FILES:${PN} += "${datadir}/pkgconfig/wayland-protocols.pc"
