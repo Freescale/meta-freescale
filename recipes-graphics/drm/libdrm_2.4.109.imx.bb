@@ -11,10 +11,9 @@ PROVIDES = "drm"
 DEPENDS = "libpthread-stubs"
 
 IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https;nobranch=1"
-IMX_LIBDRM_BRANCH ?= "libdrm-imx-2.4.107"
-SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
-           file://0001-meson-add-libdrm-vivante-to-the-meson-meta-data.patch "
-SRCREV = "a7316e7d67b7708f40ffe469858dae07f14fe21a"
+SRCBRANCH ?= "libdrm-imx-2.4.109"
+SRC_URI = "${IMX_LIBDRM_SRC};branch=${SRCBRANCH}"
+SRCREV = "1d943abb1fccc350a129950d2690948f64503bb7"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
