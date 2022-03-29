@@ -1,3 +1,10 @@
+# This recipe is for the i.MX fork of gstreamer1.0. For ease of
+# maintenance, the top section is a verbatim copy of an OE-core
+# recipe. The second section customizes the recipe for i.MX.
+
+########### OE-core copy ##################
+# Upstream hash: bb6ddc3691ab04162ec5fd69a2d5e7876713fd15
+
 SUMMARY = "GStreamer 1.0 multimedia framework"
 DESCRIPTION = "GStreamer is a multimedia framework for encoding and decoding video and sound. \
 It supports a wide range of formats including mp3, ogg, avi, mpeg and quicktime."
@@ -13,12 +20,9 @@ inherit meson pkgconfig gettext upstream-version-is-even gobject-introspection p
 LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
                     file://gst/gst.h;beginline=1;endline=21;md5=e059138481205ee2c6fc1c079c016d0d"
 
-S = "${WORKDIR}/git"
+S = "${WORKDIR}/gstreamer-${PV}"
 
-# Use i.MX fork of GST for customizations
-GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https;branch=master"
-SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
-SRC_URI = "${GST1.0_SRC};branch=${SRCBRANCH} \
+SRC_URI = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz \
            file://run-ptest \
            file://0001-gst-gstpluginloader.c-when-env-var-is-set-do-not-fal.patch \
            file://0002-Remove-unused-valgrind-detection.patch \
@@ -28,9 +32,7 @@ SRC_URI = "${GST1.0_SRC};branch=${SRCBRANCH} \
            file://0006-tests-use-a-dictionaries-for-environment.patch \
            file://0007-tests-install-the-environment-for-installed_tests.patch \
            "
-SRCREV = "2f20fd10eaf8629b3e8c134424c38412c4d3bd86"
-
-DEFAULT_PREFERENCE = "-1"
+SRC_URI[sha256sum] = "9aeec99b38e310817012aa2d1d76573b787af47f8a725a65b833880a094dfbc5"
 
 PACKAGECONFIG ??= "${@bb.utils.contains('PTEST_ENABLED', '1', 'tests', '', d)} \
                    check \
@@ -79,4 +81,21 @@ CVE_PRODUCT = "gstreamer"
 
 PTEST_BUILD_HOST_FILES = ""
 
+########### End of OE-core copy ###########
+
+########### i.MX overrides ################
+
+DEFAULT_PREFERENCE = "-1"
+
+# Use i.MX fork of GST for customizations
+SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz"
+GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https"
+SRCBRANCH = "MM_04.06.04_2112_L5.15.y"
+SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
+SRCREV = "a55998c70940bd183d25d29e1b82fd3bc9f43df3"
+
+S = "${WORKDIR}/git"
+
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+
+########### End of i.MX overrides #########
