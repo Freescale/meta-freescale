@@ -1,3 +1,10 @@
+# This recipe is for the i.MX fork of gstreamer1.0-plugins-base. For ease of
+# maintenance, the top section is a verbatim copy of an OE-core
+# recipe. The second section customizes the recipe for i.MX.
+
+########### OE-core copy ##################
+# Upstream hash: bb6ddc3691ab04162ec5fd69a2d5e7876713fd15
+
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 DESCRIPTION = "'Base' GStreamer plugins and helper libraries"
@@ -6,23 +13,20 @@ BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/-/issues
 LICENSE = "GPL-2.0-or-later & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d"
 
-GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https;branch=master"
-SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
-SRC_URI = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} \
+SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PV}.tar.xz \
+           file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
            file://0003-viv-fb-Make-sure-config.h-is-included.patch \
+           file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch \
            file://0004-glimagesink-Downrank-to-marginal.patch \
            file://4ef5c91697a141fea7317aff7f0f28e5a861db99.patch \
            "
-SRCREV = "69554a26c932481acb7c5691038c367eca60e5bc"
+SRC_URI[sha256sum] = "29e53229a84d01d722f6f6db13087231cdf6113dd85c25746b9b58c3d68e8323"
 
-S = "${WORKDIR}/git"
+S = "${WORKDIR}/gst-plugins-base-${PV}"
 
 DEPENDS += "iso-codes util-linux zlib"
-DEPENDS:append:imxgpu2d = " virtual/libg2d"
 
-inherit gobject-introspection use-imx-headers
-
-DEFAULT_PREFERENCE = "-1"
+inherit gobject-introspection
 
 PACKAGES_DYNAMIC =+ "^libgst.*"
 
@@ -40,7 +44,6 @@ PACKAGECONFIG ??= " \
 
 OPENGL_APIS = 'opengl gles2'
 OPENGL_PLATFORMS = 'egl'
-OPENGL_WINSYS = 'x11 wayland gbm viv-fb'
 
 X11DEPENDS = "virtual/libx11 libsm libxrender libxv"
 X11ENABLEOPTS = "-Dx11=enabled -Dxvideo=enabled -Dxshm=enabled"
@@ -80,7 +83,6 @@ EXTRA_OEMESON += " \
     ${@get_opengl_cmdline_list('gl_api', d.getVar('OPENGL_APIS'), d)} \
     ${@get_opengl_cmdline_list('gl_platform', d.getVar('OPENGL_PLATFORMS'), d)} \
     ${@get_opengl_cmdline_list('gl_winsys', d.getVar('OPENGL_WINSYS'), d)} \
-    -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
 
 FILES:${PN}-dev += "${libdir}/gstreamer-1.0/include/gst/gl/gstglconfig.h"
@@ -99,4 +101,44 @@ def get_opengl_cmdline_list(switch_name, options, d):
 
 CVE_PRODUCT += "gst-plugins-base"
 
+########### End of OE-core copy ###########
+
+########### i.MX overrides ################
+
+DEFAULT_PREFERENCE = "-1"
+
+SRC_URI:remove = " \
+    https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PV}.tar.xz \
+    file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
+    file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch \
+    file://0004-glimagesink-Downrank-to-marginal.patch \
+    file://4ef5c91697a141fea7317aff7f0f28e5a861db99.patch \
+"
+GST1.0-PLUGINS-BASE_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-base.git;protocol=https"
+SRCBRANCH = "MM_04.06.04_2112_L5.15.y"
+SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
+SRCREV = "d8f5d6e1d477a299ccb7f4ba7aacd36ff5e39f8b"
+
+S = "${WORKDIR}/git"
+
+inherit use-imx-headers
+
+PACKAGECONFIG_GL:imxgpu2d = \
+    "${@bb.utils.contains('DISTRO_FEATURES', 'opengl x11', 'opengl viv-fb', '', d)}"
+PACKAGECONFIG_GL:imxgpu3d = \
+    "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2 egl viv-fb', '', d)}"
+PACKAGECONFIG_GL:use-mainline-bsp = \
+    "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2 egl gbm', '', d)}"
+
+PACKAGECONFIG_REMOVE ?= "jpeg"
+PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
+PACKAGECONFIG:append:imxgpu2d = " g2d"
+
+PACKAGECONFIG[g2d] = ",,virtual/libg2d"
+PACKAGECONFIG[viv-fb] = ",,virtual/libgles2"
+
+EXTRA_OEMESON += "-Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}""
+
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+
+########### End of i.MX overrides #########
