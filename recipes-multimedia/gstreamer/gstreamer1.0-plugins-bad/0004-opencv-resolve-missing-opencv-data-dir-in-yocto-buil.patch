@@ -1,23 +1,22 @@
-From 387886b05f4ae0de9b7faf1f9ca66040d38d19ee Mon Sep 17 00:00:00 2001
-From: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
-Date: Sun, 26 Jan 2020 19:55:06 +0000
-Subject: [PATCH] opencv: resolve missing opencv data dir in yocto build
+From f19ff66640f2f472c4e9d9055253032d34e125c6 Mon Sep 17 00:00:00 2001
+From: Andrey Zhizhikin <andrey.z@gmail.com>
+Date: Mon, 27 Jan 2020 10:22:35 +0000
+Subject: [PATCH 4/4] opencv: resolve missing opencv data dir in yocto build
 
 When Yocto build is performed, opencv searches for data dir using simple
-test command, and this fails because pkg-config provides an absolute
+'test' command, this fails because pkg-config provides an absolute
 path on the target which needs to be prepended by PKG_CONFIG_SYSROOT_DIR
 in order for the 'test' utility to pick up the absolute path.
 
 Upstream-Status: Inappropriate [OE-specific]
 
-Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
-
+Signed-off-by: Andrey Zhizhikin <andrey.z@gmail.com>
 ---
  ext/opencv/meson.build | 7 ++++---
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/ext/opencv/meson.build b/ext/opencv/meson.build
-index f38b55dfe..a26403482 100644
+index 0b0b3fc..0ed3344 100644
 --- a/ext/opencv/meson.build
 +++ b/ext/opencv/meson.build
 @@ -78,20 +78,21 @@ else
@@ -45,3 +44,6 @@ index f38b55dfe..a26403482 100644
        if r.returncode() == 0
          gstopencv_cargs += '-DOPENCV_PATH_NAME="opencv4"'
        else
+-- 
+2.28.0
+
