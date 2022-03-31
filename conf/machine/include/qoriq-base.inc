@@ -1,7 +1,7 @@
 # common providers of QorIQ targets
-PREFERRED_PROVIDER_u-boot ?= "u-boot-qoriq"
-PREFERRED_PROVIDER_virtual/bootloader ?= "${PREFERRED_PROVIDER_u-boot}"
-PREFERRED_PROVIDER_virtual/kernel ?= "linux-qoriq"
+PREFERRED_PROVIDER_u-boot ??= "u-boot-qoriq"
+PREFERRED_PROVIDER_virtual/bootloader ??= "${PREFERRED_PROVIDER_u-boot}"
+PREFERRED_PROVIDER_virtual/kernel ??= "linux-qoriq"
 PREFERRED_PROVIDER_u-boot-tools-native ??= "u-boot-tools-native"
 PREFERRED_PROVIDER_u-boot-mkimage-native ??= "u-boot-tools-native"
 PREFERRED_PROVIDER_u-boot-mkimage ??= "u-boot-tools"
