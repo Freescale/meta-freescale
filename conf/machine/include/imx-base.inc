@@ -159,6 +159,7 @@ MACHINEOVERRIDES_EXTENDER:mx8mp:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxd
 MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mq-generic-bsp:mx8mq-nxp-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8dx:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dx-generic-bsp:mx8dx-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8dxl-generic-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-nxp-bsp"
 
 #######
@@ -196,6 +197,7 @@ MACHINEOVERRIDES_EXTENDER:mx8mp:use-mainline-bsp  = "imx-generic-bsp:imx-mainlin
 MACHINEOVERRIDES_EXTENDER:mx8mq:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mq-generic-bsp:mx8mq-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8qxp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8qxp-generic-bsp:mx8qxp-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8dx:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dx-generic-bsp:mx8dx-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8dxl:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dxl-generic-bsp:mx8dxl-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
@@ -221,6 +223,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8mp \
     mx8mq \
     mx8qxp \
+    mx8dx \
     mx8dxl \
 "
 
@@ -246,6 +249,7 @@ MACHINE_SOCARCH_SUFFIX:mx8mn-nxp-bsp  = "-mx8mn"
 MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp  = "-mx8mp"
 MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp  = "-mx8m"
 MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp = "-mx8"
+MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp  = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8dxl"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
@@ -335,6 +339,7 @@ MACHINE_FIRMWARE:append:mx8mp-generic-bsp  = " linux-firmware-imx-sdma-imx7d fir
 MACHINE_FIRMWARE:append:mx8mq-generic-bsp  = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE:append:mx8qm-generic-bsp  = " firmware-imx-vpu-imx8"
 MACHINE_FIRMWARE:append:mx8qxp-generic-bsp = " firmware-imx-vpu-imx8"
+MACHINE_FIRMWARE:append:mx8dx-generic-bsp  = " firmware-imx-vpu-imx8"
 MACHINE_FIRMWARE:append:imx-mainline-bsp   = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
@@ -383,6 +388,7 @@ MACHINE_GSTREAMER_1_0_PLUGIN:mx8mp-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8mq-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qm-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qxp-nxp-bsp ?= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8dx-nxp-bsp  ?= "imx-gst1.0-plugin"
 
 PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              ?= "1.18.0.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp ?= "1.18.0.imx"
