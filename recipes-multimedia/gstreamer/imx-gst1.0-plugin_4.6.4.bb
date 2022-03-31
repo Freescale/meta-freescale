@@ -10,6 +10,7 @@ SECTION = "multimedia"
 DEPENDS = "imx-codec imx-parser gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
 DEPENDS:append:mx6-nxp-bsp = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp = " imx-lib"
+DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
 DEPENDS:append:imxvpu = " imx-vpuwrap libdrm"
 
 # For backwards compatibility
@@ -20,11 +21,12 @@ RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
-SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
+SRCBRANCH = "MM_04.06.04_2112_L5.15.y"
+
 
 
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "057e6bfbc208ce31e8ed0af0264dd1e86de05808"
+SRCREV = "f4b3105ab33e608c717855cdd1a520b60f377bf3"
 
 S = "${WORKDIR}/git"
 
@@ -55,11 +57,7 @@ RDEPENDS:${PN}:append:mx8dx-nxp-bsp  = " imx-dsp"
 RDEPENDS:${PN}:append:mx8mp-nxp-bsp  = " imx-dsp"
 RDEPENDS:${PN}:append:mx8ulp-nxp-bsp = " imx-dsp"
 
-# overlaysink rely on G2D,
-# cannot be supported on i.MX6SLL & i.MX6UL & i.MX6ULL & i.MX7D
 PACKAGECONFIG ?= ""
-PACKAGECONFIG:imxgpu2d = "overlaysink"
-
 
 # FIXME: Add all features
 # feature from excluded mm packages
@@ -69,7 +67,6 @@ PACKAGECONFIG[aacp] = ",,imx-aacpcodec,imx-aacpcodec"
 MSDEPENDS = "imx-msparser imx-mscodec"
 PACKAGECONFIG[wma10dec] = ",,${MSDEPENDS},${MSDEPENDS}"
 PACKAGECONFIG[wma8enc] = ",,${MSDEPENDS},${MSDEPENDS}"
-PACKAGECONFIG[overlaysink] += ",,virtual/libg2d"
 
 FILES:${PN} = "${libdir}/gstreamer-1.0/*.so ${datadir}"
 
