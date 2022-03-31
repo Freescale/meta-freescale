@@ -250,7 +250,7 @@ MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp  = "-mx8mp"
 MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp  = "-mx8m"
 MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp  = "-mx8"
-MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8dxl"
+MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8xl"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
 MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
