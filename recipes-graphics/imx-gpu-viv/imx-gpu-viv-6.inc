@@ -147,9 +147,10 @@ HAS_GBM:mx8-nxp-bsp = "true"
 
 IMX_SOC        = "IMX_SOC_NOT_SET"
 IMX_SOC:mx8qm-nxp-bsp  = "mx8qm"
+IMX_SOC:mx8qxp-nxp-bsp = "mx8qxp"
+IMX_SOC:mx8dx-nxp-bsp  = "mx8qxp"
 IMX_SOC:mx8mp-nxp-bsp  = "mx8mp"
 IMX_SOC:mx8mq-nxp-bsp  = "mx8mq"
-IMX_SOC:mx8qxp-nxp-bsp = "mx8qxp"
 IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
 IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 

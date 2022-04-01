@@ -27,9 +27,10 @@ INI_UNCOMMENT_ASSIGNMENTS:append:mx8mq-nxp-bsp = " \
 # FIXME: The 8QM and 8QXP SoCs have better performance without G2D so don't enable it
 # Ideally, this should be seamless and Vivante ought to handle it internally and take the fastest
 # rendering code.
-INI_UNCOMMENT_USE_G2D:imxgpu2d ?= "use-g2d=1"
-INI_UNCOMMENT_USE_G2D:mx8qm-nxp-bsp = ""
+INI_UNCOMMENT_USE_G2D:imxgpu2d      ?= "use-g2d=1"
+INI_UNCOMMENT_USE_G2D:mx8qm-nxp-bsp  = ""
 INI_UNCOMMENT_USE_G2D:mx8qxp-nxp-bsp = ""
+INI_UNCOMMENT_USE_G2D:mx8dx-nxp-bsp  = ""
 INI_UNCOMMENT_ASSIGNMENTS:append:imxgpu2d = " \
     ${INI_UNCOMMENT_USE_G2D} \
 "

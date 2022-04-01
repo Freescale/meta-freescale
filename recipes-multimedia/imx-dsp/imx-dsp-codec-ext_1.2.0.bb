@@ -18,4 +18,4 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INSANE_SKIP:${PN} = "arch dev-so"
 
 FILES:${PN} += "${libdir}/imx-mm/audio-codec ${datadir}/imx-mm"
-COMPATIBLE_MACHINE = "(mx8qm-nxp-bsp|mx8qxp-nxp-bsp|mx8mp-nxp-bsp|mx8ulp-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx8qm-nxp-bsp|mx8qxp-nxp-bsp|mx8dx-nxp-bsp|mx8mp-nxp-bsp|mx8ulp-nxp-bsp)"

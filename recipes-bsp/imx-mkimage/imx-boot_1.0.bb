@@ -73,6 +73,7 @@ REV_OPTION ?= ""
 REV_OPTION:mx8qxp-nxp-bsp = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', '', \
                                                            'REV=C0', d)}"
+REV_OPTION:mx8dx-nxp-bsp  = "REV=C0"
 
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
