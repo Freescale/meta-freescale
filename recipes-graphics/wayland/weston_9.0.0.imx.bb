@@ -21,6 +21,7 @@ SRC_URI = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz \
            file://0001-tests-include-fcntl.h-for-open-O_RDWR-O_CLOEXEC-and-.patch \
            file://0001-meson.build-fix-incorrect-header.patch \
            file://0001-libweston-backend-drm-Re-order-gbm-destruction-at-DR.patch \
+           file://0001-g2d-renderer-Add-vsync-to-cloned-displays.patch \
 "
 
 SRC_URI:append:libc-musl = " file://dont-use-plane-add-prop.patch "
