@@ -11,7 +11,8 @@ DEPENDS = "imx-codec imx-parser gstreamer1.0 gstreamer1.0-plugins-base gstreamer
 DEPENDS:append:mx6-nxp-bsp = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp = " imx-lib"
 DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
-DEPENDS:append:imxvpu = " imx-vpuwrap libdrm"
+DEPENDS:append:imxvpu = " imx-vpuwrap"
+DEPENDS:append:imxfbdev:imxgpu = " libdrm"
 
 # For backwards compatibility
 RREPLACES:${PN} = "gst1.0-fsl-plugin"
