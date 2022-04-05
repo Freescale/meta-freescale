@@ -34,7 +34,7 @@ SOC_DEFAULT_WKS_FILE ?= ""
 SOC_DEFAULT_WKS_FILE_ls1043a ?= "ls104x-uboot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE_ls1046a ?= "ls104x-uboot-bootpart.wks.in"
 
-WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
+WKS_FILE ??= "${SOC_DEFAULT_WKS_FILE}"
 
 MACHINE_FEATURES ?= "pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf udev-rules-qoriq kernel-modules"
