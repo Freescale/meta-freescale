@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.10.93
+#    tag: v5.10.109
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -38,6 +38,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    27b6c760cc7f ("thermal: imx: fix a merging issue")
 #    8ef27ae9f200 ("gpio: fix enabling GPIO_VF610")
 #    12099c38577a ("ASoC: fsl_sai: Correct the clock source for mclk0")
 #    db172377e6e2 ("Revert "MLK-12786-2: ASoC: fsl_sai: correct the clock source for mclk0"")
@@ -73,14 +74,14 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.10-2.1.x-imx"
-SRCREV = "f28a9b90c506241e614212f2ce314d8f5460819d"
+SRCREV = "882b6357e0d9303c747ac47dbf1e624a84fcb8dc"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.10.93"
+LINUX_VERSION = "5.10.109"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-5.10.52-2.1.0"
