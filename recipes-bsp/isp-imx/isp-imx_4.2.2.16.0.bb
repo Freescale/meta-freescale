@@ -21,6 +21,9 @@ OECMAKE_SOURCEPATH = "${S}/appshell"
 # Use make instead of ninja
 OECMAKE_GENERATOR = "Unix Makefiles"
 
+# Workaround for linking issues seen with gold linker
+LDFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-gold', ' -fuse-ld=bfd ', '', d)}"
+
 SYSTEMD_SERVICE:${PN} = "imx8-isp.service"
 
 EXTRA_OECMAKE += " \
