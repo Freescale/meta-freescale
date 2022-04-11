@@ -53,7 +53,7 @@ do_merge_delta_config() {
     done
     cp .config ${WORKDIR}/defconfig
 }
-addtask merge_delta_config before do_preconfigure after do_patch
+addtask merge_delta_config before do_kernel_localversion after do_patch
 
 # The link of dts folder is needed for 32b compile of aarch64 targets(e.g. ls1043ardb-32b)
 do_compile_prepend_fsl-lsch2-32b() {
