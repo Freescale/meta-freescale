@@ -2,7 +2,7 @@ require recipes-bsp/atf/qoriq-atf-2.4.inc
 
 inherit deploy
 
-DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native mbedtls rcw cst-native bc-native"
+DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native rcw cst-native bc-native"
 DEPENDS:append:lx2160a = " ddr-phy"
 DEPENDS:append:lx2162a = " ddr-phy"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
