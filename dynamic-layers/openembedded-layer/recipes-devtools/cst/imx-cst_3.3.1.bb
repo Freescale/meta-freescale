@@ -1,7 +1,7 @@
 SUMMARY = "i.MX code signing tool"
 DESCRIPTION = "Provides software code signing support designed that integrate the HABv4 and AHAB library"
 SECTION = "cst"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 
 LIC_FILES_CHKSUM = "file://LICENSE.bsd3;md5=1fbcd66ae51447aa94da10cbf6271530"
 
