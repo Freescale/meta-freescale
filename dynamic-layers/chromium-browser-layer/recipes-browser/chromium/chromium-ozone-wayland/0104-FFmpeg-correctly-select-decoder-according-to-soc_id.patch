@@ -1,0 +1,62 @@
+From fed2e72a9f9c3b450adb2130700830460ab0eb10 Mon Sep 17 00:00:00 2001
+From: Hou Qi <qi.hou@nxp.com>
+Date: Thu, 31 Mar 2022 18:32:44 +0800
+Subject: [PATCH] FFmpeg: correctly select decoder according to soc_id
+
+Upstream-Status: Inappropriate [NXP specific]
+---
+ libavcodec/allcodecs.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/ffmpeg/libavcodec/allcodecs.c b/third_party/ffmpeg/libavcodec/allcodecs.c
+index 0b62ddb4da..83e2476d73 100644
+--- a/third_party/ffmpeg/libavcodec/allcodecs.c
++++ b/third_party/ffmpeg/libavcodec/allcodecs.c
+@@ -889,6 +889,29 @@ static enum AVCodecID remap_deprecated_codec_id(enum AVCodecID id)
+     }
+ }
+ 
++static const int is_hantro (void)
++{
++    FILE *fp = NULL;
++    char name[20];
++    int ret = 0;
++
++    fp = fopen("/sys/devices/soc0/soc_id", "r");
++    if (fp == NULL)
++        return  ret;
++
++    if (fscanf(fp, "%20s", name) != 1) {
++        fclose (fp);
++        return ret;
++    }
++    fclose(fp);
++
++    if (!strcmp (name, "i.MX8MP") || !strcmp (name, "i.MX8MM") || !strcmp(name, "i.MX8MQ"))
++        ret = 1;
++
++    return ret;
++}
++
++
+ static const AVCodec *find_codec(enum AVCodecID id, int (*x)(const AVCodec *))
+ {
+     const AVCodec *p, *experimental = NULL;
+@@ -902,8 +925,12 @@ static const AVCodec *find_codec(enum AVCodecID id, int (*x)(const AVCodec *))
+         if (p->id == id) {
+             if (p->capabilities & AV_CODEC_CAP_EXPERIMENTAL && !experimental) {
+                 experimental = p;
+-            } else
+-                return p;
++            } else {
++                if (is_hantro())
++                    return p;
++                else if (p->wrapper_name != "v4l2m2m")
++                    return p;
++            }
+         }
+     }
+ 
+-- 
+2.17.0
+

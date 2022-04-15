@@ -1,0 +1,26 @@
+From 55b616fac8efc9c38d0a73bf975fbd87377f2802 Mon Sep 17 00:00:00 2001
+From: Qi Hou <nxf47649@lsv11151.swis.cn-sha01.nxp.com>
+Date: Mon, 29 Nov 2021 13:43:10 +0800
+Subject: [PATCH 3/3] Chromium: change stride alignment from 32 to 16
+
+Upstream-Status: Inappropriate [NXP specific]
+---
+ media/base/video_frame_layout.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/media/base/video_frame_layout.h b/media/base/video_frame_layout.h
+index b1f40eae64966..ff8bd8c7c599a 100644
+--- a/media/base/video_frame_layout.h
++++ b/media/base/video_frame_layout.h
+@@ -34,7 +34,7 @@ class MEDIA_EXPORT VideoFrameLayout {
+   // Default alignment for buffers.
+   // Note: This value is dependent on what's used by ffmpeg, do not change
+   // without inspecting av_frame_get_buffer() first.
+-  static constexpr size_t kBufferAddressAlignment = 32;
++  static constexpr size_t kBufferAddressAlignment = 16;
+ 
+   // Factory functions.
+   // |format| and |coded_size| must always be specified.
+-- 
+2.17.0
+

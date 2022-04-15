@@ -1,0 +1,49 @@
+From 8126a1f489b7768dfb7790fd45d9ac981e0d0c30 Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Mon, 23 May 2022 16:16:12 -0500
+Subject: [PATCH 1/4] Add knob for imx gpu
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ content/gpu/BUILD.gn     | 7 +++++++
+ content/gpu/features.gni | 4 ++++
+ 2 files changed, 11 insertions(+)
+ create mode 100644 content/gpu/features.gni
+
+diff --git a/content/gpu/BUILD.gn b/content/gpu/BUILD.gn
+index bdf9b9d9ba..642b58d331 100644
+--- a/content/gpu/BUILD.gn
++++ b/content/gpu/BUILD.gn
+@@ -2,10 +2,17 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
++import("//build/buildflag_header.gni")
+ import("//build/config/chromeos/ui_mode.gni")
+ import("//build/config/ui.gni")
+ import("//gpu/vulkan/features.gni")
+ import("//media/media_options.gni")
++import("features.gni")
++
++buildflag_header("buildflags") {
++  header = "buildflags.h"
++  flags = [ "USE_IMXGPU=$use_imxgpu" ]
++}
+ 
+ # See //content/BUILD.gn for how this works.
+ group("gpu") {
+diff --git a/content/gpu/features.gni b/content/gpu/features.gni
+new file mode 100644
+index 0000000000..45106fb28b
+--- /dev/null
++++ b/content/gpu/features.gni
+@@ -0,0 +1,4 @@
++declare_args() {
++  # Checks if i.MX GPU is being used
++  use_imxgpu = false
++}
+-- 
+2.17.1
+

@@ -1,0 +1,58 @@
+From d594b8727bf3d0df6d89d3422c5d0dbaa51a23a2 Mon Sep 17 00:00:00 2001
+From: Wujian sun <wujian.sun_1@nxp.com>
+Date: Mon, 23 May 2022 16:25:45 -0500
+Subject: [PATCH 3/4] Fixed chromium flicker with g2d-renderer
+
+chromium V89 reland linux_explicit_synchronization_protocol for
+in-fence feature caused the flicker.
+The rootcasue is that weston can not acquire fence fd.
+A workaround no checking supports_acquire_fence supported.
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Wujian sun <wujian.sun_1@nxp.com>
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ ui/ozone/platform/wayland/BUILD.gn                       | 1 +
+ ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.cc | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/ui/ozone/platform/wayland/BUILD.gn b/ui/ozone/platform/wayland/BUILD.gn
+index b373a5e959..b313dd578b 100644
+--- a/ui/ozone/platform/wayland/BUILD.gn
++++ b/ui/ozone/platform/wayland/BUILD.gn
+@@ -208,6 +208,7 @@ source_set("wayland") {
+     "//base",
+     "//build:chromeos_buildflags",
+     "//build/config/linux/libdrm",
++    "//content/gpu:buildflags",
+     "//components/crash/core/common:crash_key",
+     "//components/exo/wayland/protocol:aura_shell_protocol",
+     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+diff --git a/ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.cc b/ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.cc
+index db7037fc92..937cc9957f 100644
+--- a/ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.cc
++++ b/ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.cc
+@@ -12,6 +12,7 @@
+ #include "base/task/post_task.h"
+ #include "base/task/thread_pool.h"
+ #include "base/trace_event/trace_event.h"
++#include "content/gpu/buildflags.h"
+ #include "ui/gfx/gpu_fence.h"
+ #include "ui/gfx/gpu_fence_handle.h"
+ #include "ui/gl/gl_bindings.h"
+@@ -204,7 +205,11 @@ void GbmSurfacelessWayland::SwapBuffersAsync(
+ 
+   // If Wayland server supports linux_explicit_synchronization_protocol, fences
+   // should be shipped with buffers. Otherwise, we will wait for fences.
++#if !BUILDFLAG(USE_IMXGPU)
+   if (buffer_manager_->supports_acquire_fence() || !use_egl_fence_sync_ ||
++#else
++  if (!use_egl_fence_sync_ ||
++#endif
+       !frame->schedule_planes_succeeded) {
+     frame->ready = true;
+     MaybeSubmitFrames();
+-- 
+2.17.1
+
