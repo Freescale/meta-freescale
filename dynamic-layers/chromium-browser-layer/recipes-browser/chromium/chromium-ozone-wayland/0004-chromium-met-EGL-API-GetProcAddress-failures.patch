@@ -1,0 +1,43 @@
+From 1caf74b4caab0bfc732d3d4da147192b858f8991 Mon Sep 17 00:00:00 2001
+From: Wujian Sun <wujian.sun_1@nxp.com>
+Date: Mon, 23 May 2022 16:32:53 -0500
+Subject: [PATCH 4/4] chromium met EGL API GetProcAddress failures
+
+Wayland not use SwANGLE as below commit, so no need
+build SwANGLE on wayland platform.
+
+commit 97f919dd8b544b583b772664f0d7b8e6b6d8da2e
+Reland "Use SwANGLE on all Ozone platforms, except Wayland"
+
+Upstream-Status: Inappropriate [i.MX-specific]
+
+Signed-off-by: Wujian Sun <wujian.sun_1@nxp.com>
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ ui/gl/BUILD.gn | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/ui/gl/BUILD.gn b/ui/gl/BUILD.gn
+index 111d8de844..a03a3c9249 100644
+--- a/ui/gl/BUILD.gn
++++ b/ui/gl/BUILD.gn
+@@ -9,6 +9,7 @@ import("//build/config/chromeos/ui_mode.gni")
+ import("//build/config/linux/pkg_config.gni")
+ import("//build/config/ozone.gni")
+ import("//build/config/ui.gni")
++import("//content/gpu/features.gni")
+ import("//gpu/vulkan/features.gni")
+ import("//testing/test.gni")
+ import("//third_party/angle/gni/angle.gni")
+@@ -262,7 +263,7 @@ component("gl") {
+ 
+   if (use_ozone) {
+     deps += [ "//ui/ozone:buildflags" ]
+-    if (use_egl && !is_fuchsia) {
++    if (use_egl && !is_fuchsia && !use_imxgpu) {
+       data_deps += [
+         "//third_party/angle:libEGL",
+         "//third_party/angle:libGLESv2",
+-- 
+2.17.1
+
