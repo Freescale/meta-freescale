@@ -162,13 +162,12 @@ python do_unpack() {
     else:
         bb.note("Freescale EULA has been accepted for '%s'" % pkg)
 
-    # The binary unpack needs to be done first so 'S' is valid
-    bb.build.exec_func('fsl_bin_do_unpack', d)
-
     try:
         bb.build.exec_func('base_do_unpack', d)
     except:
         raise
+
+    bb.build.exec_func('fsl_bin_do_unpack', d)
 }
 
 do_unpack[vardepsexclude] += "FSL_EULA_FILE"
