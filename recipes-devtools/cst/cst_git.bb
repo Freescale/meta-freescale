@@ -1,6 +1,6 @@
 SUMMARY = "utility for security boot"
 SECTION = "cst"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=e959d5d617e33779d0e90ce1d9043eff"
 
