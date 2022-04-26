@@ -25,7 +25,7 @@ SECO_FIRMWARE_NAME:mx8dx-nxp-bsp  = "mx8qxc0-ahab-container.img"
 SECO_FIRMWARE_NAME:mx8dxl-nxp-bsp = "mx8dxla1-ahab-container.img"
 
 python () {
-    if "mx8m-nxp-bsp" in d.getVar('MACHINEOVERRIDES').split(":"):
+    if "mx8m-generic-bsp" in d.getVar('MACHINEOVERRIDES').split(":"):
         return # We need to allow the recipes to be parsed for this case
 
     seco_firmware = d.getVar('SECO_FIRMWARE_NAME')
