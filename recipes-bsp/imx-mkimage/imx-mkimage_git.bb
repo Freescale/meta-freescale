@@ -23,5 +23,7 @@ do_install () {
     cd ${S}
     install -d ${D}${bindir}
     install -m 0755 iMX8M/mkimage_imx8 ${D}${bindir}/mkimage_imx8m
+    install -m 0755 iMX8M/mkimage_fit_atf.sh ${D}${bindir}/mkimage_fit_atf.sh
+    install -m 0755 iMX8M/print_fit_hab.sh ${D}${bindir}/print_fit_hab.sh
     install -m 0755 mkimage_imx8 ${D}${bindir}/mkimage_imx8
 }
