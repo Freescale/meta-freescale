@@ -1,4 +1,4 @@
-From ff3204addcf737b7285a0c44eb0a34c9ca82be4e Mon Sep 17 00:00:00 2001
+From 8fc8fc3dfce7533b9c965185277d34e27055cc8f Mon Sep 17 00:00:00 2001
 From: Thomas Perrot <thomas.perrot@bootlin.com>
 Date: Tue, 26 Apr 2022 15:10:04 +0200
 Subject: [PATCH] Add support for overriding BL31, BL32 and BL33
@@ -11,7 +11,7 @@ Signed-off-by: Thomas Perrot <thomas.perrot@bootlin.com>
  1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/iMX8M/print_fit_hab.sh b/iMX8M/print_fit_hab.sh
-index b915115d1ecc..9e025b78c04d 100755
+index b915115d1ecc..dbc28f2d9af5 100755
 --- a/iMX8M/print_fit_hab.sh
 +++ b/iMX8M/print_fit_hab.sh
 @@ -1,12 +1,16 @@
@@ -24,7 +24,7 @@ index b915115d1ecc..9e025b78c04d 100755
  # keep backward compatibility
  [ -z "$TEE_LOAD_ADDR" ] && TEE_LOAD_ADDR="0xfe000000"
 
-+[ -z "$BL31" ] && BL33="bl31.bin"
++[ -z "$BL31" ] && BL31="bl31.bin"
 +
 +[ -z "$BL32" ] && BL32="tee.bin"
 +
