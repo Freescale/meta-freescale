@@ -505,16 +505,6 @@ SOC_DEFAULT_WKS_FILE:mx8m-nxp-bsp ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mx8-nxp-bsp ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mxs-generic-bsp ?= "imx-uboot-mxs-bootpart.wks.in"
 
-# Boot container built as a part of mainline U-Boot uses different WKS
-# file as the entire mx8m series, as U-Boot versions later than 2021.04 are
-# providing two separate binaries, namely flash.bin and u-boot.itb. Those
-# files are packed into the boot partition.
-# Binaries produced by U-Boot build itself are serving as a direct
-# replacement of imx-boot from NXP.
-# Creation of those binary files is controlled by UBOOT_PROVIDES_BOOT_CONTAINER
-# variable defined above.
-SOC_DEFAULT_WKS_FILE:imx-boot-container ?= "imx-boot-container-bootpart.wks.in"
-
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
 SERIAL_CONSOLES = "115200;ttymxc0"

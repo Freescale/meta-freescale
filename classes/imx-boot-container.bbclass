@@ -87,6 +87,7 @@ do_deploy:append() {
                     # artifacts handled by oe-core's u-boot.inc are
                     # treated.
                     ln -sf flash.bin-${MACHINE}-${type} flash.bin
+                    ln -sf flash.bin-${MACHINE}-${type} imx-boot
                 fi
             done
             unset  j
