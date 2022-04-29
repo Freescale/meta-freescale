@@ -1,4 +1,4 @@
-From 4e4e06602f594b335b4c264a3b062bc7af961078 Mon Sep 17 00:00:00 2001
+From ef28030129a04b1d70dbca3f2236fe7b1c67b4ed Mon Sep 17 00:00:00 2001
 From: Erik Larsson <erik.larsson@combitech.se>
 Date: Thu, 8 Mar 2018 19:04:37 +0100
 Subject: [PATCH] Add support for overriding BL32 and BL33 not only BL31
@@ -10,11 +10,11 @@ Signed-off-by: Christopher Dahlberg <crille.dahlberg@gmail.com>
 Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 Signed-off-by: Thomas Perrot <thomas.perrot@bootlin.com>
 ---
- iMX8M/mkimage_fit_atf.sh | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ iMX8M/mkimage_fit_atf.sh | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
 diff --git a/iMX8M/mkimage_fit_atf.sh b/iMX8M/mkimage_fit_atf.sh
-index 10903ea3bbf5..85ea6ffcc71d 100755
+index 10903ea3bbf5..341a4b3da1ef 100755
 --- a/iMX8M/mkimage_fit_atf.sh
 +++ b/iMX8M/mkimage_fit_atf.sh
 @@ -6,6 +6,7 @@
@@ -42,10 +42,12 @@ index 10903ea3bbf5..85ea6ffcc71d 100755
  if [ ! -f $BL32 ]; then
  	BL32=/dev/null
  else
- 	echo "Building with TEE support, make sure your bl31 is compiled with spd. If you do not want tee, please delete tee.bin" >&2
+-	echo "Building with TEE support, make sure your bl31 is compiled with spd. If you do not want tee, please delete tee.bin" >&2
 -	echo "tee.bin size: " >&2
+-	ls -lct tee.bin | awk '{print $5}' >&2
++	echo "Building with TEE support, make sure $BL31 is compiled with spd. If you do not want tee, please delete $BL32" >&2
 +	echo "$BL32 size: " >&2
- 	ls -lct tee.bin | awk '{print $5}' >&2
++	ls -lct $BL32 | awk '{print $5}' >&2
  	LOADABLES="$LOADABLES, \"tee-1\""
  fi
 
