@@ -7,7 +7,7 @@ OpenEmbedded and/or Yocto.
 This layer depends on:
 
 URI: git://git.openembedded.org/openembedded-core
-branch: master
+branch: kirkstone
 revision: HEAD
 
 Contributing
