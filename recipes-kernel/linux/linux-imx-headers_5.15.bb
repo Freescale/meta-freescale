@@ -39,17 +39,21 @@ IMX_UAPI_HEADERS = " \
 
 do_install() {
     # We install all headers inside of B so we can copy only the
-    # whitelisted ones, and there is no risk of a new header to be
+    # i.MX-specific ones, and there is no risk of a new header to be
     # installed by mistake.
     oe_runmake headers_install INSTALL_HDR_PATH=${B}${exec_prefix}
 
+    ################################################
+    # BEGIN Copy of exceptional logic from linux-libc-headers
     # Kernel should not be exporting this header
-    rm -f ${D}${exec_prefix}/include/scsi/scsi.h
+    rm -f ${B}${exec_prefix}/include/scsi/scsi.h
 
     # The ..install.cmd conflicts between various configure runs
-    find ${D}${includedir} -name ..install.cmd | xargs rm -f
+    find ${B}${includedir} -name ..install.cmd | xargs rm -f
+    # END Copy from linux-libc-headers
+    ################################################
 
-    # Install whitelisted headers only
+    # Install i.MX-specific headers only
     for h in ${IMX_UAPI_HEADERS}; do
         install -D -m 0644 ${B}${includedir}/linux/$h \
                        ${D}${includedir}/imx/linux/$h
