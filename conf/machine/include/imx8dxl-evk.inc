@@ -58,6 +58,3 @@ IMXBOOT_TARGETS = \
         bb.utils.contains('UBOOT_CONFIG',      'fspi', '${IMXBOOT_TARGETS_FSPI}', \
         bb.utils.contains('UBOOT_CONFIG',      'nand', '${IMXBOOT_TARGETS_NAND}', \
                                                                        'INVALID', d), d), d)}"
-
-
-BOARD_TYPE = "evk"
