@@ -40,6 +40,7 @@ UBOOT_SUFFIX = "bin"
 
 UBOOT_CONFIG ??= "sd"
 UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
+UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_fspi_defconfig"
 
 IMX_BOOT_SEEK = "32"
 
