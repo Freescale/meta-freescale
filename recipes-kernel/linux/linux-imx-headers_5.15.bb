@@ -7,10 +7,10 @@ New headers are installed in ${includedir}/imx."
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-SRCBRANCH = "lf-5.10.y"
-LOCALVERSION = "-5.10.72-2.2.0"
+SRCBRANCH = "lf-5.15.y"
+LOCALVERSION = "-5.15.5-1.0.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "a68e31b63f864ff71cd4adb40fbc9e1edc75c250"
+SRCREV = "c1084c2773fc1005ed140db625399d5334d94a28"
 
 S = "${WORKDIR}/git"
 
@@ -22,7 +22,6 @@ IMX_UAPI_HEADERS = " \
     dma-buf.h \
     hantrodec.h \
     hx280enc.h \
-    ion.h \
     ipu.h \
     isl29023.h \
     imx_vpu.h \
@@ -40,20 +39,21 @@ IMX_UAPI_HEADERS = " \
 
 do_install() {
     # We install all headers inside of B so we can copy only the
-    # whitelisted ones, and there is no risk of a new header to be
+    # i.MX-specific ones, and there is no risk of a new header to be
     # installed by mistake.
     oe_runmake headers_install INSTALL_HDR_PATH=${B}${exec_prefix}
 
+    ################################################
+    # BEGIN Copy of exceptional logic from linux-libc-headers
     # Kernel should not be exporting this header
-    rm -f ${D}${exec_prefix}/include/scsi/scsi.h
+    rm -f ${B}${exec_prefix}/include/scsi/scsi.h
 
     # The ..install.cmd conflicts between various configure runs
-    find ${D}${includedir} -name ..install.cmd | xargs rm -f
+    find ${B}${includedir} -name ..install.cmd | xargs rm -f
+    # END Copy from linux-libc-headers
+    ################################################
 
-    # FIXME: The ion.h is still on staging so "promote" it for now
-    cp ${S}/drivers/staging/android/uapi/ion.h ${B}${includedir}/linux
-
-    # Install whitelisted headers only
+    # Install i.MX-specific headers only
     for h in ${IMX_UAPI_HEADERS}; do
         install -D -m 0644 ${B}${includedir}/linux/$h \
                        ${D}${includedir}/imx/linux/$h
