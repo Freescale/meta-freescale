@@ -1,0 +1,28 @@
+From 41825b11289be251fed64470893d18b89b0dd38b Mon Sep 17 00:00:00 2001
+From: Carlos Rafael Giani <crg7475@mailbox.org>
+Date: Sun, 8 May 2022 16:25:44 +0200
+Subject: [PATCH] g2d: Fix typo
+
+Signed-off-by: Carlos Rafael Giani <crg7475@mailbox.org>
+
+Upstream-Status: Backport [41825b11289be251fed64470893d18b89b0dd38b]
+---
+ imxdmabuffer/imxdmabuffer_g2d_allocator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/imxdmabuffer/imxdmabuffer_g2d_allocator.c b/imxdmabuffer/imxdmabuffer_g2d_allocator.c
+index f10a909..497dcea 100644
+--- a/imxdmabuffer/imxdmabuffer_g2d_allocator.c
++++ b/imxdmabuffer/imxdmabuffer_g2d_allocator.c
+@@ -139,7 +139,7 @@ static uint8_t* imx_dma_buffer_g2d_allocator_map(ImxDmaBufferAllocator *allocato
+ 	 * (Other allocators perform more steps than this.) */
+ 	if (imx_g2d_buffer->mapping_refcount > 0)
+ 	{
+-		assert((imx_dwl_buffer->map_flags & flags & IMX_DMA_BUFFER_MAPPING_READWRITE_FLAG_MASK) == (flags & IMX_DMA_BUFFER_MAPPING_READWRITE_FLAG_MASK));
++		assert((imx_g2d_buffer->map_flags & flags & IMX_DMA_BUFFER_MAPPING_READWRITE_FLAG_MASK) == (flags & IMX_DMA_BUFFER_MAPPING_READWRITE_FLAG_MASK));
+ 		imx_g2d_buffer->mapping_refcount++;
+ 	}
+ 	else
+-- 
+2.32.0
+
