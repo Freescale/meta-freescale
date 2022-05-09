@@ -40,6 +40,7 @@ UBOOT_SUFFIX = "bin"
 
 UBOOT_CONFIG ??= "sd"
 UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
+UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_fspi_defconfig"
 
 IMX_BOOT_SEEK = "32"
 
@@ -57,6 +58,3 @@ IMXBOOT_TARGETS = \
         bb.utils.contains('UBOOT_CONFIG',      'fspi', '${IMXBOOT_TARGETS_FSPI}', \
         bb.utils.contains('UBOOT_CONFIG',      'nand', '${IMXBOOT_TARGETS_NAND}', \
                                                                        'INVALID', d), d), d)}"
-
-
-BOARD_TYPE = "evk"

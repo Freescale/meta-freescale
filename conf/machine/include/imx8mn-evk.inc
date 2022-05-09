@@ -35,6 +35,7 @@ UBOOT_SUFFIX = "bin"
 UBOOT_CONFIG ??= "sd"
 UBOOT_CONFIG[sd]      = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
 UBOOT_CONFIG[fspi]    = "${UBOOT_CONFIG_BASENAME}_defconfig"
+UBOOT_CONFIG[ld]      = "${UBOOT_CONFIG_BASENAME}_ld_defconfig"
 UBOOT_CONFIG[mfgtool] = "${UBOOT_CONFIG_BASENAME}_defconfig"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
