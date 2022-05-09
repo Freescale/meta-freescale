@@ -1,0 +1,28 @@
+From 9e89d173a7fab97c913960344ae01dfa409b6258 Mon Sep 17 00:00:00 2001
+From: Cristinel Panfir <cristinel.panfir@nxp.com>
+Date: Mon, 27 Jul 2020 18:55:30 +0000
+Subject: [PATCH] Makefile: Fix LIBDIR for multilib
+
+Upstream-Status: Pending
+Signed-off-by: Cristinel Panfir <cristinel.panfir@nxp.com>
+---
+ Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index b16cebf..492d700 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,7 +4,8 @@ all: she_test hsm_test v2x_test she_lib.a seco_nvm_manager.a hsm_lib.a
+ CFLAGS = -O1 -Werror -fPIC
+ DESTDIR ?= export
+ BINDIR ?= /usr/bin
+-LIBDIR ?= /usr/lib
++base_libdir ?= /lib
++LIBDIR ?= /usr/$(base_libdir)
+ INCLUDEDIR ?= /usr/include
+ 
+ ifdef COVERAGE
+-- 
+2.7.4
+
