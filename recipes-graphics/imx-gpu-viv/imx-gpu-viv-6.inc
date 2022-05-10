@@ -6,7 +6,7 @@
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
+LIC_FILES_CHKSUM = "file://COPYING;md5=be5ff43682ed6c57dfcbeb97651c2829"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -155,7 +155,7 @@ IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
 IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
 LIBVULKAN_VERSION_MAJOR = "1"
-LIBVULKAN_VERSION = "${LIBVULKAN_VERSION_MAJOR}.1.6"
+LIBVULKAN_VERSION = "${LIBVULKAN_VERSION_MAJOR}.2.1"
 
 do_install () {
     install -d ${D}${libdir}
