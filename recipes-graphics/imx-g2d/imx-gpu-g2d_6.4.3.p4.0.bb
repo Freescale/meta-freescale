@@ -1,5 +1,5 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright 2017-2021 NXP
+# Copyright 2017-2022 NXP
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
@@ -22,7 +22,10 @@ S = "${WORKDIR}/${FSLBIN_NAME}"
 inherit fsl-eula-unpack
 
 do_install () {
-    cp -r -d --no-preserve=ownership ${S}/g2d/* ${D}
+    install -d ${D}${libdir}
+    install -d ${D}${includedir}
+    cp -r ${S}/g2d/usr/lib/*.so* ${D}${libdir}
+    cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
 }
 
 INSANE_SKIP:${PN} = "ldflags"
