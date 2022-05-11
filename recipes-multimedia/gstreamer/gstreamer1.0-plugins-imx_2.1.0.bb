@@ -15,7 +15,7 @@ RDEPENDS:gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparser
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "11e3a555a280f97d55d5243e8259a255b3ed14d0"
+SRCREV = "b1e5cca1a6df9d2c0dc505ae222775798108d340"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH};protocol=https"
 
 S = "${WORKDIR}/git"
