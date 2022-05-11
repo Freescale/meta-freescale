@@ -8,8 +8,9 @@ SECTION = "base"
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "d2058aa404ee1e8e8abd552c6a637787bcdcf514"
+SRCREV = "5410b44fb0c5bbd9fb1f3ba0681e65068d8cde57"
 SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH};protocol=https \
+           file://0001-g2d-Fix-typo.patch \
            file://run-ptest \
           "
 
@@ -18,8 +19,10 @@ S = "${WORKDIR}/git"
 
 inherit pkgconfig waf use-imx-headers ptest
 
+# dma-heap allocator is unavailable because it requires kernel 5.6 or newer.
 EXTRA_OECONF = "--imx-linux-headers-path=${STAGING_INCDIR_IMX} \
                 --libdir=${libdir} \
+                --with-dma-heap-allocator=no \
                 ${PACKAGECONFIG_CONFARGS}"
 
 # If imxdpu is in use, the DPU is also used for implementing
