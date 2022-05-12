@@ -1,0 +1,31 @@
+From e75a4d7b4474529967490de6e75ae4f1b7128937 Mon Sep 17 00:00:00 2001
+From: Xianzhong <xianzhong.li@nxp.com>
+Date: Sat, 22 Jan 2022 17:57:59 +0800
+Subject: [PATCH 1/3] Prefer to create GLES2 context for glamor EGL
+
+created the initial patch for xwayland-21.1.2
+
+Upstream-Status: Inappropriate [embedded specific]
+Signed-off-by: Xianzhong <xianzhong.li@nxp.com>
+---
+ hw/xwayland/xwayland-glamor-gbm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hw/xwayland/xwayland-glamor-gbm.c b/hw/xwayland/xwayland-glamor-gbm.c
+index 12d820e44..8a89919be 100644
+--- a/hw/xwayland/xwayland-glamor-gbm.c
++++ b/hw/xwayland/xwayland-glamor-gbm.c
+@@ -866,8 +866,8 @@ xwl_glamor_gbm_init_egl(struct xwl_screen *xwl_screen)
+         goto error;
+     }
+ 
+-    if (!xwl_glamor_try_big_gl_api(xwl_screen) &&
+-        !xwl_glamor_try_gles_api(xwl_screen)) {
++    if (!xwl_glamor_try_gles_api(xwl_screen) &&
++        !xwl_glamor_try_big_gl_api(xwl_screen)) {
+         ErrorF("Cannot use neither GL nor GLES2\n");
+         goto error;
+     }
+-- 
+2.17.1
+
