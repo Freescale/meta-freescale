@@ -8,13 +8,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
 DEPENDS = "python3-pycryptodomex-native python3-pyelftools-native u-boot-mkimage-native"
 
-SRCBRANCH = "lf-5.10.72_2.2.0"
-SRC_URI = "\
-	git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
-	file://0001-arm-imx-fix-RPMB-header-include.patch \
-"
+SRCBRANCH = "lf-5.15.5_1.0.0"
+SRC_URI = "git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH}"
 
-SRCREV = "c939619d64dea014ad1b8382356eee4d1cbfbb22"
+SRCREV = "807629a0889ad5e888f1fd187932ab7f701ddf8c"
 
 S = "${WORKDIR}/git"
 
@@ -34,11 +31,14 @@ PLATFORM_FLAVOR:imx6ulz           = "mx6ulzevk"
 PLATFORM_FLAVOR:mx8mq-nxp-bsp     = "mx8mqevk"
 PLATFORM_FLAVOR:mx8mm-nxp-bsp     = "mx8mmevk"
 PLATFORM_FLAVOR:mx8mn-nxp-bsp     = "mx8mnevk"
+PLATFORM_FLAVOR:mx8mnul-nxp-bsp   = "mx8mnevk"
 PLATFORM_FLAVOR:mx8mp-nxp-bsp     = "mx8mpevk"
+PLATFORM_FLAVOR:mx8mpul-nxp-bsp   = "mx8mpevk"
 PLATFORM_FLAVOR:mx8qm-nxp-bsp     = "mx8qmmek"
 PLATFORM_FLAVOR:mx8qxp-nxp-bsp    = "mx8qxpmek"
 PLATFORM_FLAVOR:mx8dx-nxp-bsp     = "mx8dxmek"
 PLATFORM_FLAVOR:mx8dxl-nxp-bsp    = "mx8dxlevk"
+PLATFORM_FLAVOR:mx8ulp-nxp-bsp    = "mx8ulpevk"
 
 OPTEE_ARCH ?= "arm32"
 OPTEE_ARCH:armv7a = "arm32"
@@ -97,7 +97,7 @@ addtask deploy after do_compile before do_install
 
 
 FILES:${PN} = "${nonarch_base_libdir}/firmware/ ${nonarch_base_libdir}/optee_armtz/"
-FILES:${PN}-staticdev = "/usr/include/optee/"
+FILES:${PN}-staticdev = "${includedir}/optee/"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
