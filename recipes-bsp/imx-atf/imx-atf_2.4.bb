@@ -9,7 +9,7 @@ PV .= "+git${SRCPV}"
 
 SRCBRANCH = "lf_v2.4"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
-"
+           file://0001-alsa-state-Remove-PCM-devices-mapped-by-5.15-kernel.patch"
 SRCREV = "05f788b9bbb13d002997e35008a4b945f7e2957b"
 
 S = "${WORKDIR}/git"
