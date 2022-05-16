@@ -9,7 +9,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS:append = " libgcc"
 # not put Images into /boot of rootfs, install kernel-image if needed
-RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
+RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
 KERNEL_CC:append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD:append = " ${TOOLCHAIN_OPTIONS}"
