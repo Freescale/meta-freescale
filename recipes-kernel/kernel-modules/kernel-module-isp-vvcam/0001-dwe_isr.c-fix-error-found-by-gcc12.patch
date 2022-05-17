@@ -1,0 +1,55 @@
+From 95c353810b55b30a70f1317369fcb179b444f2da Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Tue, 17 May 2022 14:49:55 +0000
+Subject: [PATCH] dwe_isr.c: fix error found by gcc12
+
+| .../vvcam/v4l2/../dwe/dwe_isr.c: In function 'update_dma_buffer':
+| .../vvcam/v4l2/../dwe/dwe_isr.c:107:47: error: the comparison will always evaluate as 'false' for the address of 'dist_map' will never be NULL [-Werror=address]
+|   107 |                 if (dev->dist_map[dev->index] == NULL) {
+|       |                                               ^~
+| cc1: all warnings being treated as errors
+| .../vvcam/v4l2/../dwe/dwe_dev.h:109:20: note: 'dist_map' declared here
+|   109 |         dma_addr_t dist_map[MAX_DWE_NUM][MAX_CFG_NUM];
+|       |                    ^~~~~~~~
+| cc1: all warnings being treated as errors
+
+Taking just one element of the first dimension of a multi-dimensional
+array always returns a valid pointer.
+
+Likely what was meant is to check if the later used element
+( dev->dist_map[dev->index][which] ) contains NULL but that isn't
+what the code does.
+Change the code according to that assumption.
+
+Upstream-Status: Pending
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ vvcam/dwe/dwe_isr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/vvcam/dwe/dwe_isr.c b/vvcam/dwe/dwe_isr.c
+index ba74302..73ef83b 100644
+--- a/vvcam/dwe/dwe_isr.c
++++ b/vvcam/dwe/dwe_isr.c
+@@ -104,7 +104,8 @@ static int update_dma_buffer(struct dwe_ic_dev *dev)
+ 			continue;
+ 		}
+ 
+-		if (dev->dist_map[dev->index] == NULL) {
++		which = dev->which[dev->index];
++		if (dev->dist_map[dev->index][which] == (dma_addr_t)NULL) {
+ 			vvbuf_ready(dev->sink_bctx, dev->src->pad, dev->src);
+ 			dev->src = NULL;
+ 			dev->error = BUF_ERR_WRONGSTATE;
+@@ -121,7 +122,6 @@ static int update_dma_buffer(struct dwe_ic_dev *dev)
+ 		}
+ 	} while(dev->dst == NULL);
+ 
+-	which = dev->which[dev->index];
+ 	dwe_s_params(dev, &dev->info[dev->index][which]);
+ 	dwe_set_buffer(dev, &dev->info[dev->index][which], dev->dst->dma);
+ 	dwe_set_lut(dev, dev->dist_map[dev->index][which]);
+-- 
+2.20.1
+
