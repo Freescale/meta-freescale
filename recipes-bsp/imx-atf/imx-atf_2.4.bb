@@ -5,11 +5,13 @@ SECTION = "BSP"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
 PV .= "+git${SRCPV}"
 
 SRCBRANCH = "lf_v2.4"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
-           file://0001-alsa-state-Remove-PCM-devices-mapped-by-5.15-kernel.patch"
+           file://0001-Makefile-Suppress-array-bounds-error.patch"
 SRCREV = "05f788b9bbb13d002997e35008a4b945f7e2957b"
 
 S = "${WORKDIR}/git"
