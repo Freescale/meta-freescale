@@ -21,18 +21,14 @@ inherit python3native features_check
 
 REQUIRED_MACHINE_FEATURES = "optee"
 
-OPTEE_ARCH ?= "arm32"
-OPTEE_ARCH:armv7a = "arm32"
+OPTEE_ARCH:arm     = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
-
-TA_DEV_KIT_DIR:arm = "${STAGING_INCDIR}/optee/export-user_ta_arm32/"
-TA_DEV_KIT_DIR:aarch64 = "${STAGING_INCDIR}/optee/export-user_ta_arm64/"
 
 CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
 EXTRA_OEMAKE = " \
-    TA_DEV_KIT_DIR=${TA_DEV_KIT_DIR} \
+    TA_DEV_KIT_DIR=${STAGING_INCDIR}/optee/export-user_ta_${OPTEE_ARCH}/ \
     ARCH=${OPTEE_ARCH} \
     OPTEE_CLIENT_EXPORT=${STAGING_DIR_HOST}${exec_prefix} \
     CROSS_COMPILE_HOST=${HOST_PREFIX} \
