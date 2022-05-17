@@ -7,7 +7,7 @@ MACHINE_FEATURES += "pci optee bcm43455 bcm4356"
 MACHINE_FEATURES:append:use-nxp-bsp = " bcm4359"
 
 # Don't include kernels in standard images
-RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
+RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
 LOADADDR = ""
 
