@@ -40,8 +40,7 @@ PLATFORM_FLAVOR:mx8dx-nxp-bsp     = "mx8dxmek"
 PLATFORM_FLAVOR:mx8dxl-nxp-bsp    = "mx8dxlevk"
 PLATFORM_FLAVOR:mx8ulp-nxp-bsp    = "mx8ulpevk"
 
-OPTEE_ARCH ?= "arm32"
-OPTEE_ARCH:armv7a = "arm32"
+OPTEE_ARCH:arm     = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
 
 # Optee-os can be built for 32 bits and 64 bits at the same time
