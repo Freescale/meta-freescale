@@ -17,19 +17,19 @@ Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
  ui/gl/BUILD.gn | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/ui/gl/BUILD.gn b/ui/gl/BUILD.gn
-index 111d8de844..a03a3c9249 100644
---- a/ui/gl/BUILD.gn
-+++ b/ui/gl/BUILD.gn
-@@ -9,6 +9,7 @@ import("//build/config/chromeos/ui_mode.gni")
+Index: chromium-96.0.4664.110/ui/gl/BUILD.gn
+===================================================================
+--- chromium-96.0.4664.110.orig/ui/gl/BUILD.gn
++++ chromium-96.0.4664.110/ui/gl/BUILD.gn
+@@ -9,6 +9,7 @@ import("//build/config/chromeos/ui_mode.
  import("//build/config/linux/pkg_config.gni")
  import("//build/config/ozone.gni")
  import("//build/config/ui.gni")
 +import("//content/gpu/features.gni")
- import("//gpu/vulkan/features.gni")
  import("//testing/test.gni")
  import("//third_party/angle/gni/angle.gni")
-@@ -262,7 +263,7 @@ component("gl") {
+ import("//third_party/dawn/scripts/dawn_features.gni")
+@@ -252,7 +253,7 @@ component("gl") {
  
    if (use_ozone) {
      deps += [ "//ui/ozone:buildflags" ]
@@ -38,6 +38,3 @@ index 111d8de844..a03a3c9249 100644
        data_deps += [
          "//third_party/angle:libEGL",
          "//third_party/angle:libGLESv2",
--- 
-2.17.1
-
