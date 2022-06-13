@@ -96,6 +96,23 @@ UBOOT_ENTRYPOINT:vf-generic-bsp     = "0x80008000"
 UBOOT_PROVIDES_BOOT_CONTAINER = "0"
 UBOOT_PROVIDES_BOOT_CONTAINER:imx-boot-container = "1"
 
+# Trusted Firmware for Cortex-A (TF-A) can have different providers, either
+# from upstream or from NXP downstream fork. Below variable defines which TF-A
+# shall be taken into the build, and will be integrated into runtime image.
+#
+# Upstream TF-A recipe resides in the meta-arm layer and in maintained by OE
+# community. Therefore, in order to add upstream TF-A - additional layer has
+# to be included in the bblayers.con file. Compatible machines are added to
+# this layer via dynamic-layers mechanism.
+#
+# NOTE: Current upstream TF-A version (v2.7) does not support HAB feature of
+# i.MX8M family. If the upstream TF-A version is chosen, then HAB will not be
+# available for all SoCs that are opting-in. This might change with future TF-A
+# release, so this statement shall be kept here until support is added.
+#
+# Default TF-A provider to NXP downstream fork
+IMX_DEFAULT_ATF_PROVIDER ??= "imx-atf"
+
 PREFERRED_PROVIDER_virtual/xserver      = "xserver-xorg"
 XSERVER_DRIVER                          = "xf86-video-fbdev"
 XSERVER_DRIVER:vf-generic-bsp           = "xf86-video-modesetting"
