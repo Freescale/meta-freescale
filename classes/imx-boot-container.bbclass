@@ -47,7 +47,7 @@ do_resolve_and_populate_binaries() {
                         cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${config}/
                     done
                     if [ -n "${ATF_MACHINE_NAME}" ]; then
-                        cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
+                        cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
                     else
                         bberror "ATF binary is undefined, result binary would be unusable!"
                     fi
