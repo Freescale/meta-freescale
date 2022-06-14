@@ -29,7 +29,7 @@ ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-o
 # appropriate dependencies for populate binaries task
 do_resolve_and_populate_binaries[depends] += " \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
-    imx-atf:do_deploy \
+    ${IMX_DEFAULT_ATF_PROVIDER}:do_deploy \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
@@ -47,7 +47,7 @@ do_resolve_and_populate_binaries() {
                         cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${config}/
                     done
                     if [ -n "${ATF_MACHINE_NAME}" ]; then
-                        cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
+                        cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
                     else
                         bberror "ATF binary is undefined, result binary would be unusable!"
                     fi
