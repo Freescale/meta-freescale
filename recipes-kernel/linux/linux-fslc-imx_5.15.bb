@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.15.46
+#    tag: v5.15.48
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -38,6 +38,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+#    aa0d6324254a ("ARM: imx_v6/v7: config: remove lzo compression")
 #    78a61d752a68 ("staging: fsl_ppfe: reduce MAC address filtering loglevel to debug")
 #    119775ff0b40 ("staging: fsl_ppfe: assign correct OF nodes to individual ports")
 #    f696b8a03198 ("staging: fsl_ppfe: handle all RGMII modes in pfe_eth_adjust_link")
@@ -70,14 +71,14 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.15-1.0.x-imx"
-SRCREV = "2badd023089aeeadb482300d5d409d6deece659c"
+SRCREV = "b6597629c15cf4fc99dbcdaa079cb1b4c3e92f2e"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.15.46"
+LINUX_VERSION = "5.15.48"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-5.15.5-1.0.0"
