@@ -168,6 +168,8 @@ MACHINEOVERRIDES_EXTENDER:mx6ulz:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxf
 MACHINEOVERRIDES_EXTENDER:mx7d:use-nxp-bsp   = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx7-generic-bsp:mx7-nxp-bsp:mx7d-generic-bsp:mx7d-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx7ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d:mx7-generic-bsp:mx7-nxp-bsp:mx7ulp-generic-bsp:mx7ulp-nxp-bsp"
 
+MACHINEOVERRIDES_EXTENDER:vf:use-nxp-bsp     = "imx-generic-bsp:imx-nxp-bsp:vf-generic-bsp:vf-nxp-bsp"
+
 MACHINEOVERRIDES_EXTENDER:mx8qm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8qm-generic-bsp:mx8qm-nxp-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8mm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mm-generic-bsp:mx8mm-nxp-bsp"
@@ -206,6 +208,8 @@ MACHINEOVERRIDES_EXTENDER:mx6ulz:use-mainline-bsp = "imx-generic-bsp:imx-mainlin
 MACHINEOVERRIDES_EXTENDER:mx7d:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx7-generic-bsp:mx7-mainline-bsp:mx7d-generic-bsp:mx7d-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx7ulp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx7-generic-bsp:mx7-mainline-bsp:mx7ulp-generic-bsp:mx7ulp-mainline-bsp"
 
+MACHINEOVERRIDES_EXTENDER:vf:use-mainline-bsp     = "imx-generic-bsp:imx-mainline-bsp:vf-generic-bsp:vf-mainline-bsp"
+
 MACHINEOVERRIDES_EXTENDER:mx8qm:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8qm-generic-bsp:mx8qm-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8mm:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mm-generic-bsp:mx8mm-mainline-bsp"
@@ -232,6 +236,8 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx7d \
     mx7ulp \
     \
+    vf \
+    \
     mx8 \
     mx8m \
     mx8qm \
@@ -255,8 +261,7 @@ MACHINE_SOCARCH_SUFFIX:mx6sl-nxp-bsp = "-mx6sl"
 MACHINE_SOCARCH_SUFFIX:mx6sll-nxp-bsp= "-mx6sll"
 MACHINE_SOCARCH_SUFFIX:mx7d-nxp-bsp = "-mx7d"
 MACHINE_SOCARCH_SUFFIX:mx7ulp-nxp-bsp = "-mx7ulp"
-MACHINE_SOCARCH_SUFFIX:vf60-nxp-bsp = "-vf60"
-MACHINE_SOCARCH_SUFFIX:vf50-nxp-bsp = "-vf50"
+MACHINE_SOCARCH_SUFFIX:vf-nxp-bsp = "-vf"
 MACHINE_SOCARCH_SUFFIX:mx6ul-nxp-bsp  = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX:mx6ull-nxp-bsp = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX:mx6ulz-nxp-bsp = "-mx6ul"
