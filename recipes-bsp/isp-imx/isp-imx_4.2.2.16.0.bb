@@ -58,22 +58,22 @@ do_install() {
     install -d ${D}/${includedir}
     install -d ${D}/opt/imx8-isp/bin
 
-    cp -r ${WORKDIR}/build/generated/release/bin/*_test ${D}/opt/imx8-isp/bin
-    cp -r ${WORKDIR}/build/generated/release/bin/*2775* ${D}/opt/imx8-isp/bin
-    cp -r ${WORKDIR}/build/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
-    cp -r ${WORKDIR}/build/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
-    cp -r ${WORKDIR}/build/generated/release/lib/*.so* ${D}/${libdir}
-    cp -r ${WORKDIR}/build/generated/release/include/* ${D}/${includedir}
+    cp -r ${B}/generated/release/bin/*_test ${D}/opt/imx8-isp/bin
+    cp -r ${B}/generated/release/bin/*2775* ${D}/opt/imx8-isp/bin
+    cp -r ${B}/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
+    cp -r ${B}/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
+    cp -r ${B}/generated/release/lib/*.so* ${D}/${libdir}
+    cp -r ${B}/generated/release/include/* ${D}/${includedir}
 
-    cp ${WORKDIR}/${BP}/imx/run.sh ${D}/opt/imx8-isp/bin
-    cp ${WORKDIR}/${BP}/imx/start_isp.sh ${D}/opt/imx8-isp/bin
+    cp ${S}/imx/run.sh ${D}/opt/imx8-isp/bin
+    cp ${S}/imx/start_isp.sh ${D}/opt/imx8-isp/bin
 
     chmod +x ${D}/opt/imx8-isp/bin/run.sh
     chmod +x ${D}/opt/imx8-isp/bin/start_isp.sh
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
       install -d ${D}${systemd_system_unitdir}
-      install -m 0644 ${WORKDIR}/${BP}/imx/imx8-isp.service ${D}${systemd_system_unitdir}
+      install -m 0644 ${S}/imx/imx8-isp.service ${D}${systemd_system_unitdir}
     fi
 }
 
