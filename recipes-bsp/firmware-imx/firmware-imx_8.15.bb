@@ -65,6 +65,29 @@ do_install() {
 # which contains only files that matches the pattern.
 #
 python populate_packages:prepend() {
+    # CODA driver tries to locate VPU firmwares directly in ${nonarch_base_libdir}/firmware, to
+    # avoid fallback loading which is usually 40-60 seconds later after system boots up, let's
+    # create symbolic links in ${nonarch_base_libdir}/firmware for VPU firmwares.
+    def coda_vpu_links(file, pkg, pattern, format, basename):
+        # Only CODA VPU firmwares need this procedure
+        if 'imx8' in basename:
+            return
+
+        dir = os.path.dirname(file)
+        dir = os.path.abspath(os.path.join(dir, os.pardir))
+        cwd = os.getcwd()
+
+        os.chdir(dir)
+
+        name = os.path.basename(file)
+        os.symlink(os.path.join("vpu", name), name)
+
+        oldfiles = d.getVar('FILES:' + pkg)
+        newfile = os.path.join(d.getVar('nonarch_base_libdir'), "firmware", name)
+        d.setVar('FILES:' + pkg, oldfiles + " " + newfile)
+
+        os.chdir(cwd)
+
     easrcdir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/easrc', d)
     do_split_packages(d, easrcdir, '^easrc-([^_]*).*\.bin',
                       output_pattern='firmware-imx-easrc-%s',
@@ -76,6 +99,7 @@ python populate_packages:prepend() {
     do_split_packages(d, vpudir, '^vpu_fw_([^_]*).*\.bin',
                       output_pattern='firmware-imx-vpu-%s',
                       description='Freescale IMX VPU Firmware [%s]',
+                      hook=coda_vpu_links,
                       extra_depends='',
                       prepend=True)
 
