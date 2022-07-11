@@ -162,7 +162,9 @@ SRCBRANCH = "weston-imx-9.0"
 SRC_URI:remove = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz \
            file://0001-tests-include-fcntl.h-for-open-O_RDWR-O_CLOEXEC-and-.patch \
 "
-SRC_URI:prepend = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} "
+SRC_URI:prepend = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
+                   file://0001-Revert-protocol-no-found-wayland-scanner-with-Yocto-.patch \
+"
 SRCREV = "7859a762617682bd804e210ad3bda6bdcd3ea24a"
 S = "${WORKDIR}/git"
 
