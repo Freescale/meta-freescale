@@ -1,0 +1,40 @@
+From be066d9841a9cd5e9cc5ef3c457bd1e33b2a5fae Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Mon, 11 Jul 2022 19:38:19 +0000
+Subject: [PATCH] Revert "protocol: no found wayland-scanner with Yocto
+ toolchain"
+
+This reverts commit 7859a762617682bd804e210ad3bda6bdcd3ea24a.
+
+With openembedded commit e525db4eb9 ("wayland: update 1.20.0 -> 1.21.0")
+package config seems no longer to provide the path to the native
+weston scanner.
+
+Thus the build fails with:
+
+| Run-time dependency wayland-scanner found: YES 1.21.0
+| Program /usr/bin/wayland-scanner found: NO
+|
+| ../git/protocol/meson.build:2:0: ERROR: Program '/usr/bin/wayland-scanner' not found or not executable
+
+Dropping weston 9.0.0-imx commit 7859a762 (protocol: no found
+wayland-scanner with Yocto toolchain") fixes the issue.
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ protocol/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/protocol/meson.build b/protocol/meson.build
+index dc90ec2a..8290ad44 100644
+--- a/protocol/meson.build
++++ b/protocol/meson.build
+@@ -1,4 +1,4 @@
+-dep_scanner = dependency('wayland-scanner', native: false)
++dep_scanner = dependency('wayland-scanner', native: true)
+ prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner'))
+ 
+ dep_wp = dependency('wayland-protocols', version: '>= 1.18')
+-- 
+2.20.1
+
