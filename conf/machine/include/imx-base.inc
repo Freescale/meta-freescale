@@ -412,14 +412,14 @@ MACHINE_GSTREAMER_1_0_PLUGIN:mx8qm-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qxp-nxp-bsp ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8dx-nxp-bsp  ?= "imx-gst1.0-plugin"
 
-PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              ?= "1.20.2.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp ?= "1.20.2.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good:mx8-nxp-bsp ?= "1.20.2.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8-nxp-bsp  ?= "1.20.2.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8-nxp-bsp ?= "1.20.2"
-PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        ?= "1.20.2"
-PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  ?= "1.20.2"
-PREFERRED_VERSION_ffmpeg:mx8-nxp-bsp                    ?= "4.4.1"
+PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              ??= "1.20.2.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp ??= "1.20.2.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good:mx8-nxp-bsp ??= "1.20.2.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8-nxp-bsp  ??= "1.20.2.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8-nxp-bsp ??= "1.20.2"
+PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        ??= "1.20.2"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  ??= "1.20.2"
+PREFERRED_VERSION_ffmpeg:mx8-nxp-bsp                    ??= "4.4.1"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
@@ -447,25 +447,25 @@ PREFERRED_PROVIDER_opencl-headers:imxgpu     ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxgpu  ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/opencl-icd:imxgpu ?= "imx-gpu-viv"
 
-PREFERRED_VERSION_weston:imx-nxp-bsp     ?= "9.0.0.imx"
-PREFERRED_VERSION_weston:imx-mainline-bsp = ""
+PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "9.0.0.imx"
+PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
-PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp ?= "1.25.imx"
-PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp ?= "1.25.imx"
-PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp ?= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp ??= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp ??= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp ??= "1.25.imx"
 
 # Use i.MX libdrm Version
-PREFERRED_VERSION_libdrm:mx6-nxp-bsp ?= "2.4.109.imx"
-PREFERRED_VERSION_libdrm:mx7-nxp-bsp ?= "2.4.109.imx"
-PREFERRED_VERSION_libdrm:mx8-nxp-bsp ?= "2.4.109.imx"
+PREFERRED_VERSION_libdrm:mx6-nxp-bsp ??= "2.4.109.imx"
+PREFERRED_VERSION_libdrm:mx7-nxp-bsp ??= "2.4.109.imx"
+PREFERRED_VERSION_libdrm:mx8-nxp-bsp ??= "2.4.109.imx"
 
 # Use i.MX optee Version
-PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ?= "3.15.0.imx"
-PREFERRED_VERSION_optee-client:mx8-nxp-bsp ?= "3.15.0.imx"
-PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ?= "3.15.0.imx"
+PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "3.15.0.imx"
+PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "3.15.0.imx"
+PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "3.15.0.imx"
 
 #Use i.MX opencv Version for mx8
-PREFERRED_VERSION_opencv:mx8-nxp-bsp ?= "4.5.2.imx"
+PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.5.2.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL:imx-mainline-bsp = "linux-fslc"
