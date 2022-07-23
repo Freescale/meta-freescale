@@ -20,6 +20,9 @@
 # by variable UBOOT_PROVIDES_BOOT_CONTAINER, which is defined in the
 # base machine include file (imx-base.inc), and is set to "1" when the
 # 'imx-boot-container' is present in MACHINEOVERRIDES.
+#
+# NOTE: A backwards-compatible symlink is added for 'flash.bin', named
+# 'imx-boot', during the deployment task.
 
 # Define ATF binary file to be deployed to the U-Boot build folder
 ATF_MACHINE_NAME = "bl31-${ATF_PLATFORM}.bin"
