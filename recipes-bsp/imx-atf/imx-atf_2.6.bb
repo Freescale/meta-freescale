@@ -48,6 +48,8 @@ EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}"'
 
 EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
 
+do_configure[noexec] = "1"
+
 do_compile() {
     # Clear LDFLAGS to avoid the option -Wl recognize issue
     oe_runmake bl31
