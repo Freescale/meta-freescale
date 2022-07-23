@@ -32,7 +32,8 @@ AS[unexport] = "1"
 LD[unexport] = "1"
 
 # Baremetal, just need a compiler
-DEPENDS:remove = "virtual/${TARGET_PREFIX}compilerlibs virtual/libc"
+INHIBIT_DEFAULT_DEPS = "1"
+DEPENDS = "virtual/${HOST_PREFIX}gcc"
 
 BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
