@@ -113,6 +113,15 @@ UBOOT_PROVIDES_BOOT_CONTAINER:imx-boot-container = "1"
 # Default TF-A provider to NXP downstream fork
 IMX_DEFAULT_ATF_PROVIDER ??= "imx-atf"
 
+# Allow setting the UART used during the boot by ATF.
+
+# FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
+# base address in source code.
+SOC_ATF_BOOT_UART_BASE                    = ""
+
+SOC_ATF_BOOT_UART_BASE:mx8m-generic-bsp   = "0x30890000"
+ATF_BOOT_UART_BASE                       ?= "${SOC_ATF_BOOT_UART_BASE}"
+
 PREFERRED_PROVIDER_virtual/xserver      = "xserver-xorg"
 XSERVER_DRIVER                          = "xf86-video-fbdev"
 XSERVER_DRIVER:vf-generic-bsp           = "xf86-video-modesetting"

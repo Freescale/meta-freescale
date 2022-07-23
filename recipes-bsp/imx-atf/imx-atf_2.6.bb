@@ -18,7 +18,11 @@ S = "${WORKDIR}/git"
 
 inherit deploy
 
-ATF_PLATFORM ??= "INVALID"
+ATF_PLATFORM          ??= "INVALID"
+
+# FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
+# base address in source code.
+ATF_BOOT_UART_BASE     ?= ""
 
 EXTRA_OEMAKE += " \
     CROSS_COMPILE="${TARGET_PREFIX}" \
@@ -47,6 +51,9 @@ def remove_options_tail (in_string):
 EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}"'
 
 EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
+
+# Set the UART to use during the boot.
+EXTRA_OEMAKE += 'IMX_BOOT_UART_BASE=${ATF_BOOT_UART_BASE}'
 
 do_configure[noexec] = "1"
 
