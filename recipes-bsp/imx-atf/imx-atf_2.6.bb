@@ -18,8 +18,6 @@ S = "${WORKDIR}/git"
 
 inherit deploy
 
-BOOT_TOOLS = "imx-boot-tools"
-
 ATF_PLATFORM ??= "INVALID"
 
 EXTRA_OEMAKE += " \

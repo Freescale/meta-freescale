@@ -10,12 +10,6 @@ inherit ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '1', 'im
 
 DEPENDS += "bc-native dtc-native python3-setuptools-native"
 
-# Location known to imx-boot component, where U-Boot artifacts
-# should be additionally deployed.
-# See below note above do_deploy:append:mx8m-nxp-bsp for the purpose of
-# this delopyment location
-BOOT_TOOLS = "imx-boot-tools"
-
 PROVIDES += "u-boot"
 
 B = "${WORKDIR}/build"
