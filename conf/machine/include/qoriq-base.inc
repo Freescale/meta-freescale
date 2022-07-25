@@ -39,7 +39,7 @@ WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 MACHINE_FEATURES ?= "pci ext2 ext3 serial"
 MACHINE_EXTRA_RRECOMMENDS += "udev-extraconf udev-rules-qoriq kernel-modules"
 
-EXTRA_IMAGEDEPENDS += "u-boot cst-native"
+EXTRA_IMAGEDEPENDS += "u-boot qoriq-cst-native"
 
 MACHINEOVERRIDES =. "qoriq:"
 
