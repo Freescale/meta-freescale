@@ -4,7 +4,7 @@ LICENSE = "BSD-3-Clause"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=e959d5d617e33779d0e90ce1d9043eff"
 
-DEPENDS += "openssl cst-native"
+DEPENDS += "openssl qoriq-cst-native"
 RDEPENDS:${PN} = "bash"
 
 GENKEYS ?= "${STAGING_BINDIR_NATIVE}/cst/gen_keys"
