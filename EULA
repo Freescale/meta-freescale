@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v34 February 2022
+LA_OPT_NXP_Software_License v35 May 2022
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
 downloading, installing, or using the Licensed Software, you indicate that you
@@ -36,7 +36,7 @@ ownership of greater than fifty percent (50%) of the shares or similar
 interests entitled to vote for the election of directors or other persons
 performing similar functions. An entity is considered an Affiliate only so long
 as such Control exists.
-1.2	"Authorized System" means either (i) Licensee's hardware product which
+1.2      "Authorized System" means either (i) Licensee's hardware product which
 incorporates an NXP Product or (ii) Licensee's software program which is used
 exclusively in connection with an NXP Product and with which the Licensed
 Software will be integrated.
@@ -345,7 +345,7 @@ Agreement will be made in writing, and will be effective when received at the
 following addresses:
           NXP:      	NXP B.V.
                       	High Tech Campus 60
-                        5656 AG Eindhoven
+                       	5656 AG Eindhoven
                        	The Netherlands
                    	ATTN: Legal Department
 
@@ -406,6 +406,9 @@ property infringement against AWS or any AWS customer utilizing AWS services.
 Any dispute or claim relating to your use of the Greengrass software will be
 resolved by binding arbitration, rather than in court, except that you may
 assert claims in small claims court if your claims qualify.
+
+Amazon: AWS Fleetwise software must be used consistent with the terms found
+here: https://github.com/aws/aws-iot-fleetwise-edge/blob/main/LICENSE.
 
 Amphion Semiconductor Ltd.: Distribution of Amphion software must be a part of,
 or embedded within, Authorized Systems that include an Amphion Video Decoder.
