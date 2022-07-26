@@ -9,9 +9,6 @@ SECTION = "BSP"
 
 inherit use-imx-security-controller-firmware uboot-sign
 
-IMX_EXTRA_FIRMWARE      = "firmware-imx-8 imx-sc-firmware imx-seco"
-IMX_EXTRA_FIRMWARE:mx8m-generic-bsp = "firmware-imx-8m"
-IMX_EXTRA_FIRMWARE:mx8x-generic-bsp = "imx-sc-firmware imx-seco"
 DEPENDS += " \
     u-boot \
     ${IMX_EXTRA_FIRMWARE} \
