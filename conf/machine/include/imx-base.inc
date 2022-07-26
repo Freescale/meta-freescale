@@ -343,6 +343,12 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS:append = " \
     imx-test->virtual/imxvpu \
 "
 
+# Firmware used for boot.
+IMX_EXTRA_FIRMWARE                  ?= ""
+IMX_EXTRA_FIRMWARE:mx8-generic-bsp   = "firmware-imx-8 imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE:mx8m-generic-bsp  = "firmware-imx-8m"
+IMX_EXTRA_FIRMWARE:mx8x-generic-bsp  = "imx-sc-firmware imx-seco"
+
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE:append:mx27-generic-bsp   = " firmware-imx-vpu-imx27"
