@@ -9,10 +9,10 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 PV .= "+git${SRCPV}"
 
-SRCBRANCH = "lf_v2.4"
+SRCBRANCH = "lf_v2.6"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-Makefile-Suppress-array-bounds-error.patch"
-SRCREV = "05f788b9bbb13d002997e35008a4b945f7e2957b"
+SRCREV = "c6a19b1a351308cc73443283f6aa56b2eff791b8"
 
 S = "${WORKDIR}/git"
 
