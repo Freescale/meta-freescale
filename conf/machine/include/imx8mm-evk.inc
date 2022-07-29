@@ -37,9 +37,6 @@ SPL_BINARY = "spl/u-boot-spl.bin"
 
 ATF_PLATFORM = "imx8mm"
 
-# Extra firmware package name, that is required to build boot container for fslc bsp
-IMX_EXTRA_FIRMWARE = "firmware-imx-8m"
-
 IMXBOOT_TARGETS = "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', '${IMXBOOT_TARGETS_BASENAME}_flexspi', '${IMXBOOT_TARGETS_BASENAME}', d)}"
 
 IMX_BOOT_SOC_TARGET = "iMX8MM"

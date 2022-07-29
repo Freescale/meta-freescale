@@ -18,9 +18,11 @@ S = "${WORKDIR}/git"
 
 inherit deploy
 
-BOOT_TOOLS = "imx-boot-tools"
+ATF_PLATFORM          ??= "INVALID"
 
-ATF_PLATFORM ??= "INVALID"
+# FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
+# base address in source code.
+ATF_BOOT_UART_BASE     ?= ""
 
 EXTRA_OEMAKE += " \
     CROSS_COMPILE="${TARGET_PREFIX}" \
@@ -34,7 +36,8 @@ AS[unexport] = "1"
 LD[unexport] = "1"
 
 # Baremetal, just need a compiler
-DEPENDS:remove = "virtual/${TARGET_PREFIX}compilerlibs virtual/libc"
+INHIBIT_DEFAULT_DEPS = "1"
+DEPENDS = "virtual/${HOST_PREFIX}gcc"
 
 BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
@@ -48,6 +51,11 @@ def remove_options_tail (in_string):
 EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}"'
 
 EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
+
+# Set the UART to use during the boot.
+EXTRA_OEMAKE += 'IMX_BOOT_UART_BASE=${ATF_BOOT_UART_BASE}'
+
+do_configure[noexec] = "1"
 
 do_compile() {
     # Clear LDFLAGS to avoid the option -Wl recognize issue
@@ -68,5 +76,5 @@ do_deploy() {
 }
 addtask deploy after do_compile
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx8-generic-bsp)"
