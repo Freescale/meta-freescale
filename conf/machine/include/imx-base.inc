@@ -113,6 +113,15 @@ UBOOT_PROVIDES_BOOT_CONTAINER:imx-boot-container = "1"
 # Default TF-A provider to NXP downstream fork
 IMX_DEFAULT_ATF_PROVIDER ??= "imx-atf"
 
+# Allow setting the UART used during the boot by ATF.
+
+# FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
+# base address in source code.
+SOC_ATF_BOOT_UART_BASE                    = ""
+
+SOC_ATF_BOOT_UART_BASE:mx8m-generic-bsp   = "0x30890000"
+ATF_BOOT_UART_BASE                       ?= "${SOC_ATF_BOOT_UART_BASE}"
+
 PREFERRED_PROVIDER_virtual/xserver      = "xserver-xorg"
 XSERVER_DRIVER                          = "xf86-video-fbdev"
 XSERVER_DRIVER:vf-generic-bsp           = "xf86-video-modesetting"
@@ -343,6 +352,12 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS:append = " \
     imx-test->virtual/imxvpu \
 "
 
+# Firmware used for boot.
+IMX_EXTRA_FIRMWARE                  ?= ""
+IMX_EXTRA_FIRMWARE:mx8-generic-bsp   = "firmware-imx-8 imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE:mx8m-generic-bsp  = "firmware-imx-8m"
+IMX_EXTRA_FIRMWARE:mx8x-generic-bsp  = "imx-sc-firmware imx-seco"
+
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE:append:mx27-generic-bsp   = " firmware-imx-vpu-imx27"
@@ -503,22 +518,18 @@ WKS_FILE_DEPENDS ?= " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_WKS_FILE_DEPENDS}', '', d)} \
 "
 
-WKS_FILE_DEPENDS:append:mx8-nxp-bsp  = " imx-boot"
-WKS_FILE_DEPENDS:append:mx8m-nxp-bsp = " imx-boot"
-
 # We need to restrict the append so we don't add this for other i.MX SoC's.
 # Derivatives that are not yet adopted the usage of boot container provided
 # by U-Boot build are still targeted to use 'imx-boot' package provided by
-# NXP. Moving those derivatives to mainline BSP would require to define an
+# NXP.
+#
+# Moving those derivatives to mainline BSP would require to define an
 # 'imx-boot-container' override, and test if the U-Boot built 'flash.bin'
 # binary is used a replacement.
-# Note, that the results binary name of the boot container is set to 'imx-boot'
+#
+# NOTE: the results binary name of the boot container is set to 'imx-boot'
 # for both NXP and Mainline BSP.
-# For Mainline BSP: the 'flash.bin' boot container is renamed during the
-# deployment task extesion execution defined in imx-boot-container class.
-# For NXP BSP: rename is done in 'imx-boot' recipe at the execution of compile
-# task.
-WKS_FILE_DEPENDS:append:imx-mainline-bsp:aarch64 = " \
+WKS_FILE_DEPENDS:append:imx-generic-bsp:aarch64 = " \
     ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
 "
 
