@@ -20,19 +20,19 @@ DEPENDS += "lzop-native bc-native"
 # UPGRADE NOTE:
 # The linux-imx kernel build uses a defconfig maintained in the layer. That
 # defconfig is a copy of a defconfig maintained by NXP in the source.
-# | defconfig in layer              | copied from NXP kernel source       |
-# | linux-imx/imx-nxp-bsp/defconfig | arch/arm/configs/imx_v7_defconfig   |
-# | linux-imx/mx8-nxp-bsp/defconfig | arch/arm64/configs/imx_v8_defconfig |
+# | SOURCE                              | LAYER                           |
+# | arch/arm/configs/imx_v7_defconfig   | linux-imx/imx-nxp-bsp/defconfig |
+# | arch/arm64/configs/imx_v8_defconfig | linux-imx/mx8-nxp-bsp/defconfig |
 SRCBRANCH = "lf-5.15.y"
-LOCALVERSION = "-5.15.5_1.0.0"
-SRCREV = "c1084c2773fc1005ed140db625399d5334d94a28"
+LOCALVERSION = "-5.15.32_2.0.0"
+SRCREV = "fa6c3168595c02bd9d5366fcc28c9e7304947a3d"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.15.5"
+LINUX_VERSION = "5.15.32"
 
 DEFAULT_PREFERENCE = "1"
 
