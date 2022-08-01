@@ -12,34 +12,25 @@
 SCMVERSION ??= "y"
 LOCALVERSION ??= "+fslc"
 
-kernel_conf_variable() {
-	CONF_SED_SCRIPT="$CONF_SED_SCRIPT /CONFIG_$1[ =]/d;"
-	if test "$2" = "n"
-	then
-		echo "# CONFIG_$1 is not set" >> ${B}/.config
-	else
-		echo "CONFIG_$1=$2" >> ${B}/.config
-	fi
-}
+# LINUX_VERSION_EXTENSION is used as CONFIG_LOCALVERSION by kernel-yocto class
+LINUX_VERSION_EXTENSION ?= "${LOCALVERSION}"
 
 do_kernel_localversion[dirs] += "${S} ${B}"
 do_kernel_localversion() {
-	mkdir -p ${B}
-	echo "" > ${B}/.config
-	CONF_SED_SCRIPT=""
 
-	kernel_conf_variable LOCALVERSION "\"${LOCALVERSION}\""
-	if [ "${SCMVERSION}" = "y" ]; then
-		kernel_conf_variable LOCALVERSION_AUTO y
+	# Fallback for recipes not able to use LINUX_VERSION_EXTENSION
+	if [ "${@bb.data.inherits_class('kernel-yocto', d)}" = "False" ]; then
+		echo "CONFIG_LOCALVERSION=${LOCALVERSION}" >> ${B}/.config
 	fi
-
-	sed -e "${CONF_SED_SCRIPT}" < '${WORKDIR}/defconfig' >> '${B}/.config'
 
 	if [ "${SCMVERSION}" = "y" ]; then
 		# Add GIT revision to the local version
 		head=`git --git-dir=${S}/.git rev-parse --verify --short HEAD 2> /dev/null`
 		printf "%s%s" +g $head > ${S}/.scmversion
+
+		sed -i -e "/CONFIG_LOCALVERSION_AUTO[ =]/d" ${B}/.config
+		echo "CONFIG_LOCALVERSION_AUTO=y" >> ${B}/.config
 	fi
 }
 
-addtask kernel_localversion before do_configure after do_patch do_kernel_metadata
+addtask kernel_localversion before do_configure after do_patch do_kernel_configme
