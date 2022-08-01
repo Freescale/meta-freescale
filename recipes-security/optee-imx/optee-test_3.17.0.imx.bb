@@ -6,16 +6,14 @@ HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD-2-Clause & GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
-DEPENDS = "python3-pycryptodome-native python3-pycryptodomex-native optee-os optee-client openssl"
-
-SRCBRANCH = "lf-5.15.5_1.0.0"
+DEPENDS = "python3-cryptography-native optee-os optee-client openssl"
 
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-optee-test.git;protocol=https;branch=${SRCBRANCH}"
+SRCBRANCH = "lf-5.15.32_2.0.0"
+SRCREV = "e064126a9769f168d1d0e178b74955e6648683b4"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
-
-SRCREV = "e9d8bf6ee121d6686e6e409c727caee76496bb86"
 
 inherit python3native features_check
 
@@ -29,11 +27,11 @@ CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
 EXTRA_OEMAKE = " \
     TA_DEV_KIT_DIR=${STAGING_INCDIR}/optee/export-user_ta_${OPTEE_ARCH}/ \
-    ARCH=${OPTEE_ARCH} \
     OPTEE_CLIENT_EXPORT=${STAGING_DIR_HOST}${exec_prefix} \
     CROSS_COMPILE_HOST=${HOST_PREFIX} \
     CROSS_COMPILE_TA=${HOST_PREFIX} \
     CROSS_COMPILE=${HOST_PREFIX} \
+    OPENSSL_MODULES=${STAGING_LIBDIR_NATIVE}/ossl-modules \
     -C ${S} O=${B} \
 "
 
