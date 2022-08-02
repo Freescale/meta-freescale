@@ -60,6 +60,14 @@ UBOOT_BINARY ?= "u-boot.${UBOOT_SUFFIX}"
 # |
 # | UBOOT_MACHINE = "mx53loco_config"
 # `----
+#
+# Please note that UBOOT_SUFFIX must be set in the machine config even
+# if the value is the same for the U-Boot flavors. If the value is not
+# set, then the assignment here is the one used, the value resolves to
+# empty, and the build fails:
+# | cp: cannot stat '/.../tmp/work/imx8qm_mek-fsl-linux/u-boot-imx/2022.04-r0/build/imx8qm_mek_defconfig/u-boot.': No such file or directory
+#| WARNING: /.../tmp/work/imx8qm_mek-fsl-linux/u-boot-imx/2022.04-r0/temp/run.do_compile.21223:186 exit 1 from 'cp /.../tmp/work/imx8qm_mek-fsl-linux/u-boot-imx/2022.04-r0/build/${config}/${binary} /.../tmp/work/imx8qm_mek-fsl-linux/u-boot-imx/2022.04-r0/build/${config}/u-boot-${type}.${UBOOT_SUFFIX:pn-u-boot-imx}'
+#
 IMX_DEFAULT_BOOTLOADER ??= "u-boot-fslc"
 UBOOT_SUFFIX ?= "${UBOOT_SUFFIX:pn-${IMX_DEFAULT_BOOTLOADER}}"
 
