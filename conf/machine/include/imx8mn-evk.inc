@@ -73,7 +73,6 @@ IMAGE_BOOT_FILES:append:use-mainline-bsp = " extlinux.conf;extlinux/extlinux.con
 
 BOOT_SPACE = "65536"
 LOADADDR = ""
-UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = "all"
 
 # Image boot offset as defined in section 6.1.6.1 "Primary image offset and IVT offset" of
