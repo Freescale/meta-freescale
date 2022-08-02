@@ -69,7 +69,6 @@ UBOOT_EXTLINUX_ROOT:default:use-mainline-bsp    = "root=/dev/mmcblk1p2"
 IMAGE_BOOT_FILES:append:use-mainline-bsp = " extlinux.conf;extlinux/extlinux.conf"
 
 LOADADDR = ""
-UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = "all"
 IMX_BOOT_SEEK = "32"
 
