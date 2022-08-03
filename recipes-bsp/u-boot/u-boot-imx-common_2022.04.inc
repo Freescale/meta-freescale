@@ -8,7 +8,13 @@ SRC_URI = "git://source.codeaurora.org/external/imx/uboot-imx.git;protocol=https
 SRCREV = "1c881f4da83cc05bee50f352fa183263d7e2622b"
 LOCALVERSION ?= "-imx_v2022.04_5.15.32-2.0.0"
 
-DEPENDS += "flex-native bison-native bc-native dtc-native"
+DEPENDS += " \
+    bc-native \
+    bison-native \
+    dtc-native \
+    flex-native \
+    gnutls-native \
+"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
