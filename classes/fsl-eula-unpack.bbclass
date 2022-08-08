@@ -128,6 +128,8 @@ python fsl_bin_do_unpack() {
         bb.note("Handling file '%s' as a Freescale EULA-licensed archive." % url.basename)
         cmd = "sh %s --auto-accept --force" % (url.localpath)
         bb.fetch2.runfetchcmd(cmd, d, quiet=True, workdir=rootdir)
+    if not found:
+        bb.fatal("The recipe inherits 'fsl-eula-unpack.bbclass' but does not mark any URL in SRC_URI with the option 'fsl-eula=true'")
 
     # Check for two EULAs, one from the layer and one from the package
     bb.note("Checking LIC_FILES_CHKSUM for Freescale EULA consistency...")
