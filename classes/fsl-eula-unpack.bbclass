@@ -104,6 +104,28 @@ do_fetch:prepend() {
         bb.fatal("The recipe LICENSE should include Proprietary but is " + d.getVar("LICENSE") + ".")
 }
 
+do_unpack[vardepsexclude] += "FSL_EULA_FILE"
+python do_unpack() {
+    eula = d.getVar('ACCEPT_FSL_EULA')
+    eula_file = d.getVar('FSL_EULA_FILE')
+    pkg = d.getVar('PN')
+    if eula == None:
+        bb.fatal("To use '%s' you need to accept the Freescale EULA at '%s'. "
+                 "Please read it and in case you accept it, write: "
+                 "ACCEPT_FSL_EULA = \"1\" in your local.conf." % (pkg, eula_file))
+    elif eula == '0':
+        bb.fatal("To use '%s' you need to accept the Freescale EULA." % pkg)
+    else:
+        bb.note("Freescale EULA has been accepted for '%s'" % pkg)
+
+    try:
+        bb.build.exec_func('base_do_unpack', d)
+    except:
+        raise
+
+    bb.build.exec_func('fsl_bin_do_unpack', d)
+}
+
 python fsl_bin_do_unpack() {
     src_uri = (d.getVar('SRC_URI') or "").split()
     if len(src_uri) == 0:
@@ -160,26 +182,3 @@ python fsl_bin_do_unpack() {
         bb.fatal("A valid package EULA with md5sum in %s was not found in LIC_FILES_CHKSUM '%s'."
                  % (md5sums.split(), licenses))
 }
-
-python do_unpack() {
-    eula = d.getVar('ACCEPT_FSL_EULA')
-    eula_file = d.getVar('FSL_EULA_FILE')
-    pkg = d.getVar('PN')
-    if eula == None:
-        bb.fatal("To use '%s' you need to accept the Freescale EULA at '%s'. "
-                 "Please read it and in case you accept it, write: "
-                 "ACCEPT_FSL_EULA = \"1\" in your local.conf." % (pkg, eula_file))
-    elif eula == '0':
-        bb.fatal("To use '%s' you need to accept the Freescale EULA." % pkg)
-    else:
-        bb.note("Freescale EULA has been accepted for '%s'" % pkg)
-
-    try:
-        bb.build.exec_func('base_do_unpack', d)
-    except:
-        raise
-
-    bb.build.exec_func('fsl_bin_do_unpack', d)
-}
-
-do_unpack[vardepsexclude] += "FSL_EULA_FILE"
