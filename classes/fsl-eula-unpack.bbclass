@@ -157,11 +157,21 @@ python fsl_bin_do_unpack() {
     bb.note("Checking LIC_FILES_CHKSUM for Freescale EULA consistency...")
     if found > 1:
         bb.warn("The package contains multiple Freescale EULA-licensed archives. The consistency logic may not be able to detect a EULA problem.")
+    (layer_license, licenses, md5sums, found_layer_licenses, found_package_licenses) = find_nxp_eula_licenses(d)
+    if not found_layer_licenses:
+        bb.fatal("The Freescale layer EULA '%s' is not listed in LIC_FILES_CHKSUM '%s'."
+                 % (layer_license, licenses))
+    if not found_package_licenses:
+        bb.fatal("A valid package EULA with md5sum in %s was not found in LIC_FILES_CHKSUM '%s'."
+                 % (md5sums.split(), licenses))
+}
+
+def find_nxp_eula_licenses(d):
     layer_license = d.getVar('LIC_FILES_CHKSUM_LAYER')
     licenses = d.getVar('LIC_FILES_CHKSUM') or ""
     md5sums = d.getVar('FSL_EULA_FILE_MD5SUMS') or ""
-    found_layer_license = False
-    found_package_license = False
+    found_layer_licenses = ""
+    found_package_licenses = ""
     for license in licenses.split():
         try:
             (method, host, path, user, pswd, parm) = bb.fetch.decodeurl(license)
@@ -171,14 +181,8 @@ python fsl_bin_do_unpack() {
             bb.fatal("%s: LIC_FILES_CHKSUM contains an invalid URL:  %s" % (d.getVar('PF'), license))
         if license == layer_license:
             bb.note("Found Freescale EULA for the layer %s." % license)
-            found_layer_license = True
+            found_layer_licenses += license
         elif parm.get('md5') in md5sums:
             bb.note("Found Freescale EULA for the package %s." % license)
-            found_package_license = True
-    if not found_layer_license:
-        bb.fatal("The Freescale layer EULA '%s' is not listed in LIC_FILES_CHKSUM '%s'."
-                 % (layer_license, licenses))
-    if not found_package_license:
-        bb.fatal("A valid package EULA with md5sum in %s was not found in LIC_FILES_CHKSUM '%s'."
-                 % (md5sums.split(), licenses))
-}
+            found_package_licenses += license
+    return (layer_license, licenses, md5sums, found_layer_licenses, found_package_licenses)
