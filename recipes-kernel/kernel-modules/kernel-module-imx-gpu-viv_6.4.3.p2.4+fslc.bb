@@ -14,6 +14,8 @@ SRC_URI = "git://github.com/Freescale/kernel-module-imx-gpu-viv.git;protocol=htt
 
 S = "${WORKDIR}/git"
 
+DEPENDS = "virtual/kernel"
+
 inherit module
 
 KERNEL_MODULE_AUTOLOAD = "galcore"

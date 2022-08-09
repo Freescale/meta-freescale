@@ -1,5 +1,7 @@
 require odp.inc
 
+DEPENDS = "virtual/kernel"
+
 inherit module
 
 do_compile:prepend () {

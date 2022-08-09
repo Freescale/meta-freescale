@@ -9,7 +9,7 @@ SRC_URI += " \
 inherit module
 
 #kernel module needs 'rte_build_config.h', which is generated at buid time
-DEPENDS += "dpdk"
+DEPENDS += "dpdk virtual/kernel"
 
 export S
 export STAGING_KERNEL_DIR

@@ -5,6 +5,8 @@ SECTION = "ls-debug"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=94263f12f9416f9fd0493c8f9e8085a3"
 
+DEPENDS = "virtual/kernel"
+
 inherit module autotools-brokensep
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/ls-dbg;branch=nxp/master"

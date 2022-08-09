@@ -18,6 +18,8 @@ SRCREV = "e47e5ff6895a7aa2f75dcb2e2c7257e25cf77901"
 
 S = "${WORKDIR}/git"
 
+DEPENDS = "virtual/kernel"
+
 inherit module
 
 EXTRA_OEMAKE += "CONFIG_MXC_GPU_VIV=m"

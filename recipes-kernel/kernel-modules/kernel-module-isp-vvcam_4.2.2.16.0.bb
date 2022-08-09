@@ -15,6 +15,8 @@ SRCREV = "b2321c0c513322aca8187ebf0328b74fe45a0f01"
 
 S = "${WORKDIR}/git/vvcam/v4l2"
 
+DEPENDS = "virtual/kernel"
+
 inherit module
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

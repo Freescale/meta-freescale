@@ -9,9 +9,10 @@ SRCREV = "3c2a3c2cd25e9dce95f34c21bb4e728647eb64ee"
 
 S = "${WORKDIR}/git/mxm_wifiex/wlan_src"
 
+DEPENDS = "virtual/kernel"
+
 inherit module
 
 EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_BUILDDIR} -C ${STAGING_KERNEL_BUILDDIR} M=${S}"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
-

@@ -3,6 +3,8 @@ DESCRIPTION = "DSP boot application and ipc test application"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fa38cd73d71527dc6efb546474f64d10"
 
+DEPENDS = "virtual/kernel"
+
 inherit module qoriq_build_64bit_kernel
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/ipc;protocol=https;nobranch=1"

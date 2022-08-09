@@ -2,6 +2,8 @@ SUMMARY = "Auto Response Control Module"
 LICENSE = "GPL-2.0-only & BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
+DEPENDS = "virtual/kernel"
+
 inherit module
 
 SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/auto-resp;branch=nxp/sdk-v2.0.x"
@@ -22,7 +24,7 @@ do_install(){
 	install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}
 	install -d ${D}${bindir}
 	install -m 644 ${B}/bin/ar.ko ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/
-	cp -f ${S}/bin/ar_* ${D}${bindir}/ 
+	cp -f ${S}/bin/ar_* ${D}${bindir}/
 }
 
 FILES:${PN} += "${bindir}/"

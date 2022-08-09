@@ -25,6 +25,7 @@ DEPENDS = " \
     python3-mako-native \
     python3-mako \
     dtc-native \
+    virtual/kernel \
 "
 
 inherit module python3native bash-completion deploy setuptools3

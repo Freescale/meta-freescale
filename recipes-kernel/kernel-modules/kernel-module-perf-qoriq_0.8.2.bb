@@ -7,6 +7,8 @@ SRCREV = "7beb3783edac66bab00c85d99a7b073f569af7fd"
 
 S = "${WORKDIR}/git"
 
+DEPENDS = "virtual/kernel"
+
 inherit module autotools-brokensep qoriq_build_64bit_kernel
 
 PROCESSOR_REV ?= "B4860_R1"
