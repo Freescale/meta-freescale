@@ -104,6 +104,28 @@ do_fetch:prepend() {
         bb.fatal("The recipe LICENSE should include Proprietary but is " + d.getVar("LICENSE") + ".")
 }
 
+do_unpack[vardepsexclude] += "FSL_EULA_FILE"
+python do_unpack() {
+    eula = d.getVar('ACCEPT_FSL_EULA')
+    eula_file = d.getVar('FSL_EULA_FILE')
+    pkg = d.getVar('PN')
+    if eula == None:
+        bb.fatal("To use '%s' you need to accept the Freescale EULA at '%s'. "
+                 "Please read it and in case you accept it, write: "
+                 "ACCEPT_FSL_EULA = \"1\" in your local.conf." % (pkg, eula_file))
+    elif eula == '0':
+        bb.fatal("To use '%s' you need to accept the Freescale EULA." % pkg)
+    else:
+        bb.note("Freescale EULA has been accepted for '%s'" % pkg)
+
+    try:
+        bb.build.exec_func('base_do_unpack', d)
+    except:
+        raise
+
+    bb.build.exec_func('fsl_bin_do_unpack', d)
+}
+
 python fsl_bin_do_unpack() {
     src_uri = (d.getVar('SRC_URI') or "").split()
     if len(src_uri) == 0:
@@ -128,16 +150,28 @@ python fsl_bin_do_unpack() {
         bb.note("Handling file '%s' as a Freescale EULA-licensed archive." % url.basename)
         cmd = "sh %s --auto-accept --force" % (url.localpath)
         bb.fetch2.runfetchcmd(cmd, d, quiet=True, workdir=rootdir)
+    if not found:
+        bb.fatal("The recipe inherits 'fsl-eula-unpack.bbclass' but does not mark any URL in SRC_URI with the option 'fsl-eula=true'")
 
     # Check for two EULAs, one from the layer and one from the package
     bb.note("Checking LIC_FILES_CHKSUM for Freescale EULA consistency...")
     if found > 1:
         bb.warn("The package contains multiple Freescale EULA-licensed archives. The consistency logic may not be able to detect a EULA problem.")
+    (layer_license, licenses, md5sums, found_layer_licenses, found_package_licenses) = find_nxp_eula_licenses(d)
+    if not found_layer_licenses:
+        bb.fatal("The Freescale layer EULA '%s' is not listed in LIC_FILES_CHKSUM '%s'."
+                 % (layer_license, licenses))
+    if not found_package_licenses:
+        bb.fatal("A valid package EULA with md5sum in %s was not found in LIC_FILES_CHKSUM '%s'."
+                 % (md5sums.split(), licenses))
+}
+
+def find_nxp_eula_licenses(d):
     layer_license = d.getVar('LIC_FILES_CHKSUM_LAYER')
     licenses = d.getVar('LIC_FILES_CHKSUM') or ""
     md5sums = d.getVar('FSL_EULA_FILE_MD5SUMS') or ""
-    found_layer_license = False
-    found_package_license = False
+    found_layer_licenses = ""
+    found_package_licenses = ""
     for license in licenses.split():
         try:
             (method, host, path, user, pswd, parm) = bb.fetch.decodeurl(license)
@@ -147,37 +181,8 @@ python fsl_bin_do_unpack() {
             bb.fatal("%s: LIC_FILES_CHKSUM contains an invalid URL:  %s" % (d.getVar('PF'), license))
         if license == layer_license:
             bb.note("Found Freescale EULA for the layer %s." % license)
-            found_layer_license = True
+            found_layer_licenses += license
         elif parm.get('md5') in md5sums:
             bb.note("Found Freescale EULA for the package %s." % license)
-            found_package_license = True
-    if not found_layer_license:
-        bb.fatal("The Freescale layer EULA '%s' is not listed in LIC_FILES_CHKSUM '%s'."
-                 % (layer_license, licenses))
-    if not found_package_license:
-        bb.fatal("A valid package EULA with md5sum in %s was not found in LIC_FILES_CHKSUM '%s'."
-                 % (md5sums.split(), licenses))
-}
-
-python do_unpack() {
-    eula = d.getVar('ACCEPT_FSL_EULA')
-    eula_file = d.getVar('FSL_EULA_FILE')
-    pkg = d.getVar('PN')
-    if eula == None:
-        bb.fatal("To use '%s' you need to accept the Freescale EULA at '%s'. "
-                 "Please read it and in case you accept it, write: "
-                 "ACCEPT_FSL_EULA = \"1\" in your local.conf." % (pkg, eula_file))
-    elif eula == '0':
-        bb.fatal("To use '%s' you need to accept the Freescale EULA." % pkg)
-    else:
-        bb.note("Freescale EULA has been accepted for '%s'" % pkg)
-
-    try:
-        bb.build.exec_func('base_do_unpack', d)
-    except:
-        raise
-
-    bb.build.exec_func('fsl_bin_do_unpack', d)
-}
-
-do_unpack[vardepsexclude] += "FSL_EULA_FILE"
+            found_package_licenses += license
+    return (layer_license, licenses, md5sums, found_layer_licenses, found_package_licenses)
