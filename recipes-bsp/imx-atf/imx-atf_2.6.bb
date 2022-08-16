@@ -1,28 +1,26 @@
-# Copyright (C) 2017-2021 NXP
+# Copyright (C) 2017-2022 NXP
 
 DESCRIPTION = "i.MX ARM Trusted Firmware"
 SECTION = "BSP"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
 PV .= "+git${SRCPV}"
 
-SRCBRANCH = "lf_v2.6"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-Makefile-Suppress-array-bounds-error.patch"
+SRCBRANCH = "lf_v2.6"
 SRCREV = "c6a19b1a351308cc73443283f6aa56b2eff791b8"
 
 S = "${WORKDIR}/git"
 
 inherit deploy
 
-ATF_PLATFORM          ??= "INVALID"
+ATF_PLATFORM ??= "INVALID"
 
 # FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
 # base address in source code.
-ATF_BOOT_UART_BASE     ?= ""
+ATF_BOOT_UART_BASE ?= ""
 
 EXTRA_OEMAKE += " \
     CROSS_COMPILE="${TARGET_PREFIX}" \
@@ -61,20 +59,20 @@ do_compile() {
     # Clear LDFLAGS to avoid the option -Wl recognize issue
     oe_runmake bl31
     if ${BUILD_OPTEE}; then
-       oe_runmake clean BUILD_BASE=build-optee
-       oe_runmake BUILD_BASE=build-optee SPD=opteed bl31
+        oe_runmake clean BUILD_BASE=build-optee
+        oe_runmake BUILD_BASE=build-optee SPD=opteed bl31
     fi
 }
 
 do_install[noexec] = "1"
 
+addtask deploy after do_compile
 do_deploy() {
     install -Dm 0644 ${S}/build/${ATF_PLATFORM}/release/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin
     if ${BUILD_OPTEE}; then
-       install -m 0644 ${S}/build-optee/${ATF_PLATFORM}/release/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin-optee
+        install -m 0644 ${S}/build-optee/${ATF_PLATFORM}/release/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin-optee
     fi
 }
-addtask deploy after do_compile
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx8-generic-bsp)"
