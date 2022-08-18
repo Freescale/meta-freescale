@@ -24,7 +24,7 @@ DEPENDS += "lzop-native bc-native"
 # | arch/arm/configs/imx_v7_defconfig   | linux-imx/imx-nxp-bsp/defconfig |
 # | arch/arm64/configs/imx_v8_defconfig | linux-imx/mx8-nxp-bsp/defconfig |
 SRCBRANCH = "lf-5.15.y"
-LOCALVERSION = "-5.15.32_2.0.0"
+LOCALVERSION = "-5.15.32-2.0.0"
 SRCREV = "fa6c3168595c02bd9d5366fcc28c9e7304947a3d"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
