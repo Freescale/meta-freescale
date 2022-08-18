@@ -1,17 +1,13 @@
-# Copyright 2020-2021 NXP
+# Copyright 2020-2022 NXP
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
-DEPENDS = "python3 libdrm virtual/libg2d libtinyxml2-8"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
+DEPENDS = "libdrm virtual/libg2d libtinyxml2"
 
-SRC_URI = " \
-    ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
-    file://0001-start_isp.sh-fix-NR_DEVICE_TREE_BASLER-variable.patch \
-"
-
-SRC_URI[md5sum] = "f490153dbec234a04416ad41834806b2"
-SRC_URI[sha256sum] = "83b24b9d1f7a40a506a45a1c5c2ef2ca2313fe9b23fde591e3b7dce77ea359ca"
+SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
+SRC_URI[md5sum] = "a20171db4bf2be423a587f3b610f0a69"
+SRC_URI[sha256sum] = "468ae51223d1873a1a756a1e64a53c0c61ebd640b3810f3a9e912b6a0de6c3c8"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -45,14 +41,6 @@ EXTRA_OECMAKE += " \
     -Wno-dev \
 "
 
-do_configure:prepend() {
-    export SDKTARGETSYSROOT=${STAGING_DIR_HOST}
-}
-
-do_compile:prepend() {
-    ln -sf ${RECIPE_SYSROOT}/${libdir}/libtinyxml2.so.?.?.? ${RECIPE_SYSROOT}/${libdir}/libtinyxml2.so
-}
-
 do_install() {
     install -d ${D}/${libdir}
     install -d ${D}/${includedir}
@@ -60,6 +48,8 @@ do_install() {
 
     cp -r ${B}/generated/release/bin/*_test ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*2775* ${D}/opt/imx8-isp/bin
+    cp -r ${B}/generated/release/bin/*.xml ${D}/opt/imx8-isp/bin
+    cp -r ${B}/generated/release/bin/*.drv ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/lib/*.so* ${D}/${libdir}
@@ -78,17 +68,21 @@ do_install() {
 }
 
 # The build contains a mix of versioned and unversioned libraries, so
-# the default packaging configuration needs some modifications
+# the default packaging configuration needs some modification so that
+# unversioned .so libraries go to the main package and versioned .so
+# symlinks go to -dev.
 FILES_SOLIBSDEV = ""
-FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
-FILES:${PN}-dev += " \
+FILES_SOLIBS_VERSIONED = " \
+    ${libdir}/libar1335.so \
     ${libdir}/libjsoncpp.so \
     ${libdir}/libos08a20.so \
     ${libdir}/libov2775.so \
 "
+FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
+FILES:${PN}-dev += "${FILES_SOLIBS_VERSIONED}"
 
 INSANE_SKIP:${PN} = "rpaths"
 
-RDEPENDS:${PN} = "libdrm libpython3"
+RDEPENDS:${PN} = "libdrm"
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

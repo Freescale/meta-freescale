@@ -6,11 +6,9 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=cd8bc2a79509c22fc9c1782a151210b1"
 DEPENDS = "imx-vpu-hantro"
 DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
 
-SRC_URI = " \
-    ${FSL_MIRROR}/${BP}.tar.gz \
-"
-SRC_URI[md5sum] = "f30942393a9093388adf91edb458f7a6"
-SRC_URI[sha256sum] = "77e25ad1e1860f0a3983f07d6beb9a04ff32763bacf26db9aefd16559e6eea9b"
+SRC_URI = "${FSL_MIRROR}/${BP}.tar.gz"
+SRC_URI[md5sum] = "657af53a73fa9898ef7725dd26934079"
+SRC_URI[sha256sum] = "75f857ddfc53341c425d6dac0e6eb9b5c0281b90b6f6de3ff1b64962d52399c5"
 
 PLATFORM:mx8mm-nxp-bsp = "IMX8MM"
 PLATFORM:mx8mq-nxp-bsp = "IMX8MQ"
