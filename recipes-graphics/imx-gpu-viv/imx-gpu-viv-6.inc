@@ -6,7 +6,7 @@
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=be5ff43682ed6c57dfcbeb97651c2829"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -25,18 +25,6 @@ DEPENDS:append:mx8-nxp-bsp = " patchelf-native"
 # We depend on mesa to fill in what is missing.
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'mesa', '', d)}"
 
-EXTRA_PROVIDES = ""
-EXTRA_PROVIDES:append:imxgpu3d = " \
-    virtual/libgl \
-    virtual/libgles1 \
-    virtual/libgles2 \
-"
-EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
-    virtual/libgbm \
-"
-PROVIDES_OPENVX       = ""
-PROVIDES_OPENVX:mx8-nxp-bsp   = "virtual/libopenvx"
-PROVIDES_OPENVX:mx8mm-nxp-bsp = ""
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
@@ -46,9 +34,26 @@ PROVIDES += " \
     virtual/egl \
     virtual/libopenvg \
     virtual/opencl-icd \
-    ${PROVIDES_OPENVX} \
     ${EXTRA_PROVIDES} \
 "
+EXTRA_PROVIDES = " \
+    ${PROVIDES_OPENGLES3} \
+    ${PROVIDES_OPENVX} \
+"
+EXTRA_PROVIDES:append:imxgpu3d = " \
+    virtual/libgl \
+    virtual/libgles1 \
+    virtual/libgles2 \
+"
+EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
+    virtual/libgbm \
+"
+PROVIDES_OPENGLES3               = ""
+PROVIDES_OPENGLES3:mx8-nxp-bsp   = "virtual/libgles3"
+PROVIDES_OPENGLES3:mx8mm-nxp-bsp = ""
+PROVIDES_OPENVX                  = ""
+PROVIDES_OPENVX:mx8-nxp-bsp      = "virtual/libopenvx"
+PROVIDES_OPENVX:mx8mm-nxp-bsp    = ""
 
 RPROVIDES:${PN}:imxgpu3d += "imx-gpu-viv"
 
