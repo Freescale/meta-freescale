@@ -10,10 +10,10 @@ LIC_FILES_CHKSUM = "file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c5
 PROVIDES = "drm"
 DEPENDS = "libpthread-stubs"
 
+SRC_URI = "${IMX_LIBDRM_SRC};branch=${SRCBRANCH}"
 IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https;nobranch=1"
 SRCBRANCH ?= "libdrm-imx-2.4.109"
-SRC_URI = "${IMX_LIBDRM_SRC};branch=${SRCBRANCH}"
-SRCREV = "1d943abb1fccc350a129950d2690948f64503bb7"
+SRCREV = "93c9a82bdf31ea055d45cb54ce57cd42e22c90ae"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
