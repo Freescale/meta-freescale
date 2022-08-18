@@ -1,6 +1,6 @@
 # Copyright (C) 2012-2016 O.S. Systems Software LTDA.
 # Copyright (C) 2013-2016 Freescale Semiconductor
-# Copyright (C) 2017-2021 NXP
+# Copyright (C) 2017-2022 NXP
 
 SUMMARY = "Test programs for i.MX BSP"
 DESCRIPTION = "Unit tests for the i.MX BSP"
@@ -8,7 +8,7 @@ SECTION = "base"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-or-later;md5=fed54355545ffd980b814dab4a3b312c"
 
-DEPENDS = "alsa-lib libdrm"
+DEPENDS = "alsa-lib freetype libdrm"
 DEPENDS:append:mx6-nxp-bsp = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp = " imx-lib"
 DEPENDS:append:imxvpu = " virtual/imxvpu"
@@ -16,12 +16,11 @@ DEPENDS:append:imxvpu = " virtual/imxvpu"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRCBRANCH = "lf-5.15.5_1.0.0"
-SRC_URI = " \
-    git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
-    file://memtool_profile \
-"
-SRCREV = "b364c1aacc72a63290106ae065bb2f6a8c365ec6"
+SRC_URI = "git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
+           file://memtool_profile"
+SRCBRANCH = "lf-5.15.32_2.0.0"
+SRCREV = "c640c7e8456b0516851e76adb2acce6b3866b1fb"
+
 S = "${WORKDIR}/git"
 
 inherit module-base use-imx-headers

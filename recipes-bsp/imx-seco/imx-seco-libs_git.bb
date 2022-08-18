@@ -1,7 +1,7 @@
 # Copyright (C) 2019-2021 NXP
 
 SUMMARY = "NXP i.MX SECO library"
-DESCRIPTION = "NXP i.MX Security Controller library"
+DESCRIPTION = "Library for NXP i.MX Security Controller Subsystem"
 SECTION = "base"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=76871788f27c28af824e2ec1ca187832"
