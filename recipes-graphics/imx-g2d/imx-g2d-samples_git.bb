@@ -3,12 +3,14 @@ DESCRIPTION = "Set of sample applications for i.MX G2D"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
 
-DEPENDS = "virtual/libg2d"
+DEPENDS = "virtual/libg2d cairo"
 
-GPU_G2D_SAMPLES_SRC ?= "git://github.com/nxpmicro/g2d-samples.git;protocol=https"
-SRCBRANCH ?= "imx_2.0"
+PV = "2.1+git${SRCPV}"
+
 SRC_URI = "${GPU_G2D_SAMPLES_SRC};branch=${SRCBRANCH}"
-SRCREV = "267af142881d350218c2c2cead8f304a28bbee07"
+GPU_G2D_SAMPLES_SRC ?= "git://github.com/nxpmicro/g2d-samples.git;protocol=https"
+SRCBRANCH ?= "imx_2.1"
+SRCREV = "3268f291a15b2d8d5f650f627764a52eb0a8fc15"
 
 S = "${WORKDIR}/git"
 
