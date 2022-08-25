@@ -1,49 +1,48 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright 2017 NXP
-# Copyright 2018 (C) O.S. Systems Software LTDA.
+# Copyright 2017-2021 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
+LIC_FILES_CHKSUM = "file://COPYING;md5=6b552f505eedab4a11ab538cf3db743a"
 
 # Backward compatibility
 PROVIDES += "libfslcodec"
 
-SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "309cae6f73a777f6e5a89831acf622ee"
-SRC_URI[sha256sum] = "7b070ab3f1762accee2806e7aba4146ef5242c67a8cd88fb90dacfc1c8b3ef5e"
-
 inherit fsl-eula-unpack autotools pkgconfig
 
-# Choose between 32-bit and 64-bit binaries and between Soft Float-Point and Hard Float-Point
+SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
+
+# Choose between 32bit and 64bit binaries
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', \
                    bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d), d)}"
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG:imxvpu = "vpu"
-
-# We need to ensure we don't have '-src' package overrided
-PACKAGE_DEBUG_SPLIT_STYLE = 'debug-without-src'
+# Enable vpu PACKAGECONFIG for aarch32 vpu platforms only
+PACKAGECONFIG:mx6q-nxp-bsp = "vpu"
+PACKAGECONFIG:mx6dl-nxp-bsp = "vpu"
 
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 
 do_install:append() {
+    # FIXME: This link points to nowhere
+    if [ -e ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so ]; then
+        rm ${D}${libdir}/imx-mm/audio-codec/lib_src_ppp_arm11_elinux.so
+    fi
+
     # LTIB move the files around or gst-fsl-plugin won't find them
     for p in $(find ${D}${libdir}/imx-mm -mindepth 2 -maxdepth 2 -not -type d); do
             mv $p ${D}${libdir}
     done
     rmdir ${D}${libdir}/imx-mm/video-codec
 
-    # Fixup ownership of files
-    chown -R root:root ${D}
 }
 
 python __set_insane_skip() {
     # Ensure we have PACKAGES expanded
     bb.build.exec_func("read_subpackage_metadata", d)
 
-    for p in d.getVar('PACKAGES').split():
+    for p in d.getVar('PACKAGES', True).split():
         # Even though we are packaging libraries those are plugins so we
         # shouldn't rename the packages to follow its sonames.
         d.setVar("DEBIAN_NOAUTONAME:%s" % p, "1")
@@ -52,7 +51,7 @@ python __set_insane_skip() {
         # the source we cannot fix it. Disable the insane check for now.
         if p == 'imx-codec-test-bin':
             # FIXME: includes the DUT .so files so we need to deploy those
-            d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel libdir file-rdeps")
+            d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel libdir")
         else:
             d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel")
 }
@@ -66,7 +65,7 @@ python __split_libfslcodec_plugins() {
                       output_pattern='imx-codec-%s',
                       description='Freescale i.MX Codec (%s)',
                       extra_depends='')
-    pkgs = d.getVar('PACKAGES').split()
+    pkgs = d.getVar('PACKAGES', True).split()
     for pkg in pkgs:
         meta = pkg[10:]
         if meta != '':
@@ -94,7 +93,7 @@ PACKAGES_DYNAMIC = "${PN}-*"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
-PACKAGES += "${PN}-meta ${PN}-test-bin ${PN}-test-source"
+PACKAGES += "${PN}-meta ${PN}-test-bin ${PN}-test-source lib-src-ppp-arm11-elinux1"
 
 ALLOW_EMPTY:${PN} = "1"
 ALLOW_EMPTY:${PN}-meta = "1"
@@ -114,6 +113,7 @@ FILES:${PN}-test-source += "${datadir}/imx-mm/*"
 FILES:${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm*_elinux.so.*"
 FILES:${PN}-nb += "${libdir}/imx-mm/audio-codec/wrap/lib_nbamrd_wrap_arm*_elinux.so.*"
 FILES:${PN}-wb += "${libdir}/imx-mm/audio-codec/wrap/lib_wbamrd_wrap_arm*_elinux.so.*"
+FILES:lib-src-ppp-arm11-elinux1 += "${libdir}/lib_src_ppp_arm11_elinux.so.1"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+PACKAGE_ARCH:mx6q-nxp-bsp = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:mx6dl-nxp-bsp = "${MACHINE_SOCARCH}"
