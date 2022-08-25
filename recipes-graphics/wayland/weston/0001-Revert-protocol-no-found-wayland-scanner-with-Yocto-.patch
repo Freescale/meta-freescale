@@ -1,4 +1,4 @@
-From be066d9841a9cd5e9cc5ef3c457bd1e33b2a5fae Mon Sep 17 00:00:00 2001
+From 77eba6f6b04ff21b77c41500657495b4fd12a5f6 Mon Sep 17 00:00:00 2001
 From: Max Krummenacher <max.krummenacher@toradex.com>
 Date: Mon, 11 Jul 2022 19:38:19 +0000
 Subject: [PATCH] Revert "protocol: no found wayland-scanner with Yocto
@@ -26,7 +26,7 @@ Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/protocol/meson.build b/protocol/meson.build
-index dc90ec2a..8290ad44 100644
+index bdd322ac..e50b23bb 100644
 --- a/protocol/meson.build
 +++ b/protocol/meson.build
 @@ -1,4 +1,4 @@
@@ -34,7 +34,7 @@ index dc90ec2a..8290ad44 100644
 +dep_scanner = dependency('wayland-scanner', native: true)
  prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner'))
  
- dep_wp = dependency('wayland-protocols', version: '>= 1.18')
+ dep_wp = dependency('wayland-protocols', version: '>= 1.24')
 -- 
-2.20.1
+2.17.1
 
