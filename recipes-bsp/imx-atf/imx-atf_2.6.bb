@@ -29,9 +29,7 @@ EXTRA_OEMAKE += " \
 
 # Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is a standalone application
 CFLAGS[unexport] = "1"
-# Needed for binutils >= 2.39 to prevent build failure.
-# imx-atf links with ld, thus no '-Wl,' prefix
-LDFLAGS = "--no-warn-rwx-segments"
+LDFLAGS[unexport] = "1"
 AS[unexport] = "1"
 LD[unexport] = "1"
 
@@ -58,6 +56,7 @@ EXTRA_OEMAKE += 'IMX_BOOT_UART_BASE=${ATF_BOOT_UART_BASE}'
 do_configure[noexec] = "1"
 
 do_compile() {
+    # Clear LDFLAGS to avoid the option -Wl recognize issue
     oe_runmake bl31
     if ${BUILD_OPTEE}; then
         oe_runmake clean BUILD_BASE=build-optee
