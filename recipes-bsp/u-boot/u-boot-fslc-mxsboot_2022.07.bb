@@ -3,7 +3,7 @@ require u-boot-fslc-common_${PV}.inc
 DESCRIPTION = "U-boot bootloader mxsboot tool"
 SECTION = "bootloader"
 
-DEPENDS = "bison-native gnutls-native dtc openssl"
+DEPENDS = "swig-native bison-native gnutls-native dtc openssl"
 
 PROVIDES = "u-boot-mxsboot"
 
