@@ -12,6 +12,10 @@ SRC_URI = "git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=ht
 SRCBRANCH = "lf-5.15.32_2.0.0"
 SRCREV = "984996422c25c99ebfc5194c1bb393028605bb0c"
 
+SRC_URI:append = " \
+    file://0008-no-warn-rwx-segments.patch \
+    "
+
 S = "${WORKDIR}/git"
 
 inherit deploy python3native autotools features_check
