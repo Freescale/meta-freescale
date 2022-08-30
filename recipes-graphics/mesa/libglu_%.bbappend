@@ -1,0 +1,1 @@
+REQUIRED_DISTRO_FEATURES:remove:imxgpu = "x11"
