@@ -2,7 +2,7 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright (C) 2017-2020 NXP
 
-DESCRIPTION = "Freescale VPU library"
+DESCRIPTION = "Freescale VPU library for Chips&Media VPU"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=228c72f2a91452b8a03c4cab30f30ef9"
 
@@ -28,5 +28,4 @@ do_install() {
     oe_runmake PLATFORM="${PLATFORM}" DEST_DIR="${D}" install
 }
 
-# Compatible only for i.MX with Chips&Media VPU
 COMPATIBLE_MACHINE = "(mx6q-nxp-bsp|mx6dl-nxp-bsp)"
