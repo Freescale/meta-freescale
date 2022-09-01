@@ -26,11 +26,18 @@ HIFI4_PLATFORM:mx8dx-nxp-bsp  = "imx8qmqxp"
 HIFI4_PLATFORM:mx8mp-nxp-bsp  = "imx8mp"
 HIFI4_PLATFORM:mx8ulp-nxp-bsp = "imx8ulp"
 
+UNSUPPORTED_TESTS                = "dsp_tflm"
+UNSUPPORTED_TESTS:mx8ulp-nxp-bsp = ""
+
 do_install:append () {
     # Remove firmware not for this platform
     find ${D}/${base_libdir}/firmware/imx/dsp -name hifi4_*.bin -not -name *${HIFI4_PLATFORM}* -exec rm {} \;
     # Set the expected generic name for the firmware
     mv ${D}/${base_libdir}/firmware/imx/dsp/hifi4_${HIFI4_PLATFORM}.bin ${D}/${base_libdir}/firmware/imx/dsp/hifi4.bin
+    # Remove unit tests not for this platform
+    for unsupported_test in ${UNSUPPORTED_TESTS}; do
+        find ${D}/unit_tests/DSP -name $unsupported_test* -exec rm {} \;
+    done
 }
 
 FILES:${PN} = "${libdir}/imx-mm/audio-codec/dsp \
