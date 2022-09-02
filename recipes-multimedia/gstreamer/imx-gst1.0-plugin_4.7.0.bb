@@ -22,12 +22,12 @@ RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
-SRCBRANCH = "MM_04.06.04_2112_L5.15.y"
+IMXGST_SRC ?= "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https"
+SRCBRANCH = "MM_04.07.00_2205_L5.15.y"
 
-
-
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "f4b3105ab33e608c717855cdd1a520b60f377bf3"
+SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH} \
+"
+SRCREV = "d0b26997556983c99d7b3e7663577f090df36240"
 
 S = "${WORKDIR}/git"
 
