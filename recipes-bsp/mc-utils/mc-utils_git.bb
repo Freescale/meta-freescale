@@ -1,6 +1,6 @@
 DESCRIPTION = "The Management Complex (MC) is a key component of DPAA"
 SECTION = "mc-utils"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=386a6287daa6504b7e7e5014ddfb3987"
 
 DEPENDS += "dtc-native"
