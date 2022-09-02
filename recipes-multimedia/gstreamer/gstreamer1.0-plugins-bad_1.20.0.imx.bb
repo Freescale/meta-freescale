@@ -3,9 +3,10 @@
 # recipe. The second section customizes the recipe for i.MX.
 
 ########### OE-core copy ##################
-# Upstream hash: bb6ddc3691ab04162ec5fd69a2d5e7876713fd15
+# Upstream hash: a21649109374fde44cf77de845cfb3cb6cbfb138
 
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
 
 DESCRIPTION = "'Bad' GStreamer plugins and helper libraries "
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
@@ -18,11 +19,11 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad
            file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
            file://0005-msdk-fix-includedir-path.patch \
            "
-SRC_URI[sha256sum] = "74e806bc5595b18c70e9ca93571e27e79dfb808e5d2e7967afa952b52e99c85f"
+SRC_URI[sha256sum] = "09d3c2cf5911f0bc7da6bf557a55251779243d3de216b6a26cc90c445b423848"
 
 S = "${WORKDIR}/gst-plugins-bad-${PV}"
 
-LICENSE = "GPL-2.0-or-later & LGPL-2.0-or-later & LGPL-2.1-or-later"
+LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 DEPENDS += "gstreamer1.0-plugins-base"
@@ -32,11 +33,12 @@ inherit gobject-introspection
 PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
-    ${@bb.utils.filter('DISTRO_FEATURES', 'directfb vulkan', d)} \
+    ${@bb.utils.filter('DISTRO_FEATURES', 'directfb vulkan x11', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gl', '', d)} \
-    bz2 closedcaption curl dash dtls hls openssl rsvg sbc smoothstreaming \
+    bz2 closedcaption curl dash dtls hls openssl sbc smoothstreaming \
     sndfile ttml uvch264 webp \
+    ${@bb.utils.contains('TUNE_FEATURES', 'mx32', '', 'rsvg', d)} \
 "
 
 PACKAGECONFIG[aom]             = "-Daom=enabled,-Daom=disabled,aom"
@@ -63,7 +65,6 @@ PACKAGECONFIG[gcrypt]          = "-Dhls-crypto=libgcrypt,,libgcrypt"
 PACKAGECONFIG[gl]              = "-Dgl=enabled,-Dgl=disabled,"
 PACKAGECONFIG[kms]             = "-Dkms=enabled,-Dkms=disabled,libdrm"
 PACKAGECONFIG[libde265]        = "-Dlibde265=enabled,-Dlibde265=disabled,libde265"
-PACKAGECONFIG[libmms]          = "-Dlibmms=enabled,-Dlibmms=disabled,libmms"
 PACKAGECONFIG[libssh2]         = "-Dcurl-ssh2=enabled,-Dcurl-ssh2=disabled,libssh2"
 PACKAGECONFIG[lcms2]           = "-Dcolormanagement=enabled,-Dcolormanagement=disabled,lcms"
 PACKAGECONFIG[modplug]         = "-Dmodplug=enabled,-Dmodplug=disabled,libmodplug"
@@ -99,10 +100,15 @@ PACKAGECONFIG[webp]            = "-Dwebp=enabled,-Dwebp=disabled,libwebp"
 PACKAGECONFIG[webrtc]          = "-Dwebrtc=enabled,-Dwebrtc=disabled,libnice"
 PACKAGECONFIG[webrtcdsp]       = "-Dwebrtcdsp=enabled,-Dwebrtcdsp=disabled,webrtc-audio-processing"
 PACKAGECONFIG[zbar]            = "-Dzbar=enabled,-Dzbar=disabled,zbar"
+PACKAGECONFIG[x11]             = "-Dx11=enabled,-Dx11=disabled,libxcb libxkbcommon"
 PACKAGECONFIG[x265]            = "-Dx265=enabled,-Dx265=disabled,x265"
+
+GSTREAMER_GPL = "${@bb.utils.filter('PACKAGECONFIG', 'faad resindvd x265', d)}"
 
 EXTRA_OEMESON += " \
     -Ddoc=disabled \
+    -Daes=enabled \
+    -Dcodecalpha=enabled \
     -Ddecklink=enabled \
     -Ddvb=enabled \
     -Dfbdev=enabled \
@@ -111,6 +117,7 @@ EXTRA_OEMESON += " \
     -Dtranscode=enabled \
     -Dandroidmedia=disabled \
     -Dapplemedia=disabled \
+    -Dasio=disabled \
     -Davtp=disabled \
     -Dbs2b=disabled \
     -Dchromaprint=disabled \
@@ -121,10 +128,12 @@ EXTRA_OEMESON += " \
     -Dfdkaac=disabled \
     -Dflite=disabled \
     -Dgme=disabled \
+    -Dgs=disabled \
     -Dgsm=disabled \
     -Diqa=disabled \
     -Dkate=disabled \
     -Dladspa=disabled \
+    -Dldac=disabled \
     -Dlv2=disabled \
     -Dmagicleap=disabled \
     -Dmediafoundation=disabled \
@@ -133,10 +142,12 @@ EXTRA_OEMESON += " \
     -Dmplex=disabled \
     -Dmusepack=disabled \
     -Dnvcodec=disabled \
-    -Dofa=disabled \
     -Dopenexr=disabled \
     -Dopenni2=disabled \
+    -Dopenaptx=disabled \
     -Dopensles=disabled \
+    -Donnx=disabled \
+    -Dqroverlay=disabled \
     -Dsoundtouch=disabled \
     -Dspandsp=disabled \
     -Dsvthevcenc=disabled \
@@ -149,7 +160,6 @@ EXTRA_OEMESON += " \
     -Dwpe=disabled \
     -Dzxing=disabled \
 "
-
 export OPENCV_PREFIX = "${STAGING_DIR_TARGET}${prefix}"
 
 ARM_INSTRUCTION_SET:armv4 = "arm"
@@ -168,31 +178,36 @@ DEFAULT_PREFERENCE = "-1"
 
 DEPENDS:append:imxgpu2d = " virtual/libg2d"
 
-SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz"
+SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
+           file://0002-avoid-including-sys-poll.h-directly.patch \
+           file://0003-ensure-valid-sentinals-for-gst_structure_get-etc.patch \
+           file://0005-msdk-fix-includedir-path.patch \
+"
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.06.04_2112_L5.15.y"
+SRCBRANCH = "MM_04.07.00_2205_L5.15.y"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
-SRCREV = "1dd01156ea45fc7a61e9edc4186353cd63a03800"
+SRCREV = "63a55f06f7e8f21b483c6d70d50389beb2e85e37"
 
 S = "${WORKDIR}/git"
 
 inherit use-imx-headers
 
 PACKAGE_ARCH:imxpxp = "${MACHINE_SOCARCH}"
-PACKAGE_ARCH:mx8 = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:mx8-nxp-bsp = "${MACHINE_SOCARCH}"
 
 PACKAGECONFIG_REMOVE ?= " \
     dtls vulkan \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', 'gl', d)} \
 "
 PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
-PACKAGECONFIG:append:mx8 = " kms tinycompress"
+PACKAGECONFIG:append:mx8-nxp-bsp = " kms tinycompress"
 
 PACKAGECONFIG[tinycompress]    = "-Dtinycompress=enabled,-Dtinycompress=disabled,tinycompress"
 
 # Disable introspection to fix [GstPlayer-1.0.gir] Error
+# -Dintrospection=disabled
 EXTRA_OEMESON += " \
-    -Dintrospection=disabled \
+    -Donnx=disabled \
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
 
