@@ -5,28 +5,27 @@
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=e565271ec9a80ce47abbddc4bffe56fa"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
 
 # Backward compatibility
 PROVIDES += "libfslcodec"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "309cae6f73a777f6e5a89831acf622ee"
-SRC_URI[sha256sum] = "7b070ab3f1762accee2806e7aba4146ef5242c67a8cd88fb90dacfc1c8b3ef5e"
+SRC_URI[md5sum] = "5041d6e438c7779dcb424aedc11dd3ef"
+SRC_URI[sha256sum] = "71bcb80bda44a326704d18b2e828b03c6f70792a4bf0686abc223657061df89b"
 
 inherit fsl-eula-unpack autotools pkgconfig
+
+PACKAGECONFIG ??= "${PACKAGECONFIG_VPU}"
+# Support Chips&Media VPU only
+PACKAGECONFIG_VPU               = ""
+PACKAGECONFIG_VPU:mx6q-nxp-bsp  = "vpu"
+PACKAGECONFIG_VPU:mx6dl-nxp-bsp = "vpu"
+PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 
 # Choose between 32-bit and 64-bit binaries and between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', \
                    bb.utils.contains('TUNE_FEATURES', 'callconvention-hard', '--enable-fhw', '', d), d)}"
-
-PACKAGECONFIG ?= ""
-PACKAGECONFIG:imxvpu = "vpu"
-
-# We need to ensure we don't have '-src' package overrided
-PACKAGE_DEBUG_SPLIT_STYLE = 'debug-without-src'
-
-PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 
 do_install:append() {
     # LTIB move the files around or gst-fsl-plugin won't find them
@@ -52,7 +51,7 @@ python __set_insane_skip() {
         # the source we cannot fix it. Disable the insane check for now.
         if p == 'imx-codec-test-bin':
             # FIXME: includes the DUT .so files so we need to deploy those
-            d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel libdir file-rdeps")
+            d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel libdir")
         else:
             d.setVar("INSANE_SKIP:%s" % p, "ldflags textrel")
 }
@@ -90,6 +89,9 @@ python __set_metapkg_rdepends() {
 
 PACKAGESPLITFUNCS =+ "__split_libfslcodec_plugins __set_metapkg_rdepends"
 
+# We need to ensure we don't have '-src' package overrided
+PACKAGE_DEBUG_SPLIT_STYLE = 'debug-without-src'
+
 PACKAGES_DYNAMIC = "${PN}-*"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
@@ -115,5 +117,5 @@ FILES:${PN}-oggvorbis += "${libdir}/imx-mm/audio-codec/wrap/lib_vorbisd_wrap_arm
 FILES:${PN}-nb += "${libdir}/imx-mm/audio-codec/wrap/lib_nbamrd_wrap_arm*_elinux.so.*"
 FILES:${PN}-wb += "${libdir}/imx-mm/audio-codec/wrap/lib_wbamrd_wrap_arm*_elinux.so.*"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

@@ -3,11 +3,11 @@
 DESCRIPTION = "NXP PDM to PCM Software Decimation SIMD Library"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=983e4c77621568488dd902b27e0c2143"
+LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "65d5b2cb378f96a5cb4577925eda236b"
-SRC_URI[sha256sum] = "68fca50d8f7526127ee5650e9002b3f9479b197f3085c68a97f7957f50ec5e5b"
+SRC_URI[md5sum] = "af01428c2971af339d0308f4aca1dac0"
+SRC_URI[sha256sum] = "d310ef581f9e6e6d726c5dc8998178b7993680b5552c45561e56ac0e927b6d9c"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
