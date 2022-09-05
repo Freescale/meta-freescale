@@ -2,14 +2,14 @@
 
 DESCRIPTION = "i.MX DSP Codec Wrapper and Lib owned by NXP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "9e1d0e06f4fed47a37cb390e135f453f"
-SRC_URI[sha256sum] = "2703a9dc619a2ac32352d65cfa58f8217e65abcabd33b77b0be02425dc896ae2"
+SRC_URI[md5sum] = "371a550b9ade88cf355d45c68813f375"
+SRC_URI[sha256sum] = "4307c0a625c73a1a1e5ab321834488d52471c434807ab81b9dd038b4cff5903b"
 
 # Fix strip command failed: 'Unable to recognise the format of the input file'
 INHIBIT_PACKAGE_STRIP = "1"

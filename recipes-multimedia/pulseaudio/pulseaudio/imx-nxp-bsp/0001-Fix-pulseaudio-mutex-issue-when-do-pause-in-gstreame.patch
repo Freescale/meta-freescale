@@ -1,0 +1,32 @@
+From c21e24f5c53e81fc715905c54a6c82b69e397e63 Mon Sep 17 00:00:00 2001
+From: "shengjiu.wang" <b02247@freescale.com>
+Date: Thu, 3 Apr 2014 14:22:02 +0800
+Subject: [PATCH] Fix pulseaudio mutex issue when do pause in gstreamer
+
+The error log is "Assertion 'pthread_mutex_unlock(&m->mutex) == 0'
+failed at pulsecore/mutex-posix.c:106, function pa_mutex_unlock(). Aborting"
+
+This fix is a workaround base on the solution from this link "
+https://bugs.launchpad.net/ubuntu/+source/pulseaudio/+bug/932096"
+
+Upstream status: Inappropriate [i.MX specific]
+Signed-off-by: shengjiu.wang <b02247@freescale.com>
+---
+ src/pulsecore/mutex-posix.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/pulsecore/mutex-posix.c b/src/pulsecore/mutex-posix.c
+index 36c2787..d592501 100644
+--- a/src/pulsecore/mutex-posix.c
++++ b/src/pulsecore/mutex-posix.c
+@@ -30,6 +30,7 @@
+ #include <pulsecore/macro.h>
+
+ #include "mutex.h"
++#undef HAVE_PTHREAD_PRIO_INHERIT
+
+ struct pa_mutex {
+     pthread_mutex_t mutex;
+--
+1.7.9.5
+

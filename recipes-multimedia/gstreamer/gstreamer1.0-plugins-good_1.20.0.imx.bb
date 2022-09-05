@@ -3,7 +3,7 @@
 # recipe. The second section customizes the recipe for i.MX.
 
 ########### OE-core copy ##################
-# Upstream hash: bb6ddc3691ab04162ec5fd69a2d5e7876713fd15
+# Upstream hash: 66ba273c10b7d738f18620b5a2883d735fff3162
 
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
@@ -13,15 +13,13 @@ BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
            file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
-           file://0002-rtpjitterbuffer-Fix-parsing-of-the-mediaclk-direct-f.patch \
-           file://0003-Remove-volatile-from-static-vars-to-fix-build-with-g.patch \
            "
 
-SRC_URI[sha256sum] = "b6e50e3a9bbcd56ee6ec71c33aa8332cc9c926b0c1fae995aac8b3040ebe39b0"
+SRC_URI[sha256sum] = "f8f3c206bf5cdabc00953920b47b3575af0ef15e9f871c0b6966f6d0aa5868b7"
 
 S = "${WORKDIR}/gst-plugins-good-${PV}"
 
-LICENSE = "GPL-2.0-or-later & LGPL-2.1-or-later"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
                     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
 
@@ -58,7 +56,12 @@ PACKAGECONFIG[libv4l2]    = "-Dv4l2-libv4l2=enabled,-Dv4l2-libv4l2=disabled,v4l-
 PACKAGECONFIG[mpg123]     = "-Dmpg123=enabled,-Dmpg123=disabled,mpg123"
 PACKAGECONFIG[pulseaudio] = "-Dpulse=enabled,-Dpulse=disabled,pulseaudio"
 PACKAGECONFIG[qt5]        = "-Dqt5=enabled,-Dqt5=disabled,qtbase qtdeclarative qtbase-native ${QT5WAYLANDDEPENDS}"
-PACKAGECONFIG[soup]       = "-Dsoup=enabled,-Dsoup=disabled,libsoup-2.4"
+# Starting with version 1.20, the GStreamer soup plugin loads libsoup with dlopen()
+# instead of linking to it. And instead of using the default libsoup C headers, it
+# uses its own stub header. Consequently, objdump will not show the libsoup .so as
+# a dependency, and libsoup won't be added to an image. Fix this by setting libsoup
+# as RDEPEND instead of DEPEND.
+PACKAGECONFIG[soup]       = "-Dsoup=enabled,-Dsoup=disabled,,libsoup-2.4"
 PACKAGECONFIG[speex]      = "-Dspeex=enabled,-Dspeex=disabled,speex"
 PACKAGECONFIG[rpi]        = "-Drpicamsrc=enabled,-Drpicamsrc=disabled,userland"
 PACKAGECONFIG[taglib]     = "-Dtaglib=enabled,-Dtaglib=disabled,taglib"
@@ -91,18 +94,14 @@ FILES:${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
 DEFAULT_PREFERENCE = "-1"
 
 # fb implementation of v4l2 uses libdrm
-DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
 DEPENDS += "${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
+DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
 
-SRC_URI:remove = " \
-    https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
-    file://0002-rtpjitterbuffer-Fix-parsing-of-the-mediaclk-direct-f.patch \
-    file://0003-Remove-volatile-from-static-vars-to-fix-build-with-g.patch \
-"
-GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.06.04_2112_L5.15.y"
+SRC_URI:remove  = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz"
 SRC_URI:prepend = "${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} "
-SRCREV = "2438ae179ed4245fbeaa2ce36b1918ed7232d442"
+GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-good.git;protocol=https"
+SRCBRANCH = "MM_04.07.00_2205_L5.15.y"
+SRCREV = "4c58a36cfd4b2b16d8978b9592145fb46bb58732"
 
 S = "${WORKDIR}/git"
 
