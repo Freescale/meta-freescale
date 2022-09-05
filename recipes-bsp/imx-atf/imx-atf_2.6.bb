@@ -37,6 +37,9 @@ LD[unexport] = "1"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "virtual/${HOST_PREFIX}gcc"
 
+# Bring in clang compiler if using clang as default
+DEPENDS:append:toolchain-clang = " clang-cross-${TARGET_ARCH}"
+
 BUILD_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
 # CC and LD introduce arguments which conflict with those otherwise provided by
