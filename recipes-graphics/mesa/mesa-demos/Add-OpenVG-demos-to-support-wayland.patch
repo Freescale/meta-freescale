@@ -1,0 +1,84 @@
+From 8aba54422d9a77383c150f9f70240b18b6e1918e Mon Sep 17 00:00:00 2001
+From: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+Date: Thu, 9 Apr 2015 15:47:21 -0500
+Subject: [PATCH] Add OpenVG demos to support wayland.
+
+Upstream-Status: Pending
+
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@freescale.com>
+---
+ src/egl/Makefile.am        |  6 +++---
+ src/egl/openvg/Makefile.am | 33 +++++++++++++++++++++++++++++----
+ 2 files changed, 32 insertions(+), 7 deletions(-)
+
+Index: mesa-demos-8.2.0/src/egl/Makefile.am
+===================================================================
+--- mesa-demos-8.2.0.orig/src/egl/Makefile.am	2016-05-09 11:45:51.479100180 -0500
++++ mesa-demos-8.2.0/src/egl/Makefile.am	2016-05-09 11:45:51.475100160 -0500
+@@ -26,10 +26,10 @@
+ 	eglut \
+ 	opengles1 \
+ 	opengles2 \
+-	oes_vg
++	oes_vg \
++        openvg
+ 
+ if HAVE_GLU
+ SUBDIRS += \
+-	opengl \
+-	openvg
++	opengl
+ endif
+Index: mesa-demos-8.2.0/src/egl/openvg/Makefile.am
+===================================================================
+--- mesa-demos-8.2.0.orig/src/egl/openvg/Makefile.am	2016-05-09 11:45:51.479100180 -0500
++++ mesa-demos-8.2.0/src/egl/openvg/Makefile.am	2016-05-09 12:39:30.000000000 -0500
+@@ -47,13 +47,26 @@
+ endif
+ endif
+ 
++if HAVE_WAYLAND
++EGL_WL_DEMOS = \
++    lion_wayland \
++    sp_wayland
++
++if HAVE_FREETYPE2
++EGL_WL_DEMOS += \
++	vgtext_wayland
++endif
++endif
++
+ if HAVE_EGL
+ if HAVE_VG
+ bin_PROGRAMS = \
+-	$(EGL_X11_DEMOS)
++	$(EGL_X11_DEMOS) \
++	$(EGL_WL_DEMOS)
+ endif
+ endif
+ 
++if HAVE_X11
+ lion_x11_SOURCES = lion.c lion-render.c lion-render.h
+ sp_x11_SOURCES = sp.c
+ 
+@@ -63,6 +76,20 @@
+ text_SOURCES = text.c
+ text_CFLAGS = $(AM_CFLAGS) @FREETYPE2_CFLAGS@
+ text_LDADD = @FREETYPE2_LIBS@ ../eglut/libeglut_x11.la
++endif
++
++if HAVE_WAYLAND
++lion_wayland_SOURCES = lion.c lion-render.c lion-render.h
++lion_wayland_LDADD = ../eglut/libeglut_wayland.la
++
++sp_wayland_SOURCES = sp.c
++sp_wayland_LDADD = ../eglut/libeglut_wayland.la
++
++vgtext_wayland_SOURCES = text.c
++vgtext_wayland_CFLAGS = $(AM_CFLAGS) @FREETYPE2_CFLAGS@
++vgtext_wayland_LDADD = @FREETYPE2_LIBS@ ../eglut/libeglut_wayland.la
++
++endif
+ 
+ SUBDIRS = \
+ 	trivial
