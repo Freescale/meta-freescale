@@ -54,6 +54,17 @@ python __anonymous () {
     if not machine_socarch in cur_package_archs:
         d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % machine_socarch)
 
+    multilib_variants = (d.getVar("MULTILIB_VARIANTS") or "").split()
+    for variant in multilib_variants:
+        defaulttune = d.getVar("DEFAULTTUNE:virtclass-multilib-" + variant)
+        if defaulttune:
+            package_extra_archs_tune_archs = (d.getVar("PACKAGE_EXTRA_ARCHS:tune-" + defaulttune) or "").split()
+            arch_suffix = d.getVar("MACHINE_SOCARCH_SUFFIX")
+            for arch in package_extra_archs_tune_archs:
+                socarch = arch + arch_suffix
+                if not socarch in cur_package_archs:
+                    d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % socarch )
+
     if d.getVar("TUNE_ARCH") == "arm":
         # For ARM we have two possible machine_socarch values, one for the arm and one for the thumb instruction set
         # add the other value to extra archs also, so that a image recipe searches both for packages.
