@@ -1,4 +1,4 @@
-From 9c8b815520bf52caf780dc4defea0fe2fe8e33a3 Mon Sep 17 00:00:00 2001
+From 8f50f62cf9030d1839e23a7f1ff9688dec2063e4 Mon Sep 17 00:00:00 2001
 From: Daniel Abrecht <public@danielabrecht.ch>
 Date: Wed, 21 Oct 2020 21:13:30 +0200
 Subject: [PATCH] Allow to enable atomic in modesetting DDX
@@ -12,16 +12,17 @@ This change doesn't enable atomic by default, but it allows a user to
 enabled it again.
 
 Signed-off-by: Daniel Abrecht <public@danielabrecht.ch>
+
 ---
  hw/xfree86/drivers/modesetting/driver.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/hw/xfree86/drivers/modesetting/driver.c b/hw/xfree86/drivers/modesetting/driver.c
-index 6549ef8e1..bd8576f81 100644
+index 535f49d..58a1c67 100644
 --- a/hw/xfree86/drivers/modesetting/driver.c
 +++ b/hw/xfree86/drivers/modesetting/driver.c
-@@ -1216,7 +1216,7 @@ PreInit(ScrnInfoPtr pScrn, int flags)
-     }
+@@ -1236,7 +1236,7 @@ PreInit(ScrnInfoPtr pScrn, int flags)
+     ms->atomic_modeset_capable = (ret == 0);
  
      if (xf86ReturnOptValBool(ms->drmmode.Options, OPTION_ATOMIC, FALSE)) {
 -        ret = drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 1);
