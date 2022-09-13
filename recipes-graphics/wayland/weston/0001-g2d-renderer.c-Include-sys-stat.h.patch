@@ -1,0 +1,34 @@
+From 4afe9b2f9ef24ce0c9bf1cd41f94ca45afa4f445 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Mon, 12 Sep 2022 20:58:14 -0700
+Subject: [PATCH] g2d-renderer.c: Include sys/stat.h
+
+This is needed for getting stat() prototype, its flagged with clang-15
+as error.
+
+| ../git/libweston/renderer-g2d/g2d-renderer.c:2057:6: error: call to undeclared function 'stat'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+|         if (stat(gr->drm_device, &dev_stat) != 0) {
+|             ^
+| 1 error generated.
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ libweston/renderer-g2d/g2d-renderer.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libweston/renderer-g2d/g2d-renderer.c b/libweston/renderer-g2d/g2d-renderer.c
+index f59fc4ee..36a458fc 100644
+--- a/libweston/renderer-g2d/g2d-renderer.c
++++ b/libweston/renderer-g2d/g2d-renderer.c
+@@ -41,6 +41,7 @@
+ #include <drm_fourcc.h>
+ #include <poll.h>
+ #include <errno.h>
++#include <sys/stat.h> /* stat() */
+ 
+ #include <libweston/libweston.h>
+ #include "g2d-renderer.h"
+-- 
+2.37.3
+
