@@ -61,8 +61,6 @@ PE = "1"
 
 inherit fsl-eula-unpack features_check
 
-REQUIRED_DISTRO_FEATURES:mx8-nxp-bsp = "wayland"
-
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
 PACKAGECONFIG ?= ""
