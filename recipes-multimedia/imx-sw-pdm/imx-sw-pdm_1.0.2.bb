@@ -16,3 +16,7 @@ INSANE_SKIP:${PN} = "already-stripped"
 FILES:${PN} += "${datadir}/imx-mm"
 
 COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
+
+INSANE_SKIP:append:libc-musl = " file-rdeps"
+
+RDEPENDS:${PN}:append:libc-musl = " gcompat"
