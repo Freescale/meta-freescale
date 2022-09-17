@@ -25,6 +25,8 @@ DEPENDS:append:mx8-nxp-bsp = " patchelf-native"
 # We depend on mesa to fill in what is missing.
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'mesa', '', d)}"
 
+DEPENDS:append:libc-musl = " gcompat"
+
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
@@ -242,6 +244,24 @@ do_install () {
     find ${D}${includedir} -type f -exec chmod 644 {} \;
 
     chown -R root:root "${D}"
+}
+
+do_install:append:libc-musl() {
+    # libs
+    for f in `find ${D}${libdir} -name '*.so*' -type f`
+    do
+        patchelf --add-needed libgcompat.so.0 $f
+    done
+    # binaries
+    for f in `find ${D}/opt ${D}${bindir} -name '*' -type f -executable`
+    do
+        # prune scripts
+        if `patchelf --print-interpreter $f 2>&1 > /dev/null`
+        then
+            patchelf --set-interpreter ${root_prefix}`patchelf --print-interpreter $f` $f
+            patchelf --add-needed libgcompat.so.0 $f
+        fi
+    done
 }
 
 ALLOW_EMPTY:${PN} = "1"
