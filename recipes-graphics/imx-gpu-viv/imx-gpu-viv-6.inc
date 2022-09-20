@@ -71,8 +71,6 @@ PACKAGECONFIG ?= ""
 PACKAGECONFIG[valgrind] = ""
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
-IMX_PACKAGES_GBM     = ""
-IMX_PACKAGES_GBM:mx8-nxp-bsp = "libgbm-imx libgbm-imx-dev"
 PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libgl-imx libgl-imx-dev \
 	libgles1-imx libgles1-imx-dev \
@@ -85,13 +83,18 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	libegl-imx libegl-imx-dev \
 	libgal-imx libgal-imx-dev \
 	libvsc-imx \
-	${IMX_PACKAGES_GBM} \
+	${PACKAGES_GBM} \
 	imx-gpu-viv-tools \
 	imx-gpu-viv-demos \
-	libvulkan-imx libvulkan-imx-dev \
+	${PACKAGES_VULKAN} \
 	libopenvx-imx libopenvx-imx-dev \
 	libnn-imx \
 "
+PACKAGES_GBM             = ""
+PACKAGES_GBM:mx8-nxp-bsp = "libgbm-imx libgbm-imx-dev"
+PACKAGES_VULKAN               = ""
+PACKAGES_VULKAN:aarch64       = "libvulkan-imx libvulkan-imx-dev"
+PACKAGES_VULKAN:mx8mm-nxp-bsp = ""
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
         if has_vivante_kernel_driver_support != '1':
