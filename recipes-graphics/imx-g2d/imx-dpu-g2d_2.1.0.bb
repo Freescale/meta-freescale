@@ -23,5 +23,8 @@ do_install () {
 }
 
 INSANE_SKIP:${PN} += "ldflags"
+INSANE_SKIP:append:libc-musl = " file-rdeps"
 
 COMPATIBLE_MACHINE = "(imxdpu)"
+
+RDEPENDS:${PN}:append:libc-musl = " gcompat"
