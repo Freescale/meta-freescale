@@ -212,15 +212,19 @@ do_install () {
         cp ${S}/gpu-core/usr/lib/fb/libVDK.so.1.2.0 ${D}${libdir}/libVDK-fb.so.1.2.0
     fi
     if [ "${IS_MX8}" = "1" ]; then
-        # Rename the vulkan implementation library which is wrapped by the vulkan-loader
-        # library of the same name
-        MAJOR=${LIBVULKAN_VERSION_MAJOR}
-        FULL=${LIBVULKAN_VERSION}
-        mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
-        patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
-        rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
-        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
-        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
+        if [ -n "${PACKAGES_VULKAN}" ]; then
+            # Rename the vulkan implementation library which is wrapped by the vulkan-loader
+            # library of the same name
+            MAJOR=${LIBVULKAN_VERSION_MAJOR}
+            FULL=${LIBVULKAN_VERSION}
+            mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
+            patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
+            rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
+            ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
+            ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
+        else
+            rm -f ${D}${libdir}/libvulkan.so* ${D}${libdir}/libSPIRV_viv${SOLIBS}*
+        fi
     fi
 
     # FIXME: MX6SL does not have 3D support; hack it for now
