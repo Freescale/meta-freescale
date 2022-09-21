@@ -38,7 +38,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-# fec_uio: fix implicit declaration
+# beacf1c5267a fec_uio: fix implicit declaration
 # e8093f50522f cert host tools: Stop complaining about deprecated OpenSSL functions
 # 49c2d3b7964d gpio: fix enabling GPIO_VF610
 # c04a396fcbf7 ARM: mach-imx: conditionally disable some functions from busfreq-imx
@@ -58,14 +58,14 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.15-2.0.x-imx"
-SRCREV = "d818413e4d7901cb8a00a631a389326e2c93ae41"
+SRCREV = "845d53f13aac7d712b931a21df53bc8ccb22b31b"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.15.60"
+LINUX_VERSION = "5.15.67"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
 LOCALVERSION = "-5.15.60-2.0.0"
