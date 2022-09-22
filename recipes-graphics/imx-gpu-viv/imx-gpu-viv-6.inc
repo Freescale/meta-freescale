@@ -71,13 +71,13 @@ PACKAGECONFIG ?= ""
 PACKAGECONFIG[valgrind] = ""
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
-PACKAGES =+ "libclc-imx libclc-imx-dev \
+PACKAGES =+ " \
 	libgl-imx libgl-imx-dev \
 	libgles1-imx libgles1-imx-dev \
 	libgles2-imx libgles2-imx-dev \
 	libgles3-imx-dev \
 	libglslc-imx libglslc-imx-dev \
-	libopencl-imx libopencl-imx-dev \
+	${PACKAGES_OPENCL} \
 	libopenvg-imx libopenvg-imx-dev \
 	libvdk-imx libvdk-imx-dev \
 	libegl-imx libegl-imx-dev \
@@ -87,11 +87,20 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	imx-gpu-viv-tools \
 	imx-gpu-viv-demos \
 	${PACKAGES_VULKAN} \
-	libopenvx-imx libopenvx-imx-dev \
+	${PACKAGES_OPENVX} \
 	libnn-imx \
 "
-PACKAGES_GBM             = ""
-PACKAGES_GBM:mx8-nxp-bsp = "libgbm-imx libgbm-imx-dev"
+
+PACKAGES_GBM                  = ""
+PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
+
+PACKAGES_OPENCL               = "libopencl-imx libopencl-imx-dev libclc-imx libclc-imx-dev"
+PACKAGES_OPENCL:mx7-nxp-bsp   = ""
+PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
+
+PACKAGES_OPENVX               = ""
+PACKAGES_OPENVX:mx8qm-nxp-bsp = "libopenvx-imx libopenvx-imx-dev"
+
 PACKAGES_VULKAN               = ""
 PACKAGES_VULKAN:aarch64       = "libvulkan-imx libvulkan-imx-dev"
 PACKAGES_VULKAN:mx8mm-nxp-bsp = ""
@@ -218,9 +227,22 @@ do_install () {
         cp ${S}/gpu-core/usr/lib/fb/libVDK.so.1.2.0 ${D}${libdir}/libVDK-fb.so.1.2.0
     fi
 
-    # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
-    install -d ${D}${sysconfdir}/OpenCL/vendors/
-    install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
+    if [ -z "${PACKAGES_OPENCL}" ]; then
+        for f in ${FILES:libopencl-imx} ${FILES:libopencl-imx-dev} ${FILES:libclc-imx} ${FILES:libclc-imx-dev}; do
+            rm -rf ${D}$f
+        done
+        rm -rf ${D}/opt/viv_samples/cl11
+    else
+        # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
+        install -d ${D}${sysconfdir}/OpenCL/vendors/
+        install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
+    fi
+
+    if [ -z "${PACKAGES_OPENVX}" ]; then
+        for f in ${FILES:libopenvx-imx} ${FILES:libopenvx-imx-dev}; do
+            rm -rf ${D}$f
+        done
+    fi
 
     if [ "${IS_MX8}" = "1" ]; then
         # Rename the vulkan implementation library which is wrapped by the vulkan-loader
