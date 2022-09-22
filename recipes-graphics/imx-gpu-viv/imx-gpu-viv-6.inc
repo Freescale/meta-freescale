@@ -302,9 +302,9 @@ INSANE_SKIP:libgal-imx += "build-deps"
 
 FILES:libvsc-imx = "${libdir}/libVSC${SOLIBS}"
 
-FILES:libgbm-imx:mx8-nxp-bsp           = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBSDEV} ${libdir}/libgbm_viv${SOLIBSDEV}"
-FILES:libgbm-imx-dev:mx8-nxp-bsp       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
-RDEPENDS:libgbm-imx:append:mx8-nxp-bsp = " libdrm"
+FILES:libgbm-imx           = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBSDEV} ${libdir}/libgbm_viv${SOLIBSDEV}"
+FILES:libgbm-imx-dev       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
+RDEPENDS:libgbm-imx:append = " libdrm"
 INSANE_SKIP:libgbm-imx += "dev-so"
 
 FILES:libvulkan-imx = "${libdir}/libvulkan_VSI${REALSOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
