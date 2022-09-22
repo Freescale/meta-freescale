@@ -205,8 +205,10 @@ do_install () {
         # Framebuffer backend for i.MX 8 and beyond
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl.pc         ${D}${libdir}/pkgconfig/egl.pc
         cp -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
+        for f in ${FILES:libvdk-imx} ${FILES:libvdk-imx-dev}; do
+            rm -rf ${D}/$f
+        done
         rm -rf \
-            ${D}${libdir}/libVDK.so* \
             ${D}/opt/viv_samples/es20 \
             ${D}/opt/viv_samples/tiger \
             ${D}/opt/viv_samples/vdk
@@ -221,18 +223,19 @@ do_install () {
     install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
     if [ "${IS_MX8}" = "1" ]; then
-        if [ -n "${PACKAGES_VULKAN}" ]; then
-            # Rename the vulkan implementation library which is wrapped by the vulkan-loader
-            # library of the same name
-            MAJOR=${LIBVULKAN_VERSION_MAJOR}
-            FULL=${LIBVULKAN_VERSION}
-            mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
-            patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
-            rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
-            ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
-            ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
-        else
-            rm -f ${D}${libdir}/libvulkan.so* ${D}${libdir}/libSPIRV_viv${SOLIBS}*
+        # Rename the vulkan implementation library which is wrapped by the vulkan-loader
+        # library of the same name
+        MAJOR=${LIBVULKAN_VERSION_MAJOR}
+        FULL=${LIBVULKAN_VERSION}
+        mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
+        patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
+        rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
+        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
+        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
+        if [ -z "${PACKAGES_VULKAN}" ]; then
+            for f in ${FILES:libvulkan-imx} ${FILES:libvulkan-imx-dev}; do
+                rm -rf ${D}$f
+            done
         fi
     fi
 
