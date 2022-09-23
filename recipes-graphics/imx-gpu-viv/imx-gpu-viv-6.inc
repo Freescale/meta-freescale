@@ -71,13 +71,13 @@ PACKAGECONFIG ?= ""
 PACKAGECONFIG[valgrind] = ""
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
-PACKAGES =+ "libclc-imx libclc-imx-dev \
+PACKAGES =+ " \
 	libgl-imx libgl-imx-dev \
 	libgles1-imx libgles1-imx-dev \
 	libgles2-imx libgles2-imx-dev \
 	libgles3-imx-dev \
 	libglslc-imx libglslc-imx-dev \
-	libopencl-imx libopencl-imx-dev \
+	${PACKAGES_OPENCL} \
 	libopenvg-imx libopenvg-imx-dev \
 	libvdk-imx libvdk-imx-dev \
 	libegl-imx libegl-imx-dev \
@@ -87,11 +87,20 @@ PACKAGES =+ "libclc-imx libclc-imx-dev \
 	imx-gpu-viv-tools \
 	imx-gpu-viv-demos \
 	${PACKAGES_VULKAN} \
-	libopenvx-imx libopenvx-imx-dev \
+	${PACKAGES_OPENVX} \
 	libnn-imx \
 "
-PACKAGES_GBM             = ""
-PACKAGES_GBM:mx8-nxp-bsp = "libgbm-imx libgbm-imx-dev"
+
+PACKAGES_GBM                  = ""
+PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
+
+PACKAGES_OPENCL               = "libopencl-imx libopencl-imx-dev libclc-imx libclc-imx-dev"
+PACKAGES_OPENCL:mx7-nxp-bsp   = ""
+PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
+
+PACKAGES_OPENVX               = ""
+PACKAGES_OPENVX:mx8qm-nxp-bsp = "libopenvx-imx libopenvx-imx-dev"
+
 PACKAGES_VULKAN               = ""
 PACKAGES_VULKAN:aarch64       = "libvulkan-imx libvulkan-imx-dev"
 PACKAGES_VULKAN:mx8mm-nxp-bsp = ""
@@ -205,8 +214,10 @@ do_install () {
         # Framebuffer backend for i.MX 8 and beyond
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl.pc         ${D}${libdir}/pkgconfig/egl.pc
         cp -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
+        for f in ${FILES:libvdk-imx} ${FILES:libvdk-imx-dev}; do
+            rm -rf ${D}/$f
+        done
         rm -rf \
-            ${D}${libdir}/libVDK.so* \
             ${D}/opt/viv_samples/es20 \
             ${D}/opt/viv_samples/tiger \
             ${D}/opt/viv_samples/vdk
@@ -216,23 +227,37 @@ do_install () {
         cp ${S}/gpu-core/usr/lib/fb/libVDK.so.1.2.0 ${D}${libdir}/libVDK-fb.so.1.2.0
     fi
 
-    # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
-    install -d ${D}${sysconfdir}/OpenCL/vendors/
-    install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
+    if [ -z "${PACKAGES_OPENCL}" ]; then
+        for f in ${FILES:libopencl-imx} ${FILES:libopencl-imx-dev} ${FILES:libclc-imx} ${FILES:libclc-imx-dev}; do
+            rm -rf ${D}$f
+        done
+        rm -rf ${D}/opt/viv_samples/cl11
+    else
+        # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
+        install -d ${D}${sysconfdir}/OpenCL/vendors/
+        install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
+    fi
+
+    if [ -z "${PACKAGES_OPENVX}" ]; then
+        for f in ${FILES:libopenvx-imx} ${FILES:libopenvx-imx-dev}; do
+            rm -rf ${D}$f
+        done
+    fi
 
     if [ "${IS_MX8}" = "1" ]; then
-        if [ -n "${PACKAGES_VULKAN}" ]; then
-            # Rename the vulkan implementation library which is wrapped by the vulkan-loader
-            # library of the same name
-            MAJOR=${LIBVULKAN_VERSION_MAJOR}
-            FULL=${LIBVULKAN_VERSION}
-            mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
-            patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
-            rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
-            ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
-            ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
-        else
-            rm -f ${D}${libdir}/libvulkan.so* ${D}${libdir}/libSPIRV_viv${SOLIBS}*
+        # Rename the vulkan implementation library which is wrapped by the vulkan-loader
+        # library of the same name
+        MAJOR=${LIBVULKAN_VERSION_MAJOR}
+        FULL=${LIBVULKAN_VERSION}
+        mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
+        patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
+        rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
+        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
+        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
+        if [ -z "${PACKAGES_VULKAN}" ]; then
+            for f in ${FILES:libvulkan-imx} ${FILES:libvulkan-imx-dev}; do
+                rm -rf ${D}$f
+            done
         fi
     fi
 
@@ -299,9 +324,9 @@ INSANE_SKIP:libgal-imx += "build-deps"
 
 FILES:libvsc-imx = "${libdir}/libVSC${SOLIBS}"
 
-FILES:libgbm-imx:mx8-nxp-bsp           = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBSDEV} ${libdir}/libgbm_viv${SOLIBSDEV}"
-FILES:libgbm-imx-dev:mx8-nxp-bsp       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
-RDEPENDS:libgbm-imx:append:mx8-nxp-bsp = " libdrm"
+FILES:libgbm-imx           = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBSDEV} ${libdir}/libgbm_viv${SOLIBSDEV}"
+FILES:libgbm-imx-dev       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
+RDEPENDS:libgbm-imx:append = " libdrm"
 INSANE_SKIP:libgbm-imx += "dev-so"
 
 FILES:libvulkan-imx = "${libdir}/libvulkan_VSI${REALSOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
