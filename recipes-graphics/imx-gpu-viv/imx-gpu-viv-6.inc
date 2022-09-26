@@ -96,7 +96,6 @@ PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
 
 PACKAGES_OPENCL               = "libopencl-imx libopencl-imx-dev libclc-imx libclc-imx-dev"
 PACKAGES_OPENCL:mx7-nxp-bsp   = ""
-PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
 
 PACKAGES_OPENVX               = ""
 PACKAGES_OPENVX:mx8qm-nxp-bsp = "libopenvx-imx libopenvx-imx-dev"
