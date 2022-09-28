@@ -1,0 +1,9 @@
+--- a/config.tests/unix/egl4gles1/egl4gles1.pro	2015-05-07 16:14:42.000000000 +0200
++++ b/config.tests/unix/egl4gles1/egl4gles1.pro	2022-09-28 15:36:53.827893490 +0200
+@@ -6,5 +6,6 @@ for(p, QMAKE_LIBDIR_EGL) {
+ 
+ !isEmpty(QMAKE_INCDIR_EGL): INCLUDEPATH += $$QMAKE_INCDIR_EGL
+ !isEmpty(QMAKE_LIBS_EGL): LIBS += $$QMAKE_LIBS_EGL
++DEFINES += LINUX=1 EGL_API_FB=1
+ 
+ CONFIG -= qt
