@@ -12,8 +12,8 @@ SRC_URI:append:imxgpu2d += " \
 	file://0001-Add-support-for-i.MX-codecs-to-phonon.patch \
 	file://0002-i.MX-video-renderer-Allow-v4l-device-from-environmen.patch \
 	file://0003-i.MX6-force-egl-visual-ID-33.patch \
-	file://egl-pro-add-defines-to-compile-with-viv-fb.patch \
-	file://egl4gles1-pro-add-defines-to-compile-with-viv-fb.patch \
+	file://0001-config.tests-add-DEFINES-to-compile-egl-test-with-im.patch \
+	file://0002-config.tests-add-DEFINES-to-compile-egl4gles1-test-w.patch.patch \
 "
 
 DEPENDS:append:imxgpu2d = " virtual/kernel virtual/libgles2"
