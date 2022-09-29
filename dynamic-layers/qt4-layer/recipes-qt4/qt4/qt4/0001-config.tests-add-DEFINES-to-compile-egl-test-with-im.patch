@@ -1,0 +1,25 @@
+From 234580de9d63fd79a8b444358cdaeac111a17061 Mon Sep 17 00:00:00 2001
+From: Mauro Salvini <m.salvini@koansoftware.com>
+Date: Thu, 29 Sep 2022 16:06:04 +0200
+Subject: [PATCH 1/2] config.tests: add DEFINES to compile egl test with
+ imxgpu2d (Vivante)
+
+Signed-off-by: Mauro Salvini <m.salvini@koansoftware.com>
+---
+ config.tests/unix/egl/egl.pro | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/config.tests/unix/egl/egl.pro b/config.tests/unix/egl/egl.pro
+index f04d0535..bc35b908 100644
+--- a/config.tests/unix/egl/egl.pro
++++ b/config.tests/unix/egl/egl.pro
+@@ -6,5 +6,6 @@ for(p, QMAKE_LIBDIR_EGL) {
+ 
+ !isEmpty(QMAKE_INCDIR_EGL): INCLUDEPATH += $$QMAKE_INCDIR_EGL
+ !isEmpty(QMAKE_LIBS_EGL): LIBS += $$QMAKE_LIBS_EGL
++DEFINES += LINUX=1 EGL_API_FB=1
+ 
+ CONFIG -= qt
+-- 
+2.17.1
+
