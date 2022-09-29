@@ -177,7 +177,7 @@ PACKAGECONFIG_OPENGL:imxgpu2d     = ""
 PACKAGECONFIG_OPENGL:imxgpu3d     = "opengl"
 
 PACKAGECONFIG:remove = "wayland x11"
-PACKAGECONFIG:append = "${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)}"
+PACKAGECONFIG:append = "${@bb.utils.filter('DISTRO_FEATURES', ' ${PACKAGECONFIG_OPENGL}', d)}"
 
 PACKAGECONFIG:remove:imxfbdev = "kms"
 PACKAGECONFIG:append:imxfbdev = " fbdev clients"
