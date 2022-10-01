@@ -50,9 +50,14 @@ EXTRA_PROVIDES:append:imxgpu3d = " \
 EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
     virtual/libgbm \
 "
+
 PROVIDES_OPENGLES3               = ""
 PROVIDES_OPENGLES3:mx8-nxp-bsp   = "virtual/libgles3"
 PROVIDES_OPENGLES3:mx8mm-nxp-bsp = ""
+
+# Note: OpenVX is fully supported on i.MX 8 QuadMax and 8 QuadPlus.
+# However, only limited support is provided on other i.MX 8 machines
+# as needed for i.MX machine learning packages.
 PROVIDES_OPENVX                  = ""
 PROVIDES_OPENVX:mx8-nxp-bsp      = "virtual/libopenvx"
 PROVIDES_OPENVX:mx8mm-nxp-bsp    = ""
@@ -97,12 +102,14 @@ PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
 PACKAGES_OPENCL               = "libopencl-imx libopencl-imx-dev libclc-imx libclc-imx-dev"
 PACKAGES_OPENCL:mx7-nxp-bsp   = ""
 
-PACKAGES_OPENVX               = ""
-PACKAGES_OPENVX:mx8qm-nxp-bsp = "libopenvx-imx libopenvx-imx-dev"
+PACKAGES_OPENVX = \
+    "${@bb.utils.contains("PROVIDES_OPENVX", "virtual/libopenvx", \
+        "libopenvx-imx libopenvx-imx-dev", "", d)}"
 
 PACKAGES_VULKAN               = ""
 PACKAGES_VULKAN:aarch64       = "libvulkan-imx libvulkan-imx-dev"
 PACKAGES_VULKAN:mx8mm-nxp-bsp = ""
+
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
         if has_vivante_kernel_driver_support != '1':
