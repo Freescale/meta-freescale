@@ -1,3 +1,2 @@
-# The i.MX implementation is dynamically loaded, so it requires an
-# explicit runtime dependency.
-RRECOMMENDS:${PN}:append:imxvulkan = " libvulkan-imx"
+# Override default mesa drivers with i.MX GPU drivers
+RRECOMMENDS:${PN}:imxvulkan = "libvulkan-imx"
