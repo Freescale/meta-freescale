@@ -68,7 +68,8 @@ PE = "1"
 
 inherit fsl-eula-unpack
 
-SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
+           file://imx_icd.json"
 
 PACKAGECONFIG ?= ""
 
@@ -177,7 +178,8 @@ IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
 IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
 LIBVULKAN_VERSION_MAJOR = "1"
-LIBVULKAN_VERSION = "${LIBVULKAN_VERSION_MAJOR}.2.1"
+LIBVULKAN_VERSION       = "${LIBVULKAN_VERSION_MAJOR}.2.1"
+LIBVULKAN_API_VERSION   = "${LIBVULKAN_VERSION_MAJOR}.2.182"
 
 do_install () {
     install -d ${D}${libdir}
@@ -271,6 +273,10 @@ do_install () {
                 set +f
                 rm -rf ${D}$f
             done
+        else
+            install -Dm 0644 ${WORKDIR}/imx_icd.json ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
+            sed -i "s,%libdir%,${libdir}," ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
+            sed -i "s,%api_version%,${LIBVULKAN_API_VERSION}," ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
         fi
     fi
 
@@ -342,7 +348,10 @@ FILES:libgbm-imx-dev       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
 RDEPENDS:libgbm-imx:append = " libdrm"
 INSANE_SKIP:libgbm-imx += "dev-so"
 
-FILES:libvulkan-imx = "${libdir}/libvulkan_VSI${REALSOLIBS} ${libdir}/libSPIRV_viv${SOLIBS}"
+FILES:libvulkan-imx = "\
+    ${libdir}/libvulkan_VSI${REALSOLIBS} \
+    ${libdir}/libSPIRV_viv${SOLIBS} \
+    ${sysconfdir}/vulkan"
 FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 
 FILES:libopenvx-imx = " \
