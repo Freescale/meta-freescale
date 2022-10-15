@@ -28,12 +28,12 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.15.50
+#    tag: v5.15.60
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-5.15.32-2.0.0
+#    tag: lf-5.15.52-2.1.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -43,8 +43,6 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # 49c2d3b7964d gpio: fix enabling GPIO_VF610
 # c04a396fcbf7 ARM: mach-imx: conditionally disable some functions from busfreq-imx
 # 166a38557bf9 drm: bridge: it6161: add missing gpio consumer header
-# bc2e851e616a Revert "clk: imx: off by one in imx_lpcg_parse_clks_from_dt()"
-# 27d3c1285087 Revert "drm/bridge: Add missing pm_runtime_put_sync"
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -57,18 +55,18 @@ include linux-fslc.inc
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-KBRANCH = "5.15-2.0.x-imx"
-SRCREV = "845d53f13aac7d712b931a21df53bc8ccb22b31b"
+KBRANCH = "5.15-2.1.x-imx"
+SRCREV = "e1b43282a845dfb78e115a8e2dc4144ce0d335b5"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.15.67"
+LINUX_VERSION = "5.15.60"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-5.15.60-2.0.0"
+LOCALVERSION = "-5.15.60-2.1.0"
 
 DEFAULT_PREFERENCE = "1"
 
