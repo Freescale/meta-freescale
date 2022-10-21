@@ -66,7 +66,7 @@ RPROVIDES:${PN}:imxgpu3d += "imx-gpu-viv"
 
 PE = "1"
 
-inherit fsl-eula-unpack
+inherit fsl-eula-unpack features_check
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
            file://imx_icd.json"
