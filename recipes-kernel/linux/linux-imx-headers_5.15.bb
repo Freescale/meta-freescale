@@ -7,10 +7,10 @@ New headers are installed in ${includedir}/imx."
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
+SRC_URI = "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-5.15.y"
-LOCALVERSION = "-5.15.32-2.0.0"
-SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV = "fa6c3168595c02bd9d5366fcc28c9e7304947a3d"
+LOCALVERSION = "-5.15.52-2.1.0"
+SRCREV = "36363d8623ba60858e2632b7d2b70dae932c9a8b"
 
 S = "${WORKDIR}/git"
 
