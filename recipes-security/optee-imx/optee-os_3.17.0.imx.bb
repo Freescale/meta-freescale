@@ -6,12 +6,15 @@ HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
-DEPENDS = "python3-pycryptodomex-native python3-pyelftools-native u-boot-mkimage-native"
+DEPENDS = "python3-cryptography-native python3-pyelftools-native u-boot-mkimage-native"
 
-SRCBRANCH = "lf-5.15.5_1.0.0"
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH}"
+SRCBRANCH = "lf-5.15.32_2.0.0"
+SRCREV = "984996422c25c99ebfc5194c1bb393028605bb0c"
 
-SRCREV = "807629a0889ad5e888f1fd187932ab7f701ddf8c"
+SRC_URI:append = " \
+    file://0008-no-warn-rwx-segments.patch \
+    "
 
 S = "${WORKDIR}/git"
 
@@ -24,10 +27,9 @@ PLATFORM_FLAVOR                   = "${@d.getVar('MACHINE')[1:]}"
 PLATFORM_FLAVOR:imx6qdlsabresd    = "mx6qsabresd"
 PLATFORM_FLAVOR:imx6qdlsabreauto  = "mx6qsabreauto"
 PLATFORM_FLAVOR:imx6qpdlsolox     = "mx6qsabresd"
-PLATFORM_FLAVOR:imx6ul            = "mx6ulevk"
-PLATFORM_FLAVOR:imx6ull           = "mx6ullevk"
-PLATFORM_FLAVOR:imx6ull           = "mx6ullevk"
-PLATFORM_FLAVOR:imx6ulz           = "mx6ulzevk"
+PLATFORM_FLAVOR:mx6ul-nxp-bsp     = "mx6ulevk"
+PLATFORM_FLAVOR:mx6ull-nxp-bsp    = "mx6ullevk"
+PLATFORM_FLAVOR:mx6ulz-nxp-bsp    = "mx6ulzevk"
 PLATFORM_FLAVOR:mx8mq-nxp-bsp     = "mx8mqevk"
 PLATFORM_FLAVOR:mx8mm-nxp-bsp     = "mx8mmevk"
 PLATFORM_FLAVOR:mx8mn-nxp-bsp     = "mx8mnevk"
@@ -49,13 +51,13 @@ OPTEE_ARCH:aarch64 = "arm64"
 # When defining CROSS_COMPILE and CROSS_COMPILE64, we assure that
 # any 32 or 64 bits builds will pass
 EXTRA_OEMAKE = " \
-	PLATFORM=imx \
-	PLATFORM_FLAVOR=${PLATFORM_FLAVOR} \
-	CROSS_COMPILE=${HOST_PREFIX} \
-	CROSS_COMPILE64=${HOST_PREFIX} \
-	CFG_TEE_TA_LOG_LEVEL=0 \
-	CFG_TEE_CORE_LOG_LEVEL=0 \
-	-C ${S} O=${B}\
+    PLATFORM=imx-${PLATFORM_FLAVOR} \
+    CROSS_COMPILE=${HOST_PREFIX} \
+    CROSS_COMPILE64=${HOST_PREFIX} \
+    CFG_TEE_TA_LOG_LEVEL=0 \
+    CFG_TEE_CORE_LOG_LEVEL=0 \
+    OPENSSL_MODULES=${STAGING_LIBDIR_NATIVE}/ossl-modules \
+    -C ${S} O=${B} \
 "
 
 LDFLAGS = ""
