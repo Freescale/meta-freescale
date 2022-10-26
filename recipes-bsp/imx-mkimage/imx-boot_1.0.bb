@@ -72,6 +72,12 @@ REV_OPTION:mx8qxp-generic-bsp = \
                                                            'REV=C0', d)}"
 REV_OPTION:mx8dx-generic-bsp  = "REV=C0"
 
+do_uboot_assemble_fitimage:prepend:imx-generic-bsp() {
+    for config in ${UBOOT_MACHINE}; do
+        mkdir -p ${B}/${config}
+    done
+}
+
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
