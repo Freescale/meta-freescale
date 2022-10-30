@@ -10,17 +10,11 @@ SECTION = "BSP"
 
 inherit deploy native
 
+EXTRA_OEMAKE = "SOC=iMX8M mkimage_imx8"
+
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR} -L ${STAGING_LIBDIR}"
 
-do_compile () {
-    cd ${S}
-    oe_runmake clean
-    oe_runmake bin
-    oe_runmake -C iMX8M -f soc.mak mkimage_imx8
-}
-
-do_install () {
-    cd ${S}
+do_install() {
     install -d ${D}${bindir}
     install -m 0755 iMX8M/mkimage_imx8 ${D}${bindir}/mkimage_imx8m
     install -m 0755 iMX8M/mkimage_fit_atf.sh ${D}${bindir}/mkimage_fit_atf.sh
