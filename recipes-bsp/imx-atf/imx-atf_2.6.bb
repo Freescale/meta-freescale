@@ -7,10 +7,13 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 
 PV .= "+git${SRCPV}"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
-           file://0001-Makefile-Suppress-array-bounds-error.patch"
+SRC_URI = " \
+    git://github.com/nxp-imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
+    file://0001-Makefile-Suppress-array-bounds-error.patch \
+"
+
 SRCBRANCH = "lf_v2.6"
-SRCREV = "c6a19b1a351308cc73443283f6aa56b2eff791b8"
+SRCREV = "9202efc9aaf65085def9a747ee32aed628449901"
 
 S = "${WORKDIR}/git"
 
