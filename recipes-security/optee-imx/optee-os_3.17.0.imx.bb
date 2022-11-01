@@ -8,15 +8,16 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
 DEPENDS = "python3-cryptography-native python3-pyelftools-native u-boot-mkimage-native"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-5.15.32_2.0.0"
-SRCREV = "984996422c25c99ebfc5194c1bb393028605bb0c"
+SRC_URI = "git://github.com/nxp-imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH}"
+SRCBRANCH = "lf-5.15.52_2.1.0"
+SRCREV = "9e86c8b6b102efa09ada451d0383ea3d11f8fad6"
 
 SRC_URI:append = " \
     file://0008-no-warn-rwx-segments.patch \
     "
 
 S = "${WORKDIR}/git"
+B = "${WORKDIR}/build"
 
 inherit deploy python3native autotools features_check
 
@@ -60,20 +61,29 @@ EXTRA_OEMAKE = " \
     -C ${S} O=${B} \
 "
 
-LDFLAGS = ""
+LDFLAGS[unexport] = "1"
 CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"
+
+do_configure[noexec] = "1"
+
+do_compile:arm () {
+    oe_runmake all uTee
+}
+
+do_compile:aarch64 () {
+    oe_runmake all
+}
+do_compile[cleandirs] = "${B}"
 
 do_deploy () {
     install -d ${DEPLOYDIR}
     cp ${B}/core/tee-raw.bin ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin
     ln -sf tee.${PLATFORM_FLAVOR}.bin ${DEPLOYDIR}/tee.bin
+}
 
-    if [ "${OPTEE_ARCH}" != "arm64" ]; then
-        IMX_LOAD_ADDR=`${TARGET_PREFIX}readelf -h ${B}/core/tee.elf | grep "Entry point address" | awk '{print $4}'`
-        uboot-mkimage -A arm -O linux -C none -a ${IMX_LOAD_ADDR} -e ${IMX_LOAD_ADDR} \
-            -d ${DEPLOYDIR}/tee.${PLATFORM_FLAVOR}.bin ${DEPLOYDIR}/uTee-${OPTEE_BIN_EXT}
-    fi
+do_deploy:append:arm () {
+    cp ${B}/core/uTee ${DEPLOYDIR}/uTee-${OPTEE_BIN_EXT}
 }
 
 do_install () {
@@ -82,7 +92,6 @@ do_install () {
 
     # Install the TA devkit
     install -d ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
-
     for f in ${B}/export-ta_${OPTEE_ARCH}/*; do
         cp -aR $f ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
     done
@@ -95,7 +104,6 @@ do_install () {
 }
 
 addtask deploy after do_compile before do_install
-
 
 FILES:${PN} = "${nonarch_base_libdir}/firmware/ ${nonarch_base_libdir}/optee_armtz/"
 FILES:${PN}-staticdev = "${includedir}/optee/"
