@@ -24,7 +24,11 @@ KERNEL_DEVICETREE = " \
 "
 KERNEL_DEVICETREE:append:use-nxp-bsp = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}-ak5558.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-lk.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-rm67191.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-rm67191-cmd-ram.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-rm67199.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-rm67199-cmd-ram.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-rpmsg.dtb \
 "
 UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
