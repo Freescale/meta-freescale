@@ -20,14 +20,12 @@ MACHINE_FEATURES += "wifi bluetooth bcm43455 bcm4356"
 MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse bcm4359"
 
 KERNEL_DEVICETREE = " \
-	freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
 "
 KERNEL_DEVICETREE:append:use-nxp-bsp = " \
-	freescale/${KERNEL_DEVICETREE_BASENAME}-ak5558.dtb \
-	freescale/${KERNEL_DEVICETREE_BASENAME}-inmate.dtb \
-	freescale/${KERNEL_DEVICETREE_BASENAME}-rm67191.dtb \
-	freescale/${KERNEL_DEVICETREE_BASENAME}-root.dtb \
-	freescale/${KERNEL_DEVICETREE_BASENAME}-rpmsg.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-ak5558.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-rm67191.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-rpmsg.dtb \
 "
 UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
 
