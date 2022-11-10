@@ -170,75 +170,75 @@ INHERIT += "machine-overrides-extender"
 ### NXP BSP specific overrides
 #######
 
-MACHINEOVERRIDES_EXTENDER:mx6q:use-nxp-bsp   = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d:mx6-generic-bsp:mx6-nxp-bsp:mx6q-generic-bsp:mx6q-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6dl:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6dl-generic-bsp:mx6dl-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6q:use-nxp-bsp   ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d:mx6-generic-bsp:mx6-nxp-bsp:mx6q-generic-bsp:mx6q-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6dl:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxipu:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6dl-generic-bsp:mx6dl-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx6sx:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d:mx6-generic-bsp:mx6-nxp-bsp:mx6sx-generic-bsp:mx6sx-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6sx:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d:mx6-generic-bsp:mx6-nxp-bsp:mx6sx-generic-bsp:mx6sx-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx6sl:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6sll:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp:mx6sll-generic-bsp:mx6sll-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6sl:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6sll:use-nxp-bsp ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6sl-generic-bsp:mx6sl-nxp-bsp:mx6sll-generic-bsp:mx6sll-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx6ul:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6ull:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6ulz:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp:mx6ulz-generic-bsp:mx6ulz-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6ul:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6ull:use-nxp-bsp ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6ulz:use-nxp-bsp ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx6-generic-bsp:mx6-nxp-bsp:mx6ul-generic-bsp:mx6ul-nxp-bsp:mx6ull-generic-bsp:mx6ull-nxp-bsp:mx6ulz-generic-bsp:mx6ulz-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx7d:use-nxp-bsp   = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx7-generic-bsp:mx7-nxp-bsp:mx7d-generic-bsp:mx7d-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx7ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d:mx7-generic-bsp:mx7-nxp-bsp:mx7ulp-generic-bsp:mx7ulp-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx7d:use-nxp-bsp   ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxepdc:mx7-generic-bsp:mx7-nxp-bsp:mx7d-generic-bsp:mx7d-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx7ulp:use-nxp-bsp ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxpxp:imxgpu:imxgpu2d:imxgpu3d:mx7-generic-bsp:mx7-nxp-bsp:mx7ulp-generic-bsp:mx7ulp-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:vf:use-nxp-bsp     = "imx-generic-bsp:imx-nxp-bsp:vf-generic-bsp:vf-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:vf:use-nxp-bsp     ??= "imx-generic-bsp:imx-nxp-bsp:vf-generic-bsp:vf-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx8qm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8qm-generic-bsp:mx8qm-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8qm:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8qm-generic-bsp:mx8qm-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx8mm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mm-generic-bsp:mx8mm-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8mn:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxgpu:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mn-generic-bsp:mx8mn-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8mp:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mq-generic-bsp:mx8mq-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mm:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mm-generic-bsp:mx8mm-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mn:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxgpu:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mn-generic-bsp:mx8mn-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mp:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mq-generic-bsp:mx8mq-nxp-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8dx:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dx-generic-bsp:mx8dx-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8dxl-generic-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp ??= "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8dx:use-nxp-bsp  ??= "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dx-generic-bsp:mx8dx-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp ??= "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8dxl-generic-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-nxp-bsp"
 
 #######
 ### Mainline BSP specific overrides
 #######
 
-MACHINEOVERRIDES_EXTENDER:mx23:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx23-generic-bsp:mx23-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx28:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx28-generic-bsp:mx28-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx23:use-mainline-bsp   ??= "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx23-generic-bsp:mx23-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx28:use-mainline-bsp   ??= "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx28-generic-bsp:mx28-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx27:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx27-generic-bsp:mx27-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx27:use-mainline-bsp   ??= "imx-generic-bsp:imx-mainline-bsp:mx27-generic-bsp:mx27-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx51:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx51-generic-bsp:mx51-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx53:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx53-generic-bsp:mx53-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx51:use-mainline-bsp   ??= "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx51-generic-bsp:mx51-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx53:use-mainline-bsp   ??= "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx53-generic-bsp:mx53-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx6q:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6q-generic-bsp:mx6q-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6dl:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6dl-generic-bsp:mx6dl-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6q:use-mainline-bsp   ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6q-generic-bsp:mx6q-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6dl:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6dl-generic-bsp:mx6dl-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx6sx:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6sx-generic-bsp:mx6sx-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6sx:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6sx-generic-bsp:mx6sx-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx6sl:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6sl-generic-bsp:mx6sl-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6sll:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6sll-generic-bsp:mx6sll-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6sl:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6sl-generic-bsp:mx6sl-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6sll:use-mainline-bsp ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6sll-generic-bsp:mx6sll-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx6ul:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6ul-generic-bsp:mx6ul-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6ull:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6ul-generic-bsp:mx6ul-mainline-bsp:mx6ull-generic-bsp:mx6ull-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx6ulz:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6ul-generic-bsp:mx6ul-mainline-bsp:mx6ull-generic-bsp:mx6ull-mainline-bsp:mx6ulz-generic-bsp:mx6ulz-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6ul:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6ul-generic-bsp:mx6ul-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6ull:use-mainline-bsp ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6ul-generic-bsp:mx6ul-mainline-bsp:mx6ull-generic-bsp:mx6ull-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx6ulz:use-mainline-bsp ??= "imx-generic-bsp:imx-mainline-bsp:mx6-generic-bsp:mx6-mainline-bsp:mx6ul-generic-bsp:mx6ul-mainline-bsp:mx6ull-generic-bsp:mx6ull-mainline-bsp:mx6ulz-generic-bsp:mx6ulz-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx7d:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx7-generic-bsp:mx7-mainline-bsp:mx7d-generic-bsp:mx7d-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx7ulp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx7-generic-bsp:mx7-mainline-bsp:mx7ulp-generic-bsp:mx7ulp-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx7d:use-mainline-bsp   ??= "imx-generic-bsp:imx-mainline-bsp:mx7-generic-bsp:mx7-mainline-bsp:mx7d-generic-bsp:mx7d-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx7ulp:use-mainline-bsp ??= "imx-generic-bsp:imx-mainline-bsp:mx7-generic-bsp:mx7-mainline-bsp:mx7ulp-generic-bsp:mx7ulp-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:vf:use-mainline-bsp     = "imx-generic-bsp:imx-mainline-bsp:vf-generic-bsp:vf-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:vf:use-mainline-bsp     ??= "imx-generic-bsp:imx-mainline-bsp:vf-generic-bsp:vf-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx8qm:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8qm-generic-bsp:mx8qm-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8qm:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8qm-generic-bsp:mx8qm-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx8mm:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mm-generic-bsp:mx8mm-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8mn:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mn-generic-bsp:mx8mn-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8mp:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mp-generic-bsp:mx8mp-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8mq:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mq-generic-bsp:mx8mq-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mm:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mm-generic-bsp:mx8mm-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mn:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mn-generic-bsp:mx8mn-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mp:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mp-generic-bsp:mx8mp-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mq:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mq-generic-bsp:mx8mq-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx8qxp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8qxp-generic-bsp:mx8qxp-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8dx:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dx-generic-bsp:mx8dx-mainline-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8dxl:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dxl-generic-bsp:mx8dxl-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8qxp:use-mainline-bsp ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8qxp-generic-bsp:mx8qxp-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8dx:use-mainline-bsp  ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dx-generic-bsp:mx8dx-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8dxl:use-mainline-bsp ??= "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dxl-generic-bsp:mx8dxl-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
+MACHINEOVERRIDES_EXTENDER_FILTER_OUT ??= " \
     mx6 \
     mx6q \
     mx6dl \
@@ -267,34 +267,34 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8dxl \
 "
 
-MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR = "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
+MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR ??= "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
 
 # Sub-architecture support
-MACHINE_SOCARCH_SUFFIX ?= ""
-MACHINE_SOCARCH_SUFFIX:mx6q-nxp-bsp = "-mx6qdl"
-MACHINE_SOCARCH_SUFFIX:mx6dl-nxp-bsp = "-mx6qdl"
-MACHINE_SOCARCH_SUFFIX:mx6sx-nxp-bsp = "-mx6sx"
-MACHINE_SOCARCH_SUFFIX:mx6sl-nxp-bsp = "-mx6sl"
-MACHINE_SOCARCH_SUFFIX:mx6sll-nxp-bsp= "-mx6sll"
-MACHINE_SOCARCH_SUFFIX:mx7d-nxp-bsp = "-mx7d"
-MACHINE_SOCARCH_SUFFIX:mx7ulp-nxp-bsp = "-mx7ulp"
-MACHINE_SOCARCH_SUFFIX:vf-nxp-bsp = "-vf"
-MACHINE_SOCARCH_SUFFIX:mx6ul-nxp-bsp  = "-mx6ul"
-MACHINE_SOCARCH_SUFFIX:mx6ull-nxp-bsp = "-mx6ul"
-MACHINE_SOCARCH_SUFFIX:mx6ulz-nxp-bsp = "-mx6ul"
-MACHINE_SOCARCH_SUFFIX:mx8qm-nxp-bsp  = "-mx8"
-MACHINE_SOCARCH_SUFFIX:mx8mm-nxp-bsp  = "-mx8mm"
-MACHINE_SOCARCH_SUFFIX:mx8mn-nxp-bsp  = "-mx8mn"
-MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp  = "-mx8mp"
-MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp  = "-mx8m"
-MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp = "-mx8"
-MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp  = "-mx8"
-MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8xl"
+MACHINE_SOCARCH_SUFFIX                ??= ""
+MACHINE_SOCARCH_SUFFIX:mx6q-nxp-bsp   ??= "-mx6qdl"
+MACHINE_SOCARCH_SUFFIX:mx6dl-nxp-bsp  ??= "-mx6qdl"
+MACHINE_SOCARCH_SUFFIX:mx6sx-nxp-bsp  ??= "-mx6sx"
+MACHINE_SOCARCH_SUFFIX:mx6sl-nxp-bsp  ??= "-mx6sl"
+MACHINE_SOCARCH_SUFFIX:mx6sll-nxp-bsp ??= "-mx6sll"
+MACHINE_SOCARCH_SUFFIX:mx7d-nxp-bsp   ??= "-mx7d"
+MACHINE_SOCARCH_SUFFIX:mx7ulp-nxp-bsp ??= "-mx7ulp"
+MACHINE_SOCARCH_SUFFIX:vf-nxp-bsp     ??= "-vf"
+MACHINE_SOCARCH_SUFFIX:mx6ul-nxp-bsp  ??= "-mx6ul"
+MACHINE_SOCARCH_SUFFIX:mx6ull-nxp-bsp ??= "-mx6ul"
+MACHINE_SOCARCH_SUFFIX:mx6ulz-nxp-bsp ??= "-mx6ul"
+MACHINE_SOCARCH_SUFFIX:mx8qm-nxp-bsp  ??= "-mx8"
+MACHINE_SOCARCH_SUFFIX:mx8mm-nxp-bsp  ??= "-mx8mm"
+MACHINE_SOCARCH_SUFFIX:mx8mn-nxp-bsp  ??= "-mx8mn"
+MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp  ??= "-mx8mp"
+MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp  ??= "-mx8m"
+MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp ??= "-mx8"
+MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp  ??= "-mx8"
+MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp ??= "-mx8xl"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
-MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
+MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp ??= "-imx"
 
-MACHINE_ARCH_FILTER = "virtual/kernel"
+MACHINE_ARCH_FILTER ??= "virtual/kernel"
 MACHINE_SOCARCH_FILTER:append:imx-nxp-bsp = " \
     alsa-lib \
     gstreamer1.0 \
