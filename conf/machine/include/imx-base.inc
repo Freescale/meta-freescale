@@ -10,11 +10,11 @@ require conf/machine/include/utilities.inc
 # DISTROs might change it if need.
 #
 # Two values are considered valid: mainline, nxp
-IMX_DEFAULT_BSP ?= "mainline"
+IMX_DEFAULT_BSP ??= "mainline"
 
 # Those are SoC families we'd like to force the use of mainline BSP.
-IMX_DEFAULT_BSP:mxs ?= "mainline"
-IMX_DEFAULT_BSP:mx5 ?= "mainline"
+IMX_DEFAULT_BSP:mxs ??= "mainline"
+IMX_DEFAULT_BSP:mx5 ??= "mainline"
 
 MACHINEOVERRIDES =. "use-${IMX_DEFAULT_BSP}-bsp:"
 
@@ -75,7 +75,7 @@ UBOOT_SUFFIX ?= "${UBOOT_SUFFIX:pn-${IMX_DEFAULT_BOOTLOADER}}"
 # wic based images.
 SPL_BINARY ??= "${@get_spl_binary(d)}"
 
-IMX_DEFAULT_MFGTOOL = "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-mfgtool', 'u-boot-fslc', d)}"
+IMX_DEFAULT_MFGTOOL ??= "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx','u-boot-imx-mfgtool', 'u-boot-fslc', d)}"
 
 PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_u-boot-mfgtool ??= "${IMX_DEFAULT_MFGTOOL}"
@@ -101,8 +101,8 @@ UBOOT_ENTRYPOINT:vf-generic-bsp     = "0x80008000"
 # Some derivates can utilize the boot container provided by U-Boot,
 # below variable sets that those machines which have a imx-boot-container
 # in their MACHINEOVERRIDES can inherit a imx-boot-container class
-UBOOT_PROVIDES_BOOT_CONTAINER = "0"
-UBOOT_PROVIDES_BOOT_CONTAINER:imx-boot-container = "1"
+UBOOT_PROVIDES_BOOT_CONTAINER ??= "0"
+UBOOT_PROVIDES_BOOT_CONTAINER:imx-boot-container ??= "1"
 
 # Trusted Firmware for Cortex-A (TF-A) can have different providers, either
 # from upstream or from NXP downstream fork. Below variable defines which TF-A
@@ -125,23 +125,23 @@ IMX_DEFAULT_ATF_PROVIDER ??= "imx-atf"
 
 # FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
 # base address in source code.
-SOC_ATF_BOOT_UART_BASE                    = ""
+SOC_ATF_BOOT_UART_BASE                  ??= ""
 
-SOC_ATF_BOOT_UART_BASE:mx8m-generic-bsp   = "0x30890000"
-ATF_BOOT_UART_BASE                       ?= "${SOC_ATF_BOOT_UART_BASE}"
+SOC_ATF_BOOT_UART_BASE:mx8m-generic-bsp ??= "0x30890000"
+ATF_BOOT_UART_BASE                      ??= "${SOC_ATF_BOOT_UART_BASE}"
 
 PREFERRED_PROVIDER_virtual/xserver      = "xserver-xorg"
-XSERVER_DRIVER                          = "xf86-video-fbdev"
-XSERVER_DRIVER:vf-generic-bsp           = "xf86-video-modesetting"
+XSERVER_DRIVER                        ??= "xf86-video-fbdev"
+XSERVER_DRIVER:vf-generic-bsp         ??= "xf86-video-modesetting"
 XSERVER_DRIVER:append:mx8-generic-bsp   = " xf86-video-modesetting"
-XSERVER_DRIVER:imx-mainline-bsp = " \
+XSERVER_DRIVER:imx-mainline-bsp       ??= " \
     xf86-video-fbdev \
     xf86-video-modesetting \
     xserver-xorg-extension-glx \
 "
 XSERVER = "xserver-xorg \
-           xf86-input-evdev \
-           ${XSERVER_DRIVER}"
+             xf86-input-evdev \
+             ${XSERVER_DRIVER}"
 
 # Ship kernel modules
 MACHINE_EXTRA_RRECOMMENDS = "kernel-modules"
@@ -366,13 +366,13 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS:append = " \
 "
 
 # Firmware used for boot.
-IMX_EXTRA_FIRMWARE                  ?= ""
-IMX_EXTRA_FIRMWARE:mx8-generic-bsp   = "firmware-imx-8 imx-sc-firmware imx-seco"
-IMX_EXTRA_FIRMWARE:mx8m-generic-bsp  = "firmware-imx-8m"
-IMX_EXTRA_FIRMWARE:mx8x-generic-bsp  = "imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE                  ??= ""
+IMX_EXTRA_FIRMWARE:mx8-generic-bsp  ??= "firmware-imx-8 imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE:mx8m-generic-bsp ??= "firmware-imx-8m"
+IMX_EXTRA_FIRMWARE:mx8x-generic-bsp ??= "imx-sc-firmware imx-seco"
 
 # Firmware
-MACHINE_FIRMWARE ?= ""
+MACHINE_FIRMWARE ??= ""
 MACHINE_FIRMWARE:append:mx27-generic-bsp   = " firmware-imx-vpu-imx27"
 MACHINE_FIRMWARE:append:mx7d-generic-bsp   = " linux-firmware-imx-sdma-imx7d firmware-imx-epdc"
 MACHINE_FIRMWARE:append:mx6-generic-bsp    = " linux-firmware-imx-sdma-imx6q"
@@ -395,8 +395,8 @@ MACHINE_FIRMWARE:append:imx-mainline-bsp   = " linux-firmware-imx-sdma-imx6q lin
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
 # Extra audio support
-IMX_ALSA_EXTRA = ""
-IMX_ALSA_EXTRA:imx-nxp-bsp = "imx-alsa-plugins"
+IMX_ALSA_EXTRA ??= ""
+IMX_ALSA_EXTRA:imx-nxp-bsp ??= "imx-alsa-plugins"
 MACHINE_EXTRA_RRECOMMENDS:append:mx6-nxp-bsp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', '${IMX_ALSA_EXTRA}', '', d)}"
 MACHINE_EXTRA_RRECOMMENDS:append:mx7-nxp-bsp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', '${IMX_ALSA_EXTRA}', '', d)}"
 MACHINE_EXTRA_RRECOMMENDS:append:mx8-nxp-bsp = " ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', '${IMX_ALSA_EXTRA}', '', d)}"
@@ -424,21 +424,21 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 "
 
 # GStreamer 1.0 plugins
-MACHINE_GSTREAMER_1_0_PLUGIN                ?= ""
-MACHINE_GSTREAMER_1_0_PLUGIN:mx6dl-nxp-bsp  ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx6q-nxp-bsp   ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx6sl-nxp-bsp  ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx6sx-nxp-bsp  ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx6ul-nxp-bsp  ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx6ull-nxp-bsp ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx7d-nxp-bsp   ?= "gstreamer1.0-plugins-imx-meta"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx8mm-nxp-bsp  ?= "imx-gst1.0-plugin"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx8mn-nxp-bsp  ?= "imx-gst1.0-plugin"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx8mp-nxp-bsp  ?= "imx-gst1.0-plugin"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx8mq-nxp-bsp  ?= "imx-gst1.0-plugin"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx8qm-nxp-bsp  ?= "imx-gst1.0-plugin"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx8qxp-nxp-bsp ?= "imx-gst1.0-plugin"
-MACHINE_GSTREAMER_1_0_PLUGIN:mx8dx-nxp-bsp  ?= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN                ??= ""
+MACHINE_GSTREAMER_1_0_PLUGIN:mx6dl-nxp-bsp  ??= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx6q-nxp-bsp   ??= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx6sl-nxp-bsp  ??= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx6sx-nxp-bsp  ??= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx6ul-nxp-bsp  ??= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx6ull-nxp-bsp ??= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx7d-nxp-bsp   ??= "gstreamer1.0-plugins-imx-meta"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8mm-nxp-bsp  ??= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8mn-nxp-bsp  ??= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8mp-nxp-bsp  ??= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8mq-nxp-bsp  ??= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8qm-nxp-bsp  ??= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8qxp-nxp-bsp ??= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8dx-nxp-bsp  ??= "imx-gst1.0-plugin"
 
 PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              ??= "1.20.0.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp ??= "1.20.0.imx"
@@ -447,13 +447,13 @@ PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8-nxp-bsp  ??= "1.20.0.imx"
 PREFERRED_VERSION_ffmpeg:mx8-nxp-bsp                    ??= "4.4.1"
 
 # Determines if the SoC has support for Vivante kernel driver
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
-SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT:imxgpu = "1"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        ??= "0"
+SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT:imxgpu ??= "1"
 
 # Handle Vivante kernel driver setting:
 #   0 - machine does not have Vivante GPU driver support
 #   1 - machine has Vivante GPU driver support
-MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ?= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
+MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ??= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
 
 # Graphics libraries
 PREFERRED_PROVIDER_virtual/egl      ?= "mesa"
@@ -498,20 +498,20 @@ PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "3.17.0.imx"
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.5.2.imx"
 
 # Handle default kernel
-IMX_DEFAULT_KERNEL:imx-mainline-bsp = "linux-fslc"
-IMX_DEFAULT_KERNEL:imx-nxp-bsp      = "linux-fslc-imx"
+IMX_DEFAULT_KERNEL:imx-mainline-bsp ??= "linux-fslc"
+IMX_DEFAULT_KERNEL:imx-nxp-bsp      ??= "linux-fslc-imx"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
-SOC_DEFAULT_IMAGE_FSTYPES = "wic.bmap wic.gz"
-SOC_DEFAULT_IMAGE_FSTYPES:mxs-generic-bsp = "uboot-mxsboot-sdcard wic.bmap wic.gz"
+SOC_DEFAULT_IMAGE_FSTYPES ??= "wic.bmap wic.gz"
+SOC_DEFAULT_IMAGE_FSTYPES:mxs-generic-bsp ??= "uboot-mxsboot-sdcard wic.bmap wic.gz"
 
 # Do not update fstab file when using wic images
 WIC_CREATE_EXTRA_ARGS ?= "--no-fstab-update"
 
 OPTEE_BIN_EXT ??= ""
-OPTEE_BOOT_IMAGE         = "tee.bin uTee-${OPTEE_BIN_EXT}"
-OPTEE_BOOT_IMAGE:aarch64 = "tee.bin"
+OPTEE_BOOT_IMAGE         ??= "tee.bin uTee-${OPTEE_BIN_EXT}"
+OPTEE_BOOT_IMAGE:aarch64 ??= "tee.bin"
 
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
@@ -522,8 +522,8 @@ IMAGE_BOOT_FILES ?= " \
 "
 
 ### wic default support
-OPTEE_WKS_FILE_DEPENDS         = "optee-os"
-OPTEE_WKS_FILE_DEPENDS:aarch64 = ""
+OPTEE_WKS_FILE_DEPENDS         ??= "optee-os"
+OPTEE_WKS_FILE_DEPENDS:aarch64 ??= ""
 
 WKS_FILE_DEPENDS ?= " \
     virtual/bootloader \
@@ -548,11 +548,11 @@ WKS_FILE_DEPENDS:append:imx-generic-bsp:aarch64 = " \
     ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
 "
 
-SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
-SOC_DEFAULT_WKS_FILE:mx8m-nxp-bsp ?= "imx-imx-boot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE ??= "imx-uboot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:mx8m-nxp-bsp ??= "imx-imx-boot-bootpart.wks.in"
 
-SOC_DEFAULT_WKS_FILE:mx8-nxp-bsp ?= "imx-imx-boot-bootpart.wks.in"
-SOC_DEFAULT_WKS_FILE:mxs-generic-bsp ?= "imx-uboot-mxs-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:mx8-nxp-bsp ??= "imx-imx-boot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:mxs-generic-bsp ??= "imx-uboot-mxs-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
