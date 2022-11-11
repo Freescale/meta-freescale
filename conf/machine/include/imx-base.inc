@@ -556,11 +556,11 @@ SOC_DEFAULT_WKS_FILE:mxs-generic-bsp ??= "imx-uboot-mxs-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
-SERIAL_CONSOLES = "115200;ttymxc0"
-SERIAL_CONSOLES:mxs-generic-bsp = "115200;ttyAMA0"
+SERIAL_CONSOLES ?= "115200;ttymxc0"
+SERIAL_CONSOLES:mxs-generic-bsp ?= "115200;ttyAMA0"
 
-KERNEL_IMAGETYPE = "zImage"
-KERNEL_IMAGETYPE:aarch64 = "Image"
+KERNEL_IMAGETYPE ?= "zImage"
+KERNEL_IMAGETYPE:aarch64 ?= "Image"
 
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
 
