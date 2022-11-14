@@ -43,6 +43,14 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # 49c2d3b7964d gpio: fix enabling GPIO_VF610
 # c04a396fcbf7 ARM: mach-imx: conditionally disable some functions from busfreq-imx
 # 166a38557bf9 drm: bridge: it6161: add missing gpio consumer header
+# 5abdee26320f Revert "ASoC: imx-card: Fix DSD/PDM mclk frequency"
+# 6da679049e7f Revert "LF-5445: media: imx-jpeg: Add pm-sleep support for imx-jpeg"
+# a62c5aa0d000 Revert "media: imx-jpeg: Don't clear stop state in handling dynamic resolution change"
+# b54e0195c2e3 Revert "LF-6878: LF-6654: media: imx-jpeg: Implement g_selection and s_selection"
+# 21f50ad28213 Revert "LF-6493: media: imx-jpeg: Add a timeout mechanism for each frame"
+# 44970f9fbed6 Revert "media: imx-jpeg: Align upwards buffer size"
+# ee7468eafdaa Revert "LF-6878: LF-6658: media: imx-jpeg: Support contiguous and non contiguous format"
+# bb6e70bff1b7 drivers/soc/imx/gpcv2.c: complete patch revert
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -56,17 +64,17 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.15-2.1.x-imx"
-SRCREV = "e1b43282a845dfb78e115a8e2dc4144ce0d335b5"
+SRCREV = "0dbb0e28ad332aa0955b873beb91190ae05ac655"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.15.60"
+LINUX_VERSION = "5.15.77"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-5.15.60-2.1.0"
+LOCALVERSION = "-5.15.77-2.1.0"
 
 DEFAULT_PREFERENCE = "1"
 
