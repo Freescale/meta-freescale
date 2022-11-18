@@ -473,7 +473,7 @@ PREFERRED_PROVIDER_opencl-headers:imxgpu     ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxgpu  ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/opencl-icd:imxgpu ?= "imx-gpu-viv"
 
-PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "10.0.0.imx"
+PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "10.0.1.imx"
 PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
 PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp ??= "1.25.imx"

@@ -160,13 +160,13 @@ SUMMARY = "Weston, a Wayland compositor, i.MX fork"
 DEFAULT_PREFERENCE = "-1"
 
 SRC_URI:remove = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz"
-SRC_URI:prepend = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} "
+SRC_URI:prepend = "git://github.com/nxp-imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} "
 SRC_URI += "file://0001-Revert-protocol-no-found-wayland-scanner-with-Yocto-.patch \
             file://0001-g2d-renderer.c-Include-sys-stat.h.patch \
             file://0001-tests-Add-dependency-on-screenshooter-client-protoco.patch \
             "
-SRCBRANCH = "weston-imx-10.0"
-SRCREV = "c8c6e3106b03441db1037afa995f95fcb2f9f17d"
+SRCBRANCH = "weston-imx-10.0.1"
+SRCREV = "3f8f336b5d2cf7ea7aa4e047d669d093fc46dfe6"
 
 S = "${WORKDIR}/git"
 

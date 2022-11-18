@@ -10,15 +10,39 @@ PV = "2.1+git${SRCPV}"
 SRC_URI = "${GPU_G2D_SAMPLES_SRC};branch=${SRCBRANCH}"
 GPU_G2D_SAMPLES_SRC ?= "git://github.com/nxpmicro/g2d-samples.git;protocol=https"
 SRCBRANCH ?= "imx_2.1"
-SRCREV = "3268f291a15b2d8d5f650f627764a52eb0a8fc15"
+SRCREV = "5a38513b97ff83b46777cf73da3cbe37b4976498"
 
 S = "${WORKDIR}/git"
 
 inherit pkgconfig
 
-PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'wayland', d)}"
+PACKAGECONFIG ??= "${PACKAGECONFIG_IMPLEMENTATION}"
+PACKAGECONFIG_IMPLEMENTATION                   = ""
+PACKAGECONFIG_IMPLEMENTATION:imxgpu2d:imxdpu   = "dpu"
+PACKAGECONFIG_IMPLEMENTATION:imxgpu2d          = "gpu-drm"
+PACKAGECONFIG_IMPLEMENTATION:imxgpu2d:imxfbdev = "gpu-fbdev"
 
-PACKAGECONFIG[wayland] = "USE_WAYLAND=true,USE_WAYLAND=false,wayland-native wayland-protocols"
+PACKAGECONFIG[dpu] = " \
+    BUILD_IMPLEMENTATION=dpu, \
+    , \
+    imx-dpu-g2d wayland-native wayland-protocols, \
+    , \
+    , \
+    gpu-drm gpu-fbdev"
+PACKAGECONFIG[gpu-drm] = " \
+    BUILD_IMPLEMENTATION=gpu-drm, \
+    , \
+    imx-gpu-g2d wayland-native wayland-protocols, \
+    , \
+    , \
+    dpu gpu-fbdev"
+PACKAGECONFIG[gpu-fbdev] = " \
+    BUILD_IMPLEMENTATION=gpu-fbdev, \
+    , \
+    imx-gpu-g2d, \
+    , \
+    , \
+    dpu gpu-drm"
 
 EXTRA_OEMAKE += " \
     SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
@@ -30,5 +54,7 @@ do_install() {
 }
 
 FILES:${PN} += "/opt"
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 COMPATIBLE_MACHINE = "(imxgpu2d)"
