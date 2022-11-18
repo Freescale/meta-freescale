@@ -6,7 +6,7 @@
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
+LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -177,9 +177,7 @@ IMX_SOC:mx8mq-nxp-bsp  = "mx8mq"
 IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
 IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
-LIBVULKAN_VERSION_MAJOR = "1"
-LIBVULKAN_VERSION       = "${LIBVULKAN_VERSION_MAJOR}.2.1"
-LIBVULKAN_API_VERSION   = "${LIBVULKAN_VERSION_MAJOR}.2.182"
+LIBVULKAN_API_VERSION   = "1.2.182"
 
 do_install () {
     install -d ${D}${libdir}
@@ -258,15 +256,6 @@ do_install () {
     fi
 
     if [ "${IS_MX8}" = "1" ]; then
-        # Rename the vulkan implementation library which is wrapped by the vulkan-loader
-        # library of the same name
-        MAJOR=${LIBVULKAN_VERSION_MAJOR}
-        FULL=${LIBVULKAN_VERSION}
-        mv ${D}${libdir}/libvulkan.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$FULL
-        patchelf --set-soname libvulkan_VSI.so.$MAJOR ${D}${libdir}/libvulkan_VSI.so.$FULL
-        rm ${D}${libdir}/libvulkan.so.$MAJOR ${D}${libdir}/libvulkan.so
-        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so.$MAJOR
-        ln -s libvulkan_VSI.so.$FULL ${D}${libdir}/libvulkan_VSI.so
         if [ -z "${PACKAGES_VULKAN}" ]; then
             set -f
             for f in ${FILES:libvulkan-imx} ${FILES:libvulkan-imx-dev}; do
