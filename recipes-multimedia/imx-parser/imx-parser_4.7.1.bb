@@ -5,7 +5,7 @@
 DESCRIPTION = "Freescale Multimedia parser libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
+LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
 
 # For backwards compatibility
 PROVIDES += "libfslparser"
@@ -14,8 +14,8 @@ RPROVIDES:${PN} = "libfslparser"
 RCONFLICTS:${PN} = "libfslparser"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "5054251389f43702fd29da9668bd3dea"
-SRC_URI[sha256sum] = "caf2757baa936ffe0e992f8e6c3121932f5b497cebfbf20048ba93b26626c4d7"
+SRC_URI[md5sum] = "33341cfbc387a881d82c5197b86a4544"
+SRC_URI[sha256sum] = "680080293df869393028c58ccb2642b724f4b2297f2cbd7b98877a81e4cd6d03"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
