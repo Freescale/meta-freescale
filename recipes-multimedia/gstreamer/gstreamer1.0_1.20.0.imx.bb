@@ -88,8 +88,8 @@ DEFAULT_PREFERENCE = "-1"
 # Use i.MX fork of GST for customizations
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz"
 SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
-GST1.0_SRC ?= "gitsm://source.codeaurora.org/external/imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.07.00_2205_L5.15.y"
+GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
+SRCBRANCH = "MM_04.07.01_2208_L5.15.y"
 SRCREV = "7afc123bc6974d68795f97466eb83ec7a093fb9b"
 
 S = "${WORKDIR}/git"
