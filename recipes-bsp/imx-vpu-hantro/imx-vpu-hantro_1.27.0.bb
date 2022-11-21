@@ -6,7 +6,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
 
 PROVIDES = "virtual/imxvpu"
 
-SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
+SRC_URI = " \
+    ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
+    file://0001-buildsystem-don-t-ignore-externally-set-cflags.patch \
+"
 SRC_URI[md5sum] = "cfa0e92da0eca9cf622c4d7abc618cef"
 SRC_URI[sha256sum] = "7e9bcdbd067ce66a1247373cbf088945346feb0027deb61af541ebc1256277c3"
 
