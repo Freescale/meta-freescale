@@ -31,7 +31,7 @@ Index: git/samples/dnn/classification.cpp
 ===================================================================
 --- git.orig/samples/dnn/classification.cpp
 +++ git/samples/dnn/classification.cpp
-@@ -11,6 +11,7 @@ std::string keys =
+@@ -12,6 +12,7 @@ std::string keys =
      "{ help  h          | | Print help message. }"
      "{ @alias           | | An alias name of model to extract preprocessing parameters from models.yml file. }"
      "{ zoo              | models.yml | An optional path to file with preprocessing parameters }"
@@ -39,7 +39,7 @@ Index: git/samples/dnn/classification.cpp
      "{ input i          | | Path to input image or video file. Skip this argument to capture frames from a camera.}"
      "{ initial_width    | 0 | Preprocess input image by initial resizing to a specific width.}"
      "{ initial_height   | 0 | Preprocess input image by initial resizing to a specific height.}"
-@@ -102,7 +103,7 @@ int main(int argc, char** argv)
+@@ -113,7 +114,7 @@ int main(int argc, char** argv)
      if (parser.has("input"))
          cap.open(parser.get<String>("input"));
      else
@@ -48,19 +48,21 @@ Index: git/samples/dnn/classification.cpp
      //! [Open a video file or an image file or a camera stream]
  
      // Process frames.
-@@ -151,13 +152,13 @@ int main(int argc, char** argv)
-         double freq = getTickFrequency() / 1000;
-         double t = net.getPerfProfile(layersTimes) / freq;
-         std::string label = format("Inference time: %.2f ms", t);
+@@ -195,14 +196,14 @@ int main(int argc, char** argv)
+         }
+         std::string label = format("Inference time of 1 round: %.2f ms", t1);
+         std::string label2 = format("Average time of 200 rounds: %.2f ms", timeRecorder.getTimeMilli()/200);
 -        putText(frame, label, Point(0, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
+-        putText(frame, label2, Point(0, 35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
 +        putText(frame, label, Point(0, 20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 255), 2, 8, false);
++        putText(frame, label2, Point(0, 45), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 255), 2, 8, false);
  
          // Print predicted class.
          label = format("%s: %.4f", (classes.empty() ? format("Class #%d", classId).c_str() :
                                                        classes[classId].c_str()),
                                     confidence);
--        putText(frame, label, Point(0, 40), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
-+        putText(frame, label, Point(0, 45), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 255), 2, 8, false);
+-        putText(frame, label, Point(0, 55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0));
++        putText(frame, label, Point(0, 70), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 255), 2, 8, false);
  
          imshow(kWinName, frame);
      }
@@ -68,7 +70,7 @@ Index: git/samples/dnn/object_detection.cpp
 ===================================================================
 --- git.orig/samples/dnn/object_detection.cpp
 +++ git/samples/dnn/object_detection.cpp
-@@ -251,13 +251,13 @@ int main(int argc, char** argv)
+@@ -260,13 +260,13 @@ int main(int argc, char** argv)
          if (predictionsQueue.counter > 1)
          {
              std::string label = format("Camera: %.2f FPS", framesQueue.getFPS());
@@ -85,7 +87,7 @@ Index: git/samples/dnn/object_detection.cpp
          }
          imshow(kWinName, frame);
      }
-@@ -293,7 +293,7 @@ int main(int argc, char** argv)
+@@ -302,7 +302,7 @@ int main(int argc, char** argv)
          double freq = getTickFrequency() / 1000;
          double t = net.getPerfProfile(layersTimes) / freq;
          std::string label = format("Inference time: %.2f ms", t);
@@ -94,7 +96,7 @@ Index: git/samples/dnn/object_detection.cpp
  
          imshow(kWinName, frame);
      }
-@@ -462,7 +462,7 @@ void drawPred(int classId, float conf, i
+@@ -471,7 +471,7 @@ void drawPred(int classId, float conf, i
      top = max(top, labelSize.height);
      rectangle(frame, Point(left, top - labelSize.height),
                Point(left + labelSize.width, top + baseLine), Scalar::all(255), FILLED);
@@ -107,7 +109,7 @@ Index: git/samples/dnn/segmentation.cpp
 ===================================================================
 --- git.orig/samples/dnn/segmentation.cpp
 +++ git/samples/dnn/segmentation.cpp
-@@ -157,7 +157,7 @@ int main(int argc, char** argv)
+@@ -162,7 +162,7 @@ int main(int argc, char** argv)
          double freq = getTickFrequency() / 1000;
          double t = net.getPerfProfile(layersTimes) / freq;
          std::string label = format("Inference time: %.2f ms", t);
