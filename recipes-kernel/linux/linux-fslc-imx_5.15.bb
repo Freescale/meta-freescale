@@ -51,6 +51,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # 44970f9fbed6 Revert "media: imx-jpeg: Align upwards buffer size"
 # ee7468eafdaa Revert "LF-6878: LF-6658: media: imx-jpeg: Support contiguous and non contiguous format"
 # bb6e70bff1b7 drivers/soc/imx/gpcv2.c: complete patch revert
+# a682d463667a Revert "serial: fsl_lpuart: Reset prior to registration"
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -64,7 +65,7 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.15-2.1.x-imx"
-SRCREV = "0dbb0e28ad332aa0955b873beb91190ae05ac655"
+SRCREV = "9dcc132b0caa04022a9adbb76510258684fbfef7"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
