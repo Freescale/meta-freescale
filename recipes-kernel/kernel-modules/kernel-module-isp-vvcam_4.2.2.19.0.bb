@@ -10,6 +10,14 @@ SRCBRANCH = "lf-5.15.y_2.1.0"
 SRCREV = "b26ee8a5402afd7488716e06d82147669c05eb4a"
 
 S = "${WORKDIR}/git/vvcam/v4l2"
+DEBUG_PREFIX_MAP = "-fmacro-prefix-map=${WORKDIR}/git/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
+ -fdebug-prefix-map=${WORKDIR}/git/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
+ -fmacro-prefix-map=${B}=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
+ -fdebug-prefix-map=${B}=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
+ -fdebug-prefix-map=${STAGING_DIR_HOST}= \
+ -fmacro-prefix-map=${STAGING_DIR_HOST}= \
+ -fdebug-prefix-map=${STAGING_DIR_NATIVE}= \
+"
 
 inherit module
 
