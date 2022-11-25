@@ -2,12 +2,12 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
+LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
 DEPENDS = "libdrm virtual/libg2d libtinyxml2"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "a20171db4bf2be423a587f3b610f0a69"
-SRC_URI[sha256sum] = "468ae51223d1873a1a756a1e64a53c0c61ebd640b3810f3a9e912b6a0de6c3c8"
+SRC_URI[md5sum] = "d0350ad40df96a84efc4802975f92c91"
+SRC_URI[sha256sum] = "5544aef41546906bc4999de1980e4706cf241c93732633efde57b018ac4863c3"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -25,6 +25,7 @@ SYSTEMD_SERVICE:${PN} = "imx8-isp.service"
 EXTRA_OECMAKE += " \
     -DSDKTARGETSYSROOT=${STAGING_DIR_HOST} \
     -DCMAKE_BUILD_TYPE=release \
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
     -DAPPMODE=V4L2 \
@@ -45,11 +46,13 @@ do_install() {
     install -d ${D}/${libdir}
     install -d ${D}/${includedir}
     install -d ${D}/opt/imx8-isp/bin
+    install -d ${D}/opt/imx8-isp/bin/dewarp_config
 
     cp -r ${B}/generated/release/bin/*_test ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*2775* ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*.xml ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*.drv ${D}/opt/imx8-isp/bin
+    cp -r ${WORKDIR}/${BP}/dewarp/dewarp_config/ ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/lib/*.so* ${D}/${libdir}
@@ -80,8 +83,6 @@ FILES_SOLIBS_VERSIONED = " \
 "
 FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
 FILES:${PN}-dev += "${FILES_SOLIBS_VERSIONED}"
-
-INSANE_SKIP:${PN} = "rpaths"
 
 RDEPENDS:${PN} = "libdrm"
 
