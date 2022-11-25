@@ -184,9 +184,9 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
            file://0005-msdk-fix-includedir-path.patch \
            "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
-GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.07.00_2205_L5.15.y"
-SRCREV = "63a55f06f7e8f21b483c6d70d50389beb2e85e37"
+GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
+SRCBRANCH = "MM_04.07.01_2208_L5.15.y"
+SRCREV = "a9c9d17bb3fc94f49f9c17fd965090949b7ba1cd"
 
 S = "${WORKDIR}/git"
 
