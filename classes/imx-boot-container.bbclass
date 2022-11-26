@@ -28,6 +28,16 @@
 ATF_MACHINE_NAME = "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
+IMX_BOOT_CONTAINER_FIRMWARE_SOC = ""
+IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx8mq-generic-bsp = " \
+    signed_dp_imx8m.bin \
+    signed_hdmi_imx8m.bin \
+"
+IMX_BOOT_CONTAINER_FIRMWARE ?= " \
+    ${IMX_BOOT_CONTAINER_FIRMWARE_SOC} \
+    ${DDR_FIRMWARE_NAME} \
+"
+
 # This package aggregates output deployed by other packages, so set the
 # appropriate dependencies for populate binaries task
 do_resolve_and_populate_binaries[depends] += " \
@@ -45,9 +55,9 @@ do_resolve_and_populate_binaries() {
             for type in ${UBOOT_CONFIG}; do
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]; then
-                    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-                        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${B}/${config}/${ddr_firmware_name}"
-                        cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware} ${B}/${config}/
+                    for firmware in ${IMX_BOOT_CONTAINER_FIRMWARE}; do
+                        bbnote "Copy firmware: ${firmware} from ${DEPLOY_DIR_IMAGE} -> ${B}/${config}/"
+                        cp ${DEPLOY_DIR_IMAGE}/${firmware} ${B}/${config}/
                     done
                     if [ -n "${ATF_MACHINE_NAME}" ]; then
                         cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
