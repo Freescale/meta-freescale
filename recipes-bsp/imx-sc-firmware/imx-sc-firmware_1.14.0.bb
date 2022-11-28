@@ -1,17 +1,17 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright (C) 2017-2021 NXP
+# Copyright 2017-2022 NXP
 
 DESCRIPTION = "i.MX System Controller Firmware"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
+LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
 SECTION = "BSP"
 
 inherit fsl-eula-unpack pkgconfig deploy
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "49fc847391edd9b7aef482fcab4f556f"
-SRC_URI[sha256sum] = "98da4fa8e119553f5d5defaecbcd3ee026fe27656ce19a93f912132ab07205dc"
+SRC_URI[md5sum] = "bc4a96de0e2ce0476a0727dd7e667bff"
+SRC_URI[sha256sum] = "a1ea7a94b5d8dd50a8e82fd37d424facabdd0228dedd08cd3da2c43d61da6126"
 
 BOARD_TYPE ?= "mek"
 SC_FIRMWARE_NAME ?= "INVALID"
