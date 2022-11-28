@@ -313,11 +313,15 @@ MACHINE_SOCARCH_FILTER:append:imxvulkan = " \
 "
 MACHINE_SOCARCH_FILTER:append:imxgpu = " \
     virtual/egl \
-    virtual/mesa \
     virtual/libopenvg \
+    virtual/mesa \
+    virtual/opencl-icd \
     libdrm \
     cairo \
     libgal-imx \
+    opencl-icd-loader \
+    opencl-clhpp \
+    opencl-headers \
     opencv \
     pango \
 "
@@ -340,16 +344,6 @@ MACHINE_SOCARCH_FILTER:append:imx-mainline-bsp = " \
     cairo \
     pango \
     qtbase \
-"
-MACHINE_SOCARCH_FILTER:append:mx6q-nxp-bsp = " \
-    opencl-icd-loader \
-    opencl-clhpp \
-    opencl-headers \
-"
-MACHINE_SOCARCH_FILTER:append:mx8-nxp-bsp = " \
-    opencl-icd-loader \
-    opencl-clhpp \
-    opencl-headers \
 "
 MACHINE_SOCARCH_FILTER:append:mx8qm-nxp-bsp = " \
     virtual/libopenvx \
