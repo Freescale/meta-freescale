@@ -313,8 +313,9 @@ MACHINE_SOCARCH_FILTER:append:imxvulkan = " \
 "
 MACHINE_SOCARCH_FILTER:append:imxgpu = " \
     virtual/egl \
-    virtual/mesa \
     virtual/libopenvg \
+    virtual/mesa \
+    virtual/opencl-icd \
     libdrm \
     cairo \
     libgal-imx \
