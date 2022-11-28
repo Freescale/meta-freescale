@@ -1,17 +1,17 @@
-# Copyright (C) 2019-2022 NXP
+# Copyright 2019-2022 NXP
 
 SUMMARY = "NXP i.MX SECO firmware"
 DESCRIPTION = "Firmware for i.MX Security Controller Subsystem"
 SECTION = "base"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=be5ff43682ed6c57dfcbeb97651c2829"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
 
 inherit fsl-eula-unpack use-imx-security-controller-firmware deploy
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "2427a45069a89bb9b9b470642ce17f18"
-SRC_URI[sha256sum] = "3bf3f4ae69f77fd8fe28a216f3927fb84e75461364ad332dd9b4605beadae59a"
+SRC_URI[md5sum] = "f5c6737b42275e513d4e0cc2efa91d6a"
+SRC_URI[sha256sum] = "03fa16ebc0633505bd02dae1c58602e278a8a28c8205c758fa3936477d51d0e0"
 
 
 do_compile[noexec] = "1"
