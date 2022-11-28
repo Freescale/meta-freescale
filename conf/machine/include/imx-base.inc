@@ -318,6 +318,9 @@ MACHINE_SOCARCH_FILTER:append:imxgpu = " \
     libdrm \
     cairo \
     libgal-imx \
+    opencl-icd-loader \
+    opencl-clhpp \
+    opencl-headers \
     opencv \
     pango \
 "
@@ -340,16 +343,6 @@ MACHINE_SOCARCH_FILTER:append:imx-mainline-bsp = " \
     cairo \
     pango \
     qtbase \
-"
-MACHINE_SOCARCH_FILTER:append:mx6q-nxp-bsp = " \
-    opencl-icd-loader \
-    opencl-clhpp \
-    opencl-headers \
-"
-MACHINE_SOCARCH_FILTER:append:mx8-nxp-bsp = " \
-    opencl-icd-loader \
-    opencl-clhpp \
-    opencl-headers \
 "
 MACHINE_SOCARCH_FILTER:append:mx8qm-nxp-bsp = " \
     virtual/libopenvx \
