@@ -13,11 +13,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
                  file://driver/jailhouse.h;beginline=9;endline=36;md5=2825581c1666c44a17955dc574cfbfb3 \
 "
 
-SRCBRANCH = "imx_5.4.47_2.2.0"
-SRCREV = "8bbe203ee7c1fc16198ce1bf964e54c90606c3c2"
+SRCBRANCH = "lf-5.15.32_2.0.0"
+SRCREV = "fb37d16f7f9df172877fc76631e4fccefceda29c"
 
 SRC_URI = "git://source.codeaurora.org/external/imx/imx-jailhouse.git;protocol=ssh;branch=${SRCBRANCH} \
-           file://0001-tools-scripts-update-shebang-to-python3.patch \
 "
 
 DEPENDS = " \
@@ -81,6 +80,8 @@ do_install() {
         ARCH=${JH_ARCH} \
         CROSS_COMPILE=${TARGET_PREFIX} \
         KDIR=${STAGING_KERNEL_BUILDDIR} \
+        INSTALL_MOD_PATH=${D}${root_prefix} \
+        firmwaredir=${nonarch_base_libdir}/firmware \
         DESTDIR=${D} install
 
     install -d ${D}${CELL_DIR}
