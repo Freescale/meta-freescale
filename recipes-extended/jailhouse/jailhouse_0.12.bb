@@ -13,11 +13,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
                  file://driver/jailhouse.h;beginline=9;endline=36;md5=2825581c1666c44a17955dc574cfbfb3 \
 "
 
-SRCBRANCH = "lf-5.15.32_2.0.0"
-SRCREV = "fb37d16f7f9df172877fc76631e4fccefceda29c"
+SRCBRANCH = "lf-5.15.52_2.1.0"
+SRCREV = "da1b37baf48295bf1a4f25661220506f5bb948f2"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-jailhouse.git;protocol=ssh;branch=${SRCBRANCH} \
-"
+SRC_URI = "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https;branch=${SRCBRANCH}"
 
 DEPENDS = " \
     make-native \
@@ -37,11 +36,6 @@ CELL_DIR ?= "${JH_DATADIR}/cells"
 CELLCONF_DIR ?= "${JH_DATADIR}/configs"
 INMATES_DIR ?= "${JH_DATADIR}/inmates"
 
-JH_CONFIG ?= "${S}/ci/jailhouse-config-x86.h"
-JH_CONFIG:x86 ?= "${S}/ci/jailhouse-config-x86.h"
-JH_CONFIG:x86-64 ?= "${S}/ci/jailhouse-config-x86.h"
-JH_CONFIG:arm ?= "${S}/ci/jailhouse-config-banana-pi.h"
-
 do_configure() {
    if [ -d ${STAGING_DIR_HOST}/${CELLCONF_DIR} ];
    then
@@ -49,29 +43,14 @@ do_configure() {
    fi
 }
 
-USER_SPACE_CFLAGS = '${CFLAGS} -DLIBEXECDIR=\\\"${libexecdir}\\\" \
-		  -DJAILHOUSE_VERSION=\\\"$JAILHOUSE_VERSION\\\" \
-		  -Wall -Wextra -Wmissing-declarations -Wmissing-prototypes -Werror \
-		  -I../driver'
-
-TOOLS_SRC_DIR = "${S}/tools"
-TOOLS_OBJ_DIR = "${S}/tools"
-
-do_compile() {
+do_compile:prepend() {
     unset LDFLAGS
     oe_runmake V=1 CC="${CC}" \
         ARCH=${JH_ARCH} CROSS_COMPILE=${TARGET_PREFIX} \
         KDIR=${STAGING_KERNEL_BUILDDIR}
-
-    cd ${TOOLS_SRC_DIR}
-    export JAILHOUSE_VERSION=$(cat ../VERSION)
-    oe_runmake V=1 \
-        CFLAGS="${USER_SPACE_CFLAGS}" \
-        src=${TOOLS_SRC_DIR} obj=${TOOLS_OBJ_DIR} \
-        ${TOOLS_OBJ_DIR}/jailhouse-config-collect ${TOOLS_OBJ_DIR}/jailhouse
 }
 
-do_install() {
+do_install:prepend() {
     oe_runmake \
         PYTHON=python3 \
         V=1 \
@@ -100,10 +79,12 @@ do_install() {
     install ${B}/inmates/tools/${JH_ARCH}/linux-loader.bin ${D}${INMATES_DIR}/tools/${JH_ARCH}
 }
 
-PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse"
+PACKAGE_BEFORE_PN = "pyjailhouse"
 
 FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
-FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}/pyjailhouse"
+# Remove libdir/* appended by setuptools3-base.bbclass for module split to work correctly
+FILES:${PN}:remove = "${libdir}/*"
+FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}"
 
 RDEPENDS:${PN} += " \
     python3-curses \
