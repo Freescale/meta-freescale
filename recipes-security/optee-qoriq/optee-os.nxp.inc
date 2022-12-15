@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 inherit deploy python3native autotools
 DEPENDS = "python3-pycryptodome-native python3-pyelftools-native python3-pycryptodomex-native dtc-native"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os.git;nobranch=1"
+SRC_URI = "git://github.com/nxp-qoriq/optee_os.git;protocol=https;nobranch=1"
 SRCREV = "735d98806dc26fbeeecad7f5e60ffeab8170c67e"
 
 S = "${WORKDIR}/git"
