@@ -12,9 +12,6 @@ SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 # commented out. For example:
 #     #xwayland=true
 # Then add the assignment to INI_UNCOMMENT_ASSIGNMENTS.
-INI_UNCOMMENT_ASSIGNMENTS:append:imx-nxp-bsp = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland=true', '', d)} \
-"
 INI_UNCOMMENT_ASSIGNMENTS:append:mx8-nxp-bsp = " \
     repaint-window=16 \
 "
