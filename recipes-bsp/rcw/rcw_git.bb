@@ -8,7 +8,7 @@ DEPENDS += "tcl-native"
 inherit deploy siteinfo
 
 SRC_URI = "git://github.com/nxp-qoriq/rcw;protocol=https;nobranch=1"
-SRCREV = "1f431891c7f0e7d4f52327f1fe19504a284491c4"
+SRCREV = "a4db86818de35d0168a48d3f17878ec68fb1cf6d"
 
 S = "${WORKDIR}/git"
 
@@ -20,6 +20,7 @@ BOARD_TARGETS="${M}"
 BOARD_TARGETS:ls2088ardb="${M} ${M}_rev1.1"
 BOARD_TARGETS:ls1088ardb-pb="ls1088ardb"
 BOARD_TARGETS:lx2160ardb = "${M} ${M}_rev2"
+BOARD_TARGETS:lx2160ardb-rev2 = "lx2160ardb_rev2"
 
 do_compile () {
     oe_runmake BOARDS="${BOARD_TARGETS}" DESTDIR=${D}/boot/rcw/
