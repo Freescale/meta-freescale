@@ -1,14 +1,14 @@
 DESCRIPTION = "Fman microcode binary"
 SECTION = "fm-ucode"
-LICENSE = "Freescale-Binary-EULA"
-LIC_FILES_CHKSUM = "file://Freescale-Binary-EULA;md5=b784c031868ba1bd5ebc5de372c823fa"
+LICENSE = "NXP-Binary-EULA"
+LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=12e248d404ce1ea8bed0148fcf127e69"
 
 PR = "r1"
 
 inherit deploy
 
 SRC_URI = "git://github.com/NXP/qoriq-fm-ucode.git;nobranch=1;protocol=https"
-SRCREV = "c275e91392e2adab1ed22f3867b8269ca3c54014"
+SRCREV = "83e8467a356316265c7695bdc7741f23066795aa"
 
 S = "${WORKDIR}/git"
 
