@@ -82,7 +82,6 @@ FILES:${PN}-bcm4359-pcie = " \
     ${nonarch_base_libdir}/firmware/brcm/brcmfmac4359-pcie.* \
     ${sysconfdir}/firmware/BCM4349B1_*.hcd \
 "
-RPROVIDES:${PN}-bcm4359-pcie = "linux-firmware-bcm4359-pcie"
 
 FILES:${PN}-nxp-common = " \
     ${nonarch_base_libdir}/firmware/nxp/wifi_mod_para.conf \
