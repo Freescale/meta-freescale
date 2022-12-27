@@ -12,7 +12,7 @@ require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 # inline NEON and FPU code generation
 DEFAULTTUNE:use-mainline-bsp = "cortexa53-crypto"
 
-MACHINE_FEATURES += "pci wifi bluetooth bcm43455 bcm4356"
+MACHINE_FEATURES += "pci wifi bluetooth bcm43455 bcm4356 nxp8987-sdio"
 
 # NXP BSP can consume proprietary jailhouse and BCM4359 firmware
 # Since the firmware is not available publicly, and rather distributed
