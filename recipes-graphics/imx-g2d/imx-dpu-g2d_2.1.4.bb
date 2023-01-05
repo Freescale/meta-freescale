@@ -10,8 +10,8 @@ DEPENDS = "libgal-imx libdrm"
 PROVIDES += "virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "85daf26176695de80a024b5f67037f08"
-SRC_URI[sha256sum] = "1023814d810c0a85c91cb2170c77f663f624331261ba0e1ab1ce29e8c192e1bc"
+SRC_URI[md5sum] = "488d9f63b2d02c687a0bc8c3debfb51c"
+SRC_URI[sha256sum] = "62050bc5dd35e942c97e7a8ab22b0b98d02e27a38935b585e622cdc5221ef2a3"
 
 inherit fsl-eula-unpack
 
@@ -24,6 +24,12 @@ do_install () {
 
 INSANE_SKIP:${PN} += "ldflags"
 INSANE_SKIP:append:libc-musl = " file-rdeps"
+
+# The packaged binaries have been stripped of debug info, so disable
+# operations accordingly.
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+INHIBIT_PACKAGE_STRIP = "1"
+INHIBIT_SYSROOT_STRIP = "1"
 
 COMPATIBLE_MACHINE = "(imxdpu)"
 
