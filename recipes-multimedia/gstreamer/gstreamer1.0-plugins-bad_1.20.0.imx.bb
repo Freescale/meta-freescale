@@ -210,4 +210,7 @@ EXTRA_OEMESON += " \
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 
+# it uses nested functions sadly, in ext/wayland/gstwaylandsink.c for GST_ELEMENT_REGISTER_DEFINE
+#
+TOOLCHAIN = "gcc"
 ########### End of i.MX overrides #########
