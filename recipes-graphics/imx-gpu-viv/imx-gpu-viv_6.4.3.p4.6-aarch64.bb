@@ -1,7 +1,7 @@
 require imx-gpu-viv-6.inc
 
-SRC_URI[md5sum] = "b899f9d4a179eab622880fd22ec7cb64"
-SRC_URI[sha256sum] = "5c52bd15146c24d449638c6276c07103949c8efbc53d002518541bc37c57e424"
+SRC_URI[md5sum] = "b33fde69f544674340ea617e9faf404e"
+SRC_URI[sha256sum] = "60a63b66ef28cadc62bc1305a3ab5a2018c910e171b0cd72f4876317282dcfcc"
 
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 
