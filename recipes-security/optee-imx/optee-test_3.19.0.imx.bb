@@ -9,8 +9,8 @@ LIC_FILES_CHKSUM = "file://LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 DEPENDS = "python3-cryptography-native optee-os optee-client openssl"
 
 SRC_URI = "git://github.com/nxp-imx/imx-optee-test.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-5.15.52_2.1.0"
-SRCREV = "41222c4b8df1adc0f0bdc737e5cb824becd25f63"
+SRCBRANCH = "lf-5.15.71_2.2.0"
+SRCREV = "5c1dbb531b304f7ae100958f6261b6cefea49b62"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"

@@ -500,9 +500,9 @@ PREFERRED_VERSION_vulkan-loader:imxvulkan  ??= "1.2.182.0"
 PREFERRED_VERSION_vulkan-tools:imxvulkan   ??= "1.2.182.0"
 
 # Use i.MX optee Version
-PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "3.17.0.imx"
-PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "3.17.0.imx"
-PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "3.17.0.imx"
+PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "3.19.0.imx"
+PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "3.19.0.imx"
+PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "3.19.0.imx"
 
 #Use i.MX opencv Version for mx8
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.6.0.imx"
