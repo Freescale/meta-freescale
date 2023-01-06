@@ -6,15 +6,12 @@ HOMEPAGE = "http://www.optee.org/"
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
-DEPENDS = "python3-cryptography-native python3-pyelftools-native u-boot-mkimage-native"
+DEPENDS = "python3-pyelftools-native u-boot-mkimage-native \
+           python3-cryptography-native"
 
 SRC_URI = "git://github.com/nxp-imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-5.15.52_2.1.0"
-SRCREV = "9e86c8b6b102efa09ada451d0383ea3d11f8fad6"
-
-SRC_URI:append = " \
-    file://0008-no-warn-rwx-segments.patch \
-    "
+SRCBRANCH = "lf-5.15.71_2.2.0"
+SRCREV = "00919403f040fad4f8603e605932281ff8451b1d"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
@@ -42,6 +39,7 @@ PLATFORM_FLAVOR:mx8qxp-nxp-bsp    = "mx8qxpmek"
 PLATFORM_FLAVOR:mx8dx-nxp-bsp     = "mx8dxmek"
 PLATFORM_FLAVOR:mx8dxl-nxp-bsp    = "mx8dxlevk"
 PLATFORM_FLAVOR:mx8ulp-nxp-bsp    = "mx8ulpevk"
+PLATFORM_FLAVOR:mx93-nxp-bsp      = "mx93evk"
 
 OPTEE_ARCH:arm     = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
@@ -90,17 +88,14 @@ do_install () {
     install -d ${D}${nonarch_base_libdir}/firmware/
     install -m 644 ${B}/core/*.bin ${D}${nonarch_base_libdir}/firmware/
 
+    # Install embedded TAs
+    install -d ${D}${nonarch_base_libdir}/optee_armtz/
+    install -m 444 ${B}/ta/*/*.ta ${D}${nonarch_base_libdir}/optee_armtz/
+
     # Install the TA devkit
     install -d ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
-    for f in ${B}/export-ta_${OPTEE_ARCH}/*; do
-        cp -aR $f ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
-    done
-
-    # Install embedded TAs
-    install -d ${D}${nonarch_base_libdir}/optee_armtz
-    find ${B}/ta -name '*.ta' | while read name; do
-        install -m 444 $name ${D}${nonarch_base_libdir}/optee_armtz/
-    done
+    cp -aR ${B}/export-ta_${OPTEE_ARCH}/* \
+        ${D}${includedir}/optee/export-user_ta_${OPTEE_ARCH}/
 }
 
 addtask deploy after do_compile before do_install
