@@ -111,3 +111,5 @@ RDEPENDS:${PN}-dev += "${PN}-staticdev"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+
+TOOLCHAIN = "gcc"
