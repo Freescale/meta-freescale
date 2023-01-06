@@ -58,5 +58,3 @@ FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/ ${libdir}/tee-supplicant/plu
 RDEPENDS:${PN} = "optee-os"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
-
-TOOLCHAIN = "gcc"
