@@ -21,7 +21,7 @@ S = "${WORKDIR}/git"
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 do_install () {
-	oe_runmake DESTDIR=${D} install
+	oe_runmake DESTDIR=${D} BINDIR=${bindir} LIBDIR=${libdir} install
 }
 
 COMPATIBLE_MACHINE = "(mx8qm-nxp-bsp|mx8qxp-nxp-bsp|mx8dxl-nxp-bsp|mx8dx-nxp-bsp)"
