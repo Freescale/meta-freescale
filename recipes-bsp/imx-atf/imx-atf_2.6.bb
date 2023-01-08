@@ -13,7 +13,7 @@ SRC_URI = " \
     file://rwx-segments.patch \
 "
 SRCBRANCH = "lf_v2.6"
-SRCREV = "9202efc9aaf65085def9a747ee32aed628449901"
+SRCREV = "3c1583ba0a5d11e5116332e91065cb3740153a46"
 
 S = "${WORKDIR}/git"
 
