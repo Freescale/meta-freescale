@@ -1,0 +1,57 @@
+From 2eff97fe2345d8255869224404322d23193f1115 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sat, 7 Jan 2023 21:59:15 -0800
+Subject: [PATCH] Fix return value of void* functions
+
+This is found with clang
+
+Fixes
+error: non-void function does not return a value [-Werror,-Wreturn-type]
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ test/hsm/hsm_test.c                     | 1 +
+ test/she/src/she_test_storage_manager.c | 1 +
+ test/v2x/v2x_test.c                     | 1 +
+ 3 files changed, 3 insertions(+)
+
+diff --git a/test/hsm/hsm_test.c b/test/hsm/hsm_test.c
+index 9f29ca9..01820b8 100644
+--- a/test/hsm/hsm_test.c
++++ b/test/hsm/hsm_test.c
+@@ -391,6 +391,7 @@ static uint32_t nvm_status;
+ static void *hsm_storage_thread(void *arg)
+ {
+     seco_nvm_manager(NVM_FLAGS_HSM, &nvm_status);
++    return 0;
+ }
+ 
+ 
+diff --git a/test/she/src/she_test_storage_manager.c b/test/she/src/she_test_storage_manager.c
+index 32a4cb9..68cdba7 100644
+--- a/test/she/src/she_test_storage_manager.c
++++ b/test/she/src/she_test_storage_manager.c
+@@ -28,6 +28,7 @@ static uint32_t nvm_status;
+ static void *she_storage_thread(void *arg)
+ {
+     seco_nvm_manager(NVM_FLAGS_SHE, &nvm_status);
++    return 0;
+ }
+ 
+ 
+diff --git a/test/v2x/v2x_test.c b/test/v2x/v2x_test.c
+index aeb3d2a..5f02354 100644
+--- a/test/v2x/v2x_test.c
++++ b/test/v2x/v2x_test.c
+@@ -181,6 +181,7 @@ static uint32_t nvm_status;
+ static void *v2x_hsm_storage_thread(void *arg)
+ {
+     seco_nvm_manager(NVM_FLAGS_V2X | NVM_FLAGS_HSM, &nvm_status);
++    return 0;
+ }
+ 
+ 
+-- 
+2.39.0
+
