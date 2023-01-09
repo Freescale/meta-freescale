@@ -1,0 +1,304 @@
+From 346a96e47990cae31b4afe774d9fabf53219c3a9 Mon Sep 17 00:00:00 2001
+From: Hou Qi <qi.hou@nxp.com>
+Date: Mon, 5 Sep 2022 14:14:10 +0800
+Subject: [PATCH 16/17] V4L2VDA: Support tile to linear transform for amphion
+
+Upstream-Status: Inappropriate [NXP specific]
+---
+ media/gpu/v4l2/BUILD.gn       |   1 +
+ media/gpu/v4l2/v4l2_device.cc | 182 +++++++++++++++++++++++++++++++++-
+ media/gpu/v4l2/v4l2_device.h  |   1 +
+ 3 files changed, 179 insertions(+), 5 deletions(-)
+
+diff --git a/media/gpu/v4l2/BUILD.gn b/media/gpu/v4l2/BUILD.gn
+index ebd0a4ad64646..273f6066de175 100644
+--- a/media/gpu/v4l2/BUILD.gn
++++ b/media/gpu/v4l2/BUILD.gn
+@@ -86,6 +86,7 @@ source_set("v4l2") {
+     "EGL",
+     "GLESv2",
+   ]
++  libs += [ "g2d" ]
+ 
+   if (use_v4l2_codec_aml) {
+     sources += [
+diff --git a/media/gpu/v4l2/v4l2_device.cc b/media/gpu/v4l2/v4l2_device.cc
+index 5a1057c845e85..42cd8386f41cb 100644
+--- a/media/gpu/v4l2/v4l2_device.cc
++++ b/media/gpu/v4l2/v4l2_device.cc
+@@ -40,6 +40,11 @@
+ #include "media/gpu/v4l2/aml_v4l2_device.h"
+ #endif
+ 
++#include "g2d.h"
++#include "g2dExt.h"
++#include <linux/dma-buf.h>
++#include <time.h>
++
+ namespace media {
+ 
+ namespace {
+@@ -169,6 +174,11 @@ class V4L2Buffer {
+   size_t GetMemoryUsage() const;
+   const struct v4l2_buffer& v4l2_buffer() const { return v4l2_buffer_; }
+   scoped_refptr<VideoFrame> GetVideoFrame();
++  std::pair<int, int> GetSavedmafd();
++  std::pair<unsigned int, unsigned int> GetSavedphys();
++  std::pair<int, int> Getg2dbufphys();
++  std::pair<void *, void *> Getg2dbufvirs();
++  const struct v4l2_format& GetFmt() const {return format_;}
+ 
+  private:
+   V4L2Buffer(scoped_refptr<V4L2Device> device,
+@@ -181,6 +191,12 @@ class V4L2Buffer {
+ 
+   scoped_refptr<V4L2Device> device_;
+   std::vector<void*> plane_mappings_;
++  int dmafd0;
++  int dmafd1;
++  unsigned long phys_0;
++  unsigned long phys_1;
++  struct g2d_buf *g2dbuf_p0;
++  struct g2d_buf *g2dbuf_p1;
+ 
+   // V4L2 data as queried by QUERYBUF.
+   struct v4l2_buffer v4l2_buffer_;
+@@ -230,6 +246,9 @@ V4L2Buffer::V4L2Buffer(scoped_refptr<V4L2Device> device,
+   v4l2_buffer_.type = type;
+   v4l2_buffer_.memory = memory;
+   plane_mappings_.resize(V4L2_TYPE_IS_MULTIPLANAR(type) ? v4l2_buffer_.length : 1);
++  dmafd0 = dmafd1  = -1;
++  phys_0 = phys_1 = 0;
++  g2dbuf_p0 = g2dbuf_p1  = NULL;
+ }
+ 
+ V4L2Buffer::~V4L2Buffer() {
+@@ -242,6 +261,32 @@ V4L2Buffer::~V4L2Buffer() {
+       }
+     }
+   }
++  if(g2dbuf_p0 && g2dbuf_p1) {
++	  g2d_free(g2dbuf_p0);
++	  g2d_free(g2dbuf_p1);
++  }
++}
++
++std::pair<int, int> V4L2Buffer::GetSavedmafd() {
++	return std::make_pair(dmafd0, dmafd1);
++}
++
++std::pair<unsigned int, unsigned int> V4L2Buffer::GetSavedphys() {
++	return std::make_pair(phys_0, phys_1);
++}
++
++std::pair<int, int> V4L2Buffer::Getg2dbufphys() {
++	if(g2dbuf_p0 && g2dbuf_p1)
++		return std::make_pair(g2dbuf_p0->buf_paddr, g2dbuf_p1->buf_paddr);
++	else
++		return std::make_pair(-1, -1);
++}
++
++std::pair<void*, void*> V4L2Buffer::Getg2dbufvirs() {
++	if(g2dbuf_p0 && g2dbuf_p1)
++		return std::make_pair(g2dbuf_p0->buf_vaddr, g2dbuf_p1->buf_vaddr);
++	else
++		return std::make_pair(nullptr, nullptr);
+ }
+ 
+ bool V4L2Buffer::Query() {
+@@ -325,6 +370,61 @@ scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
+       DLOG(ERROR) << "Fail to get DMABUFs of V4L2 buffer - invalid fd";
+       return nullptr;
+     }
++    if(dmafd0 == -1)
++	    dmafd0 = dmabuf_fd.get();
++    else
++	    dmafd1 = dmabuf_fd.get();
++  }
++
++  std::vector<base::ScopedFD> g2dbufs_fds;
++  if (V4L2_TYPE_IS_MULTIPLANAR(v4l2_buffer_.type)) {
++    struct dma_buf_phys{
++      unsigned long phys;
++    };
++    #define DMA_BUF_IOCTL_PHYS      _IOW(DMA_BUF_BASE, 10, struct dma_buf_phys)
++    struct dma_buf_phys query0, query1;
++    int ret = ioctl(dmafd0, DMA_BUF_IOCTL_PHYS, &query0);
++    if(ret != 0) {
++      DLOG(ERROR)<< "DMA_BUF_IOCTL_PHYS failed at dmafd" << dmafd0;
++      return nullptr;
++    }
++    else
++      phys_0 = query0.phys;
++
++    ret = ioctl(dmafd1, DMA_BUF_IOCTL_PHYS, &query1);
++    if(ret != 0) {
++      DLOG(ERROR)<< "DMA_BUF_IOCTL_PHYS failed at dmafd" << dmafd1;
++      return nullptr;
++    }
++    else
++      phys_1 = query1.phys;
++
++    g2dbuf_p0 = g2d_alloc(format_.fmt.pix_mp.width * format_.fmt.pix_mp.height, 0);
++    g2dbuf_p1 = g2d_alloc(format_.fmt.pix_mp.width * format_.fmt.pix_mp.height / 2, 0);
++    if((!g2dbuf_p0) || (!g2dbuf_p1)){
++      DLOG(ERROR)<<"g2d buf alloc failed";
++      return nullptr;
++    }
++
++    int tmpfd = g2d_buf_export_fd(g2dbuf_p0);
++    tmpfd = dup(tmpfd);
++    if(tmpfd > 0)
++      g2dbufs_fds.push_back(base::ScopedFD(tmpfd));
++    else if(tmpfd == -1)
++    {
++      DLOG(ERROR) << "Failed duplicating g2d fd";
++      return nullptr;
++    }
++
++    tmpfd = g2d_buf_export_fd(g2dbuf_p1);
++    tmpfd = dup(tmpfd);
++    if(tmpfd>0)
++      g2dbufs_fds.push_back(base::ScopedFD(tmpfd));
++    else if(tmpfd == -1)
++    {
++      DLOG(ERROR) << "Failed duplicating g2d fd";
++      return nullptr;
++    }
+   }
+ 
+   // Duplicate the fd of the last v4l2 plane until the number of fds are the
+@@ -339,13 +439,16 @@ scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
+     dmabuf_fds.emplace_back(duped_fd);
+   }
+ 
+-  if (V4L2_TYPE_IS_MULTIPLANAR(v4l2_buffer_.type))
++  if (V4L2_TYPE_IS_MULTIPLANAR(v4l2_buffer_.type)) {
+     gfx::Size size(format_.fmt.pix_mp.width, format_.fmt.pix_mp.height);
+-  else
++    return VideoFrame::WrapExternalDmabufs(
++        *layout, gfx::Rect(size), size, std::move(g2dbufs_fds), base::TimeDelta());
++  }
++  else {
+     gfx::Size size(format_.fmt.pix.width, format_.fmt.pix.height);
+-
+-  return VideoFrame::WrapExternalDmabufs(
+-      *layout, gfx::Rect(size), size, std::move(dmabuf_fds), base::TimeDelta());
++    return VideoFrame::WrapExternalDmabufs(
++        *layout, gfx::Rect(size), size, std::move(dmabuf_fds), base::TimeDelta());
++  }
+ }
+ 
+ scoped_refptr<VideoFrame> V4L2Buffer::GetVideoFrame() {
+@@ -1047,6 +1150,10 @@ V4L2Queue::V4L2Queue(scoped_refptr<V4L2Device> dev,
+     DVLOGF(4) << "Queue supports request API.";
+   }
+ #endif
++
++  g2d_handle = NULL;
++  if(g2d_open(&g2d_handle))
++    VLOGF(1) << "g2d_open fail";
+ }
+ 
+ V4L2Queue::~V4L2Queue() {
+@@ -1065,6 +1172,9 @@ V4L2Queue::~V4L2Queue() {
+     DeallocateBuffers();
+   }
+ 
++  if(g2d_handle)
++	  g2d_close(g2d_handle);
++
+   std::move(destroy_cb_).Run();
+ }
+ 
+@@ -1103,6 +1213,8 @@ std::pair<absl::optional<struct v4l2_format>, int> V4L2Queue::GetFormat() {
+     VPQLOGF(2) << "Failed to get format";
+     return std::make_pair(absl::nullopt, errno);
+   }
++  if (type_ == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
++    format.fmt.pix_mp.width = format.fmt.pix_mp.plane_fmt[0].bytesperline;
+ 
+   return std::make_pair(format, 0);
+ }
+@@ -1404,6 +1516,66 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
+     device_->SchedulePoll();
+ 
+   DCHECK(free_buffers_);
++
++  if(type_ == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
++  {
++	  std::pair<unsigned int, unsigned int> v4l_phys = buffers_[v4l2_buffer.index]->GetSavedphys();
++	  int width = buffers_[v4l2_buffer.index]->GetFmt().fmt.pix_mp.width;
++	  int height = buffers_[v4l2_buffer.index]->GetFmt().fmt.pix_mp.height;
++	  int stride = buffers_[v4l2_buffer.index]->GetFmt().fmt.pix_mp.plane_fmt[0].bytesperline;
++    bool interlaced = false;
++    switch (buffers_[v4l2_buffer.index]->GetFmt().fmt.pix_mp.field) {
++      case V4L2_FIELD_INTERLACED:
++      case V4L2_FIELD_INTERLACED_TB:
++      case V4L2_FIELD_INTERLACED_BT:
++      case V4L2_FIELD_SEQ_TB:
++        interlaced = true;
++        break;
++      default:
++        break;
++    };
++	  struct g2d_surfaceEx srcEx, dstEx;
++	  struct g2d_surface *src = &srcEx.base;
++	  struct g2d_surface *dst = &dstEx.base;
++
++	  dst->format = G2D_NV12;
++	  dst->planes[0] = buffers_[v4l2_buffer.index]->Getg2dbufphys().first;
++	  dst->planes[1] = buffers_[v4l2_buffer.index]->Getg2dbufphys().second;
++	  dstEx.tiling = G2D_LINEAR;
++	  dst->left = 0;
++	  dst->top = 0;
++	  dst->right = dst->left + width;
++	  dst->bottom = dst->top + height;
++	  dst->stride= width;
++	  dst->width  = width;
++	  dst->height = height;
++	  dst->rot  = G2D_ROTATION_0;
++	  dst->global_alpha = 0xff;
++	  dst->blendfunc = G2D_ONE_MINUS_SRC_ALPHA;
++	  dst->clrcolor = 0;
++
++	  src->format = G2D_NV12;
++	  src->planes[0] = v4l_phys.first;
++	  src->planes[1] = v4l_phys.second;
++	  srcEx.tiling = G2D_AMPHION_TILED;
++	  if (interlaced) {
++		  srcEx.tiling = static_cast<g2d_tiling>(0x18); //G2D_AMPHION_TILED | G2D_AMPHION_INTERLACED;
++		  DVLOGF(4)<<"interlaced video convert";
++	  }
++	  src->left = 0;
++	  src->top = 0;
++	  src->right = src->left + width;
++	  src->bottom = src->top + height;
++	  src->stride=  stride;
++	  src->width  = width;
++	  src->height = height;
++	  src->rot  = G2D_ROTATION_0;
++	  src->global_alpha = 0xff;
++	  src->blendfunc = G2D_ONE;
++
++	  g2d_blitEx(g2d_handle, &srcEx, &dstEx);
++  }
++
+   return std::make_pair(true, V4L2BufferRefFactory::CreateReadableRef(
+                                   v4l2_buffer, weak_this_factory_.GetWeakPtr(),
+                                   std::move(queued_frame)));
+diff --git a/media/gpu/v4l2/v4l2_device.h b/media/gpu/v4l2/v4l2_device.h
+index 86ef80fd09579..516d0a63b5689 100644
+--- a/media/gpu/v4l2/v4l2_device.h
++++ b/media/gpu/v4l2/v4l2_device.h
+@@ -457,6 +457,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
+   absl::optional<struct v4l2_format> current_format_;
+ 
+   std::vector<std::unique_ptr<V4L2Buffer>> buffers_;
++  void* g2d_handle;
+ 
+   // Buffers that are available for client to get and submit.
+   // Buffers in this list are not referenced by anyone else than ourselves.
+-- 
+2.17.1
+
