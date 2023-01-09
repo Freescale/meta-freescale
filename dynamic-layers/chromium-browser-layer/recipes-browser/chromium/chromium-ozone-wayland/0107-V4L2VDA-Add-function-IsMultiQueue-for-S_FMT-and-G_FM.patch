@@ -1,0 +1,183 @@
+From 3c9a3ef7f2c45386486a86bdbfa6c355f4c8da05 Mon Sep 17 00:00:00 2001
+From: Hou Qi <qi.hou@nxp.com>
+Date: Sun, 4 Sep 2022 15:48:00 +0800
+Subject: [PATCH 07/17] V4L2VDA: Add function IsMultiQueue for S_FMT and G_FMT
+
+Function IsMultiQueue() is used to set correct fotmat type for
+8M and 8Q.
+
+Upstream-Status: Inappropriate [NXP specific]
+---
+ media/gpu/v4l2/v4l2_device.cc                 | 36 +++++++++++---
+ media/gpu/v4l2/v4l2_device.h                  |  1 +
+ .../gpu/v4l2/v4l2_video_decode_accelerator.cc | 49 +++++++++++++++----
+ 3 files changed, 68 insertions(+), 18 deletions(-)
+
+diff --git a/media/gpu/v4l2/v4l2_device.cc b/media/gpu/v4l2/v4l2_device.cc
+index a9462c9a2fb2d..200b0fccb1232 100644
+--- a/media/gpu/v4l2/v4l2_device.cc
++++ b/media/gpu/v4l2/v4l2_device.cc
+@@ -58,11 +58,18 @@ struct v4l2_format BuildV4L2Format(const enum v4l2_buf_type type,
+   struct v4l2_format format;
+   memset(&format, 0, sizeof(format));
+   format.type = type;
+-  format.fmt.pix_mp.pixelformat = fourcc;
+-  format.fmt.pix_mp.width = size.width();
+-  format.fmt.pix_mp.height = size.height();
+-  format.fmt.pix_mp.num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(fourcc);
+-  format.fmt.pix_mp.plane_fmt[0].sizeimage = buffer_size;
++  if (V4L2_TYPE_IS_MULTIPLANAR(type)) {
++    format.fmt.pix_mp.pixelformat = fourcc;
++    format.fmt.pix_mp.width = size.width();
++    format.fmt.pix_mp.height = size.height();
++    format.fmt.pix_mp.num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(fourcc);
++    format.fmt.pix_mp.plane_fmt[0].sizeimage = buffer_size;
++  } else {
++    format.fmt.pix.pixelformat = fourcc;
++    format.fmt.pix.width = size.width();
++    format.fmt.pix.height = size.height();
++    format.fmt.pix.sizeimage = buffer_size;
++  }
+ 
+   return format;
+ }
+@@ -476,9 +483,13 @@ V4L2BufferRefBase::V4L2BufferRefBase(const struct v4l2_buffer& v4l2_buffer,
+   DCHECK(return_to_);
+ 
+   memcpy(&v4l2_buffer_, &v4l2_buffer, sizeof(v4l2_buffer_));
+-  memcpy(v4l2_planes_, v4l2_buffer.m.planes,
+-         sizeof(struct v4l2_plane) * v4l2_buffer.length);
+-  v4l2_buffer_.m.planes = v4l2_planes_;
++  if (V4L2_TYPE_IS_MULTIPLANAR(v4l2_buffer.type)) {
++    memcpy(v4l2_planes_, v4l2_buffer.m.planes,
++          sizeof(struct v4l2_plane) * v4l2_buffer.length);
++    v4l2_buffer_.m.planes = v4l2_planes_;
++  } else {
++    memcpy(&v4l2_planes_[0].m, &v4l2_buffer.m, sizeof(v4l2_buffer.m));
++  }
+ }
+ 
+ V4L2BufferRefBase::~V4L2BufferRefBase() {
+@@ -1434,6 +1445,15 @@ bool V4L2Queue::Streamoff() {
+   return true;
+ }
+ 
++bool V4L2Queue::IsMultiQueue() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++
++  if (type_ == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE || type_ == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
++    return true;
++  else
++    return false;
++}
++
+ size_t V4L2Queue::AllocatedBuffersCount() const {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+ 
+diff --git a/media/gpu/v4l2/v4l2_device.h b/media/gpu/v4l2/v4l2_device.h
+index 70f47ae91b648..86ef80fd09579 100644
+--- a/media/gpu/v4l2/v4l2_device.h
++++ b/media/gpu/v4l2/v4l2_device.h
+@@ -424,6 +424,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
+   // still be using them.
+   bool Streamoff();
+ 
++  bool IsMultiQueue();
+   // Returns the number of buffers currently allocated for this queue.
+   size_t AllocatedBuffersCount() const;
+   // Returns the number of currently free buffers on this queue.
+diff --git a/media/gpu/v4l2/v4l2_video_decode_accelerator.cc b/media/gpu/v4l2/v4l2_video_decode_accelerator.cc
+index 631e68e0f9314..54c72c6148d94 100644
+--- a/media/gpu/v4l2/v4l2_video_decode_accelerator.cc
++++ b/media/gpu/v4l2/v4l2_video_decode_accelerator.cc
+@@ -2153,12 +2153,30 @@ bool V4L2VideoDecodeAccelerator::GetFormatInfo(struct v4l2_format* format,
+   }
+ 
+   // Make sure we are still getting the format we set on initialization.
+-  if (format->fmt.pix_mp.pixelformat != output_format_fourcc_->ToV4L2PixFmt()) {
++  unsigned int pixelformat = V4L2_TYPE_IS_MULTIPLANAR(format->type) ?
++      format->fmt.pix_mp.pixelformat : format->fmt.pix.pixelformat;
++  if (pixelformat != output_format_fourcc_->ToV4L2PixFmt()) {
+     VLOGF(1) << "Unexpected format from G_FMT on output";
+     return false;
+   }
+ 
+-  gfx::Size coded_size(format->fmt.pix_mp.width, format->fmt.pix_mp.height);
++  int width, height;
++  if (V4L2_TYPE_IS_MULTIPLANAR(format->type)) {
++    width = format->fmt.pix_mp.width;
++    height = format->fmt.pix_mp.height;
++    if ((format->fmt.pix_mp.width == 0) && (format->fmt.pix_mp.height == 0))
++    {
++      *again = true;
++      VLOG(1)<<"As got width=height=0 again";
++    } else {
++      VLOG(1)<<"format wxh" << format->fmt.pix_mp.width << "x" << format->fmt.pix_mp.height;
++    }
++  }  else {
++    width = format->fmt.pix.width;
++    height = format->fmt.pix.height;
++  }
++
++  gfx::Size coded_size(width, height);
+   if (visible_size != nullptr)
+     *visible_size = GetVisibleSize(coded_size);
+ 
+@@ -2263,7 +2281,7 @@ bool V4L2VideoDecodeAccelerator::SetupFormats() {
+ 
+   struct v4l2_fmtdesc fmtdesc;
+   memset(&fmtdesc, 0, sizeof(fmtdesc));
+-  fmtdesc.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
++  fmtdesc.type = input_queue_->IsMultiQueue() ? V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE : V4L2_BUF_TYPE_VIDEO_OUTPUT;
+   bool is_format_supported = false;
+   while (device_->Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0) {
+     if (fmtdesc.pixelformat == input_format_fourcc_) {
+@@ -2281,10 +2299,16 @@ bool V4L2VideoDecodeAccelerator::SetupFormats() {
+ 
+   struct v4l2_format format;
+   memset(&format, 0, sizeof(format));
+-  format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+-  format.fmt.pix_mp.pixelformat = input_format_fourcc_;
+-  format.fmt.pix_mp.plane_fmt[0].sizeimage = input_size;
+-  format.fmt.pix_mp.num_planes = 1;
++  if (input_queue_->IsMultiQueue()) {
++    format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
++    format.fmt.pix_mp.pixelformat = input_format_fourcc_;
++    format.fmt.pix_mp.plane_fmt[0].sizeimage = input_size;
++    format.fmt.pix_mp.num_planes = 1;
++  } else {
++    format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
++    format.fmt.pix.pixelformat = input_format_fourcc_;
++    format.fmt.pix.sizeimage = input_size;
++  }
+   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_FMT, &format);
+   DCHECK_EQ(format.fmt.pix_mp.pixelformat, input_format_fourcc_);
+ 
+@@ -2292,7 +2316,7 @@ bool V4L2VideoDecodeAccelerator::SetupFormats() {
+   // changing it once we start streaming; whether it can support our chosen
+   // output format or not may depend on the input format.
+   memset(&fmtdesc, 0, sizeof(fmtdesc));
+-  fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
++  fmtdesc.type = output_queue_->IsMultiQueue() ? V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE : V4L2_BUF_TYPE_VIDEO_CAPTURE;
+   while (device_->Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0) {
+     auto fourcc = Fourcc::FromV4L2PixFmt(fmtdesc.pixelformat);
+     if (fourcc && device_->CanCreateEGLImageFrom(*fourcc)) {
+@@ -2334,8 +2358,13 @@ bool V4L2VideoDecodeAccelerator::SetupFormats() {
+   // Just set the fourcc for output; resolution, etc., will come from the
+   // driver once it extracts it from the stream.
+   memset(&format, 0, sizeof(format));
+-  format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+-  format.fmt.pix_mp.pixelformat = output_format_fourcc_->ToV4L2PixFmt();
++  if (output_queue_->IsMultiQueue()) {
++    format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
++    format.fmt.pix_mp.pixelformat = output_format_fourcc_->ToV4L2PixFmt();
++  } else {
++    format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
++    format.fmt.pix.pixelformat = output_format_fourcc_->ToV4L2PixFmt();
++  }
+   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_FMT, &format);
+   DCHECK_EQ(format.fmt.pix_mp.pixelformat,
+             output_format_fourcc_->ToV4L2PixFmt());
+-- 
+2.17.1
+
