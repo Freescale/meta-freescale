@@ -1,0 +1,108 @@
+From 1cae59ad534e9f10f27de3d92e828be5968f1632 Mon Sep 17 00:00:00 2001
+From: Hou Qi <qi.hou@nxp.com>
+Date: Mon, 5 Sep 2022 12:11:36 +0800
+Subject: [PATCH 13/17] V4L2VDA: Comment some unused ioctl
+
+Upstream-Status: Inappropriate [NXP specific]
+---
+ media/gpu/v4l2/v4l2_device.cc | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/media/gpu/v4l2/v4l2_device.cc b/media/gpu/v4l2/v4l2_device.cc
+index e090cad6626f7..5a1057c845e85 100644
+--- a/media/gpu/v4l2/v4l2_device.cc
++++ b/media/gpu/v4l2/v4l2_device.cc
+@@ -1041,10 +1041,12 @@ V4L2Queue::V4L2Queue(scoped_refptr<V4L2Device> dev,
+     return;
+   }
+ 
++#if !BUILDFLAG(USE_LINUX_V4L2)
+   if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
+     supports_requests_ = true;
+     DVLOGF(4) << "Queue supports request API.";
+   }
++#endif
+ }
+ 
+ V4L2Queue::~V4L2Queue() {
+@@ -2482,10 +2484,14 @@ bool V4L2Request::ApplyCtrls(struct v4l2_ext_controls* ctrls) {
+     return false;
+   }
+ 
++#if !BUILDFLAG(USE_LINUX_V4L2)
+   ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
+   ctrls->request_fd = request_fd_.get();
+ 
+   return true;
++#else
++  return false;
++#endif
+ }
+ 
+ bool V4L2Request::ApplyQueueBuffer(struct v4l2_buffer* buffer) {
+@@ -2497,10 +2503,14 @@ bool V4L2Request::ApplyQueueBuffer(struct v4l2_buffer* buffer) {
+     return false;
+   }
+ 
++#if !BUILDFLAG(USE_LINUX_V4L2)
+   buffer->flags |= V4L2_BUF_FLAG_REQUEST_FD;
+   buffer->request_fd = request_fd_.get();
+ 
+   return true;
++#else
++  return false;
++#endif
+ }
+ 
+ bool V4L2Request::Submit() {
+@@ -2511,7 +2521,11 @@ bool V4L2Request::Submit() {
+     return false;
+   }
+ 
++#if !BUILDFLAG(USE_LINUX_V4L2)
+   return HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_QUEUE)) == 0;
++#else
++  return false;
++#endif
+ }
+ 
+ bool V4L2Request::IsCompleted() {
+@@ -2554,6 +2568,7 @@ bool V4L2Request::Reset() {
+     return false;
+   }
+ 
++#if !BUILDFLAG(USE_LINUX_V4L2)
+   // Reinit the request to make sure we can use it for a new submission.
+   if (HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_REINIT)) < 0) {
+     VPLOGF(1) << "Failed to reinit request.";
+@@ -2561,6 +2576,9 @@ bool V4L2Request::Reset() {
+   }
+ 
+   return true;
++#else
++  return false;
++#endif
+ }
+ 
+ V4L2RequestRefBase::V4L2RequestRefBase(V4L2RequestRefBase&& req_base) {
+@@ -2635,6 +2653,7 @@ V4L2RequestsQueue::~V4L2RequestsQueue() {
+ absl::optional<base::ScopedFD> V4L2RequestsQueue::CreateRequestFD() {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+ 
++#if !BUILDFLAG(USE_LINUX_V4L2)
+   int request_fd;
+   int ret = HANDLE_EINTR(
+         ioctl(media_fd_.get(), MEDIA_IOC_REQUEST_ALLOC, &request_fd));
+@@ -2644,6 +2663,9 @@ absl::optional<base::ScopedFD> V4L2RequestsQueue::CreateRequestFD() {
+   }
+ 
+   return base::ScopedFD(request_fd);
++#else
++  return absl::nullopt;
++#endif
+ }
+ 
+ absl::optional<V4L2RequestRef> V4L2RequestsQueue::GetFreeRequest() {
+-- 
+2.17.1
+
