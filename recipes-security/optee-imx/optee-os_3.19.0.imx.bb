@@ -8,8 +8,13 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
 DEPENDS = "python3-pyelftools-native u-boot-mkimage-native \
            python3-cryptography-native"
+DEPENDS:append:toolchain-clang = " compiler-rt"
 
-SRC_URI = "git://github.com/nxp-imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
+           file://0001-core-Define-section-attributes-for-clang.patch \
+           file://0006-allow-setting-sysroot-for-libgcc-lookup.patch \
+           file://0007-allow-setting-sysroot-for-clang.patch \
+           file://0010-add-note-GNU-stack-section.patch"
 SRCBRANCH = "lf-5.15.71_2.2.0"
 SRCREV = "00919403f040fad4f8603e605932281ff8451b1d"
 
@@ -44,6 +49,9 @@ PLATFORM_FLAVOR:mx93-nxp-bsp      = "mx93evk"
 OPTEE_ARCH:arm     = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
 
+COMPILER ?= "gcc"
+COMPILER:toolchain-clang = "clang"
+
 # Optee-os can be built for 32 bits and 64 bits at the same time
 # as long as the compilers are correctly defined.
 # For 64bits, CROSS_COMPILE64 must be set
@@ -56,14 +64,23 @@ EXTRA_OEMAKE = " \
     CFG_TEE_TA_LOG_LEVEL=0 \
     CFG_TEE_CORE_LOG_LEVEL=0 \
     OPENSSL_MODULES=${STAGING_LIBDIR_NATIVE}/ossl-modules \
+    COMPILER=${COMPILER} \
     -C ${S} O=${B} \
 "
 
 LDFLAGS[unexport] = "1"
+CPPFLAGS[unexport] = "1"
+AS[unexport] = "1"
+LD[unexport] = "1"
+
 CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
 do_configure[noexec] = "1"
+
+do_compile:prepend() {
+    PLAT_LIBGCC_PATH=$(${CC} -print-libgcc-file-name)
+}
 
 do_compile:arm () {
     oe_runmake all uTee
