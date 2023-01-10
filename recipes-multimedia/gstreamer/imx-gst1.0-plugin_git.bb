@@ -11,6 +11,7 @@ DEPENDS = "imx-codec imx-parser gstreamer1.0 gstreamer1.0-plugins-base gstreamer
 DEPENDS:append:mx6-nxp-bsp = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp = " imx-lib"
 DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
+DEPENDS:append:mx9-nxp-bsp = " imx-lib"
 DEPENDS:append:imxvpu = " imx-vpuwrap"
 DEPENDS:append:imxfbdev:imxgpu = " libdrm"
 
@@ -22,9 +23,11 @@ RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
                     file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
 
+PV = "4.7.2+git${SRCPV}"
+
 SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "MM_04.07.01_2208_L5.15.y"
-SRCREV = "f4410b70e8cb49ec0d522bb0681c5d9178cfc216"
+SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
+SRCREV = "3a0250b983f2610e6936d10c63b45e2d39eadd7e"
 
 S = "${WORKDIR}/git"
 
@@ -38,6 +41,7 @@ PLATFORM:mx6sll-nxp-bsp = "MX6SLL"
 PLATFORM:mx7-nxp-bsp= "MX7D"
 PLATFORM:mx7ulp-nxp-bsp= "MX7ULP"
 PLATFORM:mx8-nxp-bsp = "MX8"
+PLATFORM:mx9-nxp-bsp = "MX9"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OEMESON = "-Dplatform=${PLATFORM} \

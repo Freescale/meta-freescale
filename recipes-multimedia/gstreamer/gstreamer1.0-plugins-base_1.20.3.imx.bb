@@ -114,8 +114,8 @@ SRC_URI:remove = " \
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 SRC_URI += "file://0001-gstallocatorphymem.c-Typecast-result-of-gst_phymem_g.patch"
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.07.01_2208_L5.15.y"
-SRCREV = "db100facd1b3601c225bfac2fae7abc9f7a5f92c"
+SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
+SRCREV = "cbf542ce3e0bad1009d5ecf72707e870c375c3f0"
 
 S = "${WORKDIR}/git"
 
