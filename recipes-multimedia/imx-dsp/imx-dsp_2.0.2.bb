@@ -8,16 +8,14 @@ inherit fsl-eula-unpack autotools pkgconfig
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "71e18d4518551f665fa0258ccf6605b0"
-SRC_URI[sha256sum] = "7441cf3cbdc12058f2841a708b1374c637d2a171cca17a348338ebf4580a417e"
+SRC_URI[md5sum] = "1ba2634775bf9b7a66fe25ce72195aca"
+SRC_URI[sha256sum] = "f3fb2f61dc3d9a5ae4e42474d309d891f6ac710540b47adb147df33560629aa8"
 
 EXTRA_OECONF = " \
     -datadir=${base_libdir}/firmware \
     --bindir=/unit_tests \
     ${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', '', d)} \
 "
-
-RDEPENDS:${PN} += " imx-dsp-codec-ext"
 
 HIFI4_PLATFORM               ?= "HIFI4_PLATFORM_IS_UNDEFINED"
 HIFI4_PLATFORM:mx8qm-nxp-bsp  = "imx8qmqxp"
@@ -45,6 +43,7 @@ FILES:${PN} = "${libdir}/imx-mm/audio-codec/dsp \
                ${base_libdir}/firmware/imx/dsp \
                /unit_tests \
 "
+RDEPENDS:${PN} += "imx-dsp-codec-ext"
 
 INSANE_SKIP:${PN} = "already-stripped arch ldflags dev-so"
 
