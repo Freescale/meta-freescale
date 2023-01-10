@@ -1,0 +1,31 @@
+From b81ae910fcc8d44ba26ee33923860978b092329a Mon Sep 17 00:00:00 2001
+From: Hou Qi <qi.hou@nxp.com>
+Date: Fri, 2 Sep 2022 16:42:58 +0800
+Subject: [PATCH 02/17] GenericV4L2Device: Correct v4l2 decoder device path
+
+Change decoder device pattern to /dev/video, and select one
+correct device path /dev/videox where x is an integer.
+
+Upstream-Status: Inappropriate [NXP specific]
+---
+ media/gpu/v4l2/generic_v4l2_device.cc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/media/gpu/v4l2/generic_v4l2_device.cc b/media/gpu/v4l2/generic_v4l2_device.cc
+index a6fe9d914e8d9..c1fccf3e2e813 100644
+--- a/media/gpu/v4l2/generic_v4l2_device.cc
++++ b/media/gpu/v4l2/generic_v4l2_device.cc
+@@ -478,8 +478,8 @@ bool GenericV4L2Device::PostSandboxInitialization() {
+ }
+ 
+ void GenericV4L2Device::EnumerateDevicesForType(Type type) {
+-  static const std::string kDecoderDevicePattern = "/dev/video-dec";
+-  static const std::string kEncoderDevicePattern = "/dev/video-enc";
++  static const std::string kDecoderDevicePattern = "/dev/video";
++  static const std::string kEncoderDevicePattern = "/dev/video";
+   static const std::string kImageProcessorDevicePattern = "/dev/image-proc";
+   static const std::string kJpegDecoderDevicePattern = "/dev/jpeg-dec";
+   static const std::string kJpegEncoderDevicePattern = "/dev/jpeg-enc";
+-- 
+2.17.1
+

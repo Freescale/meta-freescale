@@ -1,0 +1,150 @@
+From 0e5dd1497ff0764dc28ef9bbd3f9249617f8af59 Mon Sep 17 00:00:00 2001
+From: Hou Qi <qi.hou@nxp.com>
+Date: Fri, 2 Sep 2022 17:30:16 +0800
+Subject: [PATCH 06/17] V4L2VDA: Create videoframe according to v4l2buffer
+
+Upstream-Status: Inappropriate [NXP specific]
+---
+ media/gpu/v4l2/v4l2_device.cc | 70 ++++++++++++++++++++++++-----------
+ 1 file changed, 48 insertions(+), 22 deletions(-)
+
+diff --git a/media/gpu/v4l2/v4l2_device.cc b/media/gpu/v4l2/v4l2_device.cc
+index 9614eb8e71668..a9462c9a2fb2d 100644
+--- a/media/gpu/v4l2/v4l2_device.cc
++++ b/media/gpu/v4l2/v4l2_device.cc
+@@ -305,7 +305,7 @@ scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
+   }
+ 
+   std::vector<base::ScopedFD> dmabuf_fds = device_->GetDmabufsForV4L2Buffer(
+-      v4l2_buffer_.index, v4l2_buffer_.length,
++      v4l2_buffer_.index, V4L2_TYPE_IS_MULTIPLANAR(v4l2_buffer_.type) ? v4l2_buffer_.length : 1,
+       static_cast<enum v4l2_buf_type>(v4l2_buffer_.type));
+   if (dmabuf_fds.empty()) {
+     VLOGF(1) << "Failed to get DMABUFs of V4L2 buffer";
+@@ -332,7 +332,10 @@ scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
+     dmabuf_fds.emplace_back(duped_fd);
+   }
+ 
+-  gfx::Size size(format_.fmt.pix_mp.width, format_.fmt.pix_mp.height);
++  if (V4L2_TYPE_IS_MULTIPLANAR(v4l2_buffer_.type))
++    gfx::Size size(format_.fmt.pix_mp.width, format_.fmt.pix_mp.height);
++  else
++    gfx::Size size(format_.fmt.pix.width, format_.fmt.pix.height);
+ 
+   return VideoFrame::WrapExternalDmabufs(
+       *layout, gfx::Rect(size), size, std::move(dmabuf_fds), base::TimeDelta());
+@@ -1897,13 +1900,9 @@ gfx::Size V4L2Device::AllocatedSizeFromV4L2Format(
+ // static
+ absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
+     const struct v4l2_format& format) {
+-  if (!V4L2_TYPE_IS_MULTIPLANAR(format.type)) {
+-    VLOGF(1) << "v4l2_buf_type is not multiplanar: " << std::hex << "0x"
+-             << format.type;
+-    return absl::nullopt;
+-  }
+   const v4l2_pix_format_mplane& pix_mp = format.fmt.pix_mp;
+-  const uint32_t& pix_fmt = pix_mp.pixelformat;
++  const v4l2_pix_format& pix = format.fmt.pix;
++  const uint32_t& pix_fmt = V4L2_TYPE_IS_MULTIPLANAR(format.type) ? pix_mp.pixelformat : pix.pixelformat;
+   const auto video_fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
+   if (!video_fourcc) {
+     VLOGF(1) << "Failed to convert pixel format to VideoPixelFormat: "
+@@ -1911,7 +1910,7 @@ absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
+     return absl::nullopt;
+   }
+   const VideoPixelFormat video_format = video_fourcc->ToVideoPixelFormat();
+-  const size_t num_buffers = pix_mp.num_planes;
++  const size_t num_buffers = V4L2_TYPE_IS_MULTIPLANAR(format.type) ? format.fmt.pix_mp.num_planes : 1;
+   const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
+   if (num_color_planes == 0) {
+     VLOGF(1) << "Unsupported video format for NumPlanes(): "
+@@ -1929,9 +1928,17 @@ absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
+   std::vector<ColorPlaneLayout> planes;
+   planes.reserve(num_color_planes);
+   for (size_t i = 0; i < num_buffers; ++i) {
+-    const v4l2_plane_pix_format& plane_format = pix_mp.plane_fmt[i];
+-    planes.emplace_back(static_cast<int32_t>(plane_format.bytesperline), 0u,
+-                        plane_format.sizeimage);
++    if (V4L2_TYPE_IS_MULTIPLANAR(format.type)) {
++      if(i==0)
++        planes.emplace_back(static_cast<int32_t>(pix_mp.width), 0u,
++            pix_mp.width*pix_mp.height);
++      else
++        planes.emplace_back(static_cast<int32_t>(pix_mp.width), 0u,
++            pix_mp.width*pix_mp.height/2);
++    } else {
++      planes.emplace_back(static_cast<int32_t>(pix.bytesperline), 0u,
++                          pix.sizeimage);
++    }
+   }
+   // For the case that #color planes > #buffers, it fills stride of color
+   // plane which does not map to buffer.
+@@ -1945,8 +1952,12 @@ absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
+       case V4L2_PIX_FMT_NV12:
+         // The stride of UV is the same as Y in NV12.
+         // The height is half of Y plane.
+-        planes.emplace_back(y_stride, y_stride_abs * pix_mp.height,
+-                            y_stride_abs * pix_mp.height / 2);
++        if (V4L2_TYPE_IS_MULTIPLANAR(format.type))
++          planes.emplace_back(y_stride, y_stride_abs * pix_mp.height,
++                              y_stride_abs * pix_mp.height / 2);
++        else
++          planes.emplace_back(y_stride, y_stride_abs * pix.height,
++                              y_stride_abs * pix.height / 2);
+         DCHECK_EQ(2u, planes.size());
+         break;
+       case V4L2_PIX_FMT_YUV420:
+@@ -1954,13 +1965,18 @@ absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
+         // The spec claims that two Cx rows (including padding) is exactly as
+         // long as one Y row (including padding). So stride of Y must be even
+         // number.
+-        if (y_stride % 2 != 0 || pix_mp.height % 2 != 0) {
++        if (V4L2_TYPE_IS_MULTIPLANAR(format.type) && (y_stride % 2 != 0 || pix_mp.height % 2 != 0)) {
+           VLOGF(1) << "Plane-Y stride and height should be even; stride: "
+                    << y_stride << ", height: " << pix_mp.height;
+           return absl::nullopt;
+         }
++        else if (!V4L2_TYPE_IS_MULTIPLANAR(format.type) && (y_stride % 2 != 0 || pix.height % 2 != 0)){
++          VLOGF(1) << "Plane-Y stride and height should be even; stride: "
++                   << y_stride << ", height: " << pix.height;
++          return absl::nullopt;
++        }
+         const int32_t half_stride = y_stride / 2;
+-        const size_t plane_0_area = y_stride_abs * pix_mp.height;
++        const size_t plane_0_area = y_stride_abs * (V4L2_TYPE_IS_MULTIPLANAR(format.type) ? pix_mp.height : pix.height);
+         const size_t plane_1_area = plane_0_area / 4;
+         planes.emplace_back(half_stride, plane_0_area, plane_1_area);
+         planes.emplace_back(half_stride, plane_0_area + plane_1_area,
+@@ -1979,13 +1995,23 @@ absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
+   // such devices individually, so set this as a video frame layout property.
+   constexpr size_t buffer_alignment = 0x1000;
+   if (num_buffers == 1) {
+-    return VideoFrameLayout::CreateWithPlanes(
+-        video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
+-        buffer_alignment);
++    if (V4L2_TYPE_IS_MULTIPLANAR(format.type))
++      return VideoFrameLayout::CreateWithPlanes(
++          video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
++          buffer_alignment);
++    else
++      return VideoFrameLayout::CreateWithPlanes(
++          video_format, gfx::Size(pix.width, pix.height), std::move(planes),
++          buffer_alignment);
+   } else {
+-    return VideoFrameLayout::CreateMultiPlanar(
+-        video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
+-        buffer_alignment);
++    if (V4L2_TYPE_IS_MULTIPLANAR(format.type))
++      return VideoFrameLayout::CreateMultiPlanar(
++          video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
++          buffer_alignment);
++    else
++      return VideoFrameLayout::CreateMultiPlanar(
++          video_format, gfx::Size(pix.width, pix.height), std::move(planes),
++          buffer_alignment);
+   }
+ }
+ 
+-- 
+2.17.1
+
