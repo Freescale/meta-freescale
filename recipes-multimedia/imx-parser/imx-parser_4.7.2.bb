@@ -14,8 +14,8 @@ RPROVIDES:${PN} = "libfslparser"
 RCONFLICTS:${PN} = "libfslparser"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "33341cfbc387a881d82c5197b86a4544"
-SRC_URI[sha256sum] = "680080293df869393028c58ccb2642b724f4b2297f2cbd7b98877a81e4cd6d03"
+SRC_URI[md5sum] = "b4fee8f21ecef727af00f7106620f44b"
+SRC_URI[sha256sum] = "745dbc6c9d28bf380b707f0aeb6dfde02a3bcbb34522640510f8756e945c7320"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
