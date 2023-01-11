@@ -17,7 +17,6 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-ba
            file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
            file://0003-viv-fb-Make-sure-config.h-is-included.patch \
            file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch \
-           file://0001-gstallocatorphymem.c-Typecast-result-of-gst_phymem_g.patch \
            "
 SRC_URI[sha256sum] = "96d8a6413ba9394fbec1217aeef63741a729d476a505a797c1d5337d8fa7c204"
 
@@ -113,9 +112,10 @@ SRC_URI:remove = " \
     file://0003-viv-fb-Make-sure-config.h-is-included.patch \
     file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
+SRC_URI += "file://0001-gstallocatorphymem.c-Typecast-result-of-gst_phymem_g.patch"
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.07.01_2208_L5.15.y"
-SRCREV = "db100facd1b3601c225bfac2fae7abc9f7a5f92c"
+SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
+SRCREV = "cbf542ce3e0bad1009d5ecf72707e870c375c3f0"
 
 S = "${WORKDIR}/git"
 
