@@ -43,6 +43,13 @@ FILES:${PN} += " \
     ${libdir}/apitrace/scripts/* \
     ${libdir}/apitrace/wrappers/* \
 "
-
+EXTRA_OECMAKE += "\
+    -DENABLE_GUI=OFF \
+    -DENABLE_STATIC_LIBGCC=OFF \
+    -DENABLE_STATIC_LIBSTDCXX=OFF \
+    -DPython3_ROOT_DIR=/usr/bin/python3-native \
+"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxgpu)"
+SECURITY_CFLAGS:toolchain-clang = ""
+
