@@ -3,8 +3,7 @@
 # recipe. The second section customizes the recipe for i.MX.
 
 ########## meta-openembedded copy ###########
-# Upstream hash: 6b7cf95e75cbfc08cf1f6eddc7ce3f6a0a39edcf
-#                plus LICENSE_FLAGS_ACCEPTED fix
+# Upstream hash: 72dc42966be7da07f9553f75b825123b81704f0b
 
 SUMMARY = "Opencv : The Open Computer Vision Library"
 HOMEPAGE = "http://opencv.org/"
@@ -59,6 +58,7 @@ SRC_URI = "git://github.com/opencv/opencv.git;name=opencv;branch=master;protocol
            file://0001-Dont-use-isystem.patch \
            file://download.patch \
            file://0001-Make-ts-module-external.patch \
+           file://0001-Add-missing-header-for-LIBAVCODEC_VERSION_INT.patch \
            "
 SRC_URI:append:riscv64 = " file://0001-Use-Os-to-compile-tinyxml2.cpp.patch;patchdir=contrib"
 
@@ -117,7 +117,7 @@ EXTRA_OECMAKE:remove:x86 = " -DENABLE_SSE41=1 -DENABLE_SSE42=1"
 
 PACKAGECONFIG ??= "gapi python3 eigen jpeg png tiff v4l libv4l gstreamer samples tbb gphoto2 \
     ${@bb.utils.contains("DISTRO_FEATURES", "x11", "gtk", "", d)} \
-    ${@bb.utils.contains("LICENSE_FLAGS_ACCEPTED", "commercial", "libav", "", d)}"
+    ${@bb.utils.contains_any("LICENSE_FLAGS_ACCEPTED", "commercial_ffmpeg commercial", "libav", "", d)}"
 
 # TBB does not build for powerpc so disable that package config
 PACKAGECONFIG:remove:powerpc = "tbb"
@@ -257,19 +257,19 @@ SUMMARY = "Opencv : The Open Computer Vision Library, i.MX Fork"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 # Replace the opencv URL with the fork
-SRCREV_opencv = "d3440df40a6e90cd1d2a1b729bcbc16aa4d42f5d"
-OPENCV_SRC ?= "git://github.com/nxp-imx/opencv-imx.git;protocol=https;branch=master"
-SRCBRANCH = "4.6.0_imx"
 SRC_URI:remove = "git://github.com/opencv/opencv.git;name=opencv;branch=master;protocol=https"
 SRC_URI =+ "${OPENCV_SRC};branch=${SRCBRANCH};name=opencv"
+OPENCV_SRC ?= "git://github.com/nxp-imx/opencv-imx.git;protocol=https;branch=master"
+SRCBRANCH = "4.6.0_imx"
+SRCREV_opencv = "d3440df40a6e90cd1d2a1b729bcbc16aa4d42f5d"
 
 # Add opencv_extra
-SRCREV_extra = "936854e2b666853d6d0732a8eabc2d699f4fa3d8"
 SRC_URI += " \
     git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra;branch=master;protocol=https \
     file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=../extra \
 "
 SRCREV_FORMAT:append = "_extra"
+SRCREV_extra = "936854e2b666853d6d0732a8eabc2d699f4fa3d8"
 
 # Patch DNN example
 SRC_URI += " \
