@@ -28,30 +28,16 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.15.86
+#    tag: v5.15.87
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-5.15.52-2.1.0
+#    tag: lf-5.15.71-2.2.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-# beacf1c5267a fec_uio: fix implicit declaration
-# e8093f50522f cert host tools: Stop complaining about deprecated OpenSSL functions
-# 49c2d3b7964d gpio: fix enabling GPIO_VF610
-# c04a396fcbf7 ARM: mach-imx: conditionally disable some functions from busfreq-imx
-# 166a38557bf9 drm: bridge: it6161: add missing gpio consumer header
-# 5abdee26320f Revert "ASoC: imx-card: Fix DSD/PDM mclk frequency"
-# 6da679049e7f Revert "LF-5445: media: imx-jpeg: Add pm-sleep support for imx-jpeg"
-# a62c5aa0d000 Revert "media: imx-jpeg: Don't clear stop state in handling dynamic resolution change"
-# b54e0195c2e3 Revert "LF-6878: LF-6654: media: imx-jpeg: Implement g_selection and s_selection"
-# 21f50ad28213 Revert "LF-6493: media: imx-jpeg: Add a timeout mechanism for each frame"
-# 44970f9fbed6 Revert "media: imx-jpeg: Align upwards buffer size"
-# ee7468eafdaa Revert "LF-6878: LF-6658: media: imx-jpeg: Support contiguous and non contiguous format"
-# bb6e70bff1b7 drivers/soc/imx/gpcv2.c: complete patch revert
-# a682d463667a Revert "serial: fsl_lpuart: Reset prior to registration"
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -64,18 +50,18 @@ include linux-fslc.inc
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-KBRANCH = "5.15-2.1.x-imx"
-SRCREV = "7f663d3247e310835206336a4d1f49659094ef3f"
+KBRANCH = "5.15-2.2.x-imx"
+SRCREV = "3ff5eb3ff57e665c47c072284d7f624e5452b85d"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.15.86"
+LINUX_VERSION = "5.15.87"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-5.15.86-2.1.0"
+LOCALVERSION = "-5.15.87-2.2.0"
 
 DEFAULT_PREFERENCE = "1"
 
