@@ -193,6 +193,7 @@ MACHINEOVERRIDES_EXTENDER:mx8qm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxd
 
 MACHINEOVERRIDES_EXTENDER:mx8mm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mm-generic-bsp:mx8mm-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mn:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxgpu:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mn-generic-bsp:mx8mn-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mnul:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mnul-generic-bsp:mx8mnul-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mp:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mq-generic-bsp:mx8mq-nxp-bsp"
 
@@ -237,6 +238,7 @@ MACHINEOVERRIDES_EXTENDER:mx8qm:use-mainline-bsp  = "imx-generic-bsp:imx-mainlin
 
 MACHINEOVERRIDES_EXTENDER:mx8mm:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mm-generic-bsp:mx8mm-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mn:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mn-generic-bsp:mx8mn-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mnul:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mnul-generic-bsp:mx8mnul-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mp:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mp-generic-bsp:mx8mp-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mq:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mq-generic-bsp:mx8mq-mainline-bsp"
 
@@ -270,6 +272,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8qm \
     mx8mm \
     mx8mn \
+    mx8mnul \
     mx8mp \
     mx8mq \
     mx8qxp \
@@ -294,16 +297,17 @@ MACHINE_SOCARCH_SUFFIX:vf-nxp-bsp = "-vf"
 MACHINE_SOCARCH_SUFFIX:mx6ul-nxp-bsp  = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX:mx6ull-nxp-bsp = "-mx6ul"
 MACHINE_SOCARCH_SUFFIX:mx6ulz-nxp-bsp = "-mx6ul"
-MACHINE_SOCARCH_SUFFIX:mx8qm-nxp-bsp  = "-mx8"
-MACHINE_SOCARCH_SUFFIX:mx8mm-nxp-bsp  = "-mx8mm"
-MACHINE_SOCARCH_SUFFIX:mx8mn-nxp-bsp  = "-mx8mn"
-MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp  = "-mx8mp"
-MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp  = "-mx8m"
-MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp = "-mx8"
-MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp  = "-mx8"
-MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8xl"
-MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp = "-mx8ulp"
-MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp = "-mx93"
+MACHINE_SOCARCH_SUFFIX:mx8qm-nxp-bsp   = "-mx8"
+MACHINE_SOCARCH_SUFFIX:mx8mm-nxp-bsp   = "-mx8mm"
+MACHINE_SOCARCH_SUFFIX:mx8mn-nxp-bsp   = "-mx8mn"
+MACHINE_SOCARCH_SUFFIX:mx8mnul-nxp-bsp = "-mx8mnl"
+MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp   = "-mx8mp"
+MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp   = "-mx8m"
+MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp  = "-mx8"
+MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp   = "-mx8"
+MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp  = "-mx8xl"
+MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp  = "-mx8ulp"
+MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp    = "-mx93"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
 MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
@@ -383,24 +387,25 @@ IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "firmware-imx-8 firmware-sentinel"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
-MACHINE_FIRMWARE:append:mx27-generic-bsp   = " firmware-imx-vpu-imx27"
-MACHINE_FIRMWARE:append:mx51-generic-bsp   = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
-MACHINE_FIRMWARE:append:mx53-generic-bsp   = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
-MACHINE_FIRMWARE:append:mx6-generic-bsp    = " linux-firmware-imx-sdma-imx6q"
-MACHINE_FIRMWARE:append:mx6q-generic-bsp   = " firmware-imx-vpu-imx6q"
-MACHINE_FIRMWARE:append:mx6dl-generic-bsp  = " firmware-imx-vpu-imx6d firmware-imx-epdc"
-MACHINE_FIRMWARE:append:mx6sl-generic-bsp  = " firmware-imx-epdc"
-MACHINE_FIRMWARE:append:mx6sll-generic-bsp = " firmware-imx-epdc"
-MACHINE_FIRMWARE:append:mx6ull-generic-bsp = " firmware-imx-epdc"
-MACHINE_FIRMWARE:append:mx7d-generic-bsp   = " linux-firmware-imx-sdma-imx7d firmware-imx-epdc"
-MACHINE_FIRMWARE:append:mx8qm-generic-bsp  = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx8"
-MACHINE_FIRMWARE:append:mx8mm-generic-bsp  = " linux-firmware-imx-sdma-imx7d"
-MACHINE_FIRMWARE:append:mx8mn-generic-bsp  = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn"
-MACHINE_FIRMWARE:append:mx8mp-generic-bsp  = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn firmware-imx-xcvr-imx8mp firmware-sof-imx"
-MACHINE_FIRMWARE:append:mx8mq-generic-bsp  = " linux-firmware-imx-sdma-imx7d"
-MACHINE_FIRMWARE:append:mx8qxp-generic-bsp = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx8"
-MACHINE_FIRMWARE:append:mx8dx-generic-bsp  = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx8"
-MACHINE_FIRMWARE:append:imx-mainline-bsp   = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
+MACHINE_FIRMWARE:append:mx27-generic-bsp     = " firmware-imx-vpu-imx27"
+MACHINE_FIRMWARE:append:mx51-generic-bsp     = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
+MACHINE_FIRMWARE:append:mx53-generic-bsp     = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
+MACHINE_FIRMWARE:append:mx6-generic-bsp      = " linux-firmware-imx-sdma-imx6q"
+MACHINE_FIRMWARE:append:mx6q-generic-bsp     = " firmware-imx-vpu-imx6q"
+MACHINE_FIRMWARE:append:mx6dl-generic-bsp    = " firmware-imx-vpu-imx6d firmware-imx-epdc"
+MACHINE_FIRMWARE:append:mx6sl-generic-bsp    = " firmware-imx-epdc"
+MACHINE_FIRMWARE:append:mx6sll-generic-bsp   = " firmware-imx-epdc"
+MACHINE_FIRMWARE:append:mx6ull-generic-bsp   = " firmware-imx-epdc"
+MACHINE_FIRMWARE:append:mx7d-generic-bsp     = " linux-firmware-imx-sdma-imx7d firmware-imx-epdc"
+MACHINE_FIRMWARE:append:mx8qm-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx8"
+MACHINE_FIRMWARE:append:mx8mm-generic-bsp    = " linux-firmware-imx-sdma-imx7d"
+MACHINE_FIRMWARE:append:mx8mn-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn"
+MACHINE_FIRMWARE:append:mx8mnul-generic-bsp  = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn"
+MACHINE_FIRMWARE:append:mx8mp-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn firmware-imx-xcvr-imx8mp firmware-sof-imx"
+MACHINE_FIRMWARE:append:mx8mq-generic-bsp    = " linux-firmware-imx-sdma-imx7d"
+MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx8"
+MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx8"
+MACHINE_FIRMWARE:append:imx-mainline-bsp     = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
