@@ -23,6 +23,7 @@ SECO_FIRMWARE_NAME:mx8qxp-nxp-bsp = \
                                                            'mx8qxc0-ahab-container.img', d)}"
 SECO_FIRMWARE_NAME:mx8dx-nxp-bsp  = "mx8qxc0-ahab-container.img"
 SECO_FIRMWARE_NAME:mx8dxl-nxp-bsp = "mx8dxla1-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8ulp-nxp-bsp = "mx8ulpa1-ahab-container.img"
 
 python () {
     if "mx8m-generic-bsp" in d.getVar('MACHINEOVERRIDES').split(":"):
