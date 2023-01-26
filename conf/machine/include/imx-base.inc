@@ -164,6 +164,7 @@ DEFAULTTUNE:mx8m-generic-bsp   ?= "cortexa53-crypto"
 DEFAULTTUNE:mx8qm-generic-bsp  ?= "cortexa72-cortexa53-crypto"
 DEFAULTTUNE:mx8x-generic-bsp   ?= "cortexa35-crypto"
 DEFAULTTUNE:mx8ulp-generic-bsp ?= "cortexa35-crypto"
+DEFAULTTUNE:mx93-generic-bsp   ?= "cortexa55"
 
 INHERIT += "machine-overrides-extender"
 
@@ -200,6 +201,8 @@ MACHINEOVERRIDES_EXTENDER:mx8dx:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxd
 MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8dxl-generic-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-nxp-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8ulp-generic-bsp:mx8ulp-nxp-bsp"
+
+MACHINEOVERRIDES_EXTENDER:mx93:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx93-generic-bsp:mx93-nxp-bsp"
 
 #######
 ### Mainline BSP specific overrides
@@ -243,6 +246,8 @@ MACHINEOVERRIDES_EXTENDER:mx8dxl:use-mainline-bsp = "imx-generic-bsp:imx-mainlin
 
 MACHINEOVERRIDES_EXTENDER:mx8ulp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8ulp-generic-bsp:mx8ulp-mainline-bsp"
 
+MACHINEOVERRIDES_EXTENDER:mx93:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-mainline-bsp:mx93-generic-bsp:mx93-mainline-bsp"
+
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx6 \
     mx6q \
@@ -271,6 +276,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8dx \
     mx8dxl \
     mx8ulp \
+    mx93 \
 "
 
 MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR = "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
@@ -297,6 +303,7 @@ MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp  = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8xl"
 MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp = "-mx8ulp"
+MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp = "-mx93"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
 MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
@@ -367,11 +374,12 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS:append = " \
 "
 
 # Firmware used for boot.
-IMX_EXTRA_FIRMWARE                  ?= ""
-IMX_EXTRA_FIRMWARE:mx8-generic-bsp   = "firmware-imx-8 imx-sc-firmware imx-seco"
-IMX_EXTRA_FIRMWARE:mx8m-generic-bsp  = "firmware-imx-8m"
-IMX_EXTRA_FIRMWARE:mx8x-generic-bsp  = "imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE                   ?= ""
+IMX_EXTRA_FIRMWARE:mx8-generic-bsp    = "firmware-imx-8 imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE:mx8m-generic-bsp   = "firmware-imx-8m"
+IMX_EXTRA_FIRMWARE:mx8x-generic-bsp   = "imx-sc-firmware imx-seco"
 IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-sentinel"
+IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "firmware-imx-8 firmware-sentinel"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
@@ -495,14 +503,16 @@ PREFERRED_PROVIDER_virtual/opencl-icd:imxgpu ?= "imx-gpu-viv"
 PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "10.0.1.imx"
 PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
-PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp ??= "1.25.imx"
-PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp ??= "1.25.imx"
-PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp ??= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp  ??= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp  ??= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp  ??= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx9-nxp-bsp  ??= "1.25.imx"
 
 # Use i.MX libdrm Version
 PREFERRED_VERSION_libdrm:mx6-nxp-bsp ??= "2.4.109.imx"
 PREFERRED_VERSION_libdrm:mx7-nxp-bsp ??= "2.4.109.imx"
 PREFERRED_VERSION_libdrm:mx8-nxp-bsp ??= "2.4.109.imx"
+PREFERRED_VERSION_libdrm:mx9-nxp-bsp ??= "2.4.109.imx"
 
 PREFERRED_VERSION_vulkan-headers:imxvulkan ??= "1.2.182.0"
 PREFERRED_VERSION_vulkan-loader:imxvulkan  ??= "1.2.182.0"
@@ -510,8 +520,11 @@ PREFERRED_VERSION_vulkan-tools:imxvulkan   ??= "1.2.182.0"
 
 # Use i.MX optee Version
 PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "3.19.0.imx"
+PREFERRED_VERSION_optee-os:mx9-nxp-bsp     ??= "3.19.0.imx"
 PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "3.19.0.imx"
+PREFERRED_VERSION_optee-client:mx9-nxp-bsp ??= "3.19.0.imx"
 PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "3.19.0.imx"
+PREFERRED_VERSION_optee-test:mx9-nxp-bsp   ??= "3.19.0.imx"
 
 #Use i.MX opencv Version for mx8
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.6.0.imx"
@@ -570,6 +583,7 @@ WKS_FILE_DEPENDS:append:imx-generic-bsp:aarch64 = " \
 SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mx8-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mxs-generic-bsp ?= "imx-uboot-mxs-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:mx9-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
