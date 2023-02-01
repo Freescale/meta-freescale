@@ -1,0 +1,53 @@
+From 98b5411642ffac9d895de968748102c2c6d18cb4 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Wed, 1 Feb 2023 14:29:49 -0800
+Subject: [PATCH] Fix types to match callback functions
+
+Fixes build errors seen with gcc13
+
+| ../git/gst-libs/gst/gl/gstglphymemory.c:312:25: error: incompatible function pointer types assigning to 'GDestroyNotify' (aka 'void (*)(void *)') from 'void (GstMemory *)' (aka 'void (struct _GstMemory *)') [-Win
+compatible-function-pointer-types]
+|   params->parent.notify = gst_gl_phy_mem_destroy;
+|                         ^ ~~~~~~~~~~~~~~~~~~~~~~
+| ../git/gst-libs/gst/gl/gstglphymemory.c:340:5: warning: cast to smaller integer type 'guint' (aka 'unsigned int') from 'guint8 *' (aka 'unsigned char *') [-Wpointer-to-int-cast]
+|     (guint)memblk->paddr,
+|     ^~~~~~~~~~~~~~~~~~~~
+| ../git/gst-libs/gst/gl/gstglphymemory.c:345:7: error: incompatible function pointer types passing 'void (GstGLContext *, DirectVIVData *)' (aka 'void (struct _GstGLContext *, DirectVIVData *)') to parameter of ty
+pe 'GstGLContextThreadFunc' (aka 'void (*)(struct _GstGLContext *, void *)') [-Wincompatible-function-pointer-types]
+|       _do_viv_direct_tex_bind_mem, &directvivdata);
+|       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/gst-plugins-base/pull/1]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ gst-libs/gst/gl/gstglphymemory.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/gst-libs/gst/gl/gstglphymemory.c b/gst-libs/gst/gl/gstglphymemory.c
+index d82c9a66a..0a191f1a5 100644
+--- a/gst-libs/gst/gl/gstglphymemory.c
++++ b/gst-libs/gst/gl/gstglphymemory.c
+@@ -163,9 +163,10 @@ _finish_texture (GstGLContext * ctx, gpointer * data)
+ }
+ 
+ static void
+-_do_viv_direct_tex_bind_mem (GstGLContext * ctx, DirectVIVData * data)
++_do_viv_direct_tex_bind_mem (GstGLContext * ctx, void * data_in)
+ {
+   GstGLFuncs *gl = ctx->gl_vtable;
++  DirectVIVData *data = (DirectVIVData*) data_in;
+ 
+   GST_DEBUG ("viv direct bind, tex_id %d, fmt: %d, res: (%dx%d)", data->tex_id,
+       data->fmt, data->w, data->h);
+@@ -211,7 +212,7 @@ _directviv_video_format_to_gl_format (GstVideoFormat format)
+ }
+ 
+ static void
+-gst_gl_phy_mem_destroy (GstMemory * mem)
++gst_gl_phy_mem_destroy (void * mem)
+ {
+   gst_memory_unref (mem);
+ }
+-- 
+2.39.1
+
