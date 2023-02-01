@@ -3,7 +3,17 @@ require u-boot-fslc-common_${PV}.inc
 DESCRIPTION = "U-boot bootloader mxsboot tool"
 SECTION = "bootloader"
 
-DEPENDS = "swig-native bison-native gnutls-native dtc openssl"
+inherit python3native
+
+DEPENDS += " \
+    bison-native \
+    dtc \
+    gnutls \
+    openssl \
+    python3-setuptools-native \
+    swig-native \
+    util-linux-libuuid \
+"
 
 PROVIDES = "u-boot-mxsboot"
 
