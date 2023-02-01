@@ -3,7 +3,17 @@ require u-boot-fslc-common_${PV}.inc
 DESCRIPTION = "U-boot bootloader mxsboot tool"
 SECTION = "bootloader"
 
-DEPENDS = "swig-native bison-native gnutls-native dtc openssl"
+inherit python3native
+
+DEPENDS += " \
+    bison-native \
+    dtc \
+    gnutls \
+    openssl \
+    python3-setuptools-native \
+    swig-native \
+    util-linux-libuuid \
+"
 
 PROVIDES = "u-boot-mxsboot"
 
@@ -12,7 +22,7 @@ EXTRA_OEMAKE:class-native = 'CC="${BUILD_CC} ${BUILD_CFLAGS} ${BUILD_LDFLAGS}" H
 EXTRA_OEMAKE:class-nativesdk = 'CROSS_COMPILE="${HOST_PREFIX}" CC="${CC} ${CFLAGS} ${LDFLAGS}" HOSTCC="${BUILD_CC} ${BUILD_CFLAGS} ${BUILD_LDFLAGS}" STRIP=true V=1 CONFIG_MX28=y'
 
 do_compile () {
-    oe_runmake -C ${S} O=${B} sandbox_defconfig
+    oe_runmake -C ${S} O=${B} tools-only_defconfig
 
     # Disable CONFIG_CMD_LICENSE, license.h is not used by tools and
     # generating it requires bin2header tool, which for target build
