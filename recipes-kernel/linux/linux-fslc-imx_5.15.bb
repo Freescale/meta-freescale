@@ -51,7 +51,7 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KBRANCH = "5.15-2.2.x-imx"
-SRCREV = "3ff5eb3ff57e665c47c072284d7f624e5452b85d"
+SRCREV = "3248ffcb12d15a0e40b9a020ba362591b8137923"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
