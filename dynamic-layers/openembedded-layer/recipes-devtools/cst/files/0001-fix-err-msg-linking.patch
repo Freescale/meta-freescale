@@ -1,0 +1,56 @@
+NXP uses weaken to solve conflict in linking.
+On Ubuntu 22.04(LTS) this fails to link cst with libcrypto.
+
+The patch fixes the conflict in the code itself.
+It restricts the scope of err_msg to the module.
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Walter Schweizer <walter.schweizer@siemens.com>
+----
+diff --git a/code/cst/code/build/make/rules.mk b/code/cst/code/build/make/rules.mk
+index 1c0842b..9c46cc4 100644
+--- a/code/cst/code/build/make/rules.mk
++++ b/code/cst/code/build/make/rules.mk
+@@ -25,11 +25,11 @@ LFLAGS  := -t
+ %.a:
+ 	@echo "Create archive $@"
+ 	$(AR) $(ARFLAGS) $@ $^
+-ifneq ($(OSTYPE),mingw32)
+-ifneq ($(OSTYPE),osx)
+-	$(OBJCOPY) --weaken $@
+-endif
+-endif
++#ifneq ($(OSTYPE),mingw32)
++#ifneq ($(OSTYPE),osx)
++#	$(OBJCOPY) --weaken $@
++#endif
++#endif
+ 
+ %.exe:
+ 	@echo "Link $@"
+diff --git a/code/cst/code/front_end/src/acst.c b/code/cst/code/front_end/src/acst.c
+index fb1e8aa..1e993ee 100644
+--- a/code/cst/code/front_end/src/acst.c
++++ b/code/cst/code/front_end/src/acst.c
+@@ -65,7 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ /*===========================================================================
+                             LOCAL VARIABLES
+ =============================================================================*/
+-char err_msg[MAX_ERR_MSG_BYTES];
++static char err_msg[MAX_ERR_MSG_BYTES];
+ 
+ /*===========================================================================
+                             LOCAL FUNCTION PROTOTYPES
+diff --git a/code/cst/code/front_end/src/misc_helper.c b/code/cst/code/front_end/src/misc_helper.c
+index 678dc17..9014b2a 100644
+--- a/code/cst/code/front_end/src/misc_helper.c
++++ b/code/cst/code/front_end/src/misc_helper.c
+@@ -60,7 +60,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ /*===========================================================================
+                             LOCAL VARIABLES
+ =============================================================================*/
+-char err_msg[MAX_ERR_MSG_BYTES];
++static char err_msg[MAX_ERR_MSG_BYTES];
+ 
+ /*===========================================================================
+                             LOCAL FUNCTION PROTOTYPES
