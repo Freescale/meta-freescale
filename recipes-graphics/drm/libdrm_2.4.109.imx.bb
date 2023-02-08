@@ -11,9 +11,9 @@ PROVIDES = "drm"
 DEPENDS = "libpthread-stubs"
 
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${SRCBRANCH}"
-IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https;nobranch=1"
+IMX_LIBDRM_SRC ?= "git://github.com/nxp-imx/libdrm-imx.git;protocol=https;nobranch=1"
 SRCBRANCH ?= "libdrm-imx-2.4.109"
-SRCREV = "93c9a82bdf31ea055d45cb54ce57cd42e22c90ae"
+SRCREV = "063bd699054866852ae182d2b31d4d3e7eae4f03"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "-1"
