@@ -10,7 +10,7 @@ inherit ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '1', 'im
 
 DEPENDS += "bc-native dtc-native python3-setuptools-native gnutls-native"
 
-PROVIDES += "u-boot"
+PROVIDES += "u-boot u-boot-mfgtool"
 
 B = "${WORKDIR}/build"
 

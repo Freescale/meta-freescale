@@ -5,7 +5,7 @@
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common_${PV}.inc
 
-PROVIDES += "u-boot"
+PROVIDES += "u-boot u-boot-mfgtool"
 
 inherit uuu_bootloader_tag
 
