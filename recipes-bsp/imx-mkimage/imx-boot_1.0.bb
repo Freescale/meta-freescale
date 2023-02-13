@@ -65,7 +65,7 @@ SOC_FAMILY      = "INVALID"
 SOC_FAMILY:mx8-generic-bsp  = "mx8"
 SOC_FAMILY:mx8m-generic-bsp = "mx8m"
 SOC_FAMILY:mx8x-generic-bsp = "mx8x"
-SOC_FAMILY:mx8ulp-nxp-bsp = "mx8ulp"
+SOC_FAMILY:mx8ulp-generic-bsp = "mx8ulp"
 
 REV_OPTION ?= ""
 REV_OPTION:mx8qxp-generic-bsp = \
