@@ -20,4 +20,4 @@ do_deploy () {
 }
 addtask deploy after do_install before do_build
 
-COMPATIBLE_MACHINE = "(mx8ulp-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx8ulp-nxp-bsp|mx9-nxp-bsp)"
