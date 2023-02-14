@@ -163,6 +163,7 @@ DEFAULTTUNE:vf-generic-bsp     ?= "cortexa5thf-neon"
 DEFAULTTUNE:mx8m-generic-bsp   ?= "cortexa53-crypto"
 DEFAULTTUNE:mx8qm-generic-bsp  ?= "cortexa72-cortexa53-crypto"
 DEFAULTTUNE:mx8x-generic-bsp   ?= "cortexa35-crypto"
+DEFAULTTUNE:mx8ulp-generic-bsp ?= "cortexa35-crypto"
 
 INHERIT += "machine-overrides-extender"
 
@@ -197,6 +198,8 @@ MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxd
 MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8dx:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dx-generic-bsp:mx8dx-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8dxl-generic-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-nxp-bsp"
+
+MACHINEOVERRIDES_EXTENDER:mx8ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8ulp-generic-bsp:mx8ulp-nxp-bsp"
 
 #######
 ### Mainline BSP specific overrides
@@ -238,6 +241,8 @@ MACHINEOVERRIDES_EXTENDER:mx8qxp:use-mainline-bsp = "imx-generic-bsp:imx-mainlin
 MACHINEOVERRIDES_EXTENDER:mx8dx:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dx-generic-bsp:mx8dx-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8dxl:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8dxl-generic-bsp:mx8dxl-mainline-bsp"
 
+MACHINEOVERRIDES_EXTENDER:mx8ulp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8ulp-generic-bsp:mx8ulp-mainline-bsp"
+
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx6 \
     mx6q \
@@ -265,6 +270,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8qxp \
     mx8dx \
     mx8dxl \
+    mx8ulp \
 "
 
 MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR = "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
@@ -290,6 +296,7 @@ MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp  = "-mx8m"
 MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp  = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp = "-mx8xl"
+MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp = "-mx8ulp"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
 MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
@@ -364,6 +371,7 @@ IMX_EXTRA_FIRMWARE                  ?= ""
 IMX_EXTRA_FIRMWARE:mx8-generic-bsp   = "firmware-imx-8 imx-sc-firmware imx-seco"
 IMX_EXTRA_FIRMWARE:mx8m-generic-bsp  = "firmware-imx-8m"
 IMX_EXTRA_FIRMWARE:mx8x-generic-bsp  = "imx-sc-firmware imx-seco"
+IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-sentinel"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
@@ -449,6 +457,7 @@ MACHINE_GSTREAMER_1_0_PLUGIN:mx8mq-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qm-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qxp-nxp-bsp ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8dx-nxp-bsp  ?= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx8ulp-nxp-bsp ?= "imx-gst1.0-plugin"
 
 PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              ??= "1.20.3.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp ??= "1.20.3.imx"
