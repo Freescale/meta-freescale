@@ -61,11 +61,12 @@ BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
 BOOT_STAGING:mx8m-generic-bsp  = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
 
-SOC_FAMILY      = "INVALID"
-SOC_FAMILY:mx8-generic-bsp  = "mx8"
-SOC_FAMILY:mx8m-generic-bsp = "mx8m"
-SOC_FAMILY:mx8x-generic-bsp = "mx8x"
-SOC_FAMILY:mx8ulp-nxp-bsp = "mx8ulp"
+SOC_FAMILY                    = "INVALID"
+SOC_FAMILY:mx8-generic-bsp    = "mx8"
+SOC_FAMILY:mx8m-generic-bsp   = "mx8m"
+SOC_FAMILY:mx8x-generic-bsp   = "mx8x"
+SOC_FAMILY:mx8ulp-generic-bsp = "mx8ulp"
+SOC_FAMILY:mx93-generic-bsp   = "mx93"
 
 REV_OPTION ?= ""
 REV_OPTION:mx8qxp-generic-bsp = \
@@ -131,6 +132,22 @@ compile_mx8ulp() {
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/upower.bin          ${BOOT_STAGING}/upower.bin
+    cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
+        cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
+                                                             ${BOOT_STAGING}/u-boot-spl.bin
+    fi
+}
+
+compile_mx93() {
+    bbnote i.MX 93 boot binary build
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING} "
+        cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}
+    done
+
+    cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
+    cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
@@ -208,6 +225,21 @@ deploy_mx8ulp() {
     fi
 }
 
+deploy_mx93() {
+    install -d ${DEPLOYDIR}/${BOOT_TOOLS}
+
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
+    done
+
+    install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
+                                                             ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+}
+
 do_deploy() {
     deploy_${SOC_FAMILY}
     # copy the sc fw, dcd and uboot to deploy path
@@ -237,4 +269,4 @@ addtask deploy before do_build after do_compile
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILES:${PN} = "/boot"
 
-COMPATIBLE_MACHINE = "(mx8-generic-bsp)"
+COMPATIBLE_MACHINE = "(mx8-generic-bsp|mx9-generic-bsp)"
