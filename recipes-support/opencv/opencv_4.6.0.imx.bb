@@ -276,14 +276,17 @@ SRC_URI += " \
     file://OpenCV_DNN_examples.patch \
 "
 
-PACKAGECONFIG:remove        = "eigen"
-PACKAGECONFIG:append:mx8-nxp-bsp    = " dnn text"
-PACKAGECONFIG_OPENCL        = ""
-PACKAGECONFIG_OPENCL:mx8-nxp-bsp    = "opencl"
-PACKAGECONFIG_OPENCL:mx8dxl-nxp-bsp = ""
-PACKAGECONFIG_OPENCL:mx8mm-nxp-bsp  = ""
+PACKAGECONFIG:remove = "eigen"
+
+PACKAGECONFIG:append:mx8-nxp-bsp = " dnn text"
+PACKAGECONFIG:append:mx9-nxp-bsp = " dnn text"
+
+PACKAGECONFIG:append = " ${PACKAGECONFIG_OPENCL}"
+PACKAGECONFIG_OPENCL                    = ""
+PACKAGECONFIG_OPENCL:mx8-nxp-bsp        = "opencl"
+PACKAGECONFIG_OPENCL:mx8dxl-nxp-bsp     = ""
+PACKAGECONFIG_OPENCL:mx8mm-nxp-bsp      = ""
 PACKAGECONFIG_OPENCL:mx8mnlite-nxp-bsp  = ""
-PACKAGECONFIG:append        = " ${PACKAGECONFIG_OPENCL}"
 
 PACKAGECONFIG[openvx] = "-DWITH_OPENVX=ON -DOPENVX_ROOT=${STAGING_LIBDIR} -DOPENVX_LIB_CANDIDATES='OpenVX;OpenVXU',-DWITH_OPENVX=OFF,virtual/libopenvx,"
 PACKAGECONFIG[qt5] = "-DWITH_QT=ON -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE} -DCMAKE_PREFIX_PATH=${STAGING_BINDIR_NATIVE}/cmake,-DWITH_QT=OFF,qtbase qtbase-native,"
@@ -308,6 +311,6 @@ do_install:append() {
 
 FILES:${PN}-samples += "${datadir}/OpenCV/samples"
 
-COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx8-nxp-bsp|mx9-nxp-bsp)"
 
 ########## End of i.MX overrides ##########
