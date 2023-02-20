@@ -10,8 +10,8 @@ inherit fsl-eula-unpack pkgconfig deploy
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "bc4a96de0e2ce0476a0727dd7e667bff"
-SRC_URI[sha256sum] = "a1ea7a94b5d8dd50a8e82fd37d424facabdd0228dedd08cd3da2c43d61da6126"
+SRC_URI[md5sum] = "d608eb2b3d312da1dbde55b8514c1e0f"
+SRC_URI[sha256sum] = "1272ac5c31a88017ef548721f3acf930a7eda6ac73aa9f41b5f0cade9d5c0e5f"
 
 BOARD_TYPE ?= "mek"
 SC_FIRMWARE_NAME ?= "INVALID"
