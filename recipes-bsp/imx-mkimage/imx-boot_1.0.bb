@@ -50,9 +50,6 @@ ATF_MACHINE_NAME_mx8dxl = "bl31-imx8dxl.bin"
 ATF_MACHINE_NAME_mx8dx = "bl31-imx8dx.bin"
 ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
-UBOOT_NAME = "u-boot-${MACHINE}.bin-${UBOOT_CONFIG}"
-BOOT_CONFIG_MACHINE = "${BOOT_NAME}-${MACHINE}-${UBOOT_CONFIG}.bin"
-
 TOOLS_NAME ?= "mkimage_imx8"
 
 SOC_TARGET       ?= "INVALID"
@@ -93,23 +90,25 @@ compile_mx8m() {
     done
     cp ${DEPLOY_DIR_IMAGE}/signed_dp_imx8m.bin               ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/signed_hdmi_imx8m.bin             ${BOOT_STAGING}
-    cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
+    cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
-    cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${UBOOT_DTB_NAME}   ${BOOT_STAGING}
-    cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}-${UBOOT_CONFIG} \
+    cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${UBOOT_DTB_NAME_EXTRA} \
+                                                             ${BOOT_STAGING}
+    cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-nodtb.bin
     cp ${STAGING_DIR_NATIVE}/${bindir}/mkimage               ${BOOT_STAGING}/mkimage_uboot
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
-    cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
+    cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}               ${BOOT_STAGING}/u-boot.bin
 }
+
 compile_mx8() {
     bbnote 8QM boot binary build
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
-    cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
+    cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}               ${BOOT_STAGING}/u-boot.bin
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}
-    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
-        cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
+        cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
 }
@@ -119,45 +118,95 @@ compile_mx8x() {
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
-    cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
-    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
-        cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
+    cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}               ${BOOT_STAGING}/u-boot.bin
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
+        cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
 }
+
 do_compile() {
     # mkimage for i.MX8
     # Copy TEE binary to SoC target folder to mkimage
     if ${DEPLOY_OPTEE}; then
         cp ${DEPLOY_DIR_IMAGE}/tee.bin ${BOOT_STAGING}
     fi
-    for target in ${IMXBOOT_TARGETS}; do
-        compile_${SOC_FAMILY}
-        if [ "$target" = "flash_linux_m4_no_v2x" ]; then
-           # Special target build for i.MX 8DXL with V2X off
-           bbnote "building ${SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
-           make SOC=${SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME} flash_linux_m4
+    for type in ${UBOOT_CONFIG}; do
+
+        if [ "${@d.getVarFlags('UBOOT_DTB_NAME')}" = "None" ]; then
+            UBOOT_DTB_NAME_FLAGS="${type}:${UBOOT_DTB_NAME}"
         else
-           bbnote "building ${SOC_TARGET} - ${REV_OPTION} ${target}"
-           make SOC=${SOC_TARGET} ${REV_OPTION} dtbs=${UBOOT_DTB_NAME} ${target}
+            UBOOT_DTB_NAME_FLAGS="${@' '.join(flag + ':' + dtb for flag, dtb in (d.getVarFlags('UBOOT_DTB_NAME')).items()) if d.getVarFlags('UBOOT_DTB_NAME') is not None else '' }"
         fi
-        if [ -e "${BOOT_STAGING}/flash.bin" ]; then
-            cp ${BOOT_STAGING}/flash.bin ${S}/${BOOT_CONFIG_MACHINE}-${target}
-        fi
+
+        for key_value in ${UBOOT_DTB_NAME_FLAGS}; do
+            type_key="${key_value%%:*}"
+            dtb_name="${key_value#*:}"
+
+            if [ "$type_key" = "$type" ]
+            then
+                bbnote "UBOOT_CONFIG = $type, UBOOT_DTB_NAME = $dtb_name"
+
+                UBOOT_CONFIG_EXTRA="$type_key"
+                if [ -e ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${dtb_name}-${type} ] ; then
+                    UBOOT_DTB_NAME_EXTRA="${dtb_name}-${type}"
+                else
+                    # backward compatibility
+                    UBOOT_DTB_NAME_EXTRA="${dtb_name}"
+                fi
+                UBOOT_NAME_EXTRA="u-boot-${MACHINE}.bin-${UBOOT_CONFIG_EXTRA}"
+                BOOT_CONFIG_MACHINE_EXTRA="${BOOT_NAME}-${MACHINE}-${UBOOT_CONFIG_EXTRA}.bin"
+
+                for target in ${IMXBOOT_TARGETS}; do
+                    compile_${SOC_FAMILY}
+                    if [ "$target" = "flash_linux_m4_no_v2x" ]; then
+                        # Special target build for i.MX 8DXL with V2X off
+                        bbnote "building ${SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
+                        make SOC=${SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME_EXTRA} flash_linux_m4
+                    else
+                        bbnote "building ${SOC_TARGET} - ${REV_OPTION} ${target}"
+                        make SOC=${SOC_TARGET} ${REV_OPTION} dtbs=${UBOOT_DTB_NAME_EXTRA} ${target}
+                    fi
+                    if [ -e "${BOOT_STAGING}/flash.bin" ]; then
+                        cp ${BOOT_STAGING}/flash.bin ${S}/${BOOT_CONFIG_MACHINE_EXTRA}-${target}
+                    fi
+                done
+
+                unset UBOOT_CONFIG_EXTRA
+                unset UBOOT_DTB_NAME_EXTRA
+                unset UBOOT_NAME_EXTRA
+                unset BOOT_CONFIG_MACHINE_EXTRA
+            fi
+
+            unset type_key
+            unset dtb_name
+        done
+
+        unset UBOOT_DTB_NAME_FLAGS
     done
+    unset type
 }
 
 do_install () {
     install -d ${D}/boot
-    for target in ${IMXBOOT_TARGETS}; do
-        install -m 0644 ${S}/${BOOT_CONFIG_MACHINE}-${target} ${D}/boot/
+    for type in ${UBOOT_CONFIG}; do
+        bbnote "UBOOT_CONFIG = $type"
+
+        UBOOT_CONFIG_EXTRA="$type"
+        BOOT_CONFIG_MACHINE_EXTRA="${BOOT_NAME}-${MACHINE}-${UBOOT_CONFIG_EXTRA}.bin"
+
+        for target in ${IMXBOOT_TARGETS}; do
+            install -m 0644 ${S}/${BOOT_CONFIG_MACHINE_EXTRA}-${target} ${D}/boot/
+        done
+
+        unset UBOOT_CONFIG_EXTRA
+        unset BOOT_CONFIG_MACHINE_EXTRA
     done
+    unset type
 }
 
 deploy_mx8m() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
-                                                             ${DEPLOYDIR}/${BOOT_TOOLS}
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
     done
@@ -167,12 +216,18 @@ deploy_mx8m() {
     install -m 0755 ${BOOT_STAGING}/mkimage_fit_atf.sh       ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${BOOT_STAGING}/mkimage_uboot            ${DEPLOYDIR}/${BOOT_TOOLS}
 }
+deploy_mx8m_extra() {
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
+                                                             ${DEPLOYDIR}/${BOOT_TOOLS}
+}
 deploy_mx8() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
-    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
+}
+deploy_mx8_extra() {
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 }
@@ -180,15 +235,15 @@ deploy_mx8x() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
-    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
+}
+deploy_mx8x_extra() {
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 }
 do_deploy() {
     deploy_${SOC_FAMILY}
-    # copy the tool mkimage to deploy path and sc fw, dcd and uboot
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}        ${DEPLOYDIR}/${BOOT_TOOLS}
 
     # copy tee.bin to deploy path
     if ${DEPLOY_OPTEE}; then
@@ -197,18 +252,41 @@ do_deploy() {
 
     # copy makefile (soc.mak) for reference
     install -m 0644 ${BOOT_STAGING}/soc.mak                  ${DEPLOYDIR}/${BOOT_TOOLS}
-    # copy the generated boot image to deploy path
-    for target in ${IMXBOOT_TARGETS}; do
-        # Use first "target" as IMAGE_IMXBOOT_TARGET
-        if [ "$IMAGE_IMXBOOT_TARGET" = "" ]; then
-            IMAGE_IMXBOOT_TARGET="$target"
-            echo "Set boot target as $IMAGE_IMXBOOT_TARGET"
+
+    for type in ${UBOOT_CONFIG}; do
+        bbnote "UBOOT_CONFIG = $type"
+
+        UBOOT_CONFIG_EXTRA="$type"
+        UBOOT_NAME_EXTRA="u-boot-${MACHINE}.bin-${UBOOT_CONFIG_EXTRA}"
+        BOOT_CONFIG_MACHINE_EXTRA="${BOOT_NAME}-${MACHINE}-${UBOOT_CONFIG_EXTRA}.bin"
+
+        deploy_${SOC_FAMILY}_extra
+        # copy the tool mkimage to deploy path and sc fw, dcd and uboot
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}  ${DEPLOYDIR}/${BOOT_TOOLS}
+
+        # copy the generated boot image to deploy path
+        for target in ${IMXBOOT_TARGETS}; do
+            # Use first "target" as IMAGE_IMXBOOT_TARGET
+            if [ "$IMAGE_IMXBOOT_TARGET" = "" ]; then
+                IMAGE_IMXBOOT_TARGET="$target"
+                echo "Set boot target as $IMAGE_IMXBOOT_TARGET"
+            fi
+            install -m 0644 ${S}/${BOOT_CONFIG_MACHINE_EXTRA}-${target} ${DEPLOYDIR}
+        done
+
+        if [ "1" = "${@len(d.getVar('UBOOT_CONFIG', True).split())}" ]; then
+            cd ${DEPLOYDIR}
+            ln -sf ${BOOT_CONFIG_MACHINE_EXTRA}-${IMAGE_IMXBOOT_TARGET} ${BOOT_NAME}
+            cd -
+        else
+            bbwarn "Use custom wks.in for $UBOOT_CONFIG = $type"
         fi
-        install -m 0644 ${S}/${BOOT_CONFIG_MACHINE}-${target} ${DEPLOYDIR}
+
+        unset UBOOT_CONFIG_EXTRA
+        unset UBOOT_NAME_EXTRA
+        unset BOOT_CONFIG_MACHINE_EXTRA
     done
-    cd ${DEPLOYDIR}
-    ln -sf ${BOOT_CONFIG_MACHINE}-${IMAGE_IMXBOOT_TARGET} ${BOOT_NAME}
-    cd -
+    unset type
 }
 addtask deploy before do_build after do_compile
 
