@@ -1,0 +1,110 @@
+From 7f44fc14f83f8ff03783f1a97df8cbabab1eada4 Mon Sep 17 00:00:00 2001
+From: Ming Liu <liu.ming50@gmail.com>
+Date: Wed, 15 Mar 2023 10:54:48 +0100
+Subject: [PATCH] meson: introduce default videosink and autosink options
+
+So the end users can choose the default videosink/autosink at build
+time. It now also supports pipelines as default videosink/autosink,
+if no options chosen by meson, the default values go to autoaudiosink
+and autovideosink, no functional changes in that case.
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/4168]
+
+Signed-off-by: Ming Liu <liu.ming50@gmail.com>
+---
+ gst/playback/gstplaysink.c      | 12 ++++++++++--
+ meson.build                     |  5 ++---
+ meson_options.txt               |  5 +++++
+ tools/gst-play.c                |  7 +++++++
+ 4 files changed, 24 insertions(+), 5 deletions(-)
+
+diff --git a/gst/playback/gstplaysink.c b/gst/playback/gstplaysink.c
+index a5619e9464..62b508f88e 100644
+--- a/gst/playback/gstplaysink.c
++++ b/gst/playback/gstplaysink.c
+@@ -1780,7 +1780,11 @@ gen_video_chain (GstPlaySink * playsink, gboolean raw, gboolean async)
+       /* if default sink from config.h is different then try it too */
+       if (strcmp (DEFAULT_VIDEOSINK, "autovideosink")) {
+         GST_DEBUG_OBJECT (playsink, "trying " DEFAULT_VIDEOSINK);
+-        elem = gst_element_factory_make (DEFAULT_VIDEOSINK, "videosink");
++        /* Check if it's a pipeline description */
++        if (strchr (DEFAULT_VIDEOSINK, ' ') != NULL)
++          elem = gst_parse_bin_from_description (DEFAULT_VIDEOSINK, TRUE, NULL);
++        else
++          elem = gst_element_factory_make (DEFAULT_VIDEOSINK, "videosink");
+         chain->sink = try_element (playsink, elem, TRUE);
+       }
+     }
+@@ -2723,7 +2727,11 @@ gen_audio_chain (GstPlaySink * playsink, gboolean raw)
+       /* if default sink from config.h is different then try it too */
+       if (strcmp (DEFAULT_AUDIOSINK, "autoaudiosink")) {
+         GST_DEBUG_OBJECT (playsink, "trying " DEFAULT_AUDIOSINK);
+-        elem = gst_element_factory_make (DEFAULT_AUDIOSINK, "audiosink");
++        /* Check if it's a pipeline description */
++        if (strchr (DEFAULT_AUDIOSINK, ' ') != NULL)
++          elem = gst_parse_bin_from_description (DEFAULT_AUDIOSINK, TRUE, NULL);
++        else
++          elem = gst_element_factory_make (DEFAULT_AUDIOSINK, "audiosink");
+         chain->sink = try_element (playsink, elem, TRUE);
+       }
+     }
+diff --git a/meson.build b/meson.build
+index a390dfd69b..f9703aed49 100644
+--- a/meson.build
++++ b/meson.build
+@@ -293,9 +293,8 @@ endif
+ core_conf.set_quoted('GST_PACKAGE_NAME', gst_package_name)
+ core_conf.set_quoted('GST_PACKAGE_ORIGIN', get_option('package-origin'))
+ 
+-# FIXME: These should be configure options
+-core_conf.set_quoted('DEFAULT_VIDEOSINK', 'autovideosink')
+-core_conf.set_quoted('DEFAULT_AUDIOSINK', 'autoaudiosink')
++core_conf.set_quoted('DEFAULT_VIDEOSINK', get_option('default_videosink'))
++core_conf.set_quoted('DEFAULT_AUDIOSINK', get_option('default_audiosink'))
+ 
+ # Set whether the audioresampling method should be detected at runtime
+ core_conf.set('AUDIORESAMPLE_FORMAT_' + get_option('audioresample_format').to_upper(), true)
+diff --git a/meson_options.txt b/meson_options.txt
+index 50ec6aae1f..865f6a84ec 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -21,6 +21,11 @@ option('opengl_module_name', type : 'string', value : '',
+ option('gles2_module_name', type : 'string', value : '',
+        description : 'The file to pass to g_module_open to open the libGLESv2 library (default: libGLESv2)')
+ 
++option('default_audiosink', type : 'string', value : 'autoaudiosink',
++       description : 'The default audiosink')
++option('default_videosink', type : 'string', value : 'autovideosink',
++       description : 'The default videosink')
++
+ # Feature option for opengl plugin and integration library
+ option('gl', type : 'feature', value : 'auto', description : 'OpenGL integration library and OpenGL plugin')
+ option('gl-graphene', type : 'feature', value : 'auto', description : 'Use Graphene in OpenGL plugin')
+diff --git a/tools/gst-play.c b/tools/gst-play.c
+index ee8847d2f1..4fa36299cb 100644
+--- a/tools/gst-play.c
++++ b/tools/gst-play.c
+@@ -219,6 +219,7 @@ play_new (gchar ** uris, const gchar * audio_sink, const gchar * video_sink,
+     else
+       g_warning ("Couldn't create specified audio sink '%s'", audio_sink);
+   }
++
+   if (video_sink != NULL) {
+     if (strchr (video_sink, ' ') != NULL)
+       sink = gst_parse_bin_from_description (video_sink, TRUE, NULL);
+@@ -1758,6 +1759,12 @@ real_main (int argc, char **argv)
+     playlist_file = NULL;
+   }
+ 
++  if (audio_sink == NULL)
++    audio_sink = g_strdup (DEFAULT_AUDIOSINK);
++
++  if (video_sink == NULL)
++    video_sink = g_strdup (DEFAULT_VIDEOSINK);
++
+   if (playlist->len == 0 && (filenames == NULL || *filenames == NULL)) {
+     gst_printerr (_("Usage: %s FILE1|URI1 [FILE2|URI2] [FILE3|URI3] ..."),
+         "gst-play-" GST_API_VERSION);
+-- 
+2.25.1
+
