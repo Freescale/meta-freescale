@@ -45,4 +45,9 @@ EXTRA_OEMESON += " \
 FILES:${PN}-amrnb += "${datadir}/gstreamer-1.0/presets/GstAmrnbEnc.prs"
 FILES:${PN}-x264 += "${datadir}/gstreamer-1.0/presets/GstX264Enc.prs"
 
+# These recipes are copies of oe-core 1.20.3 that are not available
+# anymore upstream on the master branch.
+# The requirement to have them is because they are dependencies of
+# the other ones imx specific gstreamer forks on the layer.
+# So make their names maching the exisng ones will make it more safe.
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
