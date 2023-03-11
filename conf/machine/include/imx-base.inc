@@ -482,6 +482,7 @@ PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  ??= "1.20.3.imx"
 PREFERRED_VERSION_gstreamer1.0-python:mx8-nxp-bsp       ??= "1.20.3.imx"
 PREFERRED_VERSION_gstreamer1.0-vaapi:mx8-nxp-bsp        ??= "1.20.3.imx"
 PREFERRED_VERSION_gstreamer1.0-omx:mx8-nxp-bsp          ??= "1.20.3.imx"
+PREFERRED_VERSION_gst-devtools:mx8-nxp-bsp              ??= "1.20.3.imx"
 PREFERRED_VERSION_ffmpeg:mx8-nxp-bsp                    ??= "4.4.1"
 
 # Determines if the SoC has support for Vivante kernel driver
