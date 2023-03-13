@@ -1,0 +1,32 @@
+From 50c821e3578e3e0892574d88ef7edb25d60ae50a Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 12 Mar 2023 19:39:46 -0700
+Subject: [PATCH] Add prototype declaration for gst_v4l2_object_streamoff
+
+Fixes build with latest compilers e.g. clang-16
+
+../git/sys/v4l2/gstv4l2videodec.c:354:10: error: call to undeclared function 'gst_v4l2_object_streamoff'; ISO C99 and later do not support implicit function declarations [ -Wimplicit-function-declaration]
+    if (!gst_v4l2_object_streamoff (self->v4l2capture))
+         ^
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/gst-plugins-good/pull/1]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ sys/v4l2/gstv4l2object.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 685086902..c84dc1724 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -323,6 +323,7 @@ GstStructure * gst_v4l2_object_v4l2fourcc_to_structure (guint32 fourcc);
+ 
+ /* crop / compose */
+ gboolean     gst_v4l2_object_set_crop (GstV4l2Object * obj, struct v4l2_rect *result);
++gboolean     gst_v4l2_object_streamoff (GstV4l2Object * v4l2object);
+ 
+ /* TODO Move to proper namespace */
+ /* open/close the device */
+-- 
+2.39.2
+
