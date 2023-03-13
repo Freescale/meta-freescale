@@ -85,6 +85,14 @@ EXTRA_OEMESON += " \
     ${@get_opengl_cmdline_list('gl_winsys', d.getVar('OPENGL_WINSYS'), d)} \
 "
 
+# Remove this meta package when moving to gstreamer 1.22+, this is for making
+# gst packagegroups from master work with gstreamer 1.20.3.imx
+PACKAGES += "${PN}-videoconvertscale"
+
+ALLOW_EMPTY:${PN}-videoconvertscale = "1"
+
+RDEPENDS:${PN}-videoconvertscale = "${PN}-videoconvert ${PN}-videoscale"
+
 FILES:${PN}-dev += "${libdir}/gstreamer-1.0/include/gst/gl/gstglconfig.h"
 FILES:${MLPREFIX}libgsttag-1.0 += "${datadir}/gst-plugins-base/1.0/license-translations.dict"
 
