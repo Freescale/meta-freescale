@@ -117,3 +117,6 @@ FILES:${PN} += " ${datadir}/ \
 FILES:${PN}-examples += " \
 	${datadir}/examples/* \
 	"
+
+TOOLCHAIN = "gcc"
+
