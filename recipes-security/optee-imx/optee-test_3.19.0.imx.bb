@@ -22,6 +22,9 @@ REQUIRED_MACHINE_FEATURES = "optee"
 OPTEE_ARCH:arm     = "arm32"
 OPTEE_ARCH:aarch64 = "arm64"
 
+COMPILER ?= "gcc"
+COMPILER:toolchain-clang = "clang"
+
 CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 CXXFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
@@ -32,6 +35,7 @@ EXTRA_OEMAKE = " \
     CROSS_COMPILE_TA=${HOST_PREFIX} \
     CROSS_COMPILE=${HOST_PREFIX} \
     OPENSSL_MODULES=${STAGING_LIBDIR_NATIVE}/ossl-modules \
+    COMPILER=${COMPILER} \
     -C ${S} O=${B} \
 "
 
