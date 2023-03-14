@@ -1,0 +1,87 @@
+From 141f8f692ae2c7e6d41a2d78113c806602122ad5 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 12 Mar 2023 19:51:27 -0700
+Subject: [PATCH 04/10] gstimxcommon: Return 0 instead of NULL for a functions
+ returning unsigned long
+
+Fixes
+gstimxcommon.c:113:10: error: incompatible pointer to integer conversion returning 'void *' from a function with result type 'unsigned long' [-Wint-conversion]
+  return NULL;
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ libs/gstimxcommon.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/libs/gstimxcommon.c b/libs/gstimxcommon.c
+index 27fd913..803c6e5 100644
+--- a/libs/gstimxcommon.c
++++ b/libs/gstimxcommon.c
+@@ -35,13 +35,13 @@ unsigned long phy_addr_from_fd(int dmafd)
+   int ret, fd;
+ 
+   if (dmafd < 0)
+-    return NULL;
++    return 0;
+   
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
+ #ifdef USE_ION
+   fd = open(dev_ion, O_RDWR);
+   if(fd < 0) {
+-    return NULL;
++    return 0;
+   }
+ 
+   struct ion_phys_dma_data data = {
+@@ -58,18 +58,18 @@ unsigned long phy_addr_from_fd(int dmafd)
+   ret = ioctl(fd, ION_IOC_CUSTOM, &custom);
+   close(fd);
+   if (ret < 0)
+-    return NULL;
++    return 0;
+ 
+   return data.phys;
+ #else
+-  return NULL;
++  return 0;
+ #endif /* USE_ION */
+ #else
+   struct dma_buf_phys dma_phys;
+ 
+   ret = ioctl(dmafd, DMA_BUF_IOCTL_PHYS, &dma_phys);
+   if (ret < 0)
+-    return NULL;
++    return 0;
+ 
+   return dma_phys.phys;
+ #endif
+@@ -86,7 +86,7 @@ unsigned long phy_addr_from_vaddr(void *vaddr, int size)
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
+   fd = open(dev_ion, O_RDWR);
+   if(fd < 0) {
+-    return NULL;
++    return 0;
+   }
+ 
+   struct ion_phys_virt_data data = {
+@@ -103,13 +103,13 @@ unsigned long phy_addr_from_vaddr(void *vaddr, int size)
+   ret = ioctl(fd, ION_IOC_CUSTOM, &custom);
+   close(fd);
+   if (ret < 0)
+-    return NULL;
++    return 0;
+ 
+   return data.phys;
+ #else
+-  return NULL;
++  return 0;
+ #endif
+ #else
+-  return NULL;
++  return 0;
+ #endif
+ }
+-- 
+2.39.2
+

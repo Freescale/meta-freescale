@@ -24,7 +24,7 @@ DPDK_RTE_TARGET ?= "${ARCH}-dpaa-linuxapp-gcc"
 
 export RTE_TARGET = "${DPDK_RTE_TARGET}"
 export RTE_OUTPUT = "${S}/${RTE_TARGET}"
-export  MODULE_DIR = "/lib/modules/${KERNEL_VERSION}/kernel/drivers/net"
+export  MODULE_DIR = "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/net"
 
 S = "${WORKDIR}/git"
 

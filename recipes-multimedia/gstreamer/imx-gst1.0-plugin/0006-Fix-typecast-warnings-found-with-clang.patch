@@ -1,0 +1,61 @@
+From 02e16c4de3f138f0ebabf699e840bb86c98be599 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 12 Mar 2023 20:45:23 -0700
+Subject: [PATCH 06/10] Fix typecast warnings found with clang
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ libs/device-2d/imx_2d_device_g2d.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/libs/device-2d/imx_2d_device_g2d.c b/libs/device-2d/imx_2d_device_g2d.c
+index 2672e0b..6a36f6a 100755
+--- a/libs/device-2d/imx_2d_device_g2d.c
++++ b/libs/device-2d/imx_2d_device_g2d.c
+@@ -425,7 +425,7 @@ static gint imx_g2d_blit(Imx2DDevice *device,
+       goto err;
+     }
+     if (paddr) {
+-      src->mem->paddr = paddr;
++      src->mem->paddr = (guint8*)paddr;
+     } else {
+       GST_ERROR ("Can't get physical address.");
+       ret = -1;
+@@ -435,7 +435,7 @@ static gint imx_g2d_blit(Imx2DDevice *device,
+   if (!dst->mem->paddr) {
+     paddr = phy_addr_from_fd (dst->fd[0]);
+     if (paddr) {
+-      dst->mem->paddr = paddr;
++      dst->mem->paddr = (guint8*)paddr;
+     } else {
+       GST_ERROR ("Can't get physical address.");
+       ret = -1;
+@@ -474,10 +474,11 @@ static gint imx_g2d_blit(Imx2DDevice *device,
+ 
+   if (src->fd[1] >= 0)
+   {
+-    if (!src->mem->user_data)
+-      src->mem->user_data = g2d->src.base.planes[1] = phy_addr_from_fd (src->fd[1]);
+-    else
+-      g2d->src.base.planes[1] = src->mem->user_data;
++    if (!src->mem->user_data) {
++      g2d->src.base.planes[1] = (gint)phy_addr_from_fd (src->fd[1]);
++      src->mem->user_data = (gpointer *)g2d->src.base.planes[1];
++    } else
++      g2d->src.base.planes[1] = (unsigned long)src->mem->user_data;
+   }
+   switch (src->interlace_type) {
+     case IMX_2D_INTERLACE_INTERLEAVED:
+@@ -693,7 +694,7 @@ static gint imx_g2d_fill_color(Imx2DDevice *device, Imx2DFrame *dst,
+   if (!dst->mem->paddr) {
+     paddr = phy_addr_from_fd (dst->fd[0]);
+     if (paddr) {
+-      dst->mem->paddr = paddr;
++      dst->mem->paddr = (guint8*)paddr;
+     } else {
+       GST_ERROR ("Can't get physical address.");
+       return -1;
+-- 
+2.39.2
+

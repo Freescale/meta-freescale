@@ -1,0 +1,28 @@
+From 379b0492a4b53fd8fd42c734d04fd62df2e0465f Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Mon, 13 Mar 2023 20:16:48 -0700
+Subject: [PATCH 05/10] aiurstreamcache: Include gst/gstinfo.h
+
+Its needed for various GST_* defines
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ plugins/aiurdemux/aiurstreamcache.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/plugins/aiurdemux/aiurstreamcache.c b/plugins/aiurdemux/aiurstreamcache.c
+index d566268..e114a9d 100755
+--- a/plugins/aiurdemux/aiurstreamcache.c
++++ b/plugins/aiurdemux/aiurstreamcache.c
+@@ -33,6 +33,7 @@
+  * Changelog:
+  *
+  */
++ #include <gst/gstinfo.h>
+ 
+ GST_DEBUG_CATEGORY_EXTERN (aiurdemux_debug);
+ #define GST_CAT_DEFAULT aiurdemux_debug
+-- 
+2.39.2
+

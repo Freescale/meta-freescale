@@ -1,0 +1,41 @@
+From 8a3d7f26c73bdfe050d3331b30ae2f5917dc6723 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 12 Mar 2023 19:59:22 -0700
+Subject: [PATCH 09/10] gstimxv4l2.c: Fix incompatible integer to pointer
+ conversion returning
+
+Fixes
+gstimxv4l2.c:1587:24: error: incompatible pointer to integer conversion assigning to 'unsigned long' from 'guint8 *' (aka 'unsigned char *') [-Wint-c
+onversion]
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ libs/v4l2_core/gstimxv4l2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libs/v4l2_core/gstimxv4l2.c b/libs/v4l2_core/gstimxv4l2.c
+index bf2620a..0fd7452 100755
+--- a/libs/v4l2_core/gstimxv4l2.c
++++ b/libs/v4l2_core/gstimxv4l2.c
+@@ -1576,7 +1576,7 @@ static void * gst_imx_v4l2_find_buffer(gpointer v4l2handle, PhyMemBlock *memblk)
+ 
+     if (handle->allocated >= MAX_BUFFER) {
+       GST_ERROR ("No more v4l2 buffer for allocating.\n");
+-      return -1;
++      return NULL;
+     }
+ 
+     v4l2buf = &handle->buffer_pair[handle->allocated].v4l2buffer;
+@@ -1584,7 +1584,7 @@ static void * gst_imx_v4l2_find_buffer(gpointer v4l2handle, PhyMemBlock *memblk)
+     v4l2buf->type = handle->type;
+     v4l2buf->memory = handle->memory_mode;
+     v4l2buf->index = handle->allocated;
+-    v4l2buf->m.userptr = memblk->paddr;
++    v4l2buf->m.userptr = (unsigned long)memblk->paddr;
+     v4l2buf->length = memblk->size;
+     handle->buffer_pair[handle->allocated].vaddr = memblk->vaddr;
+ 
+-- 
+2.39.2
+

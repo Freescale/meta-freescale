@@ -1,0 +1,30 @@
+From a1a2069403e227d4d40fc99257d1be077f65bdc8 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 12 Mar 2023 19:54:18 -0700
+Subject: [PATCH 07/10] gstimxv4l2: Fix typecasting errors
+
+Fixes
+gstimxv4l2.c:1702:22: error: incompatible pointer to integer conversion assigning to 'unsigned long' from 'guint8 *' (aka 'unsigned char *') [-Wint-conversion]
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ libs/v4l2_core/gstimxv4l2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libs/v4l2_core/gstimxv4l2.c b/libs/v4l2_core/gstimxv4l2.c
+index 1dc826b..bf2620a 100755
+--- a/libs/v4l2_core/gstimxv4l2.c
++++ b/libs/v4l2_core/gstimxv4l2.c
+@@ -1699,7 +1699,7 @@ gint gst_imx_v4l2_register_buffer (gpointer v4l2handle, PhyMemBlock *memblk)
+   v4l2buf->type = handle->type;
+   v4l2buf->memory = handle->memory_mode;
+   v4l2buf->index = handle->allocated;
+-  v4l2buf->m.userptr = memblk->paddr;
++  v4l2buf->m.userptr = (unsigned long)memblk->paddr;
+   v4l2buf->length = memblk->size;
+   handle->buffer_pair[handle->allocated].vaddr = memblk->vaddr;
+ 
+-- 
+2.39.2
+
