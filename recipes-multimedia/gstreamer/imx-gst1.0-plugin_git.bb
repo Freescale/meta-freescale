@@ -25,7 +25,18 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
 
 PV = "4.7.2+git${SRCPV}"
 
-SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
+           file://0001-aiurdemux-Fix-type-of-USER_DATA_LOCATION.patch \
+           file://0002-aiurdemux.h-Include-glib-gprintf.h-for-g_printf-prot.patch \
+           file://0003-grecorder-Fix-build-with-clang.patch \
+           file://0004-gstimxcommon-Return-0-instead-of-NULL-for-a-function.patch \
+           file://0005-aiurstreamcache-Include-gst-gstinfo.h.patch \
+           file://0006-Fix-typecast-warnings-found-with-clang.patch \
+           file://0007-gstimxv4l2-Fix-typecasting-errors.patch \
+           file://0008-beepdec-Declare-beep_register_external_typefinders.patch \
+           file://0009-gstimxv4l2.c-Fix-incompatible-integer-to-pointer-con.patch \
+           file://0010-provide-declaration-for-aiur_register_external_typef.patch \
+           "
 SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
 SRCREV = "3a0250b983f2610e6936d10c63b45e2d39eadd7e"
 
@@ -42,6 +53,8 @@ PLATFORM:mx7-nxp-bsp= "MX7D"
 PLATFORM:mx7ulp-nxp-bsp= "MX7ULP"
 PLATFORM:mx8-nxp-bsp = "MX8"
 PLATFORM:mx9-nxp-bsp = "MX9"
+
+CFLAGS:append:toolchain-clang = " -Wno-implicit-int -Wno-int-conversion -Wno-incompatible-function-pointer-types"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OEMESON = "-Dplatform=${PLATFORM} \

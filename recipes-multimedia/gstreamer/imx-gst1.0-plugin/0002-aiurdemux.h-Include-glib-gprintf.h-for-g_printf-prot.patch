@@ -1,0 +1,28 @@
+From f8b8322cd4c3a69e5cb47b5cb33abe860e89d6ed Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sun, 12 Mar 2023 20:33:54 -0700
+Subject: [PATCH 02/10] aiurdemux.h: Include glib/gprintf.h for g_printf
+ prototype
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ plugins/aiurdemux/aiurdemux.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/aiurdemux/aiurdemux.h b/plugins/aiurdemux/aiurdemux.h
+index 1d7d0a0..f7fcb2e 100755
+--- a/plugins/aiurdemux/aiurdemux.h
++++ b/plugins/aiurdemux/aiurdemux.h
+@@ -39,7 +39,7 @@
+ #include <gst/gst.h>
+ #include <gst/base/gstadapter.h>
+ #include <gst/tag/tag.h>
+-
++#include <glib/gprintf.h>
+ //#include "mfw_gst_utils.h"
+ 
+ #include "fsl_parser.h"
+-- 
+2.39.2
+

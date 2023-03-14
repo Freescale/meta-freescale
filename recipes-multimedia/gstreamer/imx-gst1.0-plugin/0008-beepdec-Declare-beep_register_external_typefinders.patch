@@ -1,0 +1,32 @@
+From e86c20fee52f79a270a1913c5f0be98fb3f5cb77 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Mon, 13 Mar 2023 20:18:18 -0700
+Subject: [PATCH 08/10] beepdec: Declare beep_register_external_typefinders
+
+Fixes
+plugins/beepdec/beep.c:45:3: error: call to undeclared function 'beep_register_external_typefinders'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  beep_register_external_typefinders (plugin);
+  ^
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ plugins/beepdec/beep.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/beepdec/beep.c b/plugins/beepdec/beep.c
+index 3543352..e174bb3 100755
+--- a/plugins/beepdec/beep.c
++++ b/plugins/beepdec/beep.c
+@@ -37,7 +37,7 @@
+ #endif
+ #include "beepdec.h"
+ #include "gstimxcommon.h"
+-
++extern gboolean beep_register_external_typefinders (GstPlugin * plugin);
+ static gboolean
+ plugin_init (GstPlugin * plugin)
+ {
+-- 
+2.39.2
+

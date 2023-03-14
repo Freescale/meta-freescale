@@ -1,0 +1,33 @@
+From 090fb758a63b7d362d9bee8b8a665d1346c83f83 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Mon, 13 Mar 2023 20:15:22 -0700
+Subject: [PATCH 01/10] aiurdemux: Fix type of USER_DATA_LOCATION
+
+It should be char pointer not integer
+Fixe
+plugins/aiurdemux/aiurdemux.c:198:47: error: incompatible integer to pointer conversion initializin
+g 'const gchar *' (aka 'const char *') with an expression of type 'int' [-Wint-conversion]
+  {USER_DATA_LOCATION, USER_DATA_FORMAT_UTF8, -1,
+                                              ^~
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ plugins/aiurdemux/aiurdemux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/aiurdemux/aiurdemux.c b/plugins/aiurdemux/aiurdemux.c
+index 532b439..39c50ea 100755
+--- a/plugins/aiurdemux/aiurdemux.c
++++ b/plugins/aiurdemux/aiurdemux.c
+@@ -195,7 +195,7 @@ static AiurDemuxTagEntry g_user_data_entry[] = {
+       "Track Number : %s\n"},
+   {USER_DATA_TOTALTRACKNUMBER, USER_DATA_FORMAT_UTF8, GST_TAG_TRACK_COUNT,
+       "Track Count : %s\n"},
+-  {USER_DATA_LOCATION, USER_DATA_FORMAT_UTF8, -1,
++  {USER_DATA_LOCATION, USER_DATA_FORMAT_UTF8, (const gchar*)-1,
+       "Location : %s\n"},
+   {USER_DATA_KEYWORDS, USER_DATA_FORMAT_UTF8, GST_TAG_KEYWORDS,
+       "Keywords : %s\n"},
+-- 
+2.39.2
+

@@ -1,0 +1,44 @@
+From 19e6a541d2026386c9cfdeca0eebd269fef2536c Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Mon, 13 Mar 2023 20:29:01 -0700
+Subject: [PATCH 03/10] grecorder: Fix build with clang
+
+Add missing includes for APIs from libc and glib
+Add prototype declaration for post_message before
+using it in macros later in the same source file
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-gst1.0-plugin/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ tools/grecorder/grecorder.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/tools/grecorder/grecorder.c b/tools/grecorder/grecorder.c
+index c8eff2f..89aa801 100644
+--- a/tools/grecorder/grecorder.c
++++ b/tools/grecorder/grecorder.c
+@@ -23,10 +23,11 @@
+ #include <semaphore.h>
+ #include <pthread.h>
+ #include <signal.h>
++#include <unistd.h> /* sleep */
+ #include <getopt.h>
+ #define __USE_LARGEFILE64
+ #include <sys/statvfs.h>
+-
++#include <glib/gprintf.h> /* g_print */
+ #include "recorder_engine.h"
+ 
+ #define LOG_ERROR printf
+@@ -168,6 +169,8 @@ static RecorderMessage latest_message = MESSAGE_NULL;
+ 
+ static volatile sig_atomic_t quit_flag = 0;
+ 
++static void post_message (RecorderMessage message);
++
+ static void signal_handler(int signum)
+ {
+   quit_flag = 1;
+-- 
+2.39.2
+
