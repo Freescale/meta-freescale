@@ -8,6 +8,7 @@ SRC_URI = "git://github.com/nxp-qoriq/dpdk;protocol=https;nobranch=1 \
            file://0001-add-Wno-cast-function-type.patch \
            file://0001-Add-RTE_KERNELDIR_OUT.patch \
            file://0005-use-python3-instead-of-python.patch \
+           file://0001-examples-fix-Arm-build-with-GCC-12.patch \
 "
 SRCREV = "7071c27f6f5aefb57de1cffab3484707b1e82e2b"
 
