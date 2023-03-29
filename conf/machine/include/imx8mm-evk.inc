@@ -1,4 +1,4 @@
-MACHINEOVERRIDES =. "mx8mm:imx-boot-container:"
+MACHINEOVERRIDES =. "mx8mm:"
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
