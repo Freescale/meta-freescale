@@ -13,4 +13,23 @@ S = "${WORKDIR}/${BPN}-${PV}"
 SRC_URI[md5sum] = "5c254523ae4c44491ea838e84e9aee49"
 SRC_URI[sha256sum] = "c5dd1fbf8c9776d7a2844a225e0aa2e489aa24eaab8f55cb48a6e3184def235d"
 
+# SCR is the location and name of the Software Content Register file
+# relative to ${D}${D_SUBDIR}.
+SCR = "SCR.txt"
+
+do_install () {
+    install -d ${D}${D_SUBDIR}
+    cp -r ${S}/* ${D}${D_SUBDIR}
+    if [ -d "${D}/usr/lib" ] && [ "${D}/usr/lib" != "${D}${libdir}" ]; then
+        mv ${D}/usr/lib ${D}${libdir}
+    fi
+    rm ${D}${D_SUBDIR}/COPYING
+    if [ ! -f ${D}${D_SUBDIR}/${SCR} ]; then
+        bbfatal "Missing Software Content Register \"${D}${D_SUBDIR}/${SCR}\""
+    fi
+    rm ${D}${D_SUBDIR}/${SCR}
+}
+
+FILES_${PN} = "/"
+
 COMPATIBLE_MACHINE = "(mx8mp)"
