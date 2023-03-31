@@ -9,7 +9,7 @@ DEPENDS = "python3-pycrypto-native"
 inherit deploy python3native
 
 SRCREV = "4e8d2e5307b99a91a0cac3ea3560ecb7d62898d6"
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/optee_os;protocol=https;nobranch=1 \
            file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
            file://0001-Fix-alignment-of-data-for-mempool_alloc_pool.patch \
            file://0001-use-python3-instead-of-python.patch \
