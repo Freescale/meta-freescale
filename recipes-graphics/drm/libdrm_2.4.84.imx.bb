@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c5
 PROVIDES = "drm"
 DEPENDS = "libpthread-stubs libpciaccess"
 
-IMX_LIBDRM_SRC ?= "git://source.codeaurora.org/external/imx/libdrm-imx.git;protocol=https"
+IMX_LIBDRM_SRC ?= "git://github.com/nxp-imx/libdrm-imx.git;protocol=https"
 IMX_LIBDRM_BRANCH = "libdrm-imx-2.4.84"
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${IMX_LIBDRM_BRANCH} \
            file://installtests.patch \

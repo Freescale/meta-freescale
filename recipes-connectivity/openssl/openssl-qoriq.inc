@@ -22,7 +22,7 @@ python() {
             d.appendVar("RREPLACES_%s" % p, p.replace('openssl-qoriq', 'openssl'))
 }
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/openssl;nobranch=1"
+SRC_URI = "git://github.com/nxp-qoriq/openssl;protocol=https;nobranch=1"
 
 S = "${WORKDIR}/git"
 

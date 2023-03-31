@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
 DEFAULT_PREFERENCE = "-1"
 
 SRCBRANCH = "weston-imx-4.0"
-SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
+SRC_URI = "git://github.com/nxp-imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
            file://weston.png \
            file://weston.desktop \
            file://0001-make-error-portable.patch \

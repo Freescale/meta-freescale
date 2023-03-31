@@ -16,7 +16,7 @@ PV = "7.0+${SRCPV}"
 SRCBRANCH = "imx_4.9.88_2.0.0_ga"
 SRCREV = "1f7da41b3a8d5dff8329d7b01b10d4d71144b43e"
 SRC_URI = " \
-    git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
+    git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://0001-test-Makefile-Add-include-path-to-CC-command.patch \
 "
 
