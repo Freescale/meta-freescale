@@ -12,7 +12,7 @@ inherit pythonnative
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRCBRANCH = "imx_4.14.78_1.0.0_ga"
-OPTEE_TEST_SRC ?= "git://source.codeaurora.org/external/imx/imx-optee-test.git;protocol=https"
+OPTEE_TEST_SRC ?= "git://github.com/nxp-imx/imx-optee-test.git;protocol=https"
 
 SRC_URI = "${OPTEE_TEST_SRC};branch=${SRCBRANCH} \
            file://0001-regression-4011-correct-potential-overflow.patch \

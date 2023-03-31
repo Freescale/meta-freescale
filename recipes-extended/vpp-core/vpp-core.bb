@@ -11,7 +11,7 @@ OECMAKE_SOURCEPATH = "${S}/src"
 
 SRCREV = "ea4f900311027e4c50f101e08c12920f6e2ddf8d"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/vpp;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/vpp;protocol=https;nobranch=1 \
 	file://0001-GCC-above-5.4-fails-when-we-specify-arch-funattribut.patch \
         file://0001-getcpu-rename-getcpu-to-avoid-conflict-with-glibc-2..patch \
         file://0001-vpp-core-fix-package_qa-error.patch \

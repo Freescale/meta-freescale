@@ -13,7 +13,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=d343e62fc9c833710bbbed25f27364c8"
 
 DEPENDS = "hostperl-runtime-native"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/openssl;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/openssl;protocol=https;nobranch=1 \
            file://run-ptest \
            file://0001-skip-test_symbol_presence.patch \
            file://0001-buildinfo-strip-sysroot-and-debug-prefix-map-from-co.patch \
