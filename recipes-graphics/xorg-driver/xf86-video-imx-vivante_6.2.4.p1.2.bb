@@ -15,7 +15,7 @@ LIC_FILES_CHKSUM = "file://COPYING-MIT;md5=b5e9d9f5c02ea831ab3ecf802bb7c4f3"
 
 SRCREV = "946e8603ed9a52f36d305405dbb2ab8ff90943d0"
 SRCBRANCH = "imx_exa_viv6_g2d"
-SRC_URI = "git://source.codeaurora.org/external/imx/xf86-video-imx-vivante.git;protocol=https;branch=${SRCBRANCH} \
+SRC_URI = "git://github.com/nxp-imx/xf86-video-imx-vivante.git;protocol=https;branch=${SRCBRANCH} \
            file://rc.autohdmi"
 
 S = "${WORKDIR}/git/"

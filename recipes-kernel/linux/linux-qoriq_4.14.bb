@@ -6,7 +6,7 @@ SECTION = "kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/linux;protocol=https;nobranch=1 \
     file://0001-fix-gcc8-build-error.patch \
 "
 SRCREV = "b09b730fcb1cbcbaa71ff8a84eafd1c2454f7e55"

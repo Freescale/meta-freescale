@@ -32,7 +32,7 @@ def get_sub(d):
     except:
         return parts[0]
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/ptpd;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/ptpd;protocol=https;nobranch=1 \
            file://ptpd-use-pkgconfig.patch \
 "
 SRCREV = "ec34cdd10446619d036ac8d6a86b8276f0d4a81c"

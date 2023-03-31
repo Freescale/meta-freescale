@@ -18,7 +18,7 @@ DEPENDS_append_qoriq-arm64 = " change-file-endianess-native dtc-native tcl-nativ
 DEPENDS_append_qoriq-arm = " change-file-endianess-native dtc-native tcl-native"
 DEPENDS_append_qoriq-ppc = " boot-format-native"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/u-boot;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/u-boot;protocol=https;nobranch=1 \
 "
 SRCREV = "11abda97baeb57109b20c99a1edad6f8205bedbc"
 
