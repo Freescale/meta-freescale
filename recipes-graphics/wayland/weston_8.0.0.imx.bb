@@ -127,7 +127,7 @@ SUMMARY = "Weston, a Wayland compositor, i.MX fork"
 DEFAULT_PREFERENCE = "-1"
 
 SRCBRANCH = "weston-imx-8.0"
-SRC_URI = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
+SRC_URI = "git://github.com/nxp-imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} \
            file://weston.png \
            file://weston.desktop \
            file://xwayland.weston-start \

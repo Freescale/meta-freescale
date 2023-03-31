@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
 SRCBRANCH = "lf-5.4.y"
 SRCREV = "82d5698945eafaffa58bab3b4d6da320bf56289c"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-jailhouse.git;protocol=ssh;branch=${SRCBRANCH} \
+SRC_URI = "git://github.com/nxp-imx/imx-jailhouse.git;protocol=ssh;branch=${SRCBRANCH} \
            file://0001-tools-scripts-update-shebang-to-python3.patch \
 "
 

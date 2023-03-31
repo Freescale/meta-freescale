@@ -6,7 +6,7 @@ PR = "r2"
 
 DEPENDS = "libxml2 fmlib tclap"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/fmc;nobranch=1"
+SRC_URI = "git://github.com/nxp-qoriq/fmc;protocol=https;nobranch=1"
 SRCREV = "c7576ab7fb6fb09b68ebc40531e5452fc89e5cd5"
 
 S = "${WORKDIR}/git"

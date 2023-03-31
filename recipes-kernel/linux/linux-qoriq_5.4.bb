@@ -2,7 +2,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 LINUX_VERSION = "5.4.3"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/linux;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/linux;protocol=https;nobranch=1 \
     file://0001-Makfefile-linux-5.4-add-warning-cflags-on-LSDK-20.04.patch \
     file://0001-perf-Make-perf-able-to-build-with-latest-libbfd.patch \
     file://0001-perf-tests-bp_account-Make-global-variable-static.patch \
