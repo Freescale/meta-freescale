@@ -1,9 +1,5 @@
 MACHINEOVERRIDES =. "mx8mm:"
 
-# FIXME: u-boot-imx should be converted to `binman` and then we can
-# avoid this specific overrides and handle it in a generic way.
-MACHINEOVERRIDES =. "${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx', '', 'imx-boot-container:', d)}"
-
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
