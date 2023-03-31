@@ -7,7 +7,7 @@ RDEPENDS_${PN} = "bash libcrypto libssl python"
 
 inherit pythonnative
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/ovs-dpdk;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/ovs-dpdk;protocol=https;nobranch=1 \
 "
 SRCREV = "abc80ef87a8786050f27afb2a797cadd14e2a6bd"
 

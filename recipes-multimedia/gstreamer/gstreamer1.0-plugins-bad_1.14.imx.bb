@@ -16,7 +16,7 @@ PACKAGECONFIG[wayland] = "--enable-wayland --disable-x11,--disable-wayland,wayla
 EXTRA_OECONF_append = " --disable-introspection"
 
 
-GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
+GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
 SRCBRANCH = "MM_04.04.05_1902_L4.14.98_GA"
 
 SRC_URI = " \

@@ -16,7 +16,7 @@ inherit kernel-arch
 #SECURE_PRI_KEY = "/path/srk.pri"
 #SECURE_PUB_KEY = "/path/srk.pub"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cst;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/cst;protocol=https;nobranch=1 \
 "
 SRCREV = "bfad3c99074e8bb010685e17ce90c8898298bba6"
 
