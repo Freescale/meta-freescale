@@ -12,7 +12,7 @@ DEPENDS = "python3-pycrypto-native python3-pyelftools-native u-boot-mkimage-nati
 SRCBRANCH = "imx_5.4.24_2.1.0"
 
 SRC_URI = "\
-	git://source.codeaurora.org/external/imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
+	git://github.com/nxp-imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH} \
 	file://0001-optee-os-fix-gcc10-compilation-issue-and-missing-cc-.patch \
 "
 

@@ -18,7 +18,7 @@ PV = "7.0+${SRCPV}"
 
 SRCBRANCH = "imx_5.4.47_2.2.0"
 SRC_URI = " \
-    git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
+    git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://0001-pxp-test-Fix-format-security-error.patch \
     file://memtool_profile \
 "
