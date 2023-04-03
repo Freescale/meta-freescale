@@ -4,7 +4,7 @@ DEPENDS_append_imxgpu2d = " virtual/libg2d"
 
 # Use i.MX fork of weston for customizations.
 SRC_URI_remove_imxgpu2d = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz"
-SRC_URI_prepend_imxgpu2d = "git://source.codeaurora.org/external/imx/weston-imx.git;protocol=https;branch=weston-imx-2.0 "
+SRC_URI_prepend_imxgpu2d = "git://github.com/nxp-imx/weston-imx.git;protocol=https;branch=weston-imx-2.0 "
 SRCREV_imxgpu2d = "506dc2d69b7cf7b7e7d1ea94ce29c8203215a67e"
 S_imxgpu2d = "${WORKDIR}/git"
 

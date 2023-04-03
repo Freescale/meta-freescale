@@ -26,7 +26,7 @@ EXTRA_OECONF_remove = " --disable-sdl --disable-nas --disable-libvisual --disabl
                         --disable-linsys --disable-sndio --disable-apexsink --disable-libssh2 \
 "
 
-GST1.0-PLUGINS-BAD_SRC ?= "gitsm://source.codeaurora.org/external/imx/gst-plugins-bad.git;protocol=https"
+GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
 SRCBRANCH = "MM_04.03.04_1801_L4.9.51_MX8M_GA"
 
 SRC_URI = " \
