@@ -23,7 +23,7 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
 SRCBRANCH = "MM_04.05.06_2008_L5.4.47"
 
 SRC_URI = " \
-	git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
+	git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
 	file://0001-fsl_parser.h-fix-compiler-error-with-fcommon.patch \
 "
 SRCREV = "a4373418f5884de7d2da63581d3905f0e3a5d842"
