@@ -14,7 +14,7 @@ PE = "1"
 PV = "5.8+${SRCPV}"
 
 SRCBRANCH = "nxp/imx_4.9.11_1.0.0_ga"
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
 SRCREV = "f5f14fc24581e5d6e689f42a56b5f2992f978ef4"
 
 S = "${WORKDIR}/git"
