@@ -13,8 +13,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
                  file://driver/jailhouse.h;beginline=9;endline=36;md5=2825581c1666c44a17955dc574cfbfb3 \
 "
 
-SRCBRANCH = "lf-5.15.52_2.1.0"
-SRCREV = "da1b37baf48295bf1a4f25661220506f5bb948f2"
+SRCBRANCH = "lf-5.15.71_2.2.0"
+SRCREV = "d9fffb8035a8a2b8d1182c750bd0e90bb4c0027a"
 
 SRC_URI = "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https;branch=${SRCBRANCH}"
 
@@ -101,4 +101,4 @@ RDEPENDS:pyjailhouse = " \
 
 INSANE_SKIP:${PN} = "ldflags"
 
-COMPATIBLE_MACHINE = "(mx8m-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx8ulp-nxp-bsp|mx93-nxp-bsp)"
