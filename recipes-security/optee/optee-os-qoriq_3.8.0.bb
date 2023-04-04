@@ -10,7 +10,7 @@ DEPENDS += "python3-pyelftools-native python3-pycryptodome-native python3-pycryp
 
 inherit deploy python3native
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/optee_os;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/qoriq-components/optee_os;nobranch=1 \
            file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
            file://0001-arm64-Disable-outline-atomics-when-compiling.patch \
           "

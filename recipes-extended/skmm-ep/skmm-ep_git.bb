@@ -7,7 +7,7 @@ DEPENDS = "libedit openssl virtual/kernel"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/skmm-ep;protocol=https;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/qoriq-yocto-sdk/skmm-ep;protocol=https;nobranch=1 \
     file://add-two-missing-header-files.patch \
 "
 SRCREV = "de6816c7d66129683bc62229b482ac3cf585d896"

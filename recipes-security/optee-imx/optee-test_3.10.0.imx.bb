@@ -10,7 +10,7 @@ DEPENDS = "python3-pycrypto-native python3-pycryptodomex-native optee-os optee-c
 
 SRCBRANCH = "imx_5.4.70_2.3.0"
 
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-optee-test.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/imx-optee-test.git;protocol=https;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
