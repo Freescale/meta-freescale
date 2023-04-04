@@ -2,7 +2,7 @@ DESCRIPTION = "PKCS library"
 LICENSE = "GPLv2 & BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=803852533e29eb1d6d5e55ad3078b625"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/libpkcs11;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/qoriq-components/libpkcs11;nobranch=1 \
     file://0001-fix-multiple-definition-error.patch \
 "
 SRCREV = "a243fb21772f1bd434d8bc1ac45feb36571afadb"

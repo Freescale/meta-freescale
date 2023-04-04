@@ -243,7 +243,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 # Replace the opencv URL with the fork
 SRCREV_opencv = "5423d53ae0d116ee5bbe52f8b5503f0cd8586998"
-OPENCV_SRC ?= "git://source.codeaurora.org/external/imx/opencv-imx.git;protocol=https"
+OPENCV_SRC ?= "git://github.com/nxp-imx/opencv-imx.git;protocol=https"
 SRCBRANCH = "4.5.2_imx"
 SRC_URI_remove = "git://github.com/opencv/opencv.git;name=opencv"
 SRC_URI =+ "${OPENCV_SRC};branch=${SRCBRANCH};name=opencv"
