@@ -9,10 +9,10 @@ PROVIDES += "u-boot"
 
 inherit uuu_bootloader_tag
 
-UUU_BOOTLOADER            = ""
+UUU_BOOTLOADER                        = ""
 UUU_BOOTLOADER:mx6-generic-bsp        = "${UBOOT_BINARY}"
 UUU_BOOTLOADER:mx7-generic-bsp        = "${UBOOT_BINARY}"
-UUU_BOOTLOADER_TAGGED     = ""
+UUU_BOOTLOADER_TAGGED                 = ""
 UUU_BOOTLOADER_TAGGED:mx6-generic-bsp = "u-boot-tagged.${UBOOT_SUFFIX}"
 UUU_BOOTLOADER_TAGGED:mx7-generic-bsp = "u-boot-tagged.${UBOOT_SUFFIX}"
 

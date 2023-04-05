@@ -1,8 +1,9 @@
 # Copyright (C) 2014-2018 O.S. Systems Software LTDA.
 # Copyright (C) 2014-2016 Freescale Semiconductor
+# Copyright (C) 2017-2023 NXP
 
 SUMMARY = "Produces a Manufacturing Tool compatible Linux Kernel"
-DESCRIPTION = "Linux Kernel provided and supported by Freescale that produces a \
+DESCRIPTION = "Linux Kernel provided and supported by NXP that produces a \
 Manufacturing Tool compatible Linux Kernel to be used in updater environment"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/linux-imx:"

@@ -1,4 +1,4 @@
-# Copyright 2017-2021 NXP
+# Copyright 2017-2023 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "Installs i.MX-specific kernel headers"
@@ -8,9 +8,9 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRC_URI = "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-5.15.y"
-LOCALVERSION = "-5.15.71-2.2.0"
-SRCREV = "3313732e9984cb8a6b10a9085c7e18d58e770d56"
+SRCBRANCH = "lf-6.1.y"
+LOCALVERSION = "-6.1.1-1.0.0"
+SRCREV = "29549c7073bf72cfb2c4614d37de45ec36b60475"
 
 S = "${WORKDIR}/git"
 
@@ -23,7 +23,6 @@ IMX_UAPI_HEADERS = " \
     hantrodec.h \
     hx280enc.h \
     ipu.h \
-    isl29023.h \
     imx_vpu.h \
     mxc_asrc.h \
     mxc_dcic.h \
