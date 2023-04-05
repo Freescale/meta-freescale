@@ -6,7 +6,7 @@ SECTION = "dpaa2"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=386a6287daa6504b7e7e5014ddfb3987"
 
-SRC_URI = "git://github.com/nxp-qoriq/qoriq-components/gpp-aioptool;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/gpp-aioptool;nobranch=1 \
     file://0001-remove-libio.h.patch \
     file://0001-add-fcommon-to-fix-gcc-10-build-issue.patch \
 "
