@@ -17,14 +17,14 @@
 # present in the image file have it properly defined.
 
 SECO_FIRMWARE_NAME                ?= ""
-SECO_FIRMWARE_NAME:mx8qm-nxp-bsp  ?= "mx8qmb0-ahab-container.img"
-SECO_FIRMWARE_NAME:mx8qxp-nxp-bsp ?= \
+SECO_FIRMWARE_NAME:mx8qm-generic-bsp  ?= "mx8qmb0-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8qxp-generic-bsp ?= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', 'mx8qxb0-ahab-container.img', \
                                                            'mx8qxc0-ahab-container.img', d)}"
-SECO_FIRMWARE_NAME:mx8dx-nxp-bsp  ?= "mx8qxc0-ahab-container.img"
-SECO_FIRMWARE_NAME:mx8dxl-nxp-bsp ?= "mx8dxla1-ahab-container.img"
-SECO_FIRMWARE_NAME:mx8ulp-nxp-bsp ?= "mx8ulpa1-ahab-container.img"
-SECO_FIRMWARE_NAME:mx93-nxp-bsp   ?= "mx93a0-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8dx-generic-bsp  ?= "mx8qxc0-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8dxl-generic-bsp ?= "mx8dxla1-ahab-container.img"
+SECO_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulpa1-ahab-container.img"
+SECO_FIRMWARE_NAME:mx93-generic-bsp   ?= "mx93a0-ahab-container.img"
 
 python () {
     if "mx8m-generic-bsp" in d.getVar('MACHINEOVERRIDES').split(":"):
