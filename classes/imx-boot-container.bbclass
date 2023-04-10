@@ -18,8 +18,7 @@
 #
 # Class inheritance is performed in u-boot-fslc recipe, and is controlled
 # by variable UBOOT_PROVIDES_BOOT_CONTAINER, which is defined in the
-# base machine include file (imx-base.inc), and is set to "1" when the
-# 'imx-boot-container' is present in MACHINEOVERRIDES.
+# base machine include file (imx-base.inc).
 #
 # NOTE: A backwards-compatible symlink is added for 'flash.bin', named
 # 'imx-boot', during the deployment task.
