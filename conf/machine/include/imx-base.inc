@@ -586,7 +586,7 @@ WKS_FILE_DEPENDS ?= " \
 #
 # Moving those derivatives to mainline BSP would require to set
 # UBOOT_PROVIDES_BOOT_CONTAINER to "1" and test if the U-Boot built 'flash.bin'
-# binary is a  workingreplacement.
+# binary is a working replacement.
 #
 # NOTE: the results binary name of the boot container is set to 'imx-boot'
 # for both NXP and Mainline BSP.
