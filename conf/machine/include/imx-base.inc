@@ -102,7 +102,10 @@ UBOOT_ENTRYPOINT:vf-generic-bsp     ?= "0x80008000"
 # below variable sets that those SoC do use this rather than
 # assembling it in the imx-boot recipe.
 UBOOT_PROVIDES_BOOT_CONTAINER = "0"
-UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "1"
+
+# The boot container should be used only if we're not using u-boot-imx as
+# IMX_DEFAULT_BOOTLOADER.
+UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "${@oe.utils.ifelse(d.getVar('IMX_DEFAULT_BOOTLOADER') == 'u-boot-imx', '0', '1')}"
 
 # Trusted Firmware for Cortex-A (TF-A) can have different providers, either
 # from upstream or from NXP downstream fork. Below variable defines which TF-A
@@ -586,7 +589,7 @@ WKS_FILE_DEPENDS ?= " \
 #
 # Moving those derivatives to mainline BSP would require to set
 # UBOOT_PROVIDES_BOOT_CONTAINER to "1" and test if the U-Boot built 'flash.bin'
-# binary is a  workingreplacement.
+# binary is a working replacement.
 #
 # NOTE: the results binary name of the boot container is set to 'imx-boot'
 # for both NXP and Mainline BSP.
