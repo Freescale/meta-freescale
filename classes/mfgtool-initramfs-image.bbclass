@@ -6,7 +6,7 @@
 #
 # Copyright 2014-2017 (C) O.S. Systems Software LTDA.
 
-DEPENDS += "u-boot-mfgtool linux-mfgtool"
+DEPENDS += "linux-mfgtool"
 
 FEATURE_PACKAGES_mtd = "packagegroup-fsl-mfgtool-mtd"
 FEATURE_PACKAGES_extfs = "packagegroup-fsl-mfgtool-extfs"
