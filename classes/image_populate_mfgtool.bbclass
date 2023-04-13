@@ -50,12 +50,12 @@ MFGTOOL_FILESPATH ??= " \
 "
 
 MFGTOOLDIR = "${WORKDIR}/mfgtool-${PN}"
-do_populate_mfgtool[dirs] = "${MFGTOOLDIR}"
+do_populate_mfgtool[dirs] += "${MFGTOOLDIR}"
 do_populate_mfgtool[cleandirs] = "${MFGTOOLDIR}"
 
 addtask populate_mfgtool after do_image_complete do_unpack before do_deploy
-do_populate_mfgtool[dirs] ?= "${DEPLOY_DIR_IMAGE} ${WORKDIR}"
 do_populate_mfgtool[nostamp] = "1"
+do_populate_mfgtool[dirs] += "${DEPLOY_DIR_IMAGE} ${WORKDIR}"
 do_populate_mfgtool[recrdeptask] += "do_deploy"
 do_populate_mfgtool[depends] += "uuu-bin:do_populate_sysroot"
 
@@ -77,7 +77,7 @@ python () {
                 depends.append(items[0])
 
     d.appendVarFlag('do_populate_mfgtool', 'depends', ' ' + ' '.join(depends))
-    d.setVar('_SCRIPT_DEPLOY_FILES', ' '.join(list(set(deploy_files.split()))))
+    d.setVar('_SCRIPT_DEPLOY_FILES', ' '.join(sorted(list(set(deploy_files.split())))))
 }
 
 python do_populate_mfgtool() {
