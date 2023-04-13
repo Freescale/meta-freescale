@@ -11,6 +11,9 @@ LOCALVERSION ?= ""
 SCMVERSION ?= "y"
 SRCBRANCH ?= ""
 
+# Allow use of kernel as linux-mfgtool provider.
+PROVIDES += "linux-mfgtool"
+
 # Set the PV to the correct kernel version to satisfy the kernel version sanity check
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
