@@ -50,18 +50,18 @@ MFGTOOL_FILESPATH ??= " \
 "
 
 MFGTOOLDIR = "${WORKDIR}/mfgtool-${PN}"
-do_populate_mfgtool[dirs] = "${MFGTOOLDIR}"
+do_populate_mfgtool[dirs] += "${MFGTOOLDIR}"
 do_populate_mfgtool[cleandirs] = "${MFGTOOLDIR}"
 
 addtask populate_mfgtool after do_image_complete do_unpack before do_deploy
-do_populate_mfgtool[dirs] ?= "${DEPLOY_DIR_IMAGE} ${WORKDIR}"
 do_populate_mfgtool[nostamp] = "1"
+do_populate_mfgtool[dirs] += "${DEPLOY_DIR_IMAGE} ${WORKDIR}"
 do_populate_mfgtool[recrdeptask] += "do_deploy"
 do_populate_mfgtool[depends] += "uuu-bin:do_populate_sysroot"
 
 python () {
     depends = []
-    deploy_files = []
+    deploy_files = ""
     scripts = (d.getVar('MFGTOOLCONFIG') or "").split()
     scripts_and_flags = d.getVarFlags('MFGTOOLCONFIG') or {}
     for flag, flagval in sorted(scripts_and_flags.items()):
@@ -72,12 +72,12 @@ python () {
 
         if flag in scripts:
             if num >= 2 and items[1]:
-                deploy_files.append(items[1])
+                deploy_files += ' ' + items[1]
             if num >= 1 and items[0]:
                 depends.append(items[0])
 
     d.appendVarFlag('do_populate_mfgtool', 'depends', ' ' + ' '.join(depends))
-    d.setVar('_SCRIPT_DEPLOY_FILES', ' '.join(deploy_files))
+    d.setVar('_SCRIPT_DEPLOY_FILES', ' '.join(sorted(list(set(deploy_files.split())))))
 }
 
 python do_populate_mfgtool() {
