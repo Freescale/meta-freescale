@@ -1,0 +1,34 @@
+From 9ceeb0cadffee1b1476718795d0568f6b244bf44 Mon Sep 17 00:00:00 2001
+From: Jun Zhu <junzhu@nxp.com>
+Date: Mon, 31 Oct 2022 21:24:15 +0800
+Subject: [PATCH] tf-a-tests-no-warn-rwx-segments
+
+Binutils 2.39 now warns when a segment has RXW permissions[1]:
+
+aarch64-poky-linux-musl-ld: tftf.elf has a LOAD segment with RWX permissions
+
+There is a ticket filed upstream[2], so until that is resolved just disable the warning
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
+[2] https://developer.trustedfirmware.org/T996
+
+Signed-off-by: Jun Zhu <junzhu@nxp.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index dccf0121d..0d082344b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -445,7 +445,7 @@ TF_LDFLAGS		+=	--gc-sections
+ # ld.lld doesn't recognize the errata flags,
+ # therefore don't add those in that case
+ ifeq ($(findstring ld.lld,$(notdir $(LD))),)
+-TF_LDFLAGS		+=	$(TF_LDFLAGS_$(ARCH))
++TF_LDFLAGS		+=	$(TF_LDFLAGS_$(ARCH)) --no-warn-rwx-segments
+ endif
+ endif
+ 
+-- 
+2.25.1
+

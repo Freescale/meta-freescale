@@ -1,8 +1,10 @@
-require recipes-bsp/atf/qoriq-atf-2.4.inc
+require qoriq-atf-${PV}.inc
 
 DEPENDS += "openssl"
 
-EXTRA_OEMAKE = "fiptool V=1 HOSTCC='${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}'"
+PV:append = "+${SRCPV}"
+
+EXTRA_OEMAKE = "fiptool V=1 PLAT=lx2162aqds HOSTCC='${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}'"
 
 do_install () {
     install -m 0755 -d ${D}/${bindir}
