@@ -1,14 +1,18 @@
-require recipes-bsp/atf/qoriq-atf-2.4.inc
+require qoriq-atf-${PV}.inc
 
 inherit deploy
 
-DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native rcw qoriq-cst-native bc-native"
-DEPENDS:append:lx2160a = " ddr-phy"
-DEPENDS:append:lx2162a = " ddr-phy"
+DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native mbedtls rcw qoriq-cst-native bc-native"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 
-SRC_URI += "git://github.com/ARMmbed/mbedtls;nobranch=1;destsuffix=git/mbedtls;name=mbedtls;protocol=https"
+PV:append = "+${SRCPV}"
+
+SRC_URI += "git://github.com/ARMmbed/mbedtls;protocol=https;nobranch=1;destsuffix=git/mbedtls;name=mbedtls \
+    git://github.com/nxp/ddr-phy-binary;protocol=https;nobranch=1;destsuffix=git/ddr-phy-binary;name=ddr \
+    file://tf-a-tests-no-warn-rwx-segments.patch \
+"
 SRCREV_mbedtls = "0795874acdf887290b2571b193cafd3c4041a708"
+SRCREV_ddr = "fbc036b88acb6c06ffed02c898cbae9856ec75ba"
 SRCREV_FORMAT = "atf"
 
 COMPATIBLE_MACHINE = "(qoriq)"
@@ -17,12 +21,14 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PLATFORM = "${MACHINE}"
 PLATFORM:ls1088ardb-pb = "ls1088ardb"
+PLATFORM:lx2160ardb-rev2 = "lx2160ardb"
 PLATFORM_ADDITIONAL_TARGET ??= ""
 PLATFORM_ADDITIONAL_TARGET:ls1012afrwy = "ls1012afrwy_512mb"
 
 RCW_FOLDER ?= "${MACHINE}"
 RCW_FOLDER:ls1088ardb-pb = "ls1088ardb"
 RCW_FOLDER:lx2160ardb = "lx2160ardb_rev2"
+RCW_FOLDER:lx2160ardb-rev2 = "lx2160ardb_rev2"
 
 RCW_SUFFIX ?= ".bin"
 RCW_SUFFIX:ls1012a = "${@bb.utils.contains('DISTRO_FEATURES', 'secure', '_sben.bin', '_default.bin', d)}"
@@ -40,9 +46,9 @@ chassistype:ls1012a = "ls104x_1012"
 chassistype:ls1043a = "ls104x_1012"
 chassistype:ls1046a = "ls104x_1012"
 
-DDR_PHY_BIN_PATH ?= ""
-DDR_PHY_BIN_PATH:lx2160a = "${DEPLOY_DIR_IMAGE}/ddr-phy"
-DDR_PHY_BIN_PATH:lx2162a = "${DEPLOY_DIR_IMAGE}/ddr-phy"
+FIP_DDR ?= ""
+FIP_DDR:lx2160a = "${@bb.utils.contains('DISTRO_FEATURES', 'secure', 'fip_ddr', '', d)}"
+FIP_DDR:lx2162a = "${@bb.utils.contains('DISTRO_FEATURES', 'secure', 'fip_ddr', '', d)}"
 
 # requires CROSS_COMPILE set by hand as there is no configure script
 export CROSS_COMPILE="${TARGET_PREFIX}"
@@ -125,18 +131,15 @@ do_compile() {
                 cp *.pem build/${PLATFORM}/release/
             fi
 
-            oe_runmake V=1 all fip pbl PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/${rcwimg} BL33=${UBOOT_BINARY}
+            oe_runmake V=1 all fip pbl ${FIP_DDR} PLAT=${PLATFORM} BOOT_MODE=${d} RCW=${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/${rcwimg} BL33=${UBOOT_BINARY}
             cp build/${PLATFORM}/release/bl2_${d}${SECURE_EXTENTION}.pbl .
             cp build/${PLATFORM}/release/fip.bin fip_uboot${SECURE_EXTENTION}.bin
             if [ -e build/${PLATFORM}/release/fuse_fip.bin ]; then
                 cp build/${PLATFORM}/release/fuse_fip.bin .
             fi
 
-            if [ -n "${SECURE_EXTENTION}" -a -n "${DDR_PHY_BIN_PATH}" -a ! -f ddr_fip_sec.bin ]; then
-                oe_runmake V=1 fip_ddr PLAT=${PLATFORM} DDR_PHY_BIN_PATH=${DDR_PHY_BIN_PATH}
-                if [ -e build/${PLATFORM}/release/ddr_fip_sec.bin ]; then
-                    cp build/${PLATFORM}/release/ddr_fip_sec.bin .
-                fi
+            if [ -e build/${PLATFORM}/release/ddr_fip_sec.bin ] && [ ! -f ddr_fip_sec.bin ]; then
+                cp build/${PLATFORM}/release/ddr_fip_sec.bin .
             fi
 
             if [ -e build/${PLATFORM}/release/rot_key.pem ] && [ ! -f rot_key.pem ]; then
