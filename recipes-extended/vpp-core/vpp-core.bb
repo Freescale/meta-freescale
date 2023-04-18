@@ -11,7 +11,7 @@ AUTOTOOLS_SCRIPT_PATH = "${S}/src"
 
 SRCREV = "d3111f07682585079069b91666afffbc73c79cd8"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/vpp;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/vpp;nobranch=1 \
 	file://0001-Link-vpp-api-with-shared-libs-if-static-is-disabled.patch \
 	file://0001-GCC-above-5.4-fails-when-we-specify-arch-funattribut.patch \
         file://config.h \

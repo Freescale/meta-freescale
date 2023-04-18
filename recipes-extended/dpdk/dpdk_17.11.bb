@@ -9,7 +9,7 @@ RDEPENDS_${PN}-examples = "bash python-core"
 
 inherit module
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/dpdk;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/dpdk;nobranch=1 \
     file://add-RTE_KERNELDIR_OUT-to-split-kernel-bu.patch \
     file://0001-add-Wno-cast-function-type.patch \
 "

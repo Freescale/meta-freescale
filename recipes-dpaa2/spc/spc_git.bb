@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=163b09a1c249a6ff2b28da1ceca2e0a8"
 
 DEPENDS = "libxml2 fmlib tclap"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/spc;nobranch=1"
+SRC_URI = "git://github.com/nxp-qoriq/spc;nobranch=1"
 SRCREV = "1a414247ad3228bf60bfb53995a28930a8a29acc"
 
 S = "${WORKDIR}/git"
