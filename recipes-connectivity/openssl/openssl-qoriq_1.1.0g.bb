@@ -13,7 +13,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=cae6da10f4ffd9703214776d2aabce32"
 DEPENDS += "cryptodev-linux"
 DEPENDS_append_class-target = " openssl-native"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/openssl;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/openssl;nobranch=1 \
            file://run-ptest \
            file://openssl-c_rehash.sh \
            file://0001-Take-linking-flags-from-LDFLAGS-env-var.patch \

@@ -9,7 +9,7 @@ RDEPENDS_${PN} = "bash"
 
 inherit kernel-arch
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/cst;nobranch=1 \
+SRC_URI = "git://github.com/nxp-qoriq/cst;nobranch=1 \
 "
 SRCREV = "2737b8bca4432c3ef21ac675e949cb53d444a369"
 

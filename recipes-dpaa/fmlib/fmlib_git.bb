@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9c7bd5e45d066db084bdb3543d55b1ac"
 
 PR = "r1"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-components/fmlib;nobranch=1"
+SRC_URI = "git://github.com/nxp-qoriq/fmlib;nobranch=1"
 SRCREV = "69a70474cd8411d5a099c34f40760b6567d781d6"
 
 S = "${WORKDIR}/git"
