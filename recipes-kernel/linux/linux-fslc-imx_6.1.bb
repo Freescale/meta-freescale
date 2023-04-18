@@ -12,8 +12,8 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 ###############################################################################
 # This recipe (and corresponding kernel repository and branch) receives updates
 # from 3 different sources:
-# 1. Stable [linux-5.15.y] branch updates of korg;
-# 2. NXP-specific updates via branch [5.10-2.1.x-imx] shared via CodeAurora forum;
+# 1. Stable [linux-6.1.y] branch updates of korg;
+# 2. NXP-specific updates via branch [lf-6.1.y] shared via GitHub NXP repo;
 # 3. Critical patches, which are not (yet) integrated into either of 2 above
 #    sources, but are required to be applied to the kernel tree.
 #
@@ -28,12 +28,12 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v5.15.87
+#    tag: v6.1.24
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-5.15.71-2.2.0
+#    tag: lf-6.1.1-1.0.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -50,18 +50,18 @@ include linux-fslc.inc
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-KBRANCH = "5.15-2.2.x-imx"
-SRCREV = "0eb4504bd3b8fd125e83ec62da9ba039519f96c8"
+KBRANCH = "6.1-1.0.x-imx"
+SRCREV = "897d73a656fe33d0c4549c5de1d07797f99d6871"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "5.15.87"
+LINUX_VERSION = "6.1.24"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-5.15.87-2.2.0"
+LOCALVERSION = "-6.1.24-1.0.0"
 
 DEFAULT_PREFERENCE = "1"
 
