@@ -18,7 +18,7 @@ PV = "7.0+${SRCPV}"
 
 SRCBRANCH = "imx_4.9.123_imx8mm_ga"
 SRC_URI = " \
-    git://source.codeaurora.org/external/imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
+    git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
     file://0001-test-Makefile-Add-include-path-to-CC-command.patch \
     file://memtool_profile \
 "
