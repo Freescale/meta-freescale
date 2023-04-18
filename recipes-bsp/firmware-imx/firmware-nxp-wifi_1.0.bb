@@ -11,8 +11,8 @@ LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=be5ff43682ed6c57dfcbeb97651c2829"
 
 SRC_URI = "git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-5.15.71_2.2.0"
-SRCREV = "982bb10dfabfb9e7b9dc106c59a4fbb2c45bfb44"
+SRCBRANCH = "lf-6.1.1_1.0.0"
+SRCREV = "bacbeb4789c1b13d13aab12ada29217ce8c3e905"
 
 S = "${WORKDIR}/git"
 
@@ -60,6 +60,12 @@ do_install() {
 
     # Install NXP Connectivity SDIO9098 firmware
     install -m 0644 nxp/FwImage_9098_SD/sdiouart9098_combo_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp
+
+    # Install NXP Connectivity IW416 firmware
+    install -m 0644 nxp/FwImage_IW416_SD/sdiouartiw416_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/nxp
+
+    # Install NXP Connectivity IW612 firmware
+    install -m 0644 nxp/FwImage_IW612_SD/sduart_nw61x_v1.bin.se  ${D}${nonarch_base_libdir}/firmware/nxp
 }
 
 PACKAGES =+ " \
