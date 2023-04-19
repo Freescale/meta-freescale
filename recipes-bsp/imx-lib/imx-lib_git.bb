@@ -13,8 +13,8 @@ PE = "1"
 PV = "5.9+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-5.15.71_2.2.0"
-SRCREV = "87ddd80953835eb29027d1d5a12044a08e809e40"
+SRCBRANCH = "lf-6.1.1_1.0.0"
+SRCREV = "43e5ee7dc4f88d883f8ce2bea309f8708be88a3e"
 
 S = "${WORKDIR}/git"
 
