@@ -2,7 +2,7 @@ require qoriq-atf-${PV}.inc
 
 inherit deploy
 
-DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native mbedtls rcw qoriq-cst-native bc-native"
+DEPENDS += "u-boot-mkimage-native u-boot openssl openssl-native rcw qoriq-cst-native bc-native"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 
 PV:append = "+${SRCPV}"
