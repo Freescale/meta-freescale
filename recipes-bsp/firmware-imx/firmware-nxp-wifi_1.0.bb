@@ -28,11 +28,16 @@ do_compile() {
 do_install() {
     # Install various flavors of Broadcom firmware provided by Murata:
     # - bcm4359-pcie
-    install -D -m 0644 cyw-wifi-bt/*_CYW*/brcmfmac4359-pcie* ${D}${nonarch_base_libdir}/firmware/brcm
-    install -m 0644 cyw-wifi-bt/*_CYW*/BCM4349B1*.hcd ${D}${sysconfdir}/firmware
+    for f in cyw-wifi-bt/*_CYW*/brcmfmac4359-pcie*; do
+        install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/brcm/$(basename $f)
+    done
+
+    for f in cyw-wifi-bt/*_CYW*/BCM4349B1*.hcd; do
+        install -D -m 0644 $f ${D}${sysconfdir}/firmware/$(basename $f)
+    done
 
     # Install NXP Connectivity common
-    install -D -m 0644 nxp/wifi_mod_para.conf ${D}${nonarch_base_libdir}/firmware/nxp
+    install -D -m 0644 nxp/wifi_mod_para.conf ${D}${nonarch_base_libdir}/firmware/nxp/wifi_mod_para.conf
 
     # Install NXP Connectivity SD8801 firmware
     install -m 0644 nxp/FwImage_8801_SD/ed_mac_ctrl_V1_8801.conf  ${D}${nonarch_base_libdir}/firmware/nxp
