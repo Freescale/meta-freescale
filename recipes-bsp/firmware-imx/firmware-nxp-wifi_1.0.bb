@@ -8,7 +8,7 @@ recipe in favor of upstream."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://EULA.txt;md5=be5ff43682ed6c57dfcbeb97651c2829"
+LIC_FILES_CHKSUM = "file://EULA.txt;md5=add2d392714d3096ed7e0f7e2190724b"
 
 SRC_URI = "git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.1.1_1.0.0"
