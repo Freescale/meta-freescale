@@ -67,10 +67,17 @@ do_install() {
     install -m 0644 nxp/FwImage_9098_SD/sdiouart9098_combo_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp
 
     # Install NXP Connectivity IW416 firmware
+    install -m 0644 nxp/FwImage_IW416_SD/sdioiw416_wlan_v0.bin      ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_IW416_SD/sdiouartiw416_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/nxp
+    install -m 0644 nxp/FwImage_IW416_SD/uartiw416_bt_v0.bin        ${D}${nonarch_base_libdir}/firmware/nxp
 
     # Install NXP Connectivity IW612 firmware
-    install -m 0644 nxp/FwImage_IW612_SD/sduart_nw61x_v1.bin.se  ${D}${nonarch_base_libdir}/firmware/nxp
+    install -m 0644 nxp/FwImage_IW612_SD/sduart_nw61x_v1.bin.se ${D}${nonarch_base_libdir}/firmware/nxp
+    install -m 0644 nxp/FwImage_IW612_SD/sd_w61x_v1.bin.se      ${D}${nonarch_base_libdir}/firmware/nxp
+    install -m 0644 nxp/FwImage_IW612_SD/uartspi_n61x_v1.bin.se ${D}${nonarch_base_libdir}/firmware/nxp
+    for f in nxp/FwImage_IW612_SD/IW612_SD_RFTest/*; do
+        install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/$(basename $f)
+    done
 }
 
 PACKAGES =+ " \
@@ -83,6 +90,8 @@ PACKAGES =+ " \
     ${PN}-nxp8997-sdio \
     ${PN}-nxp9098-pcie \
     ${PN}-nxp9098-sdio \
+    ${PN}-nxpiw416-sdio \
+    ${PN}-nxpiw612-sdio \
 "
 
 FILES:${PN}-bcm4359-pcie = " \
@@ -131,3 +140,16 @@ FILES:${PN}-nxp9098-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sdiouart9098* \
 "
 RDEPENDS:${PN}-nxp9098-sdio += "${PN}-nxp-common"
+
+FILES:${PN}-nxpiw416-sdio = " \
+    ${nonarch_base_libdir}/firmware/nxp/*iw416* \
+"
+RDEPENDS:${PN}-nxpiw416-sdio += "${PN}-nxp-common"
+
+FILES:${PN}-nxpiw612-sdio = " \
+    ${nonarch_base_libdir}/firmware/nxp/sduart_nw61x_v1.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/sd_w61x_v1.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/uartspi_n61x_v1.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/ \
+"
+RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
