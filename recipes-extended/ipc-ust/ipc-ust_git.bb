@@ -3,7 +3,7 @@ DESCRIPTION = "DSP boot application and ipc test application"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fa38cd73d71527dc6efb546474f64d10"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/ipc;branch=nxp/sdk-v2.0.x \
+SRC_URI = "git://github.com/nxp-qoriq/qoriq-yocto-sdk/ipc;branch=nxp/sdk-v2.0.x \
     file://Makefile-use-LDFLAGS-if-set.patch \
 "
 SRCREV = "74d662707558290f070f9589177db730444bc435"

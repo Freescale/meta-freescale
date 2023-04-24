@@ -9,7 +9,7 @@ DEPENDS = "glib-2.0 zlib pixman bison-native"
 LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
                     file://COPYING.LIB;endline=24;md5=8c5efda6cf1e1b03dcfd0e6c0d271c7f"
 
-SRC_URI = "gitsm://source.codeaurora.org/external/qoriq/qoriq-components/qemu;nobranch=1 \
+SRC_URI = "gitsm://github.com/nxp-qoriq/qoriq-components/qemu;nobranch=1 \
            file://powerpc_rom.bin \
            file://run-ptest \
            file://0002-Add-subpackage-ptest-which-runs-all-unit-test-cases-.patch \

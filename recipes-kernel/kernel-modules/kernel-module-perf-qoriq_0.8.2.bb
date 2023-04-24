@@ -2,7 +2,7 @@ DESCRIPTION = "QorIQ extension to Perf for supporting non core counters"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e29234dd5d40dc352cc60cc0c93437ba"
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/qoriq-perf;branch=nxp/master"
+SRC_URI = "git://github.com/nxp-qoriq/qoriq-yocto-sdk/qoriq-perf;branch=nxp/master"
 SRCREV = "7beb3783edac66bab00c85d99a7b073f569af7fd"
 
 S = "${WORKDIR}/git"

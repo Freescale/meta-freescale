@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRCBRANCH = "lf-5.10.y"
 LOCALVERSION = "-5.10.72-2.2.0"
-SRC_URI = "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCREV = "a68e31b63f864ff71cd4adb40fbc9e1edc75c250"
 
 S = "${WORKDIR}/git"

@@ -23,7 +23,7 @@ LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
 SRCBRANCH = "MM_04.06.01_2105_L5.10.y"
 
 
-SRC_URI = "git://source.codeaurora.org/external/imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
 SRCREV = "057e6bfbc208ce31e8ed0af0264dd1e86de05808"
 
 S = "${WORKDIR}/git"
