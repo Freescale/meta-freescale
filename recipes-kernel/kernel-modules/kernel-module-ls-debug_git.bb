@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=94263f12f9416f9fd0493c8f9e8085a3"
 
 inherit module autotools-brokensep
 
-SRC_URI = "git://source.codeaurora.org/external/qoriq/qoriq-yocto-sdk/ls-dbg;branch=nxp/master"
+SRC_URI = "git://github.com/nxp-qoriq/qoriq-yocto-sdk/ls-dbg;branch=nxp/master"
 SRCREV = "40501f6659e880d38508cdd34a4df2d348d1c68e"
 
 S = "${WORKDIR}/git"
