@@ -10,9 +10,12 @@ provide support for some backported features and fixes, or because it was applie
 and takes some time to become part of a stable version, or because it is not applicable for \
 upstreaming."
 
-include linux-fslc.inc
+DEPENDS += "bc-native"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
+require linux-imx.inc
+
+SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https \
+           file://defconfig"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
@@ -23,5 +26,7 @@ LINUX_VERSION = "6.1.24"
 
 KBRANCH = "6.1.x+fslc"
 SRCREV = "4c5917cbbb13c618abe50bb85048b784bd1b1095"
+
+LOCALVERSION = "-fslc"
 
 COMPATIBLE_MACHINE = "(imx-generic-bsp)"
