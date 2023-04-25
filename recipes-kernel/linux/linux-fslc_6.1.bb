@@ -10,9 +10,11 @@ provide support for some backported features and fixes, or because it was applie
 and takes some time to become part of a stable version, or because it is not applicable for \
 upstreaming."
 
-include linux-fslc.inc
+DEPENDS += "lzop-native bc-native"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
+require linux-imx.inc
+
+SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
@@ -23,5 +25,18 @@ LINUX_VERSION = "6.1.24"
 
 KBRANCH = "6.1.x+fslc"
 SRCREV = "4c5917cbbb13c618abe50bb85048b784bd1b1095"
+
+KBUILD_DEFCONFIG:mx27-generic-bsp = "imx_v4_v5_defconfig"
+KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
+KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
+KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
+KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
+KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v6_v7_defconfig"
+KBUILD_DEFCONFIG:mx8-generic-bsp = "defconfig"
+KBUILD_DEFCONFIG:mx9-generic-bsp = "defconfig"
+KBUILD_DEFCONFIG:mxs-generic-bsp = "mxs_defconfig"
+KBUILD_DEFCONFIG:vf-generic-bsp = "imx_v6_v7_defconfig"
+
+LOCALVERSION = "-fslc"
 
 COMPATIBLE_MACHINE = "(imx-generic-bsp)"
