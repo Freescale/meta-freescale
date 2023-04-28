@@ -189,7 +189,7 @@ PACKAGECONFIG:append:imxgpu2d = " imxg2d"
 SIMPLECLIENTS:imxfbdev = "damage,im,egl,shm,touch,dmabuf-v4l"
 
 # Override
-PACKAGECONFIG[xwayland] = "-Dxwayland=true,-Dxwayland=false,libxcursor"
+PACKAGECONFIG[xwayland] = "-Dxwayland=true,-Dxwayland=false,libxcursor xwayland"
 # Weston with i.MX GPU support
 PACKAGECONFIG[imxgpu] = "-Dimxgpu=true,-Dimxgpu=false,virtual/egl"
 # Weston with i.MX G2D renderer
