@@ -9,9 +9,17 @@ REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
 # To customize weston.ini, start by setting the desired assignment in weston.ini,
+# commented in. For example:
+#     xwayland=true
+# Then add the assignment to INI_COMMENT_ASSIGNMENTS.
+#
 # commented out. For example:
 #     #xwayland=true
 # Then add the assignment to INI_UNCOMMENT_ASSIGNMENTS.
+INI_COMMENT_ASSIGNMENTS:append:imx-mainline-bsp = " \
+    xwayland=true \
+"
+
 INI_UNCOMMENT_ASSIGNMENTS:append:mx8-nxp-bsp = " \
     repaint-window=16 \
 "
@@ -33,6 +41,13 @@ INI_UNCOMMENT_ASSIGNMENTS:append = " \
     ${INI_UNCOMMENT_USE_G2D} \
 "
 
+comment() {
+    if ! grep -q "^#$1" $2 && ! grep -q "^$1" $2; then
+        bbwarn "Commented setting '#$1' not found in file $2"
+    fi
+    sed -i -e 's,^'"$1"',#'"$1"',g' $2
+}
+
 uncomment() {
     if ! grep -q "^#$1" $2 && ! grep -q "^$1" $2; then
         bbwarn "Commented setting '#$1' not found in file $2"
@@ -44,6 +59,11 @@ do_install:append() {
     if [ -f "${WORKDIR}/weston.config" ]; then
         install -Dm0755 ${WORKDIR}/weston.config ${D}${sysconfdir}/default/weston
     fi
+
+    for assignment in ${INI_COMMENT_ASSIGNMENTS}; do
+        comment "$assignment" ${D}${sysconfdir}/xdg/weston/weston.ini
+    done
+
     for assignment in ${INI_UNCOMMENT_ASSIGNMENTS}; do
         uncomment "$assignment" ${D}${sysconfdir}/xdg/weston/weston.ini
     done
