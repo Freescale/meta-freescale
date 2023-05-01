@@ -45,12 +45,12 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # information should be properly filled in above.
 ###############################################################################
 
-include linux-fslc.inc
+require linux-imx.inc
 
-LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
+DEPENDS += "lzop-native bc-native"
 
 KBRANCH = "6.1-1.0.x-imx"
+SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 SRCREV = "897d73a656fe33d0c4549c5de1d07797f99d6871"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
@@ -60,8 +60,13 @@ SRCREV = "897d73a656fe33d0c4549c5de1d07797f99d6871"
 # should be updated once patchlevel is merged.
 LINUX_VERSION = "6.1.24"
 
+KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
+KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
+KBUILD_DEFCONFIG:mx8-generic-bsp = "imx_v8_defconfig"
+KBUILD_DEFCONFIG:mx9-generic-bsp = "imx_v8_defconfig"
+
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-6.1.24-1.0.0"
+LOCALVERSION = "-lf-6.1.y"
 
 DEFAULT_PREFERENCE = "1"
 
