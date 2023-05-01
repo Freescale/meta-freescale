@@ -14,13 +14,6 @@ require recipes-kernel/linux/linux-imx.inc
 
 DEPENDS += "lzop-native bc-native"
 
-# UPGRADE NOTE:
-# The linux-imx kernel build uses a defconfig maintained in the layer. That
-# defconfig is a copy of a defconfig maintained by NXP in the source.
-# | SOURCE                              | LAYER                           |
-# | arch/arm/configs/imx_v7_defconfig   | linux-imx/imx-nxp-bsp/defconfig |
-# | arch/arm64/configs/imx_v8_defconfig | linux-imx/mx8-nxp-bsp/defconfig |
-# | arch/arm64/configs/imx_v8_defconfig | linux-imx/mx9-nxp-bsp/defconfig |
 SRCBRANCH = "lf-6.1.y"
 LOCALVERSION = "-6.1.1-1.0.0"
 SRCREV = "29549c7073bf72cfb2c4614d37de45ec36b60475"
@@ -31,6 +24,11 @@ SRCREV = "29549c7073bf72cfb2c4614d37de45ec36b60475"
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
 LINUX_VERSION = "6.1.1"
+
+KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
+KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
+KBUILD_DEFCONFIG:mx8-generic-bsp = "imx_v8_defconfig"
+KBUILD_DEFCONFIG:mx9-generic-bsp = "imx_v8_defconfig"
 
 DEFAULT_PREFERENCE = "1"
 
