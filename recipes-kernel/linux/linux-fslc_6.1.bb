@@ -21,10 +21,10 @@ SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.24"
+LINUX_VERSION = "6.1.27"
 
 KBRANCH = "6.1.x+fslc"
-SRCREV = "4c5917cbbb13c618abe50bb85048b784bd1b1095"
+SRCREV = "ddc32335b72f78943045b242eb6e0b069ef4cdae"
 
 KBUILD_DEFCONFIG:mx27-generic-bsp = "imx_v4_v5_defconfig"
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
