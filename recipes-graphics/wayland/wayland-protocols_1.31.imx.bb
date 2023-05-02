@@ -6,11 +6,11 @@ protocol either in Wayland core, or some other protocol in \
 wayland-protocols."
 HOMEPAGE = "http://wayland.freedesktop.org"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://COPYING;md5=c7b12b6702da38ca028ace54aae3d484 \
+LIC_FILES_CHKSUM = "file://LICENSE;md5=c7b12b6702da38ca028ace54aae3d484 \
                     file://stable/presentation-time/presentation-time.xml;endline=26;md5=4646cd7d9edc9fa55db941f2d3a7dc53"
 
-SRC_URI = "git://github.com/nxp-imx/wayland-protocols-imx.git;protocol=https;branch=wayland-protocols-imx-1.25"
-SRCREV = "a104fb66d1b899dc04077422c2204638675ee4a6"
+SRC_URI = "git://github.com/nxp-imx/wayland-protocols-imx.git;protocol=https;branch=wayland-protocols-imx-1.31"
+SRCREV = "99a2a439fc6b5d25d41bfec9c9b459408a45bf92"
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"

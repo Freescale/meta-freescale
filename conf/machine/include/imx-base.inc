@@ -517,10 +517,10 @@ PREFERRED_PROVIDER_virtual/opencl-icd:imxgpu ?= "imx-gpu-viv"
 PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "10.0.1.imx"
 PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
-PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp  ??= "1.25.imx"
-PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp  ??= "1.25.imx"
-PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp  ??= "1.25.imx"
-PREFERRED_VERSION_wayland-protocols:mx9-nxp-bsp  ??= "1.25.imx"
+PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp  ??= "1.31.imx"
+PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp  ??= "1.31.imx"
+PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp  ??= "1.31.imx"
+PREFERRED_VERSION_wayland-protocols:mx9-nxp-bsp  ??= "1.31.imx"
 
 # Use i.MX libdrm Version
 PREFERRED_VERSION_libdrm:mx6-nxp-bsp ??= "2.4.109.imx"
