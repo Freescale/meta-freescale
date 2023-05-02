@@ -7,13 +7,9 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 
 PV .= "+git${SRCPV}"
 
-SRC_URI = " \
-    git://github.com/nxp-imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-Makefile-Suppress-array-bounds-error.patch \
-    file://rwx-segments.patch \
-"
+SRC_URI = "git://github.com/nxp-imx/imx-atf.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf_v2.6"
-SRCREV = "3c1583ba0a5d11e5116332e91065cb3740153a46"
+SRCREV = "616a4588f333522d50a55bedd2b9a90a51474a75"
 
 S = "${WORKDIR}/git"
 
@@ -26,7 +22,7 @@ ATF_PLATFORM ??= "INVALID"
 ATF_BOOT_UART_BASE ?= ""
 
 EXTRA_OEMAKE += " \
-    CROSS_COMPILE="${TARGET_PREFIX}" \
+    CROSS_COMPILE=${TARGET_PREFIX} \
     PLAT=${ATF_PLATFORM} \
 "
 
