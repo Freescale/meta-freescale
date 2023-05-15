@@ -117,6 +117,7 @@ PACKAGES_OPENVX = \
 
 PACKAGES_VULKAN               = ""
 PACKAGES_VULKAN:imxvulkan     = "libvulkan-imx libvulkan-imx-dev"
+PACKAGES_VULKAN:mx8mm-nxp-bsp = "libvulkan-imx libvulkan-imx-dev"
 
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
