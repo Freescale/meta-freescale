@@ -30,15 +30,12 @@ DEPENDS:append:libc-musl = " gcompat"
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
-    opencl-headers \
-    opencl-clhpp \
-    opencl-icd-loader \
     virtual/egl \
     virtual/libopenvg \
-    virtual/opencl-icd \
     ${EXTRA_PROVIDES} \
 "
 EXTRA_PROVIDES = " \
+    ${PROVIDES_OPENCL} \
     ${PROVIDES_OPENGLES3} \
     ${PROVIDES_OPENVX} \
 "
@@ -50,6 +47,15 @@ EXTRA_PROVIDES:append:imxgpu3d = " \
 EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
     virtual/libgbm \
 "
+
+PROVIDES_OPENCL = " \
+    opencl-headers \
+    opencl-clhpp \
+    opencl-icd-loader \
+    virtual/opencl-icd \
+"
+PROVIDES_OPENCL:mx7-nxp-bsp   = ""
+PROVIDES_OPENCL:mx8mm-nxp-bsp = ""
 
 PROVIDES_OPENGLES3               = ""
 PROVIDES_OPENGLES3:mx8-nxp-bsp   = "virtual/libgles3"
@@ -102,6 +108,7 @@ PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
 
 PACKAGES_OPENCL               = "libopencl-imx libopencl-imx-dev libclc-imx libclc-imx-dev"
 PACKAGES_OPENCL:mx7-nxp-bsp   = ""
+PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
 
 PACKAGES_OPENVX = \
     "${@bb.utils.contains("PROVIDES_OPENVX", "virtual/libopenvx", \
