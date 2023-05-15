@@ -209,6 +209,9 @@ do_install () {
     # Install backend-specific drivers
     if [ "${BACKEND}" = "wayland" ]; then
         # Wayland backend
+        if ! ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'true', 'false', d)}; then
+            install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gl.pc ${D}${libdir}/pkgconfig/gl.pc
+        fi
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
         cp -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
     elif [ "${IS_MX8}" != "1" ]; then
@@ -357,7 +360,7 @@ RDEPENDS:libopenvx-imx = "libnn-imx"
 # package QA complains on missing RDEPENDS, which are only available for X11.
 # Skip "file-rdeps" QA for this package.
 FILES:libgl-imx = "${libdir}/libGL${REALSOLIBS}"
-FILES:libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL"
+FILES:libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL ${libdir}/pkgconfig/gl.pc"
 INSANE_SKIP:libgl-imx += "file-rdeps"
 
 # libEGL needs to open libGLESv1.so
