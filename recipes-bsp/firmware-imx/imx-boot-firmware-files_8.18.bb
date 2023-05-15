@@ -10,7 +10,7 @@ do_install[noexec] = "1"
 
 DEPLOY_FOR                  = ""
 DEPLOY_FOR:mx8-generic-bsp  = "mx8"
-DEPLOY_FOR:mx8m-generic-bsp = "mx8 mx8m"
+DEPLOY_FOR:mx8m-generic-bsp = "mx8m"
 DEPLOY_FOR:mx9-generic-bsp  = "mx9"
 
 deploy_for_mx8() {
