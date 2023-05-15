@@ -101,6 +101,7 @@ PACKAGES =+ " \
 	${PACKAGES_VULKAN} \
 	${PACKAGES_OPENVX} \
 	libnn-imx \
+	libspirv-imx \
 "
 
 PACKAGES_GBM                  = ""
@@ -348,9 +349,12 @@ INSANE_SKIP:libgbm-imx += "dev-so"
 
 FILES:libvulkan-imx = "\
     ${libdir}/libvulkan_VSI${REALSOLIBS} \
-    ${libdir}/libSPIRV_viv${SOLIBS} \
     ${sysconfdir}/vulkan"
 FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
+
+FILES:libspirv-imx = " \
+    ${libdir}/libSPIRV_viv${SOLIBS} \
+"
 
 FILES:libopenvx-imx = " \
     ${libdir}/libOpenVX${REALSOLIBS} \
