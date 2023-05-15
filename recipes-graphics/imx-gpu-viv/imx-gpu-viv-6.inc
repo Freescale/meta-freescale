@@ -1,12 +1,12 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
-# Copyright 2017-2021 NXP
+# Copyright 2017-2023 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
