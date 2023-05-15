@@ -106,7 +106,7 @@ PACKAGES =+ " \
 PACKAGES_GBM                  = ""
 PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
 
-PACKAGES_OPENCL               = "libopencl-imx libopencl-imx-dev libclc-imx libclc-imx-dev"
+PACKAGES_OPENCL               = "libclc-imx libclc-imx-dev libopencl-imx libopencl-imx-dev"
 PACKAGES_OPENCL:mx7-nxp-bsp   = ""
 PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
 
@@ -326,7 +326,6 @@ do_install:append:libc-musl() {
 ALLOW_EMPTY:${PN} = "1"
 
 FILES:libclc-imx = "${libdir}/libCLC${SOLIBS} ${includedir}/CL/cl_viv_vx_ext.h"
-FILES:libclc-imx-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 
 # libEGL.so is used by some demo apps from Freescale
 INSANE_SKIP:libegl-imx += "dev-so"
@@ -389,7 +388,7 @@ FILES:libgles3-imx-dev = "${includedir}/GLES3"
 RDEPENDS:libgles2-imx-dev += "libgles3-imx-dev"
 
 FILES:libglslc-imx = "${libdir}/libGLSLC${SOLIBS}"
-FILES:libglslc-imx-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
+FILES:libglslc-imx-dev = "${libdir}/libGLSLC${SOLIBSDEV}"
 
 FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \
