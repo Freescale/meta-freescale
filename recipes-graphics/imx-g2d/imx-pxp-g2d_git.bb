@@ -1,10 +1,10 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright 2017-2022 NXP
+# Copyright 2017-2023 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "G2D library using i.MX PXP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://EULA.txt;md5=d3c315c6eaa43e07d8c130dc3a04a011"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=ea25d099982d035af85d193c88a1b479"
 
 PROVIDES += "virtual/libg2d"
 
@@ -13,7 +13,7 @@ PV = "2.1.0+git${SRCPV}"
 SRC_URI = "${IMX_PXP_G2D_SRC};branch=${SRCBRANCH}"
 IMX_PXP_G2D_SRC ?= "git://github.com/nxp-imx/imx-g2d-pxp.git;protocol=https"
 SRCBRANCH ?= "imx_2.1"
-SRCREV = "178970dc7cdba69b94c2219b5bade46d67adb640"
+SRCREV = "8887f6bbf533affef7e22a65179a08a25f1547f1"
 
 S = "${WORKDIR}/git"
 
