@@ -1,6 +1,5 @@
 # Copyright (C) 2018-2020 NXP
-SUMMARY = "Freescale i.MX firmware for 8 family"
-DESCRIPTION = "Freescale i.MX firmware for 8 family"
+SUMMARY = "Freescale i.MX Firmware files used for boot"
 
 require firmware-imx-${PV}.inc
 
