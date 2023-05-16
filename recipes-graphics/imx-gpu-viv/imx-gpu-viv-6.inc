@@ -334,7 +334,7 @@ FILES:libegl-imx = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
 FILES:libegl-imx-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 
 FILES:libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
-FILES:libgal-imx-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
+FILES:libgal-imx-dev = "${includedir}/HAL"
 RDEPENDS:libgal-imx += "${@bb.utils.contains('PACKAGECONFIG', 'valgrind', 'valgrind', '', d)}"
 RPROVIDES:libgal-imx += "libgal-imx"
 RRECOMMENDS:libgal-imx += "kernel-module-imx-gpu-viv"
@@ -376,14 +376,14 @@ INSANE_SKIP:libgl-imx += "file-rdeps"
 # libEGL needs to open libGLESv1.so
 INSANE_SKIP:libgles1-imx += "dev-so"
 FILES:libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
-FILES:libgles1-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
+FILES:libgles1-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/pkgconfig/glesv1_cm.pc"
 RPROVIDES:libgles1-imx = "libgles-imx"
 RPROVIDES:libgles1-imx-dev = "libgles-imx-dev"
 
 # libEGL needs to open libGLESv2.so
 INSANE_SKIP:libgles2-imx += "dev-so"
 FILES:libgles2-imx = "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
-FILES:libgles2-imx-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV} ${libdir}/pkgconfig/glesv2.pc"
+FILES:libgles2-imx-dev = "${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
 RDEPENDS:libgles2-imx = "libglslc-imx"
 
 FILES:libgles3-imx-dev = "${includedir}/GLES3"
@@ -392,7 +392,6 @@ FILES:libgles3-imx-dev = "${includedir}/GLES3"
 RDEPENDS:libgles2-imx-dev += "libgles3-imx-dev"
 
 FILES:libglslc-imx = "${libdir}/libGLSLC${SOLIBS}"
-FILES:libglslc-imx-dev = "${libdir}/libGLSLC${SOLIBSDEV}"
 
 FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \
