@@ -3,28 +3,27 @@
 # recipe. The second section customizes the recipe for i.MX.
 
 ########### OE-core copy ##################
-# Upstream hash: 400aae43d08f0b9f787ac0d21cb3c97058d76748
+# Upstream hash: 4b42fd87da290ddea098605aea3a5cce1fb432a7
 
 SUMMARY = "Weston, a Wayland compositor"
 DESCRIPTION = "Weston is the reference implementation of a Wayland compositor"
 HOMEPAGE = "http://wayland.freedesktop.org"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
+LIC_FILES_CHKSUM = "file://LICENSE;md5=d79ee9e66bb0f95d3386a7acae780b70 \
                     file://libweston/compositor.c;endline=27;md5=eb6d5297798cabe2ddc65e2af519bcf0 \
                     "
 
-SRC_URI = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz \
+SRC_URI = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downloads/${BPN}-${PV}.tar.xz \
            file://weston.png \
            file://weston.desktop \
            file://xwayland.weston-start \
            file://systemd-notify.weston-start \
            "
 
-SRC_URI:append:libc-musl = " file://dont-use-plane-add-prop.patch "
-
-SRC_URI[sha256sum] = "5c23964112b90238bed39e5dd1e41cd71a79398813cdc3bbb15a9fdc94e547ae"
+SRC_URI[sha256sum] = "89646ca0d9f8d413c2767e5c3828eaa3fa149c2a105b3729a6894fa7cf1549e7"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
+UPSTREAM_CHECK_REGEX = "weston-(?P<pver>\d+\.\d+\.(?!9\d+)\d+)"
 
 inherit meson pkgconfig useradd
 
@@ -34,7 +33,6 @@ require ${THISDIR}/required-distro-features.inc
 
 DEPENDS = "libxkbcommon gdk-pixbuf pixman cairo glib-2.0"
 DEPENDS += "wayland wayland-protocols libinput virtual/egl pango wayland-native"
-DEPENDS:append:imxfbdev = " libdrm"
 
 LDFLAGS += "${@bb.utils.contains('DISTRO_FEATURES', 'lto', '-Wl,-z,undefs', '', d)}"
 
@@ -159,15 +157,12 @@ SUMMARY = "Weston, a Wayland compositor, i.MX fork"
 
 DEFAULT_PREFERENCE = "-1"
 
-SRC_URI:remove = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz"
+SRC_URI:remove = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downloads/${BPN}-${PV}.tar.xz"
 SRC_URI:prepend = "git://github.com/nxp-imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} "
 SRC_URI += "file://0001-Revert-protocol-no-found-wayland-scanner-with-Yocto-.patch \
-            file://0001-g2d-renderer.c-Include-sys-stat.h.patch \
-            file://0001-tests-Add-dependency-on-screenshooter-client-protoco.patch \
-            "
-SRCBRANCH = "weston-imx-10.0.1"
-SRCREV = "3f8f336b5d2cf7ea7aa4e047d669d093fc46dfe6"
-
+            file://0001-g2d-renderer.c-Include-sys-stat.h.patch"
+SRCBRANCH = "weston-imx-10.0.3"
+SRCREV = "c41675dc616886828219eba9b9ce22ec17533090"
 S = "${WORKDIR}/git"
 
 # Disable OpenGL for parts with GPU support for 2D but not 3D
@@ -178,7 +173,8 @@ PACKAGECONFIG_OPENGL              = "opengl"
 PACKAGECONFIG_OPENGL:imxgpu2d     = ""
 PACKAGECONFIG_OPENGL:imxgpu3d     = "opengl"
 
-PACKAGECONFIG:remove = "wayland x11"
+PACKAGECONFIG_IMX_REMOVALS ?= "wayland x11"
+PACKAGECONFIG:remove = "${PACKAGECONFIG_IMX_REMOVALS}"
 PACKAGECONFIG:append = " ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_OPENGL}', d)}"
 
 PACKAGECONFIG:remove:imxfbdev = "kms"
@@ -197,7 +193,7 @@ PACKAGECONFIG[imxg2d] = "-Drenderer-g2d=true,-Drenderer-g2d=false,virtual/libg2d
 # Weston with OpenGL support
 PACKAGECONFIG[opengl] = "-Dopengl=true,-Dopengl=false"
 
-PACKAGECONFIG[fbdev] = "-Dbackend-fbdev=true,-Dbackend-fbdev=false,udev mtdev"
+PACKAGECONFIG[fbdev] = "-Dbackend-fbdev=true,-Dbackend-fbdev=false,udev mtdev libdrm"
 EXTRA_OEMESON:append:imxfbdev = " -Dbackend-default=fbdev"
 
 EXTRA_OEMESON += "-Ddeprecated-wl-shell=true"
