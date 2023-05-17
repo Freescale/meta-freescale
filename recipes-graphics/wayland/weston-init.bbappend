@@ -36,6 +36,7 @@ PACKAGECONFIG_USE_G2D:imxgpu2d       ?= "use-g2d"
 PACKAGECONFIG_USE_G2D:mx8qm-nxp-bsp  ?= ""
 PACKAGECONFIG_USE_G2D:mx8qxp-nxp-bsp ?= ""
 PACKAGECONFIG_USE_G2D:mx8dx-nxp-bsp  ?= ""
+PACKAGECONFIG_USE_G2D:mx93-nxp-bsp   ?= "use-g2d"
 
 USE_G2D_VALUE             = "true"
 USE_G2D_VALUE:mx6-nxp-bsp = "1"
