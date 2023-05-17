@@ -16,3 +16,5 @@ OPENGL_PKGCONFIGS_REMOVE_IMXGPU:mx8-nxp-bsp = "glx"
 LDFLAGS:append:imxgpu:libc-musl = " -Wl,--allow-shlib-undefined"
 
 RDEPENDS:${PN}:append:imxgpu:libc-musl = " gcompat"
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
