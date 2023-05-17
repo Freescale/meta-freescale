@@ -1,12 +1,12 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
-# Copyright 2017-2021 NXP
+# Copyright 2017-2023 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for i.MX"
 SECTION = "libs"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
 
 DEPENDS += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -30,15 +30,12 @@ DEPENDS:append:libc-musl = " gcompat"
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
-    opencl-headers \
-    opencl-clhpp \
-    opencl-icd-loader \
     virtual/egl \
     virtual/libopenvg \
-    virtual/opencl-icd \
     ${EXTRA_PROVIDES} \
 "
 EXTRA_PROVIDES = " \
+    ${PROVIDES_OPENCL} \
     ${PROVIDES_OPENGLES3} \
     ${PROVIDES_OPENVX} \
 "
@@ -50,6 +47,15 @@ EXTRA_PROVIDES:append:imxgpu3d = " \
 EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
     virtual/libgbm \
 "
+
+PROVIDES_OPENCL = " \
+    opencl-headers \
+    opencl-clhpp \
+    opencl-icd-loader \
+    virtual/opencl-icd \
+"
+PROVIDES_OPENCL:mx7-nxp-bsp   = ""
+PROVIDES_OPENCL:mx8mm-nxp-bsp = ""
 
 PROVIDES_OPENGLES3               = ""
 PROVIDES_OPENGLES3:mx8-nxp-bsp   = "virtual/libgles3"
@@ -95,13 +101,15 @@ PACKAGES =+ " \
 	${PACKAGES_VULKAN} \
 	${PACKAGES_OPENVX} \
 	libnn-imx \
+	libspirv-imx \
 "
 
 PACKAGES_GBM                  = ""
 PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
 
-PACKAGES_OPENCL               = "libopencl-imx libopencl-imx-dev libclc-imx libclc-imx-dev"
+PACKAGES_OPENCL               = "libclc-imx libclc-imx-dev libopencl-imx libopencl-imx-dev"
 PACKAGES_OPENCL:mx7-nxp-bsp   = ""
+PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
 
 PACKAGES_OPENVX = \
     "${@bb.utils.contains("PROVIDES_OPENVX", "virtual/libopenvx", \
@@ -109,6 +117,7 @@ PACKAGES_OPENVX = \
 
 PACKAGES_VULKAN               = ""
 PACKAGES_VULKAN:imxvulkan     = "libvulkan-imx libvulkan-imx-dev"
+PACKAGES_VULKAN:mx8mm-nxp-bsp = "libvulkan-imx libvulkan-imx-dev"
 
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
@@ -209,6 +218,9 @@ do_install () {
     # Install backend-specific drivers
     if [ "${BACKEND}" = "wayland" ]; then
         # Wayland backend
+        if ! ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'true', 'false', d)}; then
+            install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gl.pc ${D}${libdir}/pkgconfig/gl.pc
+        fi
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
         cp -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
     elif [ "${IS_MX8}" != "1" ]; then
@@ -316,7 +328,6 @@ do_install:append:libc-musl() {
 ALLOW_EMPTY:${PN} = "1"
 
 FILES:libclc-imx = "${libdir}/libCLC${SOLIBS} ${includedir}/CL/cl_viv_vx_ext.h"
-FILES:libclc-imx-dev = "${includedir}/CL ${libdir}/libCLC${SOLIBSDEV}"
 
 # libEGL.so is used by some demo apps from Freescale
 INSANE_SKIP:libegl-imx += "dev-so"
@@ -324,7 +335,7 @@ FILES:libegl-imx = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBSDEV} "
 FILES:libegl-imx-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 
 FILES:libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
-FILES:libgal-imx-dev = "${libdir}/libGAL${SOLIBSDEV} ${includedir}/HAL"
+FILES:libgal-imx-dev = "${includedir}/HAL"
 RDEPENDS:libgal-imx += "${@bb.utils.contains('PACKAGECONFIG', 'valgrind', 'valgrind', '', d)}"
 RPROVIDES:libgal-imx += "libgal-imx"
 RRECOMMENDS:libgal-imx += "kernel-module-imx-gpu-viv"
@@ -339,9 +350,12 @@ INSANE_SKIP:libgbm-imx += "dev-so"
 
 FILES:libvulkan-imx = "\
     ${libdir}/libvulkan_VSI${REALSOLIBS} \
-    ${libdir}/libSPIRV_viv${SOLIBS} \
     ${sysconfdir}/vulkan"
 FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
+
+FILES:libspirv-imx = " \
+    ${libdir}/libSPIRV_viv${SOLIBS} \
+"
 
 FILES:libopenvx-imx = " \
     ${libdir}/libOpenVX${REALSOLIBS} \
@@ -357,20 +371,20 @@ RDEPENDS:libopenvx-imx = "libnn-imx"
 # package QA complains on missing RDEPENDS, which are only available for X11.
 # Skip "file-rdeps" QA for this package.
 FILES:libgl-imx = "${libdir}/libGL${REALSOLIBS}"
-FILES:libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL"
+FILES:libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL ${libdir}/pkgconfig/gl.pc"
 INSANE_SKIP:libgl-imx += "file-rdeps"
 
 # libEGL needs to open libGLESv1.so
 INSANE_SKIP:libgles1-imx += "dev-so"
 FILES:libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
-FILES:libgles1-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${SOLIBSDEV} ${libdir}/pkgconfig/glesv1_cm.pc"
+FILES:libgles1-imx-dev = "${includedir}/GLES ${libdir}/libGLESv1*${SOLIBS} ${libdir}/pkgconfig/glesv1_cm.pc"
 RPROVIDES:libgles1-imx = "libgles-imx"
 RPROVIDES:libgles1-imx-dev = "libgles-imx-dev"
 
 # libEGL needs to open libGLESv2.so
 INSANE_SKIP:libgles2-imx += "dev-so"
 FILES:libgles2-imx = "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
-FILES:libgles2-imx-dev = "${includedir}/GLES2 ${libdir}/libGLESv2${SOLIBSDEV} ${libdir}/pkgconfig/glesv2.pc"
+FILES:libgles2-imx-dev = "${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
 RDEPENDS:libgles2-imx = "libglslc-imx"
 
 FILES:libgles3-imx-dev = "${includedir}/GLES3"
@@ -379,7 +393,6 @@ FILES:libgles3-imx-dev = "${includedir}/GLES3"
 RDEPENDS:libgles2-imx-dev += "libgles3-imx-dev"
 
 FILES:libglslc-imx = "${libdir}/libGLSLC${SOLIBS}"
-FILES:libglslc-imx-dev = "${includedir}/CL ${libdir}/libGLSLC${SOLIBSDEV}"
 
 FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \

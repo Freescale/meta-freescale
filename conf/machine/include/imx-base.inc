@@ -523,10 +523,10 @@ PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp  ??= "1.31.imx"
 PREFERRED_VERSION_wayland-protocols:mx9-nxp-bsp  ??= "1.31.imx"
 
 # Use i.MX libdrm Version
-PREFERRED_VERSION_libdrm:mx6-nxp-bsp ??= "2.4.109.imx"
-PREFERRED_VERSION_libdrm:mx7-nxp-bsp ??= "2.4.109.imx"
-PREFERRED_VERSION_libdrm:mx8-nxp-bsp ??= "2.4.109.imx"
-PREFERRED_VERSION_libdrm:mx9-nxp-bsp ??= "2.4.109.imx"
+PREFERRED_VERSION_libdrm:mx6-nxp-bsp ??= "2.4.114.imx"
+PREFERRED_VERSION_libdrm:mx7-nxp-bsp ??= "2.4.114.imx"
+PREFERRED_VERSION_libdrm:mx8-nxp-bsp ??= "2.4.114.imx"
+PREFERRED_VERSION_libdrm:mx9-nxp-bsp ??= "2.4.114.imx"
 
 PREFERRED_VERSION_vulkan-headers:imxvulkan ??= "1.2.182.0"
 PREFERRED_VERSION_vulkan-loader:imxvulkan  ??= "1.2.182.0"
