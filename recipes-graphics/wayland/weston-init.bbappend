@@ -10,7 +10,6 @@ SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
 PACKAGECONFIG ??= " \
     no-idle-timeout \
-    rdp \
     ${PACKAGECONFIG_GBM_FORMAT} \
     ${PACKAGECONFIG_REPAINT_WINDOW} \
     ${PACKAGECONFIG_SIZE} \
