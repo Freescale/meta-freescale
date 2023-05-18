@@ -8,64 +8,72 @@ REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 
 SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
-# To customize weston.ini, start by setting the desired assignment in weston.ini,
-# commented in. For example:
-#     xwayland=true
-# Then add the assignment to INI_COMMENT_ASSIGNMENTS.
-#
-# commented out. For example:
-#     #xwayland=true
-# Then add the assignment to INI_UNCOMMENT_ASSIGNMENTS.
-INI_COMMENT_ASSIGNMENTS:append:imx-mainline-bsp = " \
-    xwayland=true \
+PACKAGECONFIG ??= " \
+    no-idle-timeout \
+    ${PACKAGECONFIG_GBM_FORMAT} \
+    ${PACKAGECONFIG_REPAINT_WINDOW} \
+    ${PACKAGECONFIG_SIZE} \
+    ${PACKAGECONFIG_USE_G2D} \
 "
 
-INI_UNCOMMENT_ASSIGNMENTS:append:mx8-nxp-bsp = " \
-    repaint-window=16 \
-"
-INI_UNCOMMENT_ASSIGNMENTS:append:mx8mq-nxp-bsp = " \
-    gbm-format=argb8888 \
-    \\[shell\\] \
-    size=1920x1080 \
-"
+PACKAGECONFIG_GBM_FORMAT               ?= ""
+PACKAGECONFIG_GBM_FORMAT:mx8mq-nxp-bsp ?= "gbm-format"
 
-# FIXME: The 8QM and 8QXP SoCs have better performance without G2D so don't enable it
-# Ideally, this should be seamless and Vivante ought to handle it internally and take the fastest
-# rendering code.
-INI_UNCOMMENT_USE_G2D               ?= ""
-INI_UNCOMMENT_USE_G2D:imxgpu2d      ?= "use-g2d=1"
-INI_UNCOMMENT_USE_G2D:mx8qm-nxp-bsp ?= ""
-INI_UNCOMMENT_USE_G2D:mx8qxp-nxp-bsp ?= ""
-INI_UNCOMMENT_USE_G2D:mx8dx-nxp-bsp ?= ""
-INI_UNCOMMENT_ASSIGNMENTS:append = " \
-    ${INI_UNCOMMENT_USE_G2D} \
-"
+GBM_FORMAT_VALUE:mx8mq-nxp-bsp = "argb8888"
 
-comment() {
-    if ! grep -q "^#$1" $2 && ! grep -q "^$1" $2; then
-        bbwarn "Commented setting '#$1' not found in file $2"
-    fi
-    sed -i -e 's,^'"$1"',#'"$1"',g' $2
-}
+PACKAGECONFIG_REPAINT_WINDOW             ?= ""
+PACKAGECONFIG_REPAINT_WINDOW:mx8-nxp-bsp ?= "repaint-window"
+PACKAGECONFIG_REPAINT_WINDOW:mx9-nxp-bsp ?= "repaint-window"
 
-uncomment() {
-    if ! grep -q "^#$1" $2 && ! grep -q "^$1" $2; then
-        bbwarn "Commented setting '#$1' not found in file $2"
-    fi
-    sed -i -e 's,^#'"$1"','"$1"',g' $2
-}
+PACKAGECONFIG_SIZE                     ?= ""
+PACKAGECONFIG_SIZE:mx8mq-nxp-bsp       ?= "size"
+
+SIZE_VALUE:mx8mq-nxp-bsp = "1920x1080"
+
+PACKAGECONFIG_USE_G2D                ?= ""
+PACKAGECONFIG_USE_G2D:imxgpu2d       ?= "use-g2d"
+PACKAGECONFIG_USE_G2D:mx8qm-nxp-bsp  ?= ""
+PACKAGECONFIG_USE_G2D:mx8qxp-nxp-bsp ?= ""
+PACKAGECONFIG_USE_G2D:mx8dx-nxp-bsp  ?= ""
+PACKAGECONFIG_USE_G2D:mx93-nxp-bsp   ?= "use-g2d"
+
+USE_G2D_VALUE             = "true"
+USE_G2D_VALUE:mx6-nxp-bsp = "1"
+USE_G2D_VALUE:mx7-nxp-bsp = "1"
+
+PACKAGECONFIG[gbm-format] = ",,"
+PACKAGECONFIG[rdp] = ",,"
+PACKAGECONFIG[repaint-window] = ",,"
+PACKAGECONFIG[size] = ",,"
+PACKAGECONFIG[use-g2d] = ",,"
 
 do_install:append() {
     if [ -f "${WORKDIR}/weston.config" ]; then
         install -Dm0755 ${WORKDIR}/weston.config ${D}${sysconfdir}/default/weston
     fi
 
-    for assignment in ${INI_COMMENT_ASSIGNMENTS}; do
-        comment "$assignment" ${D}${sysconfdir}/xdg/weston/weston.ini
-    done
+    if [ "${@bb.utils.contains('PACKAGECONFIG', 'gbm-format', 'yes', 'no', d)}" = "yes" ]; then
+        sed -i -e "/^\[core\]/a gbm-format=${GBM_FORMAT_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
+    fi
 
-    for assignment in ${INI_UNCOMMENT_ASSIGNMENTS}; do
-        uncomment "$assignment" ${D}${sysconfdir}/xdg/weston/weston.ini
-    done
+    if [ "${@bb.utils.contains('PACKAGECONFIG', 'rdp', 'yes', 'no', d)}" = "yes" ]; then
+        sed -i -e "s|^command=${bindir}/weston .*|& --rdp-tls-cert=${sysconfdir}/freerdp/keys/server.crt --rdp-tls-key=${sysconfdir}/freerdp/keys/server.key|" ${D}${sysconfdir}/xdg/weston/weston.ini
+        sed -i -e "/^\[core\]/a modules=screen-share.so" ${D}${sysconfdir}/xdg/weston/weston.ini
+    fi
+
+    if [ "${@bb.utils.contains('PACKAGECONFIG', 'repaint-window', 'yes', 'no', d)}" = "yes" ]; then
+        sed -i -e "/^\[core\]/a repaint-window=16" ${D}${sysconfdir}/xdg/weston/weston.ini
+    fi
+
+    if [ "${@bb.utils.contains('PACKAGECONFIG', 'size', 'yes', 'no', d)}" = "yes" ]; then
+        sed -i -e "/^\[shell\]/a size=${SIZE_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
+    fi
+
+    if [ "${@bb.utils.contains('PACKAGECONFIG', 'use-g2d', 'yes', 'no', d)}" = "yes" ]; then
+        sed -i -e "/^\[core\]/a use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
+    else
+        sed -i -e "/^\[core\]/a #use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
+    fi
+
     sed -i -e 's,@bindir@,${bindir},g' ${D}${sysconfdir}/xdg/weston/weston.ini
 }
