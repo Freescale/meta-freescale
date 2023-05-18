@@ -37,6 +37,10 @@ PACKAGECONFIG_USE_G2D:mx8qm-nxp-bsp  ?= ""
 PACKAGECONFIG_USE_G2D:mx8qxp-nxp-bsp ?= ""
 PACKAGECONFIG_USE_G2D:mx8dx-nxp-bsp  ?= ""
 
+USE_G2D_VALUE             = "true"
+USE_G2D_VALUE:mx6-nxp-bsp = "1"
+USE_G2D_VALUE:mx7-nxp-bsp = "1"
+
 PACKAGECONFIG[gbm-format] = ",,"
 PACKAGECONFIG[rdp] = ",,"
 PACKAGECONFIG[repaint-window] = ",,"
@@ -66,9 +70,9 @@ do_install:append() {
     fi
 
     if [ "${@bb.utils.contains('PACKAGECONFIG', 'use-g2d', 'yes', 'no', d)}" = "yes" ]; then
-        sed -i -e "/^\[core\]/a use-g2d=1" ${D}${sysconfdir}/xdg/weston/weston.ini
+        sed -i -e "/^\[core\]/a use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
     else
-        sed -i -e "/^\[core\]/a #use-g2d=1" ${D}${sysconfdir}/xdg/weston/weston.ini
+        sed -i -e "/^\[core\]/a #use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
     fi
 
     sed -i -e 's,@bindir@,${bindir},g' ${D}${sysconfdir}/xdg/weston/weston.ini
