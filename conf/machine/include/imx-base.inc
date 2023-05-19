@@ -600,7 +600,7 @@ SERIAL_CONSOLES:mxs-generic-bsp = "115200;ttyAMA0"
 KERNEL_IMAGETYPE = "zImage"
 KERNEL_IMAGETYPE:aarch64 = "Image"
 
-MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen"
+MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen screen"
 
 HOSTTOOLS_NONFATAL:append:mx8-nxp-bsp = " sha384sum"
 
