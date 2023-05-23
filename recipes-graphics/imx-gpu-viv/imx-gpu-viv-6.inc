@@ -327,7 +327,8 @@ do_install:append:libc-musl() {
 
 ALLOW_EMPTY:${PN} = "1"
 
-FILES:libclc-imx = "${libdir}/libCLC${SOLIBS} ${includedir}/CL/cl_viv_vx_ext.h"
+FILES:libclc-imx = "${libdir}/libCLC${SOLIBS}"
+FILES:libclc-imx-dev = "${includedir}/CL/cl_viv_vx_ext.h"
 
 # libEGL.so is used by some demo apps from Freescale
 INSANE_SKIP:libegl-imx += "dev-so"
