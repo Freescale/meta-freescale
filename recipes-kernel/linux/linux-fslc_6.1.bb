@@ -10,8 +10,6 @@ provide support for some backported features and fixes, or because it was applie
 and takes some time to become part of a stable version, or because it is not applicable for \
 upstreaming."
 
-DEPENDS += "lzop-native bc-native"
-
 require linux-imx.inc
 
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
@@ -21,10 +19,10 @@ SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.27"
+LINUX_VERSION = "6.1.29"
 
 KBRANCH = "6.1.x+fslc"
-SRCREV = "ddc32335b72f78943045b242eb6e0b069ef4cdae"
+SRCREV = "9dd7c6bd8a02e7c5b745b18cfec8bce73feb6de7"
 
 KBUILD_DEFCONFIG:mx27-generic-bsp = "imx_v4_v5_defconfig"
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"

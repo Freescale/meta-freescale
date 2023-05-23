@@ -38,6 +38,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+# - ad9ab3b3c553c ARM: imx_v7_defconfig: Remove KERNEL_LZO config
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -47,11 +48,9 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 require linux-imx.inc
 
-DEPENDS += "lzop-native bc-native"
-
 KBRANCH = "6.1-1.0.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "897d73a656fe33d0c4549c5de1d07797f99d6871"
+SRCREV = "ad9ab3b3c553cbc3c61f233b6e2cd5abdd2a624b"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
