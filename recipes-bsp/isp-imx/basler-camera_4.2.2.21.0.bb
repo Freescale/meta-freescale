@@ -2,14 +2,14 @@
 
 DESCRIPTION = "Basler camera binary drivers"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
 
 inherit fsl-eula-unpack
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "99962b0cbba53ef773b7ac8cb50ce05a"
-SRC_URI[sha256sum] = "fd2f71c854134683ac293393255d61b985e75d8dae2e090c99c21dff756017fb"
+SRC_URI[md5sum] = "4e33adeb8a43f5bd06703368721085f5"
+SRC_URI[sha256sum] = "c44fc890902d9d8ef22186d56af035c9cac182817525e64575e3b79015383790"
 
 do_install() {
     dest_dir=${D}/opt/imx8-isp/bin
