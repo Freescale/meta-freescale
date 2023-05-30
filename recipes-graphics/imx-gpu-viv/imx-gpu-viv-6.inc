@@ -188,6 +188,10 @@ IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
 LIBVULKAN_API_VERSION   = "1.2.182"
 
+SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION               = "false"
+SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION:mx8qm-nxp-bsp = "true"
+SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION:mx8mp-nxp-bsp = "true"
+
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
@@ -258,7 +262,7 @@ do_install () {
         install -d ${D}${sysconfdir}/OpenCL/vendors/
         install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
-        if [ -z "${PACKAGES_OPENVX}" ]; then
+        if ! ${SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION}; then
             rm -f ${D}${includedir}/CL/cl_viv_vx_ext.h
         fi
     fi
