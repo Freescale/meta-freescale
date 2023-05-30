@@ -107,7 +107,7 @@ PACKAGES =+ " \
 PACKAGES_GBM                  = ""
 PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
 
-PACKAGES_OPENCL               = "libclc-imx libclc-imx-dev libopencl-imx libopencl-imx-dev"
+PACKAGES_OPENCL               = "libclc-imx libopencl-imx libopencl-imx-dev"
 PACKAGES_OPENCL:mx7-nxp-bsp   = ""
 PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
 
@@ -248,7 +248,7 @@ do_install () {
 
     if [ -z "${PACKAGES_OPENCL}" ]; then
         set -f
-        for f in ${FILES:libopencl-imx} ${FILES:libopencl-imx-dev} ${FILES:libclc-imx} ${FILES:libclc-imx-dev}; do
+        for f in ${FILES:libopencl-imx} ${FILES:libopencl-imx-dev} ${FILES:libclc-imx}; do
             set +f
             rm -rf ${D}$f
         done
@@ -257,6 +257,10 @@ do_install () {
         # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
         install -d ${D}${sysconfdir}/OpenCL/vendors/
         install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
+
+        if [ -z "${PACKAGES_OPENVX}" ]; then
+            rm -f ${D}${includedir}/CL/cl_viv_vx_ext.h
+        fi
     fi
 
     if [ -z "${PACKAGES_OPENVX}" ]; then
@@ -328,7 +332,6 @@ do_install:append:libc-musl() {
 ALLOW_EMPTY:${PN} = "1"
 
 FILES:libclc-imx = "${libdir}/libCLC${SOLIBS}"
-FILES:libclc-imx-dev = "${includedir}/CL/cl_viv_vx_ext.h"
 
 # libEGL.so is used by some demo apps from Freescale
 INSANE_SKIP:libegl-imx += "dev-so"
