@@ -85,12 +85,17 @@ PTEST_BUILD_HOST_FILES = ""
 
 DEFAULT_PREFERENCE = "-1"
 
+LIC_FILES_CHKSUM = " \
+    file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770 \
+    file://gst/gst.h;beginline=1;endline=21;md5=e059138481205ee2c6fc1c079c016d0d \
+"
+
 # Use i.MX fork of GST for customizations
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz"
 SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
 GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
-SRCREV = "6d2a525316b3f5cbda6a87fc5b213ab03055f320"
+SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
+SRCREV = "e525a482611b2fccbebbc0f9fc32a88a707558fa"
 
 S = "${WORKDIR}/git"
 

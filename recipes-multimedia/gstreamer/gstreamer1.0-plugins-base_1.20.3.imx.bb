@@ -106,6 +106,8 @@ CVE_PRODUCT += "gst-plugins-base"
 
 DEFAULT_PREFERENCE = "-1"
 
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770"
+
 SRC_URI:remove = " \
     https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PV}.tar.xz \
     file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
@@ -115,8 +117,8 @@ SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 SRC_URI += "file://0001-Fix-types-to-match-callback-functions.patch"
 SRC_URI += "file://0001-gstallocatorphymem.c-Typecast-result-of-gst_phymem_g.patch"
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
-SRCREV = "cbf542ce3e0bad1009d5ecf72707e870c375c3f0"
+SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
+SRCREV = "fad4d243e030452b26dfbb2eb0f4d94befa4b9eb"
 
 S = "${WORKDIR}/git"
 

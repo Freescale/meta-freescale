@@ -176,6 +176,8 @@ FILES:${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
 
 DEFAULT_PREFERENCE = "-1"
 
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=4fbd65380cdd255951079008b364516c"
+
 DEPENDS:append:imxgpu2d = " virtual/libg2d"
 
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
@@ -185,8 +187,8 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
            "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
-SRCREV = "cfb43ae30f9038a004ea1b916c74bc66f33e1171"
+SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
+SRCREV = "6db7bca26b81468b647b680d7ef67b1b8b938b00"
 
 S = "${WORKDIR}/git"
 
