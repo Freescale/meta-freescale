@@ -13,15 +13,15 @@ RREPLACES:${PN} = "fsl-alsa-plugins"
 RPROVIDES:${PN} = "fsl-alsa-plugins"
 RCONFLICTS:${PN} = "fsl-alsa-plugins"
 
-LIC_FILES_CHKSUM = "file://COPYING.GPL;md5=94d55d512a9ba36caa9b7df079bae19f"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=94d55d512a9ba36caa9b7df079bae19f"
 
 inherit autotools pkgconfig use-imx-headers
 
 PV = "1.0.26+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-alsa-plugins.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "MM_04.07.01_2208_L5.15.y"
-SRCREV = "a9643b8820dd89b7a8c99941a90e9498f1b68c14"
+SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
+SRCREV = "8ed567b446d49abe0498278b4da90ecc4db3e37d"
 
 S = "${WORKDIR}/git"
 
@@ -32,6 +32,7 @@ EXTRA_OECONF = "CFLAGS="${INCLUDE_DIR}""
 PACKAGECONFIG ??= "${PACKAGECONFIG_SWPDM}"
 PACKAGECONFIG_SWPDM             = ""
 PACKAGECONFIG_SWPDM:mx8-nxp-bsp = "swpdm"
+
 PACKAGECONFIG[swpdm] = "--enable-swpdm,--disable-swpdm,imx-sw-pdm"
 
 INSANE_SKIP:${PN} = "dev-so"
