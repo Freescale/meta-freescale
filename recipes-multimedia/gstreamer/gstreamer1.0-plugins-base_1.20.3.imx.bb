@@ -17,7 +17,6 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-ba
            file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
            file://0003-viv-fb-Make-sure-config.h-is-included.patch \
            file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch \
-           file://0001-Fix-types-to-match-callback-functions.patch \
            "
 SRC_URI[sha256sum] = "96d8a6413ba9394fbec1217aeef63741a729d476a505a797c1d5337d8fa7c204"
 
@@ -85,14 +84,6 @@ EXTRA_OEMESON += " \
     ${@get_opengl_cmdline_list('gl_winsys', d.getVar('OPENGL_WINSYS'), d)} \
 "
 
-# Remove this meta package when moving to gstreamer 1.22+, this is for making
-# gst packagegroups from master work with gstreamer 1.20.3.imx
-PACKAGES += "${PN}-videoconvertscale"
-
-ALLOW_EMPTY:${PN}-videoconvertscale = "1"
-
-RDEPENDS:${PN}-videoconvertscale = "${PN}-videoconvert ${PN}-videoscale"
-
 FILES:${PN}-dev += "${libdir}/gstreamer-1.0/include/gst/gl/gstglconfig.h"
 FILES:${MLPREFIX}libgsttag-1.0 += "${datadir}/gst-plugins-base/1.0/license-translations.dict"
 
@@ -115,16 +106,19 @@ CVE_PRODUCT += "gst-plugins-base"
 
 DEFAULT_PREFERENCE = "-1"
 
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770"
+
 SRC_URI:remove = " \
     https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PV}.tar.xz \
     file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
     file://0003-viv-fb-Make-sure-config.h-is-included.patch \
     file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
+SRC_URI += "file://0001-Fix-types-to-match-callback-functions.patch"
 SRC_URI += "file://0001-gstallocatorphymem.c-Typecast-result-of-gst_phymem_g.patch"
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
-SRCREV = "cbf542ce3e0bad1009d5ecf72707e870c375c3f0"
+SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
+SRCREV = "fad4d243e030452b26dfbb2eb0f4d94befa4b9eb"
 
 S = "${WORKDIR}/git"
 
@@ -149,6 +143,12 @@ EXTRA_OEMESON += "-Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}""
 # links with imx-gpu libs which are pre-built for glibc
 # gcompat will address it during runtime
 LDFLAGS:append:imxgpu:libc-musl = " -Wl,--allow-shlib-undefined"
+
+# Remove this meta package when moving to gstreamer 1.22+, this is for making
+# gst packagegroups from master work with gstreamer 1.20.3.imx
+PACKAGES += "${PN}-videoconvertscale"
+ALLOW_EMPTY:${PN}-videoconvertscale = "1"
+RDEPENDS:${PN}-videoconvertscale = "${PN}-videoconvert ${PN}-videoscale"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 

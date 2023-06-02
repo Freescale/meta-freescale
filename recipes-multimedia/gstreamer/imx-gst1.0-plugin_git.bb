@@ -20,10 +20,9 @@ RREPLACES:${PN} = "gst1.0-fsl-plugin"
 RPROVIDES:${PN} = "gst1.0-fsl-plugin"
 RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
-LIC_FILES_CHKSUM = "file://COPYING-LGPL-2;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
-                    file://COPYING-LGPL-2.1;md5=fbc093901857fcd118f065f900982c24"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=fbc093901857fcd118f065f900982c24"
 
-PV = "4.7.2+git${SRCPV}"
+PV = "4.7.3+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-aiurdemux-Fix-type-of-USER_DATA_LOCATION.patch \
@@ -37,8 +36,8 @@ SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=
            file://0009-gstimxv4l2.c-Fix-incompatible-integer-to-pointer-con.patch \
            file://0010-provide-declaration-for-aiur_register_external_typef.patch \
            "
-SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
-SRCREV = "3a0250b983f2610e6936d10c63b45e2d39eadd7e"
+SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
+SRCREV = "843215344b62de7a91d5880a4b093cd384c7b567"
 
 S = "${WORKDIR}/git"
 

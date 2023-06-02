@@ -13,7 +13,6 @@ BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
            file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
-           file://0001-Add-prototype-declaration-for-gst_v4l2_object_stream.patch \
            "
 
 SRC_URI[sha256sum] = "f8f3c206bf5cdabc00953920b47b3575af0ef15e9f871c0b6966f6d0aa5868b7"
@@ -94,15 +93,22 @@ FILES:${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
 
 DEFAULT_PREFERENCE = "-1"
 
+LIC_FILES_CHKSUM = " \
+    file://LICENSE.txt;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+    file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe \
+"
+
 # fb implementation of v4l2 uses libdrm
 DEPENDS += "${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
 DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
+RDEPENDS:${PN}-soup += "${@bb.utils.contains('PACKAGECONFIG', 'soup', 'libsoup-2.4', '', d)}"
 
 SRC_URI:remove  = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz"
 SRC_URI:prepend = "${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} "
+SRC_URI += "file://0001-Add-prototype-declaration-for-gst_v4l2_object_stream.patch"
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.07.02_2210_L5.15.y"
-SRCREV = "643478677a4acb225dbb48e64720b06a7c6da668"
+SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
+SRCREV = "5de04382c1c73e7b6d3c448a8902f358784d4567"
 
 S = "${WORKDIR}/git"
 
