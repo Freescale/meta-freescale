@@ -2,12 +2,13 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
-DEPENDS = "libdrm virtual/libg2d libtinyxml2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
+DEPENDS = "boost libdrm virtual/libg2d libtinyxml2"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "01f83394df91091f414f122c339c02bc"
-SRC_URI[sha256sum] = "ab65a413f397230010266579df570beac5fde4af430e31fc251d7cf7c8fa2232"
+
+SRC_URI[md5sum] = "2f2fc2f6209a5efe7ef14cb6711b6292"
+SRC_URI[sha256sum] = "66340acdda4318b2031791f488a95b59541c98cd1e255abdc070a2d1e6e9494d"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -51,12 +52,13 @@ do_install() {
     cp -r ${B}/generated/release/bin/*_test ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*.xml ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*.drv ${D}/opt/imx8-isp/bin
-    cp -r ${WORKDIR}/${BP}/dewarp/dewarp_config/ ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
+
     cp -r ${B}/generated/release/lib/*.so* ${D}/${libdir}
     cp -r ${B}/generated/release/include/* ${D}/${includedir}
 
+    cp -r ${S}/dewarp/dewarp_config/ ${D}/opt/imx8-isp/bin
     cp ${S}/imx/run.sh ${D}/opt/imx8-isp/bin
     cp ${S}/imx/start_isp.sh ${D}/opt/imx8-isp/bin
 
@@ -74,14 +76,15 @@ do_install() {
 # unversioned .so libraries go to the main package and versioned .so
 # symlinks go to -dev.
 FILES_SOLIBSDEV = ""
-FILES_SOLIBS_VERSIONED = " \
-    ${libdir}/libar1335.so \
-    ${libdir}/libjsoncpp.so \
-    ${libdir}/libos08a20.so \
-    ${libdir}/libov2775.so \
-"
 FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
 FILES:${PN}-dev += "${FILES_SOLIBS_VERSIONED}"
+FILES_SOLIBS_VERSIONED = " \
+    ${libdir}/libcppnetlib-client-connections.so \
+    ${libdir}/libcppnetlib-server-parsers.so \
+    ${libdir}/libcppnetlib-uri.so \
+    ${libdir}/libjsoncpp.so \
+    ${libdir}/libos08a20.so \
+"
 
 RDEPENDS:${PN} = "libdrm"
 
