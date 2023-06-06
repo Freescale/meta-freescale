@@ -10,11 +10,15 @@ SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
 PACKAGECONFIG ??= " \
     no-idle-timeout \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xwayland', '', d)} \
     ${PACKAGECONFIG_GBM_FORMAT} \
     ${PACKAGECONFIG_REPAINT_WINDOW} \
     ${PACKAGECONFIG_SIZE} \
     ${PACKAGECONFIG_USE_G2D} \
 "
+
+# Mainline BSPs dont support xwayland
+PACKAGECONFIG:remove:use-mainline-bsp = "xwayland"
 
 PACKAGECONFIG_GBM_FORMAT               ?= ""
 PACKAGECONFIG_GBM_FORMAT:mx8mq-nxp-bsp ?= "gbm-format"
@@ -46,6 +50,7 @@ PACKAGECONFIG[rdp] = ",,"
 PACKAGECONFIG[repaint-window] = ",,"
 PACKAGECONFIG[size] = ",,"
 PACKAGECONFIG[use-g2d] = ",,"
+PACKAGECONFIG[xwayland] = ",,"
 
 do_install:append() {
     if [ -f "${WORKDIR}/weston.config" ]; then
@@ -73,6 +78,10 @@ do_install:append() {
         sed -i -e "/^\[core\]/a use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
     else
         sed -i -e "/^\[core\]/a #use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
+    fi
+
+    if [ "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', 'yes', 'no', d)}" = "no" ]; then
+        sed -i -e "s/^xwayland=true/#xwayland=true/g" ${D}${sysconfdir}/xdg/weston/weston.ini
     fi
 
     sed -i -e 's,@bindir@,${bindir},g' ${D}${sysconfdir}/xdg/weston/weston.ini
