@@ -188,10 +188,6 @@ IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
 LIBVULKAN_API_VERSION   = "1.2.182"
 
-SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION               = "false"
-SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION:mx8qm-nxp-bsp = "true"
-SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION:mx8mp-nxp-bsp = "true"
-
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
@@ -262,7 +258,7 @@ do_install () {
         install -d ${D}${sysconfdir}/OpenCL/vendors/
         install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
-        if ! ${SUPPORTS_OPENCL_VX_INTRINSIC_EXTENSION}; then
+        if [ "${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}" = "" ]; then
             rm -f ${D}${includedir}/CL/cl_viv_vx_ext.h
         fi
     fi
@@ -373,7 +369,10 @@ FILES:libopenvx-imx = " \
     ${libdir}/libArchModelSw${SOLIBS} \
 "
 FILES:libopenvx-imx-dev = "${includedir}/VX ${libdir}/libOpenVX${SOLIBSDEV}"
-RDEPENDS:libopenvx-imx = "libnn-imx"
+RDEPENDS:libopenvx-imx = "libnn-imx ${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}"
+OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES               = ""
+OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx-dev"
+OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8mp-nxp-bsp = "libclc-imx libopencl-imx-dev"
 
 # libGL is only targeting X11 backend, and in case if Wayland-only is used -
 # package QA complains on missing RDEPENDS, which are only available for X11.
