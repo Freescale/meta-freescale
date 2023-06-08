@@ -1,0 +1,32 @@
+From dc5d752ec3fbec10402aa60fa8245e384e0c7206 Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Wed, 7 Jun 2023 22:53:47 -0700
+Subject: [PATCH] v4l2: Include gst/allocators/gstdmabuf.h for
+ gst_is_dmabuf_memory()
+
+This is flagged by clang-16
+../git/sys/v4l2/gstv4l2videoenc.c:756:9: error: call to undeclared function 'gst_is_dmabuf_memory'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+    if (gst_is_dmabuf_memory (gst_buffer_peek_memory (frame->input_buffer, 0))
+        ^
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/gst-plugins-good/pull/2]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ sys/v4l2/gstv4l2videoenc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sys/v4l2/gstv4l2videoenc.c b/sys/v4l2/gstv4l2videoenc.c
+index a505a228f..f24d5a795 100644
+--- a/sys/v4l2/gstv4l2videoenc.c
++++ b/sys/v4l2/gstv4l2videoenc.c
+@@ -36,6 +36,7 @@
+ 
+ #include <string.h>
+ #include <gst/gst-i18n-plugin.h>
++#include <gst/allocators/gstdmabuf.h>
+ 
+ GST_DEBUG_CATEGORY_STATIC (gst_v4l2_video_enc_debug);
+ #define GST_CAT_DEFAULT gst_v4l2_video_enc_debug
+-- 
+2.41.0
+
