@@ -10,6 +10,9 @@ SRCREV = "69a70474cd8411d5a099c34f40760b6567d781d6"
 
 S = "${WORKDIR}/git"
 
+CFLAGS += "-fmacro-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/debug/fmlib/git-r1 \
+		-fdebug-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/debug/fmlib/git-r1"
+
 EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
         CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
