@@ -373,6 +373,7 @@ RDEPENDS:libopenvx-imx = "libnn-imx ${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES               = ""
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx-dev"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8mp-nxp-bsp = "libclc-imx libopencl-imx-dev"
+INSANE_SKIP:libopenvx-imx += "dev-deps"
 
 # libGL is only targeting X11 backend, and in case if Wayland-only is used -
 # package QA complains on missing RDEPENDS, which are only available for X11.
