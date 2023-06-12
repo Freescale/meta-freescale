@@ -1,0 +1,28 @@
+From 2cf9a3f919317784e7cecdff6b632cdb2665c580 Mon Sep 17 00:00:00 2001
+From: Meng Li <Meng.Li@windriver.com>
+Date: Mon, 12 Jun 2023 15:17:21 +0800
+Subject: [PATCH] tsntool: remove redundant parameters from BIN_LDFLAGS
+
+The recipe file has pass the same parameter(-Wl,-rpath-link,<lib path>)
+to Makefile, so remove redundant parameters from BIN_LDFLAGS.
+
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+---
+ Makefile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 0ba88b4..39a98c0 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,7 +16,6 @@ BIN_CFLAGS  += -Wall -Wextra -Wno-error=unused-parameter -Wno-error=sign-compare
+ BIN_CFLAGS  += $(shell $(PKG_CONFIG) --cflags libnl-3.0 libnl-genl-3.0 libcjson) -Iinclude
+ BIN_LDFLAGS += -ltsn $(shell $(PKG_CONFIG) --libs libnl-3.0 libnl-genl-3.0 libcjson) -lpthread -lm -lrt
+ BIN_LDFLAGS += -lreadline -ltermcap -L.
+-BIN_LDFLAGS += -Wl,-rpath,$(shell pwd)         # Compiled lib at local folder
+ 
+ BIN_SRC =
+ LIB_SRC =
+-- 
+2.40.1
+

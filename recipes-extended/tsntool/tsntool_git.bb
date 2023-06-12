@@ -7,8 +7,14 @@ DEPENDS = "cjson libnl readline"
 
 inherit pkgconfig
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
 SRC_URI = "git://github.com/nxp-qoriq/tsntool;protocol=https;nobranch=1"
 SRCREV = "a0769e23304957a22f0cbeee6d1f547b20c3c21e"
+
+SRC_URI:append = " \
+	file://0001-tsntool-remove-redundant-parameters-from-BIN_LDFLAGS.patch \
+"
 
 S = "${WORKDIR}/git"
 
