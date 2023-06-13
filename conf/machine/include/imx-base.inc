@@ -534,9 +534,9 @@ PREFERRED_VERSION_libdrm:mx7-nxp-bsp ??= "2.4.114.imx"
 PREFERRED_VERSION_libdrm:mx8-nxp-bsp ??= "2.4.114.imx"
 PREFERRED_VERSION_libdrm:mx9-nxp-bsp ??= "2.4.114.imx"
 
-PREFERRED_VERSION_vulkan-headers:imxvulkan ??= "1.2.182.0"
-PREFERRED_VERSION_vulkan-loader:imxvulkan  ??= "1.2.182.0"
-PREFERRED_VERSION_vulkan-tools:imxvulkan   ??= "1.2.182.0"
+PREFERRED_VERSION_vulkan-headers:imxvulkan ??= "1.2.182.0.imx"
+PREFERRED_VERSION_vulkan-loader:imxvulkan  ??= "1.2.182.0.imx"
+PREFERRED_VERSION_vulkan-tools:imxvulkan   ??= "1.2.182.0.imx"
 
 # Use i.MX optee Version
 PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "3.19.0.imx"
