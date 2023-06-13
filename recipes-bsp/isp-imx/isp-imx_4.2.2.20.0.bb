@@ -2,12 +2,13 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
-DEPENDS = "libdrm virtual/libg2d libtinyxml2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe" 
+DEPENDS = "boost libdrm virtual/libg2d libtinyxml2"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "01f83394df91091f414f122c339c02bc"
-SRC_URI[sha256sum] = "ab65a413f397230010266579df570beac5fde4af430e31fc251d7cf7c8fa2232"
+
+SRC_URI[md5sum] = "36b4eebdb3382c59fef99521ec67bee2"
+SRC_URI[sha256sum] = "62bea59cce578c5d4e4cc4eeb0439bd1ac6a3f692649b275184f3cf63e397c41"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -25,7 +26,6 @@ SYSTEMD_SERVICE:${PN} = "imx8-isp.service"
 EXTRA_OECMAKE += " \
     -DSDKTARGETSYSROOT=${STAGING_DIR_HOST} \
     -DCMAKE_BUILD_TYPE=release \
-    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
     -DAPPMODE=V4L2 \
@@ -74,14 +74,19 @@ do_install() {
 # unversioned .so libraries go to the main package and versioned .so
 # symlinks go to -dev.
 FILES_SOLIBSDEV = ""
+FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
+FILES:${PN}-dev += "${FILES_SOLIBS_VERSIONED}"
 FILES_SOLIBS_VERSIONED = " \
     ${libdir}/libar1335.so \
+    ${libdir}/libcppnetlib-client-connections.so \
+    ${libdir}/libcppnetlib-server-parsers.so \
+    ${libdir}/libcppnetlib-uri.so \
     ${libdir}/libjsoncpp.so \
     ${libdir}/libos08a20.so \
     ${libdir}/libov2775.so \
 "
-FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
-FILES:${PN}-dev += "${FILES_SOLIBS_VERSIONED}"
+
+INSANE_SKIP:${PN} = "rpaths"
 
 RDEPENDS:${PN} = "libdrm"
 
