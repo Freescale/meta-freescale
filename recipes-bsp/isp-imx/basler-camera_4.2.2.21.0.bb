@@ -12,6 +12,10 @@ SRC_URI[md5sum] = "4e33adeb8a43f5bd06703368721085f5"
 SRC_URI[sha256sum] = "c44fc890902d9d8ef22186d56af035c9cac182817525e64575e3b79015383790"
 
 do_install() {
+    # provided by the isp-imx package, do not install them here additionally
+    rm -f ${S}/opt/imx8-isp/bin/dewarp_config/sensor_dwe_os08a20_1080P_config.json
+    rm -f ${S}/opt/imx8-isp/bin/dewarp_config/sensor_dwe_os08a20_4K_config.json    
+
     dest_dir=${D}/opt/imx8-isp/bin
     install -d ${D}/${libdir}
     install -d $dest_dir
