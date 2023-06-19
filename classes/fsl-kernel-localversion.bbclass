@@ -20,7 +20,7 @@ do_kernel_localversion() {
 
 	# Fallback for recipes not able to use LINUX_VERSION_EXTENSION
 	if [ "${@bb.data.inherits_class('kernel-yocto', d)}" = "False" ]; then
-		echo "CONFIG_LOCALVERSION=${LOCALVERSION}" >> ${B}/.config
+		echo 'CONFIG_LOCALVERSION="${LOCALVERSION}"' >> ${B}/.config
 	fi
 
 	if [ "${SCMVERSION}" = "y" ]; then
