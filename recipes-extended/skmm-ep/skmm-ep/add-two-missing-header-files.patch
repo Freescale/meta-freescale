@@ -1,7 +1,8 @@
 add two missing header files
 
-Upstream-status: Pending
+Upstream-Status: Pending
 
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
 ---
  include/linux/fsl_pci_ep_vfio.h |  79 ++++++
  include/linux/vfio.h            | 555 ++++++++++++++++++++++++++++++++++++++++

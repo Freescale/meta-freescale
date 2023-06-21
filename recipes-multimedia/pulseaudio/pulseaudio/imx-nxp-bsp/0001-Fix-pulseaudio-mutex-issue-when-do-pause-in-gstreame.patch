@@ -9,7 +9,7 @@ failed at pulsecore/mutex-posix.c:106, function pa_mutex_unlock(). Aborting"
 This fix is a workaround base on the solution from this link "
 https://bugs.launchpad.net/ubuntu/+source/pulseaudio/+bug/932096"
 
-Upstream status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [i.MX specific]
 Signed-off-by: shengjiu.wang <b02247@freescale.com>
 ---
  src/pulsecore/mutex-posix.c |    1 +
