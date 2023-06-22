@@ -7,6 +7,7 @@ Subject: [PATCH] drivers/net/enetfec/enet_uio.c: fix multiple definition
 .../examples/flow_classify/flow_classify.c:170: first defined here
 collect2: error: ld returned 1 exit status
 
+Upstream-Status: Pending
 Signed-off-by: Ting Liu <ting.liu@nxp.com>
 ---
  drivers/net/enetfec/enet_uio.c | 2 +-

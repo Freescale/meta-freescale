@@ -11,6 +11,7 @@ There is a ticket filed upstream[2], so until that is resolved just disable the 
 [1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=ba951afb99912da01a6e8434126b8fac7aa75107
 [2] https://developer.trustedfirmware.org/T996
 
+Upstream-Status: Backport [https://review.trustedfirmware.org/c/TF-A/trusted-firmware-a/+/19401]
 Signed-off-by: Jun Zhu <junzhu@nxp.com>
 ---
  Makefile | 2 +-

@@ -3,6 +3,7 @@ From: Ting Liu <b28495@freescale.com>
 Date: Wed, 9 May 2012 02:42:57 -0500
 Subject: [PATCH] Yocto: replace $(COMPILE_PREFIX)gcc with $(CC) and remove -te500v2 flags
 
+Upstream-Status: Pending
 Signed-off-by: Ting Liu <b28495@freescale.com>
 ---
  SoftFloat-2b/softfloat/bits32/powerpc-GCC/Makefile |    4 ++--

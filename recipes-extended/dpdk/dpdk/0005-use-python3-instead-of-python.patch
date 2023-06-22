@@ -1,3 +1,8 @@
+Explicitly use python3
+
+Upstream-Status: Pending
+Signed-off-by: Ting Liu <ting.liu@nxp.com>
+
 diff --git a/app/test-bbdev/test-bbdev.py b/app/test-bbdev/test-bbdev.py
 index 0194be046..86fe3a89d 100755
 --- a/app/test-bbdev/test-bbdev.py

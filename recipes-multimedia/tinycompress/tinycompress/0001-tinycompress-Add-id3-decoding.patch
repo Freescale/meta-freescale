@@ -3,6 +3,7 @@ From: Shengjiu Wang <shengjiu.wang@nxp.com>
 Date: Fri, 13 Jul 2018 18:13:24 +0800
 Subject: [PATCH] tinycompress: Add id3 decoding
 
+Upstream-Status: Pending
 Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 ---
  include/tinycompress/id3_tag_decode.h | 198 +++++++++++

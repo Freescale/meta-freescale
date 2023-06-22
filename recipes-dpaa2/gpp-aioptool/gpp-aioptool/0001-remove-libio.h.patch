@@ -5,6 +5,7 @@ Subject: [PATCH] remove libio.h
 
 update for glibc libio.h removal in 2.28+
 
+Upstream-Status: Pending
 Signed-off-by: BJ DevOps Team <bjdevops@NXP1.onmicrosoft.com>
 ---
  flib/mc/fsl_mc_sys.h | 1 -

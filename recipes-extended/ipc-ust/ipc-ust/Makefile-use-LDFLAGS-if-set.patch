@@ -3,6 +3,7 @@ From: Ting Liu <ting.liu@nxp.com>
 Date: Fri, 12 Aug 2016 10:41:51 +0800
 Subject: [PATCH] Makefile: use LDFLAGS if set
 
+Upstream-Status: Pending
 Signed-off-by: Ting Liu <ting.liu@nxp.com>
 ---
  dsp_boot/Makefile |  6 +++---

@@ -20,6 +20,7 @@ Thus the build fails with:
 Dropping weston 9.0.0-imx commit 7859a762 (protocol: no found
 wayland-scanner with Yocto toolchain") fixes the issue.
 
+Upstream-Status: Inappropriate [Cross-compile Specific]
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 ---
  protocol/meson.build | 2 +-

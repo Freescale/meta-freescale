@@ -11,6 +11,7 @@ anymore.
 This change doesn't enable atomic by default, but it allows a user to
 enabled it again.
 
+Upstream-Status: Pending
 Signed-off-by: Daniel Abrecht <public@danielabrecht.ch>
 
 ---
