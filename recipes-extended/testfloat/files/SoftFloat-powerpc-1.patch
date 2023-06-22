@@ -1,5 +1,6 @@
 This patch adds PowerPC support in SoftFloat.
 
+Upstream-Status: Pending
 Signed-off-by: Ebony Zhu <ebony.zhu@freescale.com>
 Signed-off-by: Liu Yu <Yu.Liu@freescale.com>
 ---

@@ -6,6 +6,7 @@ Subject: [PATCH] Add missing includes as pointed out by musl
 These headers are indrectly included when building with
 glibc, this is exposed when compiling with musl systems
 
+Upstream-Status: Pending
 Signed-off-by: Khem Raj <raj.khem@gmail.com>
 ---
  src/mtd.h | 3 +++

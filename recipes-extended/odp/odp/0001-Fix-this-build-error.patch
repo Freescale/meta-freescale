@@ -6,6 +6,7 @@ Subject: [PATCH] Fix this build error
 fix the below error:
 |error: 'SIGEV_THREAD' undeclared (first use in this function); did you mean 'CLONE_THREAD'?
 
+Upstream-Status: Pending
 Signed-off-by: Chunrong Guo <B40290@freescale.com>
 ---
  example/lpm-ipfwd/app/odp_lpmfwd.c | 1 +

@@ -6,7 +6,7 @@ Subject: [PATCH] Replace glWindowPos2iARB calls with glWindowPos2i
 Vivante libGL does not provide the glWindowPos2iARB symbol, but
 glWindowPos2i. Use this instead.
 
-Upstream-Status: Inapropriate [embedded specific]
+Upstream-Status: Inappropriate [embedded specific]
 
 Reported-by: Jeremy Stashluk <jstashluk@dekaresearch.com>
 Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>

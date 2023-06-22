@@ -7,6 +7,7 @@ Subject: [PATCH] To fix errors as following:
 "perf_abs.cpp:13: undefined reference to `cvtest::param_seed'"
 "test_superres.cpp:270: undefined reference to `checkIppStatus()'"
 
+Upstream-Status: Pending
 Signed-off-by: Huang Qiyu <huangqy.fnst@cn.fujitsu.com>
 
 Also add the visibility changes for certain OpenCL-related functions in

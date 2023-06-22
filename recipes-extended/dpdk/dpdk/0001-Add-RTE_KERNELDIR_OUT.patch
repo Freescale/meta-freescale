@@ -3,6 +3,7 @@ From: Chunrong Guo <chunrong.guo@nxp.com>
 Date: Wed, 3 Jul 2019 08:50:45 +0200
 Subject: [PATCH] Add RTE_KERNELDIR_OUT
 
+Upstream-Status: Pending
 Signed-off-by: C.r. Guo <nxa13725@lsv07004.swis.us-cdc01.nxp.com>
 ---
  kernel/linux/kni/Makefile | 2 +-

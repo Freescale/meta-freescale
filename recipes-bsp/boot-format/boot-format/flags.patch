@@ -1,3 +1,10 @@
+Respect LDFLAGS from environment
+
+This fixes cross build using OE
+
+Upstream-Status: Pending
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+
 Index: git/Makefile
 ===================================================================
 --- git.orig/Makefile

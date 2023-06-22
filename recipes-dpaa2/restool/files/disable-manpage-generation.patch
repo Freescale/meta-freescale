@@ -3,6 +3,7 @@ From: Ting Liu <ting.liu@nxp.com>
 Date: Fri, 15 Oct 2021 09:36:04 +0530
 Subject: [PATCH] disable manpage generation
 
+Upstream-Status: Inappropriate [Cross-compile specific]
 Signed-off-by: Ting Liu <ting.liu@nxp.com>
 ---
  Makefile | 1 -

@@ -3,6 +3,7 @@ From: Khem Raj <raj.khem@gmail.com>
 Date: Tue, 25 Sep 2018 01:23:02 -0700
 Subject: [PATCH] Do not ignore OE cflags and ldflags
 
+Upstream-Status: Pending
 Signed-off-by: Khem Raj <raj.khem@gmail.com>
 ---
  Makefile | 4 ++--

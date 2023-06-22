@@ -6,6 +6,7 @@ Subject: [PATCH] tsntool: remove redundant parameters from BIN_LDFLAGS
 The recipe file has pass the same parameter(-Wl,-rpath-link,<lib path>)
 to Makefile, so remove redundant parameters from BIN_LDFLAGS.
 
+Upstream-Status: Pending
 Signed-off-by: Meng Li <Meng.Li@windriver.com>
 ---
  Makefile | 1 -

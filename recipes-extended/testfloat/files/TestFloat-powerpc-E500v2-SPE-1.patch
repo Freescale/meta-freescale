@@ -1,6 +1,7 @@
 This patch adds PowerPC E500v2 SPE support in TestFloat.
 And it disables the testing for hardware that can not trigger SPE interrupt.
 
+Upstream-Status: Pending
 Signed-off-by: Ebony Zhu <ebony.zhu@freescale.com>
 Signed-off-by: Liu Yu <Yu.Liu@freescale.com>
 ---

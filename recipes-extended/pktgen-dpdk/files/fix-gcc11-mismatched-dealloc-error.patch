@@ -26,6 +26,7 @@ Fix build error with gcc 11:
 |       |                      ^~~~~~~~~~~~~~~~~~~~~
 | cc1: all warnings being treated as errors
 
+Upstream-Status: Pending
 Signed-off-by: Ting Liu <ting.liu@nxp.com>
 ---
  app/pktgen.h       | 2 +-
