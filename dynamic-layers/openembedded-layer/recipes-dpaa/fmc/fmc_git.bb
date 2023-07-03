@@ -1,13 +1,13 @@
 SUMMARY = "Frame Manager Configuration tool"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://COPYING;md5=a504ab5a8ff235e67c7301214749346c"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=a504ab5a8ff235e67c7301214749346c"
 
 PR = "r2"
 
 DEPENDS = "libxml2 fmlib tclap"
 
 SRC_URI = "git://github.com/nxp-qoriq/fmc;protocol=https;nobranch=1"
-SRCREV = "c2ed7c269e86ac6a0aac361f5876c96e700443f4"
+SRCREV = "63c8ac99899a9bcd723801579b4d786594670455"
 
 S = "${WORKDIR}/git"
 

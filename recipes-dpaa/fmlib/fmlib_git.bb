@@ -1,12 +1,12 @@
 DESCRIPTION = "Frame Manager User Space Library"
 SECTION = "fman"
 LICENSE = "BSD-3-Clause & GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://COPYING;md5=9c7bd5e45d066db084bdb3543d55b1ac"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=9c7bd5e45d066db084bdb3543d55b1ac"
 
 PR = "r1"
 
 SRC_URI = "git://github.com/nxp-qoriq/fmlib;protocol=https;nobranch=1"
-SRCREV = "69a70474cd8411d5a099c34f40760b6567d781d6"
+SRCREV = "9fb916f255214013aa6003496c47bab0b5add2d9"
 
 S = "${WORKDIR}/git"
 
