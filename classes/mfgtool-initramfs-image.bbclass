@@ -16,6 +16,7 @@ ZSTD_COMPRESSION_LEVEL ?= "-10"
 SOC_DEFAULT_IMAGE_FSTYPES = "cpio.zst.u-boot"
 SOC_DEFAULT_IMAGE_FSTYPES:mxs-generic-bsp = "cpio.gz.u-boot"
 IMAGE_ROOTFS_SIZE ?= "8192"
+IMAGE_NAME_SUFFIX = ""
 
 # Filesystems enabled by default
 DEFAULT_FS_SUPPORT = " \
