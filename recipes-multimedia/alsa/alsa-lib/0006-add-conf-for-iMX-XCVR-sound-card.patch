@@ -3,7 +3,7 @@ From: Viorel Suman <viorel.suman@nxp.com>
 Date: Mon, 9 Mar 2020 14:25:46 +0200
 Subject: [PATCH] add conf for iMX XCVR sound card
 
-Upstream Status: Pending
+Upstream-Status: Pending
 
 Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
 
