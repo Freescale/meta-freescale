@@ -24,7 +24,6 @@ LINUX_VERSION = "6.1.38"
 KBRANCH = "6.1.x+fslc"
 SRCREV = "085682f3fc7ed71fdafa987c96d76805086336a9"
 
-KBUILD_DEFCONFIG:mx27-generic-bsp = "imx_v4_v5_defconfig"
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
