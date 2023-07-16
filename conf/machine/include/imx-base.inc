@@ -213,8 +213,6 @@ MACHINEOVERRIDES_EXTENDER:mx93:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdr
 MACHINEOVERRIDES_EXTENDER:mx23:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx23-generic-bsp:mx23-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx28:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mxs-generic-bsp:mxs-mainline-bsp:mx28-generic-bsp:mx28-mainline-bsp"
 
-MACHINEOVERRIDES_EXTENDER:mx27:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx27-generic-bsp:mx27-mainline-bsp"
-
 MACHINEOVERRIDES_EXTENDER:mx51:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx51-generic-bsp:mx51-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx53:use-mainline-bsp   = "imx-generic-bsp:imx-mainline-bsp:mx5-generic-bsp:mx5-mainline-bsp:mx53-generic-bsp:mx53-mainline-bsp"
 
@@ -389,7 +387,6 @@ IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-sentin
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
-MACHINE_FIRMWARE:append:mx27-generic-bsp     = " firmware-imx-vpu-imx27"
 MACHINE_FIRMWARE:append:mx51-generic-bsp     = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
 MACHINE_FIRMWARE:append:mx53-generic-bsp     = " firmware-imx-vpu-imx53 firmware-imx-sdma-imx53"
 MACHINE_FIRMWARE:append:mx6-generic-bsp      = " linux-firmware-imx-sdma-imx6q"
