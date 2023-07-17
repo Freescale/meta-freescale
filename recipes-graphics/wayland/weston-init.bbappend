@@ -34,6 +34,9 @@ PACKAGECONFIG_SIZE:mx8mq-nxp-bsp       ?= "size"
 
 SIZE_VALUE:mx8mq-nxp-bsp = "1920x1080"
 
+HAS_G2D          = "false"
+HAS_G2D:imxgpu2d = "true"
+
 PACKAGECONFIG_USE_G2D                ?= ""
 PACKAGECONFIG_USE_G2D:imxgpu2d       ?= "use-g2d"
 PACKAGECONFIG_USE_G2D:mx8qm-nxp-bsp  ?= ""
@@ -76,7 +79,7 @@ do_install:append() {
 
     if [ "${@bb.utils.contains('PACKAGECONFIG', 'use-g2d', 'yes', 'no', d)}" = "yes" ]; then
         sed -i -e "/^\[core\]/a use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
-    else
+    elif ${HAS_G2D}; then
         sed -i -e "/^\[core\]/a #use-g2d=${USE_G2D_VALUE}" ${D}${sysconfdir}/xdg/weston/weston.ini
     fi
 
