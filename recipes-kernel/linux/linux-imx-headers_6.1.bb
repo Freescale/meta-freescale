@@ -9,8 +9,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRC_URI = "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.1.y"
-LOCALVERSION = "-6.1.1-1.0.0"
-SRCREV = "29549c7073bf72cfb2c4614d37de45ec36b60475"
+LOCALVERSION = "-6.1.22-2.0.0"
+SRCREV = "66e442bc7fdcc935e6faa94c743f653263d4ed67"
 
 S = "${WORKDIR}/git"
 
