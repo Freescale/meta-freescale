@@ -1,9 +1,9 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2018 (C) O.S. Systems Software LTDA.
-# Copyright (C) 2017-2021 NXP
+# Copyright (C) 2017-2023 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
-require u-boot-imx-common_${PV}.inc
+require recipes-bsp/u-boot/u-boot-imx-common_${PV}.inc
 
 PROVIDES += "u-boot u-boot-mfgtool"
 
