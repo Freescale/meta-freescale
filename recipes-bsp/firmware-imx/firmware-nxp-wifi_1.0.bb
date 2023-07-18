@@ -1,4 +1,4 @@
-# Copyright 2020-2021 NXP
+# Copyright 2020-2023 NXP
 
 SUMMARY = "Wi-Fi firmware redistributed by NXP"
 DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP, \
@@ -8,11 +8,11 @@ recipe in favor of upstream."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://EULA.txt;md5=add2d392714d3096ed7e0f7e2190724b"
+LIC_FILES_CHKSUM = "file://EULA.txt;md5=673fa34349fa40f59e0713cb0ac22b1f"
 
 SRC_URI = "git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.1.1_1.0.0"
-SRCREV = "bacbeb4789c1b13d13aab12ada29217ce8c3e905"
+SRCBRANCH = "lf-6.1.22_2.0.0"
+SRCREV = "f775d53ca3a478c85e8c8a880e44cc269bd14db0"
 
 S = "${WORKDIR}/git"
 
