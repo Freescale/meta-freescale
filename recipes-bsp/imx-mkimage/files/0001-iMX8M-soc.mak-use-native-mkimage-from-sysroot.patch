@@ -1,6 +1,6 @@
-From 70b7d067ca0f6659e4f842f8d841714a26bf9d8c Mon Sep 17 00:00:00 2001
-From: Andrey Zhizhikin <andrey.z@gmail.com>
-Date: Thu, 21 Oct 2021 08:53:38 +0000
+From 3e0f78a4efeac4ea0651ac763099d780447a18b4 Mon Sep 17 00:00:00 2001
+From: Oleksandr Suvorov <oleksandr.suvorov@foundries.io>
+Date: Wed, 19 Jul 2023 18:34:32 +0300
 Subject: [PATCH] iMX8M: soc.mak: use native mkimage from sysroot
 
 mkimage tool is provided as a part of sysroot from Yocto build. Current
@@ -13,63 +13,65 @@ build.
 
 Use it from the build sysroot, and do not pull the local version of it.
 
-Upstream-Status: Inappropriate [OE-specific]
+Reinjected the original patch from Andrey Zhizhikin <andrey.z@gmail.com>
 
-Signed-off-by: Andrey Zhizhikin <andrey.z@gmail.com>
+Upstream-Status: Inappropriate [OE-specific]
+Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@foundries.io>
 ---
+
  iMX8M/soc.mak | 11 +++++------
  1 file changed, 5 insertions(+), 6 deletions(-)
 
-Index: git/iMX8M/soc.mak
-===================================================================
---- git.orig/iMX8M/soc.mak
-+++ git/iMX8M/soc.mak
-@@ -149,7 +149,7 @@ u-boot.itb: $(dtb)
+diff --git a/iMX8M/soc.mak b/iMX8M/soc.mak
+index 3486079..855c1e5 100644
+--- a/iMX8M/soc.mak
++++ b/iMX8M/soc.mak
+@@ -155,7 +155,7 @@ u-boot.itb: $(dtb) $(supp_dtbs)
  	./$(PAD_IMAGE) bl31.bin
- 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb)
- 	BL32=$(TEE) DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb) > u-boot.its
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb) $(supp_dtbs)
+ 	BL32=$(TEE) DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb) $(supp_dtbs) > u-boot.its
 -	./mkimage_uboot -E -p 0x3000 -f u-boot.its u-boot.itb
 +	mkimage -E -p 0x3000 -f u-boot.its u-boot.itb
  	@rm -f u-boot.its $(dtb)
  
  dtb_ddr3l = valddr3l.dtb
-@@ -161,7 +161,7 @@ u-boot-ddr3l.itb: $(dtb_ddr3l)
+@@ -167,7 +167,7 @@ u-boot-ddr3l.itb: $(dtb_ddr3l) $(supp_dtbs)
  	./$(PAD_IMAGE) bl31.bin
- 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr3l)
- 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr3l) > u-boot-ddr3l.its
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr3l) $(supp_dtbs)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr3l) $(supp_dtbs) > u-boot-ddr3l.its
 -	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr3l.its u-boot-ddr3l.itb
 +	mkimage -E -p 0x3000 -f u-boot-ddr3l.its u-boot-ddr3l.itb
  	@rm -f u-boot.its $(dtb_ddr3l)
  
  dtb_ddr3l_evk = evkddr3l.dtb
-@@ -173,7 +173,7 @@ u-boot-ddr3l-evk.itb: $(dtb_ddr3l_evk)
+@@ -179,7 +179,7 @@ u-boot-ddr3l-evk.itb: $(dtb_ddr3l_evk) $(supp_dtbs)
  	./$(PAD_IMAGE) bl31.bin
- 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr3l_evk)
- 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr3l_evk) > u-boot-ddr3l-evk.its
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr3l_evk) $(supp_dtbs)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr3l_evk) $(supp_dtbs) > u-boot-ddr3l-evk.its
 -	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr3l-evk.its u-boot-ddr3l-evk.itb
 +	mkimage -E -p 0x3000 -f u-boot-ddr3l-evk.its u-boot-ddr3l-evk.itb
  	@rm -f u-boot.its $(dtb_ddr3l_evk)
  
  dtb_ddr4 = valddr4.dtb
-@@ -185,7 +185,7 @@ u-boot-ddr4.itb: $(dtb_ddr4)
+@@ -191,7 +191,7 @@ u-boot-ddr4.itb: $(dtb_ddr4) $(supp_dtbs)
  	./$(PAD_IMAGE) bl31.bin
- 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr4)
- 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr4) > u-boot-ddr4.its
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr4) $(supp_dtbs)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr4) $(supp_dtbs) > u-boot-ddr4.its
 -	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr4.its u-boot-ddr4.itb
 +	mkimage -E -p 0x3000 -f u-boot-ddr4.its u-boot-ddr4.itb
  	@rm -f u-boot.its $(dtb_ddr4)
  
  dtb_ddr4_evk = evkddr4.dtb
-@@ -197,7 +197,7 @@ u-boot-ddr4-evk.itb: $(dtb_ddr4_evk)
+@@ -203,7 +203,7 @@ u-boot-ddr4-evk.itb: $(dtb_ddr4_evk) $(supp_dtbs)
  	./$(PAD_IMAGE) bl31.bin
- 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr4_evk)
- 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr4_evk) > u-boot-ddr4-evk.its
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr4_evk) $(supp_dtbs)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr4_evk) $(supp_dtbs) > u-boot-ddr4-evk.its
 -	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
 +	mkimage -E -p 0x3000 -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
  	@rm -f u-boot.its $(dtb_ddr4_evk)
  
  ifeq ($(HDMI),yes)
-@@ -343,7 +343,6 @@ nightly :
+@@ -353,7 +353,6 @@ nightly :
  	@$(WGET) -q $(SERVER)/$(DIR)/$(FW_DIR)/fsl-$(PLAT)-evk.dtb -O fsl-$(PLAT)-evk.dtb
  	@$(WGET) -q $(SERVER)/$(DIR)/$(FW_DIR)/signed_hdmi_imx8m.bin -O signed_hdmi_imx8m.bin
  	@$(WGET) -q $(SERVER)/$(DIR)/$(FW_DIR)/signed_dp_imx8m.bin -O signed_dp_imx8m.bin
@@ -77,3 +79,6 @@ Index: git/iMX8M/soc.mak
  
  archive :
  	git ls-files --others --exclude-standard -z | xargs -0 tar rvf $(ARCHIVE_PATH)/$(ARCHIVE_NAME)
+-- 
+2.40.1
+
