@@ -28,17 +28,21 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.1.24
+#    tag: v6.1.38
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.1.1-1.0.0
+#    tag: lf-6.1.22-2.0.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-# - ad9ab3b3c553c ARM: imx_v7_defconfig: Remove KERNEL_LZO config
+# - 3f1f2ea729550 mxc: gpu-viv: change _QuerySignal() return type to gceSTATUS
+# - b73c6797ee427 ARM: imx_v7_defconfig: Remove KERNEL_LZO config
+# - ec33c7fc43bef touchscreen: Kconfig: add I2C dependency for CT36X
+# - 6c41233a2cfbe pwm: pwm-adp5585: fix get_state callback prototype
+# - 9c7540ecb891f pwm: pwm-rpmsg-imx: fix get_state callback prototype
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -48,16 +52,16 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 require linux-imx.inc
 
-KBRANCH = "6.1-1.0.x-imx"
+KBRANCH = "6.1-2.0.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "ad9ab3b3c553cbc3c61f233b6e2cd5abdd2a624b"
+SRCREV = "b872b1170fc8843b55e9f8838dd373ff43bb7552"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.24"
+LINUX_VERSION = "6.1.38"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
