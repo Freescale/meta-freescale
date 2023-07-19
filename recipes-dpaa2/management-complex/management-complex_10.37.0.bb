@@ -1,20 +1,21 @@
 SUMMARY = "DPAA2 Management Complex Firmware"
 LICENSE = "NXP-Binary-EULA"
-LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=73d4b970c18882e229e4bf1ada5bb8d6"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=481d6288552113961a835bbabceb0c33"
 
 inherit deploy
 
 INHIBIT_DEFAULT_DEPS = "1"
 
-SRC_URI = "git://github.com/nxp/qoriq-mc-binary;nobranch=1;protocol=https"
-SRCREV = "f73683596a7b72124d67b62e64f3dc2bb36b9321"
+SRC_URI = "git://github.com/nxp/qoriq-mc-binary;protocol=https;nobranch=1"
+SRCREV = "bb19f586b87b97878b4bd0d3e57da2ca40c5c69f"
 
 S = "${WORKDIR}/git"
 
 REGLEX:ls2088a = "ls2088a"
 REGLEX:ls2080a = "ls2080a"
 REGLEX:ls1088a = "ls1088a"
-REGLEX:lx2160a = "lx2160a"
+REGLEX:lx2160a = "lx216xa"
+REGLEX:lx2162a = "lx216xa"
 
 do_install () {
     install -d ${D}/boot
@@ -38,4 +39,3 @@ INHIBIT_PACKAGE_STRIP = "1"
 
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-
