@@ -1,11 +1,11 @@
 SUMMARY = "DPAA2 Resource Manager Tool"
 LICENSE = "BSD-3-Clause | GPL-2.0-or-later"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ec8d84e9cd4de287e290275d09db27f0"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=ec8d84e9cd4de287e290275d09db27f0"
 
 SRC_URI = "git://github.com/nxp-qoriq/restool;protocol=https;nobranch=1 \
     file://disable-manpage-generation.patch \
 "
-SRCREV = "65c9a10d95b19e61d2f86dbcaa45d12ba98e85e1"
+SRCREV = "46604e41f4c7e54efa62503c6b4629321b21e056"
 
 S = "${WORKDIR}/git"
 

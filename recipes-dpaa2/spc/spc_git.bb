@@ -1,11 +1,11 @@
 SUMMARY = "Soft Parser Configuration tool"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://COPYING;md5=163b09a1c249a6ff2b28da1ceca2e0a8"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=163b09a1c249a6ff2b28da1ceca2e0a8"
 
 DEPENDS = "libxml2 fmlib tclap"
 
 SRC_URI = "git://github.com/nxp-qoriq/spc;protocol=https;nobranch=1"
-SRCREV = "398138687a3d3d6ef174501221711de74ff7bc40"
+SRCREV = "d624b7809be48e4cf29a7bfa201028e4de1d1955"
 
 S = "${WORKDIR}/git"
 
