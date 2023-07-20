@@ -15,15 +15,15 @@ require recipes-kernel/linux/linux-imx.inc
 SRC_URI += "file://ARM-imx_v7_defconfig-Remove-KERNEL_LZO-config.patch"
 
 SRCBRANCH = "lf-6.1.y"
-LOCALVERSION = "-6.1.1-1.0.0"
-SRCREV = "29549c7073bf72cfb2c4614d37de45ec36b60475"
+LOCALVERSION = "-6.1.22-2.0.0"
+SRCREV = "66e442bc7fdcc935e6faa94c743f653263d4ed67"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.1"
+LINUX_VERSION = "6.1.22"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
