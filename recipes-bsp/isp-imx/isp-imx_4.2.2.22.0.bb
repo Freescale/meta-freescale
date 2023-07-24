@@ -2,13 +2,13 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
+LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 DEPENDS = "boost libdrm virtual/libg2d libtinyxml2"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "2f2fc2f6209a5efe7ef14cb6711b6292"
-SRC_URI[sha256sum] = "66340acdda4318b2031791f488a95b59541c98cd1e255abdc070a2d1e6e9494d"
+SRC_URI[md5sum] = "693e76b20985de607208c21d996019f8"
+SRC_URI[sha256sum] = "c2f450502390442926920d6457bbf24378c0338a445be180130ec6b1b12d1056"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -30,6 +30,7 @@ EXTRA_OECMAKE += " \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
     -DAPPMODE=V4L2 \
+    -DTUNINGEXT=1 \
     -DQTLESS=1 \
     -DFULL_SRC_COMPILE=1 \
     -DWITH_DRM=1 \
@@ -52,6 +53,7 @@ do_install() {
     cp -r ${B}/generated/release/bin/*_test ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*.xml ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/*.drv ${D}/opt/imx8-isp/bin
+    cp -r ${B}/generated/release/bin/tuningext ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/isp_media_server ${D}/opt/imx8-isp/bin
     cp -r ${B}/generated/release/bin/vvext ${D}/opt/imx8-isp/bin
 

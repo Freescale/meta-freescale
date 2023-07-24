@@ -1,15 +1,15 @@
-# Copyright 2020-2022 NXP
+# Copyright 2020-2023 NXP
 
 DESCRIPTION = "Basler camera binary drivers"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
+LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 
 inherit fsl-eula-unpack
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "4e33adeb8a43f5bd06703368721085f5"
-SRC_URI[sha256sum] = "c44fc890902d9d8ef22186d56af035c9cac182817525e64575e3b79015383790"
+SRC_URI[md5sum] = "cb5e5a4d1efd1d845464ac9a8c6383b8"
+SRC_URI[sha256sum] = "6fe10f5118d18a7cb1dd40e713343ce788ad3766104ad2471ee49aed7b55833a"
 
 do_install() {
     # provided by the isp-imx package, do not install them here additionally
