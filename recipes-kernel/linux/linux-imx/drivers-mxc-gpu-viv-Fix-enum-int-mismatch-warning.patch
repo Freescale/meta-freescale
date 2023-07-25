@@ -1,0 +1,37 @@
+From 168e36d8879e3f5c4cf57ed74c10f6c134e45638 Mon Sep 17 00:00:00 2001
+From: Daiane Angolini <daiane.angolini@foundries.io>
+Date: Tue, 25 Jul 2023 10:54:45 -0300
+Subject: [PATCH] drivers:mxc-gpu-viv: Fix enum-int-mismatch warning
+
+Fix the warning (treated as error):
+
+ignal' due to enum/integer mismatch; have 'gceSTATUS(struct _gckOS *, void *)' {aka 'enum _gceSTATUS(struct _gckOS *, void *)'} [-Werror=enum-int-mismatch]
+|  5675 | _QuerySignal(IN gckOS Os, IN gctSIGNAL Signal)
+|       | ^~~~~~~~~~~~
+| In file included from /(...)tmp/work-shared/imx93-11x11-lpddr4x-evk/kernel-source/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_os.c:56:
+| /(...)/buildw/tmp/work-shared/imx93-11x11-lpddr4x-evk/kernel-source/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h:341:1: note: previous declaration of '_QuerySignal' with type 'gctBOOL(struct _gckOS *, void *)' {aka 'int(struct _gckOS *, void *)'}
+|   341 | _QuerySignal(IN gckOS Os, IN gctSIGNAL Signal);
+|       | ^~~~~~~~~~~~
+| cc1: all warnings being treated as errors
+
+Signed-off-by: Daiane Angolini <daiane.angolini@foundries.io>
+---
+ drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h
+index 61edf03571443..b4c1cbf414846 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/gc_hal_kernel_linux.h
+@@ -337,7 +337,7 @@ _ConvertLogical2Physical(IN gckOS           Os,
+                          IN PLINUX_MDL      Mdl,
+                          OUT gctPHYS_ADDR_T *Physical);
+ 
+-gctBOOL
++gceSTATUS
+ _QuerySignal(IN gckOS Os, IN gctSIGNAL Signal);
+ 
+ static inline gctINT
+-- 
+2.34.1
+

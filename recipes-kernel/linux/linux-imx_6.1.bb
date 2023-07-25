@@ -12,7 +12,9 @@ i.MX Family Reference Boards. It includes support for many IPs such as GPU, VPU 
 
 require recipes-kernel/linux/linux-imx.inc
 
-SRC_URI += "file://ARM-imx_v7_defconfig-Remove-KERNEL_LZO-config.patch"
+SRC_URI += "file://ARM-imx_v7_defconfig-Remove-KERNEL_LZO-config.patch \
+            file://drivers-mxc-gpu-viv-Fix-enum-int-mismatch-warning.patch \
+           "
 
 SRCBRANCH = "lf-6.1.y"
 LOCALVERSION = "-6.1.22-2.0.0"
