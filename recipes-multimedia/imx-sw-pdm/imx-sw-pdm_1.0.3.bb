@@ -1,13 +1,13 @@
-# Copyright 2020 NXP Semiconductors
+# Copyright 2020,2023 NXP
 
 DESCRIPTION = "NXP PDM to PCM Software Decimation SIMD Library"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=03bcadc8dc0a788f66ca9e2b89f56c6f"
+LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "af01428c2971af339d0308f4aca1dac0"
-SRC_URI[sha256sum] = "d310ef581f9e6e6d726c5dc8998178b7993680b5552c45561e56ac0e927b6d9c"
+SRC_URI[md5sum] = "cbd5af6e9019db789c03c2d05a8bb444"
+SRC_URI[sha256sum] = "f778a7b785fc500df5573f5b810a190ddc561267b47ca54b9ddf4ae12571cfe3"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
