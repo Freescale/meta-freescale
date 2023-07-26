@@ -1,15 +1,15 @@
-# Copyright 2017-2022 NXP
+# Copyright 2017-2023 NXP
 
 DESCRIPTION = "i.MX DSP Wrapper, Firmware Binary, Codec Libraries"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
+LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "1ba2634775bf9b7a66fe25ce72195aca"
-SRC_URI[sha256sum] = "f3fb2f61dc3d9a5ae4e42474d309d891f6ac710540b47adb147df33560629aa8"
+SRC_URI[md5sum] = "536180f4d50982a6a3df9cdb0bf9e28b"
+SRC_URI[sha256sum] = "c16f077411f3af412b2b58312b041eea5eb0fadc0271d7d2322860cc40089445"
 
 EXTRA_OECONF = " \
     -datadir=${base_libdir}/firmware \
