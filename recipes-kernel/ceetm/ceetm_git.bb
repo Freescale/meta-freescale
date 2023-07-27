@@ -1,9 +1,9 @@
 DESCRIPTION = "CEETM TC QDISC"
-LICENSE = "GPL-2.0-only & BSD"
-LIC_FILES_CHKSUM = "file://COPYING;md5=bac620b9883d38a84dfb73ca7122d915"
+LICENSE = "GPL-2.0-only"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRC_URI = "git://github.com/nxp-qoriq/ceetm;protocol=https;nobranch=1"
-SRCREV = "6a7f2ec2091df2f4380cb8d25a36c399aed5af1b"
+SRCREV = "27218bc625e83458db2301f6c07de133cb5f6792"
 SRC_URI:append = " file://0001-Makefile-update-CFLAGS.patch \
     file://0001-use-new-api-tc_print_rate.patch \
 "
@@ -27,4 +27,3 @@ INHIBIT_PACKAGE_STRIP = "1"
 
 COMPATIBLE_MACHINE = "(qoriq)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-
