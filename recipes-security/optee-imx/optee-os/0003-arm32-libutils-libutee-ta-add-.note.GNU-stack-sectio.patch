@@ -1,7 +1,8 @@
-From ec30e84671aac9a2e9549754eb7bc6201728db4c Mon Sep 17 00:00:00 2001
+From f23fb3381422c613890f77c26d11e377234481c6 Mon Sep 17 00:00:00 2001
 From: Jerome Forissier <jerome.forissier@linaro.org>
 Date: Tue, 23 Aug 2022 12:31:46 +0000
-Subject: [PATCH] arm32: libutils, libutee, ta: add .note.GNU-stack section to
+Subject: [PATCH 3/4] arm32: libutils, libutee, ta: add .note.GNU-stack section
+ to
 
  .S files
 
@@ -24,8 +25,9 @@ Signed-off-by: Jerome Forissier <jerome.forissier@linaro.org>
 
 Signed-off-by: Anton Antonov <Anton.Antonov@arm.com>
 Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
-
+Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@foundries.io>
 ---
+
  lib/libutee/arch/arm/utee_syscalls_a32.S             | 2 ++
  lib/libutils/ext/arch/arm/atomic_a32.S               | 2 ++
  lib/libutils/ext/arch/arm/mcount_a32.S               | 2 ++
@@ -35,6 +37,8 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
  ta/arch/arm/ta_entry_a32.S                           | 2 ++
  7 files changed, 14 insertions(+)
 
+diff --git a/lib/libutee/arch/arm/utee_syscalls_a32.S b/lib/libutee/arch/arm/utee_syscalls_a32.S
+index 2dea83ab8..668b65a86 100644
 --- a/lib/libutee/arch/arm/utee_syscalls_a32.S
 +++ b/lib/libutee/arch/arm/utee_syscalls_a32.S
 @@ -9,6 +9,8 @@
@@ -46,6 +50,8 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
          .section .text
          .balign 4
          .code 32
+diff --git a/lib/libutils/ext/arch/arm/atomic_a32.S b/lib/libutils/ext/arch/arm/atomic_a32.S
+index 2be73ffad..87ddf1065 100644
 --- a/lib/libutils/ext/arch/arm/atomic_a32.S
 +++ b/lib/libutils/ext/arch/arm/atomic_a32.S
 @@ -7,6 +7,8 @@
@@ -57,6 +63,8 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
  /* uint32_t atomic_inc32(uint32_t *v); */
  FUNC atomic_inc32 , :
  	ldrex	r1, [r0]
+diff --git a/lib/libutils/ext/arch/arm/mcount_a32.S b/lib/libutils/ext/arch/arm/mcount_a32.S
+index 54dc3c02d..2f24632b8 100644
 --- a/lib/libutils/ext/arch/arm/mcount_a32.S
 +++ b/lib/libutils/ext/arch/arm/mcount_a32.S
 @@ -9,6 +9,8 @@
@@ -68,6 +76,8 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
  /*
   * Convert return address to call site address by subtracting the size of the
   * mcount call instruction (blx __gnu_mcount_nc).
+diff --git a/lib/libutils/isoc/arch/arm/arm32_aeabi_divmod_a32.S b/lib/libutils/isoc/arch/arm/arm32_aeabi_divmod_a32.S
+index 37ae9ec6f..bc6c48b1a 100644
 --- a/lib/libutils/isoc/arch/arm/arm32_aeabi_divmod_a32.S
 +++ b/lib/libutils/isoc/arch/arm/arm32_aeabi_divmod_a32.S
 @@ -7,6 +7,8 @@
@@ -79,6 +89,8 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
  /*
   * signed ret_idivmod_values(signed quot, signed rem);
   * return quotient and remaining the EABI way (regs r0,r1)
+diff --git a/lib/libutils/isoc/arch/arm/arm32_aeabi_ldivmod_a32.S b/lib/libutils/isoc/arch/arm/arm32_aeabi_ldivmod_a32.S
+index 5c3353e2c..9fb5e0283 100644
 --- a/lib/libutils/isoc/arch/arm/arm32_aeabi_ldivmod_a32.S
 +++ b/lib/libutils/isoc/arch/arm/arm32_aeabi_ldivmod_a32.S
 @@ -7,6 +7,8 @@
@@ -90,6 +102,8 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
  /*
   * __value_in_regs lldiv_t __aeabi_ldivmod( long long n, long long d)
   */
+diff --git a/lib/libutils/isoc/arch/arm/setjmp_a32.S b/lib/libutils/isoc/arch/arm/setjmp_a32.S
+index f8a0b70df..37d7cb88e 100644
 --- a/lib/libutils/isoc/arch/arm/setjmp_a32.S
 +++ b/lib/libutils/isoc/arch/arm/setjmp_a32.S
 @@ -53,6 +53,8 @@
@@ -101,6 +115,8 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
  /* Arm/Thumb interworking support:
  
     The interworking scheme expects functions to use a BX instruction
+diff --git a/ta/arch/arm/ta_entry_a32.S b/ta/arch/arm/ta_entry_a32.S
+index cd9a12f9d..ccdc19928 100644
 --- a/ta/arch/arm/ta_entry_a32.S
 +++ b/ta/arch/arm/ta_entry_a32.S
 @@ -7,6 +7,8 @@
@@ -112,3 +128,6 @@ Upstream-Status: Backport [https://github.com/OP-TEE/optee_os/pull/5499]
  /*
   * This function is the bottom of the user call stack. Mark it as such so that
   * the unwinding code won't try to go further down.
+-- 
+2.40.1
+
