@@ -1,5 +1,5 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
-# Copyright 2017-2022 NXP
+# Copyright 2017-2023 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale Multimedia VPU wrapper"
@@ -11,8 +11,8 @@ DEPENDS = "virtual/imxvpu"
 DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
 
 SRC_URI = "git://github.com/NXP/imx-vpuwrap.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
-SRCREV = "12a78274b3bc4f3105aabe16df03edd5e0c3b84a"
+SRCBRANCH = "MM_04.08.00_2305_L6.1.y"
+SRCREV = "a9cd0835da0ecce55d94510d028371b473090fcc"
 
 S = "${WORKDIR}/git"
 
