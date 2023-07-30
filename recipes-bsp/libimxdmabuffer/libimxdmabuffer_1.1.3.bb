@@ -8,9 +8,8 @@ SECTION = "base"
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "5410b44fb0c5bbd9fb1f3ba0681e65068d8cde57"
+SRCREV = "faf547cc2345bfbf95507ab7e86530f85289bb5b"
 SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH};protocol=https \
-           file://0001-g2d-Fix-typo.patch \
            file://run-ptest \
           "
 
