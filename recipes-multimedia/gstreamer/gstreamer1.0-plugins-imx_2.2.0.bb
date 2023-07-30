@@ -15,7 +15,7 @@ RDEPENDS_gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparser
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "b1e5cca1a6df9d2c0dc505ae222775798108d340"
+SRCREV = "cb3cd45676e808b222ac573e8a118f44fd70c288"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH};protocol=https"
 
 S = "${WORKDIR}/git"
@@ -46,19 +46,29 @@ PACKAGECONFIG_append_imxgpu2d = " g2d"
 PACKAGECONFIG_append_imxvpu   = " vpu"
 PACKAGECONFIG_append_imxipu   = " ipu"
 PACKAGECONFIG_append_imxpxp   = " pxp"
-# The custom imxv4l2 elements are only available on the i.MX6.
+# The custom imxv4l2 source and sink elements are only
+# available on the i.MX6.
 # The 2D blitter sinks require an MXC framebuffer, which
 # is not available anymore on the i.MX8 (since these SoCs
 # now use KMS instead of the old Linux framebuffer).
-PACKAGECONFIG_append_mx6      = " imx2dvideosink v4l2"
+PACKAGECONFIG_append_mx6      = " imx2dvideosink v4l2-mxc-source-sink"
 PACKAGECONFIG_append_mx7      = " imx2dvideosink"
+# The custom Amphion V4L2 mem-2-mem elements are meant for
+# the QuadMax and QuadXPlus SoCs.
+PACKAGECONFIG_append_mx8qm    = " v4l2-amphion"
+PACKAGECONFIG_append_mx8qxp   = " v4l2-amphion"
 
 PACKAGECONFIG[g2d] = "-Dg2d=enabled ${LIBG2D_DPU_OPTION},-Dg2d=disabled,${LIBG2D_DEPENDENCIES}"
 PACKAGECONFIG[pxp] = "-Dpxp=enabled,-Dpxp=disabled,"
 PACKAGECONFIG[ipu] = "-Dipu=enabled,-Dipu=disabled,"
 PACKAGECONFIG[vpu] = "-Dvpu=enabled,-Dvpu=disabled,libimxvpuapi2"
 PACKAGECONFIG[imx2dvideosink] = "-Dimx2d-videosink=true,-Dimx2d-videosink=false,"
-PACKAGECONFIG[v4l2] = "-Dv4l2=true,-Dv4l2=false,"
+PACKAGECONFIG[v4l2-mxc-source-sink] = "-Dv4l2-mxc-source-sink=true,-Dv4l2-mxc-source-sink=false,"
+# v4l2-isi is not enabled by default because the ISI devices
+# need to be turned on in the devicetree. See the readme on
+# the gstreamer-imx github site for details.
+PACKAGECONFIG[v4l2-isi] = "-Dv4l2-isi=true,-Dv4l2-isi=false,"
+PACKAGECONFIG[v4l2-amphion] = "-Dv4l2-amphion=enabled,-Dv4l2-amphion=disabled,"
 PACKAGECONFIG[uniaudiodec] = "-Duniaudiodec=enabled,-Duniaudiodec=disabled,imx-codec"
 PACKAGECONFIG[mp3encoder] = "-Dmp3encoder=enabled,-Dmp3encoder=disabled,imx-codec"
 
