@@ -1,0 +1,42 @@
+From c76f5d2c0a0dda534888025d7236465202884665 Mon Sep 17 00:00:00 2001
+From: Xianzhong <xianzhong.li@nxp.com>
+Date: Thu, 5 Aug 2021 16:57:43 +0800
+Subject: [PATCH] glamor: Fix fbo pixmap format with GL_BGRA_EXT
+
+Red and Blue channels are swizzled in GLES path,
+Fix color inverse problem with ximagesink command:
+gst-launch-1.0 videotestsrc pattern=6 num-buffers=1 ! video/x-raw,format=BGRx ! videoconvert ! ximagesink display=:0 -v
+
+This fix requires GL_EXT_texture_format_BGRA8888 extention, not applicable for upstream.
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Xianzhong <xianzhong.li@nxp.com>
+---
+ glamor/glamor.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/glamor/glamor.c b/glamor/glamor.c
+index 3450113e0..e327b9db8 100644
+--- a/glamor/glamor.c
++++ b/glamor/glamor.c
+@@ -574,10 +574,17 @@ glamor_setup_formats(ScreenPtr screen)
+ 
+     if (glamor_priv->is_gles) {
+         assert(X_BYTE_ORDER == X_LITTLE_ENDIAN);
++#if GL_EXT_texture_format_BGRA8888
++        glamor_add_format(screen, 24, PICT_x8r8g8b8,
++                          GL_BGRA_EXT, GL_BGRA_EXT, GL_UNSIGNED_BYTE);
++        glamor_add_format(screen, 32, PICT_a8r8g8b8,
++                          GL_BGRA_EXT, GL_BGRA_EXT, GL_UNSIGNED_BYTE);
++#else
+         glamor_add_format(screen, 24, PICT_x8b8g8r8,
+                           GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+         glamor_add_format(screen, 32, PICT_a8b8g8r8,
+                           GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
++#endif
+     } else {
+         glamor_add_format(screen, 24, PICT_x8r8g8b8,
+                           GL_RGBA, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV);
+-- 
+2.17.1

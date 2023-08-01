@@ -74,9 +74,11 @@ PE = "1"
 
 inherit fsl-eula-unpack
 
-SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true \
-           file://imx_icd.json"
 FILESEXTRAPATHS:append := "${THISDIR}/imx-gpu-viv:"
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
+           file://imx_icd.json"
+
+S = "${WORKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
 PACKAGECONFIG ?= ""
 
