@@ -4,14 +4,14 @@
 
 DESCRIPTION = "G2D library using i.MX DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
+LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 
 DEPENDS = "libgal-imx libdrm"
 PROVIDES += "virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "ab5972089fe8746dc5fa5388e432a154"
-SRC_URI[sha256sum] = "771d71b5766f148bfb349cbc069a1808ad43f881d17cb11ec2ca27a959a9ad34"
+SRC_URI[md5sum] = "0f7ceac3f8ce97d4f0f6ad5bb8a5bbd2"
+SRC_URI[sha256sum] = "dfcda2c286076bb6080261901241eac2a9e9db8ebbd00f301d8f49665af4c835"
 
 inherit fsl-eula-unpack
 
