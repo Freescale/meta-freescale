@@ -11,6 +11,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c7b12b6702da38ca028ace54aae3d484 \
 
 SRC_URI = "git://github.com/nxp-imx/wayland-protocols-imx.git;protocol=https;branch=wayland-protocols-imx-1.31"
 SRCREV = "99a2a439fc6b5d25d41bfec9c9b459408a45bf92"
+
 S = "${WORKDIR}/git"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
@@ -23,6 +24,8 @@ EXTRA_OEMESON += "-Dtests=false"
 
 PACKAGES = "${PN}"
 FILES:${PN} += "${datadir}/pkgconfig/wayland-protocols.pc"
+
+BBCLASSEXTEND = "native nativesdk"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx7-nxp-bsp|mx8-nxp-bsp|mx9-nxp-bsp)"
