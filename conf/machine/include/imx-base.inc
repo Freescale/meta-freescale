@@ -456,6 +456,7 @@ MACHINE_EXTRA_RRECOMMENDS:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'q
 MACHINE_EXTRA_RRECOMMENDS += "udev-rules-imx"
 
 # Jailhouse
+PREFERRED_PROVIDER_jailhouse:imx-nxp-bsp ?= "jailhouse-imx"
 MACHINE_EXTRA_RRECOMMENDS += " \
     ${@bb.utils.filter('COMBINED_FEATURES', 'jailhouse', d)} \
 "
