@@ -13,6 +13,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
                  file://driver/jailhouse.h;beginline=9;endline=36;md5=2825581c1666c44a17955dc574cfbfb3 \
 "
 
+PROVIDES = "jailhouse"
+RPROVIDES:${PN} += "jailhouse"
+
 SRCBRANCH = "lf-6.1.22_2.0.0"
 SRCREV = "e090abc70bb395f705f85659ad92bdafbe407628"
 
@@ -35,6 +38,8 @@ JH_DATADIR ?= "${datadir}/jailhouse"
 CELL_DIR ?= "${JH_DATADIR}/cells"
 CELLCONF_DIR ?= "${JH_DATADIR}/configs"
 INMATES_DIR ?= "${JH_DATADIR}/inmates"
+
+TUNE_CCARGS:remove:mx93-nxp-bsp = "-mcpu=cortex-a55"
 
 do_configure() {
    if [ -d ${STAGING_DIR_HOST}/${CELLCONF_DIR} ];
