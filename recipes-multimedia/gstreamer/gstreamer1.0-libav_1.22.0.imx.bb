@@ -12,9 +12,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
                     "
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-${@get_gst_ver('${PV}')}.tar.xz \
-           file://0001-libav-Fix-for-APNG-encoder-property-registration.patch \
-           "
-SRC_URI[sha256sum] = "3fedd10560fcdfaa1b6462cbf79a38c4e7b57d7f390359393fc0cef6dbf27dfe"
+           file://ffmpeg-6.0.patch \
+          "
+SRC_URI[sha256sum] = "0e48407b4905227a260213dbda84cba3812f0530fc7a75b43829102ef82810f1"
 
 S = "${WORKDIR}/gst-libav-${@get_gst_ver('${PV}')}"
 
@@ -33,9 +33,4 @@ def get_gst_ver(v):
 FILES:${PN} += "${libdir}/gstreamer-1.0/*.so"
 FILES:${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
 
-# These recipes are copies of oe-core 1.20.3 that are not available
-# anymore upstream on the master branch.
-# The requirement to have them is because they are dependencies of
-# the other ones imx specific gstreamer forks on the layer.
-# So make their names maching the exisng ones will make it more safe.
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

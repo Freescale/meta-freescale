@@ -60,7 +60,7 @@ PACKAGECONFIG[v4l2-mxc-source-sink] = "-Dv4l2-mxc-source-sink=true,-Dv4l2-mxc-so
 PACKAGECONFIG[uniaudiodec] = "-Duniaudiodec=enabled,-Duniaudiodec=disabled,imx-codec"
 PACKAGECONFIG[mp3encoder] = "-Dmp3encoder=enabled,-Dmp3encoder=disabled,imx-codec"
 
-require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
+require gstreamer1.0-plugins-packaging.inc
 
 # the following line is required to produce one package for each plugin
 PACKAGES_DYNAMIC = "^${PN}-.*"
