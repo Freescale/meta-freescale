@@ -477,12 +477,17 @@ MACHINE_GSTREAMER_1_0_PLUGIN:mx8qm-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8qxp-nxp-bsp ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8dx-nxp-bsp  ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx8ulp-nxp-bsp ?= "imx-gst1.0-plugin"
+MACHINE_GSTREAMER_1_0_PLUGIN:mx93-nxp-bsp   ?= "imx-gst1.0-plugin"
 
 # GStreamer forked recipes
 PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              ??= "1.22.0.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8-nxp-bsp  ??= "1.22.0.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp ??= "1.22.0.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-good:mx8-nxp-bsp ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0:mx9-nxp-bsp              ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx9-nxp-bsp  ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-base:mx9-nxp-bsp ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good:mx9-nxp-bsp ??= "1.22.0.imx"
 
 # GStreamer copied recipes
 PREFERRED_VERSION_gst-devtools:mx8-nxp-bsp              ??= "1.22.0.imx"
@@ -492,9 +497,17 @@ PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8-nxp-bsp ??= "1.22.0.imx"
 PREFERRED_VERSION_gstreamer1.0-python:mx8-nxp-bsp       ??= "1.22.0.imx"
 PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  ??= "1.22.0.imx"
 PREFERRED_VERSION_gstreamer1.0-vaapi:mx8-nxp-bsp        ??= "1.22.0.imx"
+PREFERRED_VERSION_gst-devtools:mx9-nxp-bsp              ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-libav:mx9-nxp-bsp        ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-omx:mx9-nxp-bsp          ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx9-nxp-bsp ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-python:mx9-nxp-bsp       ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx9-nxp-bsp  ??= "1.22.0.imx"
+PREFERRED_VERSION_gstreamer1.0-vaapi:mx9-nxp-bsp        ??= "1.22.0.imx"
 
 # GStreamer downgrade ffmpeg
 PREFERRED_VERSION_ffmpeg:mx8-nxp-bsp ??= "4.4.1"
+PREFERRED_VERSION_ffmpeg:mx9-nxp-bsp ??= "4.4.1"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
