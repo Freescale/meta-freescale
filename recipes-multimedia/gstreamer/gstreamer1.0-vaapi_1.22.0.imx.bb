@@ -32,8 +32,13 @@ def get_gst_ver(v):
 
 PACKAGES =+ "${PN}-tests"
 
-# Use egl for i.MX
-PACKAGECONFIG_GL ?= "egl"
+# OpenGL packageconfig factored out to make it easy for distros
+# and BSP layers to pick either glx, egl, or no GL. By default,
+# try detecting X11 first, and if found (with OpenGL), use GLX,
+# otherwise try to check if EGL can be used.
+PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'glx', \
+                        bb.utils.contains('DISTRO_FEATURES',     'opengl', 'egl', \
+                                                                       '', d), d)}"
 
 PACKAGECONFIG ??= "drm encoders \
                    ${PACKAGECONFIG_GL} \
