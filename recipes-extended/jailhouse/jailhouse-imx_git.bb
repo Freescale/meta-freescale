@@ -39,6 +39,8 @@ CELL_DIR ?= "${JH_DATADIR}/cells"
 CELLCONF_DIR ?= "${JH_DATADIR}/configs"
 INMATES_DIR ?= "${JH_DATADIR}/inmates"
 
+TUNE_CCARGS:remove:mx93-nxp-bsp = "-mcpu=cortex-a55"
+
 do_configure() {
    if [ -d ${STAGING_DIR_HOST}/${CELLCONF_DIR} ];
    then
