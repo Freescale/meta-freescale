@@ -3,10 +3,10 @@
 # recipe. The second section customizes the recipe for i.MX.
 
 ########### OE-core copy ##################
-# Upstream hash: a21649109374fde44cf77de845cfb3cb6cbfb138
+# Upstream hash: fb2d28e0315ece6180c87c7047587673024a09f7
 
-require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
-require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
+require gstreamer1.0-plugins-common.inc
+require gstreamer1.0-plugins-license.inc
 
 DESCRIPTION = "'Bad' GStreamer plugins and helper libraries "
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
@@ -15,11 +15,9 @@ BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues"
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
            file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
            file://0002-avoid-including-sys-poll.h-directly.patch \
-           file://0003-ensure-valid-sentinals-for-gst_structure_get-etc.patch \
            file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
-           file://0005-msdk-fix-includedir-path.patch \
            "
-SRC_URI[sha256sum] = "09d3c2cf5911f0bc7da6bf557a55251779243d3de216b6a26cc90c445b423848"
+SRC_URI[sha256sum] = "3c9d9300f5f4fb3e3d36009379d1fb6d9ecd79c1a135df742b8a68417dd663a1"
 
 S = "${WORKDIR}/gst-plugins-bad-${PV}"
 
@@ -43,6 +41,7 @@ PACKAGECONFIG ??= " \
 
 PACKAGECONFIG[aom]             = "-Daom=enabled,-Daom=disabled,aom"
 PACKAGECONFIG[assrender]       = "-Dassrender=enabled,-Dassrender=disabled,libass"
+PACKAGECONFIG[avtp]            = "-Davtp=enabled,-Davtp=disabled,libavtp"
 PACKAGECONFIG[bluez]           = "-Dbluez=enabled,-Dbluez=disabled,bluez5"
 PACKAGECONFIG[bz2]             = "-Dbz2=enabled,-Dbz2=disabled,bzip2"
 PACKAGECONFIG[closedcaption]   = "-Dclosedcaption=enabled,-Dclosedcaption=disabled,pango cairo"
@@ -90,6 +89,8 @@ PACKAGECONFIG[srtp]            = "-Dsrtp=enabled,-Dsrtp=disabled,libsrtp"
 PACKAGECONFIG[tinyalsa]        = "-Dtinyalsa=enabled,-Dtinyalsa=disabled,tinyalsa"
 PACKAGECONFIG[ttml]            = "-Dttml=enabled,-Dttml=disabled,libxml2 pango cairo"
 PACKAGECONFIG[uvch264]         = "-Duvch264=enabled,-Duvch264=disabled,libusb1 libgudev"
+# this enables support for stateless V4L2 mem2mem codecs, which is a newer form of
+# V4L2 codec; the V4L2 code in -base supports the older stateful V4L2 mem2mem codecs
 PACKAGECONFIG[v4l2codecs]      = "-Dv4l2codecs=enabled,-Dv4l2codecs=disabled,libgudev"
 PACKAGECONFIG[va]              = "-Dva=enabled,-Dva=disabled,libva"
 PACKAGECONFIG[voaacenc]        = "-Dvoaacenc=enabled,-Dvoaacenc=disabled,vo-aacenc"
@@ -118,7 +119,6 @@ EXTRA_OEMESON += " \
     -Dandroidmedia=disabled \
     -Dapplemedia=disabled \
     -Dasio=disabled \
-    -Davtp=disabled \
     -Dbs2b=disabled \
     -Dchromaprint=disabled \
     -Dd3dvideosink=disabled \
@@ -160,6 +160,7 @@ EXTRA_OEMESON += " \
     -Dwpe=disabled \
     -Dzxing=disabled \
 "
+
 export OPENCV_PREFIX = "${STAGING_DIR_TARGET}${prefix}"
 
 ARM_INSTRUCTION_SET:armv4 = "arm"
@@ -169,6 +170,7 @@ FILES:${PN}-freeverb += "${datadir}/gstreamer-1.0/presets/GstFreeverb.prs"
 FILES:${PN}-opencv += "${datadir}/gst-plugins-bad/1.0/opencv*"
 FILES:${PN}-transcode += "${datadir}/gstreamer-1.0/encoding-profiles"
 FILES:${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
+
 
 ########### End of OE-core copy ###########
 
@@ -180,15 +182,13 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=4fbd65380cdd255951079008b364516c"
 
 DEPENDS:append:imxgpu2d = " virtual/libg2d"
 
-SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
-           file://0002-avoid-including-sys-poll.h-directly.patch \
-           file://0003-ensure-valid-sentinals-for-gst_structure_get-etc.patch \
-           file://0005-msdk-fix-includedir-path.patch \
-           "
+SRC_URI:remove  = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
+                   file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
+                   file://0002-avoid-including-sys-poll.h-directly.patch"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.07.03_2301_L6.1.y"
-SRCREV = "6db7bca26b81468b647b680d7ef67b1b8b938b00"
+SRCBRANCH = "MM_04.08.00_2305_L6.1.y"
+SRCREV = "3c2f0b5794e699437964f2c337463f57b1e17f51"
 
 S = "${WORKDIR}/git"
 

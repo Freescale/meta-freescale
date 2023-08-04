@@ -1,12 +1,12 @@
-require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
-require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
+require gstreamer1.0-plugins-common.inc
+require gstreamer1.0-plugins-license.inc
 
-DESCRIPTION = "'Ugly GStreamer plugins"
+SUMMARY = "'Ugly GStreamer plugins"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-ugly/-/issues"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
-                    file://tests/check/elements/xingmux.c;beginline=1;endline=21;md5=4c771b8af188724855cb99cadd390068"
+                   "
 
 LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 LICENSE_FLAGS = "commercial"
@@ -14,7 +14,7 @@ LICENSE_FLAGS = "commercial"
 SRC_URI = " \
             https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${@get_gst_ver("${PV}")}.tar.xz \
             "
-SRC_URI[sha256sum] = "8caa20789a09c304b49cf563d33cca9421b1875b84fcc187e4a385fa01d6aefd"
+SRC_URI[sha256sum] = "a644dc981afa2d8d3a913f763ab9523c0620ee4e65a7ec73c7721c29da3c5a0c"
 
 S = "${WORKDIR}/gst-plugins-ugly-${@get_gst_ver("${PV}")}"
 
@@ -49,9 +49,4 @@ def get_gst_ver(v):
 FILES:${PN}-amrnb += "${datadir}/gstreamer-1.0/presets/GstAmrnbEnc.prs"
 FILES:${PN}-x264 += "${datadir}/gstreamer-1.0/presets/GstX264Enc.prs"
 
-# These recipes are copies of oe-core 1.20.3 that are not available
-# anymore upstream on the master branch.
-# The requirement to have them is because they are dependencies of
-# the other ones imx specific gstreamer forks on the layer.
-# So make their names maching the exisng ones will make it more safe.
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

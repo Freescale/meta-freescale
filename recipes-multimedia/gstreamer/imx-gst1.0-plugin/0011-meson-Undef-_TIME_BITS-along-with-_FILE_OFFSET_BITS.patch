@@ -1,0 +1,34 @@
+From bda3461b0b6493f3e04910e82e6e530a64af26b1 Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Mon, 24 Jul 2023 12:09:34 -0700
+Subject: [PATCH] meson: Undef _TIME_BITS along with _FILE_OFFSET_BITS
+
+On gcc 13, _TIME_BITS is set to 64 and causes failure with the undef of
+_FILE_OFFSET_BITS:
+```
+/usr/include/features-time64.h:26:5: error: #error "_TIME_BITS=64 is allowed only with _FILE_OFFSET_BITS=64"
+   26 | #   error "_TIME_BITS=64 is allowed only with _FILE_OFFSET_BITS=64"
+      |     ^~~~~
+```
+
+Upstream-Status: Pending
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ meson.build | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/meson.build b/meson.build
+index 7ec5c70..64b2930 100644
+--- a/meson.build
++++ b/meson.build
+@@ -24,6 +24,7 @@ gst_dep = dependency('gstreamer-' + api_version, version : gst_req)
+ #meson automaticaly add _FILE_OFFSET_BITS=64 to gcc, this will make ipu test
+ #case fail when do mmap on 6q, autoconf didn't add this define, so undef it
+ add_project_arguments('-U_FILE_OFFSET_BITS', language: 'c')
++add_project_arguments('-U_TIME_BITS', language: 'c')
+ 
+ #below two marcos are defined in autoconf
+ add_project_arguments ('-DARM', language: 'c')
+-- 
+2.25.1
+
