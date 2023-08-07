@@ -5,7 +5,7 @@
 DESCRIPTION = "Freescale Multimedia VPU wrapper"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
+LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 
 DEPENDS = "virtual/imxvpu"
 DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
