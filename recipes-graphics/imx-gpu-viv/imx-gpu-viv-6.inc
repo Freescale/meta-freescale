@@ -424,3 +424,8 @@ FILES:imx-gpu-viv-demos = "/opt"
 INSANE_SKIP:imx-gpu-viv-demos += "rpaths dev-deps"
 
 FILES:libnn-imx = "${libdir}/libNN*${SOLIBS}"
+
+# It will use gcompat at runtime therefore checking for these at compile time wont be useful as
+# they dont match musl/gcompat but it should run fine
+INSANE_SKIP:append:libc-musl = " file-rdeps"
+

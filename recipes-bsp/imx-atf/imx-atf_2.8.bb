@@ -48,7 +48,7 @@ def remove_options_tail (in_string):
     from itertools import takewhile
     return ' '.join(takewhile(lambda x: not x.startswith('-'), in_string.split(' ')))
 
-EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}.bfd"'
+EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}"'
 
 EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
 
