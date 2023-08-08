@@ -1,0 +1,47 @@
+From 90b94ff95c72487054fd283fb7cb5ebd13822b3f Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Mon, 7 Aug 2023 18:56:05 -0700
+Subject: [PATCH] gstallocator: Fix typcasts
+
+These are found when building with clang+musl
+| ../git/gst-libs/gst/allocators/gstallocatorphymem.c:228:10: error: incompatible pointer to integer conversion returning 'gpointer' (aka 'void *') from a function with result type 'guintptr
+' (aka 'unsigned long') [-Wint-conversion]
+|   228 |   return gst_phymem_get_phy (mem);
+|       |          ^~~~~~~~~~~~~~~~~~~~~~~~
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/gst-plugins-base/pull/4]
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ gst-libs/gst/allocators/gstallocatorphymem.c | 2 +-
+ gst-libs/gst/gl/gstglphymemory.c             | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/gst-libs/gst/allocators/gstallocatorphymem.c b/gst-libs/gst/allocators/gstallocatorphymem.c
+index f3c3306c7..f8a4511ab 100755
+--- a/gst-libs/gst/allocators/gstallocatorphymem.c
++++ b/gst-libs/gst/allocators/gstallocatorphymem.c
+@@ -225,7 +225,7 @@ static guintptr
+ gst_allocator_phymem_get_phys_addr (GstPhysMemoryAllocator * allocator,
+     GstMemory * mem)
+ {
+-  return gst_phymem_get_phy (mem);
++  return (guintptr)gst_phymem_get_phy (mem);
+ }
+ 
+ static void
+diff --git a/gst-libs/gst/gl/gstglphymemory.c b/gst-libs/gst/gl/gstglphymemory.c
+index d82c9a66a..1d8be0a5d 100644
+--- a/gst-libs/gst/gl/gstglphymemory.c
++++ b/gst-libs/gst/gl/gstglphymemory.c
+@@ -337,7 +337,7 @@ gst_gl_physical_memory_setup_buffer (GstAllocator * allocator,
+     GST_VIDEO_INFO_HEIGHT (info),
+     viv_fmt,
+     memblk->vaddr,
+-    memblk->paddr,
++    (guint)memblk->paddr,
+     FALSE
+   };
+ 
+-- 
+2.41.0
+
