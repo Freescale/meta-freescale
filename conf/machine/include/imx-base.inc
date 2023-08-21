@@ -179,7 +179,7 @@ IMX_SOC_REV:mx8dx-generic-bsp  ??= "C0"
 #IMX_SOC_REV:mx8dxl-generic-bsp ??= ""
 IMX_SOC_REV:mx8ulp-generic-bsp ??= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
-                                                           'A1', d)}"
+                                                           'A2', d)}"
 
 IMX_SOC_REV_LOWER   = "${@d.getVar('IMX_SOC_REV').lower()}"
 IMX_SOC_REV_UPPER   = "${@d.getVar('IMX_SOC_REV').upper()}"
