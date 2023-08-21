@@ -1,10 +1,9 @@
 # Copyright 2020-2023 NXP
 
 SUMMARY = "Wi-Fi firmware redistributed by NXP"
-DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP, \
-which is not covered by linux-firmware package. Once package becomes \
-available as a part of linux-firmware - it can be dropped from this \
-recipe in favor of upstream."
+DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP \
+and not available in linux-firmware. Once a package becomes \
+available in linux-firmware, it can be dropped from this recipe."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
@@ -48,14 +47,12 @@ do_install() {
     install -m 0644 nxp/FwImage_8987/sd8987_wlan.bin           ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_8987/sdiouart8987_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_8987/txpwrlimit_cfg_8987.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8987/uartuart8987_bt.bin       ${D}${nonarch_base_libdir}/firmware/nxp
 
     # Install NXP Connectivity PCIE8997 firmware
     install -m 0644 nxp/FwImage_8997/ed_mac_ctrl_V3_8997.conf  ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_8997/pcie8997_wlan_v4.bin      ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_8997/pcieuart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_8997/txpwrlimit_cfg_8997.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997/uartuart8997_bt_v4.bin    ${D}${nonarch_base_libdir}/firmware/nxp
 
     # Install NXP Connectivity SDIO8997 firmware
     install -m 0644 nxp/FwImage_8997_SD/ed_mac_ctrl_V3_8997.conf  ${D}${nonarch_base_libdir}/firmware/nxp
@@ -68,7 +65,6 @@ do_install() {
     install -m 0644 nxp/FwImage_9098_PCIE/pcie9098_wlan_v1.bin      ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_9098_PCIE/pcieuart9098_combo_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_9098_PCIE/txpwrlimit_cfg_9098.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_9098_PCIE/uartuart9098_bt_v1.bin    ${D}${nonarch_base_libdir}/firmware/nxp
 
     # Install NXP Connectivity SDIO9098 firmware
     install -m 0644 nxp/FwImage_9098_SD/sdio9098_wlan_v1.bin      ${D}${nonarch_base_libdir}/firmware/nxp
@@ -77,12 +73,10 @@ do_install() {
     # Install NXP Connectivity IW416 firmware
     install -m 0644 nxp/FwImage_IW416_SD/sdioiw416_wlan_v0.bin      ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_IW416_SD/sdiouartiw416_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_IW416_SD/uartiw416_bt_v0.bin        ${D}${nonarch_base_libdir}/firmware/nxp
 
     # Install NXP Connectivity IW612 firmware
     install -m 0644 nxp/FwImage_IW612_SD/sduart_nw61x_v1.bin.se ${D}${nonarch_base_libdir}/firmware/nxp
     install -m 0644 nxp/FwImage_IW612_SD/sd_w61x_v1.bin.se      ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_IW612_SD/uartspi_n61x_v1.bin.se ${D}${nonarch_base_libdir}/firmware/nxp
     for f in nxp/FwImage_IW612_SD/IW612_SD_RFTest/*; do
         install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/$(basename $f)
     done
@@ -125,7 +119,6 @@ RDEPENDS:${PN}-nxp8987-sdio += "${PN}-nxp-common"
 FILES:${PN}-nxp8997-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_8997.conf \
     ${nonarch_base_libdir}/firmware/nxp/txpwrlimit_cfg_8997.conf \
-    ${nonarch_base_libdir}/firmware/nxp/uartuart8997_bt_v4.bin \
 "
 RDEPENDS:${PN}-nxp8997-common += "${PN}-nxp-common"
 
@@ -142,7 +135,6 @@ RDEPENDS:${PN}-nxp8997-sdio += "${PN}-nxp8997-common"
 FILES:${PN}-nxp9098-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_909x.conf \
     ${nonarch_base_libdir}/firmware/nxp/txpwrlimit_cfg_9098.conf \
-    ${nonarch_base_libdir}/firmware/nxp/uartuart9098_bt_v1.bin \
 "
 RDEPENDS:${PN}-nxp9098-common += "${PN}-nxp-common"
 
@@ -164,7 +156,6 @@ RDEPENDS:${PN}-nxpiw416-sdio += "${PN}-nxp-common"
 FILES:${PN}-nxpiw612-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sduart_nw61x_v1.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/sd_w61x_v1.bin.se \
-    ${nonarch_base_libdir}/firmware/nxp/uartspi_n61x_v1.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/ \
 "
 RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
