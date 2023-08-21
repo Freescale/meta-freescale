@@ -68,14 +68,7 @@ SOC_FAMILY:mx8x-generic-bsp   = "mx8x"
 SOC_FAMILY:mx8ulp-generic-bsp = "mx8ulp"
 SOC_FAMILY:mx93-generic-bsp   = "mx93"
 
-REV_OPTION ?= ""
-REV_OPTION:mx8qxp-generic-bsp = \
-    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', '', \
-                                                           'REV=C0', d)}"
-REV_OPTION:mx8dx-generic-bsp  = "REV=C0"
-REV_OPTION:mx8ulp-generic-bsp = \
-    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', '', \
-                                                           'REV=A1', d)}"
+REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 
 do_uboot_assemble_fitimage:prepend:imx-generic-bsp() {
     for config in ${UBOOT_MACHINE}; do

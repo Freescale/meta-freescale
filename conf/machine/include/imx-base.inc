@@ -169,6 +169,20 @@ DEFAULTTUNE:mx93-generic-bsp   ?= "cortexa55"
 
 INHERIT += "machine-overrides-extender"
 
+IMX_SOC_REV                    ??= "A0"
+IMX_SOC_REV:mx8qm-generic-bsp  ??= "B0"
+IMX_SOC_REV:mx8qxp-generic-bsp ??= \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', 'B0', \
+                                                           'C0', d)}"
+IMX_SOC_REV:mx8dx-generic-bsp  ??= "C0"
+IMX_SOC_REV:mx8dxl-generic-bsp ??= "A1"
+IMX_SOC_REV:mx8ulp-generic-bsp ??= \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
+                                                           'A1', d)}"
+
+IMX_SOC_REV_LOWER   = "${@d.getVar('IMX_SOC_REV').lower()}"
+IMX_SOC_REV_UPPER   = "${@d.getVar('IMX_SOC_REV').upper()}"
+
 #######
 ### NXP BSP specific overrides
 #######
