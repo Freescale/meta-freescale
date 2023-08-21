@@ -175,7 +175,8 @@ IMX_SOC_REV:mx8qxp-generic-bsp ??= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', 'B0', \
                                                            'C0', d)}"
 IMX_SOC_REV:mx8dx-generic-bsp  ??= "C0"
-IMX_SOC_REV:mx8dxl-generic-bsp ??= "A1"
+# WARNING: Don't set a default for 8DXL since an image built with A1 can brick a B0 board
+#IMX_SOC_REV:mx8dxl-generic-bsp ??= ""
 IMX_SOC_REV:mx8ulp-generic-bsp ??= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
                                                            'A1', d)}"
