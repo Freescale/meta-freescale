@@ -169,6 +169,21 @@ DEFAULTTUNE:mx93-generic-bsp   ?= "cortexa55"
 
 INHERIT += "machine-overrides-extender"
 
+IMX_SOC_REV                    ??= "A0"
+IMX_SOC_REV:mx8qm-generic-bsp  ??= "B0"
+IMX_SOC_REV:mx8qxp-generic-bsp ??= \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', 'B0', \
+                                                           'C0', d)}"
+IMX_SOC_REV:mx8dx-generic-bsp  ??= "C0"
+# WARNING: Don't set a default for 8DXL since an image built with A1 can brick a B0 board
+#IMX_SOC_REV:mx8dxl-generic-bsp ??= ""
+IMX_SOC_REV:mx8ulp-generic-bsp ??= \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
+                                                           'A2', d)}"
+
+IMX_SOC_REV_LOWER   = "${@d.getVar('IMX_SOC_REV').lower()}"
+IMX_SOC_REV_UPPER   = "${@d.getVar('IMX_SOC_REV').upper()}"
+
 #######
 ### NXP BSP specific overrides
 #######
@@ -200,7 +215,7 @@ MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxd
 
 MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8dx:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dx-generic-bsp:mx8dx-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8dxl-generic-bsp:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8dxl-generic-bsp:mx8dxl-nxp-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8ulp-generic-bsp:mx8ulp-nxp-bsp"
 
