@@ -1,10 +1,9 @@
 # Copyright 2020-2023 NXP
 
 SUMMARY = "Wi-Fi firmware redistributed by NXP"
-DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP, \
-which is not covered by linux-firmware package. Once package becomes \
-available as a part of linux-firmware - it can be dropped from this \
-recipe in favor of upstream."
+DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP. Some \
+is available in linux-firmware, but what is here is the latest and \
+should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
@@ -121,6 +120,9 @@ FILES:${PN}-nxp8987-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/*8987* \
 "
 RDEPENDS:${PN}-nxp8987-sdio += "${PN}-nxp-common"
+RPROVIDES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
+RREPLACES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
+RCONFLICTS:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 
 FILES:${PN}-nxp8997-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_8997.conf \
@@ -128,16 +130,25 @@ FILES:${PN}-nxp8997-common = " \
     ${nonarch_base_libdir}/firmware/nxp/uartuart8997_bt_v4.bin \
 "
 RDEPENDS:${PN}-nxp8997-common += "${PN}-nxp-common"
+RPROVIDES:${PN}-nxp8997-common = "linux-firmware-nxp8997-common"
+RREPLACES:${PN}-nxp8997-common = "linux-firmware-nxp8997-common"
+RCONFLICTS:${PN}-nxp8997-common = "linux-firmware-nxp8997-common"
 
 FILES:${PN}-nxp8997-pcie = " \
     ${nonarch_base_libdir}/firmware/nxp/pci*8997* \
 "
 RDEPENDS:${PN}-nxp8997-pcie += "${PN}-nxp8997-common"
+RPROVIDES:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
+RREPLACES:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
+RCONFLICTS:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
 
 FILES:${PN}-nxp8997-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sdio*8997* \
 "
 RDEPENDS:${PN}-nxp8997-sdio += "${PN}-nxp8997-common"
+RPROVIDES:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
+RREPLACES:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
+RCONFLICTS:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
 
 FILES:${PN}-nxp9098-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_909x.conf \
@@ -145,21 +156,33 @@ FILES:${PN}-nxp9098-common = " \
     ${nonarch_base_libdir}/firmware/nxp/uartuart9098_bt_v1.bin \
 "
 RDEPENDS:${PN}-nxp9098-common += "${PN}-nxp-common"
+RPROVIDES:${PN}-nxp9098-common = "linux-firmware-nxp9098-common"
+RREPLACES:${PN}-nxp9098-common = "linux-firmware-nxp9098-common"
+RCONFLICTS:${PN}-nxp9098-common = "linux-firmware-nxp9098-common"
 
 FILES:${PN}-nxp9098-pcie = " \
     ${nonarch_base_libdir}/firmware/nxp/pcie*9098* \
 "
 RDEPENDS:${PN}-nxp9098-pcie += "${PN}-nxp9098-common"
+RPROVIDES:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
+RREPLACES:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
+RCONFLICTS:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
 
 FILES:${PN}-nxp9098-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sdio*9098* \
 "
 RDEPENDS:${PN}-nxp9098-sdio += "${PN}-nxp9098-common"
+RPROVIDES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
+RREPLACES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
+RCONFLICTS:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 
 FILES:${PN}-nxpiw416-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/*iw416* \
 "
 RDEPENDS:${PN}-nxpiw416-sdio += "${PN}-nxp-common"
+RPROVIDES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
+RREPLACES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
+RCONFLICTS:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 
 FILES:${PN}-nxpiw612-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sduart_nw61x_v1.bin.se \
@@ -168,3 +191,6 @@ FILES:${PN}-nxpiw612-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/ \
 "
 RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
+RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
+RREPLACES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
+RCONFLICTS:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
