@@ -13,6 +13,6 @@ inherit cmake pkgconfig
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "libusb zlib bzip2 openssl"
+DEPENDS = "libusb zlib bzip2 openssl zstd"
 
 BBCLASSEXTEND = "native nativesdk"
