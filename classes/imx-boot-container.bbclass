@@ -92,14 +92,14 @@ do_deploy:append() {
                 then
                     install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}-${type}
                     # When there's more than one word in UBOOT_CONFIG,
-                    # this will overwrite the links created in
-                    # previous loop iterations, effectively making
-                    # u-boot.itb and flash.bin correspond to the _last_
-                    # word in UBOOT_CONFIG. This is also how all other
-                    # artifacts handled by oe-core's u-boot.inc are
-                    # treated.
-                    ln -sf flash.bin-${MACHINE}-${type} flash.bin
-                    ln -sf flash.bin-${MACHINE}-${type} imx-boot
+                    # the first UBOOT_CONFIG listed will be the imx-boot binary
+                    if [ ! -f "${DEPLOYDIR}/imx-boot" ]; then
+                        ln -sf flash.bin-${MACHINE}-${type} flash.bin
+                        ln -sf flash.bin-${MACHINE}-${type} imx-boot
+
+                    else
+                        bbwarn "Use custom wks.in for $UBOOT_CONFIG = $type"
+                    fi
                 fi
             done
             unset  j
