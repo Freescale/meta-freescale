@@ -3,16 +3,16 @@
 
 SUMMARY = "Universal Update Utility - Binaries"
 DESCRIPTION = "Image deploy tool for i.MX chips"
-HOMEPAGE = "https://github.com/NXPmicro/mfgtools"
+HOMEPAGE = "https://github.com/nxp-imx/mfgtools"
 
 LICENSE = "BSD-3-Clause & LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9 \
                     file://${COMMON_LICENSE_DIR}/LGPL-2.1-or-later;md5=2a4f4fd2128ea2f65047ee63fbca9f68"
 
 SRC_URI = " \
-    https://github.com/NXPmicro/mfgtools/releases/download/uuu_${PV}/uuu;downloadfilename=uuu-${PV};name=Linux \
-    https://github.com/NXPmicro/mfgtools/releases/download/uuu_${PV}/uuu_mac;downloadfilename=uuu-${PV}_mac;name=Mac \
-    https://github.com/NXPmicro/mfgtools/releases/download/uuu_${PV}/uuu.exe;downloadfilename=uuu-${PV}.exe;name=Windows \
+    https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu;downloadfilename=uuu-${PV};name=Linux \
+    https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu_mac;downloadfilename=uuu-${PV}_mac;name=Mac \
+    https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu.exe;downloadfilename=uuu-${PV}.exe;name=Windows \
 "
 
 SRC_URI[Linux.sha256sum] = "dfb2a6dca337ebd59675ea5ce7f1bce6724e3b901bcb455126d4bf9bdfa2e585"
