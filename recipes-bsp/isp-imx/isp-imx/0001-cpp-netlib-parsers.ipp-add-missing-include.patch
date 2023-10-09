@@ -1,0 +1,44 @@
+From 15aae364fb52df30e4a49e73e2048fdc633e6868 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Sun, 8 Oct 2023 09:15:54 -0300
+Subject: [PATCH] cpp-netlib: parsers.ipp: add missing include
+
+With the update to boost from 1.82.0 -> 1.83.0 we now get compiler errors:
+
+| .../isp-imx/4.2.2.22.0/isp-imx-4.2.2.22.0/utils3rd/3rd/cpp-netlib/boost/network/protocol/http/server/impl/parsers.ipp:58:3: error: 'u8_to_u32_iterator' was not declared in this scope
+
+Add the missing explicit include. Before the file was indirectly included from qi.hpp:
+
+| In file included from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/regex/pending/unicode_iterator.hpp:27,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/home/support/utf8.hpp:15,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/home/support/info.hpp:17,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/home/qi/domain.hpp:16,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/home/qi/meta_compiler.hpp:15,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/home/qi/action/action.hpp:14,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/home/qi/action.hpp:14,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/home/qi.hpp:14,
+|                  from .../isp-imx/4.2.2.22.0/recipe-sysroot/usr/include/boost/spirit/include/qi.hpp:16,
+|                  from .../isp-imx/4.2.2.22.0/isp-imx-4.2.2.22.0/utils3rd/3rd/cpp-netlib/boost/network/protocol/http/server/impl/parsers.ipp:5,
+
+Upstream-Status: Pending
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ .../boost/network/protocol/http/server/impl/parsers.ipp          | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/utils3rd/3rd/cpp-netlib/boost/network/protocol/http/server/impl/parsers.ipp b/utils3rd/3rd/cpp-netlib/boost/network/protocol/http/server/impl/parsers.ipp
+index c31e60e..2b83fbe 100755
+--- a/utils3rd/3rd/cpp-netlib/boost/network/protocol/http/server/impl/parsers.ipp
++++ b/utils3rd/3rd/cpp-netlib/boost/network/protocol/http/server/impl/parsers.ipp
+@@ -13,6 +13,7 @@
+ #include <tuple>
+ #include <boost/fusion/include/std_tuple.hpp>
+ #include <boost/network/protocol/http/message/header.hpp>
++#include <boost/regex/pending/unicode_iterator.hpp>
+ 
+ #ifdef BOOST_NETWORK_NO_LIB
+ #ifndef BOOST_NETWORK_INLINE
+-- 
+2.35.3
+

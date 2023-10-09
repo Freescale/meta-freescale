@@ -5,7 +5,10 @@ LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 DEPENDS = "boost libdrm virtual/libg2d libtinyxml2"
 
-SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
+SRC_URI = " \
+    ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
+    file://0001-cpp-netlib-parsers.ipp-add-missing-include.patch \
+"
 
 SRC_URI[md5sum] = "693e76b20985de607208c21d996019f8"
 SRC_URI[sha256sum] = "c2f450502390442926920d6457bbf24378c0338a445be180130ec6b1b12d1056"
