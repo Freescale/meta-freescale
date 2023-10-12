@@ -1,0 +1,63 @@
+From fcdf06423d682cdafc092b67bbada3753c20bbd5 Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Thu, 12 Oct 2023 18:52:02 -0300
+Subject: [PATCH] Fix include of headers so it indicates it uses the includedir
+
+Upstream-Status: Submitted [https://github.com/nxp-imx-support/nxp-cst-signer/pull/2]
+
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ src/cfg_parser.c |  2 +-
+ src/cst_signer.c | 10 ++++++----
+ src/fdt.c        |  3 ++-
+ 3 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/src/cfg_parser.c b/src/cfg_parser.c
+index 0f4ea0a..e289d13 100644
+--- a/src/cfg_parser.c
++++ b/src/cfg_parser.c
+@@ -4,7 +4,7 @@
+  *
+  */
+ 
+-#include "cfg_parser.h"
++#include <cfg_parser.h>
+ 
+ #define DELIMITER       "="
+ 
+diff --git a/src/cst_signer.c b/src/cst_signer.c
+index 4d8825b..34d1711 100644
+--- a/src/cst_signer.c
++++ b/src/cst_signer.c
+@@ -4,11 +4,13 @@
+  *
+  */
+ 
+-#include "cst_signer.h"
+-#include "cfg_parser.h"
+-#include "mkimage_helper.h"
+-#include "fdt.h"
+ #include <limits.h>
++
++#include <cst_signer.h>
++#include <cfg_parser.h>
++#include <mkimage_helper.h>
++#include <fdt.h>
++
+ #define RSIZE   256
+ 
+ uint32_t g_image_offset = 0;
+diff --git a/src/fdt.c b/src/fdt.c
+index 34cf585..9aecca9 100644
+--- a/src/fdt.c
++++ b/src/fdt.c
+@@ -13,7 +13,8 @@
+ #include <limits.h>
+ #include <stdio.h>
+ #include <string.h>
+-#include "fdt.h"
++
++#include <fdt.h>
+ 
+ 
+ static struct fdt_errtabent fdt_errtable[] = {

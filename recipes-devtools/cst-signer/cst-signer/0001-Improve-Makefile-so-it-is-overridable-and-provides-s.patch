@@ -1,0 +1,94 @@
+From d7d6eebdb4f49e6a3d93c101f1fb23bb6e96f07c Mon Sep 17 00:00:00 2001
+From: Otavio Salvador <otavio@ossystems.com.br>
+Date: Thu, 12 Oct 2023 18:48:09 -0300
+Subject: [PATCH] Improve Makefile so it is overridable and provides
+ standardized targets
+
+This commit rework the Makefile targets so it provides a standardized
+set of targets and allow overriding of variables so cross compiling is
+properly supported.
+
+Upstream-Status: Submitted [https://github.com/nxp-imx-support/nxp-cst-signer/pull/2]
+
+Fixes: #1.
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+---
+ Makefile     | 14 +++++++-------
+ src/Makefile | 34 ++++++++++++++++++++++------------
+ 2 files changed, 29 insertions(+), 19 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index c799b13..a722744 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,13 +4,13 @@
+ #    SPDX-License-Identifier: GPL-2.0-or-later
+ #==============================================================================
+ 
+-SRC_DIR := src
+-
+-.PHONY: all clean
+-
+ all:
+-	@$(MAKE) -C $(SRC_DIR)/
+-	@mv $(SRC_DIR)/cst_signer .
++	@$(MAKE) -C src
++
++install:
++	@$(MAKE) -C src install
+ 
+ clean:
+-	@rm -rf cst_signer src/fdt.o
++	@$(MAKE) -C src clean
++
++.PHONY: all install clean
+diff --git a/src/Makefile b/src/Makefile
+index 5e6dade..101be12 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -4,23 +4,33 @@
+ #    SPDX-License-Identifier: GPL-2.0-or-later
+ #==============================================================================
+ 
+-CC = gcc
++CC       ?= gcc
++CFLAGS   ?= -g -Wall -Werror
++CPPFLAGS ?=
++LDFLAGS  ?=
++INCLUDES  = -I../inc/
+ 
+-COPTS = -g -Wall -Werror
+-CFLAGS = -I../inc/.
++PREFIX   ?= /usr/local
++BINDIR   ?= $(PREFIX)/bin
++DATADIR  ?= $(PREFIX)/share
+ 
+-DEPS = cst_signer.h cfg_parser.h mkimage_helper.h
+-SRCS = cst_signer.c cfg_parser.c mkimage_helper.c fdt.o
++SRCS = cst_signer.c cfg_parser.c mkimage_helper.c fdt.c
+ 
+-.PHONY: all clean
++all: cst-signer
+ 
+-all: cst_signer fdt.o
++%.o : %.c
++	$(CC) -c $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS) $< -o $@
+ 
+-fdt.o: fdt.c
+-	$(CC) -c -w -o $@ $< $(CFLAGS)
++cst-signer: $(SRCS:.c=.o)
++	$(CC) $(INCLUDES) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS) -o $@ $(SRCS:.c=.o)
+ 
+-cst_signer: cst_signer.c fdt.o
+-	$(CC) $(COPTS) $(CFLAGS) -o $@ $(SRCS)
++install: cst-signer
++	install -D -m 0755 cst-signer $(DESTDIR)/$(BINDIR)/cst-signer
++	install -D -m 0755 -t $(DESTDIR)$(DATADIR)/doc/cst-signer \
++            ../csf_ahab.cfg.sample \
++            ../csf_hab4.cfg.sample
+ 
+ clean:
+-	rm -rf cst_signer fdt.o
++	rm -rf cst-signer *.o
++
++.PHONY: all install clean
