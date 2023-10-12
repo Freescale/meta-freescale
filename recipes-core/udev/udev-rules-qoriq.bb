@@ -22,7 +22,6 @@ RULE:ls1046a = "73-fsl-dpaa-persistent-networking.rules \
     74-ls1046a-xfi2-networking.rules \
 "
 RULE:ls1012a = ""
-RULE:ls2080a = ""
 
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d/

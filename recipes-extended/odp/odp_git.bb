@@ -15,7 +15,6 @@ ODP_PLATFORM ?= "linux-dpaa2"
 ODP_BUILD_TYPE ?= "ls2088"
 ODP_BUILD_TYPE:ls1043ardb = "ls1043"
 ODP_BUILD_TYPE:ls1046ardb = "ls1046"
-ODP_BUILD_TYPE:ls2080ardb = "ls2080"
 ODP_BUILD_TYPE:ls1088ardb = "ls1088"
 
 EXTRA_OECONF = "--with-platform=${ODP_PLATFORM} \
