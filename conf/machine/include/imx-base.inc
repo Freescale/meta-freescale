@@ -131,6 +131,18 @@ SOC_ATF_BOOT_UART_BASE                    = ""
 SOC_ATF_BOOT_UART_BASE:mx8m-generic-bsp   = "0x30890000"
 ATF_BOOT_UART_BASE                       ?= "${SOC_ATF_BOOT_UART_BASE}"
 
+#####
+# Secure boot support
+#####
+MACHINEOVERRIDES:append:mx6-generic-bsp = ":imx-hab4-secureboot"
+MACHINEOVERRIDES:append:mx7-generic-bsp = ":imx-hab4-secureboot"
+MACHINEOVERRIDES:append:mx8m-generic-bsp = ":imx-hab4-secureboot"
+MACHINEOVERRIDES:append:mx8ulp-generic-bsp = ":imx-ahab-secureboot"
+MACHINEOVERRIDES:append:mx8qm-generic-bsp = ":imx-ahab-secureboot"
+MACHINEOVERRIDES:append:mx8qxp-generic-bsp = ":imx-ahab-secureboot"
+MACHINEOVERRIDES:append:mx8dxl-generic-bsp = ":imx-ahab-secureboot"
+MACHINEOVERRIDES:append:mx9-generic-bsp = ":imx-ahab-secureboot"
+
 PREFERRED_PROVIDER_virtual/xserver      = "xserver-xorg"
 XSERVER_DRIVER                          = "xf86-video-fbdev"
 XSERVER_DRIVER:vf-generic-bsp           = "xf86-video-modesetting"
