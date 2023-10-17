@@ -194,3 +194,5 @@ RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RREPLACES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RCONFLICTS:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
+
+COMPATIBLE_MACHINE = "(imx-generic-bsp)"
