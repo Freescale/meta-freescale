@@ -12,20 +12,16 @@ i.MX Family Reference Boards. It includes support for many IPs such as GPU, VPU 
 
 require recipes-kernel/linux/linux-imx.inc
 
-SRC_URI += "file://ARM-imx_v7_defconfig-Remove-KERNEL_LZO-config.patch \
-            file://drivers-mxc-gpu-viv-Fix-enum-int-mismatch-warning.patch \
-           "
-
 SRCBRANCH = "lf-6.1.y"
-LOCALVERSION = "-6.1.22-2.0.0"
-SRCREV = "66e442bc7fdcc935e6faa94c743f653263d4ed67"
+LOCALVERSION = "-6.1.36-2.1.0"
+SRCREV = "04b05c5527e9af8d81254638c307df07dc9a5dd3"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.22"
+LINUX_VERSION = "6.1.36"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
