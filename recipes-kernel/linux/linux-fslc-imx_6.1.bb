@@ -52,16 +52,16 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 require linux-imx.inc
 
-KBRANCH = "6.1-2.0.x-imx"
+KBRANCH = "6.1-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "b872b1170fc8843b55e9f8838dd373ff43bb7552"
+SRCREV = "3f41fbe42851375d3d5996e4bf9e9809e6c79517"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.38"
+LINUX_VERSION = "6.1.57"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
