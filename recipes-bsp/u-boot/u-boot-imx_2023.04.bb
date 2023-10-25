@@ -3,7 +3,7 @@
 # Copyright (C) 2017-2023 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
-require recipes-bsp/u-boot/u-boot-imx-common_${PV}.inc
+require u-boot-imx-common_${PV}.inc
 
 PROVIDES += "u-boot u-boot-mfgtool"
 
