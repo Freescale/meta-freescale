@@ -40,4 +40,6 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 LDFLAGS:remove = "-fuse-ld=lld"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 COMPATIBLE_MACHINE = "(mx8qm-generic-bsp|mx8qxp-generic-bsp|mx8dxl-generic-bsp|mx8dx-generic-bsp)"
