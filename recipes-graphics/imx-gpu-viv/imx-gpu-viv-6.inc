@@ -59,7 +59,6 @@ PROVIDES_OPENCL:mx8mm-nxp-bsp = ""
 
 PROVIDES_OPENGLES3               = ""
 PROVIDES_OPENGLES3:mx8-nxp-bsp   = "virtual/libgles3"
-PROVIDES_OPENGLES3:mx8mm-nxp-bsp = ""
 
 # Note: OpenVX is fully supported on i.MX 8 QuadMax and 8 QuadPlus.
 # However, only limited support is provided on other i.MX 8 machines
@@ -189,7 +188,7 @@ IMX_SOC:mx8mq-nxp-bsp  = "mx8mq"
 IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
 IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
-LIBVULKAN_API_VERSION   = "1.2.182"
+LIBVULKAN_API_VERSION   = "1.3.239"
 
 do_install () {
     install -d ${D}${libdir}
