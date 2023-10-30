@@ -4,14 +4,18 @@
 
 DESCRIPTION = "G2D library using i.MX DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
+LIC_FILES_CHKSUM = "file://COPYING;md5=db4762b09b6bda63da103963e6e081de"
 
 DEPENDS = "libgal-imx libdrm"
 PROVIDES += "virtual/libg2d"
 
-SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "0f7ceac3f8ce97d4f0f6ad5bb8a5bbd2"
-SRC_URI[sha256sum] = "dfcda2c286076bb6080261901241eac2a9e9db8ebbd00f301d8f49665af4c835"
+SRC_URI = "${FSL_MIRROR}/${IMX_BIN_NAME}.bin;fsl-eula=true"
+IMX_BIN_NAME = "${BP}-${IMX_SRCREV_ABBREV}"
+IMX_SRCREV_ABBREV = "7ed5396"
+SRC_URI[md5sum] = "eed4f724973192564474efbda83f67bc"
+SRC_URI[sha256sum] = "bca725e442c1438990cf1b41a59194e6efbd080c63d9b683a0d572e27f900e25"
+
+S = "${WORKDIR}/${IMX_BIN_NAME}"
 
 inherit fsl-eula-unpack
 
@@ -22,7 +26,6 @@ do_install () {
     cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
 }
 
-INSANE_SKIP:${PN} += "ldflags"
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 RDEPENDS:${PN}:append:libc-musl = " gcompat"
 
