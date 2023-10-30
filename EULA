@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v45 May 2023
+LA_OPT_NXP_Software_License v48 July 2023
 IMPORTANT.  Read the following NXP Software License Agreement (“Agreement”)
 completely. By selecting the “I Accept” button at the end of this page, or
 by downloading, installing, or using the Licensed Software, you indicate that
@@ -384,7 +384,7 @@ Agreement:
 
 Airbiquity Inc.: The Airbiquity software may only be used in object code and
 Licensee may not sublicense the Airbiquity software to any third party.
-Licensee’s license to use the Airbiquity software expires on June 30, 2023.
+Licensee’s license to use the Airbiquity software expires on June 30, 2024.
 
 Amazon: Use of the Amazon software constitutes your acceptance of the terms of
 the Amazon Program Materials License Agreement (including the AVS Component
@@ -415,15 +415,23 @@ here: https://github.com/aws/aws-iot-fleetwise-edge/blob/main/LICENSE.
 Amphion Semiconductor Ltd.: Distribution of Amphion software must be a part of,
 or embedded within, Authorized Systems that include an Amphion Video Decoder.
 
-Apple Mfi Software Development Kit: Use of Apple Mfi Software and associated
-documentation is restricted to current Apple Mfi licensees in accordance with
+Apple MFi Software Development Kit: Use of Apple MFi Software and associated
+documentation is restricted to current Apple MFi licensees in accordance with
 the terms of their own valid and in-effect license from Apple.
 
-Aquantia Corp.: You may use Aquantia’s API binaries solely to flash the API
+Aquantia Corp.: You may use Aquantia's API binaries solely to flash the API
 software to an NXP Product which mates with an Aquantia device.
 
 Argus Cyber Security: The Argus software may only be used in object code and
 only for evaluation and demonstration purposes.
+
+Arm Toolkit: This tool is owned by Arm Limited. You may not reverse engineer,
+decompile or dissemble any ARM Toolkit. You agree to abide by any third-party
+IP requirements, including the relevant license terms where applicable, where
+such third-party IP is identified in the documentation provided with the ARM
+Toolkit. You may not copy the Arm Toolkit except solely for archival and backup
+purposes provided all notices are preserved. Arm disclaims any and all
+liability related to your use of the ARM Toolkit.
 
 Atheros: Use of Atheros software is limited to evaluation and demonstration
 only.  Permitted distributions must be similarly limited. Further rights must
@@ -575,9 +583,10 @@ MQX RTOS Code: MQX RTOS source code may not be re-distributed by any NXP
 Licensee under any circumstance, even by a signed written amendment to this
 Agreement.
 
-NXP Voice Software: VoiceSpot, VoiceSeeker (including AEC), and Conversa may be
-used for evaluation or demonstration purposes only. Any commercial distribution
-rights are subject to a separate royalty agreement obtained from NXP.
+NXP Voice Software: VoiceSpot, VoiceSeeker (including AEC), VIT Speech to
+Intent, and Conversa may be used for evaluation or demonstration purposes only.
+Any commercial distribution rights are subject to a separate royalty agreement
+obtained from NXP.
 
 NXP Wireless Charging Library: License to the Software is limited to use in
 inductive coupling or wireless charging applications
