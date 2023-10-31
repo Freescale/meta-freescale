@@ -584,6 +584,8 @@ PREFERRED_VERSION_libdrm:mx7-nxp-bsp ??= "2.4.115.imx"
 PREFERRED_VERSION_libdrm:mx8-nxp-bsp ??= "2.4.115.imx"
 PREFERRED_VERSION_libdrm:mx9-nxp-bsp ??= "2.4.115.imx"
 
+PREFERRED_VERSION_spirv-headers:imxvulkan            ??= "1.3.239.0.imx"
+PREFERRED_VERSION_spirv-tools:imxvulkan              ??= "1.3.239.0.imx"
 PREFERRED_VERSION_vulkan-headers:imxvulkan           ??= "1.3.239.0.imx"
 PREFERRED_VERSION_vulkan-loader:imxvulkan            ??= "1.3.239.0.imx"
 PREFERRED_VERSION_vulkan-tools:imxvulkan             ??= "1.3.239.0.imx"
