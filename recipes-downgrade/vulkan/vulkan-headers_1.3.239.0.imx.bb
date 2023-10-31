@@ -9,14 +9,15 @@ SECTION = "libs"
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=3b83ef96387f14655fc854ddc3c6bd57"
-SRC_URI = "git://github.com/KhronosGroup/Vulkan-Headers.git;branch=master;protocol=https"
+SRC_URI = "git://github.com/KhronosGroup/Vulkan-Headers.git;branch=main;protocol=https"
 
-SRCREV = "37164a5726f7e6113810f9557903a117498421cf"
+SRCREV = "2bb0a23104ceffd9a28d5b7401f2cee7dae35bb8"
 
 S = "${WORKDIR}/git"
 
 inherit cmake
 
 FILES:${PN} += "${datadir}/vulkan"
+RDEPENDS:${PN} += "python3-core"
 
 UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\d+(\.\d+)+)"

@@ -9,9 +9,8 @@ SECTION = "libs"
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=7dbefed23242760aa3475ee42801c5ac"
-SRC_URI = "git://github.com/KhronosGroup/Vulkan-Loader.git;protocol=https;branch=master \
-           "
-SRCREV = "1896143df69d439b0933c1bb485f5a4587bdf2dc"
+SRC_URI = "git://github.com/KhronosGroup/Vulkan-Loader.git;branch=sdk-1.3.239;protocol=https"
+SRCREV = "fa421a02686e7f01c8e4af24650fa04374df8338"
 
 S = "${WORKDIR}/git"
 
@@ -29,7 +28,6 @@ EXTRA_OECMAKE = "\
                  -DVulkanRegistry_DIR=${RECIPE_SYSROOT}/${datadir} \
                  "
 
-# must choose x11 or wayland or both
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'wayland x11', d)}"
 
 PACKAGECONFIG[x11] = "-DBUILD_WSI_XLIB_SUPPORT=ON -DBUILD_WSI_XCB_SUPPORT=ON, -DBUILD_WSI_XLIB_SUPPORT=OFF -DBUILD_WSI_XCB_SUPPORT=OFF, libxcb libx11 libxrandr"

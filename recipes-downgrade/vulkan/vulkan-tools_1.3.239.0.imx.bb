@@ -6,12 +6,12 @@ SECTION = "libs"
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=3b83ef96387f14655fc854ddc3c6bd57"
-SRC_URI = "git://github.com/KhronosGroup/Vulkan-Tools.git;protocol=https;branch=sdk-1.2.182"
-SRCREV = "9d3305731c3be8de05c9f223a79959d448506a37"
+SRC_URI = "git://github.com/KhronosGroup/Vulkan-Tools.git;branch=sdk-1.3.239;protocol=https"
+SRCREV = "84c61c463aecdda385de33b0149c7368119c23f6"
 
 S = "${WORKDIR}/git"
 
-inherit cmake features_check
+inherit cmake features_check pkgconfig
 ANY_OF_DISTRO_FEATURES = "x11 wayland"
 REQUIRED_DISTRO_FEATURES = "vulkan"
 
