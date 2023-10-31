@@ -164,8 +164,8 @@ SRC_URI:remove = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}
 SRC_URI:prepend = "git://github.com/nxp-imx/weston-imx.git;protocol=https;branch=${SRCBRANCH} "
 SRC_URI += "file://0001-Revert-protocol-no-found-wayland-scanner-with-Yocto-.patch \
             file://0001-g2d-renderer.c-Include-sys-stat.h.patch"
-SRCBRANCH = "weston-imx-10.0.3"
-SRCREV = "c41675dc616886828219eba9b9ce22ec17533090"
+SRCBRANCH = "weston-imx-10.0.4"
+SRCREV = "6210a8f1302252273b50cc3c0ff55ec680dda479"
 S = "${WORKDIR}/git"
 
 # Disable OpenGL for parts with GPU support for 2D but not 3D
