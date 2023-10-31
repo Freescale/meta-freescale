@@ -22,8 +22,10 @@ PACKAGECONFIG:remove:use-mainline-bsp = "xwayland"
 
 PACKAGECONFIG_GBM_FORMAT               ?= ""
 PACKAGECONFIG_GBM_FORMAT:mx8mq-nxp-bsp ?= "gbm-format"
+PACKAGECONFIG_GBM_FORMAT:mx93-nxp-bsp  ?= "gbm-format"
 
 GBM_FORMAT_VALUE:mx8mq-nxp-bsp = "argb8888"
+GBM_FORMAT_VALUE:mx93-nxp-bsp  = "argb8888"
 
 PACKAGECONFIG_REPAINT_WINDOW             ?= ""
 PACKAGECONFIG_REPAINT_WINDOW:mx8-nxp-bsp ?= "repaint-window"
