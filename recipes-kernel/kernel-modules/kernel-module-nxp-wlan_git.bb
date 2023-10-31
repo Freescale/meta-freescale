@@ -10,7 +10,8 @@ RCONFLICTS:${PN} = "kernel-module-nxp89xx"
 
 SRCBRANCH = "lf-6.1.22_2.0.0"
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
-SRC_URI = "${MRVL_SRC};branch=${SRCBRANCH}"
+SRC_URI = "${MRVL_SRC};branch=${SRCBRANCH} \
+           file://0001-moal_cfg80211-remove-dropped-REGULATORY_IGNORE_STALE.patch;patchdir=${WORKDIR}/git"
 SRCREV = "f1382ccbd34fc22daf504e798745f6cddb702b82"
 
 S = "${WORKDIR}/git/mxm_wifiex/wlan_src"
