@@ -38,3 +38,29 @@ KCONFIG_MODE="--alldefconfig"
 # We need to pass it as param since kernel might support more then one
 # machine, with different entry points
 KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
+
+# A function to strip the new 32-bit dtb sub-folders in KERNEL_DEVICETREE
+# for older kernel builds.
+# Set KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1" to enable.
+KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE ?= "0"
+python kernel_devicetree_32bit_compatibility_update() {
+    import os.path
+    import re
+    if d.getVar('KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE') != "1" or d.getVar('TUNE_ARCH') != "arm":
+        return
+    input = d.getVar('KERNEL_DEVICETREE').split()
+    output = ""
+    stripped = ""
+    for original in input:
+        if re.match("^.*/", original):
+            stripped = os.path.basename(original)
+            output += stripped + " "
+            bb.debug(1, "Devicetrees are moved to sub-folder, stripping the sub-folder for older kernel: %s -> %s" % (original, stripped))
+        else:
+            output += original + " "
+    if stripped:
+        bb.warn("Updating KERNEL_DEVICETREE, removing sub-folders for older kernel. Use -D for more details. Set KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = \"0\" to disable.")
+        d.setVar('KERNEL_DEVICETREE', output)
+}
+addhandler kernel_devicetree_32bit_compatibility_update
+kernel_devicetree_32bit_compatibility_update[eventmask] = "bb.event.RecipeParsed"

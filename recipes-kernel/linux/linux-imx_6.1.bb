@@ -12,6 +12,8 @@ i.MX Family Reference Boards. It includes support for many IPs such as GPU, VPU 
 
 require recipes-kernel/linux/linux-imx.inc
 
+KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
+
 SRCBRANCH = "lf-6.1.y"
 LOCALVERSION = "-6.1.36-2.1.0"
 SRCREV = "04b05c5527e9af8d81254638c307df07dc9a5dd3"
