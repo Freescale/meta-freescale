@@ -12,6 +12,8 @@ upstreaming in any form."
 
 require linux-imx.inc
 
+include linux-legacy-arm-dts.inc
+
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
