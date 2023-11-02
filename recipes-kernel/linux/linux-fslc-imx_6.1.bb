@@ -52,6 +52,8 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 require linux-imx.inc
 
+KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
+
 KBRANCH = "6.1-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 SRCREV = "3f41fbe42851375d3d5996e4bf9e9809e6c79517"
