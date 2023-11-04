@@ -93,8 +93,8 @@ LIC_FILES_CHKSUM = " \
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz"
 SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
 GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.08.00_2305_L6.1.y"
-SRCREV = "e39d4ce54e78cb090cf4e5cd56f431c365c5b0f4"
+SRCBRANCH = "MM_04.08.01_2308_L6.1.y"
+SRCREV = "95112902507718085231a933cdfe54e3997d1b28"
 
 S = "${WORKDIR}/git"
 

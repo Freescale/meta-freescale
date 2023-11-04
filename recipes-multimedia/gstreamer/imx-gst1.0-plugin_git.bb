@@ -22,7 +22,7 @@ RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=fbc093901857fcd118f065f900982c24"
 
-PV = "4.8.0+git${SRCPV}"
+PV = "4.8.1+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-aiurdemux-Fix-type-of-USER_DATA_LOCATION.patch \
@@ -37,8 +37,8 @@ SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=
            file://0010-provide-declaration-for-aiur_register_external_typef.patch \
            file://0011-meson-Undef-_TIME_BITS-along-with-_FILE_OFFSET_BITS.patch \
            "
-SRCBRANCH = "MM_04.08.00_2305_L6.1.y"
-SRCREV = "2df72651dcc0ecff9db7c0a96d59c5ca2b9be9d4"
+SRCBRANCH = "MM_04.08.01_2308_L6.1.y"
+SRCREV = "903c03e8611a107508b1f60e4736df208e72247d"
 
 S = "${WORKDIR}/git"
 

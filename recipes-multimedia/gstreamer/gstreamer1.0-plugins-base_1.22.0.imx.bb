@@ -116,8 +116,8 @@ SRC_URI:remove = " \
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 SRC_URI:append = " file://0001-gstallocator-Fix-typcasts.patch"
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.08.00_2305_L6.1.y"
-SRCREV = "aaaf7df211523b1835659ae85c510e5615d451d7"
+SRCBRANCH = "MM_04.08.01_2308_L6.1.y"
+SRCREV = "f7c109c3b09645266ad41139253f32cf70a7d692"
 
 S = "${WORKDIR}/git"
 
