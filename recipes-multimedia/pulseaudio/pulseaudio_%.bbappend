@@ -11,6 +11,8 @@ SRC_URI_IMX:mx7-nxp-bsp = " \
     file://0100-pulseaudio-remove-the-control-for-speaker-headphone-widge.patch"
 SRC_URI_IMX:mx8-nxp-bsp = " \
     ${SRC_URI_IMX:mx6-nxp-bsp}"
+SRC_URI_IMX:mx9-nxp-bsp = " \
+    ${SRC_URI_IMX:mx6-nxp-bsp}"
 
 CACHED_CONFIGUREVARS:append:mx6-nxp-bsp = " ax_cv_PTHREAD_PRIO_INHERIT=no"
 
@@ -24,3 +26,4 @@ do_install:append() {
 PACKAGE_ARCH:mx6-nxp-bsp = "${MACHINE_SOCARCH}"
 PACKAGE_ARCH:mx7-nxp-bsp = "${MACHINE_SOCARCH}"
 PACKAGE_ARCH:mx8-nxp-bsp = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:mx9-nxp-bsp = "${MACHINE_SOCARCH}"
