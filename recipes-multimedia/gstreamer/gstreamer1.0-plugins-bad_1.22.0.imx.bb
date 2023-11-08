@@ -187,8 +187,8 @@ SRC_URI:remove  = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plu
                    file://0002-avoid-including-sys-poll.h-directly.patch"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.08.00_2305_L6.1.y"
-SRCREV = "3c2f0b5794e699437964f2c337463f57b1e17f51"
+SRCBRANCH = "MM_04.08.01_2308_L6.1.y"
+SRCREV = "fd7a399c3a9c43b5675bc2497ad8a23540bf720e"
 
 S = "${WORKDIR}/git"
 
