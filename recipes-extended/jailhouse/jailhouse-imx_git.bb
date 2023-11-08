@@ -64,6 +64,7 @@ do_install:prepend() {
         ARCH=${JH_ARCH} \
         CROSS_COMPILE=${TARGET_PREFIX} \
         KDIR=${STAGING_KERNEL_BUILDDIR} \
+        MODLIB="${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}" \
         INSTALL_MOD_PATH=${D}${root_prefix} \
         firmwaredir=${nonarch_base_libdir}/firmware \
         DESTDIR=${D} install
