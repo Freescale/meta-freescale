@@ -25,8 +25,9 @@ do_kernel_localversion() {
 
 	if [ "${SCMVERSION}" = "y" ]; then
 		# Add GIT revision to the local version
-		head=`git --git-dir=${S}/.git rev-parse --verify --short HEAD 2> /dev/null`
-		printf "%s%s" +g $head > ${S}/.scmversion
+		head=`git --git-dir=${S}/.git rev-parse --verify --short ${SRCREV} 2> /dev/null`
+		patches=`git --git-dir=${S}/.git rev-list --count ${SRCREV}..HEAD 2> /dev/null`
+		printf "%s%s%s%s" +g $head +p $patches > ${S}/.scmversion
 
 		sed -i -e "/CONFIG_LOCALVERSION_AUTO[ =]/d" ${B}/.config
 		echo "CONFIG_LOCALVERSION_AUTO=y" >> ${B}/.config
