@@ -1,0 +1,38 @@
+From e3803a81326cece3b4cdd086ab009e9858fec21e Mon Sep 17 00:00:00 2001
+From: Joao Marcos Costa <joaomarcos.costa@bootlin.com>
+Date: Thu, 7 Dec 2023 15:45:12 +0100
+Subject: [PATCH] iMX9/soc.mak: dynamically set AHAB_IMG
+
+Instead of assigning a constant value to AHAB_IMG (i.e.,
+mx93a0-ahab-container.img), set it to SECO_FIRMWARE_NAME.
+
+This variable is defined in
+use-imx-security-controller-firmware.bbclass, then it is passed as a
+make parameter in imx-boot's do_compile() task.
+
+As of now, there are revisions beyond A0 (namely A1), so the firmware
+must be compiled accordingly. The firmware name is already handled in
+Yocto side, but not in imx-boot/imx-mkimage side. This patch implements
+such feature.
+
+Signed-off-by: Joao Marcos Costa <joaomarcos.costa@bootlin.com>
+---
+ iMX9/soc.mak | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/iMX9/soc.mak b/iMX9/soc.mak
+index 7c4086c..fa13391 100644
+--- a/iMX9/soc.mak
++++ b/iMX9/soc.mak
+@@ -16,7 +16,7 @@ else
+     RENAME = rename
+ endif
+ 
+-AHAB_IMG = mx93a0-ahab-container.img
++AHAB_IMG = ${SECO_FIRMWARE_NAME}
+ MCU_IMG = m33_image.bin
+ 
+ SPL_LOAD_ADDR ?= 0x2049A000
+-- 
+2.43.0
+
