@@ -190,10 +190,10 @@ do_compile() {
                     if [ "$target" = "flash_linux_m4_no_v2x" ]; then
                         # Special target build for i.MX 8DXL with V2X off
                         bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
-                        make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME_EXTRA} flash_linux_m4
+                        make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME_EXTRA} flash_linux_m4 SECO_FIRMWARE_NAME=${SECO_FIRMWARE_NAME}
                     else
                         bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} ${target}"
-                        make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} dtbs=${UBOOT_DTB_NAME_EXTRA} ${target}
+                        make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} dtbs=${UBOOT_DTB_NAME_EXTRA} ${target} SECO_FIRMWARE_NAME=${SECO_FIRMWARE_NAME}
                     fi
                     if [ -e "${BOOT_STAGING}/flash.bin" ]; then
                         cp ${BOOT_STAGING}/flash.bin ${S}/${BOOT_CONFIG_MACHINE_EXTRA}-${target}
