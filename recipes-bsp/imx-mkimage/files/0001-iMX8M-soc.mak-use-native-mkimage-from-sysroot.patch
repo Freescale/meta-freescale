@@ -22,56 +22,56 @@ Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@foundries.io>
  iMX8M/soc.mak | 11 +++++------
  1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/iMX8M/soc.mak b/iMX8M/soc.mak
-index 3486079..855c1e5 100644
---- a/iMX8M/soc.mak
-+++ b/iMX8M/soc.mak
-@@ -155,7 +155,7 @@ u-boot.itb: $(dtb) $(supp_dtbs)
+Index: git/iMX8M/soc.mak
+===================================================================
+--- git.orig/iMX8M/soc.mak
++++ git/iMX8M/soc.mak
+@@ -160,7 +160,7 @@ u-boot.itb: $(dtb) $(supp_dtbs)
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb) $(supp_dtbs)
  	BL32=$(TEE) DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb) $(supp_dtbs) > u-boot.its
--	./mkimage_uboot -E -p 0x3000 -f u-boot.its u-boot.itb
-+	mkimage -E -p 0x3000 -f u-boot.its u-boot.itb
+-	./mkimage_uboot -E -p $(FIT_EXTERNAL_POSITION) -f u-boot.its u-boot.itb
++	mkimage -E -p $(FIT_EXTERNAL_POSITION) -f u-boot.its u-boot.itb
  	@rm -f u-boot.its $(dtb)
  
  dtb_ddr3l = valddr3l.dtb
-@@ -167,7 +167,7 @@ u-boot-ddr3l.itb: $(dtb_ddr3l) $(supp_dtbs)
+@@ -172,7 +172,7 @@ u-boot-ddr3l.itb: $(dtb_ddr3l) $(supp_dt
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr3l) $(supp_dtbs)
  	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr3l) $(supp_dtbs) > u-boot-ddr3l.its
--	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr3l.its u-boot-ddr3l.itb
-+	mkimage -E -p 0x3000 -f u-boot-ddr3l.its u-boot-ddr3l.itb
+-	./mkimage_uboot -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr3l.its u-boot-ddr3l.itb
++	mkimage -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr3l.its u-boot-ddr3l.itb
  	@rm -f u-boot.its $(dtb_ddr3l)
  
  dtb_ddr3l_evk = evkddr3l.dtb
-@@ -179,7 +179,7 @@ u-boot-ddr3l-evk.itb: $(dtb_ddr3l_evk) $(supp_dtbs)
+@@ -184,7 +184,7 @@ u-boot-ddr3l-evk.itb: $(dtb_ddr3l_evk) $
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr3l_evk) $(supp_dtbs)
  	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr3l_evk) $(supp_dtbs) > u-boot-ddr3l-evk.its
--	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr3l-evk.its u-boot-ddr3l-evk.itb
-+	mkimage -E -p 0x3000 -f u-boot-ddr3l-evk.its u-boot-ddr3l-evk.itb
+-	./mkimage_uboot -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr3l-evk.its u-boot-ddr3l-evk.itb
++	mkimage -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr3l-evk.its u-boot-ddr3l-evk.itb
  	@rm -f u-boot.its $(dtb_ddr3l_evk)
  
  dtb_ddr4 = valddr4.dtb
-@@ -191,7 +191,7 @@ u-boot-ddr4.itb: $(dtb_ddr4) $(supp_dtbs)
+@@ -196,7 +196,7 @@ u-boot-ddr4.itb: $(dtb_ddr4) $(supp_dtbs
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr4) $(supp_dtbs)
  	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr4) $(supp_dtbs) > u-boot-ddr4.its
--	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr4.its u-boot-ddr4.itb
-+	mkimage -E -p 0x3000 -f u-boot-ddr4.its u-boot-ddr4.itb
+-	./mkimage_uboot -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr4.its u-boot-ddr4.itb
++	mkimage -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr4.its u-boot-ddr4.itb
  	@rm -f u-boot.its $(dtb_ddr4)
  
  dtb_ddr4_evk = evkddr4.dtb
-@@ -203,7 +203,7 @@ u-boot-ddr4-evk.itb: $(dtb_ddr4_evk) $(supp_dtbs)
+@@ -208,7 +208,7 @@ u-boot-ddr4-evk.itb: $(dtb_ddr4_evk) $(s
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtb_ddr4_evk) $(supp_dtbs)
  	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ../$(SOC_DIR)/mkimage_fit_atf.sh $(dtb_ddr4_evk) $(supp_dtbs) > u-boot-ddr4-evk.its
--	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
-+	mkimage -E -p 0x3000 -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
+-	./mkimage_uboot -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
++	mkimage -E -p $(FIT_EXTERNAL_POSITION) -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
  	@rm -f u-boot.its $(dtb_ddr4_evk)
  
  ifeq ($(HDMI),yes)
-@@ -353,7 +353,6 @@ nightly :
+@@ -358,7 +358,6 @@ nightly :
  	@$(WGET) -q $(SERVER)/$(DIR)/$(FW_DIR)/fsl-$(PLAT)-evk.dtb -O fsl-$(PLAT)-evk.dtb
  	@$(WGET) -q $(SERVER)/$(DIR)/$(FW_DIR)/signed_hdmi_imx8m.bin -O signed_hdmi_imx8m.bin
  	@$(WGET) -q $(SERVER)/$(DIR)/$(FW_DIR)/signed_dp_imx8m.bin -O signed_dp_imx8m.bin
@@ -79,6 +79,3 @@ index 3486079..855c1e5 100644
  
  archive :
  	git ls-files --others --exclude-standard -z | xargs -0 tar rvf $(ARCHIVE_PATH)/$(ARCHIVE_NAME)
--- 
-2.40.1
-
