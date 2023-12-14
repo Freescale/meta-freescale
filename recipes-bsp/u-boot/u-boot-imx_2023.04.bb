@@ -53,6 +53,10 @@ do_deploy:append:mx8m-generic-bsp() {
             unset  j
         done
         unset  i
+    else
+        install -d ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -m 0644 ${B}/${config}/arch/arm/dts/${UBOOT_DTB_NAME}  ${DEPLOYDIR}/${BOOT_TOOLS}/${UBOOT_DTB_NAME}
+        install -m 0644 ${B}/${config}/u-boot-nodtb.bin                ${DEPLOYDIR}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}
     fi
 }
 
