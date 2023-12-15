@@ -91,6 +91,7 @@ FILES:${PN}:remove = "${libdir}/*"
 FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}"
 
 RDEPENDS:${PN} += " \
+    pyjailhouse \
     python3-curses \
     python3-datetime \
     python3-mmap \
