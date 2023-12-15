@@ -28,16 +28,17 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.1.38
+#    tag: v6.1.57
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.1.22-2.0.0
+#    tag: lf-6.1.36-2.1.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
+# - d9e9cb8ce9bc7 hx280enc_vc8000e: fix misplaced #endif
 # - 3f1f2ea729550 mxc: gpu-viv: change _QuerySignal() return type to gceSTATUS
 # - b73c6797ee427 ARM: imx_v7_defconfig: Remove KERNEL_LZO config
 # - ec33c7fc43bef touchscreen: Kconfig: add I2C dependency for CT36X
@@ -56,7 +57,7 @@ KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
 
 KBRANCH = "6.1-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "3f41fbe42851375d3d5996e4bf9e9809e6c79517"
+SRCREV = "241e2f51bd87beb652196d1db92f0387c1209bfb"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
