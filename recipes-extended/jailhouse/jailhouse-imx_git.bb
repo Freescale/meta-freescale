@@ -19,7 +19,8 @@ RPROVIDES:${PN} += "jailhouse"
 SRCBRANCH = "lf-6.1.22_2.0.0"
 SRCREV = "e090abc70bb395f705f85659ad92bdafbe407628"
 
-SRC_URI = "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https;branch=${SRCBRANCH}"
+IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
+SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH}"
 
 DEPENDS = " \
     make-native \
