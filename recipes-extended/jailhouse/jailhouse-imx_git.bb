@@ -91,6 +91,7 @@ PACKAGE_BEFORE_PN = "pyjailhouse"
 FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
 # Remove libdir/* appended by setuptools3-base.bbclass for module split to work correctly
 FILES:${PN}:remove = "${libdir}/*"
+FILES:${PN}-dev += "${RECIPE_SYSROOT_NATIVE}${PYTHON_SITEPACKAGES_DIR}/*"
 FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}"
 
 RDEPENDS:${PN} += " \
