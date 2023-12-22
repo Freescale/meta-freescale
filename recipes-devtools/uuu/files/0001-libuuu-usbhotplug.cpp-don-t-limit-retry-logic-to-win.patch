@@ -1,0 +1,61 @@
+From 51e8aa31a9260492576e316096dc8fb68065a7fd Mon Sep 17 00:00:00 2001
+From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Date: Fri, 22 Dec 2023 11:57:15 +0100
+Subject: [PATCH] libuuu/usbhotplug.cpp: don't limit retry logic to windows
+
+When using the udev rules to avoid use of sudo, we have sometimes
+observed uuu spuriously failing because it sees the device and
+attempts to open it, before the udev daemon has had a chance to apply
+its rules and grant access to the current user (via the 'uaccess'
+tag).
+
+The error in that case is -EACCES which libusb translates to
+LIBUSB_ERROR_ACCESS, so extend the retry logic to that case. Also,
+since I have seen the open() succeed on the 5th and last attempt, bump
+the number of retries to 10, for a total of around 2 seconds instead
+of just 1.
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/mfgtools/pull/407]
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+---
+ libuuu/usbhotplug.cpp | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/libuuu/usbhotplug.cpp b/libuuu/usbhotplug.cpp
+index 815d9dd..cc3d6ce 100644
+--- a/libuuu/usbhotplug.cpp
++++ b/libuuu/usbhotplug.cpp
+@@ -214,10 +214,7 @@ static string get_device_path(libusb_device *dev)
+ 
+ static int open_libusb(libusb_device *dev, void **usb_device_handle)
+ {
+-	int retry = 1;
+-#ifdef WIN32
+-	retry = 5;
+-#endif
++	int retry = 10;
+ 
+ 	while (retry)
+ 	{
+@@ -226,13 +223,17 @@ static int open_libusb(libusb_device *dev, void **usb_device_handle)
+ 		/* work around windows open device failure 1/10
+ 		 * sometime HID device detect need some time, refresh list
+ 		 * to make sure HID driver installed.
++		 *
++		 * On linux, udev rules may need some time to kick in,
++		 * so also retry on -EACCES.
+ 		 */
+ 		CAutoList l;
+ 
+ 		int ret;
+ 		if ((ret = libusb_open(dev, (libusb_device_handle **)(usb_device_handle))) < 0)
+ 		{
+-			if ((ret != LIBUSB_ERROR_NOT_SUPPORTED) || (retry == 0))
++			if ((ret != LIBUSB_ERROR_NOT_SUPPORTED && ret != LIBUSB_ERROR_ACCESS)
++			    || (retry == 0))
+ 			{
+ 				set_last_err_string("Failure open usb device" TRY_SUDO);
+ 				return -1;
+-- 
+2.40.1.1.g1c60b9335d
+
