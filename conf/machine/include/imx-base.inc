@@ -617,7 +617,8 @@ WIC_CREATE_EXTRA_ARGS ?= "--no-fstab-update"
 
 OPTEE_BIN_EXT ??= ""
 OPTEE_BOOT_IMAGE         = "tee.bin uTee-${OPTEE_BIN_EXT}"
-OPTEE_BOOT_IMAGE:aarch64 = "tee.bin"
+OPTEE_BOOT_IMAGE:mx8-generic-bsp = "tee.bin"
+OPTEE_BOOT_IMAGE:mx9-generic-bsp = "tee.bin"
 
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
