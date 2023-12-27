@@ -651,7 +651,10 @@ WKS_FILE_DEPENDS ?= " \
 #
 # NOTE: the results binary name of the boot container is set to 'imx-boot'
 # for both NXP and Mainline BSP.
-WKS_FILE_DEPENDS:append:imx-generic-bsp:aarch64 = " \
+WKS_FILE_DEPENDS:append:imx-generic-bsp:mx8-generic-bsp = " \
+    ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
+"
+WKS_FILE_DEPENDS:append:imx-generic-bsp:mx9-generic-bsp = " \
     ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
 "
 
