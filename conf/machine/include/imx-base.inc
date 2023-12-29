@@ -618,7 +618,8 @@ WIC_CREATE_EXTRA_ARGS ?= "--no-fstab-update"
 
 OPTEE_BIN_EXT ??= ""
 OPTEE_BOOT_IMAGE         = "tee.bin uTee-${OPTEE_BIN_EXT}"
-OPTEE_BOOT_IMAGE:aarch64 = "tee.bin"
+OPTEE_BOOT_IMAGE:mx8-generic-bsp = "tee.bin"
+OPTEE_BOOT_IMAGE:mx9-generic-bsp = "tee.bin"
 
 IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
@@ -651,7 +652,10 @@ WKS_FILE_DEPENDS ?= " \
 #
 # NOTE: the results binary name of the boot container is set to 'imx-boot'
 # for both NXP and Mainline BSP.
-WKS_FILE_DEPENDS:append:imx-generic-bsp:aarch64 = " \
+WKS_FILE_DEPENDS:append:imx-generic-bsp:mx8-generic-bsp = " \
+    ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
+"
+WKS_FILE_DEPENDS:append:imx-generic-bsp:mx9-generic-bsp = " \
     ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
 "
 
@@ -666,7 +670,8 @@ SERIAL_CONSOLES = "115200;ttymxc0"
 SERIAL_CONSOLES:mxs-generic-bsp = "115200;ttyAMA0"
 
 KERNEL_IMAGETYPE = "zImage"
-KERNEL_IMAGETYPE:aarch64 = "Image"
+KERNEL_IMAGETYPE:mx8-generic-bsp = "Image"
+KERNEL_IMAGETYPE:mx9-generic-bsp = "Image"
 
 MACHINE_FEATURES = "usbgadget usbhost vfat alsa touchscreen screen"
 
