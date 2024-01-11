@@ -15,15 +15,15 @@ require recipes-kernel/linux/linux-imx.inc
 KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
 
 SRCBRANCH = "lf-6.1.y"
-LOCALVERSION = "-6.1.36-2.1.0"
-SRCREV = "04b05c5527e9af8d81254638c307df07dc9a5dd3"
+LOCALVERSION = "-6.1.55-2.2.0"
+SRCREV = "770c5fe2c1d1529fae21b7043911cd50c6cf087e"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.36"
+LINUX_VERSION = "6.1.55"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
