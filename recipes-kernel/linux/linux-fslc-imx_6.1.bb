@@ -28,22 +28,23 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.1.57
+#    tag: v6.1.70
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.1.36-2.1.0
+#    tag: lf-6.1.55-2.2.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-# - d9e9cb8ce9bc7 hx280enc_vc8000e: fix misplaced #endif
-# - 3f1f2ea729550 mxc: gpu-viv: change _QuerySignal() return type to gceSTATUS
-# - b73c6797ee427 ARM: imx_v7_defconfig: Remove KERNEL_LZO config
-# - ec33c7fc43bef touchscreen: Kconfig: add I2C dependency for CT36X
-# - 6c41233a2cfbe pwm: pwm-adp5585: fix get_state callback prototype
-# - 9c7540ecb891f pwm: pwm-rpmsg-imx: fix get_state callback prototype
+# - 77a660738af5 Revert "net: stmmac: fix FPE events losing"
+# - d9e9cb8ce9bc hx280enc_vc8000e: fix misplaced #endif
+# - 3f1f2ea72955 mxc: gpu-viv: change _QuerySignal() return type to gceSTATUS
+# - b73c6797ee42 ARM: imx_v7_defconfig: Remove KERNEL_LZO config
+# - ec33c7fc43be touchscreen: Kconfig: add I2C dependency for CT36X
+# - 6c41233a2cfb pwm: pwm-adp5585: fix get_state callback prototype
+# - 9c7540ecb891 pwm: pwm-rpmsg-imx: fix get_state callback prototype
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -55,16 +56,16 @@ require linux-imx.inc
 
 KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
 
-KBRANCH = "6.1-2.1.x-imx"
+KBRANCH = "6.1-2.2.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "241e2f51bd87beb652196d1db92f0387c1209bfb"
+SRCREV = "32a344619c750cdcbe31bed754adc1b30d362e45"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.57"
+LINUX_VERSION = "6.1.70"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
