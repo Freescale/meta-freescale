@@ -35,7 +35,7 @@ Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
    )
    dep_wayland_scanner = dependency(
 @@ -120,7 +122,7 @@ else
-     wayland_xdg_shell_xml = join_paths(dep_wayland_proto.get_pkgconfig_variable('pkgdatadir'),
+     wayland_xdg_shell_xml = join_paths(dep_wayland_proto.get_variable(pkgconfig: 'pkgdatadir'),
      'stable/xdg-shell/xdg-shell.xml')
    endif
 -  build_wayland = dep_egl.found() and dep_wayland_client.found() and dep_wayland_egl.found() and dep_wayland_scanner.found() and dep_wayland_proto.found()
