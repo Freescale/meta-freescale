@@ -3,7 +3,7 @@
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
-DEPENDS = "boost libdrm virtual/libg2d libtinyxml2"
+DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 patchelf-native"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
@@ -46,6 +46,12 @@ EXTRA_OECMAKE += " \
     -DIMX_G2D=ON \
     -Wno-dev \
 "
+
+do_configure:prepend () {
+    # FIXME: Should be rebuild.
+    patchelf --replace-needed libtinyxml2.so.9 libtinyxml2.so.10 ${S}/units/cam_device/proprietories/lib/libcam_device.so
+    patchelf --replace-needed libtinyxml2.so.9 libtinyxml2.so.10 ${S}/mediacontrol/lib/arm-64/fpga/libcam_device.so
+}
 
 do_install() {
     install -d ${D}/${libdir}
