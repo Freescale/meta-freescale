@@ -2,16 +2,15 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
-DEPENDS = "boost libdrm virtual/libg2d libtinyxml2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=2827219e81f28aba7c6a569f7c437fa7"
+DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 patchelf-native"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}.bin;fsl-eula=true \
     file://0001-cpp-netlib-parsers.ipp-add-missing-include.patch \
 "
 
-SRC_URI[md5sum] = "693e76b20985de607208c21d996019f8"
-SRC_URI[sha256sum] = "c2f450502390442926920d6457bbf24378c0338a445be180130ec6b1b12d1056"
+SRC_URI[sha256sum] = "34b23f5b9f0856a8f5722e339a7ad4ccf4d99614788598306ff8b20093c1e846"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -30,6 +29,7 @@ EXTRA_OECMAKE += " \
     -DSDKTARGETSYSROOT=${STAGING_DIR_HOST} \
     -DCMAKE_BUILD_TYPE=release \
     -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+    -DCMAKE_INSTALL_LIBDIR=${libdir} \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
     -DAPPMODE=V4L2 \
@@ -46,6 +46,12 @@ EXTRA_OECMAKE += " \
     -DIMX_G2D=ON \
     -Wno-dev \
 "
+
+do_configure:prepend () {
+    # FIXME: Should be rebuild.
+    patchelf --replace-needed libtinyxml2.so.9 libtinyxml2.so.10 ${S}/units/cam_device/proprietories/lib/libcam_device.so
+    patchelf --replace-needed libtinyxml2.so.9 libtinyxml2.so.10 ${S}/mediacontrol/lib/arm-64/fpga/libcam_device.so
+}
 
 do_install() {
     install -d ${D}/${libdir}
