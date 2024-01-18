@@ -54,6 +54,9 @@ do_configure:prepend () {
 }
 
 do_install() {
+    # FIXME: provided by the basler-camera package, do not install them here additionally
+    rm -f ${S}/dewarp/dewarp_config//daA3840_30mc*.json
+
     install -d ${D}/${libdir}
     install -d ${D}/${includedir}
     install -d ${D}/opt/imx8-isp/bin

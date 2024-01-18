@@ -2,20 +2,16 @@
 
 DESCRIPTION = "Basler camera binary drivers"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
+LIC_FILES_CHKSUM = "file://COPYING;md5=2827219e81f28aba7c6a569f7c437fa7"
 
 inherit fsl-eula-unpack
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "cb5e5a4d1efd1d845464ac9a8c6383b8"
-SRC_URI[sha256sum] = "6fe10f5118d18a7cb1dd40e713343ce788ad3766104ad2471ee49aed7b55833a"
+SRC_URI[md5sum] = "31d716e1f40c248556e5a8e6b467ba71"
+SRC_URI[sha256sum] = "ad3e98ee0c10f2b3e74af8923f44b8d5908e42eedbca12a702e35cee9328d8cf"
 
 do_install() {
-    # provided by the isp-imx package, do not install them here additionally
-    rm -f ${S}/opt/imx8-isp/bin/dewarp_config/sensor_dwe_os08a20_1080P_config.json
-    rm -f ${S}/opt/imx8-isp/bin/dewarp_config/sensor_dwe_os08a20_4K_config.json    
-
     dest_dir=${D}/opt/imx8-isp/bin
     install -d ${D}/${libdir}
     install -d $dest_dir
