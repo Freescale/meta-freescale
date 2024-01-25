@@ -41,7 +41,7 @@ INMATES_DIR ?= "${JH_DATADIR}/inmates"
 
 TUNE_CCARGS:remove:mx93-nxp-bsp = "-mcpu=cortex-a55"
 
-do_configure() {
+do_configure:prepend() {
    if [ -d ${STAGING_DIR_HOST}/${CELLCONF_DIR} ];
    then
       cp "${STAGING_DIR_HOST}/${CELLCONF_DIR}/"*.c ${S}/configs/${ARCH}/
@@ -55,7 +55,7 @@ do_compile:prepend() {
         KDIR=${STAGING_KERNEL_BUILDDIR}
 }
 
-do_install:prepend() {
+do_install:append() {
     oe_runmake \
         PYTHON=python3 \
         V=1 \
