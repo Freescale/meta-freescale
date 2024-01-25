@@ -7,11 +7,11 @@ should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://EULA.txt;md5=673fa34349fa40f59e0713cb0ac22b1f"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=2827219e81f28aba7c6a569f7c437fa7"
 
 SRC_URI = "git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.1.22_2.0.0"
-SRCREV = "f775d53ca3a478c85e8c8a880e44cc269bd14db0"
+SRCBRANCH = "lf-6.1.55_2.2.0"
+SRCREV = "7be5a936ce8677962dd7b41c6c9f41dd14350bec"
 
 S = "${WORKDIR}/git"
 
@@ -25,8 +25,11 @@ do_compile() {
 }
 
 do_install() {
-    # Install various flavors of Broadcom firmware provided by Murata:
-    # - bcm4359-pcie
+
+    install -d ${D}${nonarch_base_libdir}/firmware/nxp
+    install -d ${D}${nonarch_base_libdir}/firmware/brcm/
+
+    # Install bcm4359-pcie
     for f in cyw-wifi-bt/*_CYW*/brcmfmac4359-pcie*; do
         install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/brcm/$(basename $f)
     done
@@ -35,56 +38,13 @@ do_install() {
         install -D -m 0644 $f ${D}${sysconfdir}/firmware/$(basename $f)
     done
 
-    # Install NXP Connectivity common
-    install -D -m 0644 nxp/wifi_mod_para.conf ${D}${nonarch_base_libdir}/firmware/nxp/wifi_mod_para.conf
-
-    # Install NXP Connectivity SD8801 firmware
-    install -m 0644 nxp/FwImage_8801_SD/ed_mac_ctrl_V1_8801.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8801_SD/sd8801_uapsta.bin         ${D}${nonarch_base_libdir}/firmware/nxp
-
-    # Install NXP Connectivity SDIO8987 firmware
-    install -m 0644 nxp/FwImage_8987/ed_mac_ctrl_V3_8987.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8987/sd8987_wlan.bin           ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8987/sdiouart8987_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8987/txpwrlimit_cfg_8987.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8987/uartuart8987_bt.bin       ${D}${nonarch_base_libdir}/firmware/nxp
-
-    # Install NXP Connectivity PCIE8997 firmware
-    install -m 0644 nxp/FwImage_8997/ed_mac_ctrl_V3_8997.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997/pcie8997_wlan_v4.bin      ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997/pcieuart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997/txpwrlimit_cfg_8997.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997/uartuart8997_bt_v4.bin    ${D}${nonarch_base_libdir}/firmware/nxp
-
-    # Install NXP Connectivity SDIO8997 firmware
-    install -m 0644 nxp/FwImage_8997_SD/ed_mac_ctrl_V3_8997.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997_SD/sdio8997_wlan_v4.bin      ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997_SD/sdiouart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_8997_SD/txpwrlimit_cfg_8997.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-
-    # Install NXP Connectivity PCIE9098 firmware
-    install -m 0644 nxp/FwImage_9098_PCIE/ed_mac_ctrl_V3_909x.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_9098_PCIE/pcie9098_wlan_v1.bin      ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_9098_PCIE/pcieuart9098_combo_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_9098_PCIE/txpwrlimit_cfg_9098.conf  ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_9098_PCIE/uartuart9098_bt_v1.bin    ${D}${nonarch_base_libdir}/firmware/nxp
-
-    # Install NXP Connectivity SDIO9098 firmware
-    install -m 0644 nxp/FwImage_9098_SD/sdio9098_wlan_v1.bin      ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_9098_SD/sdiouart9098_combo_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp
-
-    # Install NXP Connectivity IW416 firmware
-    install -m 0644 nxp/FwImage_IW416_SD/sdioiw416_wlan_v0.bin      ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_IW416_SD/sdiouartiw416_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_IW416_SD/uartiw416_bt_v0.bin        ${D}${nonarch_base_libdir}/firmware/nxp
-
-    # Install NXP Connectivity IW612 firmware
-    install -m 0644 nxp/FwImage_IW612_SD/sduart_nw61x_v1.bin.se ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_IW612_SD/sd_w61x_v1.bin.se      ${D}${nonarch_base_libdir}/firmware/nxp
-    install -m 0644 nxp/FwImage_IW612_SD/uartspi_n61x_v1.bin.se ${D}${nonarch_base_libdir}/firmware/nxp
-    for f in nxp/FwImage_IW612_SD/IW612_SD_RFTest/*; do
+    for f in nxp/FwImage_IW612_SD/*; do
         install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/$(basename $f)
     done
+
+    oe_runmake install INSTALLDIR=${D}${nonarch_base_libdir}/firmware/nxp
+
+
 }
 
 PACKAGES =+ " \
@@ -109,6 +69,7 @@ FILES:${PN}-bcm4359-pcie = " \
 
 FILES:${PN}-nxp-common = " \
     ${nonarch_base_libdir}/firmware/nxp/wifi_mod_para.conf \
+    ${nonarch_base_libdir}/firmware/nxp/helper_uart_3000000.bin \
 "
 
 FILES:${PN}-nxp8801-sdio = " \
