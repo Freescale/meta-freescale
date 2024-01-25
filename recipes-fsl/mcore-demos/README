@@ -1,11 +1,13 @@
 The M4 demo app version of each SoCs are followed:
-* 2.13.0 -- i.MX 7ULP, 8MQ, 8MM
+* 2.14.0 -- i.MX 7ULP, 8MQ
+* 2.14.1 -- i.MX 8MM
 * 2.9.0 -- i.MX 8DXL, 8QM, 8QXP
 * 1.0.1 -- i.MX 7D
 
 The M7 demo app version of each SoCs are followed:
-* 2.13.0 -- i.MX 8MNULite, 8MN
-* 2.13.1 -- i.MX 8MP
+* 2.14.0 -- i.MX 8MNULite, 8MN
+* 2.14.1 -- i.MX 8MP
 
 The M33 demo app version of each SoCs are followed:
-* 2.14.0 -- i.MX 8ULP,i.MX 93
+* 2.14.1 -- i.MX 8ULP
+* 2.14.2 -- i.MX 93
