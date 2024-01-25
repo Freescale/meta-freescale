@@ -16,10 +16,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
 PROVIDES = "jailhouse"
 RPROVIDES:${PN} += "jailhouse"
 
-SRCBRANCH = "lf-6.1.22_2.0.0"
-SRCREV = "e090abc70bb395f705f85659ad92bdafbe407628"
+SRCBRANCH = "lf-6.1.36_2.1.0"
+SRCREV = "d3484c68313c2c837eb213ca1aa373e491fbc55f"
 
-SRC_URI = "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https;branch=${SRCBRANCH}"
+IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
+SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH}"
 
 DEPENDS = " \
     make-native \
@@ -91,6 +92,7 @@ FILES:${PN}:remove = "${libdir}/*"
 FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}"
 
 RDEPENDS:${PN} += " \
+    pyjailhouse \
     python3-curses \
     python3-datetime \
     python3-mmap \
