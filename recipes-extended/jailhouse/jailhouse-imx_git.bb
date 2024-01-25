@@ -41,6 +41,17 @@ INMATES_DIR ?= "${JH_DATADIR}/inmates"
 
 TUNE_CCARGS:remove:mx93-nxp-bsp = "-mcpu=cortex-a55"
 
+EXTRA_OEMAKE += 'V=1'
+EXTRA_OEMAKE += 'PYTHON=python3'
+EXTRA_OEMAKE += 'LDFLAGS=""'
+EXTRA_OEMAKE += 'CC="${CC}"'
+EXTRA_OEMAKE += 'ARCH=${JH_ARCH}'
+EXTRA_OEMAKE += 'CROSS_COMPILE=${TARGET_PREFIX}'
+EXTRA_OEMAKE += 'KDIR=${STAGING_KERNEL_BUILDDIR}'
+EXTRA_OEMAKE += 'MODLIB="${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}"'
+EXTRA_OEMAKE += 'INSTALL_MOD_PATH=${D}${root_prefix}'
+EXTRA_OEMAKE += 'firmwaredir=${nonarch_base_libdir}/firmware'
+
 do_configure:prepend() {
    if [ -d ${STAGING_DIR_HOST}/${CELLCONF_DIR} ];
    then
@@ -49,25 +60,12 @@ do_configure:prepend() {
 }
 
 do_compile:prepend() {
-    unset LDFLAGS
-    oe_runmake V=1 CC="${CC}" \
-        ARCH=${JH_ARCH} CROSS_COMPILE=${TARGET_PREFIX} \
-        KDIR=${STAGING_KERNEL_BUILDDIR}
+    # explicity call make to build the kernel module and tools
+    oe_runmake
 }
 
 do_install:append() {
-    oe_runmake \
-        PYTHON=python3 \
-        V=1 \
-        LDFLAGS="" \
-        CC="${CC}" \
-        ARCH=${JH_ARCH} \
-        CROSS_COMPILE=${TARGET_PREFIX} \
-        KDIR=${STAGING_KERNEL_BUILDDIR} \
-        MODLIB="${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}" \
-        INSTALL_MOD_PATH=${D}${root_prefix} \
-        firmwaredir=${nonarch_base_libdir}/firmware \
-        DESTDIR=${D} install
+    oe_runmake DESTDIR=${D} install
 
     install -d ${D}${CELL_DIR}
     install ${B}/configs/${JH_ARCH}/*.cell ${D}${CELL_DIR}/
