@@ -8,7 +8,6 @@ ISP_PKGS      ?= ""
 ISP_PKGS:mx8mp-nxp-bsp = " \
     isp-imx \
     basler-camera \
-    basler-camera-dev \
     kernel-module-isp-vvcam \
 "
 RDEPENDS:${PN} = " \
