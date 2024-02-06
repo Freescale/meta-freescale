@@ -1,0 +1,40 @@
+From 7117c1fe979053e4b1071968b444c03fbffe55bb Mon Sep 17 00:00:00 2001
+From: Daiane Angolini <daiane.angolini@foundries.io>
+Date: Tue, 6 Feb 2024 18:01:07 -0300
+Subject: [PATCH] arm:arm64: Makefile: Remove -march option from Makefile
+
+It let the recipe to decide which are the compilation flags to be used.
+
+It acomodates to [1].
+
+[1] https://git.yoctoproject.org/poky/commit/?id=04eac1f2b67eac5f892a9e0f8fcfe54849923af5
+
+Upstream-Status: Inappropriate [See above]
+
+Signed-off-by: Daiane Angolini <daiane.angolini@foundries.io>
+---
+ hypervisor/arch/arm/Makefile   | 2 --
+ hypervisor/arch/arm64/Makefile | 1 -
+ 2 files changed, 3 deletions(-)
+
+diff --git a/hypervisor/arch/arm/Makefile b/hypervisor/arch/arm/Makefile
+index a54370fc..cddb6cd3 100644
+--- a/hypervisor/arch/arm/Makefile
++++ b/hypervisor/arch/arm/Makefile
+@@ -12,5 +12,3 @@
+
+ LINUXINCLUDE += -I$(src)/arch/arm-common/include
+
+-KBUILD_CFLAGS += -marm -march=armv7ve -msoft-float
+-KBUILD_AFLAGS += -march=armv7ve -msoft-float
+diff --git a/hypervisor/arch/arm64/Makefile b/hypervisor/arch/arm64/Makefile
+index 0718994d..5d7a80c6 100644
+--- a/hypervisor/arch/arm64/Makefile
++++ b/hypervisor/arch/arm64/Makefile
+@@ -12,4 +12,3 @@
+
+ LINUXINCLUDE += -I$(src)/arch/arm-common/include
+
+-KBUILD_CFLAGS += -march=armv8-a+nofp
+--
+2.34.1
