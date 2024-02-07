@@ -377,12 +377,14 @@ OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8mp-nxp-bsp = "libclc-imx libopencl-imx-dev"
 INSANE_SKIP:libopenvx-imx += "dev-deps"
 
-FILES:libgl-imx = "${libdir}/libGL${REALSOLIBS}"
-FILES:libgl-imx-dev = "${libdir}/libGL${SOLIBSDEV} ${includedir}/GL ${libdir}/pkgconfig/gl.pc"
+FILES:libgl-imx = "${libdir}/libGL${REALSOLIBS} ${libdir}/libGL${SOLIBS}"
+FILES:libgl-imx-dev = "${includedir}/GL ${libdir}/pkgconfig/gl.pc"
 # libGL is only targeting X11 backend, and in case if Wayland-only is used -
 # package QA complains on missing RDEPENDS, which are only available for X11.
 # Skip "file-rdeps" QA for this package.
 INSANE_SKIP:libgl-imx += "file-rdeps"
+# libEGL does dlopen of libGL.so
+INSANE_SKIP:libgl-imx += "dev-so"
 
 FILES:libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
 FILES:libgles1-imx-dev = "${includedir}/GLES ${libdir}/pkgconfig/glesv1_cm.pc"
@@ -411,8 +413,10 @@ FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
 FILES:libopencl-imx-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 RDEPENDS:libopencl-imx= "libclc-imx"
 
-FILES:libopenvg-imx = "${libdir}/libOpenVG*${REALSOLIBS}"
-FILES:libopenvg-imx-dev = "${includedir}/VG ${libdir}/libOpenVG*${SOLIBSDEV} ${libdir}/pkgconfig/vg.pc"
+FILES:libopenvg-imx = "${libdir}/libOpenVG*${REALSOLIBS} ${libdir}/libOpenVG*${SOLIBS}"
+FILES:libopenvg-imx-dev = "${includedir}/VG ${libdir}/pkgconfig/vg.pc"
+# libEGL does dlopen of libOpenVG.so
+INSANE_SKIP:libopenvg-imx += "dev-so"
 
 FILES:libvdk-imx = "${libdir}/libVDK*${REALSOLIBS}"
 FILES:libvdk-imx-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
