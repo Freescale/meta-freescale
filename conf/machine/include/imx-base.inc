@@ -398,8 +398,8 @@ IMX_EXTRA_FIRMWARE                   ?= ""
 IMX_EXTRA_FIRMWARE:mx8-generic-bsp    = "imx-boot-firmware-files imx-sc-firmware imx-seco"
 IMX_EXTRA_FIRMWARE:mx8m-generic-bsp   = "imx-boot-firmware-files"
 IMX_EXTRA_FIRMWARE:mx8x-generic-bsp   = "imx-sc-firmware imx-seco"
-IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-sentinel"
-IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-sentinel"
+IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-ele-imx"
+IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
