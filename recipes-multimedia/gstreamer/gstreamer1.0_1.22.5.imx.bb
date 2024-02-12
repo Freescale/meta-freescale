@@ -3,7 +3,7 @@
 # recipe. The second section customizes the recipe for i.MX.
 
 ########### OE-core copy ##################
-# Upstream hash: fb2d28e0315ece6180c87c7047587673024a09f7
+# Upstream hash: 937817e5164f8af8452aec03ae3c45cb23d63df9
 
 SUMMARY = "GStreamer 1.0 multimedia framework"
 DESCRIPTION = "GStreamer is a multimedia framework for encoding and decoding video and sound. \
@@ -29,7 +29,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.x
            file://0003-tests-use-a-dictionaries-for-environment.patch;striplevel=3 \
            file://0004-tests-add-helper-script-to-run-the-installed_tests.patch;striplevel=3 \
            "
-SRC_URI[sha256sum] = "78d21b5469ac93edafc6d8ceb63bc82f6cbbee94d2f866cca6b9252157ee0a09"
+SRC_URI[sha256sum] = "4408d7930f381809e85917acc19712f173261ba85bdf20c5567b2a21b1193b61"
 
 PACKAGECONFIG ??= "${@bb.utils.contains('PTEST_ENABLED', '1', 'tests', '', d)} \
                    check \
@@ -93,8 +93,8 @@ LIC_FILES_CHKSUM = " \
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz"
 SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
 GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.08.01_2308_L6.1.y"
-SRCREV = "95112902507718085231a933cdfe54e3997d1b28"
+SRCBRANCH = "MM_04.08.02_2310_L6.1.y"
+SRCREV = "e51e577a730191911b7050216814bede1b9545ae" 
 
 S = "${WORKDIR}/git"
 
