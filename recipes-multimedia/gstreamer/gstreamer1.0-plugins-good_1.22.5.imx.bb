@@ -3,19 +3,19 @@
 # recipe. The second section customizes the recipe for i.MX.
 
 ########### OE-core copy ##################
-# Upstream hash: fb2d28e0315ece6180c87c7047587673024a09f7
+# Upstream hash: 937817e5164f8af8452aec03ae3c45cb23d63df9
 
 require gstreamer1.0-plugins-common.inc
 
-DESCRIPTION = "'Good' GStreamer plugins"
+SUMMARY = "'Good' GStreamer plugins"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
            file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
-           "
+           file://0001-v4l2-Define-ioctl_req_t-for-posix-linux-case.patch"
 
-SRC_URI[sha256sum] = "582e617271e7f314d1a2211e3e3856ae2e4303c8c0d6114e9c4a5ea5719294b0"
+SRC_URI[sha256sum] = "b67b31313a54c6929b82969d41d3cfdf2f58db573fb5f491e6bba5d84aea0778"
 
 S = "${WORKDIR}/gst-plugins-good-${PV}"
 
@@ -102,12 +102,15 @@ LIC_FILES_CHKSUM = " \
 DEPENDS += "${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
 DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
 
-SRC_URI:remove  = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
-                   file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch"
+SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
+                file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
+                file://0001-v4l2-Define-ioctl_req_t-for-posix-linux-case.patch \
+"
+
 SRC_URI:prepend = "${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.08.01_2308_L6.1.y"
-SRCREV = "ca3ef27dd4020393bfda546a25a3fa28314276e1"
+SRCBRANCH = "MM_04.08.02_2310_L6.1.y"
+SRCREV = "a4631334ad32abc513bde8f73491ef345f865a48"
 
 S = "${WORKDIR}/git"
 
