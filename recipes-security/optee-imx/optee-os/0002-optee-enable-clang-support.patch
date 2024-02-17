@@ -1,4 +1,4 @@
-From c67f63d4e7bbe7b21b4c9ef49ae84c6725794aa9 Mon Sep 17 00:00:00 2001
+From 2ba573c9763329fbfdfacc8393d565ab747cac4d Mon Sep 17 00:00:00 2001
 From: Brett Warren <brett.warren@arm.com>
 Date: Wed, 23 Sep 2020 09:27:34 +0100
 Subject: [PATCH 2/4] optee: enable clang support
@@ -30,5 +30,5 @@ index a045beee8..1ebe2f702 100644
  
  # Core ASLR relies on the executable being ready to run from its preferred load
 -- 
-2.40.1
+2.43.2
 
