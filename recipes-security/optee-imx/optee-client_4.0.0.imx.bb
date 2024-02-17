@@ -1,7 +1,7 @@
 require optee-client-fslc-imx.inc
 
-SRCBRANCH = "lf-6.1.36_2.1.0"
-SRCREV = "8533e0e6329840ee96cf81b6453f257204227e6c"
+SRCBRANCH = "lf-6.1.55_2.2.0"
+SRCREV = "acb0885c117e73cb6c5c9b1dd9054cb3f93507ee"
 
 DEPENDS += "util-linux"
 EXTRA_OEMAKE += "PKG_CONFIG=pkg-config"

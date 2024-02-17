@@ -595,8 +595,8 @@ PREFERRED_VERSION_vulkan-validation-layers:imxvulkan ??= "1.3.239.0.imx"
 # Use i.MX optee Version
 PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "4.0.0.imx"
 PREFERRED_VERSION_optee-os:mx9-nxp-bsp     ??= "4.0.0.imx"
-PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "3.21.0.imx"
-PREFERRED_VERSION_optee-client:mx9-nxp-bsp ??= "3.21.0.imx"
+PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "4.0.0.imx"
+PREFERRED_VERSION_optee-client:mx9-nxp-bsp ??= "4.0.0.imx"
 PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "3.21.0.imx"
 PREFERRED_VERSION_optee-test:mx9-nxp-bsp   ??= "3.21.0.imx"
 
