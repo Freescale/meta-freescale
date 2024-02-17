@@ -1,4 +1,4 @@
-From f23fb3381422c613890f77c26d11e377234481c6 Mon Sep 17 00:00:00 2001
+From 6f738803a59613ec4a683ddbc1747ebffd75a4e6 Mon Sep 17 00:00:00 2001
 From: Jerome Forissier <jerome.forissier@linaro.org>
 Date: Tue, 23 Aug 2022 12:31:46 +0000
 Subject: [PATCH 3/4] arm32: libutils, libutee, ta: add .note.GNU-stack section
@@ -129,5 +129,5 @@ index cd9a12f9d..ccdc19928 100644
   * This function is the bottom of the user call stack. Mark it as such so that
   * the unwinding code won't try to go further down.
 -- 
-2.40.1
+2.43.2
 

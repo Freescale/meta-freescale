@@ -1,4 +1,4 @@
-From b53f5542102b8088448134202c30ca563f5b3c04 Mon Sep 17 00:00:00 2001
+From a63f82f74e015eb662242cdb51ef814e3f576829 Mon Sep 17 00:00:00 2001
 From: Jerome Forissier <jerome.forissier@linaro.org>
 Date: Fri, 5 Aug 2022 09:48:03 +0200
 Subject: [PATCH 4/4] core: link: add --no-warn-rwx-segments
@@ -25,7 +25,7 @@ Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@foundries.io>
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/core/arch/arm/kernel/link.mk b/core/arch/arm/kernel/link.mk
-index e8a518254..60e08966f 100644
+index 49e9f4fa1..9e1cc172f 100644
 --- a/core/arch/arm/kernel/link.mk
 +++ b/core/arch/arm/kernel/link.mk
 @@ -37,6 +37,7 @@ link-ldflags += --sort-section=alignment
@@ -63,5 +63,5 @@ index e8a518254..60e08966f 100644
  	      $(libgcccore)
  cleanfiles += $(link-out-dir)/init.o
 -- 
-2.40.1
+2.43.2
 

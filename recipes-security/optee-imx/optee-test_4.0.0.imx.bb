@@ -4,7 +4,7 @@ require optee-test-fslc.inc
 
 SRC_URI = "git://github.com/nxp-imx/imx-optee-test.git;protocol=https;branch=${SRCBRANCH}"
 
-SRCBRANCH = "lf-6.1.36_2.1.0"
-SRCREV = "e0ebd5193070e0215b5389da191bc33f4f478222"
+SRCBRANCH = "lf-6.1.55_2.2.0"
+SRCREV = "38efacef3b14b32a6792ceaebe211b5718536fbb"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
