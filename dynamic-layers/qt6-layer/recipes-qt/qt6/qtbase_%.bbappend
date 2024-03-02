@@ -41,6 +41,10 @@ PACKAGECONFIG_PLATFORM:use-mainline-bsp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'eglfs', d)}"
 
 PACKAGECONFIG += " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '${PACKAGECONFIG_WAYLAND}', '', d)}"
+PACKAGECONFIG_WAYLAND = "wayland"
+
+PACKAGECONFIG += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', '${PACKAGECONFIG_VULKAN}', '', d)}"
 PACKAGECONFIG_VULKAN = ""
 PACKAGECONFIG_VULKAN:imxgpu = " \
