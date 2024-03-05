@@ -637,7 +637,7 @@ WKS_FILE_DEPENDS ?= " \
     virtual/bootloader \
     \
     e2fsprogs-native \
-    bmap-tools-native \
+    bmaptool-native \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_WKS_FILE_DEPENDS}', '', d)} \
 "
 
