@@ -25,6 +25,7 @@ inherit deploy uuu_bootloader_tag
 
 UUU_BOOTLOADER        = "${BOOT_NAME}"
 UUU_BOOTLOADER_TAGGED = "${BOOT_NAME}-tagged"
+UUU_BOOTLOADER_UNTAGGED = "${BOOT_NAME}-untagged"
 
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
