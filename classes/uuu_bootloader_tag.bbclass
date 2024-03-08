@@ -4,6 +4,7 @@
 do_deploy:append() {
     if [ "${UUU_BOOTLOADER}" != "" ]; then
         cp ${DEPLOYDIR}/${UUU_BOOTLOADER}   ${DEPLOYDIR}/${UUU_BOOTLOADER_TAGGED}
+        cp ${DEPLOYDIR}/${UUU_BOOTLOADER}   ${DEPLOYDIR}/${UUU_BOOTLOADER_UNTAGGED}
         ln -sf ${UUU_BOOTLOADER_TAGGED}     ${DEPLOYDIR}/${UUU_BOOTLOADER}
         stat -L -cUUUBURNXXOEUZX7+A-XY5601QQWWZ%sEND ${DEPLOYDIR}/${UUU_BOOTLOADER} \
                                          >> ${DEPLOYDIR}/${UUU_BOOTLOADER}
