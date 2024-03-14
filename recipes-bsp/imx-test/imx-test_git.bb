@@ -73,11 +73,11 @@ do_install() {
     if [ -e ${WORKDIR}/clocks.sh ]; then
         install -m 755 ${WORKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
     fi
-    install -d -m 0755 ${D}/home/root/
-    install -m 0644 ${WORKDIR}/memtool_profile ${D}/home/root/.profile
+    install -d -m 0755 ${D}${ROOT_HOME}/
+    install -m 0644 ${WORKDIR}/memtool_profile ${D}${ROOT_HOME}/.profile
 }
 
-FILES:${PN} += "/unit_tests /home/root/.profile"
+FILES:${PN} += "/unit_tests ${ROOT_HOME}/.profile"
 RDEPENDS:${PN} = "bash"
 
 FILES:${PN}-dbg += "/unit_tests/.debug"
