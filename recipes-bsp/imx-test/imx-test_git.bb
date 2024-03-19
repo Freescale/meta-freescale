@@ -19,8 +19,8 @@ PV = "7.0+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
            file://memtool_profile"
-SRCBRANCH = "lf-6.1.22_2.0.0"
-SRCREV = "9fe083c29439b71292df9a8e4d40c73f25828a69"
+SRCBRANCH = "lf-6.1.55_2.2.0"
+SRCREV = "e8b3c9026553233491abb4df4185dd7291a8ffb2"
 
 S = "${WORKDIR}/git"
 
