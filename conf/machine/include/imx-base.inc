@@ -574,9 +574,6 @@ PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp  ??= "1.32.imx"
 PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp  ??= "1.32.imx"
 PREFERRED_VERSION_wayland-protocols:mx9-nxp-bsp  ??= "1.32.imx"
 
-PREFERRED_VERSION_wayland-native       ??= "1.22.0.imx"
-PREFERRED_VERSION_nativesdk-wayland    ??= "1.22.0.imx"
-PREFERRED_VERSION_wayland:imx-nxp-bsp  ??= "1.22.0.imx"
 PREFERRED_VERSION_xwayland:imx-nxp-bsp ??= "23.1.1.imx"
 
 # Use i.MX libdrm Version
