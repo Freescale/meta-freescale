@@ -125,12 +125,6 @@ S = "${WORKDIR}/git"
 
 inherit use-imx-headers
 
-# Prior to version 1.22.5, viv-fb is coupled with the Vivante direct texture feature.
-# For this reason, in these older versions, viv-fb must be enabled always, even when
-# building for SoCs like the i.MX8 that do not support the viv-fb windowing system.
-# TODO: Once this .imx recipe is upgraded to 1.22.5 or newer, drop this line.
-PACKAGECONFIG_GL:append = " viv-fb "
-
 PACKAGECONFIG_REMOVE ?= "jpeg"
 PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
 PACKAGECONFIG:append:imxgpu2d = " g2d"
