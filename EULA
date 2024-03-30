@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v49 September 2023
+LA_OPT_NXP_Software_License v53 December 2023
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
 downloading, installing, or using the Licensed Software, you indicate that you
@@ -6,7 +6,7 @@ accept the terms of the Agreement, and you acknowledge that you have the
 authority, for yourself or on behalf of your company, to bind your company to
 these terms. You may then download or install the file. In the event of a
 conflict between the terms of this Agreement and any license terms and
-conditions for NXP's proprietary software embedded anywhere in the Licensed
+conditions for NXP’s proprietary software embedded anywhere in the Licensed
 Software file, the terms of this Agreement shall control.  If a separate
 license agreement for the Licensed Software has been signed by you and NXP,
 then that agreement shall govern your use of the Licensed Software and shall
@@ -36,10 +36,10 @@ ownership of greater than fifty percent (50%) of the shares or similar
 interests entitled to vote for the election of directors or other persons
 performing similar functions. An entity is considered an Affiliate only so long
 as such Control exists.
-1.2	"Authorized System" means either (i) Licensee's hardware product which
-incorporates an NXP Product or (ii) Licensee's software program which is used
-exclusively in connection with an NXP Product and with which the Licensed
-Software will be integrated.
+1.2	"Authorized System" means either (i) Licensee’s hardware product
+which incorporates an NXP Product or (ii) Licensee’s software program which
+is used exclusively in connection with an NXP Product and with which the
+Licensed Software will be integrated.
 1.3.	"Derivative Work" means a work based upon one or more pre-existing
 works.  A work consisting of editorial revisions, annotations, elaborations, or
 other modifications which, as a whole, represent an original work of
@@ -113,7 +113,7 @@ Appendix A.
 2.2 and Section 2.3, if any, so long as you have an agreement in place with the
 subcontractor containing confidentiality restrictions no less stringent than
 those contained in this Agreement. You will remain liable for your
-subcontractors' adherence to the terms of this Agreement and for any and all
+subcontractors’ adherence to the terms of this Agreement and for any and all
 acts and omissions of such subcontractors with respect to this Agreement and
 the Licensed Software.
 3.       LICENSE LIMITATIONS AND RESTRICTIONS.
@@ -121,7 +121,7 @@ the Licensed Software.
 Intellectual Property Rights that would be infringed by the unmodified Licensed
 Software prior to your preparation of any Derivative Work.
 3.2.         The Licensed Software is licensed to you, not sold. Title to
-Licensed Software delivered hereunder remains vested in NXP or NXP's licensor
+Licensed Software delivered hereunder remains vested in NXP or NXP’s licensor
 and cannot be assigned or transferred. You are expressly forbidden from selling
 or otherwise distributing the Licensed Software, or any portion thereof, except
 as expressly permitted herein. This Agreement does not grant to you any implied
@@ -132,8 +132,8 @@ prohibits such restriction. You must prohibit your subcontractors or customers
 (if distribution is permitted) from translating, reverse engineering,
 decompiling, or disassembling the Licensed Software except to the extent
 applicable law specifically prohibits such restriction.
-3.4.         You must reproduce any and all of NXP's (or its third-party
-licensor's) copyright notices and other proprietary legends on copies of
+3.4.         You must reproduce any and all of NXP’s (or its third-party
+licensor’s) copyright notices and other proprietary legends on copies of
 Licensed Software.
 3.5.         If you distribute the Licensed Software to the United States
 Government, then the Licensed Software is "restricted computer software" and is
@@ -224,8 +224,8 @@ for a particular purpose, or non-infringement. You assume the entire risk
 arising out of the use or performance of the licensed software, or any systems
 you design using the licensed software (if any).
 10.        INDEMNITY. You agree to fully defend and indemnify NXP from all
-claims, liabilities, and costs (including reasonable attorney's fees) related
-to (1) your use (including your subcontractor's or distributee's use, if
+claims, liabilities, and costs (including reasonable attorney’s fees) related
+to (1) your use (including your subcontractor’s or distributee’s use, if
 permitted) of the Licensed Software or (2) your violation of the terms and
 conditions of this Agreement.
 11.        LIMITATION OF LIABILITY.  EXCLUDING LIABILITY FOR A BREACH OF
@@ -235,7 +235,7 @@ IN NO EVENT WILL EITHER PARTY BE LIABLE, WHETHER IN CONTRACT, TORT, OR
 OTHERWISE, FOR ANY INCIDENTAL, SPECIAL, INDIRECT, CONSEQUENTIAL OR PUNITIVE
 DAMAGES, INCLUDING, BUT NOT LIMITED TO, DAMAGES FOR ANY LOSS OF USE, LOSS OF
 TIME, INCONVENIENCE, COMMERCIAL LOSS, OR LOST PROFITS, SAVINGS, OR REVENUES, TO
-THE FULL EXTENT SUCH MAY BE DISCLAIMED BY LAW. NXP'S TOTAL LIABILITY FOR ALL
+THE FULL EXTENT SUCH MAY BE DISCLAIMED BY LAW. NXP’S TOTAL LIABILITY FOR ALL
 COSTS, DAMAGES, CLAIMS, OR LOSSES WHATSOEVER ARISING OUT OF OR IN CONNECTION
 WITH THIS AGREEMENT OR PRODUCT(S) SUPPLIED UNDER THIS AGREEMENT IS LIMITED TO
 THE AGGREGATE AMOUNT PAID BY YOU TO NXP IN CONNECTION WITH THE LICENSED
@@ -243,8 +243,8 @@ SOFTWARE PROVIDED UNDER THIS AGREEMENT TO WHICH LOSSES OR DAMAGES ARE CLAIMED.
 12.        EXPORT COMPLIANCE. Each party shall comply with all applicable
 export and import control laws and regulations including but not limited to the
 US Export Administration Regulation (including restrictions on certain military
-end uses and military end users as specified in Section 15 C.F.R. Â§ 744.21
-and prohibited party lists issued by other federal governments), Catch-all
+end uses and military end users as specified in Section 15 C.F.R. § 744.21 and
+prohibited party lists issued by other federal governments), Catch-all
 regulations and all national and international embargoes. Each party further
 agrees that it will not knowingly transfer, divert, export or re-export,
 directly or indirectly, any product, software, including software source code,
@@ -278,7 +278,7 @@ software for use in the development of, or for incorporation into, products or
 services (a) used in applications requiring fail-safe performance or (b) in
 which failure could lead to death, personal injury, or severe physical or
 environmental damage (these products and services are referred to as "Critical
-Applications"). NXP's goal is to educate customers so that they can design
+Applications"). NXP’s goal is to educate customers so that they can design
 their own end-product solutions to meet applicable functional safety standards
 and requirements. Licensee makes the ultimate design decisions regarding its
 products and is solely responsible for compliance with all legal, regulatory,
@@ -288,8 +288,8 @@ assumes all risk related to use of the Licensed Software in Critical
 Applications and NXP SHALL NOT BE LIABLE FOR ANY SUCH USE IN CRITICAL
 APPLICATIONS BY LICENSEE. Accordingly, Licensee will indemnify and hold NXP
 harmless from any claims, liabilities, damages and associated costs and
-expenses (including attorneys' fees) that NXP may incur related to Licensee's
-incorporation of the Licensed Software in a Critical Application.
+expenses (including attorneys’ fees) that NXP may incur related to
+Licensee’s incorporation of the Licensed Software in a Critical Application.
 15.        CHOICE OF LAW; VENUE.  This Agreement will be governed by,
 construed, and enforced in accordance with the laws of The Netherlands, without
 regard to conflicts of laws principles, will apply to all matters relating to
@@ -335,7 +335,7 @@ subsequent breach of the same or a different provision.
 to your compliance with the limited license rights granted under this Agreement
 for three years following expiration or termination of this Agreement. NXP will
 have the right, either itself or through an independent certified public
-accountant to examine and audit, at NXP's expense, not more than once a year,
+accountant to examine and audit, at NXP’s expense, not more than once a year,
 and during normal business hours, all such records that may bear upon your
 compliance with the limited license rights granted above. You must make prompt
 adjustment to compensate for any errors and/or omissions disclosed by such
@@ -365,9 +365,9 @@ or delayed. NXP may assign this Agreement, or any part of this Agreement, in
 its sole discretion.
 25.	PRIVACY. By agreeing to this Agreement and/or utilizing the Licensed
 Software, Licensee consents to use of certain personal information, including
-but not limited to name, email address, and location, for the purpose of NXP's
-internal analysis regarding future software offerings.  NXP's complete Privacy
-Statement can be found at:
+but not limited to name, email address, and location, for the purpose of
+NXP’s internal analysis regarding future software offerings.  NXP’s
+complete Privacy Statement can be found at:
 https://www.nxp.com/company/our-company/about-nxp/privacy-statement:PRIVACYPRACT
 ICES.
 
@@ -394,7 +394,7 @@ directly from AGGIOS, Inc.
 
 Airbiquity Inc.: The Airbiquity software may only be used in object code and
 Licensee may not sublicense the Airbiquity software to any third party.
-Licensee's license to use the Airbiquity software expires on June 30, 2024.
+Licensee’s license to use the Airbiquity software expires on June 30, 2024.
 
 Amazon: Use of the Amazon software constitutes your acceptance of the terms of
 the Amazon Program Materials License Agreement (including the AVS Component
@@ -551,6 +551,12 @@ https://portal.etsi.org/directives/45_directives_jun_2022.pdf. For application
 in an End Product, Fraunhofer communication applies, see
 https://www.iis.fraunhofer.de/en/ff/amm/communication/lc3.html
 
+Lumissil: Use of the Lumissil software constitutes your acceptance of the terms
+of the Lumissil Software License Agreement.  A link to the agreement is
+incorporated as follows:
+https://www.lumissil.com/assets/pdf/support/2023%20Lumissil%20IS3xCG5317%20Softw
+are%20License%20Agreement%20NXP.pdf .
+
 Microsoft: Except for Microsoft PlayReady software, if the Licensed Software
 includes software owned by Microsoft Corporation ("Microsoft"), it is subject
 to the terms of your license with Microsoft (the "Microsoft Underlying Licensed
@@ -600,6 +606,11 @@ obtained from NXP.
 
 NXP Wireless Charging Library: License to the Software is limited to use in
 inductive coupling or wireless charging applications
+
+ON Semiconductor: ON Semiconductor AP1302 Image Signal Processor Initialization
+Binaries must be used consistent with the terms found here:
+https://github.com/ONSemiconductor/ap1302_binaries/blob/main/AP1302%20Software%2
+0License%20Agreement.pdf
 
 Opus: Use of Opus software must be consistent with the terms of the Opus
 license which can be found at: http://www.opus-codec.org/license/
@@ -668,6 +679,12 @@ Cortex-M3, Cortex-M4, Cortex-M33, Cortex-M7, and Cortex-A7 based products only.
 SEGGER Microcontroller - J-Link/J-Trace Software: Segger software must be used
 consistent with the terms found here: http://www.segger.com/jlink-software.html
 
+SEVENSTAX - Not withstanding anything in this Agreement, SEVENSTAX GmbH
+software must be used for evaluation purposes only, in strict accordance with
+the SEVENSTAX License Agreement, available here:
+https://www.sevenstax.de/fileadmin/documents/SEVENSTAX-NX-ESLA.txt. Any other
+use, and embedding the software into commercial products, is expressly
+prohibited.
 Synopsys/BLE Software: Your use of the Synopsys/BLE Software and related
 documentation is subject to the following:
 (1) Synopsys is third-party beneficiaries of, and thus may enforce against you,
