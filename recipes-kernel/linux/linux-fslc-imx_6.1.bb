@@ -58,7 +58,7 @@ KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
 
 KBRANCH = "6.1-2.2.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "32a344619c750cdcbe31bed754adc1b30d362e45"
+SRCREV = "2bfda7392e6621dd9060f87d7f9d601bb1906dbf"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
