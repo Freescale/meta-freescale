@@ -4,8 +4,8 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Gstreamer freescale plugins"
-LICENSE = "GPL-2.0-only & LGPL-2.0-only & LGPL-2.1-only"
 SECTION = "multimedia"
+LICENSE = "GPL-2.0-only & LGPL-2.0-only & LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=fbc093901857fcd118f065f900982c24"
 
 DEPENDS = " \
@@ -19,7 +19,7 @@ DEPENDS = " \
 DEPENDS:append:mx6-nxp-bsp = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp = " imx-lib"
 DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
-DEPENDS:append:mx9-nxp-bsp = " imx-lib"
+DEPENDS:append:mx93-nxp-bsp = " imx-lib"
 DEPENDS:append:imxvpu = " imx-vpuwrap"
 DEPENDS:append:imxfbdev:imxgpu = " libdrm"
 DEPENDS_IMXGPU        = ""
@@ -27,13 +27,14 @@ DEPENDS_IMXGPU:imxgpu = "${DEPENDS_IMX_OPENCL_CONVERTER}"
 DEPENDS_IMX_OPENCL_CONVERTER               = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx8-nxp-bsp   = "imx-opencl-converter"
 DEPENDS_IMX_OPENCL_CONVERTER:mx8mm-nxp-bsp = ""
+DEPENDS_IMX_OPENCL_CONVERTER:mx95-nxp-bsp   = "imx-opencl-converter"
 
 # For backwards compatibility
-RREPLACES:${PN} = "gst1.0-fsl-plugin"
-RPROVIDES:${PN} = "gst1.0-fsl-plugin"
+RREPLACES:${PN}  = "gst1.0-fsl-plugin"
+RPROVIDES:${PN}  = "gst1.0-fsl-plugin"
 RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
-PV = "4.8.2+git${SRCPV}"
+PV = "4.8.3+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
            file://0001-aiurdemux-Fix-type-of-USER_DATA_LOCATION.patch \
@@ -48,8 +49,8 @@ SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=
            file://0010-provide-declaration-for-aiur_register_external_typef.patch \
            file://0011-meson-Undef-_TIME_BITS-along-with-_FILE_OFFSET_BITS.patch \
            "
-SRCBRANCH = "MM_04.08.02_2310_L6.1.y"
-SRCREV = "a72df52acfec5f849ec93906e33cb50da01b0b2e" 
+SRCBRANCH = "MM_04.08.03_2312_L6.6.y"
+SRCREV = "91c7fec888cf8932c91e354331aad94975cae3ff"
 
 S = "${WORKDIR}/git"
 

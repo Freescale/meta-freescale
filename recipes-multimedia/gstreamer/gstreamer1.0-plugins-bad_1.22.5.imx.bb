@@ -187,8 +187,8 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
                    file://0002-avoid-including-sys-poll.h-directly.patch"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.08.02_2310_L6.1.y"
-SRCREV = "e4edcda6b110f42eca1f2cc20bc935edf7e66d6d" 
+SRCBRANCH = "MM_04.08.03_2312_L6.6.y"
+SRCREV = "9de821c50b4dd7af2407d9c3d078020704510a20"
 
 S = "${WORKDIR}/git"
 
@@ -204,6 +204,11 @@ PACKAGECONFIG_REMOVE ?= " \
 PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
 PACKAGECONFIG:append:mx8-nxp-bsp = " kms tinycompress"
 
+PACKAGECONFIG:append = " ${PACKAGECONFIG_G2D}"
+PACKAGECONFIG_G2D          ??= ""
+PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
+
+PACKAGECONFIG[g2d] = ",,virtual/libg2d"
 PACKAGECONFIG[tinycompress]    = "-Dtinycompress=enabled,-Dtinycompress=disabled,tinycompress"
 
 EXTRA_OEMESON += " \

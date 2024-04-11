@@ -2,14 +2,14 @@
 
 DESCRIPTION = "i.MX DSP Codec Wrapper and Lib owned by NXP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=2827219e81f28aba7c6a569f7c437fa7"
+LIC_FILES_CHKSUM = "file://COPYING;md5=44a8052c384584ba09077e85a3d1654f"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "d211febb231717649d35553d22a50578"
-SRC_URI[sha256sum] = "d5f312d742493aee7e1f1304916aca8264bcf8d3f7de7e1522d30ba33efb6a8a"
+SRC_URI[md5sum] = "32251bc952ca7b9a4b12fadb9328a8c1"
+SRC_URI[sha256sum] = "0baa82410a77c68e39aaa987d91b41c94255d62294fa2f5a399169f3068862cc"
 
 EXTRA_OECONF:append:mx8qm-nxp-bsp = " --enable-imx8qmqxp"
 EXTRA_OECONF:append:mx8qxp-nxp-bsp = " --enable-imx8qmqxp"
