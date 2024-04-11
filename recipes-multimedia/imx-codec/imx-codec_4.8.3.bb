@@ -5,14 +5,14 @@
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=2827219e81f28aba7c6a569f7c437fa7"
+LIC_FILES_CHKSUM = "file://COPYING;md5=44a8052c384584ba09077e85a3d1654f"
 
 # Backward compatibility
 PROVIDES += "libfslcodec"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "1977bab8d89972f08d9eee0122a64603"
-SRC_URI[sha256sum] = "b0744a91c265202a79a019c72f17cae01fd5b63a3ba451592b6c8349d95719e0"
+SRC_URI[md5sum] = "7ae1615aad2c0456b9be2ab804a6267e"
+SRC_URI[sha256sum] = "9facb3541903b4a6c6baa906f8c2c6cc01fc8c7b82a726c8da6d3681d4ed720b"
 
 inherit fsl-eula-unpack autotools pkgconfig
 

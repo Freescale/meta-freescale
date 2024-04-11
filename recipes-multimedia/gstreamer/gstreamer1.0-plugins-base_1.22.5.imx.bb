@@ -118,16 +118,19 @@ SRC_URI:remove = " \
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 SRC_URI:append = " file://0001-gstallocator-Fix-typcasts.patch"
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.08.02_2310_L6.1.y"
-SRCREV = "53a12f4e39773ca5b052eccbf0476d4ebd3ac08e" 
+SRCBRANCH = "MM_04.08.03_2312_L6.6.y"
+SRCREV = "c4333767ea122c182ba4e14cababe8dbe2a1b882"
 
 S = "${WORKDIR}/git"
 
 inherit use-imx-headers
 
-PACKAGECONFIG_REMOVE ?= "jpeg"
 PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
-PACKAGECONFIG:append:imxgpu2d = " g2d"
+PACKAGECONFIG_REMOVE ?= "jpeg"
+
+PACKAGECONFIG:append = " ${PACKAGECONFIG_G2D}"
+PACKAGECONFIG_G2D          ??= ""
+PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
 PACKAGECONFIG[viv-fb] = ",,virtual/libgles2"

@@ -1,0 +1,41 @@
+From aa4f56c3c952269c36464cc0da9db5a1381648fa Mon Sep 17 00:00:00 2001
+From: Jaroslav Kysela <perex@perex.cz>
+Date: Wed, 9 Nov 2022 08:11:42 +0100
+Subject: [PATCH] pcm: rate - fix the crash in
+
+Upstream-Status: Backport
+
+ snd_pcm_rate_may_wait_for_avail_min()
+
+The pcm argument passed to the conversion function in
+snd_pcm_plugin_may_wait_for_avail_min_conv() should be
+pcm->fast_op_arg.
+
+Test command: arecord -Dplughw:x -r12000 -c2 -fS16_LE -M temp.wav
+
+Fixes: d9dbb57b ("pcm: rate - rewrite the may_wait_for_avail_min callback for the rate plugin")
+
+BugLink: https://lore.kernel.org/alsa-devel/1667793912-18957-1-git-send-email-shengjiu.wang@nxp.com/
+Fixes: https://github.com/alsa-project/alsa-lib/issues/282
+Reported-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+---
+ src/pcm/pcm_plugin.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/pcm/pcm_plugin.c b/src/pcm/pcm_plugin.c
+index 6bb90b8b..ec64604c 100644
+--- a/src/pcm/pcm_plugin.c
++++ b/src/pcm/pcm_plugin.c
+@@ -622,7 +622,7 @@ int snd_pcm_plugin_may_wait_for_avail_min_conv(
+ 		 * This code is also used by extplug, but extplug does not allow to alter the sampling rate.
+ 		 */
+ 		if (conv)
+-			needed_slave_avail_min = conv(pcm, needed_slave_avail_min);
++			needed_slave_avail_min = conv(pcm->fast_op_arg, needed_slave_avail_min);
+ 
+ 		if (slave->avail_min != needed_slave_avail_min) {
+ 			snd_pcm_sw_params_t *swparams;
+-- 
+2.34.1
+
