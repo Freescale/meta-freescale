@@ -8,9 +8,9 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRC_URI = "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.1.y"
-LOCALVERSION = "-6.1.55-2.2.0"
-SRCREV = "770c5fe2c1d1529fae21b7043911cd50c6cf087e"
+SRCBRANCH = "lf-6.6.y"
+LOCALVERSION = "-6.6.3-1.0.0"
+SRCREV = "ccf0a99701a701fb48a04e31ffe3f9d585a8374a"
 
 S = "${WORKDIR}/git"
 
