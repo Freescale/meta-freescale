@@ -8,5 +8,5 @@ SRC_URI += " \
     file://0003-arm32-libutils-libutee-ta-add-.note.GNU-stack-sectio.patch \
     file://0004-core-link-add-no-warn-rwx-segments.patch \
 "
-SRCBRANCH = "lf-6.1.55_2.2.0"
-SRCREV = "a303fc80f7c4bd713315687a1fa1d6ed136e78ee"
+SRCBRANCH = "lf-6.6.3_1.0.0"
+SRCREV = "e0a3e77735941e6057a1994a576b83a93ea0bdb9"
