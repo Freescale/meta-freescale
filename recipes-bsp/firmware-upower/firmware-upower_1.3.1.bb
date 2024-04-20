@@ -2,7 +2,7 @@
 DESCRIPTION = "NXP i.MX uPower firmware"
 LICENSE = "Proprietary"
 SECTION = "BSP"
-LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
+LIC_FILES_CHKSUM = "file://COPYING;md5=db4762b09b6bda63da103963e6e081de"
 
 SRC_URI = "${FSL_MIRROR}/${PN}-${PV}.bin;fsl-eula=true"
 
@@ -10,8 +10,8 @@ S = "${WORKDIR}/${PN}-${PV}"
 
 inherit fsl-eula-unpack pkgconfig deploy
 
-SRC_URI[md5sum] = "d2cbe8d2f8fa170e5d48c599c4caac5e"
-SRC_URI[sha256sum] = "c02595917744769abe810107a08506e4055b8077b5fc4ed17c353b833756c8b0"
+SRC_URI[md5sum] = "65f28bd8ace3ce7116cb15685bfe1cd0"
+SRC_URI[sha256sum] = "1df3a03d69feb38a450ee63abc7713d78cf6339988476e4c9f95ebbf63790f66"
 
 do_configure[noexec] = "1"
 
