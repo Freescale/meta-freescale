@@ -16,8 +16,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
 PROVIDES = "jailhouse"
 RPROVIDES:${PN} += "jailhouse"
 
-SRCBRANCH = "lf-6.1.55_2.2.0"
-SRCREV = "139bb5fff80579ae3602061392b9424d6432710a"
+SRCBRANCH = "lf-6.6.3_1.0.0"
+SRCREV = "184a287f4c4c63a3842a3b582b5d700e0f9fd9a4"
 
 IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
 SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
@@ -109,4 +109,4 @@ RDEPENDS:pyjailhouse = " \
 
 INSANE_SKIP:${PN} = "ldflags"
 
-COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx8ulp-nxp-bsp|mx93-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx8ulp-nxp-bsp|mx9-nxp-bsp)"
