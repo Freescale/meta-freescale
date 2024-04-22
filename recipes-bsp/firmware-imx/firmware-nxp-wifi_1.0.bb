@@ -7,11 +7,11 @@ should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=2827219e81f28aba7c6a569f7c437fa7"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=44a8052c384584ba09077e85a3d1654f"
 
-SRC_URI = "git://github.com/NXP/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.1.55_2.2.0"
-SRCREV = "7be5a936ce8677962dd7b41c6c9f41dd14350bec"
+SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
+SRCBRANCH = "lf-6.6.3_1.0.0"
+SRCREV = "2afa15e77f0b58eade42b4f59c9215339efcca66"
 
 S = "${WORKDIR}/git"
 

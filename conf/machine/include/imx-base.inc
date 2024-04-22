@@ -486,6 +486,10 @@ MACHINE_EXTRA_RRECOMMENDS += " \
     ${@bb.utils.filter('COMBINED_FEATURES', 'jailhouse', d)} \
 "
 
+# ELE extra Firmware
+SECOEXT_FIRMWARE_NAME ?= "UNDEFINED"
+SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
+
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN                ?= ""
 MACHINE_GSTREAMER_1_0_PLUGIN:mx6dl-nxp-bsp  ?= "gstreamer1.0-plugins-imx-meta"
