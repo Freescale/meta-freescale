@@ -21,6 +21,7 @@ SOC:mx8qxp-nxp-bsp  = "imx8qx"
 SOC:mx8dx-nxp-bsp   = "imx8qx"
 SOC:mx8ulp-nxp-bsp  = "imx8ulp"
 SOC:mx93-nxp-bsp    = "imx93"
+SOC:mx95-nxp-bsp    = "imx95"
 
 MCORE_TYPE  ?= "m4"
 MCORE_TYPE:mx8mn-nxp-bsp  = "m7"
@@ -29,6 +30,7 @@ MCORE_TYPE:mx8mp-nxp-bsp  = "m7"
 MCORE_TYPE:mx8mpul-nxp-bsp  = "m7"
 MCORE_TYPE:mx8ulp-nxp-bsp  = "m33"
 MCORE_TYPE:mx93-nxp-bsp  = "m33"
+MCORE_TYPE:mx95-nxp-bsp  = "m7"
 
 SRC_URI = "${FSL_MIRROR}/${SOC}-${MCORE_TYPE}-demo-${PV}.bin;name=${SOC};fsl-eula=true"
 
