@@ -5,11 +5,11 @@ HOMEPAGE = "https://www.khronos.org/vulkan/"
 BUGTRACKER = "https://github.com/KhronosGroup/Vulkan-ValidationLayers"
 SECTION = "libs"
 
-LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=8df9e8826734226d08cb412babfa599c"
+LICENSE = "Apache-2.0 & MIT"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=cd3c0bc366cd9b6a906e22f0bcb5910f"
 
-SRC_URI = "git://git@github.com/KhronosGroup/Vulkan-ValidationLayers.git;branch=main;protocol=https"
-SRCREV = "60e58bc683807fa396b1287deace8b45cfd957a3"
+SRC_URI = "git://git@github.com/KhronosGroup/Vulkan-ValidationLayers.git;branch=sdk-1.3.261;protocol=https"
+SRCREV = "628cd310bef6d54b4e6b25b5ac2ed013473409d6"
 
 S = "${WORKDIR}/git"
 
@@ -18,16 +18,12 @@ REQUIRED_DISTRO_FEATURES = "vulkan"
 DEPENDS = "vulkan-headers vulkan-loader spirv-headers spirv-tools glslang"
 
 # BUILD_TESTS            - Not required for OE builds
-# BUILD_WERROR           - There are too many compiler warnings/errors due to upgrades in version
-#                          of clang. Requiring a number of patches from upstream. Disable compiler
-#                          -Werror to bypass build issues.
 # USE_ROBIN_HOOD_HASHING - Provides substantial performance improvements on all platforms.
 #                          Yocto project doesn't contain a recipe for package so disabled it.
 EXTRA_OECMAKE = "\
     -DBUILD_TESTS=OFF \
-    -DBUILD_WERROR=OFF \
     -DUSE_ROBIN_HOOD_HASHING=OFF \
-    -DGLSLANG_INSTALL_DIR=${STAGING_DATADIR} \
+    -DGLSLANG_INSTALL_DIR=${STAGING_LIBDIR} \
     -DVULKAN_HEADERS_INSTALL_DIR=${STAGING_EXECPREFIXDIR} \
     -DSPIRV_HEADERS_INSTALL_DIR=${STAGING_EXECPREFIXDIR} \
     "
@@ -35,7 +31,7 @@ EXTRA_OECMAKE = "\
 PACKAGECONFIG[x11] = "-DBUILD_WSI_XLIB_SUPPORT=ON -DBUILD_WSI_XCB_SUPPORT=ON, -DBUILD_WSI_XLIB_SUPPORT=OFF -DBUILD_WSI_XCB_SUPPORT=OFF, libxcb libx11 libxrandr"
 PACKAGECONFIG[wayland] = "-DBUILD_WSI_WAYLAND_SUPPORT=ON, -DBUILD_WSI_WAYLAND_SUPPORT=OFF, wayland"
 
-PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'x11 wayland', d)}"
+PACKAGECONFIG ?= "${@bb.utils.filter('DISTRO_FEATURES', 'x11 wayland', d)}"
 
 inherit cmake features_check pkgconfig
 
