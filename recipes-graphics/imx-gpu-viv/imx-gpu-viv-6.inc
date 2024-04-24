@@ -1,6 +1,6 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
-# Copyright 2017-2023 NXP
+# Copyright 2017-2024 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for i.MX"
@@ -20,11 +20,6 @@ DEPENDS += " \
 DEPENDS:append:imxdrm = " libdrm wayland"
 DEPENDS:append:mx8-nxp-bsp = " patchelf-native"
 
-# imx-gpu-viv does not provide everything it needs to for virtual/libgl
-# on x11 backend or on Wayland backend with XWayland support.
-# We depend on mesa to fill in what is missing.
-DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'mesa', '', d)}"
-
 DEPENDS:append:libc-musl = " gcompat"
 
 PROVIDES += " \
@@ -40,7 +35,6 @@ EXTRA_PROVIDES = " \
     ${PROVIDES_OPENVX} \
 "
 EXTRA_PROVIDES:append:imxgpu3d = " \
-    virtual/libgl \
     virtual/libgles1 \
     virtual/libgles2 \
 "
@@ -86,7 +80,6 @@ PACKAGECONFIG[valgrind] = ""
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
 PACKAGES =+ " \
-	libgl-imx libgl-imx-dev \
 	libgles1-imx libgles1-imx-dev \
 	libgles2-imx libgles2-imx-dev \
 	libgles3-imx-dev \
@@ -149,7 +142,7 @@ python __anonymous() {
 
     # For the packages that make up the OpenGL interfaces, inject variables so that
     # they don't get Debian-renamed (which would remove the -imx suffix).
-    for p in (("libegl", "libegl1"), ("libgl", "libgl1"),
+    for p in (("libegl", "libegl1"),
               ("libgles1", "libglesv1-cm1"), ("libgles2", "libglesv2-2"),
               ("libgles3",), ("libgbm",)):
         fullp = p[0] + "-imx"
@@ -291,8 +284,6 @@ do_install () {
     if [ "${IS_MX6SL}" = "1" ]; then
         rm -rf ${D}${libdir}/libCLC* ${D}${includedir}/CL \
                \
-               ${D}${libdir}/libGL* ${D}${includedir}/GL* ${D}${libdir}/pkgconfig/gl.pc \
-               \
                ${D}${libdir}/libGLES* ${D}${libdir}/pkgconfig/gles*.pc \
                \
                ${D}${libdir}/libOpenCL* ${D}${includedir}/CL \
@@ -376,15 +367,6 @@ OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES               = ""
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx-dev"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8mp-nxp-bsp = "libclc-imx libopencl-imx-dev"
 INSANE_SKIP:libopenvx-imx += "dev-deps"
-
-FILES:libgl-imx = "${libdir}/libGL${REALSOLIBS} ${libdir}/libGL${SOLIBS}"
-FILES:libgl-imx-dev = "${includedir}/GL ${libdir}/pkgconfig/gl.pc"
-# libGL is only targeting X11 backend, and in case if Wayland-only is used -
-# package QA complains on missing RDEPENDS, which are only available for X11.
-# Skip "file-rdeps" QA for this package.
-INSANE_SKIP:libgl-imx += "file-rdeps"
-# libEGL does dlopen of libGL.so
-INSANE_SKIP:libgl-imx += "dev-so"
 
 FILES:libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
 FILES:libgles1-imx-dev = "${includedir}/GLES ${libdir}/pkgconfig/glesv1_cm.pc"
