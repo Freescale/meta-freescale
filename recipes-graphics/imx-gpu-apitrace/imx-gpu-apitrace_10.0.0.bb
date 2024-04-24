@@ -2,7 +2,7 @@
 SUMMARY = "Samples for OpenGL ES"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
-DEPENDS = "imx-gpu-viv zlib libpng procps"
+DEPENDS = "zlib libpng procps"
 
 SRC_URI = "git://github.com/nxp-imx/apitrace-imx.git;protocol=https;branch=imx_10.0 \
            file://0001-dlsym-workaround-glibc-2.34-build-failure.patch \
@@ -18,11 +18,13 @@ PACKAGECONFIG_BACKEND:mx6-nxp-bsp = " \
        bb.utils.contains('DISTRO_FEATURES',     'x11',    'x11', \
                                                              '', d), d)} \
 "
-PACKAGECONFIG_BACKEND:mx7-nxp-bsp = "${PACKAGECONFIG_BACKEND:mx6-nxp-bsp}"
-PACKAGECONFIG_BACKEND:mx8-nxp-bsp = "waffle"
+PACKAGECONFIG_BACKEND:mx7-nxp-bsp  = "${PACKAGECONFIG_BACKEND:mx6-nxp-bsp}"
+PACKAGECONFIG_BACKEND:mx8-nxp-bsp  = "waffle"
+PACKAGECONFIG_BACKEND:mx95-nxp-bsp = "waffle"
 
-PACKAGECONFIG_GPU2D          = ""
-PACKAGECONFIG_GPU2D:imxgpu2d = "vivante"
+PACKAGECONFIG_GPU2D              = ""
+PACKAGECONFIG_GPU2D:imxgpu2d     = "vivante"
+PACKAGECONFIG_GPU2D:mx95-nxp-bsp = ""
 
 PACKAGECONFIG ??= " \
     egl \
