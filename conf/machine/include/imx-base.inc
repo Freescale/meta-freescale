@@ -568,7 +568,7 @@ PREFERRED_PROVIDER_opencl-headers:imxgpu     ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxgpu  ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/opencl-icd:imxgpu ?= "imx-gpu-viv"
 
-PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "11.0.3.imx"
+PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "12.0.3.imx"
 # i.MX 6 & 7 stay on weston 10.0 for fbdev
 PREFERRED_VERSION_weston:mx6-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:mx7-nxp-bsp      ??= "10.0.5.imx"
