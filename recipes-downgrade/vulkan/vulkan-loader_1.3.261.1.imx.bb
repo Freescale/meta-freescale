@@ -9,8 +9,8 @@ SECTION = "libs"
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=7dbefed23242760aa3475ee42801c5ac"
-SRC_URI = "git://github.com/KhronosGroup/Vulkan-Loader.git;branch=sdk-1.3.239;protocol=https"
-SRCREV = "fa421a02686e7f01c8e4af24650fa04374df8338"
+SRC_URI = "git://github.com/KhronosGroup/Vulkan-Loader.git;branch=main;protocol=https"
+SRCREV = "afdd025ead2b63b2c73d900ab128a2d3b512cdf0"
 
 S = "${WORKDIR}/git"
 
@@ -35,4 +35,8 @@ PACKAGECONFIG[wayland] = "-DBUILD_WSI_WAYLAND_SUPPORT=ON, -DBUILD_WSI_WAYLAND_SU
 
 RRECOMMENDS:${PN} = "mesa-vulkan-drivers"
 
+# These recipes need to be updated in lockstep with each other:
+# glslang, vulkan-headers, vulkan-loader, vulkan-tools, spirv-headers, spirv-tools
+# The tags versions should always be sdk-x.y.z, as this is what
+# upstream considers a release.
 UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\d+(\.\d+)+)"

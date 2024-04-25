@@ -26,16 +26,13 @@ Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
  protocol/meson.build | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/protocol/meson.build b/protocol/meson.build
-index e8698530..ba52089b 100644
---- a/protocol/meson.build
-+++ b/protocol/meson.build
+Index: git/protocol/meson.build
+===================================================================
+--- git.orig/protocol/meson.build
++++ git/protocol/meson.build
 @@ -1,4 +1,4 @@
 -dep_scanner = dependency('wayland-scanner', native: false)
 +dep_scanner = dependency('wayland-scanner', native: true)
- prog_scanner = find_program(dep_scanner.get_pkgconfig_variable('wayland_scanner'))
+ prog_scanner = find_program(dep_scanner.get_variable(pkgconfig: 'wayland_scanner'))
  
- dep_wp = dependency('wayland-protocols', version: '>= 1.26',
--- 
-2.25.1
-
+ dep_wp = dependency('wayland-protocols', version: '>= 1.31',

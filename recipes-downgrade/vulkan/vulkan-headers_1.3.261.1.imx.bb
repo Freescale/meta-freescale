@@ -7,11 +7,11 @@ HOMEPAGE = "https://www.khronos.org/vulkan/"
 BUGTRACKER = "https://github.com/KhronosGroup/Vulkan-Headers"
 SECTION = "libs"
 
-LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=3b83ef96387f14655fc854ddc3c6bd57"
+LICENSE = "Apache-2.0 & MIT"
+LIC_FILES_CHKSUM = "file://LICENSE.md;md5=1bc355d8c4196f774c8b87ed1a8dd625"
 SRC_URI = "git://github.com/KhronosGroup/Vulkan-Headers.git;branch=main;protocol=https"
 
-SRCREV = "2bb0a23104ceffd9a28d5b7401f2cee7dae35bb8"
+SRCREV = "85c2334e92e215cce34e8e0ed8b2dce4700f4a50"
 
 S = "${WORKDIR}/git"
 
@@ -20,4 +20,8 @@ inherit cmake
 FILES:${PN} += "${datadir}/vulkan"
 RDEPENDS:${PN} += "python3-core"
 
+# These recipes need to be updated in lockstep with each other:
+# glslang, vulkan-headers, vulkan-loader, vulkan-tools, spirv-headers, spirv-tools
+# The tags versions should always be sdk-x.y.z, as this is what
+# upstream considers a release.
 UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\d+(\.\d+)+)"
