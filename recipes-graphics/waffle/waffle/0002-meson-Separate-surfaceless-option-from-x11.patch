@@ -14,9 +14,11 @@ Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
  meson.build | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/meson.build
-+++ b/meson.build
-@@ -72,6 +72,7 @@ dep_udev = _dep_null
+Index: git/meson.build
+===================================================================
+--- git.orig/meson.build
++++ git/meson.build
+@@ -72,6 +72,7 @@ dep_gbm = _dep_null
  dep_cocoa = _dep_null
  dep_core_foundation = _dep_null
  dep_gl_headers = _dep_null
@@ -24,17 +26,13 @@ Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
  
  # Get dependencies
  if build_wgl
-@@ -96,10 +97,11 @@ else
-   dep_egl = dependency('egl', required : get_option('gbm'))
-   dep_gbm = dependency('gbm', required : get_option('gbm'))
-   dep_udev = dependency('libudev', required : get_option('gbm'))
-+  dep_surfaceless_egl = dependency('egl', required : get_option('surfaceless_egl'))
-+  dep_surfaceless_gbm = dependency('gbm', required : get_option('surfaceless_egl'))
-   build_gbm = dep_egl.found() and dep_gbm.found() and dep_udev.found()
+@@ -99,7 +100,8 @@ else
+   build_gbm = dep_drm.found() and dep_egl.found() and dep_gbm.found()
  
--  dep_egl = dependency('egl', required : get_option('surfaceless_egl'))
+   dep_egl = dependency('egl', required : get_option('surfaceless_egl'))
 -  build_surfaceless = dep_egl.found()
-+  build_surfaceless = dep_surfaceless_egl.found() and dep_surfaceless_gbm.found()
++  dep_gbm = dependency('gbm', required : get_option('surfaceless_egl'))
++  build_surfaceless = dep_egl.found() and dep_gbm.found()
  
    dep_egl = dependency('egl', required : get_option('wayland'))
    dep_wayland_client = dependency(

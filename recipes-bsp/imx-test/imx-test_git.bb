@@ -13,14 +13,15 @@ DEPENDS:append:imxvpu = " virtual/imxvpu"
 DEPENDS:append:mx6-nxp-bsp    = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp    = " imx-lib"
 DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
+DEPENDS:append:mx93-nxp-bsp   = " imx-lib"
 
 PE = "1"
 PV = "7.0+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
            file://memtool_profile"
-SRCBRANCH = "lf-6.1.55_2.2.0"
-SRCREV = "e8b3c9026553233491abb4df4185dd7291a8ffb2"
+SRCBRANCH = "lf-6.6.3_1.0.0"
+SRCREV = "8a1fa37664a1e470cf86f1185c08e265e4602a9b"
 
 S = "${WORKDIR}/git"
 
@@ -39,6 +40,8 @@ PLATFORM:mx7d-nxp-bsp  = "IMX7D"
 PLATFORM:mx7ulp-nxp-bsp = "IMX7D"
 PLATFORM:mx8-nxp-bsp = "IMX8"
 PLATFORM:mx8ulp-nxp-bsp = "IMX8ULP"
+PLATFORM:mx93-nxp-bsp = "IMX8ULP"
+PLATFORM:mx95-nxp-bsp = "IMX8"
 
 PARALLEL_MAKE = "-j 1"
 EXTRA_OEMAKE += "${PACKAGECONFIG_CONFARGS}"
