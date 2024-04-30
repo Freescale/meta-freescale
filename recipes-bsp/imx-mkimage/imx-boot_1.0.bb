@@ -58,7 +58,8 @@ IMXBOOT_TARGETS ?= \
 BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
 BOOT_STAGING:mx8m-generic-bsp  = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
-BOOT_STAGING:mx9-generic-bsp   = "${S}/iMX9"
+BOOT_STAGING:mx91p-generic-bsp   = "${S}/iMX91"
+BOOT_STAGING:mx93-generic-bsp   = "${S}/iMX93"
 
 SOC_FAMILY                    = "INVALID"
 SOC_FAMILY:mx8-generic-bsp    = "mx8"
