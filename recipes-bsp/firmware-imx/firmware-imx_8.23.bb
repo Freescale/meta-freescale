@@ -151,7 +151,7 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-* ${PN}-easrc-* ${PN}-xcvr-* ${PN}-xu
 # is empty.
 # Therefore, we opt-out from producing -dev package here, since also for firmware
 # files it makes no sense.
-PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi ${PN}-vpu-imx8 ${PN}-vpu-imx95"
+PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi ${PN}-vpu-amphion ${PN}-vpu-wave"
 
 FILES:${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
 FILES:${PN}-hdmi = " \
@@ -159,7 +159,7 @@ FILES:${PN}-hdmi = " \
     ${nonarch_base_libdir}/firmware/hdmirxfw.bin \
     ${nonarch_base_libdir}/firmware/dpfw.bin \
 "
-FILES:${PN}-vpu-imx8 = "${nonarch_base_libdir}/firmware/amphion/vpu/*"
-FILES:${PN}-vpu-imx95 = "${nonarch_base_libdir}/firmware/wave633c_codec_fw.bin"
+FILES:${PN}-vpu-amphion = "${nonarch_base_libdir}/firmware/amphion/vpu/*"
+FILES:${PN}-vpu-wave = "${nonarch_base_libdir}/firmware/wave633c_codec_fw.bin"
 
 COMPATIBLE_MACHINE = "(imx-generic-bsp)"
