@@ -10,15 +10,21 @@ PE = "1"
 
 inherit allarch
 
+IMX_USE_LINUX_FIRMWARE_SDMA ?= "1"
+
 do_install() {
     install -d ${D}${nonarch_base_libdir}/firmware/imx
 
     # SDMA Firmware section
     install -d ${D}${nonarch_base_libdir}/firmware/imx/sdma
     install -m 0644 ${S}/firmware/sdma/* ${D}${nonarch_base_libdir}/firmware/imx/sdma
-    # Comment these lines to use sdma-imx6q/7d.bin from here and not linux-firmware
-    #rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx6q.bin
-    #rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx7d.bin
+    # Define IMX_USE_LINUX_FIRMWARE_SDMA = "0" in layer.conf, machine.conf, local.conf
+    # or in .bbappend to use sdma-imx6q/7d.bin from here and not linux-firmware
+    if [ ${IMX_USE_LINUX_FIRMWARE_SDMA} -gt 0 ]
+    then
+        rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx6q.bin
+        rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx7d.bin
+    fi
 
     # EASRC Firmware section
     install -d ${D}${nonarch_base_libdir}/firmware/imx/easrc
