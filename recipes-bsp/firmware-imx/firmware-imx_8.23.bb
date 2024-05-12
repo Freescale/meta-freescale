@@ -1,5 +1,5 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright 2017-2021 NXP
+# Copyright 2017-2021,2023 NXP
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 SUMMARY = "Freescale i.MX firmware"
 DESCRIPTION = "Freescale i.MX firmware such as for the VPU"
@@ -10,14 +10,21 @@ PE = "1"
 
 inherit allarch
 
+IMX_USE_LINUX_FIRMWARE_SDMA ?= "1"
+
 do_install() {
     install -d ${D}${nonarch_base_libdir}/firmware/imx
 
     # SDMA Firmware section
     install -d ${D}${nonarch_base_libdir}/firmware/imx/sdma
     install -m 0644 ${S}/firmware/sdma/* ${D}${nonarch_base_libdir}/firmware/imx/sdma
-    rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx6q.bin
-    rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx7d.bin
+    # Define IMX_USE_LINUX_FIRMWARE_SDMA = "0" in layer.conf, machine.conf, local.conf
+    # or in .bbappend to use sdma-imx6q/7d.bin from here and not linux-firmware
+    if [ ${IMX_USE_LINUX_FIRMWARE_SDMA} -gt 0 ]
+    then
+        rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx6q.bin
+        rm -f ${D}${nonarch_base_libdir}/firmware/imx/sdma/sdma-imx7d.bin
+    fi
 
     # EASRC Firmware section
     install -d ${D}${nonarch_base_libdir}/firmware/imx/easrc
@@ -53,6 +60,11 @@ do_install() {
     # as some of other files are provided by packages from other recipes.
     install -d ${D}${nonarch_base_libdir}/firmware/vpu
     install -m 0644 ${S}/firmware/vpu/vpu_fw_imx*.bin ${D}${nonarch_base_libdir}/firmware/vpu
+    # Update i.MX8 vpu firmware path to align with kernel6.5+
+    install -d ${D}${nonarch_base_libdir}/firmware/amphion/vpu/
+    mv ${D}${nonarch_base_libdir}/firmware/vpu/vpu_fw_imx8* ${D}${nonarch_base_libdir}/firmware/amphion/vpu/
+    # Install i.MX 95 VPU firmware
+    install -m 0644 ${S}/firmware/vpu/wave633c_codec_fw.bin ${D}${nonarch_base_libdir}/firmware
 }
 
 #
@@ -87,6 +99,7 @@ python populate_packages:prepend() {
         d.setVar('FILES:' + pkg, oldfiles + " " + newfile)
 
         os.chdir(cwd)
+
 
     easrcdir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/easrc', d)
     do_split_packages(d, easrcdir, '^easrc-([^_]*).*\.bin',
@@ -144,7 +157,7 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-* ${PN}-easrc-* ${PN}-xcvr-* ${PN}-xu
 # is empty.
 # Therefore, we opt-out from producing -dev package here, since also for firmware
 # files it makes no sense.
-PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi"
+PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi ${PN}-vpu-amphion ${PN}-vpu-wave"
 
 FILES:${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
 FILES:${PN}-hdmi = " \
@@ -152,5 +165,7 @@ FILES:${PN}-hdmi = " \
     ${nonarch_base_libdir}/firmware/hdmirxfw.bin \
     ${nonarch_base_libdir}/firmware/dpfw.bin \
 "
+FILES:${PN}-vpu-amphion = "${nonarch_base_libdir}/firmware/amphion/vpu/*"
+FILES:${PN}-vpu-wave = "${nonarch_base_libdir}/firmware/wave633c_codec_fw.bin"
 
 COMPATIBLE_MACHINE = "(imx-generic-bsp)"
