@@ -13,10 +13,10 @@ SRCREV = "f55ee9f72090309bbb7ab71f48a498fc02909234"
 S = "${WORKDIR}/git"
 
 do_install () {
-    install -d ${D}/lib/firmware
+    install -d ${D}${nonarch_base_libdir}/firmware
     install -d ${D}/boot/engine-pfe-bin
-    install -m 644 ${S}/NXP-Binary-EULA.txt ${D}/lib/firmware
-    install -m 755 ${S}/ls1012a/slow_path/*.elf ${D}/lib/firmware
+    install -m 644 ${S}/NXP-Binary-EULA.txt ${D}${nonarch_base_libdir}/firmware
+    install -m 755 ${S}/ls1012a/slow_path/*.elf ${D}${nonarch_base_libdir}/firmware
     install -m 755 ${S}/ls1012a/u-boot/* ${D}/boot/engine-pfe-bin
 }
 
@@ -27,7 +27,7 @@ do_deploy () {
 
 addtask deploy after do_install
 
-FILES:${PN} += "/lib/firmware /boot/"
+FILES:${PN} += "${nonarch_base_libdir}/firmware /boot/"
 INSANE_SKIP:${PN} += "arch already-stripped"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
