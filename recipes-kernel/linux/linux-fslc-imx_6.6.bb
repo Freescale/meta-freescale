@@ -12,8 +12,8 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 ###############################################################################
 # This recipe (and corresponding kernel repository and branch) receives updates
 # from 3 different sources:
-# 1. Stable [linux-6.1.y] branch updates of korg;
-# 2. NXP-specific updates via branch [lf-6.1.y] shared via GitHub NXP repo;
+# 1. Stable [linux-6.6.y] branch updates of korg;
+# 2. NXP-specific updates via branch [lf-6.6.y] shared via GitHub NXP repo;
 # 3. Critical patches, which are not (yet) integrated into either of 2 above
 #    sources, but are required to be applied to the kernel tree.
 #
@@ -28,23 +28,20 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.1.70
+#    tag: v6.6.28
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.1.55-2.2.0
+#    tag: lf-6.6.3-1.0.00
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-# - 77a660738af5 Revert "net: stmmac: fix FPE events losing"
-# - d9e9cb8ce9bc hx280enc_vc8000e: fix misplaced #endif
-# - 3f1f2ea72955 mxc: gpu-viv: change _QuerySignal() return type to gceSTATUS
-# - b73c6797ee42 ARM: imx_v7_defconfig: Remove KERNEL_LZO config
-# - ec33c7fc43be touchscreen: Kconfig: add I2C dependency for CT36X
-# - 6c41233a2cfb pwm: pwm-adp5585: fix get_state callback prototype
-# - 9c7540ecb891 pwm: pwm-rpmsg-imx: fix get_state callback prototype
+# - f67cb9a5b4fb7 Revert "net: stmmac: fix FPE events losing"
+# - 1918c2eb8b07f Revert "dmaengine: fsl-edma: fix DMA channel leak in eDMAv4"
+# - 42289407ee38f Revert "dmaengine: fsl-edma: Add judgment on enabling round robin arbitration"
+# - 952f79923f055 Revert "dmaengine: fsl-edma: Do not suspend and resume the masked dma channel when the system is sleeping"
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -56,14 +53,14 @@ require linux-imx.inc
 
 KBRANCH = "6.6-1.0.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "ccf0a99701a701fb48a04e31ffe3f9d585a8374a"
+SRCREV = "776652a165f5bbf30c68a5f6213d75b02e8df11c"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.3"
+LINUX_VERSION = "6.6.28"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
