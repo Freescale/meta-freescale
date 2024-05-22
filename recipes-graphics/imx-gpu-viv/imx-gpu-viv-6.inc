@@ -274,7 +274,7 @@ do_install () {
                 rm -rf ${D}$f
             done
         else
-            install -Dm 0644 ${WORKDIR}/imx_icd.json ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
+            install -Dm 0644 ${UNPACKDIR}/imx_icd.json ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
             sed -i "s,%libdir%,${libdir}," ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
             sed -i "s,%api_version%,${LIBVULKAN_API_VERSION}," ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
         fi
