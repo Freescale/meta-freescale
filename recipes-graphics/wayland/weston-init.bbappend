@@ -58,8 +58,8 @@ PACKAGECONFIG[use-g2d] = ",,"
 PACKAGECONFIG[xwayland] = ",,"
 
 do_install:append() {
-    if [ -f "${WORKDIR}/weston.config" ]; then
-        install -Dm0755 ${WORKDIR}/weston.config ${D}${sysconfdir}/default/weston
+    if [ -f "${UNPACKDIR}/weston.config" ]; then
+        install -Dm0755 ${UNPACKDIR}/weston.config ${D}${sysconfdir}/default/weston
     fi
 
     if [ "${@bb.utils.contains('PACKAGECONFIG', 'gbm-format', 'yes', 'no', d)}" = "yes" ]; then

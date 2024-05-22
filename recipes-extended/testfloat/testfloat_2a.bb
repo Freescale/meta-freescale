@@ -18,7 +18,7 @@ SRC_URI[SoftFloat.sha256sum] = "89d14b55113a2ba8cbda7011443ba1d298d381c89d939515
 S = "${WORKDIR}/TestFloat-2a"
 
 do_unpack2(){
-    mv ${WORKDIR}/SoftFloat-2b ${S}/SoftFloat-2b
+    mv ${UNPACKDIR}/SoftFloat-2b ${S}/SoftFloat-2b
     cd ${S}
     if [ -n "$(which fromdos)" ];then
         find -type f -exec fromdos {} \;
