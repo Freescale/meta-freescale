@@ -4,6 +4,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI:append:qoriq-ppc = " file://qemu.conf"
 
 do_install:append:qoriq-ppc() {
-	install -m 0644 ${WORKDIR}/qemu.conf ${D}${sysconfdir}/libvirt/qemu.conf
+	install -m 0644 ${UNPACKDIR}/qemu.conf ${D}${sysconfdir}/libvirt/qemu.conf
 }
 
