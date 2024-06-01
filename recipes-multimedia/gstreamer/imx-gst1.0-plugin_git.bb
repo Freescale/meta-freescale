@@ -67,6 +67,13 @@ PLATFORM:mx8-nxp-bsp = "MX8"
 PLATFORM:mx9-nxp-bsp = "MX9"
 
 CFLAGS:append:toolchain-clang = " -Wno-implicit-int -Wno-int-conversion -Wno-incompatible-function-pointer-types"
+# GCC-14 otherwise errors out
+CFLAGS += " \
+    -Wno-error=int-conversion \
+    -Wno-error=incompatible-pointer-types \
+    -Wno-error=return-mismatch \
+    -Wno-error=implicit-function-declaration \
+"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OEMESON = "-Dplatform=${PLATFORM} \
