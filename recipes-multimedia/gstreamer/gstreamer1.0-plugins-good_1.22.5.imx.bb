@@ -120,6 +120,11 @@ GLIBC_64BIT_TIME_FLAGS:mx7-nxp-bsp = ""
 INSANE_SKIP:mx6-nxp-bsp:append = " 32bit-time"
 INSANE_SKIP:mx7-nxp-bsp:append = " 32bit-time"
 
+# GCC-14 otherwise errors out
+CFLAGS += " \
+    -Wno-error=implicit-function-declaration \
+    -Wno-error=incompatible-pointer-types \
+"
 S = "${WORKDIR}/git"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
