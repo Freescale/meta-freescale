@@ -135,6 +135,8 @@ PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
 PACKAGECONFIG[viv-fb] = ",,virtual/libgles2"
 
+# GCC-14 otherwise errors out
+CFLAGS += "-Wno-error=incompatible-pointer-types"
 EXTRA_OEMESON += "-Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}""
 
 # links with imx-gpu libs which are pre-built for glibc
