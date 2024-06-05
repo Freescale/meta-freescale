@@ -519,6 +519,20 @@ PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx9-nxp-bsp  ??= "1.22.5.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-base:mx9-nxp-bsp ??= "1.22.5.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-good:mx9-nxp-bsp ??= "1.22.5.imx"
 
+# GStreamer copied recipes
+PREFERRED_VERSION_gst-devtools:mx8-nxp-bsp              ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8-nxp-bsp ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-python:mx8-nxp-bsp       ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-vaapi:mx8-nxp-bsp        ??= "1.22.5.imx"
+PREFERRED_VERSION_gst-devtools:mx9-nxp-bsp              ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-libav:mx9-nxp-bsp        ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx9-nxp-bsp ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-python:mx9-nxp-bsp       ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx9-nxp-bsp  ??= "1.22.5.imx"
+PREFERRED_VERSION_gstreamer1.0-vaapi:mx9-nxp-bsp        ??= "1.22.5.imx"
+
 # GStreamer downgrade ffmpeg
 PREFERRED_VERSION_ffmpeg:mx8-nxp-bsp ??= "4.4.1"
 PREFERRED_VERSION_ffmpeg:mx9-nxp-bsp ??= "4.4.1"
