@@ -25,8 +25,6 @@ KBRANCH = "6.6.x+fslc"
 SRCREV = "8c0a83d1bb158cd9d90ab7378fd963e72b4a5a7f"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
-KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
-KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx8-generic-bsp = "defconfig"
