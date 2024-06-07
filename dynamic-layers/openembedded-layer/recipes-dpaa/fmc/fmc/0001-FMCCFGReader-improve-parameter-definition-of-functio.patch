@@ -1,0 +1,56 @@
+From 329c8ab2770ab34d887296a35585fac53c8bedb7 Mon Sep 17 00:00:00 2001
+From: Meng Li <Meng.Li@windriver.com>
+Date: Wed, 5 Jun 2024 18:54:22 +0800
+Subject: [PATCH] FMCCFGReader: improve parameter definition of function
+ errorFuncHandler
+
+When building fmc package, there is below error:
+FMCCFGReader.cpp: In member function 'void CCFGReader::parseCfgData(std::string)':
+FMCCFGReader.cpp:98:40: error: invalid conversion from
+'void (*)(void*, xmlErrorPtr)' {aka 'void (*)(void*, _xmlError*)'} to
+'xmlStructuredErrorFunc' {aka 'void (*)(void*, const _xmlError*)'} [-fpermissive]
+   98 |     xmlSetStructuredErrorFunc( &error, errorFuncHandler );
+      |                                        ^~~~~~~~~~~~~~~~
+      |                                        |
+      |                                        void (*)(void*, xmlErrorPtr) {aka void (*)(void*, _xmlError*)}
+Because in libxml2 package, the parameter definition of function
+pointer xmlStructuredErrorFunc has changed, adjust the parameter
+of errorFuncHandler to align with upstream.
+
+Upstream-Status: Pending
+
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+---
+ source/FMCGenericError.cpp | 2 +-
+ source/FMCGenericError.h   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/source/FMCGenericError.cpp b/source/FMCGenericError.cpp
+index a1a87a4..c11742c 100644
+--- a/source/FMCGenericError.cpp
++++ b/source/FMCGenericError.cpp
+@@ -33,7 +33,7 @@
+ #include "FMCUtils.h"
+ #include "logger.hpp"
+ 
+-void errorFuncHandler( void * ctx, xmlErrorPtr error )
++void errorFuncHandler( void * ctx, const xmlError *error )
+ {
+     char *filestr = (char*)"";
+     char *msgstr  = (char*)"";
+diff --git a/source/FMCGenericError.h b/source/FMCGenericError.h
+index 504a81b..61ab6c1 100644
+--- a/source/FMCGenericError.h
++++ b/source/FMCGenericError.h
+@@ -35,7 +35,7 @@
+ 
+ const int NO_LINE = -1;
+ 
+-void errorFuncHandler( void * ctx, xmlErrorPtr error );
++void errorFuncHandler( void * ctx, const xmlError *error );
+ 
+ 
+ class CGenericError {
+-- 
+2.34.1
+
