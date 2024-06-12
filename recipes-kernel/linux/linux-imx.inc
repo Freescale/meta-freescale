@@ -19,8 +19,6 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/linux-imx;protocol=https;branch=${SRCBRANCH}"
 
-S = "${WORKDIR}/git"
-
 # Tell to kernel class that we would like to use our defconfig to configure the kernel.
 # Otherwise, the --allnoconfig would be used per default which leads to mis-configured
 # kernel.
