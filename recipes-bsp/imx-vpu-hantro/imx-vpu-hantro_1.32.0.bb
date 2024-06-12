@@ -2,13 +2,12 @@
 
 DESCRIPTION = "i.MX Hantro VPU library"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
+LIC_FILES_CHKSUM = "file://COPYING;md5=44a8052c384584ba09077e85a3d1654f"
 
 PROVIDES = "virtual/imxvpu"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[md5sum] = "81b4eb801349a0c198b7cc43eb8b6097"
-SRC_URI[sha256sum] = "e868e12945b4f217e2e0511fdc2587875d6c9124e8673b67f1e7de367ff5012f"
+SRC_URI[sha256sum] = "f751ab7369d48e610ea3b6b0dc5a885c70a510861d6b46296ffc063fed370003"
 
 inherit fsl-eula-unpack use-imx-headers
 
