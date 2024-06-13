@@ -17,6 +17,12 @@ PLATFORM:mx8mm-nxp-bsp = "IMX8MM"
 PLATFORM:mx8mq-nxp-bsp = "IMX8MQ"
 PLATFORM:mx8mp-nxp-bsp = "IMX8MP"
 
+#| ../../source/h264high/h264decapi.c:1803:22: error: assignment to 'const u8 *' {aka 'const unsigned char *'} from incompatible pointer type 'u32 *' {aka 'unsigned int *'} [-Wincompatible-pointer-types]
+#|  1803 |             ref_data = ref.virtual_address;
+#| ../../source/h264high/h264decapi.c:2086:22: error: assignment to 'const u8 *' {aka 'const unsigned char *'} from incompatible pointer type 'u32 *' {aka 'unsigned int *'} [-Wincompatible-pointer-types]
+#|  2086 |             ref_data = ref.virtual_address;
+
+CFLAGS += " -Wno-error=incompatible-pointer-types"
 EXTRA_OEMAKE = " \
     CROSS_COMPILE="${HOST_PREFIX}" \
     SDKTARGETSYSROOT="${STAGING_DIR_TARGET}" \
