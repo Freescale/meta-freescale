@@ -5,13 +5,14 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 inherit allarch
 
 SRC_URI = "file://merge"
+S = "${WORKDIR}"
 
 MERGED_DST ?= "${ROOT_HOME}"
 do_install () {
     install -d ${D}/${MERGED_DST}
-    find ${UNPACKDIR}/merge/ -maxdepth 1 -mindepth 1 -not -name README \
+    find ${WORKDIR}/merge/ -maxdepth 1 -mindepth 1 -not -name README \
     -exec cp -fr '{}' ${D}/${MERGED_DST}/ \;
-    find ${UNPACKDIR}/merge/ -maxdepth 1 -mindepth 1 -exec rm -fr '{}' \;
+    find ${WORKDIR}/merge/ -maxdepth 1 -mindepth 1 -exec rm -fr '{}' \;
 }
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"

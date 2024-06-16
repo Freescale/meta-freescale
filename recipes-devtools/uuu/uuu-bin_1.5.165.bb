@@ -19,12 +19,14 @@ SRC_URI[Linux.sha256sum] = "f863bba022202361d19e5026be0af408d307f78d2dbf2c139fb7
 SRC_URI[Mac.sha256sum] = "62da0bd7e333931fba100823aa50133621c7e6047be0546bc12e29c0ea78a4d8"
 SRC_URI[Windows.sha256sum] = "013ed8bb45e21b971b6b3a5802c5f154733913714bece0b020cb770a809cd206"
 
+S = "${WORKDIR}"
+
 inherit allarch
 
 do_install() {
-    install -D -m 0755 ${UNPACKDIR}/uuu-${PV}     ${D}${libdir}/uuu/uuu
-    install -D -m 0755 ${UNPACKDIR}/uuu-${PV}_mac ${D}${libdir}/uuu/uuu_mac
-    install -D -m 0644 ${UNPACKDIR}/uuu-${PV}.exe ${D}${libdir}/uuu/uuu.exe
+    install -D -m 0755 ${WORKDIR}/uuu-${PV}     ${D}${libdir}/uuu/uuu
+    install -D -m 0755 ${WORKDIR}/uuu-${PV}_mac ${D}${libdir}/uuu/uuu_mac
+    install -D -m 0644 ${WORKDIR}/uuu-${PV}.exe ${D}${libdir}/uuu/uuu.exe
 }
 
 # HACK! We are not aiming to run those binaries during the build but copy then for MFGTOOL bundle.

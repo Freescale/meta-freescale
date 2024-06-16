@@ -73,11 +73,11 @@ do_install() {
                PLATFORM=${PLATFORM} \
                install
 
-    if [ -e ${UNPACKDIR}/clocks.sh ]; then
-        install -m 755 ${UNPACKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
+    if [ -e ${WORKDIR}/clocks.sh ]; then
+        install -m 755 ${WORKDIR}/clocks.sh ${D}/unit_tests/clocks.sh
     fi
     install -d -m 0755 ${D}${ROOT_HOME}/
-    install -m 0644 ${UNPACKDIR}/memtool_profile ${D}${ROOT_HOME}/.profile
+    install -m 0644 ${WORKDIR}/memtool_profile ${D}${ROOT_HOME}/.profile
 }
 
 FILES:${PN} += "/unit_tests ${ROOT_HOME}/.profile"

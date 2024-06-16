@@ -17,13 +17,13 @@ do_install:use-mainline-bsp() {
 
     # systemd
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
-        install -D -m 644 ${UNPACKDIR}/mesa-etnaviv.conf \
+        install -D -m 644 ${WORKDIR}/mesa-etnaviv.conf \
             ${D}${sysconfdir}/systemd/system.conf.d/mesa-etnaviv.conf
     fi
 
     # sysvinit
     if ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'true', 'false', d)}; then
-        install -D -m 644 ${UNPACKDIR}/mesa-etnaviv.sh \
+        install -D -m 644 ${WORKDIR}/mesa-etnaviv.sh \
             ${D}${sysconfdir}/profile.d/mesa-etnaviv.sh
     fi
 }

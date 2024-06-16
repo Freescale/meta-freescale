@@ -17,9 +17,9 @@ SRC_URI_IMX:mx9-nxp-bsp = " \
 CACHED_CONFIGUREVARS:append:mx6-nxp-bsp = " ax_cv_PTHREAD_PRIO_INHERIT=no"
 
 do_install:append() {
-    if [ -e "${UNPACKDIR}/daemon.conf" ] && [ -e "${UNPACKDIR}/default.pa" ]; then
-        install -m 0644 ${UNPACKDIR}/daemon.conf ${D}${sysconfdir}/pulse/daemon.conf
-        install -m 0644 ${UNPACKDIR}/default.pa ${D}${sysconfdir}/pulse/default.pa
+    if [ -e "${WORKDIR}/daemon.conf" ] && [ -e "${WORKDIR}/default.pa" ]; then
+        install -m 0644 ${WORKDIR}/daemon.conf ${D}${sysconfdir}/pulse/daemon.conf
+        install -m 0644 ${WORKDIR}/default.pa ${D}${sysconfdir}/pulse/default.pa
     fi
 }
 

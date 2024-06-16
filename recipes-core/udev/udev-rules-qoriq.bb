@@ -9,6 +9,7 @@ SRC_URI = "\
     file://74-ls1046a-xfi2-networking.rules \
     file://73-fsl-enetc-networking.rules \
 "
+S = "${WORKDIR}"
 
 RULE = "71-fsl-dpaa-persistent-networking.rules"
 RULE:e6500 = "72-fsl-dpaa-persistent-networking.rules"
@@ -25,7 +26,7 @@ RULE:ls1012a = ""
 do_install () {
     install -d ${D}${sysconfdir}/udev/rules.d/
     for r in ${RULE};do
-        install -m 0644 ${UNPACKDIR}/${r} ${D}${sysconfdir}/udev/rules.d/
+        install -m 0644 ${WORKDIR}/${r} ${D}${sysconfdir}/udev/rules.d/
     done
 }
 
