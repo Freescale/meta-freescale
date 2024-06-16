@@ -82,7 +82,7 @@ PACKAGECONFIG[dma-heap-uncached] = "--with-dma-heap-allocator=yes ${UNCACHED_DMA
 # Using do_install_ptest_base instead of do_install_ptest, since
 # the default do_install_ptest_base is hardcoded to expect Makefiles.
 do_install_ptest_base() {
-    install -D ${WORKDIR}/run-ptest ${D}${PTEST_PATH}/run-ptest
+    install -D ${UNPACKDIR}/run-ptest ${D}${PTEST_PATH}/run-ptest
     install -m 0755 ${B}/test-alloc ${D}${PTEST_PATH}
 }
 
