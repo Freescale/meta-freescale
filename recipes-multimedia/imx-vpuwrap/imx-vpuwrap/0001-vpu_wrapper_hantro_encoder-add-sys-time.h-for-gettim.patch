@@ -1,0 +1,29 @@
+From 482c639a0da4b093cfc029009604e9653ced33c4 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Thu, 13 Jun 2024 07:15:12 +0000
+Subject: [PATCH] vpu_wrapper_hantro_encoder: add sys/time.h for gettimeofday
+
+Fixes:
+| ../git/vpu_wrapper_hantro_encoder.c:953:3: error: implicit declaration of function 'gettimeofday' [-Wimplicit-function-declaration]
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ vpu_wrapper_hantro_encoder.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/vpu_wrapper_hantro_encoder.c b/vpu_wrapper_hantro_encoder.c
+index 3819c389320c..635c98bf1f19 100755
+--- a/vpu_wrapper_hantro_encoder.c
++++ b/vpu_wrapper_hantro_encoder.c
+@@ -24,6 +24,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
++#include <sys/time.h>
+ #include <semaphore.h>
+ 
+ #include "headers/OMX_Video.h"
+-- 
+2.42.0
+

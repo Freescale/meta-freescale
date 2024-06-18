@@ -1,0 +1,39 @@
+From e78af6d0c9cd1a655f6bc17173f6c411b8b34d2f Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Sat, 1 Jun 2024 11:07:13 +0000
+Subject: [PATCH] src/ocl.c: fix wrong integer type
+
+Fixes:
+| .../ocl.c:258:22: error: passing argument 6 of 'clGetProgramBuildInfo' from incompatible pointer type [-Wincompatible-pointer-types]
+  258 |             0, NULL, &log_size);
+      |                      ^~~~~~~~~
+      |                      |
+      |                      int *
+In file included from .../recipe-sysroot/usr/include/CL/cl_ext.h:27,
+                 from .../ocl.c:21:
+/recipe-sysroot/usr/include/CL/cl.h:1348:45: note: expected 'size_t *' {aka 'long unsigned int *'} but argument is of type 'int *'
+ 1348 |                       size_t *              param_value_size_ret) CL_API_SUFFIX__VERSION_1_0;
+      |                       ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ src/ocl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/ocl.c b/src/ocl.c
+index f56d9cb..b2b0c52 100644
+--- a/src/ocl.c
++++ b/src/ocl.c
+@@ -253,7 +253,7 @@ static OCL_RESULT CreateProgram(ImxOcl* ocl, const char* binName, const char* sr
+     cl_ret = clBuildProgram (program, 1, &ocl->device, "", NULL, NULL);
+     if (cl_ret < 0)
+     {
+-        int log_size;
++        size_t log_size;
+         cl_ret = clGetProgramBuildInfo(program, ocl->device, CL_PROGRAM_BUILD_LOG,
+             0, NULL, &log_size);
+ 
+-- 
+2.42.0
+

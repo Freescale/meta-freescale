@@ -4,6 +4,7 @@ Date: Thu, 29 Sep 2022 16:12:11 +0200
 Subject: [PATCH 2/2] config.tests: add DEFINES to compile egl4gles1 test with
  imxgpu2d (Vivante)
 
+Upstream-Status: Pending
 Signed-off-by: Mauro Salvini <m.salvini@koansoftware.com>
 ---
  config.tests/unix/egl4gles1/egl4gles1.pro | 1 +
