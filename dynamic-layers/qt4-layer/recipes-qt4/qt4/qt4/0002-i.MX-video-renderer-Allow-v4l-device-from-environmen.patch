@@ -18,6 +18,7 @@ a particular session for use in multi-headed applications.
 The default is /dev/video17:
 	export v4lsinkdev=/dev/video17
 
+Upstream-Status: Pending
 Signed-off-by: Eric Nelson <eric.nelson@boundarydevices.com>
 ---
  src/3rdparty/phonon/gstreamer/widgetrenderer.cpp | 5 ++++-
