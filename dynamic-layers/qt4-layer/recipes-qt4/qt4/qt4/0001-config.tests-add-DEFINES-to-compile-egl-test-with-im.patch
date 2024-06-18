@@ -4,6 +4,7 @@ Date: Thu, 29 Sep 2022 16:06:04 +0200
 Subject: [PATCH 1/2] config.tests: add DEFINES to compile egl test with
  imxgpu2d (Vivante)
 
+Upstream-Status: Pending
 Signed-off-by: Mauro Salvini <m.salvini@koansoftware.com>
 ---
  config.tests/unix/egl/egl.pro | 1 +

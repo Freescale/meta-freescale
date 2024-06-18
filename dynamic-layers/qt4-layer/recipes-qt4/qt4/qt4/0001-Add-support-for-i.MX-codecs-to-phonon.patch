@@ -5,6 +5,7 @@ Subject: [PATCH] Add support for i.MX codecs to phonon
 
 Add support for i.MX codecs to phonon
 
+Upstream-Status: Pending
 Signed-off-by: Daniele Dall'Acqua <daniele.d@freescale.com>
 Signed-off-by: Rogerio Pimentel <rogerio.pimentel@freescale.com>
 ---
