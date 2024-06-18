@@ -1,5 +1,4 @@
-Upstream-Status: Unknown
-
+Upstream-Status: Pending
 Signed-off-by: Khem Raj <raj.khem@gmail.com>
 
 libluajit is having symbols that can't be

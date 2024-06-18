@@ -6,6 +6,7 @@ Subject: [PATCH] vpu_wrapper_hantro_encoder: add sys/time.h for gettimeofday
 Fixes:
 | ../git/vpu_wrapper_hantro_encoder.c:953:3: error: implicit declaration of function 'gettimeofday' [-Wimplicit-function-declaration]
 
+Upstream-Status: Pending
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 ---
  vpu_wrapper_hantro_encoder.c | 1 +

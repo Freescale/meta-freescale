@@ -15,6 +15,7 @@ In file included from .../recipe-sysroot/usr/include/CL/cl_ext.h:27,
  1348 |                       size_t *              param_value_size_ret) CL_API_SUFFIX__VERSION_1_0;
       |                       ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
 
+Upstream-Status: Pending
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 ---
  src/ocl.c | 2 +-
