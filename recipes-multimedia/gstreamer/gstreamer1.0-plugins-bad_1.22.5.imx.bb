@@ -211,13 +211,6 @@ PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
 PACKAGECONFIG[tinycompress]    = "-Dtinycompress=enabled,-Dtinycompress=disabled,tinycompress"
 
-# GCC-14 otherwise errors out
-CFLAGS += " \
-    -Wno-error=implicit-function-declaration \
-    -Wno-error=incompatible-pointer-types \
-    -Wno-error=return-mismatch \
-    -Wno-error=int-conversion \
-"
 EXTRA_OEMESON += " \
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
