@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v53 December 2023
+LA_OPT_NXP_Software_License v56 April 2024
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
 downloading, installing, or using the Licensed Software, you indicate that you
@@ -15,7 +15,9 @@ supersede this Agreement.
 NXP SOFTWARE LICENSE AGREEMENT
 This is a legal agreement between your employer, of which you are an authorized
 representative, or, if you have no employer, you as an individual ("you" or
-"Licensee"), and NXP B.V. ("NXP").  It concerns your rights to use the software
+"Licensee"), and and NXP USA, Inc., if Licensee is located within the United
+States or NXP Semiconductors Netherlands B.V., if Licensee if located outside
+of the United States (“NXP”).  It concerns your rights to use the software
 provided to you in binary or source code form and any accompanying written
 materials (the "Licensed Software"). The Licensed Software may include any
 updates or error corrections or documentation relating to the Licensed Software
@@ -290,13 +292,20 @@ APPLICATIONS BY LICENSEE. Accordingly, Licensee will indemnify and hold NXP
 harmless from any claims, liabilities, damages and associated costs and
 expenses (including attorneys’ fees) that NXP may incur related to
 Licensee’s incorporation of the Licensed Software in a Critical Application.
-15.        CHOICE OF LAW; VENUE.  This Agreement will be governed by,
-construed, and enforced in accordance with the laws of The Netherlands, without
-regard to conflicts of laws principles, will apply to all matters relating to
-this Agreement or the Licensed Software, and you agree that any litigation will
-be subject to the exclusive jurisdiction of the courts of Amsterdam, The
-Netherlands. The United Nations Convention on Contracts for the International
-Sale of Goods will not apply to this document.
+15.        CHOICE OF LAW; VENUE.  When Software is licensed by NXP USA, Inc.,
+Licensee agrees that the laws of the State of Texas, USA, without regard to
+conflicts of laws principles, will apply to all matters relating to this
+Agreement or the Software, and Licensee agrees that any litigation will be
+subject to the exclusive jurisdiction of the state or federal courts in Austin,
+Texas, USA..  When Software is licensed by NXP Semiconductors Netherlands B.V.,
+Licensee agrees that the laws of The Netherlands, without regard to conflicts
+of laws principles, will apply to all matters relating to this Agreement or the
+Software, and Licensee agrees that any litigation will be subject to the
+exclusive jurisdiction of the courts in Amsterdam, The Netherlands.
+Notwithstanding the foregoing, NXP will always be permitted to bring any action
+or proceedings against Licensee in any other court of competent jurisdiction.
+The United Nations Convention on Contracts for the International Sale of Goods
+will not apply to this document.
 16.        CONFIDENTIAL INFORMATION.  Subject to the license grants and
 restrictions contained herein, you must treat the Licensed Software as
 confidential information and you agree to retain the Licensed Software in
@@ -555,7 +564,15 @@ Lumissil: Use of the Lumissil software constitutes your acceptance of the terms
 of the Lumissil Software License Agreement.  A link to the agreement is
 incorporated as follows:
 https://www.lumissil.com/assets/pdf/support/2023%20Lumissil%20IS3xCG5317%20Softw
-are%20License%20Agreement%20NXP.pdf .
+are%20License%20Agreement%20NXP.pdf .  The Run-Time Software and Boot ROM Code
+are without warranty of any kind from NXP or Lumissil, either express or
+implied, including without limitation the implied warranties of
+merchantability, fitness for a particular purpose, or non-infringement. You
+assume the entire risk arising out of the use or performance of the Lumissil
+software, or any systems you design using the such, if any.  For the use of
+Lumissil software, Lumissil is as a third-party beneficiary of the this
+Agreement with authority to enforce its rights in the Run-Time Software and
+Boot ROM Code.
 
 Microsoft: Except for Microsoft PlayReady software, if the Licensed Software
 includes software owned by Microsoft Corporation ("Microsoft"), it is subject
@@ -727,9 +744,15 @@ sublicense or otherwise distribute the source code, or any modifications or
 derivatives thereof as stand-alone products.  You will be responsible for
 qualifying any modifications or derivatives with the Bluetooth SIG and any
 other qualifying bodies.
+
 TARA Systems: Use of TARA Systems GUI technology Embedded Wizard is limited to
 evaluation and demonstration only. Permitted distributions must be similarly
 limited. Further rights must be obtained directly from TARA Systems.
+
+Teensyduino Core Library:  If the Teensyduino Core Library or documentation is
+incorporated into a build system that allows selection among a list of target
+devices, then similar target devices manufactured by PJRC.com must be included
+in the list of target devices and selectable in the same manner.
 
 Texas Instruments: Your use of Texas Instruments Inc. WiLink8 Licensed Software
 is restricted to NXP SoC based systems that include a compatible connectivity
