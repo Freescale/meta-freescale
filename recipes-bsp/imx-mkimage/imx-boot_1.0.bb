@@ -86,11 +86,7 @@ MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin ?= " \
     ${MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp} \
     QSPI_HEADER=./scripts/fspi_header_133"
 
-do_uboot_assemble_fitimage:prepend:imx-generic-bsp() {
-    for config in ${UBOOT_MACHINE}; do
-        mkdir -p ${B}/${config}
-    done
-}
+UBOOT_DTB_BINARY ?= "u-boot.dtb"
 
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
