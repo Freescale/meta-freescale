@@ -5,6 +5,8 @@ SUMMARY = "Linux Kernel for NXP QorIQ platforms"
 SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
 
+S = "${WORKDIR}/git"
+
 DEPENDS:append = " libgcc"
 # not put Images into /boot of rootfs, install kernel-image if needed
 RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""
