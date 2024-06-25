@@ -114,6 +114,7 @@ compile_mx8m() {
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
 
 }
+
 compile_mx8() {
     bbnote 8QM boot binary build
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
