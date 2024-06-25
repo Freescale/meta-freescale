@@ -7,7 +7,7 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 SECTION = "BSP"
 
-inherit use-imx-security-controller-firmware uboot-sign
+inherit use-imx-security-controller-firmware uboot-config
 
 DEPENDS += " \
     u-boot \
@@ -71,11 +71,7 @@ SOC_FAMILY:mx93-generic-bsp   = "mx93"
 
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 
-do_uboot_assemble_fitimage:prepend:imx-generic-bsp() {
-    for config in ${UBOOT_MACHINE}; do
-        mkdir -p ${B}/${config}
-    done
-}
+UBOOT_DTB_BINARY ?= "u-boot.dtb"
 
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
