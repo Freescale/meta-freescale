@@ -7,6 +7,6 @@ SRC_URI = " file://10-imx.rules"
 S = "${UNPACKDIR}"
 
 do_install () {
-	install -d ${D}${sysconfdir}/udev/rules.d
-	install -m 0644 ${UNPACKDIR}/10-imx.rules ${D}${sysconfdir}/udev/rules.d/
+    install -D -m 0644 ${UNPACKDIR}/10-imx.rules \
+                       ${D}${sysconfdir}/udev/rules.d/10-imx.rules
 }
