@@ -1,7 +1,7 @@
-From 329c8ab2770ab34d887296a35585fac53c8bedb7 Mon Sep 17 00:00:00 2001
+From 018249d180705657efbecdce3736c9a415412762 Mon Sep 17 00:00:00 2001
 From: Meng Li <Meng.Li@windriver.com>
-Date: Wed, 5 Jun 2024 18:54:22 +0800
-Subject: [PATCH] FMCCFGReader: improve parameter definition of function
+Date: Tue, 9 Jul 2024 14:35:06 +0800
+Subject: [PATCH] FMCCFGReader: improve parameter definition of function 
  errorFuncHandler
 
 When building fmc package, there is below error:
