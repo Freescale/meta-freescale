@@ -10,10 +10,10 @@ DEPENDS += "flex-native bison-native"
 
 SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH};protocol=https"
 
-SRCREV = "1a2bdc16b79a6f9c31829ede1bbf4063ccea6e54"
-SRCBRANCH = "2024.04+fslc"
+SRCREV = "1406c04f60f5c375e0fc77b9f661aecd08dff45e"
+SRCBRANCH = "2024.07+fslc"
 
-PV = "2024.04+git${SRCPV}"
+PV = "2024.07+fslc+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
