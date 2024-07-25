@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2023 NXP
+# Copyright (C) 2017-2024 NXP
 
 DESCRIPTION = "i.MX ARM Trusted Firmware"
 SECTION = "BSP"
@@ -8,8 +8,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 PV .= "+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-atf.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf_v2.8"
-SRCREV = "8dbe28631802a51b3ec8179b2c5635b00393ad97"
+SRCBRANCH = "lf_v2.10"
+SRCREV = "49143a1701d9ccd3239e3f95f3042897ca889ea8"
 
 S = "${WORKDIR}/git"
 
