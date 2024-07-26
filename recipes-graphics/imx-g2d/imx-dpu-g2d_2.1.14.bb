@@ -4,7 +4,7 @@
 
 DESCRIPTION = "G2D library using i.MX DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=44a8052c384584ba09077e85a3d1654f"
+LIC_FILES_CHKSUM = "file://COPYING;md5=10c0fda810c63b052409b15a5445671a" 
 
 DEPENDS = "libdrm ${LIBGAL_IMX}"
 LIBGAL_IMX              = "libgal-imx"
@@ -15,15 +15,15 @@ PROVIDES += "virtual/libg2d"
 SRC_URI = "${FSL_MIRROR}/${IMX_BIN_NAME}.bin;fsl-eula=true;name=${IMX_SRC_URI_NAME}"
 IMX_BIN_NAME = "${BPN}-${IMX_SRC_URI_NAME}-${PV}-${IMX_SRCREV_ABBREV}"
 
-IMX_SRCREV_ABBREV = "ee47ef7"
+IMX_SRCREV_ABBREV = "6a00326"
 IMX_SRC_URI_NAME = "v1"
-SRC_URI[v1.md5sum] = "4150f09e27178101fdccb792b7cbc526"
-SRC_URI[v1.sha256sum] = "bd7849376564f7e2eb55210f156afae00b49451de6de80cfbc5fbda15be6a2b0"
+SRC_URI[v1.md5sum] = "470ad0bdef7dec171395991d47b39e2c"
+SRC_URI[v1.sha256sum] = "4d8e4b536bd24eedfbce375a06c19ab74603291b8b5a5be36b03fbf6e016e940"
 
-IMX_SRCREV_ABBREV:mx95-nxp-bsp = "ee47ef7"
+IMX_SRCREV_ABBREV:mx95-nxp-bsp = "6a00326"
 IMX_SRC_URI_NAME:mx95-nxp-bsp = "v2"
-SRC_URI[v2.md5sum] = "031396e175c432eb6c84aad8e0a6fc7d"
-SRC_URI[v2.sha256sum] = "0646d8cc8e53f22fc15a61f0b78cd5f73460520f91949bc1d29c10ecbf77307b"
+SRC_URI[v2.md5sum] = "cf807c38a110763c19a12d6d595b4b09"
+SRC_URI[v2.sha256sum] = "1b86d4fecd5026e871da0de8ed6382c962460468d8151ae2f95b72d00bca17ee"
 
 S = "${WORKDIR}/${IMX_BIN_NAME}"
 
@@ -36,10 +36,14 @@ do_install () {
     cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
 }
 
+INSANE_SKIP:append:libc-musl = " file-rdeps"
+RDEPENDS:${PN}:append:libc-musl = " gcompat"
+
 # The packaged binaries have been stripped of debug info, so disable
 # operations accordingly.
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxdpu)"
