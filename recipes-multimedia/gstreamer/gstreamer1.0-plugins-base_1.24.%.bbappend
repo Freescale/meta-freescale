@@ -13,5 +13,5 @@ PACKAGECONFIG_GL:use-mainline-bsp = \
 # does not depend on the viv-fb feature. It used to, but that was actually a bug
 # which was fixed in GStreamer 1.22.5. Since then, the direct texture support is
 # detected by Meson by checking for direct texture symbols like "glTexDirectVIV".)
-PACKAGECONFIG_GL:append:mx6-nxp-bsp = " viv-fb "
-PACKAGECONFIG_GL:append:mx7ulp-nxp-bsp = " viv-fb "
+PACKAGECONFIG_GL:imxgpu2d:append:mx6-nxp-bsp = " viv-fb "
+PACKAGECONFIG_GL:imxgpu2d:append:mx7-nxp-bsp = " viv-fb "

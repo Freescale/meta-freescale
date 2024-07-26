@@ -12,11 +12,11 @@ LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 LICENSE_FLAGS = "commercial"
 
 SRC_URI = " \
-            https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.22.5.tar.xz \
+            https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${@get_gst_ver("${PV}")}.tar.xz \
             "
-SRC_URI[sha256sum] = "2680473b218158f18467cac3e1c50291b7ff4e0710dd350a59eaacbc29c09a54"
+SRC_URI[sha256sum] = "c5d1cbdf71ab0c675bca236f70edfa1feb3f813fd4bfff563308f466d8805ca5"
 
-S = "${WORKDIR}/gst-plugins-ugly-1.22.5"
+S = "${WORKDIR}/gst-plugins-ugly-${@get_gst_ver("${PV}")}"
 
 DEPENDS += "gstreamer1.0-plugins-base"
 
@@ -24,10 +24,9 @@ GST_PLUGIN_SET_HAS_EXAMPLES = "0"
 
 PACKAGECONFIG ??= " \
     ${GSTREAMER_ORC} \
+    a52dec mpeg2dec \
 "
 
-PACKAGECONFIG[amrnb]    = "-Damrnb=enabled,-Damrnb=disabled,opencore-amr"
-PACKAGECONFIG[amrwb]    = "-Damrwbdec=enabled,-Damrwbdec=disabled,opencore-amr"
 PACKAGECONFIG[a52dec]   = "-Da52dec=enabled,-Da52dec=disabled,liba52"
 PACKAGECONFIG[cdio]     = "-Dcdio=enabled,-Dcdio=disabled,libcdio"
 PACKAGECONFIG[dvdread]  = "-Ddvdread=enabled,-Ddvdread=disabled,libdvdread"
@@ -41,5 +40,10 @@ EXTRA_OEMESON += " \
     -Dsidplay=disabled \
 "
 
-FILES:${PN}-amrnb += "${datadir}/gstreamer-1.0/presets/GstAmrnbEnc.prs"
+# Drop .imx from PV
+def get_gst_ver(v):
+    return oe.utils.trim_version(v, 3)
+
 FILES:${PN}-x264 += "${datadir}/gstreamer-1.0/presets/GstX264Enc.prs"
+
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
