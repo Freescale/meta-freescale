@@ -184,11 +184,13 @@ DEPENDS:append:imxgpu2d = " virtual/libg2d"
 
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
                    file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
-                   file://0002-avoid-including-sys-poll.h-directly.patch"
+                   file://0002-avoid-including-sys-poll.h-directly.patch \
+                   file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
+                   "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.08.03_2312_L6.6.y"
-SRCREV = "9de821c50b4dd7af2407d9c3d078020704510a20"
+SRCBRANCH = "MM_04.09.00_2405_L6.6.y"
+SRCREV = "869cef4efbc004c795392d274e617f2dfa71ac98"
 
 S = "${WORKDIR}/git"
 
@@ -222,8 +224,11 @@ EXTRA_OEMESON += " \
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
 
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+EXTRA_OEMESON:remove = " \
+    -Dkate=disabled \
+"
 
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 # it uses nested functions sadly, in ext/wayland/gstwaylandsink.c for GST_ELEMENT_REGISTER_DEFINE
 #
 TOOLCHAIN = "gcc"
