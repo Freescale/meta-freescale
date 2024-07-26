@@ -1,0 +1,33 @@
+From 188d7b01037e5a0249e63c2600cf15a288a9ff3f Mon Sep 17 00:00:00 2001
+From: Wujian Sun <wujian.sun_1@nxp.com>
+Date: Fri, 19 Apr 2024 18:38:17 +0800
+Subject: [PATCH] MGS-7673 egl/dri2: fix video showing wrong frame
+
+Softpipe driver doesn't support EGL_EXT_image_dma_buf_import_modifiers
+extension.
+Should not report the extension.
+
+Upstream-Status: Pending
+
+Signed-off-by: Wujian Sun <wujian.sun_1@nxp.com>
+---
+ src/egl/drivers/dri2/egl_dri2.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 992f0e3d46d..6ee209d4b47 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -942,7 +942,8 @@ dri2_setup_screen(_EGLDisplay *disp)
+ 
+ #ifdef HAVE_LIBDRM
+       if (dri2_dpy->image->base.version >= 8 &&
+-          dri2_dpy->image->createImageFromDmaBufs) {
++          dri2_dpy->image->createImageFromDmaBufs &&
++          strcmp("softpipe", pscreen->get_name(pscreen))) {
+          disp->Extensions.EXT_image_dma_buf_import = EGL_TRUE;
+          disp->Extensions.EXT_image_dma_buf_import_modifiers = EGL_TRUE;
+       }
+-- 
+2.17.1
+
