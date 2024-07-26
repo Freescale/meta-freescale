@@ -1,0 +1,47 @@
+From 612c3dc98d5d050b9cfee16ec77ca3c8358caa0d Mon Sep 17 00:00:00 2001
+From: Wujian Sun <wujian.sun_1@nxp.com>
+Date: Mon, 29 Apr 2024 17:29:16 +0800
+Subject: [PATCH] MGS-7599 cso: fix virgl driver assert issue
+
+A workaround that remove PIPE_MAX_SAMPLERS and
+PIPE_MAX_CONSTANT_BUFFERS assert.
+
+Upstream-Status: Inappropriate [i.MX-specific]
+
+Signed-off-by: Wujian Sun <wujian.sun_1@nxp.com>
+---
+ src/gallium/auxiliary/cso_cache/cso_context.c | 2 --
+ src/gallium/drivers/virgl/virgl_screen.c      | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/gallium/auxiliary/cso_cache/cso_context.c b/src/gallium/auxiliary/cso_cache/cso_context.c
+index 3e86def31c5..ffc6d22da9c 100644
+--- a/src/gallium/auxiliary/cso_cache/cso_context.c
++++ b/src/gallium/auxiliary/cso_cache/cso_context.c
+@@ -403,10 +403,8 @@ cso_unbind_context(struct cso_context *ctx)
+                                               PIPE_SHADER_CAP_MAX_CONST_BUFFERS);
+             int maximg = scr->get_shader_param(scr, sh,
+                                               PIPE_SHADER_CAP_MAX_SHADER_IMAGES);
+-            assert(maxsam <= PIPE_MAX_SAMPLERS);
+             assert(maxview <= PIPE_MAX_SHADER_SAMPLER_VIEWS);
+             assert(maxssbo <= PIPE_MAX_SHADER_BUFFERS);
+-            assert(maxcb <= PIPE_MAX_CONSTANT_BUFFERS);
+             assert(maximg <= PIPE_MAX_SHADER_IMAGES);
+             if (maxsam > 0) {
+                ctx->base.pipe->bind_sampler_states(ctx->base.pipe, sh, 0, maxsam, zeros);
+diff --git a/src/gallium/drivers/virgl/virgl_screen.c b/src/gallium/drivers/virgl/virgl_screen.c
+index 389a1935cc3..7c7f8ba576b 100644
+--- a/src/gallium/drivers/virgl/virgl_screen.c
++++ b/src/gallium/drivers/virgl/virgl_screen.c
+@@ -435,7 +435,7 @@ virgl_get_shader_param(struct pipe_screen *screen,
+          return 1;
+       case PIPE_SHADER_CAP_MAX_TEXTURE_SAMPLERS:
+          return MIN2(vscreen->caps.caps.v2.max_shader_sampler_views,
+-                     PIPE_MAX_SHADER_SAMPLER_VIEWS);
++                     PIPE_MAX_SAMPLERS);
+       case PIPE_SHADER_CAP_INTEGERS:
+          return vscreen->caps.caps.v1.glsl_level >= 130;
+       case PIPE_SHADER_CAP_MAX_CONTROL_FLOW_DEPTH:
+-- 
+2.17.1
+
