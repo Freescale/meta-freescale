@@ -9,7 +9,9 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c7b12b6702da38ca028ace54aae3d484 \
                     file://stable/presentation-time/presentation-time.xml;endline=26;md5=4646cd7d9edc9fa55db941f2d3a7dc53"
 
-SRC_URI = "git://github.com/nxp-imx/wayland-protocols-imx.git;protocol=https;branch=wayland-protocols-imx-${@oe.utils.trim_version("${PV}", 2)}"
+SRC_URI = "${WAYLAND_PROTOCOLS_SRC};branch=${SRCBRANCH}"
+WAYLAND_PROTOCOLS_SRC ?= "git://github.com/nxp-imx/wayland-protocols-imx.git;protocol=https"
+SRCBRANCH = "wayland-protocols-imx-${@oe.utils.trim_version("${PV}", 2)}"
 SRCREV = "7ece577d467f8afb2f5a2f7fff3761a1e0ee9dad"
 
 S = "${WORKDIR}/git"
