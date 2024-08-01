@@ -1,0 +1,31 @@
+From a57daf8f58cf69be06de8ebc9eab3a3077143760 Mon Sep 17 00:00:00 2001
+From: Hiago De Franco <hiago.franco@toradex.com>
+Date: Fri, 26 Jul 2024 14:43:55 -0300
+Subject: [PATCH] vpu_wrapper_hantro_VCencoder: add sys/time.h for gettimeofday
+
+Fixes:
+| ../git/vpu_wrapper_hantro_VCencoder.c:1965:5: error: implicit declaration of function 'gettimeofday' [-Wimplicit-function-declaration]
+|  1965 |     gettimeofday (&pObj->tvBegin, NULL);
+|       |     ^~~~~~~~~~~~
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-vpuwrap/pull/2]
+Signed-off-by: Hiago De Franco <hiago.franco@toradex.com>
+---
+ vpu_wrapper_hantro_VCencoder.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/vpu_wrapper_hantro_VCencoder.c b/vpu_wrapper_hantro_VCencoder.c
+index efae31a77ca4..6185cfc067d1 100755
+--- a/vpu_wrapper_hantro_VCencoder.c
++++ b/vpu_wrapper_hantro_VCencoder.c
+@@ -17,6 +17,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <sys/time.h>
+ #include <time.h>
+ #include <math.h>
+ #include <fcntl.h>
+--
+2.39.2
+
