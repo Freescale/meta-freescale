@@ -659,10 +659,18 @@ WKS_FILE_DEPENDS:append:imx-generic-bsp:mx9-generic-bsp = " \
     ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
 "
 
-SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
-SOC_DEFAULT_WKS_FILE:mx8-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE                 ?= "imx-uboot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mxs-generic-bsp ?= "imx-uboot-mxs-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:mx8-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mx9-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
+
+WIC_BOOTLOADER = " \
+    ${@bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'imx-boot',   'imx-boot-tagged', \
+       bb.utils.contains('IMX_DEFAULT_BOOTLOADER', 'u-boot-imx', '${WIC_BOOTLOADER_32BIT}', \
+                                                                 '${UBOOT_BINARY}', d), d)}"
+WIC_BOOTLOADER_32BIT                 = "${UBOOT_BINARY}"
+WIC_BOOTLOADER_32BIT:mx6-generic-bsp = "u-boot-tagged.${UBOOT_SUFFIX}"
+WIC_BOOTLOADER_32BIT:mx7-generic-bsp = "u-boot-tagged.${UBOOT_SUFFIX}"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
 
