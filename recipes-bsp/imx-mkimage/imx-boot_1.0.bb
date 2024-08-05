@@ -41,6 +41,9 @@ do_compile[depends] += " \
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
 
+OEI_ENABLE = "${@bb.utils.contains('DEPENDS', 'imx-oei', 'YES', 'NO', d)}"
+OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
+
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
@@ -60,6 +63,7 @@ BOOT_STAGING:mx8m-generic-bsp  = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
 BOOT_STAGING:mx91p-generic-bsp   = "${S}/iMX91"
 BOOT_STAGING:mx93-generic-bsp   = "${S}/iMX93"
+BOOT_STAGING:mx95-generic-bsp  = "${S}/iMX95"
 
 SOC_FAMILY                    = "INVALID"
 SOC_FAMILY:mx8-generic-bsp    = "mx8"
@@ -68,8 +72,18 @@ SOC_FAMILY:mx8x-generic-bsp   = "mx8x"
 SOC_FAMILY:mx8ulp-generic-bsp = "mx8ulp"
 SOC_FAMILY:mx91p-generic-bsp  = "mx93"
 SOC_FAMILY:mx93-generic-bsp   = "mx93"
+SOC_FAMILY:mx95-generic-bsp   = "mx95"
 
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
+
+MKIMAGE_EXTRA_ARGS ?= ""
+MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp ?= " \
+    OEI=${OEI_ENABLE} \
+    LPDDR_TYPE=${DDR_TYPE} \
+    ${@bb.utils.contains('SYSTEM_MANAGER_CONFIG', 'mx95alt', 'MSEL=1', '', d)}"
+MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin ?= " \
+    ${MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp} \
+    QSPI_HEADER=./scripts/fspi_header_133"
 
 do_uboot_assemble_fitimage:prepend:imx-generic-bsp() {
     for config in ${UBOOT_MACHINE}; do
@@ -156,13 +170,30 @@ compile_mx93() {
     fi
 }
 
+compile_mx95() {
+    bbnote i.MX 95 boot binary build
+    compile_mx93
+
+    cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
+       ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
+}
+
 do_compile() {
     # mkimage for i.MX8
     # Copy TEE binary to SoC target folder to mkimage
     if ${DEPLOY_OPTEE}; then
         cp ${DEPLOY_DIR_IMAGE}/tee.bin ${BOOT_STAGING}
+        if ${DEPLOY_OPTEE_STMM}; then
+            # Copy tee.bin to tee.bin-stmm
+            cp ${DEPLOY_DIR_IMAGE}/tee.bin ${BOOT_STAGING}/tee.bin-stmm
+        fi
     fi
-   for type in ${UBOOT_CONFIG}; do
+    # Copy OEI firmware to SoC target folder to mkimage
+    if [ "${OEI_ENABLE}" = "YES" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
+    fi
+
+    for type in ${UBOOT_CONFIG}; do
         if [ "${@d.getVarFlags('UBOOT_DTB_NAME')}" = "None" ]; then
             UBOOT_DTB_NAME_FLAGS="${type}:${UBOOT_DTB_NAME}"
         else
@@ -193,9 +224,16 @@ do_compile() {
                         # Special target build for i.MX 8DXL with V2X off
                         bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
                         make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME_EXTRA} flash_linux_m4
+                    elif [[ $target == *sttm_capsule ]]; then
+                        # target for flash_evk_stmm_capsule or
+                        # flash_singleboot_stmm_capsule
+                        cp ${RECIPE_SYSROOT_NATIVE}/${bindir}/mkeficapsule ${BOOT_STAGING}
+                        bbnote "building ${IMX_BOOT_SOC_TARGET} - TEE=tee.bin-stmm ${target}"
+                        cp ${DEPLOY_DIR_IMAGE}/CRT.* ${BOOT_STAGING}
+                        make SOC=${IMX_BOOT_SOC_TARGET} TEE=tee.bin-stmm dtbs=${UBOOT_DTB_NAME} ${REV_OPTION} ${target}
                     else
-                        bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} ${target}"
-                        make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} dtbs=${UBOOT_DTB_NAME_EXTRA} ${target}
+                        bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} ${MKIMAGE_EXTRA_ARGS} ${target}"
+                        make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} ${MKIMAGE_EXTRA_ARGS} dtbs=${UBOOT_DTB_NAME} ${target}
                     fi
                     if [ -e "${BOOT_STAGING}/flash.bin" ]; then
                         cp ${BOOT_STAGING}/flash.bin ${S}/${BOOT_CONFIG_MACHINE_EXTRA}-${target}
@@ -294,6 +332,12 @@ deploy_mx93() {
     fi
 }
 
+deploy_mx95() {
+    deploy_mx93
+    install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
+                ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
+}
+
 do_deploy() {
     deploy_${SOC_FAMILY}
 
@@ -301,6 +345,12 @@ do_deploy() {
     if ${DEPLOY_OPTEE}; then
        install -m 0644 ${DEPLOY_DIR_IMAGE}/tee.bin ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
+
+    # copy oei to deploy path
+    if [ "${OEI_ENABLE}" = "YES" ]; then
+        install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+
     # copy makefile (soc.mak) for reference
     install -m 0644 ${BOOT_STAGING}/soc.mak                  ${DEPLOYDIR}/${BOOT_TOOLS}
 
