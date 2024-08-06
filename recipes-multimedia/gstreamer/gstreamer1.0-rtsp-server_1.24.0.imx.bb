@@ -8,11 +8,11 @@ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base"
 
 PNREAL = "gst-rtsp-server"
 
-SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-1.22.5.tar.xz"
+SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${@get_gst_ver("${PV}")}.tar.xz"
 
-SRC_URI[sha256sum] = "f343eb54964ebd4d8c071be5eecad586f28feb0156e036e06b148d0e7febb1c0"
+SRC_URI[sha256sum] = "5b0fa6b12ba95b1d336a4b274cbe19e982aa3e6819f1d97bfd8e0102b103ed9b"
 
-S = "${WORKDIR}/${PNREAL}-1.22.5"
+S = "${WORKDIR}/${PNREAL}-${@get_gst_ver("${PV}")}"
 
 inherit meson pkgconfig upstream-version-is-even gobject-introspection
 
@@ -25,7 +25,14 @@ EXTRA_OEMESON += " \
 GIR_MESON_ENABLE_FLAG = "enabled"
 GIR_MESON_DISABLE_FLAG = "disabled"
 
+# Drop .imx from PV
+def get_gst_ver(v):
+    return oe.utils.trim_version(v, 3)
+
 # Starting with 1.8.0 gst-rtsp-server includes dependency-less plugins as well
 require gstreamer1.0-plugins-packaging.inc
 
 CVE_PRODUCT += "gst-rtsp-server"
+
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+

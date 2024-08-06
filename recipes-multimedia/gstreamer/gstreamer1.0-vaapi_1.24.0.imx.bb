@@ -9,14 +9,18 @@ REALPN = "gstreamer-vaapi"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "https://gstreamer.freedesktop.org/src/${REALPN}/${REALPN}-1.22.5.tar.xz"
+SRC_URI = "https://gstreamer.freedesktop.org/src/${REALPN}/${REALPN}-1.24.0.tar.xz"
 
-SRC_URI[sha256sum] = "a9a550267c9584df0e8c70434d30476e8fd0018b733c1c1ee33deaf422bdb24b"
+SRC_URI[sha256sum] = "6b1f3b91ca65dedc67dc67a25dc1d1e464f11825a27ab9c7ac7c1bda67f03596"
 
-S = "${WORKDIR}/${REALPN}-1.22.5"
+S = "${WORKDIR}/${REALPN}-${@get_gst_ver('${PV}')}"
 DEPENDS = "libva gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
 
 inherit meson pkgconfig features_check upstream-version-is-even
+
+# Drop .imx from PV
+def get_gst_ver(v):
+    return oe.utils.trim_version(v, 3)
 
 REQUIRED_DISTRO_FEATURES ?= "opengl"
 
