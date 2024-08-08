@@ -1,0 +1,30 @@
+From cad7eb0f0487aea64c4460bd6ad95b5c9537d35a Mon Sep 17 00:00:00 2001
+From: Jiyu Yang <jiyu.yang@nxp.com>
+Date: Thu, 11 Apr 2024 16:30:50 +0800
+Subject: [PATCH] egl: clear backgrounds black
+
+if 50% translucency used, the application render result can vary
+depending on the format chosen, such as R10G10B10A2 or RGB24.
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/demos/-/merge_requests/174]
+Signed-off-by: Jiyu Yang <jiyu.yang@nxp.com>
+---
+ src/egl/opengles2/es2gears.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/egl/opengles2/es2gears.c b/src/egl/opengles2/es2gears.c
+index db67f3a9..4e81afe7 100644
+--- a/src/egl/opengles2/es2gears.c
++++ b/src/egl/opengles2/es2gears.c
+@@ -515,7 +515,7 @@ gears_draw(void)
+    GLfloat transform[16];
+    identity(transform);
+ 
+-   glClearColor(0.0, 0.0, 0.0, 0.0);
++   glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+    /* Translate and rotate the view */
+-- 
+2.34.1
+
