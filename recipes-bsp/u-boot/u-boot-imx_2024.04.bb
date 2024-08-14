@@ -1,6 +1,6 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2018 (C) O.S. Systems Software LTDA.
-# Copyright (C) 2017-2023 NXP
+# Copyright (C) 2017-2024 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common_${PV}.inc
@@ -57,6 +57,14 @@ do_deploy:append:mx8m-generic-bsp() {
         done
         unset  i
     fi
+
+    # Deploy CRT.* from u-boot for stmm
+    install -m 0644 ${S}/CRT.*     ${DEPLOYDIR}
+}
+
+do_deploy:append:mx93-generic-bsp() {
+    # Deploy CRT.* from u-boot for stmm
+    install -m 0644 ${S}/CRT.*     ${DEPLOYDIR}
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
