@@ -7,7 +7,7 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 SECTION = "BSP"
 
-inherit use-imx-security-controller-firmware uboot-sign
+inherit use-imx-security-controller-firmware uboot-config
 
 DEPENDS += " \
     u-boot \
@@ -85,11 +85,7 @@ MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin ?= " \
     ${MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp} \
     QSPI_HEADER=./scripts/fspi_header_133"
 
-do_uboot_assemble_fitimage:prepend:imx-generic-bsp() {
-    for config in ${UBOOT_MACHINE}; do
-        mkdir -p ${B}/${config}
-    done
-}
+UBOOT_DTB_BINARY ?= "u-boot.dtb"
 
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
@@ -118,6 +114,7 @@ compile_mx8m() {
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
 
 }
+
 compile_mx8() {
     bbnote 8QM boot binary build
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
