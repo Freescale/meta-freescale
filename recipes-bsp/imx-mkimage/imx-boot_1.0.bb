@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 NXP
+# Copyright (C) 2017-2024 NXP
 
 require imx-mkimage_git.inc
 
@@ -18,6 +18,7 @@ DEPENDS += " \
 # xxd is a dependency of fspi_packer.sh
 DEPENDS += "xxd-native"
 DEPENDS:append:mx8m-generic-bsp = " u-boot-mkimage-native dtc-native"
+DEPENDS:append:mx93-generic-bsp = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot"
 PROVIDES = "${BOOT_NAME}"
 
@@ -52,6 +53,7 @@ TOOLS_NAME ?= "mkimage_imx8"
 IMX_BOOT_SOC_TARGET       ?= "INVALID"
 
 DEPLOY_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
+DEPLOY_OPTEE_STMM = "${@bb.utils.contains('MACHINE_FEATURES', 'optee stmm', 'true', 'false', d)}"
 
 IMXBOOT_TARGETS ?= \
     "${@bb.utils.contains('UBOOT_CONFIG', 'fspi', 'flash_flexspi', \
@@ -61,8 +63,8 @@ IMXBOOT_TARGETS ?= \
 BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
 BOOT_STAGING:mx8m-generic-bsp  = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
-BOOT_STAGING:mx91p-generic-bsp   = "${S}/iMX91"
-BOOT_STAGING:mx93-generic-bsp   = "${S}/iMX93"
+BOOT_STAGING:mx91-generic-bsp  = "${S}/iMX91"
+BOOT_STAGING:mx93-generic-bsp  = "${S}/iMX93"
 BOOT_STAGING:mx95-generic-bsp  = "${S}/iMX95"
 
 SOC_FAMILY                    = "INVALID"
@@ -70,7 +72,7 @@ SOC_FAMILY:mx8-generic-bsp    = "mx8"
 SOC_FAMILY:mx8m-generic-bsp   = "mx8m"
 SOC_FAMILY:mx8x-generic-bsp   = "mx8x"
 SOC_FAMILY:mx8ulp-generic-bsp = "mx8ulp"
-SOC_FAMILY:mx91p-generic-bsp  = "mx93"
+SOC_FAMILY:mx91-generic-bsp   = "mx91"
 SOC_FAMILY:mx93-generic-bsp   = "mx93"
 SOC_FAMILY:mx95-generic-bsp   = "mx95"
 
@@ -153,6 +155,11 @@ compile_mx8ulp() {
     fi
 }
 
+compile_mx91() {
+    bbnote i.MX 91 boot binary build
+    compile_mx93
+}
+
 compile_mx93() {
     bbnote i.MX 93 boot binary build
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
@@ -219,21 +226,26 @@ do_compile() {
 
                 for target in ${IMXBOOT_TARGETS}; do
                     compile_${SOC_FAMILY}
-                    if [ "$target" = "flash_linux_m4_no_v2x" ]; then
+                    case $target in
+                    *no_v2x)
                         # Special target build for i.MX 8DXL with V2X off
                         bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
                         make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME_EXTRA} flash_linux_m4
-                    elif [[ $target == *sttm_capsule ]]; then
+                        ;;
+                    *stmm_capsule)
                         # target for flash_evk_stmm_capsule or
                         # flash_singleboot_stmm_capsule
                         cp ${RECIPE_SYSROOT_NATIVE}/${bindir}/mkeficapsule ${BOOT_STAGING}
                         bbnote "building ${IMX_BOOT_SOC_TARGET} - TEE=tee.bin-stmm ${target}"
                         cp ${DEPLOY_DIR_IMAGE}/CRT.* ${BOOT_STAGING}
                         make SOC=${IMX_BOOT_SOC_TARGET} TEE=tee.bin-stmm dtbs=${UBOOT_DTB_NAME} ${REV_OPTION} ${target}
-                    else
+                        ;;
+                    *)
                         bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} ${MKIMAGE_EXTRA_ARGS} ${target}"
                         make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} ${MKIMAGE_EXTRA_ARGS} dtbs=${UBOOT_DTB_NAME} ${target}
-                    fi
+                        ;;
+                    esac
+
                     if [ -e "${BOOT_STAGING}/flash.bin" ]; then
                         cp ${BOOT_STAGING}/flash.bin ${S}/${BOOT_CONFIG_MACHINE_EXTRA}-${target}
                     fi
@@ -316,6 +328,10 @@ deploy_mx8ulp() {
     fi
 }
 
+deploy_mx91() {
+    deploy_mx93
+}
+
 deploy_mx93() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
 
@@ -352,6 +368,14 @@ do_deploy() {
 
     # copy makefile (soc.mak) for reference
     install -m 0644 ${BOOT_STAGING}/soc.mak                  ${DEPLOYDIR}/${BOOT_TOOLS}
+
+    # copy stmm files to deploy path
+    if ${DEPLOY_OPTEE_STMM}; then
+        install -m 0644 ${BOOT_STAGING}/tee.bin-stmm         ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -m 0644 ${BOOT_STAGING}/capsule1.bin         ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -m 0644 ${BOOT_STAGING}/CRT.*                ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -m 0755 ${BOOT_STAGING}/mkeficapsule         ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 
     for type in ${UBOOT_CONFIG}; do
         UBOOT_CONFIG_EXTRA="$type"
