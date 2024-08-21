@@ -32,7 +32,7 @@ MCORE_TYPE:mx8ulp-nxp-bsp  = "m33"
 MCORE_TYPE:mx93-nxp-bsp  = "m33"
 MCORE_TYPE:mx95-nxp-bsp  = "m7"
 
-SRC_URI = "${FSL_MIRROR}/${SOC}-${MCORE_TYPE}-demo-${PV}.bin;name=${SOC};fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}${SOC}-${MCORE_TYPE}-demo-${PV}.bin;name=${SOC};fsl-eula=true"
 
 S = "${WORKDIR}/${SOC}-${MCORE_TYPE}-demo-${PV}"
 
