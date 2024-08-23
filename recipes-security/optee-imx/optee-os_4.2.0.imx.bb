@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2021 NXP
+# Copyright 2017-2024 NXP
 
 require optee-os-fslc-imx.inc
 
@@ -8,5 +8,5 @@ SRC_URI += " \
     file://0003-arm32-libutils-libutee-ta-add-.note.GNU-stack-sectio.patch \
     file://0004-core-link-add-no-warn-rwx-segments.patch \
 "
-SRCBRANCH = "lf-6.6.3_1.0.0"
-SRCREV = "e0a3e77735941e6057a1994a576b83a93ea0bdb9"
+SRCBRANCH = "lf-6.6.23_2.0.0"
+SRCREV = "c6be5b572452a2808d1a34588fd10e71715e23cf"
