@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2021 NXP
+# Copyright 2017-2024 NXP
 
 SUMMARY = "OPTEE Client libs"
 HOMEPAGE = "http://www.optee.org/"
