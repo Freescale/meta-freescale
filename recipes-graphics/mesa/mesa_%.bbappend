@@ -1,6 +1,9 @@
 PROVIDES:remove:imxgpu   = "virtual/egl"
 PROVIDES:remove:imxgpu3d = "virtual/libgl virtual/libgles1 virtual/libgles2"
 
+SRC_URI:append:mx93-nxp-bsp = " file://0001-MGS-7673-egl-dri2-fix-video-showing-wrong-frame.patch"
+SRC_URI:append:imx-nxp-bsp  = " file://0001-MGS-7599-cso-fix-virgl-driver-assert-issue.patch"
+
 PACKAGECONFIG:remove:imxgpu   = "egl gbm"
 PACKAGECONFIG:remove:imxgpu3d = "gles"
 

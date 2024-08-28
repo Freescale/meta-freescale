@@ -7,11 +7,11 @@ should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=44a8052c384584ba09077e85a3d1654f"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=10c0fda810c63b052409b15a5445671a"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.6.3_1.0.0"
-SRCREV = "2afa15e77f0b58eade42b4f59c9215339efcca66"
+SRCBRANCH = "lf-6.6.23_2.0.0"
+SRCREV = "7e038c6afba3118bcee91608764ac3c633bce0c4"
 
 S = "${WORKDIR}/git"
 
@@ -150,6 +150,7 @@ FILES:${PN}-nxpiw612-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sd_w61x_v1.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/uartspi_n61x_v1.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/ \
+    ${nonarch_base_libdir}/firmware/nxp/uartuart_n61x_v1.bin.se \
 "
 RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
