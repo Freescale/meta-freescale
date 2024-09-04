@@ -25,9 +25,9 @@ EXTRA_OEMAKE = " \
 do_install () {
 	oe_runmake -C ${S} install
 
-	install -D -p -m0644 ${B}/export/usr/lib/libteec.so.1.0.0 ${D}${libdir}/libteec.so.1.0.0
-	ln -sf libteec.so.1.0.0 ${D}${libdir}/libteec.so.1
-	ln -sf libteec.so.1.0.0 ${D}${libdir}/libteec.so
+	install -D -p -m0644 ${B}/export/usr/lib/libteec.so.2.0.0 ${D}${libdir}/libteec.so.2.0.0
+	ln -sf libteec.so.2.0.0 ${D}${libdir}/libteec.so.2
+	ln -sf libteec.so.2.0.0 ${D}${libdir}/libteec.so
 
 	install -D -p -m0644 ${B}/export/usr/lib/libckteec.so.0.1.0 ${D}${libdir}/libckteec.so.0.1.0
 	ln -sf libckteec.so.0.1.0 ${D}${libdir}/libckteec.so.0
