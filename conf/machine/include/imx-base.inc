@@ -572,18 +572,12 @@ PREFERRED_VERSION_weston:mx6-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:mx7-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
-PREFERRED_VERSION_wayland-protocols:mx6-nxp-bsp  ??= "1.32.imx"
-PREFERRED_VERSION_wayland-protocols:mx7-nxp-bsp  ??= "1.32.imx"
-PREFERRED_VERSION_wayland-protocols:mx8-nxp-bsp  ??= "1.32.imx"
-PREFERRED_VERSION_wayland-protocols:mx9-nxp-bsp  ??= "1.32.imx"
+PREFERRED_VERSION_wayland-protocols:imx-nxp-bsp  ??= "1.32.imx"
 
 PREFERRED_VERSION_xwayland:imx-nxp-bsp ??= "23.1.1.imx"
 
 # Use i.MX libdrm Version
-PREFERRED_VERSION_libdrm:mx6-nxp-bsp ??= "2.4.116.imx"
-PREFERRED_VERSION_libdrm:mx7-nxp-bsp ??= "2.4.116.imx"
-PREFERRED_VERSION_libdrm:mx8-nxp-bsp ??= "2.4.116.imx"
-PREFERRED_VERSION_libdrm:mx9-nxp-bsp ??= "2.4.116.imx"
+PREFERRED_VERSION_libdrm:imx-nxp-bsp ??= "2.4.116.imx"
 
 PREFERRED_VERSION_spirv-headers:imxvulkan            ??= "1.3.261.1.imx"
 PREFERRED_VERSION_spirv-tools:imxvulkan              ??= "1.3.261.1.imx"
