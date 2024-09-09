@@ -12,17 +12,17 @@ upstreaming."
 
 require linux-imx.inc
 
-SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
+SRC_URI = "git://github.com/Livius90/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.36"
+LINUX_VERSION = "6.10.9"
 
-KBRANCH = "6.6.x+fslc"
-SRCREV = "44101c9bc5277baa5a678b43ac0b4d95cf03afa8"
+KBRANCH = "6.10.x+fslc"
+SRCREV = "1611860f184a2c9e74ed593948d43657734a7098"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
