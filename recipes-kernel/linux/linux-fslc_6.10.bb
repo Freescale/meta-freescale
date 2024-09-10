@@ -14,6 +14,10 @@ require linux-imx.inc
 
 SRC_URI = "git://github.com/Livius90/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
+DEPENDS += " \
+    coreutils-native \
+"
+
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
