@@ -22,9 +22,7 @@ DEPENDS:append:mx93-generic-bsp = " u-boot-mkimage-native dtc-native"
 
 inherit deploy uuu_bootloader_tag
 
-UUU_BOOTLOADER        = "imx-boot"
-UUU_BOOTLOADER_TAGGED = "imx-boot-tagged"
-UUU_BOOTLOADER_UNTAGGED = "imx-boot-untagged"
+UUU_BOOTLOADER = "imx-boot"
 
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"

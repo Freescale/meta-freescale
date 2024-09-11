@@ -12,7 +12,7 @@
 # | |         |              |
 # 0 1kiB    4MiB + rootfs + IMAGE_EXTRA_SPACE (default 10MiB)
 #
-part u-boot --source rawcopy --sourceparams="file=u-boot.imx" --ondisk mmcblk --no-table --align 1
+part u-boot --source rawcopy --sourceparams="file=${UBOOT_BINARY}.tagged" --ondisk mmcblk --no-table --align 1
 part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 4096
 
 bootloader --ptable msdos
