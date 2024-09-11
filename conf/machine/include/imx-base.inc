@@ -587,12 +587,12 @@ PREFERRED_VERSION_vulkan-tools:imxvulkan             ??= "1.3.261.1.imx"
 PREFERRED_VERSION_vulkan-validation-layers:imxvulkan ??= "1.3.261.1.imx"
 
 # Use i.MX optee Version
-PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "4.0.0.imx"
-PREFERRED_VERSION_optee-os:mx9-nxp-bsp     ??= "4.0.0.imx"
-PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "4.0.0.imx"
-PREFERRED_VERSION_optee-client:mx9-nxp-bsp ??= "4.0.0.imx"
-PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "4.0.0.imx"
-PREFERRED_VERSION_optee-test:mx9-nxp-bsp   ??= "4.0.0.imx"
+PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "4.2.0.imx"
+PREFERRED_VERSION_optee-os:mx9-nxp-bsp     ??= "4.2.0.imx"
+PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "4.2.0.imx"
+PREFERRED_VERSION_optee-client:mx9-nxp-bsp ??= "4.2.0.imx"
+PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "4.2.0.imx"
+PREFERRED_VERSION_optee-test:mx9-nxp-bsp   ??= "4.2.0.imx"
 
 # Use i.MX opencv Version
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.6.0.imx"
