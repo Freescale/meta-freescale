@@ -12,7 +12,7 @@ upstreaming."
 
 require linux-imx.inc
 
-SRC_URI = "git://github.com/Livius90/linux-fslc.git;branch=${KBRANCH};protocol=https"
+SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 DEPENDS += " \
     coreutils-native \
@@ -23,10 +23,10 @@ DEPENDS += " \
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.10.9"
+LINUX_VERSION = "6.10.10"
 
 KBRANCH = "6.10.x+fslc"
-SRCREV = "1611860f184a2c9e74ed593948d43657734a7098"
+SRCREV = "049be94099ea5ba8338526c5a4f4f404b9dcaf54"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
