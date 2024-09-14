@@ -15,6 +15,8 @@ S = "${WORKDIR}/git"
 
 inherit deploy
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 OEI_CONFIGS ?= "UNDEFINED"
 OEI_CORE    ?= "UNDEFINED"
 OEI_SOC     ?= "UNDEFINED"
