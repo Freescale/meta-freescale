@@ -1,0 +1,39 @@
+From 784881b9bffaa768c3a1e9cb3d8eead7b4ca356a Mon Sep 17 00:00:00 2001
+From: Hiago De Franco <hiago.franco@toradex.com>
+Date: Thu, 12 Sep 2024 18:44:14 +0200
+Subject: [PATCH] autovideoconvert: add imxvideoconvert_g2d
+
+On i.MX8 platform, autovideoconvert defaults to CPU-based processing as
+imxvideoconvert_g2d is not included as a listed filter, resulting in
+poor video playback performance.
+
+Add imxvideoconvert_g2d to improve performance by utilizing hardware
+acceleration.
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/gst-plugins-bad/pull/2]
+Signed-off-by: Hiago De Franco <hiago.franco@toradex.com>
+---
+ gst/autoconvert/gstautovideoconvert.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/gst/autoconvert/gstautovideoconvert.c b/gst/autoconvert/gstautovideoconvert.c
+index cf5468316cd5..b91bd1556c37 100644
+--- a/gst/autoconvert/gstautovideoconvert.c
++++ b/gst/autoconvert/gstautovideoconvert.c
+@@ -85,6 +85,13 @@ gst_auto_video_convert_init (GstAutoVideoConvert * autovideoconvert)
+       .filters = {  NULL },
+       .rank = GST_RANK_SECONDARY,
+     },
++    {
++      .first_elements = { "capsfilter caps=\"video/x-raw\"", NULL, },
++      .colorspace_converters = { "imxvideoconvert_g2d", NULL },
++      .last_elements = { NULL, },
++      .filters = { NULL },
++      .rank = GST_RANK_PRIMARY + 1,
++    },
+     {
+       .first_elements = { "capsfilter caps=\"video/x-raw\"", NULL, },
+       .colorspace_converters = { "videoconvertscale", NULL },
+-- 
+2.39.2
+

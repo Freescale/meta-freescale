@@ -188,6 +188,7 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
                    file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
                    "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
+SRC_URI:append = " file://0001-autovideoconvert-add-imxvideoconvert_g2d.patch"
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
 SRCBRANCH = "MM_04.09.00_2405_L6.6.y"
 SRCREV = "869cef4efbc004c795392d274e617f2dfa71ac98"
