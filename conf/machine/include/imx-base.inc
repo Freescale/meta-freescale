@@ -653,9 +653,9 @@ WKS_FILE_DEPENDS:append:imx-generic-bsp:mx9-generic-bsp = " \
     ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '0', 'imx-boot', '')} \
 "
 
-SOC_DEFAULT_WKS_FILE ?= "imx-uboot-bootpart.wks.in"
-SOC_DEFAULT_WKS_FILE:mx8-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE                 ?= "imx-uboot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mxs-generic-bsp ?= "imx-uboot-mxs-bootpart.wks.in"
+SOC_DEFAULT_WKS_FILE:mx8-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mx9-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
