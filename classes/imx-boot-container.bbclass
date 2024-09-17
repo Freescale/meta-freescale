@@ -96,7 +96,7 @@ do_deploy:append() {
                     if [ ! -f "${DEPLOYDIR}/imx-boot" ]; then
                         ln -sf flash.bin-${MACHINE}-${type} flash.bin
                         ln -sf flash.bin-${MACHINE}-${type} imx-boot
-
+                        ln -sf flash.bin.tagged imx-boot.tagged
                     else
                         bbwarn "Use custom wks.in for $UBOOT_CONFIG = $type"
                     fi

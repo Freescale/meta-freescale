@@ -9,15 +9,10 @@ PROVIDES += "u-boot u-boot-mfgtool"
 
 inherit uuu_bootloader_tag
 
-UUU_BOOTLOADER                          = ""
-UUU_BOOTLOADER:mx6-generic-bsp          = "${UBOOT_BINARY}"
-UUU_BOOTLOADER:mx7-generic-bsp          = "${UBOOT_BINARY}"
-UUU_BOOTLOADER_TAGGED                   = ""
-UUU_BOOTLOADER_TAGGED:mx6-generic-bsp   = "u-boot-tagged.${UBOOT_SUFFIX}"
-UUU_BOOTLOADER_TAGGED:mx7-generic-bsp   = "u-boot-tagged.${UBOOT_SUFFIX}"
-UUU_BOOTLOADER_UNTAGGED                 = ""
-UUU_BOOTLOADER_UNTAGGED:mx6-generic-bsp = "u-boot-untagged.${UBOOT_SUFFIX}"
-UUU_BOOTLOADER_UNTAGGED:mx7-generic-bsp = "u-boot-untagged.${UBOOT_SUFFIX}"
+# The UUU tag goes on the boot partition. For 8+, the boot partition image
+# is imx-boot, so disable UUU-tagging here
+UUU_BOOTLOADER:mx8-generic-bsp = ""
+UUU_BOOTLOADER:mx9-generic-bsp = ""
 
 do_deploy:append:mx8m-generic-bsp() {
     # Deploy u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
