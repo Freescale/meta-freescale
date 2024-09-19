@@ -28,20 +28,28 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.6.23
+#    tag: v6.6.51
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.6.3-1.0.00
+#    tag: lf-6.6.23-2.0.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
-# - f67cb9a5b4fb7 Revert "net: stmmac: fix FPE events losing"
-# - 1918c2eb8b07f Revert "dmaengine: fsl-edma: fix DMA channel leak in eDMAv4"
-# - 42289407ee38f Revert "dmaengine: fsl-edma: Add judgment on enabling round robin arbitration"
-# - 952f79923f055 Revert "dmaengine: fsl-edma: Do not suspend and resume the masked dma channel when the system is sleeping"
+
+# $ git log --oneline  --no-merges v6.6.23.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# - 4d8a7fb526c1 imx8mp: Remove obsolete device tree file
+# - e420d14b057f MLK-25922-4 arm64: dts: imx93: add lpspi support
+# - 965390eee531 Revert "dmaengine: fsl-edma: add address for channel mux register in fsl_edma_chan"
+# - a1553c4e0862 Revert "dmaengine: fsl-edma: add i.MX8ULP edma support"
+# - 652e34468562 Revert "dmaengine: fsl-edma: clean up unused "fsl,imx8qm-adma" compatible string"
+# - f4114b5ea07c Revert "dmaengine: fsl-edma: change the memory access from local into remote mode in i.MX 8QM"
+# - 97e602775143 Revert "arm64: dts: imx8-ss-conn: fix usdhc wrong lpcg clock order"
+# - dd280fd310dd arm64: imx_v8_defconfig: Enable CONFIG_GPIO_VF610
+# - 7a31ed76b4ee drm/imx: lcdifv3: Fix videomode settings
+# - fb5da09f0eae i2c: imx: Remove unnecessary clock reconfiguration
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -53,14 +61,14 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.0.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "dd280fd310dd5fabbff7393175ee9d7a6aea6b34"
+SRCREV = "d023c381fa6161a7af966abaad8e7d9a997f07e7"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.23"
+LINUX_VERSION = "6.6.51"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
