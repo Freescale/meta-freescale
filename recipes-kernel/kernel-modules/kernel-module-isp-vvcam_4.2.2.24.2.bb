@@ -13,6 +13,8 @@ S = "${WORKDIR}/git/vvcam/v4l2"
 
 inherit module
 
+MODULES_MODULE_SYMVERS_LOCATION = "dwe"
+
 DEBUG_PREFIX_MAP:prepend = " \
     -fmacro-prefix-map=${WORKDIR}/git/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
     -fdebug-prefix-map=${WORKDIR}/git/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} "
