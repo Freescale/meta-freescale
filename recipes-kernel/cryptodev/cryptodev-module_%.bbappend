@@ -7,6 +7,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 # See also: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0f8660c82b79af595b056f6b9f4f227edeb88574
 #           https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c626910f3f1bbce6ad18bc613d895d2a089ed95e
 
-SRC_URI += " \
+SRC_URI:append:imx-generic-bsp = " \
     file://fix-build-for-Linux-6.7-rc1.patch \
 "
