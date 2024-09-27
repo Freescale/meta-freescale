@@ -14,15 +14,19 @@ require linux-imx.inc
 
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
+DEPENDS += " \
+    coreutils-native \
+"
+
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.50"
+LINUX_VERSION = "6.11.0"
 
-KBRANCH = "6.6.x+fslc"
-SRCREV = "2473dfed9007471b503efe1f7de74d63eaf4c699"
+KBRANCH = "6.11.x+fslc"
+SRCREV = "98f7e32f20d28ec452afb208f9cffc08448a2652"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
