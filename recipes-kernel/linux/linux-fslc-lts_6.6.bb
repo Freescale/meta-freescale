@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2019 O.S. Systems Software LTDA.
+# Copyright (C) 2012-2024 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 #
 # SPDX-License-Identifier: MIT
@@ -12,8 +12,6 @@ upstreaming in any form."
 
 require linux-imx.inc
 
-KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
-
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
@@ -21,13 +19,11 @@ SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.1.72"
+LINUX_VERSION = "6.6.50"
 
-KBRANCH = "6.1.x+fslc"
-SRCREV = "b80c9dede70132da3ae7feb949fe0803aad3db24"
+KBRANCH = "6.6.x+fslc"
+SRCREV = "2473dfed9007471b503efe1f7de74d63eaf4c699"
 
-KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
-KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v6_v7_defconfig"
