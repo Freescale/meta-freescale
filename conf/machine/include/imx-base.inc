@@ -166,6 +166,7 @@ DEFAULTTUNE:mx8qm-generic-bsp  ?= "cortexa72-cortexa53-crypto"
 DEFAULTTUNE:mx8x-generic-bsp   ?= "cortexa35-crypto"
 DEFAULTTUNE:mx8ulp-generic-bsp ?= "cortexa35-crypto"
 DEFAULTTUNE:mx93-generic-bsp   ?= "cortexa55"
+DEFAULTTUNE:mx95-generic-bsp   ?= "cortexa55"
 
 INHERIT += "machine-overrides-extender"
 
@@ -221,6 +222,7 @@ MACHINEOVERRIDES_EXTENDER:mx8dxl:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxf
 MACHINEOVERRIDES_EXTENDER:mx8ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxgpu:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8ulp-generic-bsp:mx8ulp-nxp-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx93:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx93-generic-bsp:mx93-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx95:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp"
 
 #######
 ### Mainline BSP specific overrides
@@ -264,6 +266,7 @@ MACHINEOVERRIDES_EXTENDER:mx8dxl:use-mainline-bsp = "imx-generic-bsp:imx-mainlin
 MACHINEOVERRIDES_EXTENDER:mx8ulp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8ulp-generic-bsp:mx8ulp-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx93:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx93-generic-bsp:mx93-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx95:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx95-generic-bsp:mx95-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx6 \
@@ -295,6 +298,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8dxl \
     mx8ulp \
     mx93 \
+    mx95 \
 "
 
 MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR = "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
@@ -323,6 +327,7 @@ MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp   = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp  = "-mx8xl"
 MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp  = "-mx8ulp"
 MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp    = "-mx93"
+MACHINE_SOCARCH_SUFFIX:mx95-nxp-bsp    = "-mx95"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
 MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
@@ -400,6 +405,8 @@ IMX_EXTRA_FIRMWARE:mx8m-generic-bsp   = "imx-boot-firmware-files"
 IMX_EXTRA_FIRMWARE:mx8x-generic-bsp   = "imx-sc-firmware imx-seco"
 IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
+PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
+IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager imx-oei"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
@@ -420,6 +427,7 @@ MACHINE_FIRMWARE:append:mx8mp-generic-bsp    = " linux-firmware-imx-sdma-imx7d f
 MACHINE_FIRMWARE:append:mx8mq-generic-bsp    = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
+MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave"
 MACHINE_FIRMWARE:append:imx-mainline-bsp     = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
