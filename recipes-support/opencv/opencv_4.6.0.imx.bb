@@ -268,7 +268,7 @@ SRCREV_opencv = "d3440df40a6e90cd1d2a1b729bcbc16aa4d42f5d"
 # Add opencv_extra
 SRC_URI += " \
     git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra;branch=master;protocol=https \
-    file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=../extra \
+    file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=${UNPACKDIR}/extra \
 "
 SRCREV_FORMAT:append = "_extra"
 SRCREV_extra = "936854e2b666853d6d0732a8eabc2d699f4fa3d8"
@@ -293,7 +293,7 @@ PACKAGECONFIG_OPENCL:mx8mnul-nxp-bsp = ""
 PACKAGECONFIG[openvx] = "-DWITH_OPENVX=ON -DOPENVX_ROOT=${STAGING_LIBDIR} -DOPENVX_LIB_CANDIDATES='OpenVX;OpenVXU',-DWITH_OPENVX=OFF,virtual/libopenvx,"
 PACKAGECONFIG[qt5] = "-DWITH_QT=ON -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE} -DCMAKE_PREFIX_PATH=${STAGING_BINDIR_NATIVE}/cmake,-DWITH_QT=OFF,qtbase qtbase-native,"
 PACKAGECONFIG[qt6] = "-DWITH_QT=ON -DQT_HOST_PATH=${RECIPE_SYSROOT_NATIVE}${prefix_native},-DWITH_QT=OFF,qtbase qtbase-native,"
-PACKAGECONFIG[tests-imx] = "-DINSTALL_TESTS=ON -DOPENCV_TEST_DATA_PATH=${S}/../extra/testdata, -DINSTALL_TESTS=OFF,"
+PACKAGECONFIG[tests-imx] = "-DINSTALL_TESTS=ON -DOPENCV_TEST_DATA_PATH=${UNPACKDIR}/extra/testdata, -DINSTALL_TESTS=OFF,"
 PACKAGECONFIG[tim-vx] = "-DWITH_TIMVX=ON -DTIMVX_INSTALL_DIR=${STAGING_DIR_HOST}${libdir},-DWITH_TIMVX=OFF,tim-vx"
 
 # Disable cvv module in opencv_contrib as it is not yet suppported for Qt6
