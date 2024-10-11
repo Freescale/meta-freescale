@@ -48,7 +48,9 @@ def remove_options_tail (in_string):
     from itertools import takewhile
     return ' '.join(takewhile(lambda x: not x.startswith('-'), in_string.split(' ')))
 
-EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}.bfd"'
+# LD can have linker suffix in its name e.g. aarch64-yoe-linux-ld.lld so we need to
+# drop .lld as well along with options from LD
+EXTRA_OEMAKE += 'LD="${HOST_PREFIX}ld.bfd"'
 
 EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
 
