@@ -39,17 +39,12 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # 3. Critical patches (SHA(s))
 # ------------------------------------------------------------------------------
 
-# $ git log --oneline  --no-merges v6.6.23.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
-# - 4d8a7fb526c1 imx8mp: Remove obsolete device tree file
-# - e420d14b057f MLK-25922-4 arm64: dts: imx93: add lpspi support
-# - 965390eee531 Revert "dmaengine: fsl-edma: add address for channel mux register in fsl_edma_chan"
-# - a1553c4e0862 Revert "dmaengine: fsl-edma: add i.MX8ULP edma support"
-# - 652e34468562 Revert "dmaengine: fsl-edma: clean up unused "fsl,imx8qm-adma" compatible string"
-# - f4114b5ea07c Revert "dmaengine: fsl-edma: change the memory access from local into remote mode in i.MX 8QM"
-# - 97e602775143 Revert "arm64: dts: imx8-ss-conn: fix usdhc wrong lpcg clock order"
-# - dd280fd310dd arm64: imx_v8_defconfig: Enable CONFIG_GPIO_VF610
-# - 7a31ed76b4ee drm/imx: lcdifv3: Fix videomode settings
-# - fb5da09f0eae i2c: imx: Remove unnecessary clock reconfiguration
+# $ git log --oneline  --no-merges v6.6.34.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# - 3fb57e773e55 tty: vt: conmakehash: Don't mention the full path of the input in output
+# - d1198b88bc1b Revert "dmaengine: fsl-edma: add address for channel mux register in fsl_edma_chan"
+# - 717fee4a9cf7 Revert "dmaengine: fsl-edma: add i.MX8ULP edma support"
+# - 74ef72069927 Revert "dmaengine: fsl-edma: clean up unused "fsl,imx8qm-adma" compatible string"
+# - b54c6ea17058 Revert "dmaengine: fsl-edma: change the memory access from local into remote mode in i.MX 8QM"
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -59,16 +54,16 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 require linux-imx.inc
 
-KBRANCH = "6.6-2.0.x-imx"
+KBRANCH = "6.6-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "d023c381fa6161a7af966abaad8e7d9a997f07e7"
+SRCREV = "096cd0432b03805f49c86684dafb9ced4511a714"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.51"
+LINUX_VERSION = "6.6.54"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
