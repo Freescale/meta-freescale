@@ -36,4 +36,7 @@ ALLOW_EMPTY:${PN}-ext = "1"
 FILES:${PN} += "${nonarch_base_libdir}/firmware/imx/ele/${SECO_FIRMWARE_NAME}"
 FILES:${PN}-ext += "${nonarch_base_libdir}/firmware/imx/ele/${SECOEXT_FIRMWARE_NAME}"
 
+RREPLACES:${PN} = "firmware-sentinel"
+RPROVIDES:${PN} = "firmware-sentinel"
+
 COMPATIBLE_MACHINE = "(mx8ulp-nxp-bsp|mx9-nxp-bsp)"
