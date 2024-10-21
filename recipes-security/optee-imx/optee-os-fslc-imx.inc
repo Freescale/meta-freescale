@@ -22,5 +22,6 @@ PLATFORM_FLAVOR:mx8dx-nxp-bsp     = "mx8dxmek"
 PLATFORM_FLAVOR:mx8dxl-nxp-bsp    = "mx8dxlevk"
 PLATFORM_FLAVOR:mx8ulp-nxp-bsp    = "mx8ulpevk"
 PLATFORM_FLAVOR:mx93-nxp-bsp      = "mx93evk"
+PLATFORM_FLAVOR:mx95-nxp-bsp      = "mx95evk"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
