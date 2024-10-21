@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2021 NXP
+# Copyright (C) 2017-2021,2024 NXP
 
 SUMMARY = "OPTEE OS"
 DESCRIPTION = "OPTEE OS"
@@ -83,5 +83,8 @@ addtask deploy after do_compile before do_install
 FILES:${PN} = "${nonarch_base_libdir}/firmware/ ${nonarch_base_libdir}/optee_armtz/"
 FILES:${PN}-staticdev = "${includedir}/optee/"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
+
+# FIXME: Build paths are currently embedded
+INSANE_SKIP:${PN}-staticdev += "buildpaths"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
