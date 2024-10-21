@@ -1,5 +1,5 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright 2017-2021,2023 NXP
+# Copyright 2017-2021,2024 NXP
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 SUMMARY = "Freescale i.MX firmware"
 DESCRIPTION = "Freescale i.MX firmware such as for the VPU"
