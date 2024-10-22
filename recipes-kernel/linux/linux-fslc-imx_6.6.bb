@@ -40,6 +40,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 
 # $ git log --oneline  --no-merges v6.6.34.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# - a10c64e35a24 tty: vt: conmakehash: cope with abs_srctree no longer in env
 # - 3fb57e773e55 tty: vt: conmakehash: Don't mention the full path of the input in output
 # - d1198b88bc1b Revert "dmaengine: fsl-edma: add address for channel mux register in fsl_edma_chan"
 # - 717fee4a9cf7 Revert "dmaengine: fsl-edma: add i.MX8ULP edma support"
@@ -56,7 +57,7 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "096cd0432b03805f49c86684dafb9ced4511a714"
+SRCREV = "47d927c130da97d140d1455103e3cacecef94807"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
