@@ -12,6 +12,7 @@ SRC_URI:append:imxgpu = " \
 
 PACKAGECONFIG_GL_IMX_GPU     = ""
 PACKAGECONFIG_GL_IMX_GPU:mx8-nxp-bsp = "gbm kms"
+PACKAGECONFIG_GL_IMX_GPU:mx95-nxp-bsp = "gbm kms"
 
 PACKAGECONFIG_GL:imxpxp   = "gles2"
 PACKAGECONFIG_GL:imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' gl', '', d)} \
@@ -31,6 +32,7 @@ PACKAGECONFIG += "${PACKAGECONFIG_PLATFORM}"
 
 PACKAGECONFIG_VULKAN_IMX_GPU       = ""
 PACKAGECONFIG_VULKAN_IMX_GPU:mx8-nxp-bsp   = "vulkan"
+PACKAGECONFIG_VULKAN_IMX_GPU:mx9-nxp-bsp   = "vulkan"
 PACKAGECONFIG_VULKAN_IMX_GPU:mx8mm-nxp-bsp = ""
 PACKAGECONFIG_VULKAN               = ""
 PACKAGECONFIG_VULKAN:imxgpu        = "${PACKAGECONFIG_VULKAN_IMX_GPU}"
