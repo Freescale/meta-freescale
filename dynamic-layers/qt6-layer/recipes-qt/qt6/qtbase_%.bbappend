@@ -14,6 +14,8 @@ PACKAGECONFIG_GRAPHICS:imxgpu3d = " \
 PACKAGECONFIG_GRAPHICS_IMX_GPU = ""
 PACKAGECONFIG_GRAPHICS_IMX_GPU:mx8-nxp-bsp = " \
     gbm kms"
+PACKAGECONFIG_GRAPHICS_IMX_GPU:mx95-nxp-bsp = " \
+    gbm kms"
 
 PACKAGECONFIG_GRAPHICS:use-mainline-bsp ?= " \
     gles2 gbm kms"
@@ -51,4 +53,5 @@ PACKAGECONFIG_VULKAN:imxgpu = " \
     ${PACKAGECONFIG_VULKAN_IMX_GPU}"
 PACKAGECONFIG_VULKAN_IMX_GPU               = ""
 PACKAGECONFIG_VULKAN_IMX_GPU:mx8-nxp-bsp   = "vulkan"
+PACKAGECONFIG_VULKAN_IMX_GPU:mx95-nxp-bsp   = "vulkan"
 PACKAGECONFIG_VULKAN_IMX_GPU:mx8mm-nxp-bsp = ""
