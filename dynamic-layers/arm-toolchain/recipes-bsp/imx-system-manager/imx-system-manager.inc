@@ -6,6 +6,8 @@ PROVIDES += "virtual/imx-system-manager"
 
 inherit deploy
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 # Set monitor mode for none, one, or two
 PACKAGECONFIG[m0] = "M=0,,,,,m1 m2"
 PACKAGECONFIG[m1] = ",,,,,m0 m2"
