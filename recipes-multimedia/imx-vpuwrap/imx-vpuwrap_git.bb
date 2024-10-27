@@ -5,7 +5,7 @@
 DESCRIPTION = "Freescale Multimedia VPU wrapper"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=10c0fda810c63b052409b15a5445671a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
 
 DEPENDS = "virtual/imxvpu"
 DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
@@ -15,8 +15,8 @@ SRC_URI = " \
     file://0001-vpu_wrapper_hantro_encoder-add-sys-time.h-for-gettim.patch \
     file://0001-vpu_wrapper_hantro_VCencoder-add-sys-time.h-for-gett.patch \
 "
-SRCBRANCH = "MM_04.09.00_2405_L6.6.y"
-SRCREV = "73093da30dc4053c9f69813a6447091bfca5429b"
+SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
+SRCREV = "c13069d239cae314adc3651df25b96afa46cb434"
 
 S = "${WORKDIR}/git"
 
