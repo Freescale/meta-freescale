@@ -1,15 +1,15 @@
-# Copyright 2023 NXP
+# Copyright 2023-2024 NXP
 DESCRIPTION = "NXP Multimedia opencl converter lib"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=10c0fda810c63b052409b15a5445671a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
 DEPENDS = "virtual/opencl-icd"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-IMX_SRCREV_ABBREV = "efe25d6"
+IMX_SRCREV_ABBREV = "f2c3930"
 
-SRC_URI[md5sum] = "daa99b8615ca08280833bb80bc52c9be"
-SRC_URI[sha256sum] = "1717f7fe64b260156b8d5b353add5edb7bc0217dd3847ac641601d4a59494f08"
+SRC_URI[md5sum] = "c57b978d29bf136be3523676ad088b07"
+SRC_URI[sha256sum] = "eb3df72a7e1d16ec1660978cf36b7818b8ac7c7defe3222ae4bb7dabd4a5f4cc"
 
 S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 inherit fsl-eula-unpack autotools pkgconfig meson
