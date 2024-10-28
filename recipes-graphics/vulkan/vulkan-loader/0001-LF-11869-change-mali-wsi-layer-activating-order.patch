@@ -1,0 +1,52 @@
+From 3448c245b15928aa5a5a3695d9271fb201eb2e3b Mon Sep 17 00:00:00 2001
+From: Yuan Tian <yuan.tian@nxp.com>
+Date: Sat, 27 Apr 2024 06:06:54 +0800
+Subject: [PATCH] LF-11869 change mali wsi layer activating order
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Yuan Tian <yuan.tian@nxp.com>
+---
+ loader/loader.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/loader/loader.c b/loader/loader.c
+index e646b28b4..55912c178 100644
+--- a/loader/loader.c
++++ b/loader/loader.c
+@@ -2906,6 +2906,7 @@ VkResult add_data_files(const struct loader_instance *inst, char *search_path, s
+ #if !defined(_WIN32)
+     char temp_path[2048];
+ #endif
++    bool has_wsi_layer = false;
+ 
+     // Now, parse the paths
+     next_file = search_path;
+@@ -2965,6 +2966,10 @@ VkResult add_data_files(const struct loader_instance *inst, char *search_path, s
+                 name = full_path;
+ 
+                 VkResult local_res;
++                if(!strcmp(name,"/etc/vulkan/implicit_layer.d/VkLayer_window_system_integration.json")) {
++                    has_wsi_layer = true;
++                    continue;
++                }
+                 local_res = add_if_manifest_file(inst, name, out_files);
+ 
+                 // Incomplete means this was not a valid data file.
+@@ -2975,6 +2980,13 @@ VkResult add_data_files(const struct loader_instance *inst, char *search_path, s
+                     break;
+                 }
+             }
++
++            if(has_wsi_layer) {
++                name = "/etc/vulkan/implicit_layer.d/VkLayer_window_system_integration.json";
++                vk_result = add_if_manifest_file(inst, name, out_files);
++                has_wsi_layer = false;
++            }
++
+             loader_closedir(inst, dir_stream);
+             if (vk_result != VK_SUCCESS) {
+                 goto out;
+-- 
+2.34.1
+

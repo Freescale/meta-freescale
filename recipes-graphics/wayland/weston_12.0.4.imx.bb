@@ -172,7 +172,7 @@ SRC_URI:prepend = "${WESTON_SRC};branch=${SRCBRANCH} "
 WESTON_SRC ?= "git://github.com/nxp-imx/weston-imx.git;protocol=https"
 SRC_URI += "file://0001-Revert-protocol-no-found-wayland-scanner-with-Yocto-.patch"
 SRCBRANCH = "weston-imx-12.0.4"
-SRCREV = "461c49d20677cfd36d01a95dafbd9eedf2a4b09c"
+SRCREV = "c3c1f9ff7824123dd4808ace3c9476345cb84177"
 S = "${WORKDIR}/git"
 
 PACKAGECONFIG_IMX_REMOVALS ?= "wayland x11"
@@ -185,6 +185,9 @@ PACKAGECONFIG_G2D:mx93-nxp-bsp ??= "imxg2d"
 
 # Weston with i.MX G2D renderer
 PACKAGECONFIG[imxg2d] = "-Drenderer-g2d=true,-Drenderer-g2d=false,virtual/libg2d"
+
+# Weston on RDP, fix for base recipe
+PACKAGECONFIG[rdp] = "-Dbackend-rdp=true,-Dbackend-rdp=false,freerdp,freerdp"
 
 # links with imx-gpu libs which are pre-built for glibc
 # gcompat will address it during runtime
