@@ -22,10 +22,6 @@ DEPENDS:append:mx8-nxp-bsp = " patchelf-native"
 
 DEPENDS:append:libc-musl = " gcompat"
 
-DEPENDS:remove:imx-nxp-bsp = "mesa"
-PACKAGES:remove:imx-nxp-bsp = "libgl-imx libgl-imx-dev"
-PROVIDES:remove:imx-nxp-bsp = "virtual/libgl"
-
 PROVIDES += " \
     imx-gpu-viv \
     libgal-imx \
