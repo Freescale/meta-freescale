@@ -105,7 +105,9 @@ compile_mx8m() {
         cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${UBOOT_DTB_NAME_EXTRA} \
                                                              ${BOOT_STAGING}
     fi
-    ln -sf ${UBOOT_DTB_NAME_EXTRA}                           ${BOOT_STAGING}/${UBOOT_DTB_NAME}
+    if [ "${UBOOT_DTB_NAME_EXTRA}" != "${UBOOT_DTB_NAME}" ] ; then
+        ln -sf ${UBOOT_DTB_NAME_EXTRA}                       ${BOOT_STAGING}/${UBOOT_DTB_NAME}
+    fi
 
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-nodtb.bin
