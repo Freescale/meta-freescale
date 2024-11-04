@@ -1,5 +1,5 @@
 DESCRIPTION = "PKCS library"
-LICENSE = "GPL-2.0-only & BSD"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=803852533e29eb1d6d5e55ad3078b625"
 
 SRC_URI = "git://github.com/nxp-qoriq/libpkcs11;protocol=https;nobranch=1 \
