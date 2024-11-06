@@ -57,7 +57,7 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "47d927c130da97d140d1455103e3cacecef94807"
+SRCREV = "ea326ecb9fc05493c53e51832e447c157268e2ab"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
