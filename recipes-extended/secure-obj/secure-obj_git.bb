@@ -1,9 +1,11 @@
 require secure-obj.inc
 
-LIC_FILES_CHKSUM = "file://README;md5=82b72e88f23cded9dd23f0fb1790b8d2"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 
 S = "${WORKDIR}/git"
 
+DEPENDS:remove = " python3-pycryptodomex-native"
+DEPENDS:append = " python3-cryptography-native optee-os-qoriq-tadevkit"
 RDEPENDS:{PN}  += "secure-obj-module"
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
@@ -17,14 +19,15 @@ CFLAGS += "${TOOLCHAIN_OPTIONS}"
 
 do_compile() {
         unset LDFLAGS
-        export TA_DEV_KIT_DIR="${RECIPE_SYSROOT}/usr/include/optee/export-user_ta"
+        export TA_DEV_KIT_DIR=${STAGING_INCDIR}/optee/export-user_ta/
         export CROSS_COMPILE="${WRAP_TARGET_PREFIX}"
-        export OPENSSL_PATH="${RECIPE_SYSROOT}/usr" 
-        for APP in  secure_storage_ta securekey_lib secure_obj-openssl-engine; do        
+        export OPENSSL_PATH="${RECIPE_SYSROOT}/usr"
+        export OPENSSL_MODULES=${STAGING_LIBDIR_NATIVE}/ossl-modules
+        for APP in  secure_storage_ta securekey_lib secure_obj-openssl-engine; do
             cd  ${APP}
             oe_runmake
 	    cd ..
-        done       
+        done
 }
 
 do_install() {

@@ -8,7 +8,7 @@ DEPENDS += "tcl-native"
 inherit deploy siteinfo
 
 SRC_URI = "git://github.com/nxp-qoriq/rcw;protocol=https;nobranch=1"
-SRCREV = "020dcf0645959afec6705f518e8350476891ef4f"
+SRCREV = "64abe70cf0abab053c37db460c12e367e6adf7a4"
 
 S = "${WORKDIR}/git"
 
