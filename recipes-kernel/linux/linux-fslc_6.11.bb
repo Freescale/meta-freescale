@@ -23,10 +23,10 @@ DEPENDS += " \
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.11.4"
+LINUX_VERSION = "6.11.7"
 
 KBRANCH = "6.11.x+fslc"
-SRCREV = "ea947c5d06275e548ddfac48af577063aa6f9d71"
+SRCREV = "10167047cf0d918ad8e31638e52b7fd620039698"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
