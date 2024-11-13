@@ -61,7 +61,9 @@ PACKAGECONFIG:append:imxpxp           = " pxp"
 # former is not available pre-5.6. Out of the dma-heaps, we
 # pick the uncached one by default (see above).
 PACKAGECONFIG:append:mx8-nxp-bsp      = " dma-heap-uncached"
-PACKAGECONFIG:append:mx8m-nxp-bsp     = " dwl"
+PACKAGECONFIG:append:mx8mq-nxp-bsp     = " dwl"
+PACKAGECONFIG:append:mx8mm-nxp-bsp     = " dwl"
+PACKAGECONFIG:append:mx8mp-nxp-bsp     = " dwl"
 
 HANTRO_CONF = "--hantro-headers-path=${STAGING_INCDIR}/hantro_dec --hantro-decoder-version=G2"
 
