@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.6.51
+#    tag: v6.6.54
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -57,7 +57,7 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "ea326ecb9fc05493c53e51832e447c157268e2ab"
+SRCREV = "6605f549a71ef3af9c65609cba985086ac4edf2b"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
