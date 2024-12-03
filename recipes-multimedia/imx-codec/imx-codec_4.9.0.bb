@@ -60,7 +60,7 @@ do_package_qa[prefuncs] += "__set_insane_skip"
 
 python __split_libfslcodec_plugins() {
     codecdir = bb.data.expand('${libdir}', d)
-    do_split_packages(d, codecdir, '^lib_([^_]*).*_arm.*_elinux\.so\..*',
+    do_split_packages(d, codecdir, r'^lib_([^_]*).*_arm.*_elinux\.so\..*',
                       aux_files_pattern='${libdir}/imx-mm/audio-codec/wrap/lib_%sd_wrap_arm*_elinux.so.*',
                       output_pattern='imx-codec-%s',
                       description='Freescale i.MX Codec (%s)',
