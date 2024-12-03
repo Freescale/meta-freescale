@@ -102,14 +102,14 @@ python populate_packages:prepend() {
 
 
     easrcdir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/easrc', d)
-    do_split_packages(d, easrcdir, '^easrc-([^_]*).*\.bin',
+    do_split_packages(d, easrcdir, r'^easrc-([^_]*).*\.bin',
                       output_pattern='firmware-imx-easrc-%s',
                       description='Freescale IMX EASRC Firmware [%s]',
                       extra_depends='',
                       prepend=True)
 
     vpudir = bb.data.expand('${nonarch_base_libdir}/firmware/vpu', d)
-    do_split_packages(d, vpudir, '^vpu_fw_([^_]*).*\.bin',
+    do_split_packages(d, vpudir, r'^vpu_fw_([^_]*).*\.bin',
                       output_pattern='firmware-imx-vpu-%s',
                       description='Freescale IMX VPU Firmware [%s]',
                       hook=coda_vpu_links,
@@ -117,21 +117,21 @@ python populate_packages:prepend() {
                       prepend=True)
 
     sdmadir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/sdma', d)
-    do_split_packages(d, sdmadir, '^sdma-([^-]*).*\.bin',
+    do_split_packages(d, sdmadir, r'^sdma-([^-]*).*\.bin',
                       output_pattern='firmware-imx-sdma-%s',
                       description='Freescale IMX SDMA Firmware [%s]',
                       extra_depends='',
                       prepend=True)
 
     xcvrdir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/xcvr', d)
-    do_split_packages(d, xcvrdir, '^xcvr-([^_]*).*\.bin',
+    do_split_packages(d, xcvrdir, r'^xcvr-([^_]*).*\.bin',
                       output_pattern='firmware-imx-xcvr-%s',
                       description='Freescale IMX XCVR Firmware [%s]',
                       extra_depends='',
                       prepend=True)
 
     xuvidir = bb.data.expand('${nonarch_base_libdir}/firmware/imx/xuvi', d)
-    do_split_packages(d, xuvidir, '^vpu_fw_([^_]*).*\.bin',
+    do_split_packages(d, xuvidir, r'^vpu_fw_([^_]*).*\.bin',
                       output_pattern='firmware-imx-xuvi-%s',
                       description='Freescale IMX XUVI Firmware [%s]',
                       extra_depends='',
