@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Create or clear the LICENSE file
+echo "# License Information" > LICENSE
+echo "" >> LICENSE
+echo "This file lists all licenses used by recipes in the meta-freescale-3rdparty layer." >> LICENSE
+echo "" >> LICENSE
+
+# Find all .bb and .inc files and extract license information
+find . -type f \( -name "*.bb" -o -name "*.inc" \) | while read -r file; do
+    # Extract the license line from each recipe file, if it exists
+    license_line=$(grep -i "^LICENSE" "$file")
+    if [ -n "$license_line" ]; then
+        echo "$file: $license_line" >> LICENSE
+    fi
+done
+
+echo "LICENSE file has been generated and updated with current recipe licenses."
