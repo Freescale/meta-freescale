@@ -3,7 +3,7 @@
 # Create or clear the LICENSE file
 echo "# License Information" > LICENSE
 echo "" >> LICENSE
-echo "This file lists all licenses used by recipes in the meta-freescale-3rdparty layer." >> LICENSE
+echo "This file lists all licenses used by recipes in the meta-freescale layer." >> LICENSE
 echo "" >> LICENSE
 
 # Find all .bb and .inc files and extract license information
