@@ -1,6 +1,6 @@
 # License Information
 
-This file lists all licenses used by recipes in the meta-freescale-3rdparty layer.
+This file lists all licenses used by recipes in the meta-freescale layer.
 
 ./recipes-multimedia/ffmpeg/ffmpeg_4.4.1.bb: LICENSE = "GPL-2.0-or-later & LGPL-2.1-or-later & ISC & MIT & BSD-2-Clause & BSD-3-Clause & IJG"
 LICENSE:${PN} = "GPL-2.0-or-later"
