@@ -2,7 +2,7 @@ SUMMARY = "utility for security boot"
 SECTION = "cst"
 LICENSE = "BSD-3-Clause"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=e959d5d617e33779d0e90ce1d9043eff"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=e959d5d617e33779d0e90ce1d9043eff"
 
 DEPENDS += "openssl qoriq-cst-native"
 RDEPENDS:${PN} = "bash"
@@ -19,7 +19,7 @@ inherit kernel-arch
 SRC_URI = "git://github.com/nxp-qoriq/cst;protocol=https;nobranch=1 \
            file://0001-tools-Mark-struct-input_field-file_field-extern.patch \
 "
-SRCREV = "af56e6c5c66dd2bc86a83b0bee8cb61b88d2120c"
+SRCREV = "e96dead3c339f6addb1600249be67e1884cdbcc5"
 
 S = "${WORKDIR}/git"
 
