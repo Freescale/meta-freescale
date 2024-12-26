@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/nxp-qoriq/dce;protocol=https;nobranch=1 \
       git://github.com/nxp-qoriq/qbman_userspace;protocol=https;nobranch=1;name=qbman;destsuffix=git/lib/qbman_userspace \
       file://0001-support-user-merge.patch \
 "
-SRCREV = "9db9c08379aa89f45f514f4f3f0a8e8212198758"
+SRCREV = "88ef2e8c3845532ee64cea4349fd38fb2bd5f807"
 SRCREV_qbman = "2f92993a9f34e5221d6b36c63b9e30ef703e9ac3"
 
 SRCREV_FORMAT = "default_qbman"
