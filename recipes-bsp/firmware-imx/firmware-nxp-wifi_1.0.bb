@@ -1,4 +1,4 @@
-# Copyright 2020-2023 NXP
+# Copyright 2020-2024 NXP
 
 SUMMARY = "Wi-Fi firmware redistributed by NXP"
 DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP. Some \
@@ -7,11 +7,11 @@ should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=10c0fda810c63b052409b15a5445671a"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=ca53281cc0caa7e320d4945a896fb837"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.6.23_2.0.0"
-SRCREV = "7e038c6afba3118bcee91608764ac3c633bce0c4"
+SRCBRANCH = "lf-6.6.52_2.2.0"
+SRCREV = "2978f3c88d6bcc5695a7b45f1936f18d31eebfa8"
 
 S = "${WORKDIR}/git"
 
@@ -59,6 +59,7 @@ PACKAGES =+ " \
     ${PN}-nxp9098-common \
     ${PN}-nxp9098-sdio \
     ${PN}-nxpiw416-sdio \
+    ${PN}-nxpiw610-sdio \
     ${PN}-nxpiw612-sdio \
 "
 
@@ -88,7 +89,7 @@ RCONFLICTS:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 FILES:${PN}-nxp8997-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_8997.conf \
     ${nonarch_base_libdir}/firmware/nxp/txpwrlimit_cfg_8997.conf \
-    ${nonarch_base_libdir}/firmware/nxp/uartuart8997_bt_v4.bin \
+    ${nonarch_base_libdir}/firmware/nxp/uart8997_bt_v4.bin \
 "
 RDEPENDS:${PN}-nxp8997-common += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxp8997-common = "linux-firmware-nxp8997-common"
@@ -114,7 +115,7 @@ RCONFLICTS:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
 FILES:${PN}-nxp9098-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_909x.conf \
     ${nonarch_base_libdir}/firmware/nxp/txpwrlimit_cfg_9098.conf \
-    ${nonarch_base_libdir}/firmware/nxp/uartuart9098_bt_v1.bin \
+    ${nonarch_base_libdir}/firmware/nxp/uart9098_bt_v1.bin \
 "
 RDEPENDS:${PN}-nxp9098-common += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxp9098-common = "linux-firmware-nxp9098-common"
@@ -144,6 +145,17 @@ RDEPENDS:${PN}-nxpiw416-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 RREPLACES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 RCONFLICTS:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
+
+FILES:${PN}-nxpiw610-sdio += " \
+    ${nonarch_base_libdir}/firmware/nxp/sd_iw610.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/sduart_iw610.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/uart_iw610_bt.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/uartspi_iw610.bin.se \
+"
+RDEPENDS:${PN}-nxpiw610-sdio += "${PN}-nxp-common"
+RPROVIDES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
+RREPLACES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
+RCONFLICTS:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 
 FILES:${PN}-nxpiw612-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sduart_nw61x_v1.bin.se \
