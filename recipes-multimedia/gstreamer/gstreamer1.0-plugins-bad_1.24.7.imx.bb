@@ -178,9 +178,7 @@ FILES:${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
 
 DEFAULT_PREFERENCE = "-1"
 
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=4fbd65380cdd255951079008b364516c"
-
-DEPENDS:append:imxgpu2d = " virtual/libg2d"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770"
 
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
                    file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
@@ -188,10 +186,9 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
                    file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
                    "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
-SRC_URI:append = " file://0001-autovideoconvert-add-imxvideoconvert_g2d.patch"
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
-SRCREV = "7011fdfa6d60fb3ee1dc8545f675cfdb519203cd"
+SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
+SRCREV = "bba296b75dfb3e7ae4c836255edbd2b3c085c269"
 
 S = "${WORKDIR}/git"
 
@@ -214,13 +211,6 @@ PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
 PACKAGECONFIG[tinycompress]    = "-Dtinycompress=enabled,-Dtinycompress=disabled,tinycompress"
 
-# GCC-14 otherwise errors out
-CFLAGS += " \
-    -Wno-error=implicit-function-declaration \
-    -Wno-error=incompatible-pointer-types \
-    -Wno-error=return-mismatch \
-    -Wno-error=int-conversion \
-"
 EXTRA_OEMESON += " \
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
@@ -229,8 +219,9 @@ EXTRA_OEMESON:remove = " \
     -Dkate=disabled \
 "
 
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 # it uses nested functions sadly, in ext/wayland/gstwaylandsink.c for GST_ELEMENT_REGISTER_DEFINE
 #
 TOOLCHAIN = "gcc"
+
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 ########### End of i.MX overrides #########
