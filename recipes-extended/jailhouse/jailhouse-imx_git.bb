@@ -16,8 +16,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
 PROVIDES = "jailhouse"
 RPROVIDES:${PN} += "jailhouse"
 
-SRCBRANCH = "lf-6.6.36_2.1.0"
-SRCREV = "327e56941e3e96ef9a291d2decb7add21078d8de"
+SRCBRANCH = "lf-6.6.52_2.2.0"
+SRCREV = "44dd492a745cd8b8313fb6c7c03fb45a36d70e8a"
 
 IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
 SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
