@@ -14,10 +14,10 @@ RPROVIDES:${PN} = "libfslparser"
 RCONFLICTS:${PN} = "libfslparser"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-IMX_SRCREV_ABBREV = "5d91190"
+IMX_SRCREV_ABBREV = "828fcb7"
 S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
-SRC_URI[sha256sum] = "087badea414540d1b9403be1a0c7fc91ac42a61f0374857972cd06d8c392ddec"
+SRC_URI[sha256sum] = "7414db9e2cce2cb2d6fe63ac7d193a0ea65ad8a184e6a2e2ce2785e43acbb339"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
