@@ -1,4 +1,4 @@
-SUMMARY = "NXP Wi-Fi driver for module 88w8801/8987/8997/9098 IW416/612"
+SUMMARY = "NXP Wi-Fi driver for module 88w8801/8987/8997/9098 IW416/610/612"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ab04ac0f249af12befccb94447c08b77"
 
@@ -8,10 +8,10 @@ RREPLACES:${PN} = "kernel-module-nxp89xx"
 RPROVIDES:${PN} = "kernel-module-nxp89xx"
 RCONFLICTS:${PN} = "kernel-module-nxp89xx"
 
-SRCBRANCH = "lf-6.6.23_2.0.0"
+SRCBRANCH = "lf-6.6.52_2.2.0"
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
 SRC_URI = "${MRVL_SRC};branch=${SRCBRANCH}"
-SRCREV = "88372772badbf30152b3ad12ae251dc567095cab"
+SRCREV = "5ad19e194f49ed9447bee7864eb562618ccaf9b1"
 
 S = "${WORKDIR}/git"
 
