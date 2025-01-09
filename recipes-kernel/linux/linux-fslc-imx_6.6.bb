@@ -43,6 +43,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # Additional commits may exist to better acommodate yocto builds.
 #
 # $ git log --oneline  --no-merges v6.6.52.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# - 93b9fc75becd nvmem: imx-ocotp-fsb-s400: BUG: Fix the word count
 # - 090d101928fc tty: vt: conmakehash: Don't mention the full path of the input in output
 # - d16eb5ced32f arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
 # - d39502c0dea9 imx:dts:imx8mm-evkb: fix the pmic name to avoid duplicated label error
@@ -62,7 +63,7 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.2.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "113a097d3614e3dce802828ae439be23c5e4c931"
+SRCREV = "657504d5644f24a41822960ed31b883062ca30c9"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
