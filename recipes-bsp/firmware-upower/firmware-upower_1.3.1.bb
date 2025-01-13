@@ -10,7 +10,6 @@ S = "${WORKDIR}/${PN}-${PV}"
 
 inherit fsl-eula-unpack pkgconfig deploy
 
-SRC_URI[md5sum] = "65f28bd8ace3ce7116cb15685bfe1cd0"
 SRC_URI[sha256sum] = "1df3a03d69feb38a450ee63abc7713d78cf6339988476e4c9f95ebbf63790f66"
 
 do_configure[noexec] = "1"
