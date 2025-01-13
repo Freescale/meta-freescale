@@ -637,7 +637,7 @@ IMAGE_FSTYPES ?= "${SOC_DEFAULT_IMAGE_FSTYPES}"
 
 IMAGE_BOOT_FILES ?= " \
     ${KERNEL_IMAGETYPE} \
-    ${@make_dtb_boot_files(d)} \
+    ${@bb.utils.contains('KERNEL_IMAGETYPE', 'fitImage', '', '${@make_dtb_boot_files(d)}', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', '${OPTEE_BOOT_IMAGE}', '', d)} \
 "
 
