@@ -7,8 +7,8 @@ LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837" 
 
 DEPENDS = "libdrm ${LIBGAL_IMX}"
-LIBGAL_IMX              = "libgal-imx"
-LIBGAL_IMX:mx95-nxp-bsp = ""
+LIBGAL_IMX        = ""
+LIBGAL_IMX:imxviv = "libgal-imx"
 
 PROVIDES += "virtual/libg2d"
 
@@ -19,8 +19,8 @@ IMX_SRCREV_ABBREV = "7943590"
 IMX_SRC_URI_NAME = "v1"
 SRC_URI[v1.sha256sum] = "bf347f53e8f390a0554c0db76707819bb50cf4aaa564a9c86821ae9add26e113"
 
-IMX_SRCREV_ABBREV:mx95-nxp-bsp = "7943590"
-IMX_SRC_URI_NAME:mx95-nxp-bsp = "v2"
+IMX_SRCREV_ABBREV:imxmali = "7943590"
+IMX_SRC_URI_NAME:imxmali = "v2"
 SRC_URI[v2.sha256sum] = "c0a87908cd04c208659423746a57eaee6a30b4d680ec871f3495ad4a2acb5076"
 
 S = "${WORKDIR}/${IMX_BIN_NAME}"
