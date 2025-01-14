@@ -13,8 +13,8 @@ i.MX Family Reference Boards. It includes support for many IPs such as GPU, VPU 
 require recipes-kernel/linux/linux-imx.inc
 
 SRCBRANCH = "lf-6.6.y"
-LOCALVERSION = "-6.6.36-2.1.0"
-SRCREV = "d23d64eea5111e1607efcce1d601834fceec92cb"
+LOCALVERSION = "-6.6.52-2.2.0"
+SRCREV = "e0f9e2afd4cff3f02d71891244b4aa5899dfc786"
 
 SRC_URI += " \
     file://0001-tty-vt-conmakehash-Don-t-mention-the-full-path-of-th.patch \
@@ -27,7 +27,7 @@ SRC_URI += " \
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.36"
+LINUX_VERSION = "6.6.52"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
