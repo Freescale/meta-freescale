@@ -13,24 +13,20 @@ S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig perlnative python3native
 
-PACKAGECONFIG_BACKEND:mx6-nxp-bsp = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'waffle', \
-       bb.utils.contains('DISTRO_FEATURES',     'x11',    'x11', \
-                                                             '', d), d)} \
-"
-PACKAGECONFIG_BACKEND:mx7-nxp-bsp  = "${PACKAGECONFIG_BACKEND:mx6-nxp-bsp}"
-PACKAGECONFIG_BACKEND:mx8-nxp-bsp  = "waffle"
-PACKAGECONFIG_BACKEND:mx95-nxp-bsp = "waffle"
-
-PACKAGECONFIG_GPU2D              = ""
-PACKAGECONFIG_GPU2D:imxgpu2d     = "vivante"
-PACKAGECONFIG_GPU2D:mx95-nxp-bsp = ""
-
 PACKAGECONFIG ??= " \
     egl \
     ${PACKAGECONFIG_BACKEND} \
     ${PACKAGECONFIG_GPU2D} \
 "
+PACKAGECONFIG_BACKEND = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'waffle', \
+       bb.utils.contains('DISTRO_FEATURES',     'x11',    'x11', \
+                                                             '', d), d)} \
+"
+PACKAGECONFIG_GPU2D              = ""
+PACKAGECONFIG_GPU2D:imxgpu2d     = "vivante"
+PACKAGECONFIG_GPU2D:mx95-nxp-bsp = ""
+
 
 PACKAGECONFIG[egl] = "-DENABLE_EGL=ON,-DENABLE_EGL=OFF,virtual/egl"
 PACKAGECONFIG[gui] = "-DENABLE_GUI=ON,-DENABLE_GUI=OFF"
