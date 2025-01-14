@@ -23,10 +23,8 @@ PACKAGECONFIG_BACKEND = " \
        bb.utils.contains('DISTRO_FEATURES',     'x11',    'x11', \
                                                              '', d), d)} \
 "
-PACKAGECONFIG_GPU2D              = ""
-PACKAGECONFIG_GPU2D:imxgpu2d     = "vivante"
-PACKAGECONFIG_GPU2D:mx95-nxp-bsp = ""
-
+PACKAGECONFIG_GPU2D                 = ""
+PACKAGECONFIG_GPU2D:imxviv:imxgpu2d = "vivante"
 
 PACKAGECONFIG[egl] = "-DENABLE_EGL=ON,-DENABLE_EGL=OFF,virtual/egl"
 PACKAGECONFIG[gui] = "-DENABLE_GUI=ON,-DENABLE_GUI=OFF"
