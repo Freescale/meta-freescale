@@ -554,12 +554,7 @@ SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT:imxgpu = "1"
 #   1 - machine has Vivante GPU driver support
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ?= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
 
-# Graphics libraries
-PREFERRED_PROVIDER_virtual/egl      ?= "mesa"
-PREFERRED_PROVIDER_virtual/libgl    ?= "mesa"
-PREFERRED_PROVIDER_virtual/libgles1 ?= "mesa"
-PREFERRED_PROVIDER_virtual/libgles2 ?= "mesa"
-
+# Override graphics for i.MX GPU
 PREFERRED_PROVIDER_virtual/egl:imxgpu        ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl:imxgpu      ?= "mesa-gl"
 PREFERRED_PROVIDER_virtual/mesa:imxgpu       ?= "mesa-gl"
