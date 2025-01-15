@@ -583,7 +583,7 @@ PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
 PREFERRED_VERSION_wayland-protocols:imx-nxp-bsp  ??= "1.32.imx"
 
-PREFERRED_VERSION_xwayland:imx-nxp-bsp ??= "23.1.1.imx"
+PREFERRED_VERSION_xwayland:imx-nxp-bsp ??= "23.2.5.imx"
 
 # Use i.MX libdrm Version
 PREFERRED_VERSION_libdrm:imx-nxp-bsp ??= "2.4.116.imx"
