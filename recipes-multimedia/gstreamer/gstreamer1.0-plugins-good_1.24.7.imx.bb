@@ -94,11 +94,11 @@ FILES:${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
 DEFAULT_PREFERENCE = "-1"
 
 LIC_FILES_CHKSUM = " \
-    file://LICENSE.txt;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+    file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770 \
     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe \
 "
 # Enable pulsesink in gstreamer
-PACKAGECONFIG:append = "${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)}"
+PACKAGECONFIG:append = "${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', ' pulseaudio', '', d)}"
 
 # fb implementation of v4l2 uses libdrm
 DEPENDS += "${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
@@ -111,20 +111,9 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plu
 
 SRC_URI:prepend = "${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
-SRCREV = "d8727edd56536a5c39de7905f073fce61896c0af"
+SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
+SRCREV = "33b2732b873758a302064818b35dcad41b5bbc14"
 
-# set 32bit compile timer for 32-bit platform
-GLIBC_64BIT_TIME_FLAGS:mx6-nxp-bsp = ""
-GLIBC_64BIT_TIME_FLAGS:mx7-nxp-bsp = ""
-INSANE_SKIP:mx6-nxp-bsp:append = " 32bit-time"
-INSANE_SKIP:mx7-nxp-bsp:append = " 32bit-time"
-
-# GCC-14 otherwise errors out
-CFLAGS += " \
-    -Wno-error=implicit-function-declaration \
-    -Wno-error=incompatible-pointer-types \
-"
 S = "${WORKDIR}/git"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

@@ -34,11 +34,11 @@ RREPLACES:${PN}  = "gst1.0-fsl-plugin"
 RPROVIDES:${PN}  = "gst1.0-fsl-plugin"
 RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
-PV = "4.9.1+git${SRCPV}"
+PV = "4.9.2+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
-SRCREV = "87135d5f084b6c61efa6671cddc3a5509ab11640"
+SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
+SRCREV = "ef9c1a080e739e6f0be878148d9f4a050dc83bec"
 
 S = "${WORKDIR}/git"
 
@@ -53,15 +53,6 @@ PLATFORM:mx7-nxp-bsp= "MX7D"
 PLATFORM:mx7ulp-nxp-bsp= "MX7ULP"
 PLATFORM:mx8-nxp-bsp = "MX8"
 PLATFORM:mx9-nxp-bsp = "MX9"
-
-CFLAGS:append:toolchain-clang = " -Wno-implicit-int -Wno-int-conversion -Wno-incompatible-function-pointer-types"
-# GCC-14 otherwise errors out
-CFLAGS += " \
-    -Wno-error=int-conversion \
-    -Wno-error=incompatible-pointer-types \
-    -Wno-error=return-mismatch \
-    -Wno-error=implicit-function-declaration \
-"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OEMESON = "-Dplatform=${PLATFORM} \
