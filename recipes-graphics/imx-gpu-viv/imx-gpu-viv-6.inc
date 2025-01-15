@@ -187,7 +187,7 @@ IMX_SOC:mx8mq-nxp-bsp  = "mx8mq"
 IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
 IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
-LIBVULKAN_API_VERSION   = "1.3.239"
+LIBVULKAN_API_VERSION   = "1.3.204"
 
 do_install () {
     install -d ${D}${libdir}
