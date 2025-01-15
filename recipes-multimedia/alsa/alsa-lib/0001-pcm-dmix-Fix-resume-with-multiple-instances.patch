@@ -1,0 +1,64 @@
+From 2adc30e9838daf62312f32a0a93129d64b1668b3 Mon Sep 17 00:00:00 2001
+From: Takashi Iwai <tiwai@suse.de>
+Date: Fri, 6 Sep 2024 10:05:56 +0200
+Subject: [PATCH] pcm: dmix: Fix resume with multiple instances
+
+Upstream-Status: Pending
+
+The fix for PCM dmix suspend/resume checks spcm->info bit of
+SND_PCM_INFO_RESUME for applying a workaround for drivers with the
+full resume support.  This assumed that scpm->info is exposed from the
+underlying slave PCM device.
+
+The above is true for the first opened instance, but for the second
+opened instance, it's a copy from the saved data in shmem.  And, we
+dropped SND_PCM_INFO_RESUME bit there to assure not to expose the full
+resume capability to applications.  This resulted in the
+inconsistencies, and when the second instance is resumed at first, it
+misses the snd_pcm_resume() call, hence the driver doesn't react
+properly any longer.
+
+For addressing it, we keep SND_PCM_INFO_RESUME bit in shmptr->s.info
+bits as is, while dropping the bit exposed to apps in
+snd_pcm_direct_hw_refine() and *_hw_params() callbacks.
+
+Fixes: 6d1d620eadf3 ("pcm: dmix: resume workaround for buggy driver")
+Reported-and-tested-by: Chancel Liu <chancel.liu@nxp.com>
+Closes: https://lore.kernel.org/DB9PR04MB94988752ED7C43B399E0BC00E3942@DB9PR04MB9498.eurprd04.prod.outlook.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ src/pcm/pcm_direct.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/pcm/pcm_direct.c b/src/pcm/pcm_direct.c
+index e53e5923..17e677f6 100644
+--- a/src/pcm/pcm_direct.c
++++ b/src/pcm/pcm_direct.c
+@@ -1018,6 +1018,7 @@ int snd_pcm_direct_hw_refine(snd_pcm_t *pcm, snd_pcm_hw_params_t *params)
+ 	}
+ 	dshare->timer_ticks = hw_param_interval(params, SND_PCM_HW_PARAM_PERIOD_SIZE)->max / dshare->slave_period_size;
+ 	params->info = dshare->shmptr->s.info;
++	params->info &= ~SND_PCM_INFO_RESUME;
+ #ifdef REFINE_DEBUG
+ 	snd_output_puts(log, "DMIX REFINE (end):\n");
+ 	snd_pcm_hw_params_dump(params, log);
+@@ -1031,6 +1032,7 @@ int snd_pcm_direct_hw_params(snd_pcm_t *pcm, snd_pcm_hw_params_t * params)
+ 	snd_pcm_direct_t *dmix = pcm->private_data;
+ 
+ 	params->info = dmix->shmptr->s.info;
++	params->info &= ~SND_PCM_INFO_RESUME;
+ 	params->rate_num = dmix->shmptr->s.rate;
+ 	params->rate_den = 1;
+ 	params->fifo_size = 0;
+@@ -1183,8 +1185,6 @@ static void save_slave_setting(snd_pcm_direct_t *dmix, snd_pcm_t *spcm)
+ 	COPY_SLAVE(buffer_time);
+ 	COPY_SLAVE(sample_bits);
+ 	COPY_SLAVE(frame_bits);
+-
+-	dmix->shmptr->s.info &= ~SND_PCM_INFO_RESUME;
+ }
+ 
+ #undef COPY_SLAVE
+-- 
+2.46.0
+
