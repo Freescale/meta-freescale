@@ -6,3 +6,5 @@ CFLAGS:append:imxgpu = " -DLINUX \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', '-DEGL_API_FB', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '-DWL_EGL_PLATFORM', '', d)} \
 "
+PACKAGECONFIG:append:imx-nxp-bsp = " ${PACKAGECONFIG_LIBDECOR}"
+PACKAGECONFIG_LIBDECOR ??= "libdecor"
