@@ -18,8 +18,6 @@ SRCREV = "e0f9e2afd4cff3f02d71891244b4aa5899dfc786"
 
 SRC_URI += " \
     file://0001-tty-vt-conmakehash-Don-t-mention-the-full-path-of-th.patch \
-    file://0001-lib-build_OID_registry-don-t-mention-the-full-path-o.patch \
-    file://0001-video-logo-Drop-full-path-of-the-input-filename-in-g.patch \
 "
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
