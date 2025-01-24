@@ -11,7 +11,7 @@ DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "8639837a246f8d85fba8a707c130239aeabc0a19"
+SRCREV = "90d3a52106d0b704a064ddb58d1226a60ce2c6e8"
 SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH};protocol=https"
 
 S = "${WORKDIR}/git"
