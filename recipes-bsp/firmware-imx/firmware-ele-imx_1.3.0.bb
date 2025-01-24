@@ -39,4 +39,4 @@ FILES:${PN}-ext += "${nonarch_base_libdir}/firmware/imx/ele/${SECOEXT_FIRMWARE_N
 RREPLACES:${PN} = "firmware-sentinel"
 RPROVIDES:${PN} = "firmware-sentinel"
 
-COMPATIBLE_MACHINE = "(mx8ulp-nxp-bsp|mx9-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx8ulp-generic-bsp|mx9-generic-bsp)"
