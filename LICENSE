@@ -70,7 +70,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-bsp/u-boot/u-boot-qoriq_2021.04.bb: LICENSE = "GPL-2.0-only & BSD-3-Clause & BSD-2-Clause & LGPL-2.0-only & LGPL-2.1-only"
 ./recipes-bsp/rcw/rcw_git.bb: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/isp-imx/basler-camera_4.2.2.24.0.bb: LICENSE = "Proprietary"
-./recipes-bsp/isp-imx/isp-imx_4.2.2.24.0.bb: LICENSE = "Proprietary"
+./recipes-bsp/isp-imx/isp-imx_4.2.2.24.4.bb: LICENSE = "Proprietary"
 ./recipes-bsp/inphi/inphi_git.bb: LICENSE = "NXP-Binary-EULA"
 ./recipes-bsp/boot-format/boot-format_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-bsp/imx-sc-firmware/imx-sc-firmware_1.15.0.bb: LICENSE = "Proprietary"
