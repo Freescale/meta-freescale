@@ -81,7 +81,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-core/udev/udev-rules-imx.bb: LICENSE = "MIT"
 ./recipes-core/udev/udev-rules-qoriq.bb: LICENSE = "MIT"
 ./recipes-support/opencv/opencv_4.6.0.imx.bb: LICENSE = "Apache-2.0"
-./recipes-multimedia/tinycompress/tinycompress_1.1.6.bb: LICENSE = "LGPL-2.1-only | BSD-3-Clause"
+./recipes-multimedia/tinycompress/tinycompress_1.2.5.bb: LICENSE = "LGPL-2.1-only | BSD-3-Clause"
 ./recipes-multimedia/alsa/imx-alsa-plugins_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-multimedia/imx-dsp/imx-dsp_2.1.8.bb: LICENSE = "Proprietary"
 ./recipes-multimedia/imx-dsp/imx-dsp-codec-ext_2.1.8.bb: LICENSE = "Proprietary"
