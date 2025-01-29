@@ -1,3 +1,6 @@
+PACKAGECONFIG:append:imx-nxp-bsp = " ${PACKAGECONFIG_LIBDECOR}"
+PACKAGECONFIG_LIBDECOR ??= "libdecor"
+
 # what vivante driver does libsdl2 mean? Anyway it fails with missing functions as
 # VIVANTE_Create VIVANTE_GLES_GetProcAddress VIVANTE_GLES_UnloadLibrary ...
 EXTRA_OECMAKE:append:imxgpu = " -DSDL_VIVANTE=OFF"
