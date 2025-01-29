@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 # Create or clear the LICENSE file
 echo "# License Information" > LICENSE
 echo "" >> LICENSE
@@ -7,7 +9,7 @@ echo "This file lists all licenses used by recipes in the meta-freescale layer."
 echo "" >> LICENSE
 
 # Find all .bb and .inc files and extract license information
-find . -type f \( -name "*.bb" -o -name "*.inc" \) | while read -r file; do
+find . -type f \( -name "*.bb" -o -name "*.inc" \) | sort | while read -r file; do
     # Extract the license line from each recipe file, if it exists
     license_line=$(grep -i "^LICENSE" "$file")
     if [ -n "$license_line" ]; then
