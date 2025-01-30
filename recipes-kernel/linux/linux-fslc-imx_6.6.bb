@@ -28,12 +28,12 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.6.54
+#    tag: v6.6.74
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.6.23-2.0.0
+#    tag: lf-6.6.52-2.2.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -42,7 +42,8 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.6.52.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# $ git log --oneline  --no-merges v6.6.74.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# - 3d6392b96bf1 Revert "LF-4131 iio: gyro: fxas21002c: Fix raw data is not updated in trigger/buffer"
 # - 93b9fc75becd nvmem: imx-ocotp-fsb-s400: BUG: Fix the word count
 # - 090d101928fc tty: vt: conmakehash: Don't mention the full path of the input in output
 # - d16eb5ced32f arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
@@ -63,14 +64,14 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.2.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "657504d5644f24a41822960ed31b883062ca30c9"
+SRCREV = "92bdc37231596ea6b737cf897cea98c356b9d248"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.69"
+LINUX_VERSION = "6.6.74"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
