@@ -94,6 +94,7 @@ UBOOT_ENTRYPOINT:mx6ulz-generic-bsp ?= "0x80008000"
 UBOOT_ENTRYPOINT:mx7-generic-bsp    ?= "0x80008000"
 UBOOT_ENTRYPOINT:mx7ulp-generic-bsp ?= "0x60008000"
 UBOOT_ENTRYPOINT:mx8m-generic-bsp   ?= "0x40480000"
+UBOOT_ENTRYPOINT:mx93-generic-bsp   ?= "0x80400000"
 UBOOT_ENTRYPOINT:vf-generic-bsp     ?= "0x80008000"
 
 # Some SoC can utilize the boot container provided by U-Boot,
