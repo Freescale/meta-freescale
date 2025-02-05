@@ -31,12 +31,12 @@ PROVIDES += " \
 "
 EXTRA_PROVIDES = " \
     ${PROVIDES_OPENCL} \
-    ${PROVIDES_OPENGLES3} \
     ${PROVIDES_OPENVX} \
 "
 EXTRA_PROVIDES:append:imxgpu3d = " \
     virtual/libgles1 \
     virtual/libgles2 \
+    virtual/libgles3 \
 "
 EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
     virtual/libgbm \
@@ -50,9 +50,6 @@ PROVIDES_OPENCL = " \
 "
 PROVIDES_OPENCL:mx7-nxp-bsp   = ""
 PROVIDES_OPENCL:mx8mm-nxp-bsp = ""
-
-PROVIDES_OPENGLES3               = ""
-PROVIDES_OPENGLES3:mx8-nxp-bsp   = "virtual/libgles3"
 
 # Note: OpenVX is fully supported on i.MX 8 QuadMax and 8 QuadPlus.
 # However, only limited support is provided on other i.MX 8 machines
