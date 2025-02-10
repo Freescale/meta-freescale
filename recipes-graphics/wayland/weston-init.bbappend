@@ -92,3 +92,10 @@ do_install:append() {
         sed -i -e "s/^xwayland=true/#xwayland=true/g" ${D}${sysconfdir}/xdg/weston/weston.ini
     fi
 }
+
+do_install:append:mx93-nxp-bsp() {
+    # imx-pxp-g2d needs root access to some devices
+    if [ "${@bb.utils.contains('PACKAGECONFIG', 'use-g2d', 'yes', 'no', d)}" = "yes" ]; then
+        sed -i -e "s/User=weston/User=root/g" ${D}${systemd_system_unitdir}/weston.service
+    fi
+}
