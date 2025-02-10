@@ -23,6 +23,9 @@ DEPENDS += " \
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
+#
+# Linux kernel stable 6.12.13 changelog:
+# https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.12.13
 LINUX_VERSION = "6.12.13"
 
 KBRANCH = "6.12.x+fslc"
