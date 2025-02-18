@@ -44,7 +44,10 @@ do_install() {
 
     oe_runmake install INSTALLDIR=${D}${nonarch_base_libdir}/firmware/nxp
 
-
+    # Upstream SDIO8997 and IW416 driver firmwares are located on mrvl folder
+    install -d ${D}${nonarch_base_libdir}/firmware/mrvl
+    ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sdiouart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin
+    ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sdiouartiw416_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/mrvl/sdiouartiw416_combo_v0.bin
 }
 
 PACKAGES =+ " \
@@ -105,6 +108,7 @@ RREPLACES:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
 RCONFLICTS:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
 
 FILES:${PN}-nxp8997-sdio = " \
+    ${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin \
     ${nonarch_base_libdir}/firmware/nxp/sdio*8997* \
 "
 RDEPENDS:${PN}-nxp8997-sdio += "${PN}-nxp8997-common"
@@ -139,6 +143,7 @@ RREPLACES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 RCONFLICTS:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 
 FILES:${PN}-nxpiw416-sdio = " \
+    ${nonarch_base_libdir}/firmware/mrvl/sdiouartiw416_combo_v0.bin \
     ${nonarch_base_libdir}/firmware/nxp/*iw416* \
 "
 RDEPENDS:${PN}-nxpiw416-sdio += "${PN}-nxp-common"
