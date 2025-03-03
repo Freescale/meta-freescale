@@ -14,6 +14,7 @@ SRCREV = "aa4bc52d08c342df83e3c576e2c108d7c8816e0e"
 SRCBRANCH = "2025.01+fslc"
 
 PV = "2025.01+fslc+git${SRCPV}"
+CVE_PRODUCT = "denx:u-boot"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
