@@ -404,6 +404,8 @@ SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS:append = " \
     imx-codec->virtual/imxvpu \
     imx-test->virtual/imxvpu \
 "
+# Mcore installed
+MACHINE_EXTRA_RRECOMMENDS:append:mx7d-nxp-bsp  = " imx-m4-demos"
 
 # Firmware used for boot.
 IMX_EXTRA_FIRMWARE                   ?= ""
