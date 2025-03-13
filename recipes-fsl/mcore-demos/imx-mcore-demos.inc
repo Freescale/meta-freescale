@@ -39,19 +39,19 @@ S = "${WORKDIR}/${SOC}-${MCORE_TYPE}-demo-${PV}"
 
 SCR = "SCR-${SOC}-${MCORE_TYPE}-demo.txt"
 
+MCORE_DEMO_FILE_EXTENSION               ?= "bin"
+MCORE_DEMO_FILE_EXTENSION:mx7ulp-nxp-bsp = "img"
+
 do_install () {
     install -d ${D}${nonarch_base_libdir}/firmware
     install -m 0644 ${S}/*.elf ${D}${nonarch_base_libdir}/firmware
-    install -m 0644 ${S}/*.bin ${D}${nonarch_base_libdir}/firmware
+    install -m 0644 ${S}/*.${MCORE_DEMO_FILE_EXTENSION} ${D}${nonarch_base_libdir}/firmware
 }
-
-DEPLOY_FILE_EXT       ?= "bin"
-DEPLOY_FILE_EXT:mx7ulp-nxp-bsp = "img"
 
 do_deploy () {
     # Install the demo binaries
     install -d ${DEPLOYDIR}/mcore-demos
-    install -m 0644 ${S}/*.${DEPLOY_FILE_EXT} ${DEPLOYDIR}/mcore-demos/
+    install -m 0644 ${S}/*.${MCORE_DEMO_FILE_EXTENSION} ${DEPLOYDIR}/mcore-demos/
 }
 
 addtask deploy after do_install
