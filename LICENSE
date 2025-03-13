@@ -85,7 +85,6 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-extended/testfloat/testfloat_2a.bb: LICENSE = "TestFloat"
 ./recipes-extended/tsntool/tsntool_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-fsl/images/fsl-image-mfgtool-initramfs.bb: LICENSE = "MIT"
-./recipes-fsl/mcore-demos/imx-m4-demos_1.0.1.bb: LICENSE = "Proprietary"
 ./recipes-fsl/mcore-demos/imx-mcore-demos.inc: LICENSE = "Proprietary"
 ./recipes-fsl/packagegroups/packagegroup-fsl-mfgtool.bb: LICENSE = "MIT"
 ./recipes-graphics/drm/libdrm_2.4.116.imx.bb: LICENSE = "MIT"
