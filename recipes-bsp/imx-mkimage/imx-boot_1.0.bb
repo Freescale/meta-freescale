@@ -38,7 +38,7 @@ do_compile[depends] += " \
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
 
-OEI_ENABLE = "${@bb.utils.contains('DEPENDS', 'imx-oei', 'YES', 'NO', d)}"
+OEI_ENABLE = "${@bb.utils.contains('DEPENDS', 'virtual/imx-oei', 'YES', 'NO', d)}"
 OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
