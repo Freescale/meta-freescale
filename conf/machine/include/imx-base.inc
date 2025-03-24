@@ -414,7 +414,8 @@ IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx91-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
-IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager imx-oei"
+PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
+IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
