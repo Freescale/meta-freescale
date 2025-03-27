@@ -1,27 +1,26 @@
-require optee-os-fslc.inc
+# Copied from meta-imx/meta-imx-bsp/recipes-security/optee/optee-os-imx.inc.
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-scarthgap/imx-6.6.52-2.2.0.xml#L37
 
-SRC_URI = "git://github.com/nxp-imx/imx-optee-os.git;protocol=https;branch=${SRCBRANCH}"
+require optee-os-common-fslc-imx.inc
 
-# The platform flavor corresponds to the Yocto machine without the leading 'i'.
-PLATFORM_FLAVOR                   = "${@d.getVar('MACHINE')[1:]}"
-PLATFORM_FLAVOR:imx6qdlsabresd    = "mx6qsabresd"
-PLATFORM_FLAVOR:imx6qdlsabreauto  = "mx6qsabreauto"
-PLATFORM_FLAVOR:imx6qpdlsolox     = "mx6qsabresd"
-PLATFORM_FLAVOR:mx6ul-nxp-bsp     = "mx6ulevk"
-PLATFORM_FLAVOR:mx6ull-nxp-bsp    = "mx6ullevk"
-PLATFORM_FLAVOR:mx6ulz-nxp-bsp    = "mx6ulzevk"
-PLATFORM_FLAVOR:mx8mq-nxp-bsp     = "mx8mqevk"
-PLATFORM_FLAVOR:mx8mm-nxp-bsp     = "mx8mmevk"
-PLATFORM_FLAVOR:mx8mn-nxp-bsp     = "mx8mnevk"
-PLATFORM_FLAVOR:mx8mnul-nxp-bsp   = "mx8mnevk"
-PLATFORM_FLAVOR:mx8mp-nxp-bsp     = "mx8mpevk"
-PLATFORM_FLAVOR:mx8mpul-nxp-bsp   = "mx8mpevk"
-PLATFORM_FLAVOR:mx8qm-nxp-bsp     = "mx8qmmek"
-PLATFORM_FLAVOR:mx8qxp-nxp-bsp    = "mx8qxpmek"
-PLATFORM_FLAVOR:mx8dx-nxp-bsp     = "mx8dxmek"
-PLATFORM_FLAVOR:mx8dxl-nxp-bsp    = "mx8dxlevk"
-PLATFORM_FLAVOR:mx8ulp-nxp-bsp    = "mx8ulpevk"
-PLATFORM_FLAVOR:mx93-nxp-bsp      = "mx93evk"
-PLATFORM_FLAVOR:mx95-nxp-bsp      = "mx95evk"
+do_compile:arm() {
+    oe_runmake -C ${S} all uTee
+}
 
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+do_install:append () {
+    # Install embedded TAs
+    install -d ${D}${nonarch_base_libdir}/optee_armtz/
+    install -m 444 ${B}/ta/*/*.ta ${D}${nonarch_base_libdir}/optee_armtz/
+}
+
+do_deploy:append() {
+    cp ${B}/core/tee-raw.bin ${DEPLOYDIR}/${MLPREFIX}optee/tee.${PLATFORM_FLAVOR}.bin
+    ln -sf ${MLPREFIX}optee/tee.${PLATFORM_FLAVOR}.bin ${DEPLOYDIR}/tee.bin
+}
+
+do_deploy:append:arm() {
+    cp ${B}/core/uTee ${DEPLOYDIR}/${MLPREFIX}optee/uTee-${OPTEE_BIN_EXT}
+    ln -sf ${MLPREFIX}optee/uTee-${OPTEE_BIN_EXT} ${DEPLOYDIR}/uTee-${OPTEE_BIN_EXT}
+}
+
+FILES:${PN} += "${nonarch_base_libdir}/optee_armtz"
