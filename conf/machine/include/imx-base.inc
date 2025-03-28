@@ -130,6 +130,7 @@ IMX_DEFAULT_ATF_PROVIDER ??= "imx-atf"
 SOC_ATF_BOOT_UART_BASE                    = ""
 
 SOC_ATF_BOOT_UART_BASE:mx8m-generic-bsp   = "0x30890000"
+SOC_ATF_BOOT_UART_BASE:mx8mq-generic-bsp  = "0x30860000"
 ATF_BOOT_UART_BASE                       ?= "${SOC_ATF_BOOT_UART_BASE}"
 
 PREFERRED_PROVIDER_virtual/xserver      = "xserver-xorg"
