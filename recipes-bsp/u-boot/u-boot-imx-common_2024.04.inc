@@ -7,6 +7,7 @@ SRC_URI = "git://github.com/nxp-imx/uboot-imx.git;protocol=https;branch=${SRCBRA
 SRCBRANCH = "lf_v2024.04"
 LOCALVERSION ?= "-imx_v2024.04_6.6.52-2.2.0"
 SRCREV = "6c4545203d123c246c5d7995f2893959506d28e0"
+CVE_PRODUCT = "nxp:uboot_secondary_program_loader denx:u-boot"
 
 DEPENDS += " \
     bc-native \

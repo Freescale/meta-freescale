@@ -184,7 +184,6 @@ IMX_SOC_REV:mx8dx-generic-bsp  ??= "C0"
 IMX_SOC_REV:mx8ulp-generic-bsp ??= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
                                                            'A2', d)}"
-IMX_SOC_REV:mx91-generic-bsp   ??= "A0"
 IMX_SOC_REV:mx93-generic-bsp   ??= "A1"
 
 IMX_SOC_REV_LOWER   = "${@d.getVar('IMX_SOC_REV').lower()}"
@@ -606,12 +605,12 @@ PREFERRED_VERSION_vulkan-tools:imxvulkan             ??= "1.3.275.0.imx"
 PREFERRED_VERSION_vulkan-validation-layers:imxvulkan ??= "1.3.275.0.imx"
 
 # Use i.MX optee Version
-PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "4.2.0.imx"
-PREFERRED_VERSION_optee-os:mx9-nxp-bsp     ??= "4.2.0.imx"
-PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "4.2.0.imx"
-PREFERRED_VERSION_optee-client:mx9-nxp-bsp ??= "4.2.0.imx"
-PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "4.2.0.imx"
-PREFERRED_VERSION_optee-test:mx9-nxp-bsp   ??= "4.2.0.imx"
+PREFERRED_VERSION_optee-os:mx8-nxp-bsp     ??= "4.4.0.imx"
+PREFERRED_VERSION_optee-os:mx9-nxp-bsp     ??= "4.4.0.imx"
+PREFERRED_VERSION_optee-client:mx8-nxp-bsp ??= "4.4.0.imx"
+PREFERRED_VERSION_optee-client:mx9-nxp-bsp ??= "4.4.0.imx"
+PREFERRED_VERSION_optee-test:mx8-nxp-bsp   ??= "4.4.0.imx"
+PREFERRED_VERSION_optee-test:mx9-nxp-bsp   ??= "4.4.0.imx"
 
 # Use i.MX opencv Version
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.6.0.imx"
