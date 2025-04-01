@@ -1,0 +1,47 @@
+name: Update LICENSE file
+
+on:
+  push:
+    branches:
+      - master
+      - walnascar
+      - styhead
+      - scarthgap
+      - nanbield
+      - mickledore
+      - kirkstone
+      - honister
+      - hardknott
+      - gatesgarth
+      - dunfell
+    paths:
+      - "**/*.bb"
+      - "**/*.inc"
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight
+  workflow_dispatch: # Allows manual run
+
+jobs:
+  update-license:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run license generation script
+        run: |
+          ./scripts/generate-license-file
+
+      - name: Commit and push LICENSE file
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add LICENSE
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Auto-update LICENSE file with current recipe licenses"
+            git push
+          fi
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
