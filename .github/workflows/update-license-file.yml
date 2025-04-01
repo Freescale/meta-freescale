@@ -2,6 +2,18 @@ name: Update LICENSE file
 
 on:
   push:
+    branches:
+      - master
+      - walnascar
+      - styhead
+      - scarthgap
+      - nanbield
+      - mickledore
+      - kirkstone
+      - honister
+      - hardknott
+      - gatesgarth
+      - dunfell
     paths:
       - "**/*.bb"
       - "**/*.inc"
