@@ -1,0 +1,1904 @@
+diff --git a/Makefile b/Makefile
+index 024e977..d61798e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ #  File: Makefile
+ #
+-#  Copyright 2008-2024 NXP
++#  Copyright 2008-2025 NXP
+ #
+ #  This software file (the File) is distributed by NXP
+ #  under the terms of the GNU General Public License Version 2, June 1991
+@@ -188,7 +188,7 @@ APPDIR= $(shell if test -d "mapp"; then echo mapp; fi)
+ #############################################################################
+ 
+ 	ccflags-y += -I$(KERNELDIR)/include
+-	ccflags-y += -DMLAN_RELEASE_VERSION='"505.p4"'
++	ccflags-y += -DMLAN_RELEASE_VERSION='"505.p7.1"'
+ 
+ 	ccflags-y += -DFPNUM='"92"'
+ 
+diff --git a/mlan/mlan_cmdevt.c b/mlan/mlan_cmdevt.c
+index 49c645e..dc0c8ba 100644
+--- a/mlan/mlan_cmdevt.c
++++ b/mlan/mlan_cmdevt.c
+@@ -4,7 +4,7 @@
+  *  @brief This file contains the handling of CMD/EVENT in MLAN
+  *
+  *
+- *  Copyright 2009-2024 NXP
++ *  Copyright 2009-2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -5272,6 +5272,17 @@ mlan_status wlan_adapter_init_cmd(pmlan_adapter pmadapter)
+ 		}
+ 	}
+ #endif
++        if (pmpriv && (pmadapter->init_para.disable_11h_tpc)) {
++                /* Send command to FW to disable 11h tpc */
++                ret = wlan_prepare_cmd(pmpriv, HostCmd_CMD_802_11_SNMP_MIB,
++                                       HostCmd_ACT_GEN_SET,
++                                       Dot11h_disable_tpc_i, MNULL,
++                                       &pmadapter->init_para.disable_11h_tpc);
++                if (ret) {
++                        ret = MLAN_STATUS_FAILURE;
++                        goto done;
++                }
++        }
+ #ifdef STA_SUPPORT
+ 	if (pmpriv_sta && (pmadapter->ps_mode == Wlan802_11PowerModePSP)) {
+ 		ret = wlan_prepare_cmd(pmpriv_sta,
+diff --git a/mlan/mlan_decl.h b/mlan/mlan_decl.h
+index d1367d6..97bc08f 100644
+--- a/mlan/mlan_decl.h
++++ b/mlan/mlan_decl.h
+@@ -3,7 +3,7 @@
+  *  @brief This file declares the generic data structures and APIs.
+  *
+  *
+- *  Copyright 2008-2022, 2024 NXP
++ *  Copyright 2008-2022, 2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -2782,6 +2782,7 @@ typedef struct _mlan_device {
+ 	t_u32 max_tx_pending;
+ 	t_u16 tx_budget;
+ 	t_u8 mclient_scheduling;
++	t_u8 disable_11h_tpc;
+ } mlan_device, *pmlan_device;
+ 
+ /** MLAN API function prototype */
+diff --git a/mlan/mlan_fw.h b/mlan/mlan_fw.h
+index 6ce0451..df8efa6 100644
+--- a/mlan/mlan_fw.h
++++ b/mlan/mlan_fw.h
+@@ -5,7 +5,7 @@
+  *  in MLAN module.
+  *
+  *
+- *  Copyright 2008-2024 NXP
++ *  Copyright 2008-2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -1674,11 +1674,14 @@ typedef MLAN_PACK_START struct _RxPD {
+ 	t_u32 rx_info;
+ 
+ 	/** Reserved */
+-	t_u8 reserved3[8];
++	t_u8 reserved3[7];
++	t_u8 rx_pkt_flags;
+ 	t_u8 ta_mac[6];
+ 	t_u8 reserved4[2];
+ } MLAN_PACK_END RxPD, *PRxPD;
+ 
++#define RX_PKT_FLAG_MEF_MATCH_PKT MBIT(0)
++
+ /** IEEEtypes_FrameCtl_t*/
+ #ifdef BIG_ENDIAN_SUPPORT
+ typedef MLAN_PACK_START struct _IEEEtypes_FrameCtl_t {
+@@ -3686,6 +3689,7 @@ typedef enum _SNMP_MIB_INDEX {
+ 	StopDeauth_i = 44,
+ 	Dot11H_fakeRadar = 45,
+ 	ChanTrackParam_i = 46,
++	Dot11h_disable_tpc_i = 47,
+ } SNMP_MIB_INDEX;
+ 
+ /** max SNMP buf size */
+diff --git a/mlan/mlan_join.c b/mlan/mlan_join.c
+index f4c8860..34fe4e7 100644
+--- a/mlan/mlan_join.c
++++ b/mlan/mlan_join.c
+@@ -7,7 +7,7 @@
+  *  to the firmware.
+  *
+  *
+- *  Copyright 2008-2024 NXP
++ *  Copyright 2008-2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -1046,6 +1046,7 @@ mlan_status wlan_cmd_802_11_associate(mlan_private *pmpriv,
+ 	t_u32 rates_size;
+ 	t_u16 tmp_cap;
+ 	t_u8 *pos;
++	IEEEtypes_CapInfo_t *pcap_info;
+ 	t_u8 ft_akm = 0;
+ 	t_u8 oper_class;
+ 	t_u8 oper_class_flag = MFALSE;
+@@ -1524,6 +1525,11 @@ mlan_status wlan_cmd_802_11_associate(mlan_private *pmpriv,
+ 	memcpy_ext(pmadapter, &tmp_cap, &pbss_desc->cap_info,
+ 		   sizeof(passo->cap_info), sizeof(tmp_cap));
+ 
++        /* retain spectrum_mgmt capability */
++        pcap_info = &passo->cap_info;
++        if (pcap_info->spectrum_mgmt)
++                SPECTRUM_MGMT_ENABLED(tmp_cap);
++
+ 	if (pmpriv->config_bands == BAND_B)
+ 		SHORT_SLOT_TIME_DISABLED(tmp_cap);
+ 
+diff --git a/mlan/mlan_main.h b/mlan/mlan_main.h
+index 2e41d37..258bd1f 100644
+--- a/mlan/mlan_main.h
++++ b/mlan/mlan_main.h
+@@ -5,7 +5,7 @@
+  *  in MLAN module.
+  *
+  *
+- *  Copyright 2008-2024 NXP
++ *  Copyright 2008-2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -2042,6 +2042,7 @@ typedef struct _mlan_init_para {
+ 	t_u16 tx_budget;
+ 	t_u8 mclient_scheduling;
+ 	t_u32 reject_addba_req;
++	t_u8 disable_11h_tpc;
+ } mlan_init_para, *pmlan_init_para;
+ 
+ #ifdef SDIO
+diff --git a/mlan/mlan_pcie.c b/mlan/mlan_pcie.c
+index 3575a9a..c29fb6e 100644
+--- a/mlan/mlan_pcie.c
++++ b/mlan/mlan_pcie.c
+@@ -3,7 +3,7 @@
+  *  @brief This file contains PCI-E specific code
+  *
+  *
+- *  Copyright 2008-2021, 2024 NXP
++ *  Copyright 2008-2021, 2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -2134,6 +2134,8 @@ static mlan_status wlan_pcie_send_data_complete(mlan_adapter *pmadapter)
+ 			ptx_bd_buf->flags = 0;
+ 			ptx_bd_buf->frag_len = 0;
+ 			ptx_bd_buf->offset = 0;
++			pcb->moal_spin_lock(pmadapter->pmoal_handle,
++					    pmadapter->pmlan_pcie_lock);
+ 			pmadapter->pcard_pcie->txbd_rdptr++;
+ 			if ((pmadapter->pcard_pcie->txbd_rdptr &
+ 			     txrx_rw_ptr_mask) == num_tx_buffs)
+@@ -2141,6 +2143,8 @@ static mlan_status wlan_pcie_send_data_complete(mlan_adapter *pmadapter)
+ 					((pmadapter->pcard_pcie->txbd_rdptr &
+ 					  txrx_rw_ptr_rollover_ind) ^
+ 					 txrx_rw_ptr_rollover_ind);
++			pcb->moal_spin_unlock(pmadapter->pmoal_handle,
++					      pmadapter->pmlan_pcie_lock);
+ 		}
+ #endif
+ #if defined(PCIE9098) || defined(PCIE9097) || defined(PCIEAW693) ||            \
+@@ -2154,9 +2158,13 @@ static mlan_status wlan_pcie_send_data_complete(mlan_adapter *pmadapter)
+ 			padma_bd_buf->flags = 0;
+ 			padma_bd_buf->pkt_size = 0;
+ 			padma_bd_buf->reserved = 0;
++			pcb->moal_spin_lock(pmadapter->pmoal_handle,
++					    pmadapter->pmlan_pcie_lock);
+ 			pmadapter->pcard_pcie->txbd_rdptr++;
+ 			pmadapter->pcard_pcie->txbd_rdptr &=
+ 				ADMA_RW_PTR_WRAP_MASK;
++			pcb->moal_spin_unlock(pmadapter->pmoal_handle,
++					      pmadapter->pmlan_pcie_lock);
+ 		}
+ #endif
+ 	}
+diff --git a/mlan/mlan_shim.c b/mlan/mlan_shim.c
+index 0752d7f..d27ab7e 100644
+--- a/mlan/mlan_shim.c
++++ b/mlan/mlan_shim.c
+@@ -3,7 +3,7 @@
+  *  @brief This file contains APIs to MOAL module.
+  *
+  *
+- *  Copyright 2008-2021, 2024 NXP
++ *  Copyright 2008-2021, 2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -474,6 +474,7 @@ mlan_status mlan_register(pmlan_device pmdevice, t_void **ppmlan_adapter)
+ #endif
+ 	pmadapter->init_para.dfs53cfg = pmdevice->dfs53cfg;
+ 	pmadapter->init_para.dfs_offload = pmdevice->dfs_offload;
++	pmadapter->init_para.disable_11h_tpc = pmdevice->disable_11h_tpc;
+ 	pmadapter->priv_num = 0;
+ 	pmadapter->priv[0] = MNULL;
+ 
+diff --git a/mlan/mlan_sta_cmd.c b/mlan/mlan_sta_cmd.c
+index 4dd1712..2e16779 100644
+--- a/mlan/mlan_sta_cmd.c
++++ b/mlan/mlan_sta_cmd.c
+@@ -5,7 +5,7 @@
+  *  it is ready.
+  *
+  *
+- *  Copyright 2008-2024 NXP
++ *  Copyright 2008-2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -242,6 +242,18 @@ static mlan_status wlan_cmd_802_11_snmp_mib(pmlan_private pmpriv,
+ 			cmd->size += sizeof(t_u16);
+ 		}
+ 		break;
++        case Dot11h_disable_tpc_i:
++                psnmp_mib->oid = wlan_cpu_to_le16((t_u16)Dot11h_disable_tpc_i);
++                if (cmd_action == HostCmd_ACT_GEN_SET) {
++                        psnmp_mib->query_type =
++                                wlan_cpu_to_le16(HostCmd_ACT_GEN_SET);
++                        psnmp_mib->buf_size = wlan_cpu_to_le16(sizeof(t_u16));
++                        ul_temp = *(t_u32 *)pdata_buf;
++                        *((t_u16 *)(psnmp_mib->value)) =
++                                wlan_cpu_to_le16((t_u16)ul_temp);
++                        cmd->size += sizeof(t_u16);
++                }
++                break;
+ 	case WwsMode_i:
+ 		psnmp_mib->oid = wlan_cpu_to_le16((t_u16)WwsMode_i);
+ 		if (cmd_action == HostCmd_ACT_GEN_SET) {
+diff --git a/mlan/mlan_sta_cmdresp.c b/mlan/mlan_sta_cmdresp.c
+index 116506c..f88f91d 100644
+--- a/mlan/mlan_sta_cmdresp.c
++++ b/mlan/mlan_sta_cmdresp.c
+@@ -4,7 +4,7 @@
+  *  responses generated by firmware.
+  *
+  *
+- *  Copyright 2008-2024 NXP
++ *  Copyright 2008-2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -643,6 +643,13 @@ static mlan_status wlan_ret_802_11_snmp_mib(pmlan_private pmpriv,
+ 				(ul_temp & SLAVE_RADAR_DET_MASK) ? MTRUE :
+ 								   MFALSE;
+ 		}
++                /* Update state for 11h tpc disable */
++                if (oid == Dot11h_disable_tpc_i) {
++                        /* Set 11h tpc to private */
++                        ul_temp = wlan_le16_to_cpu(*((t_u16 *)(psmib->value)));
++                        PRINTM(MCMND, "SNMP_RESP: Dot11h_disable_tpc_i =%u\n",
++                               ul_temp);
++                }
+ 	}
+ 
+ 	if (pioctl_buf) {
+diff --git a/mlan/mlan_uap_cmdevent.c b/mlan/mlan_uap_cmdevent.c
+index 6c50db9..66c01c5 100644
+--- a/mlan/mlan_uap_cmdevent.c
++++ b/mlan/mlan_uap_cmdevent.c
+@@ -3,7 +3,7 @@
+  *  @brief This file contains the handling of AP mode command and event
+  *
+  *
+- *  Copyright 2009-2024 NXP
++ *  Copyright 2009-2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -3024,6 +3024,7 @@ static mlan_status wlan_uap_cmd_snmp_mib(pmlan_private pmpriv,
+ 		switch (cmd_oid) {
+ 		case Dot11D_i:
+ 		case Dot11H_i:
++		case Dot11h_disable_tpc_i:
+ 			psnmp_mib->oid = wlan_cpu_to_le16((t_u16)cmd_oid);
+ 			psnmp_mib->buf_size = wlan_cpu_to_le16(sizeof(t_u16));
+ 			ul_temp = *(t_u32 *)pdata_buf;
+diff --git a/mlan/mlan_wmm.c b/mlan/mlan_wmm.c
+index 9a8083a..6da49ea 100644
+--- a/mlan/mlan_wmm.c
++++ b/mlan/mlan_wmm.c
+@@ -3,7 +3,7 @@
+  *  @brief This file contains functions for WMM.
+  *
+  *
+- *  Copyright 2008-2021, 2024 NXP
++ *  Copyright 2008-2021, 2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -840,11 +840,11 @@ static raListTbl *wlan_wmm_get_highest_priolist_ptr(pmlan_adapter pmadapter,
+  *
+  *  @return                 byte budget
+  */
+-static t_u32 wlan_wmm_get_byte_budget(pmlan_adapter pmadapter, t_u32 time_budget_us, t_u32 phy_rate_kbps)
++static t_u32 wlan_wmm_get_byte_budget(t_u32 time_budget_us, t_u32 phy_rate_kbps)
+ {
+ 	const t_u32 min_budget = MV_ETH_FRAME_LEN;
+-	t_u64 byte_budget = pmadapter->callbacks.moal_do_div((t_u64)phy_rate_kbps * time_budget_us,
+-		8 * 1000u);
++	t_u64 byte_budget =
++		((t_u64)phy_rate_kbps * time_budget_us) / (8 * 1000u);
+ 
+ 	if (byte_budget > INT_MAX)
+ 		return INT_MAX;
+@@ -891,7 +891,7 @@ wlan_wmm_allocate_sta_table(pmlan_adapter pmadapter, t_u8 *ra)
+ 
+ 	sta_table->budget.time_budget_init_us = pmadapter->init_para.tx_budget;
+ 	sta_table->budget.byte_budget_init = wlan_wmm_get_byte_budget(
+-		pmadapter, sta_table->budget.time_budget_init_us, default_rate);
++		sta_table->budget.time_budget_init_us, default_rate);
+ 	sta_table->budget.queue_packets = default_queue_packets;
+ 	sta_table->budget.phy_rate_kbps = default_rate;
+ 
+@@ -900,14 +900,14 @@ wlan_wmm_allocate_sta_table(pmlan_adapter pmadapter, t_u8 *ra)
+ 	sta_table->budget.mpdu_no_amsdu_pps_cap =
+ 		pmadapter->tx_mpdu_no_amsdu_pps;
+ 
+-	sta_table->budget.mpdu_with_amsdu_budget_init = pmadapter->callbacks.moal_do_div(
+-		(t_u64)sta_table->budget.mpdu_with_amsdu_pps_cap *
+-		 sta_table->budget.time_budget_init_us,
+-		1000000);
+-	sta_table->budget.mpdu_no_amsdu_budget_init = pmadapter->callbacks.moal_do_div(
+-		(t_u64)sta_table->budget.mpdu_no_amsdu_pps_cap *
+-		 sta_table->budget.time_budget_init_us,
+-		1000000);
++        sta_table->budget.mpdu_with_amsdu_budget_init =
++                ((t_u64)sta_table->budget.mpdu_with_amsdu_pps_cap *
++                 sta_table->budget.time_budget_init_us) /
++                1000000;
++        sta_table->budget.mpdu_no_amsdu_budget_init =
++                ((t_u64)sta_table->budget.mpdu_no_amsdu_pps_cap *
++                 sta_table->budget.time_budget_init_us) /
++                1000000;
+ 
+ 	for (i = 0; i < NELEMENTS(sta_table->budget.bytes); ++i) {
+ 		sta_table->budget.bytes[i] = sta_table->budget.byte_budget_init;
+@@ -3142,12 +3142,12 @@ static t_void wlan_wmm_update_queue_packets_budget(pmlan_adapter pmadapter,
+ 			list_entry, struct wmm_sta_table, active_sta_entry);
+ 		const t_u64 sta_capacity = sta->budget.byte_budget_init;
+ 		const t_u32 max_pkts_by_airtime =
+-			wlan_wmm_get_byte_budget(pmadapter, max_pending_tx_time_us,
++			wlan_wmm_get_byte_budget(max_pending_tx_time_us,
+ 						 sta->budget.phy_rate_kbps) /
+ 			MV_ETH_FRAME_LEN;
+-		t_u32 sta_share = pmadapter->callbacks.moal_do_div((t_u64)queue_packets_limit * sta_capacity,
+-									total_capacity);
+ 
++		t_u32 sta_share =
++			queue_packets_limit * sta_capacity / total_capacity;
+ 		sta_share = MAX(sta_share, min_sta_share);
+ 		sta_share = MIN(sta_share, queue_packets_limit * 7 / 8);
+ 		sta_share = MIN(sta_share, max_pkts_by_airtime);
+@@ -5183,7 +5183,6 @@ static void wlan_wmm_adjust_sta_tx_budget(pmlan_private priv,
+ 					  struct wmm_sta_table *sta,
+ 					  HostCmd_TX_RATE_QUERY *rate)
+ {
+-	mlan_adapter *pmadapter = priv->adapter;
+ 	const t_u8 ppdu_type_legacy = 0;
+ 	const t_u8 ppdu_type_ht = 1;
+ 	const t_u8 ppdu_type_vht = 2;
+@@ -5211,7 +5210,7 @@ static void wlan_wmm_adjust_sta_tx_budget(pmlan_private priv,
+ 	if (phy_rate > 0) {
+ 		const t_u32 old_phy_rate = sta->budget.phy_rate_kbps;
+ 		sta->budget.byte_budget_init = wlan_wmm_get_byte_budget(
+-			pmadapter, sta->budget.time_budget_init_us, phy_rate);
++			sta->budget.time_budget_init_us, phy_rate);
+ 		sta->budget.phy_rate_kbps = phy_rate;
+ 
+ 		if (old_phy_rate / phy_rate >= 2 ||
+diff --git a/mlinux/mlan_decl.h b/mlinux/mlan_decl.h
+index d1367d6..97bc08f 100644
+--- a/mlinux/mlan_decl.h
++++ b/mlinux/mlan_decl.h
+@@ -3,7 +3,7 @@
+  *  @brief This file declares the generic data structures and APIs.
+  *
+  *
+- *  Copyright 2008-2022, 2024 NXP
++ *  Copyright 2008-2022, 2025 NXP
+  *
+  *  This software file (the File) is distributed by NXP
+  *  under the terms of the GNU General Public License Version 2, June 1991
+@@ -2782,6 +2782,7 @@ typedef struct _mlan_device {
+ 	t_u32 max_tx_pending;
+ 	t_u16 tx_budget;
+ 	t_u8 mclient_scheduling;
++	t_u8 disable_11h_tpc;
+ } mlan_device, *pmlan_device;
+ 
+ /** MLAN API function prototype */
+diff --git a/mlinux/moal_cfg80211.c b/mlinux/moal_cfg80211.c
+index 074fd59..0e54436 100644
+--- a/mlinux/moal_cfg80211.c
++++ b/mlinux/moal_cfg80211.c
+@@ -3,7 +3,7 @@
+  * @brief This file contains the functions for CFG80211.
+  *
+  *
+- * Copyright 2011-2024 NXP
++ * Copyright 2011-2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -1105,10 +1105,7 @@ void woal_cancel_cac(moal_private *priv)
+ 		if (woal_11h_cancel_chan_report_ioctl(priv, MOAL_IOCTL_WAIT))
+ 			PRINTM(MERROR, "%s: cancel chan report failed \n",
+ 			       __func__);
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-		cfg80211_cac_event(priv->netdev, &priv->phandle->dfs_channel,
+-				   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 		cfg80211_cac_event(priv->netdev, &priv->phandle->dfs_channel,
+ 				   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL);
+ #else
+@@ -1203,12 +1200,7 @@ int woal_cfg80211_change_virtual_intf(struct wiphy *wiphy,
+ 				PRINTM(MERROR,
+ 				       "%s: cancel chan report failed \n",
+ 				       __func__);
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-			cfg80211_cac_event(priv->netdev,
+-					   &priv->phandle->dfs_channel,
+-					   NL80211_RADAR_CAC_ABORTED,
+-					   GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 			cfg80211_cac_event(priv->netdev,
+ 					   &priv->phandle->dfs_channel,
+ 					   NL80211_RADAR_CAC_ABORTED,
+@@ -1322,8 +1314,8 @@ int woal_cfg80211_change_virtual_intf(struct wiphy *wiphy,
+ #endif /* WIFI_DIRECT_SUPPORT */
+ #if defined(STA_SUPPORT) && defined(UAP_SUPPORT)
+ 		if (priv->bss_type == MLAN_BSS_TYPE_UAP) {
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			woal_cfg80211_del_beacon(wiphy, dev, 0);
+ #else
+ 			woal_cfg80211_del_beacon(wiphy, dev);
+@@ -1562,7 +1554,8 @@ fail:
+  */
+ #endif
+ int woal_cfg80211_add_key(struct wiphy *wiphy, struct net_device *netdev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 			  int link_id,
+ #endif
+ 			  t_u8 key_index,
+@@ -1638,7 +1631,8 @@ int woal_cfg80211_add_key(struct wiphy *wiphy, struct net_device *netdev,
+  */
+ #endif
+ int woal_cfg80211_del_key(struct wiphy *wiphy, struct net_device *netdev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 			  int link_id,
+ #endif
+ 			  t_u8 key_index,
+@@ -1655,13 +1649,9 @@ int woal_cfg80211_del_key(struct wiphy *wiphy, struct net_device *netdev,
+ 		LEAVE();
+ 		return -EFAULT;
+ 	}
+-	/* del_key will be trigger from cfg80211_rx_mlme_mgmt funtion
+-	 * where we receive deauth/disassoicate packet in rx_work
+-	 * use MOAL_NO_WAIT to avoid dead lock
+-	 */
+ 	if (MLAN_STATUS_FAILURE ==
+ 	    woal_cfg80211_set_key(priv, 0, 0, NULL, 0, NULL, 0, key_index,
+-				  mac_addr, 1, 0, MOAL_NO_WAIT)) {
++				  mac_addr, 1, 0, MOAL_IOCTL_WAIT)) {
+ 		PRINTM(MERROR, "Error deleting the crypto keys\n");
+ 		LEAVE();
+ 		return -EFAULT;
+@@ -1697,7 +1687,8 @@ int woal_cfg80211_del_key(struct wiphy *wiphy, struct net_device *netdev,
+ #endif
+ int woal_cfg80211_set_default_key(struct wiphy *wiphy,
+ 				  struct net_device *netdev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 				  int link_id,
+ #endif
+ 				  t_u8 key_index
+@@ -1736,7 +1727,8 @@ int woal_cfg80211_set_default_key(struct wiphy *wiphy,
+ #if KERNEL_VERSION(2, 6, 30) <= CFG80211_VERSION_CODE
+ int woal_cfg80211_set_default_mgmt_key(struct wiphy *wiphy,
+ 				       struct net_device *netdev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 				       int link_id,
+ #endif
+ 				       t_u8 key_index)
+@@ -1750,7 +1742,8 @@ int woal_cfg80211_set_default_mgmt_key(struct wiphy *wiphy,
+ #if KERNEL_VERSION(5, 10, 0) <= CFG80211_VERSION_CODE
+ int woal_cfg80211_set_default_beacon_key(struct wiphy *wiphy,
+ 					 struct net_device *netdev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 					 int link_id,
+ #endif
+ 					 t_u8 key_index)
+@@ -2337,8 +2330,8 @@ done:
+  * @return                0 -- success, otherwise fail
+  */
+ int woal_cfg80211_set_bitrate_mask(struct wiphy *wiphy, struct net_device *dev,
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 				   unsigned int link_id,
+ #endif
+ 				   const u8 *peer,
+@@ -5484,11 +5477,11 @@ void woal_cfg80211_notify_channel(moal_private *priv,
+ 	CFG80211_VERSION_CODE < KERNEL_VERSION(6, 9, 0)
+ 		cfg80211_ch_switch_notify(priv->netdev, &chandef, 0, 0);
+ #elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) &&                    \
+-	IMX_ANDROID_13)) &&                                                    \
++	(defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))) &&       \
+ 	CFG80211_VERSION_CODE < KERNEL_VERSION(6, 9, 0)
+ 		cfg80211_ch_switch_notify(priv->netdev, &chandef, 0, 0);
+ #elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                  \
+-       IMX_ANDROID_13 || IMX_ANDROID_12_BACKPORT)
++       (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 		cfg80211_ch_switch_notify(priv->netdev, &chandef, 0);
+ #else
+ 		cfg80211_ch_switch_notify(priv->netdev, &chandef);
+diff --git a/mlinux/moal_cfg80211.h b/mlinux/moal_cfg80211.h
+index 3323055..1b8484b 100644
+--- a/mlinux/moal_cfg80211.h
++++ b/mlinux/moal_cfg80211.h
+@@ -3,7 +3,7 @@
+  * @brief This file contains the CFG80211 specific defines.
+  *
+  *
+- * Copyright 2011-2022, 2024 NXP
++ * Copyright 2011-2022, 2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -133,7 +133,8 @@ int woal_cfg80211_change_virtual_intf(struct wiphy *wiphy,
+ int woal_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed);
+ 
+ int woal_cfg80211_add_key(struct wiphy *wiphy, struct net_device *dev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 			  int link_id,
+ #endif
+ 			  t_u8 key_index,
+@@ -143,7 +144,8 @@ int woal_cfg80211_add_key(struct wiphy *wiphy, struct net_device *dev,
+ 			  const t_u8 *mac_addr, struct key_params *params);
+ 
+ int woal_cfg80211_del_key(struct wiphy *wiphy, struct net_device *dev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 			  int link_id,
+ #endif
+ 			  t_u8 key_index,
+@@ -167,8 +169,8 @@ int woal_cfg80211_flush_pmksa(struct wiphy *wiphy, struct net_device *dev);
+ #endif
+ 
+ int woal_cfg80211_set_bitrate_mask(struct wiphy *wiphy, struct net_device *dev,
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 				   unsigned int link_id,
+ #endif
+ 				   const u8 *peer,
+@@ -219,7 +221,8 @@ int woal_cfg80211_set_channel(struct wiphy *wiphy,
+ 
+ #if KERNEL_VERSION(2, 6, 37) < CFG80211_VERSION_CODE
+ int woal_cfg80211_set_default_key(struct wiphy *wiphy, struct net_device *dev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 				  int link_id,
+ #endif
+ 				  t_u8 key_index, bool ucast, bool mcast);
+@@ -231,7 +234,8 @@ int woal_cfg80211_set_default_key(struct wiphy *wiphy, struct net_device *dev,
+ #if KERNEL_VERSION(2, 6, 30) <= CFG80211_VERSION_CODE
+ int woal_cfg80211_set_default_mgmt_key(struct wiphy *wiphy,
+ 				       struct net_device *netdev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 				       int link_id,
+ #endif
+ 				       t_u8 key_index);
+@@ -240,7 +244,8 @@ int woal_cfg80211_set_default_mgmt_key(struct wiphy *wiphy,
+ #if KERNEL_VERSION(5, 10, 0) <= CFG80211_VERSION_CODE
+ int woal_cfg80211_set_default_beacon_key(struct wiphy *wiphy,
+ 					 struct net_device *netdev,
+-#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) || IMX_ANDROID_13)
++#if ((KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE) ||                        \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))
+ 					 int link_id,
+ #endif
+ 					 t_u8 key_index);
+@@ -453,8 +458,8 @@ int woal_cfg80211_set_beacon(struct wiphy *wiphy, struct net_device *dev,
+ 			     struct beacon_parameters *params);
+ #endif
+ 
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ int woal_cfg80211_del_beacon(struct wiphy *wiphy, struct net_device *dev,
+ 			     unsigned int link_id);
+ #else
+@@ -472,12 +477,7 @@ int woal_cfg80211_del_station(struct wiphy *wiphy, struct net_device *dev,
+ #endif
+ 
+ #if KERNEL_VERSION(3, 12, 0) <= CFG80211_VERSION_CODE
+-#if KERNEL_VERSION(6, 12, 0) <= CFG80211_VERSION_CODE
+-int woal_cfg80211_start_radar_detection(struct wiphy *wiphy,
+-					struct net_device *dev,
+-					struct cfg80211_chan_def *chandef,
+-					u32 cac_time_msi, int link_id);
+-#elif KERNEL_VERSION(3, 15, 0) <= CFG80211_VERSION_CODE
++#if KERNEL_VERSION(3, 15, 0) <= CFG80211_VERSION_CODE
+ int woal_cfg80211_start_radar_detection(struct wiphy *wiphy,
+ 					struct net_device *dev,
+ 					struct cfg80211_chan_def *chandef,
+diff --git a/mlinux/moal_init.c b/mlinux/moal_init.c
+index f790666..845d272 100644
+--- a/mlinux/moal_init.c
++++ b/mlinux/moal_init.c
+@@ -4,7 +4,7 @@
+  * driver.
+  *
+  *
+- * Copyright 2018-2022, 2024 NXP
++ * Copyright 2018-2022, 2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -336,6 +336,9 @@ static int mon_filter = DEFAULT_NETMON_FILTER;
+ 
+ int dual_nb;
+ 
++/** disable 802.11h tpc configuration */
++static int disable_11h_tpc = 0;
++
+ #ifdef DEBUG_LEVEL1
+ #ifdef DEBUG_LEVEL2
+ #define DEFAULT_DEBUG_MASK (0xffffffff)
+@@ -1597,6 +1600,14 @@ static mlan_status parse_cfg_read_block(t_u8 *data, t_u32 size,
+ 			params->reject_addba_req = out_data;
+ 			PRINTM(MMSG, "reject_addba_req=%x\n",
+ 			       params->reject_addba_req);
++		} else if (strncmp(line, "disable_11h_tpc",
++				   strlen("disable_11h_tpc")) == 0) {
++			if (parse_line_read_int(line, &out_data) !=
++			    MLAN_STATUS_SUCCESS)
++				goto err;
++			params->disable_11h_tpc = out_data;
++			PRINTM(MMSG, "disable_11h_tpc=%x\n",
++			       params->disable_11h_tpc);
+ 		}
+ 	}
+ 
+@@ -2000,6 +2011,13 @@ static void woal_setup_module_param(moal_handle *handle, moal_mod_para *params)
+ 	handle->params.dual_nb = dual_nb;
+ 	if (params)
+ 		handle->params.dual_nb = params->dual_nb;
++
++	handle->params.disable_11h_tpc = disable_11h_tpc;
++	/* Ignore country IE when 11h tpc is disabled */
++	if (disable_11h_tpc)
++		moal_extflg_set(handle, EXT_COUNTRY_IE_IGNORE);
++	if (params)
++		handle->params.disable_11h_tpc = params->disable_11h_tpc;
+ }
+ 
+ /**
+@@ -2568,6 +2586,12 @@ void woal_init_from_dev_tree(void)
+ 				       data);
+ 				reject_addba_req = data;
+ 			}
++		} else if (!strncmp(prop->name, "disable_11h_tpc",
++				    strlen("disable_11h_tpc"))) {
++			if (!of_property_read_u32(dt_node, prop->name, &data)) {
++				PRINTM(MERROR, "disable_11h_tpc=0x%x\n", data);
++				disable_11h_tpc = data;
++			}
+ 		}
+ #if defined(STA_CFG80211) || defined(UAP_CFG80211)
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
+@@ -3187,3 +3211,7 @@ module_param(reject_addba_req, int, 0);
+ MODULE_PARM_DESC(
+ 	reject_addba_req,
+ 	"Bit1: Reject the addba request when FW auto re-connect enabled (STA BSS only); Bit0: Reject the addba request when HS activated");
++
++module_param(disable_11h_tpc, int, 0);
++MODULE_PARM_DESC(disable_11h_tpc,
++		 "0: Enable 802.11h tpc; 1: Disable 802.11h tpc");
+diff --git a/mlinux/moal_ioctl.c b/mlinux/moal_ioctl.c
+index 94b8b2a..49711ea 100644
+--- a/mlinux/moal_ioctl.c
++++ b/mlinux/moal_ioctl.c
+@@ -3,7 +3,7 @@
+  * @brief This file contains ioctl function to MLAN
+  *
+  *
+- * Copyright 2008-2024 NXP
++ * Copyright 2008-2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -6101,13 +6101,19 @@ mlan_status woal_cancel_scan(moal_private *priv, t_u8 wait_option)
+ #ifdef STA_CFG80211
+ 	unsigned long flags;
+ #endif
++
++#ifdef STA_CFG80211
++	// cancel scan timeout
++	if (IS_STA_CFG80211(handle->params.cfg80211_wext) &&
++	    handle->scan_request)
++		cancel_delayed_work(&handle->scan_timeout_work);
++#endif
+ 	/* If scan is in process, cancel the scan command */
+ 	if (!handle->scan_pending_on_block || !scan_priv) {
+ #ifdef STA_CFG80211
+ 		spin_lock_irqsave(&handle->scan_req_lock, flags);
+ 		if (IS_STA_CFG80211(handle->params.cfg80211_wext) &&
+ 		    handle->scan_request) {
+-			cancel_delayed_work(&handle->scan_timeout_work);
+ 			/* some supplicant cannot handle SCAN abort event */
+ 			if (scan_priv &&
+ 			    (scan_priv->bss_type == MLAN_BSS_TYPE_STA))
+@@ -6138,7 +6144,6 @@ mlan_status woal_cancel_scan(moal_private *priv, t_u8 wait_option)
+ 	spin_lock_irqsave(&handle->scan_req_lock, flags);
+ 	if (IS_STA_CFG80211(handle->params.cfg80211_wext) &&
+ 	    handle->scan_request) {
+-		cancel_delayed_work(&handle->scan_timeout_work);
+ 		/** some supplicant can not handle SCAN abort event */
+ 		if (scan_priv->bss_type == MLAN_BSS_TYPE_STA)
+ 			woal_cfg80211_scan_done(handle->scan_request, MTRUE);
+diff --git a/mlinux/moal_main.c b/mlinux/moal_main.c
+index e7f3242..a478a2c 100644
+--- a/mlinux/moal_main.c
++++ b/mlinux/moal_main.c
+@@ -4,7 +4,7 @@
+  * driver.
+  *
+  *
+- * Copyright 2008-2024 NXP
++ * Copyright 2008-2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -174,6 +174,7 @@ static struct _card_info card_info_SD8887 = {
+ 	.fw_reset_val = 1,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0x90,
+ 	.slew_rate_reg = 0x80002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -214,6 +215,7 @@ static struct _card_info card_info_SD8897 = {
+ 	.fw_reset_val = 1,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xC0,
+ 	.slew_rate_reg = 0x80002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -299,6 +301,7 @@ static struct _card_info card_info_SD8977 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x80002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -342,6 +345,7 @@ static struct _card_info card_info_SD8978 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x80002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -385,6 +389,7 @@ static struct _card_info card_info_SD8997 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x80002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -429,6 +434,7 @@ static struct _card_info card_info_SD9098 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x90002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -473,6 +479,7 @@ static struct _card_info card_info_SD9097 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x90002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -517,6 +524,7 @@ static struct _card_info card_info_SDIW624 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x90002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -561,6 +569,7 @@ static struct _card_info card_info_SDAW693 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x90002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -605,6 +614,7 @@ static struct _card_info card_info_SD9177 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x90002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -649,6 +659,7 @@ static struct _card_info card_info_SDIW610 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x45001064,
+ 	.slew_rate_bit_offset = 16,
+ #endif
+@@ -976,6 +987,7 @@ static struct _card_info card_info_SD8987 = {
+ 	.fw_reset_val = 0x99,
+ 	.fw_wakeup_reg = 0,
+ 	.fw_wakeup_val = 2,
++	.fw_winner_status_reg = 0xFC,
+ 	.slew_rate_reg = 0x80002328,
+ 	.slew_rate_bit_offset = 12,
+ #endif
+@@ -989,8 +1001,7 @@ static struct _card_info card_info_SD8987 = {
+ 
+ /** Driver version */
+ char driver_version[] =
+-	INTF_CARDTYPE KERN_VERSION "--" MLAN_RELEASE_VERSION "-GPL"
+-				   "-("
++	INTF_CARDTYPE KERN_VERSION "--" MLAN_RELEASE_VERSION "-("
+ 				   "FP" FPNUM ")"
+ #ifdef DEBUG_LEVEL2
+ 				   "-dbg"
+@@ -1224,11 +1235,7 @@ void woal_clean_up(moal_handle *handle)
+ 		handle->cac_period = MFALSE;
+ 		priv = handle->priv[handle->cac_bss_index];
+ 		if (priv) {
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-			cfg80211_cac_event(priv->netdev, &handle->dfs_channel,
+-					   NL80211_RADAR_CAC_ABORTED,
+-					   GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 			cfg80211_cac_event(priv->netdev, &handle->dfs_channel,
+ 					   NL80211_RADAR_CAC_ABORTED,
+ 					   GFP_KERNEL);
+@@ -1259,8 +1266,8 @@ void woal_clean_up(moal_handle *handle)
+ #ifdef STA_CFG80211
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
+ 			if (IS_STA_CFG80211(cfg80211_wext) && priv->wdev &&
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			    priv->wdev->connected) {
+ #else
+ 			    priv->wdev->current_bss) {
+@@ -1305,6 +1312,92 @@ void woal_clean_up(moal_handle *handle)
+ 	return;
+ }
+ 
++/**
++ *  @brief This function send the auto recovery failure event to userspace using
++ * netlink
++ *
++ *  @param handle       Pointer to structure moal_handle
++ *
++ *  @return        N/A
++ */
++void woal_send_auto_recovery_failure_event(moal_handle *handle)
++{
++	mlan_status ret = MLAN_STATUS_SUCCESS;
++	struct sk_buff *skb = NULL;
++	struct nlmsghdr *nlh = NULL;
++	struct sock *sk = handle->nl_sk;
++	int len = strlen(CUS_EVT_FW_RECOVER_FAIL);
++	ENTER();
++
++	/* interface name to be prepended to event */
++	/* NL_MAX_PAYLOAD = 3 * 1024 */
++	if ((len + IFNAMSIZ) > NL_MAX_PAYLOAD) {
++		PRINTM(MERROR, "event size is too big, len=%d\n", (int)len);
++		ret = MLAN_STATUS_FAILURE;
++		goto done;
++	}
++	if (sk) {
++		/* Allocate skb */
++		skb = alloc_skb(NLMSG_SPACE(NL_MAX_PAYLOAD), GFP_ATOMIC);
++		if (!skb) {
++			PRINTM(MERROR, "Could not allocate skb for netlink\n");
++			ret = MLAN_STATUS_FAILURE;
++			goto done;
++		}
++		memset(skb->data, 0, NLMSG_SPACE(NL_MAX_PAYLOAD));
++
++		nlh = (struct nlmsghdr *)skb->data;
++		nlh->nlmsg_len = NLMSG_SPACE(len + IFNAMSIZ);
++
++		/* From kernel */
++		nlh->nlmsg_pid = 0;
++		nlh->nlmsg_flags = 0;
++
++		/* Data */
++		skb_put(skb, nlh->nlmsg_len);
++		moal_memcpy_ext(handle, NLMSG_DATA(nlh), "wlan", sizeof("wlan"),
++				nlh->nlmsg_len - NLMSG_LENGTH(0));
++
++		moal_memcpy_ext(handle, ((t_u8 *)(NLMSG_DATA(nlh))) + IFNAMSIZ,
++				CUS_EVT_FW_RECOVER_FAIL, len,
++				nlh->nlmsg_len - NLMSG_LENGTH(IFNAMSIZ));
++
++		/* From Kernel */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0)
++		NETLINK_CB(skb).pid = 0;
++#else
++		NETLINK_CB(skb).portid = 0;
++#endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 20)
++		/* Multicast message */
++		NETLINK_CB(skb).dst_pid = 0;
++#endif
++
++		/* Multicast group number */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 14)
++		NETLINK_CB(skb).dst_groups = NL_MULTICAST_GROUP;
++#else
++		NETLINK_CB(skb).dst_group = NL_MULTICAST_GROUP;
++#endif
++
++		/* Send message */
++		ret = netlink_broadcast(sk, skb, 0, NL_MULTICAST_GROUP,
++					GFP_ATOMIC);
++		if (ret) {
++			PRINTM(MWARN, "netlink_broadcast failed: ret=%d\n",
++			       ret);
++			goto done;
++		}
++
++	} else {
++		PRINTM(MERROR,
++		       "Could not send event through NETLINK. Link down.\n");
++	}
++done:
++	LEAVE();
++}
++
+ /**
+  *  @brief This function send the auto recovery complete event to kernel
+  *
+@@ -1412,8 +1505,8 @@ static void woal_hang_work_queue(struct work_struct *work)
+ #ifdef STA_CFG80211
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
+ 			if (IS_STA_CFG80211(cfg80211_wext) && priv->wdev &&
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			    priv->wdev->connected) {
+ #else
+ 			    priv->wdev->current_bss) {
+@@ -2603,6 +2696,7 @@ mlan_status woal_init_sw(moal_handle *handle)
+ 	handle->rtt_capa.responder_supported = MTRUE;
+ 	handle->rtt_capa.mc_version = 60;
+ 	handle->is_edmac_enabled = MFALSE;
++	handle->driver_init = MFALSE;
+ 
+ 	/* Register to MLAN */
+ 	memset(&device, 0, sizeof(mlan_device));
+@@ -2716,6 +2810,7 @@ mlan_status woal_init_sw(moal_handle *handle)
+ 	device.dmcs = handle->params.dmcs;
+ 	device.pref_dbc = handle->params.pref_dbc;
+ 	device.reject_addba_req = handle->params.reject_addba_req;
++	device.disable_11h_tpc = (t_u32)handle->params.disable_11h_tpc;
+ 
+ 	for (i = 0; i < handle->drv_mode.intf_num; i++) {
+ 		device.bss_attr[i].bss_type =
+@@ -4274,6 +4369,15 @@ err:
+ #ifdef CONFIG_PROC_FS
+ 		woal_proc_exit(handle);
+ #endif
++
++#if defined(STA_CFG80211) || defined(UAP_CFG80211)
++		if (handle->wiphy) {
++			wiphy_unregister(handle->wiphy);
++			woal_cfg80211_free_bands(handle->wiphy);
++			wiphy_free(handle->wiphy);
++			handle->wiphy = NULL;
++		}
++#endif
+ 	}
+ 	LEAVE();
+ 	return ret;
+@@ -4770,6 +4874,7 @@ static mlan_status woal_request_fw_dpc(moal_handle *handle,
+ 	if (ret)
+ 		goto done;
+ 
++	handle->driver_init = MTRUE;
+ done:
+ 	/* We should hold the semaphore until callback finishes execution */
+ 	MOAL_REL_SEMAPHORE(&AddRemoveCardSem);
+@@ -4910,6 +5015,9 @@ mlan_status woal_init_fw(moal_handle *handle)
+ 			ret = woal_add_card_dpc(handle);
+ 			if (ret)
+ 				goto done;
++
++			handle->driver_init = MTRUE;
++
+ 			/* Release semaphore if download is not required */
+ 			MOAL_REL_SEMAPHORE(&AddRemoveCardSem);
+ 		done:
+@@ -6653,8 +6761,8 @@ int woal_close(struct net_device *dev)
+ 	woal_cancel_scan(priv, MOAL_IOCTL_WAIT);
+ 
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 	if (IS_STA_CFG80211(cfg80211_wext) && priv->wdev &&
+ 	    priv->wdev->connected) {
+ #else
+@@ -10391,8 +10499,8 @@ t_void woal_send_disconnect_to_system(moal_private *priv,
+ 	if (IS_STA_CFG80211(cfg80211_wext)) {
+ 		spin_lock_irqsave(&priv->connect_lock, flags);
+ 		if (!priv->cfg_disconnect && !priv->cfg_connect && priv->wdev &&
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 		    priv->wdev->connected) {
+ #else
+ 		    priv->wdev->current_bss) {
+@@ -12222,7 +12330,9 @@ t_void woal_scan_timeout_handler(struct work_struct *work)
+ 				woal_inform_bss_from_scan_result(priv, NULL,
+ 								 MOAL_NO_WAIT);
+ 			spin_lock_irqsave(&handle->scan_req_lock, flags);
+-			woal_cfg80211_scan_done(handle->scan_request, MFALSE);
++			if (handle->scan_request)
++				woal_cfg80211_scan_done(handle->scan_request,
++							MFALSE);
+ 			handle->scan_request = NULL;
+ 			handle->fake_scan_complete = MFALSE;
+ 			spin_unlock_irqrestore(&handle->scan_req_lock, flags);
+@@ -14035,6 +14145,13 @@ int woal_request_fw_reload(moal_handle *phandle, t_u8 mode)
+ 	moal_handle *ref_handle = NULL;
+ 
+ 	ENTER();
++
++	if (!handle->driver_init) {
++		PRINTM(MMSG, "Ignore fw reload, driver not initialized\n");
++		LEAVE();
++		return -EFAULT;
++	}
++
+ 	wifi_status = WIFI_STATUS_FW_RELOAD;
+ #ifdef PCIE
+ 	if (mode == FW_RELOAD_PCIE_RESET) {
+@@ -14710,4 +14827,3 @@ MODULE_DESCRIPTION("M-WLAN Driver");
+ MODULE_AUTHOR("NXP");
+ MODULE_VERSION(MLAN_RELEASE_VERSION);
+ MODULE_LICENSE("GPL");
+-MODULE_LICENSE("GPL");
+diff --git a/mlinux/moal_main.h b/mlinux/moal_main.h
+index 6d87dcf..f8941c7 100644
+--- a/mlinux/moal_main.h
++++ b/mlinux/moal_main.h
+@@ -3,7 +3,7 @@
+  * @brief This file contains wlan driver specific defines etc.
+  *
+  *
+- * Copyright 2008-2024 NXP
++ * Copyright 2008-2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -408,6 +408,7 @@ typedef enum _MOAL_HARDWARE_STATUS {
+ #define WIFI_STATUS_SCAN_TIMEOUT 8
+ #define WIFI_STATUS_FW_DUMP 9
+ #define WIFI_STATUS_FW_RELOAD 10
++#define WIFI_STATUS_FW_RECOVERY_FAIL 11
+ 
+ /** fw cap info 11p */
+ #define FW_CAPINFO_80211P MBIT(24)
+@@ -2124,6 +2125,7 @@ typedef struct _card_info {
+ 	t_u8 func1_reg_end;
+ 	t_u32 slew_rate_reg;
+ 	t_u8 slew_rate_bit_offset;
++	t_u32 fw_winner_status_reg;
+ #endif
+ #if defined(SDIO) || defined(PCIE)
+ 	t_u32 fw_stuck_code_reg;
+@@ -2724,6 +2726,8 @@ typedef struct _moal_mod_para {
+ 	int dual_nb;
+ 	/* reject addba req config for HS or FW Auto-reconnect */
+ 	t_u32 reject_addba_req;
++	/** disable_11h_tpc setting */
++	int disable_11h_tpc;
+ } moal_mod_para;
+ 
+ void woal_tp_acnt_timer_func(void *context);
+@@ -3265,6 +3269,7 @@ struct _moal_handle {
+ #endif
+ 	t_u32 ips_ctrl;
+ 	BOOLEAN is_edmac_enabled;
++	bool driver_init;
+ };
+ 
+ /**
+@@ -4330,6 +4335,7 @@ moal_private *woal_add_interface(moal_handle *handle, t_u8 bss_num,
+ 				 t_u8 bss_type);
+ void woal_clean_up(moal_handle *handle);
+ void woal_send_auto_recovery_complete_event(moal_handle *handle);
++void woal_send_auto_recovery_failure_event(moal_handle *handle);
+ void woal_remove_interface(moal_handle *handle, t_u8 bss_index);
+ void woal_set_multicast_list(struct net_device *dev);
+ mlan_status woal_request_fw(moal_handle *handle);
+diff --git a/mlinux/moal_pcie.c b/mlinux/moal_pcie.c
+index 9034124..f3e8b8c 100644
+--- a/mlinux/moal_pcie.c
++++ b/mlinux/moal_pcie.c
+@@ -4,7 +4,7 @@
+  *  related functions.
+  *
+  *
+- * Copyright 2008-2022, 2024 NXP
++ * Copyright 2008-2022, 2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -153,6 +153,8 @@ static const struct pci_device_id wlan_ids[] = {
+ /* moal interface ops */
+ static moal_if_ops pcie_ops;
+ 
++MODULE_DEVICE_TABLE(pci, wlan_ids);
++
+ /********************************************************
+ 			Global Variables
+ ********************************************************/
+@@ -2547,8 +2549,10 @@ static void woal_pcie_dump_fw_info(moal_handle *phandle)
+ 	moal_private *priv = NULL;
+ #ifdef DUMP_TO_PROC
+ 	if (phandle->fw_dump_buf) {
+-		PRINTM(MERROR, "FW dump already exist\n");
+-		return;
++		PRINTM(MMSG, "FW dump already exist, free existing dump\n");
++		moal_vfree(phandle, phandle->fw_dump_buf);
++		phandle->fw_dump_buf = NULL;
++		phandle->fw_dump_len = 0;
+ 	}
+ #endif
+ 	mlan_pm_wakeup_card(phandle->pmlan_adapter, MTRUE);
+diff --git a/mlinux/moal_sdio_mmc.c b/mlinux/moal_sdio_mmc.c
+index 299829e..44a09f0 100644
+--- a/mlinux/moal_sdio_mmc.c
++++ b/mlinux/moal_sdio_mmc.c
+@@ -4,7 +4,7 @@
+  *  related functions.
+  *
+  *
+- * Copyright 2008-2022, 2024 NXP
++ * Copyright 2008-2022, 2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -165,6 +165,8 @@ static const struct sdio_device_id wlan_ids[] = {
+ 	{},
+ };
+ 
++MODULE_DEVICE_TABLE(sdio, wlan_ids);
++
+ int woal_sdio_probe(struct sdio_func *func, const struct sdio_device_id *id);
+ void woal_sdio_remove(struct sdio_func *func);
+ static void woal_sdiommc_work(struct work_struct *work);
+@@ -281,7 +283,7 @@ static void woal_sdio_interrupt(struct sdio_func *func)
+ 	moal_handle *handle;
+ 	sdio_mmc_card *card;
+ 	mlan_status status;
+-
++	t_u32 host_int_status_reg_val;
+ 	ENTER();
+ 
+ 	card = sdio_get_drvdata(func);
+@@ -301,6 +303,14 @@ static void woal_sdio_interrupt(struct sdio_func *func)
+ 	PRINTM(MINFO, "*** IN SDIO IRQ ***\n");
+ 	PRINTM(MINTR, "*\n");
+ 
++	if (handle->fw_reseting == MTRUE && (!handle->pmlan_adapter)) {
++		handle->ops.read_reg(handle, 0x0c, &host_int_status_reg_val);
++		PRINTM(MERROR,
++		       "*** Recv intr during fw reset, host int status reg value is %d, ignore it ***\n",
++		       host_int_status_reg_val);
++		LEAVE();
++		return;
++	}
+ 	/* call mlan_interrupt to read int status */
+ 	status = mlan_interrupt(0, handle->pmlan_adapter);
+ 	if (status == MLAN_STATUS_FAILURE) {
+@@ -3092,8 +3102,10 @@ static void woal_sdiommc_dump_fw_info(moal_handle *phandle)
+ 	}
+ #ifdef DUMP_TO_PROC
+ 	if (phandle->fw_dump_buf) {
+-		PRINTM(MERROR, "FW dump already exist\n");
+-		return;
++		PRINTM(MMSG, "FW dump already exist, free existing dump\n");
++		moal_vfree(phandle, phandle->fw_dump_buf);
++		phandle->fw_dump_buf = NULL;
++		phandle->fw_dump_len = 0;
+ 	}
+ #endif
+ 	/** cancel all pending commands */
+@@ -3298,6 +3310,30 @@ void woal_sdio_reset_hw(moal_handle *handle)
+ 	return;
+ }
+ 
++/**
++ *  @brief This function check fw winner status
++ *
++ *  @param handle   A pointer to moal_handle structure
++ *
++ *  @return        1--success, otherwise failure
++ */
++static BOOLEAN woal_sdiommc_check_winner_status(moal_handle *handle)
++{
++	t_u32 value = 1;
++	t_u32 winner_status_reg = handle->card_info->fw_winner_status_reg;
++
++	ENTER();
++#ifdef SD8801
++	if (IS_SD8801(handle->card_type)) {
++		LEAVE();
++		return MTRUE;
++	}
++#endif
++	handle->ops.read_reg(handle, winner_status_reg, &value);
++	LEAVE();
++	return (value == 0);
++}
++
+ /**
+  *  @brief This function reload fw
+  *
+@@ -3322,8 +3358,7 @@ static int woal_sdiommc_reset_fw(moal_handle *handle)
+ 		ret = -EFAULT;
+ 		goto done;
+ 	}
+-	udelay(2000);
+-	udelay(2000);
++	udelay(4000);
+ 	/** wait SOC fully wake up */
+ 	for (tries = 0; tries < MAX_POLL_TRIES; ++tries) {
+ 		ret = handle->ops.write_reg(handle, reset_reg, 0xba);
+@@ -3364,6 +3399,13 @@ static int woal_sdiommc_reset_fw(moal_handle *handle)
+ 		       reset_reg, value);
+ 		ret = -EFAULT;
+ 		goto done;
++	} else {
++		for (tries = 0; tries < 1000; ++tries) {
++			if (woal_sdiommc_check_winner_status(handle)) {
++				break;
++			}
++			udelay(1000);
++		}
+ 	}
+ 	PRINTM(MMSG, "SDIO Trigger FW In-band Reset success");
+ done:
+@@ -3609,13 +3651,19 @@ static void woal_sdiommc_work(struct work_struct *work)
+ 	}
+ 	if (woal_sdiommc_reset_fw(handle)) {
+ 		PRINTM(MERROR, "SDIO In-band Reset Fail\n");
+-		goto done;
++		woal_send_auto_recovery_failure_event(handle);
++		wifi_status = WIFI_STATUS_FW_RECOVERY_FAIL;
++		return;
+ 	}
++
+ 	handle->surprise_removed = MFALSE;
+ 	if (MLAN_STATUS_SUCCESS == woal_do_sdiommc_flr(handle, false, true))
+ 		handle->fw_reseting = MFALSE;
+-	else
++	else {
+ 		handle = NULL;
++		wifi_status = WIFI_STATUS_FW_RECOVERY_FAIL;
++		return;
++	}
+ 
+ 	if (ref_handle) {
+ 		ref_handle->surprise_removed = MFALSE;
+@@ -3624,7 +3672,6 @@ static void woal_sdiommc_work(struct work_struct *work)
+ 			ref_handle->fw_reseting = MFALSE;
+ 	}
+ 	card->work_flags = MFALSE;
+-done:
+ 	wifi_status = WIFI_STATUS_OK;
+ 	if (handle)
+ 		woal_send_auto_recovery_complete_event(handle);
+diff --git a/mlinux/moal_shim.c b/mlinux/moal_shim.c
+index 992e6ac..514aa95 100644
+--- a/mlinux/moal_shim.c
++++ b/mlinux/moal_shim.c
+@@ -3,7 +3,7 @@
+  * @brief This file contains the callback functions registered to MLAN
+  *
+  *
+- * Copyright 2008-2024 NXP
++ * Copyright 2008-2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -3734,12 +3734,7 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 					&priv->phandle->cac_timer);
+ 			priv->phandle->is_cac_timer_set = MFALSE;
+ 			if (radar_detected) {
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-				cfg80211_cac_event(priv->netdev,
+-						   &priv->phandle->dfs_channel,
+-						   NL80211_RADAR_CAC_ABORTED,
+-						   GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 				cfg80211_cac_event(priv->netdev,
+ 						   &priv->phandle->dfs_channel,
+ 						   NL80211_RADAR_CAC_ABORTED,
+@@ -3761,19 +3756,11 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 					// WARN_ON(!time_after_eq(jiffies,
+ 					// timeout)); mdelay(100); Using
+ 					// optimized delay
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-					timeout =
+-						(priv->wdev->links[0].cac_start_time +
+-						 msecs_to_jiffies(
+-							 priv->wdev
+-								 ->links[0].cac_time_ms));
+-#else
+ 					timeout =
+ 						(priv->wdev->cac_start_time +
+ 						 msecs_to_jiffies(
+ 							 priv->wdev
+ 								 ->cac_time_ms));
+-#endif
+ 					if (!time_after_eq(jiffies, timeout)) {
+ 						/* Exact time to make host and
+ 						 * device timer in sync */
+@@ -3790,12 +3777,7 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 				}
+ #endif
+ 
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-				cfg80211_cac_event(priv->netdev,
+-						   &priv->phandle->dfs_channel,
+-						   NL80211_RADAR_CAC_FINISHED,
+-						   GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 				cfg80211_cac_event(priv->netdev,
+ 						   &priv->phandle->dfs_channel,
+ 						   NL80211_RADAR_CAC_FINISHED,
+@@ -3873,12 +3855,7 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 				woal_11h_cancel_chan_report_ioctl(priv,
+ 								  MOAL_NO_WAIT);
+ 				/* upstream: inform cfg80211 */
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-				cfg80211_cac_event(priv->netdev,
+-						   &priv->phandle->dfs_channel,
+-						   NL80211_RADAR_CAC_ABORTED,
+-						   GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 				cfg80211_cac_event(priv->netdev,
+ 						   &priv->phandle->dfs_channel,
+ 						   NL80211_RADAR_CAC_ABORTED,
+@@ -3980,8 +3957,8 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 			    || priv->uap_host_based
+ #endif
+ #ifdef STA_CFG80211
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			    || priv->wdev->connected
+ #else
+ 			    || priv->wdev->current_bss
+@@ -4132,12 +4109,12 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 			cfg80211_ch_switch_notify(priv->netdev, &priv->chan, 0,
+ 						  0);
+ #elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) &&                    \
+-	IMX_ANDROID_13)) &&                                                    \
++	(defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))) &&       \
+ 	CFG80211_VERSION_CODE < KERNEL_VERSION(6, 9, 0)
+ 			cfg80211_ch_switch_notify(priv->netdev, &priv->chan, 0,
+ 						  0);
+ #elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                  \
+-       IMX_ANDROID_13 || IMX_ANDROID_12_BACKPORT)
++       (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			cfg80211_ch_switch_notify(priv->netdev, &priv->chan, 0);
+ #else
+ 			cfg80211_ch_switch_notify(priv->netdev, &priv->chan);
+@@ -4486,8 +4463,8 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 						PRINTM(MEVENT,
+ 						       "HostMlme %s: Receive deauth/disassociate\n",
+ 						       priv->netdev->name);
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 						if (!priv->wdev->connected) {
+ #else
+ 						if (!priv->wdev->current_bss) {
+@@ -4919,8 +4896,8 @@ mlan_status moal_recv_event(t_void *pmoal, pmlan_event pmevent)
+ 		roam_info =
+ 			kzalloc(sizeof(struct cfg80211_roam_info), GFP_ATOMIC);
+ 		if (roam_info) {
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_13 ||   \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			roam_info->links[0].bssid = priv->cfg_bssid;
+ #else
+ 			roam_info->bssid = priv->cfg_bssid;
+diff --git a/mlinux/moal_sta_cfg80211.c b/mlinux/moal_sta_cfg80211.c
+index 3883433..f30134c 100644
+--- a/mlinux/moal_sta_cfg80211.c
++++ b/mlinux/moal_sta_cfg80211.c
+@@ -3,7 +3,7 @@
+  * @brief This file contains the functions for STA CFG80211.
+  *
+  *
+- * Copyright 2011-2024 NXP
++ * Copyright 2011-2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -135,8 +135,8 @@ static int woal_cfg80211_dump_survey(struct wiphy *wiphy,
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
+ static int woal_cfg80211_get_channel(struct wiphy *wiphy,
+ 				     struct wireless_dev *wdev,
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 				     unsigned int link_id,
+ #endif
+ 				     struct cfg80211_chan_def *chandef);
+@@ -2841,7 +2841,9 @@ void woal_host_mlme_process_assoc_timeout(moal_private *priv,
+ 					  struct cfg80211_bss *bss)
+ {
+ 	/* Send Assoc Failure with Timeout to CFG80211 */
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
++#if (CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0) ||                       \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33 &&             \
++      CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 15, 74)))
+ 	struct cfg80211_assoc_failure data;
+ 	memset(&data, 0, sizeof(struct cfg80211_assoc_failure));
+ 	data.timeout = 1;
+@@ -2877,7 +2879,8 @@ void woal_host_mlme_process_assoc_resp(moal_private *priv,
+ 	struct cfg80211_rx_assoc_resp_data resp = {
+ 		.uapsd_queues = -1,
+ 	};
+-#elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                   \
++       (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	struct cfg80211_rx_assoc_resp resp = {
+ 		.uapsd_queues = -1,
+ 	};
+@@ -2950,7 +2953,8 @@ void woal_host_mlme_process_assoc_resp(moal_private *priv,
+ 						}
+ 					}
+ 
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 					resp.links[0].bss = bss;
+ 					resp.buf = assoc_info->assoc_resp_buf;
+ 					resp.len = assoc_info->assoc_resp_len;
+@@ -5021,7 +5025,9 @@ static int woal_cfg80211_scan(struct wiphy *wiphy, struct net_device *dev,
+ 			if (chan->flags & IEEE80211_CHAN_PASSIVE_SCAN)
+ 				scan_req->chan_list[num_chans].scan_time =
+ 					INIT_PASSIVE_SCAN_CHAN_TIME;
+-			else if (priv->bss_type == MLAN_BSS_TYPE_STA) {
++			else if (priv->bss_type == MLAN_BSS_TYPE_STA &&
++				 scan_req->chan_list[num_chans].scan_type ==
++					 MLAN_SCAN_TYPE_PASSIVE) {
+ 				/*
+ 				 * Set passive scan time to 110ms to discover
+ 				 * all nearby AP's, Current 40ms passive scan
+@@ -5034,20 +5040,17 @@ static int woal_cfg80211_scan(struct wiphy *wiphy, struct net_device *dev,
+ 				 * 1. STA is in connected state
+ 				 * 2. Scan type is passive
+ 				 */
+-				if (scan_req->chan_list[num_chans].scan_type ==
+-				    MLAN_SCAN_TYPE_PASSIVE)
+-					scan_req->chan_list[num_chans]
+-						.scan_time =
+-						PASSIVE_SCAN_CHAN_TIME;
+-			} else
++				scan_req->chan_list[num_chans].scan_time =
++					PASSIVE_SCAN_CHAN_TIME;
++			} else {
+ 				scan_req->chan_list[num_chans].scan_time = MIN(
+ 					MIN_SPECIFIC_SCAN_CHAN_TIME,
+ 					scan_cfg.scan_time.specific_scan_time);
++			}
+ 		}
+ #endif
+ #ifdef UAP_CFG80211
+ 		if (GET_BSS_ROLE(priv) == MLAN_BSS_ROLE_UAP) {
+-			scan_req->scan_chan_gap = 0;
+ 			if (!woal_is_uap_scan_result_expired(priv))
+ 				scan_req->chan_list[num_chans].scan_time =
+ 					MIN_SPECIFIC_SCAN_CHAN_TIME;
+@@ -5850,8 +5853,8 @@ static int woal_cfg80211_disconnect(struct wiphy *wiphy, struct net_device *dev,
+ 	if (priv->media_connected == MFALSE) {
+ 		PRINTM(MMSG, " Already disconnected\n");
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 		if (priv->wdev->connected &&
+ #else
+ 		if (priv->wdev->current_bss &&
+@@ -6205,8 +6208,8 @@ done:
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
+ static int woal_cfg80211_get_channel(struct wiphy *wiphy,
+ 				     struct wireless_dev *wdev,
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 				     unsigned int link_id,
+ #endif
+ 				     struct cfg80211_chan_def *chandef)
+@@ -9277,8 +9280,8 @@ int woal_cfg80211_update_ft_ies(struct wiphy *wiphy, struct net_device *dev,
+ 			passoc_rsp = (IEEEtypes_AssocRsp_t *)
+ 					     assoc_rsp->assoc_resp_buf;
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_13 ||   \
+-     IMX_ANDROID_14 || IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			roam_info.links[0].bssid = priv->cfg_bssid;
+ #else
+ 			roam_info.bssid = priv->cfg_bssid;
+@@ -9757,8 +9760,8 @@ void woal_start_roaming(moal_private *priv)
+ 		}
+ #endif
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_13 ||   \
+-     IMX_ANDROID_14 || IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 		roam_info.links[0].bssid = priv->cfg_bssid;
+ #else
+ 		roam_info.bssid = priv->cfg_bssid;
+@@ -9839,7 +9842,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 	if (params->ext_capab_len)
+ 		req_len += sizeof(MrvlIEtypesHeader_t) + params->ext_capab_len;
+ #endif
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.supported_rates_len)
+ 		req_len += sizeof(MrvlIEtypesHeader_t) +
+ 			   params->link_sta_params.supported_rates_len;
+@@ -9850,14 +9854,16 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ #endif
+ 	if (params->uapsd_queues || params->max_sp)
+ 		req_len += sizeof(MrvlIEtypesHeader_t) + sizeof(qosinfo);
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.ht_capa)
+ #else
+ 	if (params->ht_capa)
+ #endif
+ 		req_len += sizeof(MrvlIEtypesHeader_t) +
+ 			   sizeof(struct ieee80211_ht_cap);
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.vht_capa)
+ #else
+ 	if (params->vht_capa)
+@@ -9865,7 +9871,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 		req_len += sizeof(MrvlIEtypesHeader_t) +
+ 			   sizeof(struct ieee80211_vht_cap);
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.opmode_notif_used)
+ 		req_len += sizeof(MrvlIEtypesHeader_t) + sizeof(u8);
+ #else
+@@ -9875,7 +9882,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ #endif
+ 
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.he_capa_len)
+ 		req_len += sizeof(MrvlExtIEtypesHeader_t) +
+ 			   params->link_sta_params.he_capa_len;
+@@ -9931,20 +9939,23 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 	}
+ #endif
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.supported_rates_len) {
+ #else
+ 	if (params->supported_rates_len) {
+ #endif
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 		tlv->header.type = SUPPORTED_RATES;
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 		tlv->header.len = params->link_sta_params.supported_rates_len;
+ #else
+ 		tlv->header.len = params->supported_rates_len;
+ #endif
+ 		moal_memcpy_ext(priv->phandle, tlv->data,
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 				params->link_sta_params.supported_rates,
+ 				tlv->header.len,
+ #else
+@@ -9968,7 +9979,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 			sizeof(MrvlIEtypesHeader_t) + tlv->header.len;
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 	}
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.ht_capa) {
+ #else
+ 	if (params->ht_capa) {
+@@ -9976,7 +9988,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 		tlv->header.type = HT_CAPABILITY;
+ 		tlv->header.len = sizeof(struct ieee80211_ht_cap);
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 		moal_memcpy_ext(priv->phandle, tlv->data,
+ 				params->link_sta_params.ht_capa,
+ #else
+@@ -9988,7 +10001,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 			sizeof(MrvlIEtypesHeader_t) + tlv->header.len;
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 	}
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.vht_capa) {
+ #else
+ 	if (params->vht_capa) {
+@@ -9996,7 +10010,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 		tlv->header.type = VHT_CAPABILITY;
+ 		tlv->header.len = sizeof(struct ieee80211_vht_cap);
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 		moal_memcpy_ext(priv->phandle, tlv->data,
+ 				params->link_sta_params.vht_capa,
+ #else
+@@ -10009,7 +10024,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 	}
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.opmode_notif_used) {
+ #else
+ 	if (params->opmode_notif_used) {
+@@ -10017,7 +10033,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 		tlv->header.type = OPER_MODE_NTF;
+ 		tlv->header.len = sizeof(u8);
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 		moal_memcpy_ext(priv->phandle, tlv->data,
+ 				&params->link_sta_params.opmode_notif,
+ #else
+@@ -10030,7 +10047,8 @@ int woal_cfg80211_uap_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 		tlv = (MrvlIEtypes_Data_t *)pos;
+ 	}
+ #endif
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || IMX_ANDROID_14)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) ||                     \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 34))
+ 	if (params->link_sta_params.he_capa_len) {
+ 		ext_tlv = (MrvlExtIEtypes_Data_t *)pos;
+ 		ext_tlv->header.type = EXTENSION;
+diff --git a/mlinux/moal_uap_cfg80211.c b/mlinux/moal_uap_cfg80211.c
+index 6c40a10..95aaaad 100644
+--- a/mlinux/moal_uap_cfg80211.c
++++ b/mlinux/moal_uap_cfg80211.c
+@@ -3,7 +3,7 @@
+  * @brief This file contains the functions for uAP CFG80211.
+  *
+  *
+- * Copyright 2011-2024 NXP
++ * Copyright 2011-2025 NXP
+  *
+  * This software file (the File) is distributed by NXP
+  * under the terms of the GNU General Public License Version 2, June 1991
+@@ -2780,8 +2780,8 @@ int woal_cfg80211_del_virtual_intf(struct wiphy *wiphy,
+ 			}
+ 		}
+ 		if (vir_priv && vir_priv->bss_type == MLAN_BSS_TYPE_UAP) {
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			if (woal_cfg80211_del_beacon(wiphy, dev, 0))
+ #else
+ 			if (woal_cfg80211_del_beacon(wiphy, dev))
+@@ -2789,15 +2789,15 @@ int woal_cfg80211_del_virtual_intf(struct wiphy *wiphy,
+ 				PRINTM(MERROR, "%s: del_beacon failed\n",
+ 				       __func__);
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 0, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			vir_priv->wdev->links[0].ap.beacon_interval = 0;
+ #else
+ 			vir_priv->wdev->beacon_interval = 0;
+ #endif
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			memset(&vir_priv->wdev->links[0].ap.chandef, 0,
+ 			       sizeof(vir_priv->wdev->links[0].ap.chandef));
+ #else
+@@ -2806,8 +2806,8 @@ int woal_cfg80211_del_virtual_intf(struct wiphy *wiphy,
+ #endif
+ #endif
+ #endif
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ 			vir_priv->wdev->u.ap.ssid_len = 0;
+ #else
+ 			vir_priv->wdev->ssid_len = 0;
+@@ -3101,8 +3101,8 @@ done:
+  *
+  * @return                0 -- success, otherwise fail
+  */
+-#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || IMX_ANDROID_13 ||  \
+-     IMX_ANDROID_12_BACKPORT)
++#if ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                    \
++     (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ int woal_cfg80211_del_beacon(struct wiphy *wiphy, struct net_device *dev,
+ 			     unsigned int link_id)
+ #else
+@@ -3168,10 +3168,7 @@ int woal_cfg80211_del_beacon(struct wiphy *wiphy, struct net_device *dev)
+ 		if (woal_11h_cancel_chan_report_ioctl(priv, MOAL_IOCTL_WAIT))
+ 			PRINTM(MERROR, "%s: cancel chan report failed \n",
+ 			       __func__);
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-		cfg80211_cac_event(priv->netdev, &priv->phandle->dfs_channel,
+-				   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 		cfg80211_cac_event(priv->netdev, &priv->phandle->dfs_channel,
+ 				   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL);
+ #else
+@@ -3851,10 +3848,7 @@ void woal_cac_timer_func(void *context)
+ 	moal_private *priv = handle->priv[handle->cac_bss_index];
+ 
+ 	PRINTM(MEVENT, "cac_timer fired.\n");
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-	cfg80211_cac_event(priv->netdev, &handle->dfs_channel,
+-			   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 	cfg80211_cac_event(priv->netdev, &handle->dfs_channel,
+ 			   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL);
+ #else
+@@ -3957,11 +3951,11 @@ static void woal_switch_uap_channel(moal_private *priv, t_u8 wait_option)
+ 	CFG80211_VERSION_CODE < KERNEL_VERSION(6, 9, 0)
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->chan, 0, 0);
+ #elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 1, 0) &&                    \
+-	IMX_ANDROID_13)) &&                                                    \
++	(defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 33))) &&       \
+ 	CFG80211_VERSION_CODE < KERNEL_VERSION(6, 9, 0)
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->chan, 0, 0);
+ #elif ((CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) ||                  \
+-       IMX_ANDROID_13 || IMX_ANDROID_12_BACKPORT)
++       (defined(ANDROID_SDK_VERSION) && ANDROID_SDK_VERSION >= 31))
+ cfg80211_ch_switch_notify(priv->netdev, &priv->chan, 0);
+ #else
+ cfg80211_ch_switch_notify(priv->netdev, &priv->chan);
+@@ -4013,10 +4007,7 @@ void woal_process_cancel_chanrpt_event(moal_private *priv)
+ 		if (woal_11h_cancel_chan_report_ioctl(priv, MOAL_IOCTL_WAIT))
+ 			PRINTM(MERROR, "%s: cancel chan report failed \n",
+ 			       __func__);
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-		cfg80211_cac_event(priv->netdev, &priv->phandle->dfs_channel,
+-				   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL, 0);
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 		cfg80211_cac_event(priv->netdev, &priv->phandle->dfs_channel,
+ 				   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL);
+ #else
+@@ -4030,22 +4021,7 @@ void woal_process_cancel_chanrpt_event(moal_private *priv)
+ }
+ #endif
+ 
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+-/**
+- * @brief start radar detection
+- *
+- * @param wiphy           A pointer to wiphy structure
+- * @param dev             A pointer to net_device structure
+- * @param chandef         A pointer to cfg80211_chan_def structure
+- * @param cac_time_ms     A cac dwell time
+- * @param link_id	   valid link_id for MLO operation or 0 otherwise.
+- * @return                0 -- success, otherwise fail
+- */
+-int woal_cfg80211_start_radar_detection(struct wiphy *wiphy,
+-					struct net_device *dev,
+-					struct cfg80211_chan_def *chandef,
+-					u32 cac_time_ms, int link_id)
+-#elif CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)
+ /**
+  * @brief start radar detection
+  *
