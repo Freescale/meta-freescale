@@ -8,7 +8,6 @@ inherit fsl-eula-unpack autotools pkgconfig
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
 
-SRC_URI[md5sum] = "4250b61f23f49de9500ea8208f6e2be9"
 SRC_URI[sha256sum] = "fa30f3e1b13e570d7c6f0a5f335c11fc3c6336a266fd3a4941e27c4c2a5b13d3"
 
 EXTRA_OECONF:append:mx8qm-nxp-bsp = " --enable-imx8qmqxp"

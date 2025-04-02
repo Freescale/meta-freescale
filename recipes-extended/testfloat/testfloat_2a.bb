@@ -10,9 +10,7 @@ SRC_URI:append:qoriq-ppc = " file://SoftFloat-powerpc-1.patch \
                               file://TestFloat-powerpc-E500v2-SPE-1.patch \
                               file://Yocto-replace-COMPILE_PREFIX-gcc.patch \
                             "
-SRC_URI[TestFloat.md5sum] = "4dc889319ae1e0c5381ec511f784553a"
 SRC_URI[TestFloat.sha256sum] = "84d14aa42adefbda2ec9708b42946f7fa59f93689b042684bd027863481f8e4e"
-SRC_URI[SoftFloat.md5sum] = "b4a58b5c941f1a2317e4c2500086e3fa"
 SRC_URI[SoftFloat.sha256sum] = "89d14b55113a2ba8cbda7011443ba1d298d381c89d939515d56c5f18f2febf81"
 
 S = "${WORKDIR}/TestFloat-2a"

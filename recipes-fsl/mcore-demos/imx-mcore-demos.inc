@@ -9,6 +9,7 @@ inherit deploy fsl-eula-unpack
 
 SOC                ?= "INVALID"
 SOC:mx7ulp-nxp-bsp  = "imx7ulp"
+SOC:mx7d-nxp-bsp    = "imx7d-sabresd"
 SOC:mx8dxl-nxp-bsp  = "imx8dxl"
 SOC:mx8mm-nxp-bsp   = "imx8mm"
 SOC:mx8mn-nxp-bsp   = "imx8mn"
@@ -32,26 +33,27 @@ MCORE_TYPE:mx8ulp-nxp-bsp  = "m33"
 MCORE_TYPE:mx93-nxp-bsp  = "m33"
 MCORE_TYPE:mx95-nxp-bsp  = "m7"
 
-SRC_URI = "${FSL_MIRROR}${SOC}-${MCORE_TYPE}-demo-${PV}.bin;name=${SOC};fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${SOC}-${MCORE_TYPE}-demo-${PV}.bin;name=${SOC};fsl-eula=true"
 
 S = "${WORKDIR}/${SOC}-${MCORE_TYPE}-demo-${PV}"
 
-#SRC_URI="https://www.nxp.com/lgfiles/NMG/MAD/YOCTO//imx93-m33-demo-2.14.0.bin;fsl-eula=true;name=imx93"
-
-
 SCR = "SCR-${SOC}-${MCORE_TYPE}-demo.txt"
+
+MCORE_DEMO_FILE_EXTENSION               ?= "bin"
+MCORE_DEMO_FILE_EXTENSION:mx7ulp-nxp-bsp = "img"
 
 do_install () {
     install -d ${D}${nonarch_base_libdir}/firmware
-    install -m 0644 ${S}/*.elf ${D}${nonarch_base_libdir}/firmware
+    if ls ${S}/*.elf > /dev/null 2>&1; then
+        install -m 0644 ${S}/*.elf ${D}${nonarch_base_libdir}/firmware
+    fi
+    install -m 0644 ${S}/*.${MCORE_DEMO_FILE_EXTENSION} ${D}${nonarch_base_libdir}/firmware
 }
 
-DEPLOY_FILE_EXT       ?= "bin"
-DEPLOY_FILE_EXT:mx7ulp-nxp-bsp = "img"
-
 do_deploy () {
-   # Install the demo binaries
-   install -m 0644 ${S}/*.${DEPLOY_FILE_EXT} ${DEPLOYDIR}/
+    # Install the demo binaries
+    install -d ${DEPLOYDIR}/mcore-demos
+    install -m 0644 ${S}/*.${MCORE_DEMO_FILE_EXTENSION} ${DEPLOYDIR}/mcore-demos/
 }
 
 addtask deploy after do_install

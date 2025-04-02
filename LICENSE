@@ -1,6 +1,6 @@
 # License Information
 
-This file lists all licenses used by recipes in the meta-freescale-3rdparty layer.
+This file lists all licenses used by recipes in the meta-freescale layer.
 
 ./recipes-graphics/mali/mali-imx_r50.2.bb: LICENSE = "Proprietary"
 ./recipes-graphics/mesa/mesa-etnaviv-env_0.1.bb: LICENSE = "MIT"
