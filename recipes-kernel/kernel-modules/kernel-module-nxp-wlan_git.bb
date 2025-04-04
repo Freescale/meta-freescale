@@ -8,14 +8,13 @@ RREPLACES:${PN} = "kernel-module-nxp89xx"
 RPROVIDES:${PN} = "kernel-module-nxp89xx"
 RCONFLICTS:${PN} = "kernel-module-nxp89xx"
 
-SRCBRANCH = "lf-6.6.52_2.2.0"
+SRCBRANCH = "lf-6.12.3_1.0.0"
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
 SRC_URI = " \
     ${MRVL_SRC};branch=${SRCBRANCH} \
-    file://wlan_src_driver_patch_release_lf-6.6.52-2.2.0.patch \
     file://mlinux-moal_main-lower-PRINTM_MMSG-log-level-to-KERN_INFO.patch \
 "
-SRCREV = "5ad19e194f49ed9447bee7864eb562618ccaf9b1"
+SRCREV = "0396cfb38ad73a3d587cd0f8c139b47801e70891"
 
 S = "${WORKDIR}/git"
 
