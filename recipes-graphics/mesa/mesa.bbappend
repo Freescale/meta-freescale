@@ -19,7 +19,7 @@ python () {
 }
 
 # Enable Etnaviv and Freedreno support
-PACKAGECONFIG:append:use-mainline-bsp = " gallium etnaviv kmsro freedreno"
+PACKAGECONFIG:append:use-mainline-bsp = " gallium etnaviv freedreno"
 
 # For NXP BSP, GPU drivers don't support dri
 PACKAGECONFIG:remove:imxgpu:use-nxp-bsp = "dri"
