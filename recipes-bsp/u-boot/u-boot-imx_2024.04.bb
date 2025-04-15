@@ -1,6 +1,6 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2018 (C) O.S. Systems Software LTDA.
-# Copyright (C) 2017-2024 NXP
+# Copyright 2017-2024 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common_${PV}.inc
@@ -13,6 +13,8 @@ inherit uuu_bootloader_tag
 # is imx-boot, so disable UUU-tagging here
 UUU_BOOTLOADER:mx8-generic-bsp = ""
 UUU_BOOTLOADER:mx9-generic-bsp = ""
+
+TOOLCHAIN_OPTIONS:append = " -Wno-error=implicit-function-declaration"
 
 do_deploy:append:mx8m-generic-bsp() {
     # Deploy u-boot-nodtb.bin and fsl-imx8m*-XX.dtb for mkimage to generate boot binary
