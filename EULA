@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v57 July 2024
+LA_OPT_NXP_Software_License v58 November 2024
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
 downloading, installing, or using the Licensed Software, you indicate that you
@@ -242,21 +242,51 @@ COSTS, DAMAGES, CLAIMS, OR LOSSES WHATSOEVER ARISING OUT OF OR IN CONNECTION
 WITH THIS AGREEMENT OR PRODUCT(S) SUPPLIED UNDER THIS AGREEMENT IS LIMITED TO
 THE AGGREGATE AMOUNT PAID BY YOU TO NXP IN CONNECTION WITH THE LICENSED
 SOFTWARE PROVIDED UNDER THIS AGREEMENT TO WHICH LOSSES OR DAMAGES ARE CLAIMED.
-12.        EXPORT COMPLIANCE. Each party shall comply with all applicable
-export and import control laws and regulations including but not limited to the
-US Export Administration Regulation (including restrictions on certain military
-end uses and military end users as specified in Section 15 C.F.R. § 744.21 and
-prohibited party lists issued by other federal governments), Catch-all
-regulations and all national and international embargoes. Each party further
-agrees that it will not knowingly transfer, divert, export or re-export,
-directly or indirectly, any product, software, including software source code,
-or technology restricted by such regulations or by other applicable national
-regulations, received from the other party under this Agreement, or any direct
-product of such software or technical data to any person, firm, entity, country
-or destination to which such transfer, diversion, export or re-export is
-restricted or prohibited, without obtaining prior written authorization from
-the applicable competent government authorities to the extent required by those
-laws.
+12.        EXPORT COMPLIANCE.
+12.1	Each party shall comply with all applicable export and import control
+laws and regulations including but not limited to the US Export Administration
+Regulation (including restrictions on certain military end uses and military
+end users as specified in Section 15 C.F.R. § 744.21 and prohibited party
+lists issued by other federal governments), Catch-all regulations and all
+national and international embargoes. Each party further agrees that it will
+not knowingly transfer, divert, export or re-export, directly or indirectly,
+any product, software, including software source code, or technology restricted
+by such regulations or by other applicable national regulations, received from
+the other party under this Agreement, or any direct product of such software or
+technical data to any person, firm, entity, country or destination to which
+such transfer, diversion, export or re-export is restricted or prohibited,
+without obtaining prior written authorization from the applicable competent
+government authorities to the extent required by those laws.
+12.2	Prohibition of Export to Russian Federation
+
+(a)	With respect to activitit that falls under the scope of Article 12g,
+12ga of Council Regulation (EU) No 833/2014, or Council Regulation (EU) No
+765/2006 (as the case requires), you (a) will not sell, export or re-export,
+directly or indirectly any item, and (b) will not sell, license or sublicense
+any intellectual property rights or trade secrets, to the Russian Federation or
+Belarus, or for use in the Russian Federation or Belarus.
+
+(b)	You will ensure that the purpose of paragraph (a) above is not
+frustrated by any third parties further down the commercial chain, including by
+either resellers, sublicensees, or both.
+
+(c)	You will set up and maintain an adequate monitoring mechanism to detect
+conduct by any third parties further down the commercial chain, including by
+either resellers, sublicensees, or both, that would frustrate the purpose of
+paragraph (a).
+
+(d)	Any violation of paragraphs (a), (b) or (c) will constitute a material
+breach of this Agreement, and NXP will be entitled to seek appropriate
+remedies, including, but not limited to: (i) termination of these Terms; (ii)
+suspension of any of its business relationships with you, youraffiliates or
+both, until the breach of paragraph (a) above is remedied, and (iii) a plan to
+remedy the breach.
+
+(e)	You will immediately inform NXP about any problems in applying
+paragraphs (a), (b) or (c), above, including any relevant activities by third
+parties that could frustrate the purpose of paragraph (a). You will make
+available to NXPinformation concerning compliance with the obligations under
+paragraphs (a), (b) and (c) within 2 weeks of the request for information.
 13.   GOVERNMENT CONTRACT COMPLIANCE
 13.1.      If you sell Authorized Systems directly to any government or public
 entity, including U.S., state, local, foreign or international governments or
@@ -403,7 +433,7 @@ directly from AGGIOS, Inc.
 
 Airbiquity Inc.: The Airbiquity software may only be used in object code and
 Licensee may not sublicense the Airbiquity software to any third party.
-Licensee’s license to use the Airbiquity software expires on June 30, 2024.
+Licensee’s license to use the Airbiquity software expires on June 30, 2026.
 
 Amazon: Use of the Amazon software constitutes your acceptance of the terms of
 the Amazon Program Materials License Agreement (including the AVS Component
