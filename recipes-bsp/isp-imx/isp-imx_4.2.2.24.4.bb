@@ -52,6 +52,9 @@ do_configure:prepend () {
     patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/bin/isp_media_server
     patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/lib/libmedia_server.so
     patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/tuningext/install/tuningext
+
+    # FIXME: Should be rebuild.
+    patchelf --replace-needed libtinyxml2.so.10 libtinyxml2.so.11 ${S}/appshell/shell_libs/ispcore/ARM64/libcam_device.so
 }
 
 do_install() {
