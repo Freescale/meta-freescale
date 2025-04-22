@@ -396,7 +396,7 @@ FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
                        ${libdir}/libLLVM_viv${SOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
 FILES:libopencl-imx-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
-RDEPENDS:libopencl-imx= "libclc-imx"
+RDEPENDS:libopencl-imx = "libclc-imx"
 
 FILES:libopenvg-imx = "${libdir}/libOpenVG*${REALSOLIBS} ${libdir}/libOpenVG*${SOLIBS}"
 FILES:libopenvg-imx-dev = "${includedir}/VG ${libdir}/pkgconfig/vg.pc"
