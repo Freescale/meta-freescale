@@ -16,9 +16,9 @@ export PYTHON = "${USRBINPATH}/python3"
 
 M="${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
-BOARD_TARGETS="${M}"
-BOARD_TARGETS:ls2088ardb="${M} ${M}_rev1.1"
-BOARD_TARGETS:ls1088ardb-pb="ls1088ardb"
+BOARD_TARGETS = "${M}"
+BOARD_TARGETS:ls2088ardb = "${M} ${M}_rev1.1"
+BOARD_TARGETS:ls1088ardb-pb = "ls1088ardb"
 BOARD_TARGETS:lx2160ardb = "${M} ${M}_rev2"
 BOARD_TARGETS:lx2160ardb-rev2 = "lx2160ardb_rev2"
 

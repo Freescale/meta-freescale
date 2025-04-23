@@ -11,7 +11,7 @@ SRC_URI[sha256sum] = "f751ab7369d48e610ea3b6b0dc5a885c70a510861d6b46296ffc063fed
 
 inherit fsl-eula-unpack use-imx-headers
 
-PARALLEL_MAKE="-j 1"
+PARALLEL_MAKE = "-j 1"
 
 PLATFORM:mx8mm-nxp-bsp = "IMX8MM"
 PLATFORM:mx8mq-nxp-bsp = "IMX8MQ"
