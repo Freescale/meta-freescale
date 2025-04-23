@@ -33,8 +33,6 @@ KERNEL_DEVICETREE:append:use-nxp-bsp = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds0-panel-rpmsg.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds1-panel.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds1-panel-rpmsg.dtb \
-    freescale/${KERNEL_DEVICETREE_BASENAME}-ov5640.dtb \
-    freescale/${KERNEL_DEVICETREE_BASENAME}-ov5640-rpmsg.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-rpmsg.dtb \
 "
 
