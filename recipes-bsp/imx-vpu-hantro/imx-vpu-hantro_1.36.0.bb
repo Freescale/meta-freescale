@@ -2,14 +2,14 @@
 
 DESCRIPTION = "i.MX Hantro VPU library"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
+LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 PROVIDES = "virtual/imxvpu"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-IMX_SRCREV_ABBREV = "98ff183"
+IMX_SRCREV_ABBREV = "194a305"
 
-SRC_URI[sha256sum] = "c4730cb996a3eafbc06ed0765cd509caa63cdeecdc0c4958efbc91383e0501fd"
+SRC_URI[sha256sum] = "0ef1fb5c6653c08f2d2812c72dedf3e8beb091dd5b3d70d6e26f41bac4ebffa7"
 
 S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
