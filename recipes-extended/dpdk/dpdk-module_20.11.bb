@@ -14,7 +14,7 @@ DEPENDS += "dpdk"
 export S
 export STAGING_KERNEL_DIR
 export STAGING_INCDIR
-export INSTALL_MOD_DIR="dpdk"
+export INSTALL_MOD_DIR = "dpdk"
 
 do_configure[noexec] = "1"
 

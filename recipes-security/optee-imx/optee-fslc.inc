@@ -32,7 +32,7 @@ EXTRA_OEMAKE += "V=1 \
                 "
 # python3-cryptography needs the legacy provider, so set OPENSSL_MODULES to the
 # right path until this is relocated automatically.
-export OPENSSL_MODULES="${STAGING_LIBDIR_NATIVE}/ossl-modules"
+export OPENSSL_MODULES = "${STAGING_LIBDIR_NATIVE}/ossl-modules"
 
 CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
