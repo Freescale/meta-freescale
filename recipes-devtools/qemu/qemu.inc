@@ -97,7 +97,7 @@ EXTRA_OECONF = " \
     ${PACKAGECONFIG_CONFARGS} \
     "
 
-export LIBTOOL="${HOST_SYS}-libtool"
+export LIBTOOL = "${HOST_SYS}-libtool"
 
 B = "${WORKDIR}/build"
 

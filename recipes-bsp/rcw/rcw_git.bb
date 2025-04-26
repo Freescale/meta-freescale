@@ -14,7 +14,7 @@ S = "${WORKDIR}/git"
 
 export PYTHON = "${USRBINPATH}/python3"
 
-M="${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
+M = "${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"
 
 BOARD_TARGETS="${M}"
 BOARD_TARGETS:ls2088ardb="${M} ${M}_rev1.1"

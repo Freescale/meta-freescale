@@ -35,7 +35,7 @@ OPTEE_OS_TA_EXPORT_DIR:aarch64 = "${STAGING_INCDIR}/optee/export-user_ta_arm64"
 OPTEE_OS_TA_EXPORT_DIR:arm = "${STAGING_INCDIR}/optee/export-user_ta_arm32"
 
 # Needs to sign OPTEE TAs
-export OPENSSL_MODULES="${STAGING_LIBDIR_NATIVE}/ossl-modules"
+export OPENSSL_MODULES = "${STAGING_LIBDIR_NATIVE}/ossl-modules"
 
 EXTRA_OECMAKE = " \
     -DTA_DEV_KIT_ROOT=${OPTEE_OS_TA_EXPORT_DIR} \
