@@ -51,8 +51,8 @@ FIP_DDR:lx2160a = "${@bb.utils.contains('DISTRO_FEATURES', 'secure', 'fip_ddr', 
 FIP_DDR:lx2162a = "${@bb.utils.contains('DISTRO_FEATURES', 'secure', 'fip_ddr', '', d)}"
 
 # requires CROSS_COMPILE set by hand as there is no configure script
-export CROSS_COMPILE="${TARGET_PREFIX}"
-export ARCH="arm64"
+export CROSS_COMPILE = "${TARGET_PREFIX}"
+export ARCH = "arm64"
 
 # Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is
 # a standalone application

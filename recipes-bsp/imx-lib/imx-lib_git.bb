@@ -32,7 +32,7 @@ PLATFORM:mx7ulp-nxp-bsp = "IMX7"
 PLATFORM:mx8ulp-nxp-bsp = "IMX8ULP"
 PLATFORM:mx9-nxp-bsp    = "IMX8ULP"
 
-PARALLEL_MAKE="-j 1"
+PARALLEL_MAKE = "-j 1"
 EXTRA_OEMAKE = ""
 
 do_compile () {
