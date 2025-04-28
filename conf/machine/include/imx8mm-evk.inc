@@ -16,7 +16,7 @@ MACHINE_FEATURES += "pci wifi bluetooth bcm43455 bcm4356 nxp8987-sdio"
 # and pin it to NXP BSP only
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
 # a full support for it yet.
-MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse bcm4359"
+MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse bcm4359 dpdk nxpwifi-all-sdio"
 
 KERNEL_DEVICETREE = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
