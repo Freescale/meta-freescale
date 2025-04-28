@@ -9,6 +9,7 @@ require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 DEFAULTTUNE:use-mainline-bsp = "cortexa53-crypto"
 
 MACHINE_FEATURES += "wifi bluetooth bcm43455 bcm4356 nxp8987-sdio"
+MACHINE_FEATURES:append:use-nxp-bsp = " nxpwifi-all-sdio"
 
 # NXP BSP can consume proprietary jailhouse and Broadcom drivers
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
