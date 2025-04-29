@@ -13,7 +13,7 @@ MACHINE_FEATURES += "pci wifi bluetooth nxp8997-pcie nxp8997-sdio nxp9098-pcie n
 # NXP BSP can consume proprietary jailhouse and Marvell drivers
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
 # a full support for it yet.
-MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse mrvl8997"
+MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse mrvl8997 nxpwifi-all-pcie nxpwifi-all-sdio dpdk"
 
 # Mainline kernel contains only one DTB file for
 # imx8mpevk machine
