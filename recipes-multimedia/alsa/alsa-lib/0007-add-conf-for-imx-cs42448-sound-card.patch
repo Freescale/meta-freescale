@@ -1,4 +1,4 @@
-From 2f87ea5afa137dfa2f7a096e9c8518be43920ed9 Mon Sep 17 00:00:00 2001
+From 38d84440a7bec9e26380f08f050b2ada772b822e Mon Sep 17 00:00:00 2001
 From: Chancel Liu <chancel.liu@nxp.com>
 Date: Fri, 29 Jul 2022 16:12:37 +0800
 Subject: [PATCH] add conf for imx-cs42448 sound card
@@ -11,9 +11,9 @@ Upstream-Status: Inappropriate [i.MX specific]
 Signed-off-by: Chancel Liu <chancel.liu@nxp.com>
 ---
  src/conf/cards/CS42448.conf | 58 +++++++++++++++++++++++++++++++++++++
- src/conf/cards/Makefile.am  |  3 +-
+ src/conf/cards/Makefile.am  |  1 +
  src/conf/cards/aliases.conf |  1 +
- 3 files changed, 61 insertions(+), 1 deletion(-)
+ 3 files changed, 60 insertions(+)
  create mode 100644 src/conf/cards/CS42448.conf
 
 diff --git a/src/conf/cards/CS42448.conf b/src/conf/cards/CS42448.conf
@@ -81,19 +81,17 @@ index 000000000000..28ba5c485837
 +
 +# vim: ft=alsaconf
 diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
-index 044d2581f8bd..b08962cf3ba3 100644
+index 4502919e3bec..da2def3a9498 100644
 --- a/src/conf/cards/Makefile.am
 +++ b/src/conf/cards/Makefile.am
-@@ -62,7 +62,8 @@ cfg_files = aliases.conf \
- 	CS42888.conf \
+@@ -5,6 +5,7 @@ cfg_files = aliases.conf \
  	IMX-HDMI.conf \
  	AK4458.conf \
--	IMX-XCVR.conf
-+	IMX-XCVR.conf \
-+	CS42448.conf
- 
- alsa_DATA = $(cfg_files)
- 
+ 	IMX-XCVR.conf \
++	CS42448.conf \
+ 	AACI.conf \
+ 	ATIIXP.conf \
+ 	ATIIXP-SPDMA.conf \
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
 index 6dab14855f25..554db846f8e5 100644
 --- a/src/conf/cards/aliases.conf
