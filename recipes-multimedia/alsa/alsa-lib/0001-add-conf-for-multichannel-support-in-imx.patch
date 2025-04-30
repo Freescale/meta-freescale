@@ -1,4 +1,4 @@
-From 49a7eac8e02c33cae8a168e6d22d9ff8aaf86d44 Mon Sep 17 00:00:00 2001
+From 365213e10b073c45d7bacf9c94e30e879bfa8255 Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <b02247@freescale.com>
 Date: Thu, 5 Jun 2014 17:37:47 +0800
 Subject: [PATCH] add conf for multichannel support in imx
@@ -6,7 +6,6 @@ Subject: [PATCH] add conf for multichannel support in imx
 Upstream-Status: Inappropriate [platform specific]
 
 Signed-off-by: Shengjiu Wang <b02247@freescale.com>
-
 ---
  src/conf/cards/CS42888.conf  | 94 ++++++++++++++++++++++++++++++++++++
  src/conf/cards/IMX-HDMI.conf | 67 +++++++++++++++++++++++++
@@ -18,7 +17,7 @@ Signed-off-by: Shengjiu Wang <b02247@freescale.com>
 
 diff --git a/src/conf/cards/CS42888.conf b/src/conf/cards/CS42888.conf
 new file mode 100644
-index 0000000..671a284
+index 000000000000..671a2845894b
 --- /dev/null
 +++ b/src/conf/cards/CS42888.conf
 @@ -0,0 +1,94 @@
@@ -118,7 +117,7 @@ index 0000000..671a284
 +# vim: ft=alsaconf
 diff --git a/src/conf/cards/IMX-HDMI.conf b/src/conf/cards/IMX-HDMI.conf
 new file mode 100644
-index 0000000..a51509e
+index 000000000000..a51509e8ad5a
 --- /dev/null
 +++ b/src/conf/cards/IMX-HDMI.conf
 @@ -0,0 +1,67 @@
@@ -190,7 +189,7 @@ index 0000000..a51509e
 +
 +# vim: ft=alsaconf
 diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
-index 00999f0..fbf0697 100644
+index f387cf4197da..fb7de95b194d 100644
 --- a/src/conf/cards/Makefile.am
 +++ b/src/conf/cards/Makefile.am
 @@ -58,7 +58,9 @@ cfg_files = aliases.conf \
@@ -202,10 +201,10 @@ index 00999f0..fbf0697 100644
 +	CS42888.conf \
 +	IMX-HDMI.conf
  
- if BUILD_ALISP
- cfg_files += aliases.alisp
+ alsa_DATA = $(cfg_files)
+ 
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index 7e352f7..a9e6d76 100644
+index a54824ae636b..0aa874d7434f 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
 @@ -57,6 +57,8 @@ CMI8786 cards.CMI8788
@@ -217,3 +216,6 @@ index 7e352f7..a9e6d76 100644
  
  <confdir:ctl/default.conf>
  <confdir:pcm/default.conf>
+-- 
+2.42.0
+

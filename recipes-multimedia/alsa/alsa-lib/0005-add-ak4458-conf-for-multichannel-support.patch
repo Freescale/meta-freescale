@@ -1,4 +1,4 @@
-From d78b7e2b964c9713c2e9889f4ec85922528ba971 Mon Sep 17 00:00:00 2001
+From eba3f36b6619d0794028f0880fbdfc2bb98df45e Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <shengjiu.wang@nxp.com>
 Date: Wed, 31 Jan 2018 15:06:53 +0800
 Subject: [PATCH] add ak4458 conf for multichannel support
@@ -12,7 +12,6 @@ maximum 8 channels, but ak4458 may support 16 channels
 Upstream-Status: Inappropriate [i.MX specific]
 
 Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-
 ---
  src/conf/cards/AK4458.conf  | 74 +++++++++++++++++++++++++++++++++++++
  src/conf/cards/Makefile.am  |  3 +-
@@ -22,7 +21,7 @@ Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 
 diff --git a/src/conf/cards/AK4458.conf b/src/conf/cards/AK4458.conf
 new file mode 100644
-index 0000000..3b5b195
+index 000000000000..3b5b195f2ca0
 --- /dev/null
 +++ b/src/conf/cards/AK4458.conf
 @@ -0,0 +1,74 @@
@@ -101,7 +100,7 @@ index 0000000..3b5b195
 +	slave.channels 8
 +}
 diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
-index fbf0697..34fa5a3 100644
+index fb7de95b194d..bdb1c2523d62 100644
 --- a/src/conf/cards/Makefile.am
 +++ b/src/conf/cards/Makefile.am
 @@ -60,7 +60,8 @@ cfg_files = aliases.conf \
@@ -112,10 +111,10 @@ index fbf0697..34fa5a3 100644
 +	IMX-HDMI.conf \
 +	AK4458.conf
  
- if BUILD_ALISP
- cfg_files += aliases.alisp
+ alsa_DATA = $(cfg_files)
+ 
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index a9e6d76..2f0a22a 100644
+index 0aa874d7434f..dda71d99916e 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
 @@ -59,6 +59,7 @@ pistachio cards.pistachio-card
@@ -126,3 +125,6 @@ index a9e6d76..2f0a22a 100644
  
  <confdir:ctl/default.conf>
  <confdir:pcm/default.conf>
+-- 
+2.42.0
+

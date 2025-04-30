@@ -1,4 +1,4 @@
-From 36aae65dc913e1ebe72366d7ae361897d465e88d Mon Sep 17 00:00:00 2001
+From 812399f89e01239ca88b905451a55ba996a88e1a Mon Sep 17 00:00:00 2001
 From: Viorel Suman <viorel.suman@nxp.com>
 Date: Mon, 9 Mar 2020 14:25:46 +0200
 Subject: [PATCH] add conf for iMX XCVR sound card
@@ -6,7 +6,6 @@ Subject: [PATCH] add conf for iMX XCVR sound card
 Upstream-Status: Pending
 
 Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
-
 ---
  src/conf/cards/IMX-XCVR.conf | 39 ++++++++++++++++++++++++++++++++++++
  src/conf/cards/Makefile.am   |  3 ++-
@@ -16,7 +15,7 @@ Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
 
 diff --git a/src/conf/cards/IMX-XCVR.conf b/src/conf/cards/IMX-XCVR.conf
 new file mode 100755
-index 0000000..009000c
+index 000000000000..009000c63a19
 --- /dev/null
 +++ b/src/conf/cards/IMX-XCVR.conf
 @@ -0,0 +1,39 @@
@@ -60,7 +59,7 @@ index 0000000..009000c
 +	preamble.y 0x3
 +}
 diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
-index 34fa5a3..70b9bab 100644
+index bdb1c2523d62..044d2581f8bd 100644
 --- a/src/conf/cards/Makefile.am
 +++ b/src/conf/cards/Makefile.am
 @@ -61,7 +61,8 @@ cfg_files = aliases.conf \
@@ -71,10 +70,10 @@ index 34fa5a3..70b9bab 100644
 +	AK4458.conf \
 +	IMX-XCVR.conf
  
- if BUILD_ALISP
- cfg_files += aliases.alisp
+ alsa_DATA = $(cfg_files)
+ 
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index 2f0a22a..e824145 100644
+index dda71d99916e..6dab14855f25 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
 @@ -60,6 +60,7 @@ VC4-HDMI cards.vc4-hdmi
@@ -85,3 +84,6 @@ index 2f0a22a..e824145 100644
  
  <confdir:ctl/default.conf>
  <confdir:pcm/default.conf>
+-- 
+2.42.0
+

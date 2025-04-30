@@ -1,7 +1,10 @@
-From 97d5e09a4166b45c567026e51b8a25ef5d7d587d Mon Sep 17 00:00:00 2001
+From 2f87ea5afa137dfa2f7a096e9c8518be43920ed9 Mon Sep 17 00:00:00 2001
 From: Chancel Liu <chancel.liu@nxp.com>
 Date: Fri, 29 Jul 2022 16:12:37 +0800
 Subject: [PATCH] add conf for imx-cs42448 sound card
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 Upstream-Status: Inappropriate [i.MX specific]
 
@@ -15,7 +18,7 @@ Signed-off-by: Chancel Liu <chancel.liu@nxp.com>
 
 diff --git a/src/conf/cards/CS42448.conf b/src/conf/cards/CS42448.conf
 new file mode 100644
-index 00000000..28ba5c48
+index 000000000000..28ba5c485837
 --- /dev/null
 +++ b/src/conf/cards/CS42448.conf
 @@ -0,0 +1,58 @@
@@ -78,7 +81,7 @@ index 00000000..28ba5c48
 +
 +# vim: ft=alsaconf
 diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
-index 70b9bab3..6aba20b4 100644
+index 044d2581f8bd..b08962cf3ba3 100644
 --- a/src/conf/cards/Makefile.am
 +++ b/src/conf/cards/Makefile.am
 @@ -62,7 +62,8 @@ cfg_files = aliases.conf \
@@ -89,10 +92,10 @@ index 70b9bab3..6aba20b4 100644
 +	IMX-XCVR.conf \
 +	CS42448.conf
  
- if BUILD_ALISP
- cfg_files += aliases.alisp
+ alsa_DATA = $(cfg_files)
+ 
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index e824145d..a40d3731 100644
+index 6dab14855f25..554db846f8e5 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
 @@ -61,6 +61,7 @@ imx-cs42888 cards.CS42888
@@ -104,4 +107,5 @@ index e824145d..a40d3731 100644
  <confdir:ctl/default.conf>
  <confdir:pcm/default.conf>
 -- 
-2.17.1
+2.42.0
+
