@@ -1,4 +1,4 @@
-From 365213e10b073c45d7bacf9c94e30e879bfa8255 Mon Sep 17 00:00:00 2001
+From 3fa81ebaf8bac6b167776888ae26c6c140d8aebc Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <b02247@freescale.com>
 Date: Thu, 5 Jun 2014 17:37:47 +0800
 Subject: [PATCH] add conf for multichannel support in imx
@@ -9,9 +9,9 @@ Signed-off-by: Shengjiu Wang <b02247@freescale.com>
 ---
  src/conf/cards/CS42888.conf  | 94 ++++++++++++++++++++++++++++++++++++
  src/conf/cards/IMX-HDMI.conf | 67 +++++++++++++++++++++++++
- src/conf/cards/Makefile.am   |  4 +-
+ src/conf/cards/Makefile.am   |  2 +
  src/conf/cards/aliases.conf  |  2 +
- 4 files changed, 166 insertions(+), 1 deletion(-)
+ 4 files changed, 165 insertions(+)
  create mode 100644 src/conf/cards/CS42888.conf
  create mode 100644 src/conf/cards/IMX-HDMI.conf
 
@@ -189,20 +189,18 @@ index 000000000000..a51509e8ad5a
 +
 +# vim: ft=alsaconf
 diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
-index f387cf4197da..fb7de95b194d 100644
+index f387cf4197da..cbd2cd04227d 100644
 --- a/src/conf/cards/Makefile.am
 +++ b/src/conf/cards/Makefile.am
-@@ -58,7 +58,9 @@ cfg_files = aliases.conf \
- 	VIA8237.conf \
- 	VX222.conf \
- 	VXPocket.conf \
--	VXPocket440.conf
-+	VXPocket440.conf \
+@@ -1,6 +1,8 @@
+ alsaconfigdir = @ALSA_CONFIG_DIR@
+ alsadir = $(alsaconfigdir)/cards
+ cfg_files = aliases.conf \
 +	CS42888.conf \
-+	IMX-HDMI.conf
- 
- alsa_DATA = $(cfg_files)
- 
++	IMX-HDMI.conf \
+ 	AACI.conf \
+ 	ATIIXP.conf \
+ 	ATIIXP-SPDMA.conf \
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
 index a54824ae636b..0aa874d7434f 100644
 --- a/src/conf/cards/aliases.conf
