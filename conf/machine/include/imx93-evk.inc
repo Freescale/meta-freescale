@@ -4,7 +4,7 @@ require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8-2a/tune-cortexa55.inc
 
 MACHINE_FEATURES += "pci wifi bluetooth"
-MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse nxpiw612-sdio"
+MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse nxpiw612-sdio dpdk nxpwifi-all-sdio"
 
 MACHINE_FIRMWARE:append:use-nxp-bsp = " ethos-u-firmware"
 
