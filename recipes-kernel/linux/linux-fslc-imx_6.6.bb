@@ -43,7 +43,10 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # Additional commits may exist to better acommodate yocto builds.
 #
 # $ git log --oneline  --no-merges v6.6.74.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
-# - e587f8fe42f6 firmware: se_fw: remove info_list from ro section
+# - 8981bfbf2cd5 Reapply "LF-12740: mxc: vpu: hantro_v4l2: report performance statistics"
+# - 9a97c180b1c4 Fix spi-nxp-fspi merge error
+# - e587f8fe42f1 firmware: se_fw: remove info_list from ro section
+# - 0f638960dcff media: Kconfig: fix double VIDEO_DEV
 # - 198242c057e0 drivers:clk:imx:clk-imx8mp-audiomix: remove duplicated CLK_GATE_PARENT definition
 # - 4f5936d7391f Revert "usb: gadget: u_serial: Disable ep before setting port to null to fix the crash caused by port being null"
 # - 997b7e13e413 imx8mp-olimex.dts: Olimex iMX8MP-SOM-EVB-IND
@@ -79,7 +82,7 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.2.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "5ff4cf4d61e11f0fdf8d4e2e54fbb203e46d34b2"
+SRCREV = "37ea7c8b34946d3c83939c41b93681531e21fd8d"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
