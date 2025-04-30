@@ -1,4 +1,4 @@
-From aa4f56c3c952269c36464cc0da9db5a1381648fa Mon Sep 17 00:00:00 2001
+From 3950e1ae36ca53a67b7248137e6033e7e99f79a3 Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Wed, 9 Nov 2022 08:11:42 +0100
 Subject: [PATCH] pcm: rate - fix the crash in
@@ -24,10 +24,10 @@ Signed-off-by: Jaroslav Kysela <perex@perex.cz>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/pcm/pcm_plugin.c b/src/pcm/pcm_plugin.c
-index 6bb90b8b..ec64604c 100644
+index 9d7e233e8437..d58789eca73b 100644
 --- a/src/pcm/pcm_plugin.c
 +++ b/src/pcm/pcm_plugin.c
-@@ -622,7 +622,7 @@ int snd_pcm_plugin_may_wait_for_avail_min_conv(
+@@ -626,7 +626,7 @@ int snd_pcm_plugin_may_wait_for_avail_min_conv(
  		 * This code is also used by extplug, but extplug does not allow to alter the sampling rate.
  		 */
  		if (conv)
@@ -37,5 +37,5 @@ index 6bb90b8b..ec64604c 100644
  		if (slave->avail_min != needed_slave_avail_min) {
  			snd_pcm_sw_params_t *swparams;
 -- 
-2.34.1
+2.42.0
 
