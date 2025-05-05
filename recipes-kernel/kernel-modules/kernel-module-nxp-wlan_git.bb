@@ -13,6 +13,7 @@ MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
 SRC_URI = " \
     ${MRVL_SRC};branch=${SRCBRANCH} \
     file://wlan_src_driver_patch_release_lf-6.6.52-2.2.0.patch \
+    file://mlinux-moal_main-lower-PRINTM_MMSG-log-level-to-KERN_INFO.patch \
 "
 SRCREV = "5ad19e194f49ed9447bee7864eb562618ccaf9b1"
 
