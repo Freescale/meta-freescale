@@ -1,0 +1,36 @@
+From b1b218757973fd6a293de5bdbdc75307db07998e Mon Sep 17 00:00:00 2001
+From: Vitor Soares <vitor.soares@toradex.com>
+Date: Wed, 30 Apr 2025 15:12:06 +0100
+Subject: [PATCH] mlinux: moal_main: lower PRINTM_MMSG() log level to KERN_INFO
+
+Currently, the PRINTM_MMSG macro uses KERN_ALERT for printing messages.
+KERN_ALERT is intended for critical conditions requiring immediate
+attention (e.g., hardware failure), and using it for normal debug output
+is misleading and can clutter system logs.
+
+This patch lowers the log level to KERN_INFO, which is more appropriate
+for informational messages that are not indicative of system-critical
+failures.
+
+Upstream-Status: Inappropriate [upstream not accepting patches]
+Signed-off-by: Vitor Soares <vitor.soares@toradex.com>
+---
+ mlinux/moal_main.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mlinux/moal_main.h b/mlinux/moal_main.h
+index 6d87dcf4f5db..b4e7e4d4a5fd 100644
+--- a/mlinux/moal_main.h
++++ b/mlinux/moal_main.h
+@@ -3517,7 +3517,7 @@ extern t_u32 drvdbg;
+ 	do {                                                                   \
+ 		woal_print(level, msg);                                        \
+ 		if (drvdbg & MMSG)                                             \
+-			printk(KERN_ALERT msg);                                \
++			printk(KERN_INFO msg);                                \
+ 	} while (0)
+ 
+ static inline void woal_print(t_u32 level, char *fmt, ...)
+-- 
+2.34.1
+
