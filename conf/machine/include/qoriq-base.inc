@@ -43,6 +43,8 @@ EXTRA_IMAGEDEPENDS += "u-boot qoriq-cst-native"
 
 MACHINEOVERRIDES =. "qoriq:"
 
+INHERIT += "machine-overrides-extender"
+
 # Machines or distros can define which BSP it should use by default. We are
 # intending to default for nxp BSP by default and specific machines or
 # DISTROs might change it if need.
@@ -51,6 +53,8 @@ MACHINEOVERRIDES =. "qoriq:"
 QORIQ_DEFAULT_BSP ?= "nxp"
 
 MACHINEOVERRIDES =. "use-${QORIQ_DEFAULT_BSP}-bsp:"
+MACHINEOVERRIDES_EXTENDER:use-mainline-bsp = "qoriq-generic-bsp:qoriq-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:use-nxp-bsp = "qoriq-generic-bsp:qoriq-nxp-bsp"
 
 # Sub-architecture support
 MACHINE_SOCARCH_SUFFIX ?= ""
