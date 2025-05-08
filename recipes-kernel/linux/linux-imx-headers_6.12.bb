@@ -7,10 +7,11 @@ New headers are installed in ${includedir}/imx."
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-SRC_URI = "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.6.y"
-LOCALVERSION = "-6.6.52-2.2.0"
-SRCREV = "e0f9e2afd4cff3f02d71891244b4aa5899dfc786"
+SRC_URI = "${LINUX_IMX_SRC}"
+LINUX_IMX_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
+SRCBRANCH = "lf-6.12.y"
+LOCALVERSION = "-lts-${SRCBRANCH}"
+SRCREV = "37d02f4dcbbe6677dc9f5fc17f386c05d6a7bd7a"
 
 S = "${WORKDIR}/git"
 
@@ -24,7 +25,6 @@ IMX_UAPI_HEADERS = " \
     hx280enc.h \
     ipu.h \
     imx_vpu.h \
-    mxc_asrc.h \
     mxc_dcic.h \
     mxc_mlb.h \
     mxc_sim_interface.h \
@@ -34,6 +34,11 @@ IMX_UAPI_HEADERS = " \
     pxp_dma.h \
     version.h \
     videodev2.h \
+"
+
+IMX_UAPI_HEADERS_SOUND = " \
+    sound/compress_offload.h \
+    sound/compress_params.h \
 "
 
 do_install() {
@@ -56,6 +61,11 @@ do_install() {
     for h in ${IMX_UAPI_HEADERS}; do
         install -D -m 0644 ${B}${includedir}/linux/$h \
                        ${D}${includedir}/imx/linux/$h
+    done
+    install -d ${D}${includedir}/imx/linux/sound
+    for h in ${IMX_UAPI_HEADERS_SOUND}; do
+        install -D -m 0644 ${B}${includedir}/$h \
+                       ${D}${includedir}/imx/$h
     done
 }
 
