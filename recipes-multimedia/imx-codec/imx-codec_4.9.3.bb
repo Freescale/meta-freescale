@@ -1,19 +1,23 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright 2017 NXP-2023
+# Copyright (C) 2017-2024 NXP
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
+
 DESCRIPTION = "Freescale Multimedia codec libs"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=10c0fda810c63b052409b15a5445671a"
+LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 # Backward compatibility
 PROVIDES += "libfslcodec"
 
-SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
-SRC_URI[sha256sum] = "1a41a3cad9e0f4baa904fcec896105d3474e18d13f169dad1172d5691fc11c9a"
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
+SRC_URI[sha256sum] = "61b40623e1c2322f1ba85da57ab6949f749d02b3b5cbc2b1ef583a99b59e8968"
+IMX_SRCREV_ABBREV = "394336b"
 
 inherit fsl-eula-unpack autotools pkgconfig
+
+S = "${WORKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
 PACKAGECONFIG ??= "${PACKAGECONFIG_VPU}"
 # Support Chips&Media VPU only
