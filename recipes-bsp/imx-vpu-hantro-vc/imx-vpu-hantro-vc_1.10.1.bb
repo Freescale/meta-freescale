@@ -6,7 +6,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
 
 inherit fsl-eula-unpack
 
-SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
+SRC_URI = " \
+    ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
+    file://0001-base_type.h-make-header-compatible-with-c23.patch \
+"
 IMX_SRCREV_ABBREV = "c0244a1"
 
 SRC_URI[sha256sum] = "713ba375f25490727fcc62bab5d5508f74de03204b4c153464b696b652c5c7df"
