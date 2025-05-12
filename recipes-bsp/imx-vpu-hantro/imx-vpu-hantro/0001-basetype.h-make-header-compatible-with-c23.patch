@@ -1,0 +1,38 @@
+From e39a6602817e4221ae09ac3d520ca6a0d94814dc Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Wed, 7 May 2025 16:13:38 +0000
+Subject: [PATCH] basetype.h: make header compatible with c23
+
+With C23 bool, true and false are built in keywords and cannot be
+redefined.
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ h1_encoder/software/inc/basetype.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/h1_encoder/software/inc/basetype.h b/h1_encoder/software/inc/basetype.h
+index 55e46a195b3b..6655ec54481b 100755
+--- a/h1_encoder/software/inc/basetype.h
++++ b/h1_encoder/software/inc/basetype.h
+@@ -66,12 +66,16 @@ typedef size_t ptr_t;
+ #define PRT_PTR "x"
+ #endif
+ 
++#if defined __STDC_VERSION__ && __STDC_VERSION__ > 201710L
++/* bool, true and false are keywords.  */
++#else
+ #ifndef __cplusplus
+ typedef enum {
+         false   = 0,
+         true    = 1
+ } bool;
+ #endif
++#endif
+ 
+ #else /* __symbian__ or __win__ or whatever, customize it to suit well */
+ 
+-- 
+2.42.0
+

@@ -1,0 +1,90 @@
+From 0c5bdd12a6f3ba73e605656828bf429966a997ef Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Wed, 7 May 2025 13:25:26 +0000
+Subject: [PATCH] test: md5: convert to ansi c
+
+GCC 15 no longer likes this K&R style function declarations.
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ decoder_sw/software/test/common/swhw/md5.c | 15 +++++----------
+ decoder_sw/software/test/common/swhw/md5.h |  8 ++++----
+ 2 files changed, 9 insertions(+), 14 deletions(-)
+
+diff --git a/decoder_sw/software/test/common/swhw/md5.c b/decoder_sw/software/test/common/swhw/md5.c
+index c3334bf751fd..20014fbdf268 100755
+--- a/decoder_sw/software/test/common/swhw/md5.c
++++ b/decoder_sw/software/test/common/swhw/md5.c
+@@ -42,8 +42,7 @@
+ /*
+  * Note: this code is harmless on little-endian machines.
+  */
+-void ByteReverse(buf, longs) unsigned char *buf;
+-unsigned longs;
++void ByteReverse(unsigned char *buf, unsigned longs)
+ {
+   uint32 t;
+   do {
+@@ -59,7 +58,7 @@ unsigned longs;
+  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
+  * initialization constants.
+  */
+-void MD5Init(ctx) struct MD5Context *ctx;
++void MD5Init(struct MD5Context *ctx)
+ {
+   ctx->buf[0] = 0x67452301;
+   ctx->buf[1] = 0xefcdab89;
+@@ -74,9 +73,7 @@ void MD5Init(ctx) struct MD5Context *ctx;
+  * Update context to reflect the concatenation of another buffer full
+  * of bytes.
+  */
+-void MD5Update(ctx, buf, len) struct MD5Context *ctx;
+-unsigned char *buf;
+-unsigned len;
++void MD5Update(struct MD5Context *ctx, unsigned char *buf, unsigned len)
+ {
+   uint32 t;
+ 
+@@ -124,8 +121,7 @@ unsigned len;
+  * Final wrapup - pad to 64-byte boundary with the bit pattern
+  * 1 0* (64-bit count of bits processed, MSB-first)
+  */
+-void MD5Final(digest, ctx) unsigned char digest[16];
+-struct MD5Context *ctx;
++void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
+ {
+   unsigned count;
+   unsigned char *p;
+@@ -186,8 +182,7 @@ struct MD5Context *ctx;
+  * reflect the addition of 16 longwords of new data.  MD5Update blocks
+  * the data and converts bytes into longwords for this routine.
+  */
+-void MD5Transform(buf, in) uint32 buf[4];
+-uint32 in[16];
++void MD5Transform(uint32 buf[4], uint32 in[16])
+ {
+   register uint32 a, b, c, d;
+ 
+diff --git a/decoder_sw/software/test/common/swhw/md5.h b/decoder_sw/software/test/common/swhw/md5.h
+index 516400236606..c1d773093b66 100755
+--- a/decoder_sw/software/test/common/swhw/md5.h
++++ b/decoder_sw/software/test/common/swhw/md5.h
+@@ -76,10 +76,10 @@ struct MD5Context {
+   unsigned char in[64];
+ };
+ 
+-extern void MD5Init();
+-extern void MD5Update();
+-extern void MD5Final();
+-extern void MD5Transform();
++extern void MD5Init(struct MD5Context *ctx);
++extern void MD5Update(struct MD5Context *ctx, unsigned char *buf, unsigned len);
++extern void MD5Final(unsigned char digest[16], struct MD5Context *ctx);
++extern void MD5Transform(uint32 buf[4], uint32 in[16]);
+ 
+ /*
+  * This is needed to make RSAREF happy on some MS-DOS compilers.
+-- 
+2.42.0
+

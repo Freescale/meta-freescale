@@ -6,7 +6,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 PROVIDES = "virtual/imxvpu"
 
-SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
+SRC_URI = " \
+    ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
+    file://0001-test-md5-convert-to-ansi-c.patch \
+    file://0001-basetype.h-make-header-compatible-with-c23.patch \
+"
 IMX_SRCREV_ABBREV = "194a305"
 
 SRC_URI[sha256sum] = "0ef1fb5c6653c08f2d2812c72dedf3e8beb091dd5b3d70d6e26f41bac4ebffa7"
