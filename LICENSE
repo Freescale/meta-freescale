@@ -20,7 +20,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-bsp/imx-lib/imx-lib_git.bb: LICENSE = "LGPL-2.1-only"
 ./recipes-bsp/imx-mkimage/imx-boot_1.0.bb: LICENSE = "GPL-2.0-only"
 ./recipes-bsp/imx-mkimage/imx-mkimage_git.bb: LICENSE = "GPL-2.0-only"
-./recipes-bsp/imx-sc-firmware/imx-sc-firmware_1.15.0.bb: LICENSE = "Proprietary"
+./recipes-bsp/imx-sc-firmware/imx-sc-firmware_1.18.0.bb: LICENSE = "Proprietary"
 ./recipes-bsp/imx-seco/imx-seco-libs_git.bb: LICENSE = "Proprietary"
 ./recipes-bsp/imx-seco/imx-seco_5.9.4.1.bb: LICENSE = "Proprietary"
 ./recipes-bsp/imx-secure-enclave/imx-secure-enclave_git.bb: LICENSE = "BSD-3-Clause"
