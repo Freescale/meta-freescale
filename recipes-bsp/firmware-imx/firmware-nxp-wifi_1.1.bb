@@ -7,11 +7,11 @@ should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=ca53281cc0caa7e320d4945a896fb837"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.6.52_2.2.0"
-SRCREV = "2978f3c88d6bcc5695a7b45f1936f18d31eebfa8"
+SRCBRANCH = "lf-6.12.3_1.0.0"
+SRCREV = "eef7ef94bc44cacd3b068f66658ef33391547daa"
 
 S = "${WORKDIR}/git"
 
@@ -19,6 +19,8 @@ inherit allarch
 
 CLEANBROKEN = "1"
 ALLOW_EMPTY:${PN} = "1"
+ALLOW_EMPTY:${PN}-all-sdio = "1"
+ALLOW_EMPTY:${PN}-all-pcie = "1"
 
 do_compile() {
 	:
@@ -173,3 +175,17 @@ RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RREPLACES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RCONFLICTS:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
+
+RDEPENDS:${PN}-all-sdio = " \
+    ${PN}-nxp8801-sdio \
+    ${PN}-nxp8987-sdio \
+    ${PN}-nxp9098-sdio \
+    ${PN}-nxpiw416-sdio \
+    ${PN}-nxpiw610-sdio \
+    ${PN}-nxpiw612-sdio \
+"
+
+RDEPENDS:${PN}-all-pcie = " \
+    ${PN}-nxp8997-pcie \
+    ${PN}-nxp9098-pcie \
+"
