@@ -111,7 +111,7 @@ RCONFLICTS:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
 
 FILES:${PN}-nxp8997-sdio = " \
     ${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin \
-    ${nonarch_base_libdir}/firmware/nxp/sdio*8997* \
+    ${nonarch_base_libdir}/firmware/nxp/sd*8997* \
 "
 RDEPENDS:${PN}-nxp8997-sdio += "${PN}-nxp8997-common"
 RPROVIDES:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
@@ -137,7 +137,7 @@ RREPLACES:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
 RCONFLICTS:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
 
 FILES:${PN}-nxp9098-sdio = " \
-    ${nonarch_base_libdir}/firmware/nxp/sdio*9098* \
+    ${nonarch_base_libdir}/firmware/nxp/sd*9098* \
 "
 RDEPENDS:${PN}-nxp9098-sdio += "${PN}-nxp9098-common"
 RPROVIDES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
