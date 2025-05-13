@@ -9,8 +9,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRC_URI = " \
     git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-video-fbdev-mxc-make-uapi-ipu.h-pxp_dma.h-compatible.patch \
 "
+
+SRC_URI:append = " file://0001-video-fbdev-mxc-make-uapi-ipu.h-pxp_dma.h-compatible.patch "
+
 SRCBRANCH = "lf-6.6.y"
 LOCALVERSION = "-6.6.52-2.2.0"
 SRCREV = "e0f9e2afd4cff3f02d71891244b4aa5899dfc786"
