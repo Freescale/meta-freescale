@@ -10,6 +10,3 @@ IMX_PATCH = " \
 SRC_URI:append:imx-nxp-bsp = "${IMX_PATCH}"
 
 PACKAGE_ARCH:imx-nxp-bsp = "${MACHINE_SOCARCH}"
-
-GLIBC_64BIT_TIME_FLAGS = ""
-INSANE_SKIP:append = " 32bit-time"
