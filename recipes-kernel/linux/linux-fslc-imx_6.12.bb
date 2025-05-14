@@ -28,12 +28,12 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.6.84
+#    tag: v6.12.3
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.6.52-2.2.0
+#    tag: lf-6.12.3-1.0.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -42,35 +42,21 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.6.74.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
-# - 8981bfbf2cd5 Reapply "LF-12740: mxc: vpu: hantro_v4l2: report performance statistics"
-# - 9a97c180b1c4 Fix spi-nxp-fspi merge error
-# - e587f8fe42f1 firmware: se_fw: remove info_list from ro section
-# - 0f638960dcff media: Kconfig: fix double VIDEO_DEV
-# - 198242c057e0 drivers:clk:imx:clk-imx8mp-audiomix: remove duplicated CLK_GATE_PARENT definition
-# - 4f5936d7391f Revert "usb: gadget: u_serial: Disable ep before setting port to null to fix the crash caused by port being null"
-# - 997b7e13e413 imx8mp-olimex.dts: Olimex iMX8MP-SOM-EVB-IND
-# - b746c990ecba Revert "LF-12740: mxc: vpu: hantro_v4l2: report performance statistics"
-# - e349e6c45a94 arm64: imx_v8_defconfig: Enable CONFIG_GPIO_VF610
-# - 5a015324eddc arm64: dts: imx8qm: add missing imx8-ss-cm40.dtsi include
-# - 8a8245d395d5 arm64: dts: imx8: img: add #address-cells and #size-cells to I2C MIPI CSI nodes
-# - db13648c4be6 fw: imx: seco_mu: change dev_err to dev_err_probe for -EPROBE_DEFER
-# - 0451236fd0ae clk: imx: imx8qm: add more resources to whitelist
-# - 2ee789512d1b drm/imx: lcdifv3: Fix videomode settings
-# - 5cd4c30ec228 i2c: imx: Remove unnecessary clock reconfiguration
-# - 583f2a703c5d tty: vt: conmakehash: remove non-portable code printing comment header
-# - 4ddc4dae8515 tty: vt: conmakehash: cope with abs_srctree no longer in env
-# - 46a05495bce3 drm: of: Fix build without CONFIG_OF
-# - 3d6392b96bf1 Revert "LF-4131 iio: gyro: fxas21002c: Fix raw data is not updated in trigger/buffer"
-# - 93b9fc75becd nvmem: imx-ocotp-fsb-s400: BUG: Fix the word count
-# - 090d101928fc tty: vt: conmakehash: Don't mention the full path of the input in output
-# - d16eb5ced32f arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
-# - d39502c0dea9 imx:dts:imx8mm-evkb: fix the pmic name to avoid duplicated label error
-# - 58181fb0ff67 media: imx8: select v4l2_* for mxc-mipi-csi2_yav
-# - 930431e0d1d5 gpu: drm: cadence: select hdmi helper
-# - da675fd29502 of: enable using OF_DYNAMIC without OF_UNITTEST
-# - 7c5f3cbb180c arm64: dts: imx8mq: drop cpu-idle-states
-# - a9920ce3e197 hwrng: optee: support generic crypto
+# $ git log --oneline  --no-merges v6.12.3.. ^mainline/linux-6.12.y ^NXP/lf-6.12.y
+# - 29efe53139ac hwrng: optee: support generic crypto
+# - 7f80ce9b7c82 arm64: dts: imx8mq: drop cpu-idle-states
+# - 5e3b6ecf85c4 of: enable using OF_DYNAMIC without OF_UNITTEST
+# - 1bd794e571f6 gpu: drm: cadence: select hdmi helper
+# - d74361dc9bdc imx:dts:imx8mm-evkb: fix the pmic name to avoid duplicated label error
+# - 90900e871607 arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
+# - 24ef2924dd5f drm: of: Fix build without CONFIG_OF
+# - a97fe216ede5 i2c: imx: Remove unnecessary clock reconfiguration
+# - 93e7f87e7bc6 drm/imx: lcdifv3: Fix videomode settings
+# - ff2397021b0d clk: imx: imx8qm: add more resources to whitelist
+# - e0fc64f7a2f8 arm64: dts: imx8: img: add #address-cells and #size-cells to I2C MIPI CSI nodes
+# - 98b777bfa849 arm64: dts: imx8qm: add missing imx8-ss-cm40.dtsi include
+# - 2d0aefc287a7 arm64: imx_v8_defconfig: Enable CONFIG_GPIO_VF610
+# - 44aadbd00c61 imx8mp-olimex.dts: Olimex iMX8MP-SOM-EVB-IND
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -80,16 +66,16 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 require linux-imx.inc
 
-KBRANCH = "6.6-2.2.x-imx"
+KBRANCH = "6.12-1.0.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "37ea7c8b34946d3c83939c41b93681531e21fd8d"
+SRCREV = "29efe53139acb64d96bfcc119cd10d10c552801b"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.84"
+LINUX_VERSION = "6.12.3"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
@@ -97,7 +83,7 @@ KBUILD_DEFCONFIG:mx8-generic-bsp = "imx_v8_defconfig"
 KBUILD_DEFCONFIG:mx9-generic-bsp = "imx_v8_defconfig"
 
 # Local version indicates the branch name in the NXP kernel tree where patches are collected from.
-LOCALVERSION = "-lf-6.6.y"
+LOCALVERSION = "-lf-6.12.y"
 
 DEFAULT_PREFERENCE = "1"
 
