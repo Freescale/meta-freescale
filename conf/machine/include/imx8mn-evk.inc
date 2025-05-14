@@ -9,6 +9,7 @@ require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 DEFAULTTUNE:use-mainline-bsp = "cortexa53-crypto"
 
 MACHINE_FEATURES += "wifi bluetooth bcm43455 bcm4356 nxp8987-sdio"
+MACHINE_FEATURES:append:use-nxp-bsp = " nxpwifi-all-sdio"
 
 # NXP BSP can consume proprietary jailhouse and Broadcom drivers
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
@@ -82,3 +83,11 @@ TEE_LOAD_ADDR = "0x56000000"
 
 # Add additional firmware
 MACHINE_FIRMWARE:append = " linux-firmware-ath10k"
+
+WKS_FILE_DEPENDS:append:imx-nxp-bsp = " imx-m7-demos"
+IMAGE_BOOT_FILES:append:imx-nxp-bsp = " \
+    mcore-demos/imx8mn_m7_TCM_hello_world.bin \
+    mcore-demos/imx8mn_m7_TCM_rpmsg_lite_pingpong_rtos_linux_remote.bin \
+    mcore-demos/imx8mn_m7_TCM_rpmsg_lite_str_echo_rtos.bin \
+    mcore-demos/imx8mn_m7_TCM_sai_low_power_audio.bin \
+"

@@ -6,7 +6,7 @@ require conf/machine/include/arm/armv8a/tune-cortexa35.inc
 IMX_DEFAULT_BSP = "nxp"
 
 MACHINE_FEATURES += "pci bcm43455 bcm4356 nxp8997-pcie nxp9098-pcie"
-MACHINE_FEATURES:append:use-nxp-bsp = " bcm4359"
+MACHINE_FEATURES:append:use-nxp-bsp = " bcm4359 dpdk nxpwifi-all-sdio"
 
 # Don't include kernels in standard images
 RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""

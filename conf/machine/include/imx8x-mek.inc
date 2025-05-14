@@ -4,7 +4,7 @@ require conf/machine/include/arm/armv8a/tune-cortexa35.inc
 IMX_DEFAULT_BSP = "nxp"
 
 MACHINE_FEATURES += "pci optee bcm43455 bcm4356 nxp8997-pcie nxp9098-pcie"
-MACHINE_FEATURES:append:use-nxp-bsp = " bcm4359"
+MACHINE_FEATURES:append:use-nxp-bsp = " bcm4359 nxpwifi-all-pcie nxpwifi-all-sdio"
 
 # Don't include kernels in standard images
 RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""
@@ -33,8 +33,6 @@ KERNEL_DEVICETREE:append:use-nxp-bsp = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds0-panel-rpmsg.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds1-panel.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-jdi-wuxga-lvds1-panel-rpmsg.dtb \
-    freescale/${KERNEL_DEVICETREE_BASENAME}-ov5640.dtb \
-    freescale/${KERNEL_DEVICETREE_BASENAME}-ov5640-rpmsg.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-rpmsg.dtb \
 "
 

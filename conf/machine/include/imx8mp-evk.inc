@@ -13,7 +13,7 @@ MACHINE_FEATURES += "pci wifi bluetooth nxp8997-pcie nxp8997-sdio nxp9098-pcie n
 # NXP BSP can consume proprietary jailhouse and Marvell drivers
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
 # a full support for it yet.
-MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse mrvl8997"
+MACHINE_FEATURES:append:use-nxp-bsp = " optee jailhouse mrvl8997 nxpwifi-all-pcie nxpwifi-all-sdio dpdk"
 
 # Mainline kernel contains only one DTB file for
 # imx8mpevk machine
@@ -72,3 +72,12 @@ TEE_LOAD_ADDR = "0x56000000"
 
 # Add additional firmware
 MACHINE_FIRMWARE:append = " linux-firmware-ath10k"
+
+WKS_FILE_DEPENDS:append:imx-nxp-bsp = " imx-m7-demos"
+IMAGE_BOOT_FILES:append:imx-nxp-bsp = " \
+    mcore-demos/imx8mp_m7_TCM_hello_world.bin \
+    mcore-demos/imx8mp_m7_TCM_low_power_wakeword.bin \
+    mcore-demos/imx8mp_m7_TCM_rpmsg_lite_pingpong_rtos_linux_remote.bin \
+    mcore-demos/imx8mp_m7_TCM_rpmsg_lite_str_echo_rtos.bin \
+    mcore-demos/imx8mp_m7_TCM_sai_low_power_audio.bin \
+"
