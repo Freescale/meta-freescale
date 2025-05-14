@@ -1,4 +1,4 @@
-From b1b218757973fd6a293de5bdbdc75307db07998e Mon Sep 17 00:00:00 2001
+From 9e2200debd7ac4fa8dac4b01949b5bedbc52fe2b Mon Sep 17 00:00:00 2001
 From: Vitor Soares <vitor.soares@toradex.com>
 Date: Wed, 30 Apr 2025 15:12:06 +0100
 Subject: [PATCH] mlinux: moal_main: lower PRINTM_MMSG() log level to KERN_INFO
@@ -19,18 +19,15 @@ Signed-off-by: Vitor Soares <vitor.soares@toradex.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/mlinux/moal_main.h b/mlinux/moal_main.h
-index 6d87dcf4f5db..b4e7e4d4a5fd 100644
+index 4328652..27121e0 100644
 --- a/mlinux/moal_main.h
 +++ b/mlinux/moal_main.h
-@@ -3517,7 +3517,7 @@ extern t_u32 drvdbg;
+@@ -3529,7 +3529,7 @@ extern t_u32 drvdbg;
  	do {                                                                   \
- 		woal_print(level, msg);                                        \
+ 		woal_print(MMSG, msg);                                         \
  		if (drvdbg & MMSG)                                             \
 -			printk(KERN_ALERT msg);                                \
 +			printk(KERN_INFO msg);                                \
  	} while (0)
  
  static inline void woal_print(t_u32 level, char *fmt, ...)
--- 
-2.34.1
-
