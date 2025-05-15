@@ -24,12 +24,12 @@ DEPENDS += " \
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
 #
-# Linux kernel stable 6.12.20 changelog:
-# https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.12.20
-LINUX_VERSION = "6.12.20"
+# Linux kernel stable 6.12.28 changelog:
+# https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.12.28
+LINUX_VERSION = "6.12.28"
 
 KBRANCH = "6.12.x+fslc"
-SRCREV = "844aa3471b97053b0a59f68d36dc6f796338b562"
+SRCREV = "7a7717289cd3915e484b02c02557de380352b030"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
