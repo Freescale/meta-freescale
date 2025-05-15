@@ -105,7 +105,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-kernel/kernel-modules/kernel-module-imx-gpu-viv_6.4.11.p2.2+fslc.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-imx-gpu-viv_6.4.11.p2.4.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-ipc.inc: LICENSE = "BSD"
-./recipes-kernel/kernel-modules/kernel-module-isp-vvcam_4.2.2.24.2.bb: LICENSE = "GPL-2.0-only"
+./recipes-kernel/kernel-modules/kernel-module-isp-vvcam_4.2.2.25.1.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-ls-debug_git.bb: LICENSE = "GPL-2.0-or-later"
 ./recipes-kernel/kernel-modules/kernel-module-nxp-wlan_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-uio-seville_0.1.bb: LICENSE = "GPL-2.0-only"
