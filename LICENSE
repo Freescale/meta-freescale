@@ -103,7 +103,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-kernel/ceetm/ceetm_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-ar_git.bb: LICENSE = "GPL-2.0-only & BSD"
 ./recipes-kernel/kernel-modules/kernel-module-imx-gpu-viv_6.4.11.p2.2+fslc.bb: LICENSE = "GPL-2.0-only"
-./recipes-kernel/kernel-modules/kernel-module-imx-gpu-viv_6.4.11.p2.4.bb: LICENSE = "GPL-2.0-only"
+./recipes-kernel/kernel-modules/kernel-module-imx-gpu-viv_6.4.11.p3.0.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-ipc.inc: LICENSE = "BSD"
 ./recipes-kernel/kernel-modules/kernel-module-isp-vvcam_4.2.2.24.2.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-ls-debug_git.bb: LICENSE = "GPL-2.0-or-later"
