@@ -187,8 +187,8 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
                    "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
-SRCREV = "bba296b75dfb3e7ae4c836255edbd2b3c085c269"
+SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
+SRCREV = "7bb1254fcb0a0dcb1ecb4ac21efbc5068151943d"
 
 S = "${WORKDIR}/git"
 
@@ -218,10 +218,6 @@ EXTRA_OEMESON += " \
 EXTRA_OEMESON:remove = " \
     -Dkate=disabled \
 "
-
-# it uses nested functions sadly, in ext/wayland/gstwaylandsink.c for GST_ELEMENT_REGISTER_DEFINE
-#
-TOOLCHAIN = "gcc"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 ########### End of i.MX overrides #########
