@@ -20,8 +20,8 @@ PV = "7.0+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
            file://memtool_profile"
-SRCBRANCH = "lf-6.6.3_1.0.0"
-SRCREV = "8a1fa37664a1e470cf86f1185c08e265e4602a9b"
+SRCBRANCH = "lf-6.12.3_1.0.0"
+SRCREV = "92a497313016bfa536d561e13fcbad2d273ded4c"
 
 S = "${WORKDIR}/git"
 
@@ -40,6 +40,7 @@ PLATFORM:mx7d-nxp-bsp  = "IMX7D"
 PLATFORM:mx7ulp-nxp-bsp = "IMX7D"
 PLATFORM:mx8-nxp-bsp = "IMX8"
 PLATFORM:mx8ulp-nxp-bsp = "IMX8ULP"
+PLATFORM:mx91-nxp-bsp = "IMX8"
 PLATFORM:mx93-nxp-bsp = "IMX8ULP"
 PLATFORM:mx95-nxp-bsp = "IMX8"
 
