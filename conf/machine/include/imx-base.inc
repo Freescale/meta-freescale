@@ -619,8 +619,8 @@ PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.6.0.imx"
 PREFERRED_VERSION_opencv:mx9-nxp-bsp ??= "4.6.0.imx"
 
 # Handle default kernel
-IMX_DEFAULT_KERNEL:imx-mainline-bsp = "linux-fslc"
-IMX_DEFAULT_KERNEL:imx-nxp-bsp      = "linux-fslc-imx"
+IMX_DEFAULT_KERNEL:imx-mainline-bsp ??= "linux-fslc"
+IMX_DEFAULT_KERNEL:imx-nxp-bsp      ??= "linux-fslc-imx"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 
