@@ -1,17 +1,17 @@
-# Copyright 2020-2023 NXP
+# Copyright (C) 2020-2024 NXP
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
+LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
 DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 jsoncpp patchelf-native"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
 "
-IMX_SRCREV_ABBREV = "8527c7b"
+IMX_SRCREV_ABBREV = "327f21d"
 S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
-SRC_URI[sha256sum] = "481e49e9da6d7783d6c28385bb68463eac7b9e9fef6ea958950260a8ad6b1e4c"
+SRC_URI[sha256sum] = "f57c6fe1c2dd1c8e5991a625d0b3a1dbfdfe6d39a1a116a904d543faa0f4f6f0"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -36,6 +36,7 @@ EXTRA_OECMAKE += " \
     -DCMAKE_BUILD_TYPE=release \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
+    -DTUNINGEXT=1 \
     -DQTLESS=1 \
     -DFULL_SRC_COMPILE=1 \
     -DWITH_DRM=1 \

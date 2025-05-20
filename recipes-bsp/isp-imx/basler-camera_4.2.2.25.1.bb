@@ -1,16 +1,23 @@
-# Copyright 2020-2023 NXP
+# Copyright (C) 2020-2024 NXP
 
 DESCRIPTION = "Basler camera binary drivers"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=2827219e81f28aba7c6a569f7c437fa7"
+LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
+
+IMX_SRCREV_ABBREV = "d1f506a"
 
 inherit fsl-eula-unpack
 
-SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
+SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 
-SRC_URI[sha256sum] = "ad3e98ee0c10f2b3e74af8923f44b8d5908e42eedbca12a702e35cee9328d8cf"
+SRC_URI[sha256sum] = "49d1b3691d18e2ba5f43a6e2c59ac16767b6e077a118cafec7f51293d6bf30f3"
+
+S = "${WORKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
+
+do_compile[noexec] = "1"
 
 do_install() {
+    oe_runmake install INSTALL_DIR=${D}
     dest_dir=${D}/opt/imx8-isp/bin
     install -d ${D}/${libdir}
     install -d $dest_dir
