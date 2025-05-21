@@ -75,9 +75,9 @@ UBOOT_SUFFIX ?= "${UBOOT_SUFFIX:pn-${IMX_DEFAULT_BOOTLOADER}}"
 # wic based images.
 SPL_BINARY ??= "${@get_spl_binary(d)}"
 
-PREFERRED_PROVIDER_u-boot ??= "${IMX_DEFAULT_BOOTLOADER}"
-PREFERRED_PROVIDER_u-boot-mfgtool ??= "${IMX_DEFAULT_BOOTLOADER}"
 PREFERRED_PROVIDER_virtual/bootloader ??= "${IMX_DEFAULT_BOOTLOADER}"
+PREFERRED_PROVIDER_u-boot ??= "${PREFERRED_PROVIDER_virtual/bootloader}"
+PREFERRED_PROVIDER_u-boot-mfgtool ??= "${PREFERRED_PROVIDER_virtual/bootloader}"
 
 PREFERRED_PROVIDER_u-boot-mxsboot-native ??= "u-boot-fslc-mxsboot-native"
 
@@ -539,14 +539,14 @@ PREFERRED_VERSION_gstreamer1.0-plugins-good:mx9-nxp-bsp ??= "1.24.7.imx"
 # GStreamer copied recipes
 PREFERRED_VERSION_gst-devtools:mx8-nxp-bsp              ??= "1.24.0.imx"
 PREFERRED_VERSION_gst-examples:mx8-nxp-bsp              ??= "1.24.7.imx"
-PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        ??= "1.24.0.imx"
+PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        ??= "1.24.7.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8-nxp-bsp ??= "1.24.0.imx"
 PREFERRED_VERSION_gstreamer1.0-python:mx8-nxp-bsp       ??= "1.24.0.imx"
 PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  ??= "1.24.0.imx"
 PREFERRED_VERSION_gstreamer1.0-vaapi:mx8-nxp-bsp        ??= "1.24.0.imx"
 PREFERRED_VERSION_gst-devtools:mx9-nxp-bsp              ??= "1.24.0.imx"
 PREFERRED_VERSION_gst-examples:mx9-nxp-bsp              ??= "1.24.7.imx"
-PREFERRED_VERSION_gstreamer1.0-libav:mx9-nxp-bsp        ??= "1.24.0.imx"
+PREFERRED_VERSION_gstreamer1.0-libav:mx9-nxp-bsp        ??= "1.24.7.imx"
 PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx9-nxp-bsp ??= "1.24.0.imx"
 PREFERRED_VERSION_gstreamer1.0-python:mx9-nxp-bsp       ??= "1.24.0.imx"
 PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx9-nxp-bsp  ??= "1.24.0.imx"
@@ -619,8 +619,8 @@ PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.6.0.imx"
 PREFERRED_VERSION_opencv:mx9-nxp-bsp ??= "4.6.0.imx"
 
 # Handle default kernel
-IMX_DEFAULT_KERNEL:imx-mainline-bsp = "linux-fslc"
-IMX_DEFAULT_KERNEL:imx-nxp-bsp      = "linux-fslc-imx"
+IMX_DEFAULT_KERNEL:imx-mainline-bsp ??= "linux-fslc"
+IMX_DEFAULT_KERNEL:imx-nxp-bsp      ??= "linux-fslc-imx"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "${IMX_DEFAULT_KERNEL}"
 

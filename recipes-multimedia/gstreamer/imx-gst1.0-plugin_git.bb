@@ -27,18 +27,20 @@ DEPENDS_IMXGPU:imxgpu = "${DEPENDS_IMX_OPENCL_CONVERTER}"
 DEPENDS_IMX_OPENCL_CONVERTER               = "imx-opencl-converter"
 DEPENDS_IMX_OPENCL_CONVERTER:mx6-nxp-bsp   = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx7-nxp-bsp   = ""
+DEPENDS_IMX_OPENCL_CONVERTER:mx8-nxp-bsp   = "imx-opencl-converter"
 DEPENDS_IMX_OPENCL_CONVERTER:mx8mm-nxp-bsp = ""
+DEPENDS_IMX_OPENCL_CONVERTER:mx95-nxp-bsp   = "imx-opencl-converter"
 
 # For backwards compatibility
 RREPLACES:${PN}  = "gst1.0-fsl-plugin"
 RPROVIDES:${PN}  = "gst1.0-fsl-plugin"
 RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
-PV = "4.9.2+git${SRCPV}"
+PV = "4.9.3+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
-SRCREV = "ef9c1a080e739e6f0be878148d9f4a050dc83bec"
+SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
+SRCREV = "370510ef8137874339df18a2a35ec1d04d98fa0b"
 
 S = "${WORKDIR}/git"
 
