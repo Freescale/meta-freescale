@@ -4,16 +4,16 @@
 
 DESCRIPTION = "G2D library using i.MX PXP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=ca53281cc0caa7e320d4945a896fb837"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 PROVIDES += "virtual/libg2d"
 
-PV = "2.2+git${SRCPV}"
+PV = "2.3+git${SRCPV}"
 
 SRC_URI = "${IMX_PXP_G2D_SRC};branch=${SRCBRANCH}"
 IMX_PXP_G2D_SRC ?= "git://github.com/nxp-imx/imx-g2d-pxp.git;protocol=https"
-SRCBRANCH = "imx_2.2"
-SRCREV = "5e633f895a84cec809ca98d77c879af3591b3b20"
+SRCBRANCH = "imx_2.3"
+SRCREV = "f3aabbcb7977a0a17c962c62b02bc829855f8edf"
 
 S = "${WORKDIR}/git"
 
