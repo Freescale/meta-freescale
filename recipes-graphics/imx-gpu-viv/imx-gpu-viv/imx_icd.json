@@ -1,7 +1,0 @@
-{
-    "file_format_version": "1.0.0",
-    "ICD": {
-        "library_path": "%libdir%/libvulkan_VSI.so.1",
-        "api_version": "%api_version%"
-    }
-}
