@@ -1,11 +1,11 @@
 require mali-imx.inc
 
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837" 
+LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-SRC_URI[sha256sum] = "947881cdad085a29dcb52dc4431f803b73c06141b31e06520f9bfe17d324f774"
-IMX_SRCREV_ABBREV = "710cfb6"
+SRC_URI[sha256sum] = "67a008bc64af4f3d9ad91465af3c0c3ac90ff8dcbcdaed96036eccc62880c7a3"
+IMX_SRCREV_ABBREV = "f2226b0"
 
 S = "${WORKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
