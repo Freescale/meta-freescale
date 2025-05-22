@@ -254,7 +254,7 @@ do_install () {
     else
         # Install Vendor ICDs for OpenCL's installable client driver loader (ICDs Loader)
         install -d ${D}${sysconfdir}/OpenCL/vendors/
-        install -m 0644 ${S}/gpu-core/etc/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
+        install -m 0644 ${S}/gpu-core/etc/OpenCL/vendors/Vivante.icd ${D}${sysconfdir}/OpenCL/vendors/Vivante.icd
 
         if [ "${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}" = "" ]; then
             rm -f ${D}${includedir}/CL/cl_viv_vx_ext.h
