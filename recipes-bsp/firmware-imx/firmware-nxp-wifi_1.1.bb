@@ -55,6 +55,7 @@ do_install() {
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduart9098_combo_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouart9098_combo_v1.bin
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sd8997_wlan_v4.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdio8997_wlan_v4.bin
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouart8997_combo_v4.bin
+    ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduartiw416_combo.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouartiw416_combo_v0.bin
 }
 
 PACKAGES =+ " \
