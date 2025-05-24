@@ -25,6 +25,9 @@ symlink_name = "scfw_tcm.bin"
 
 BOOT_TOOLS = "imx-boot-tools"
 
+LDFLAGS:remove = "-fuse-ld=lld"
+LDFLAGS:append = " -fuse-ld=bfd"
+
 do_compile[noexec] = "1"
 
 do_install[noexec] = "1"
