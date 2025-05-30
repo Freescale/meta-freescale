@@ -1,4 +1,4 @@
-From cad7eb0f0487aea64c4460bd6ad95b5c9537d35a Mon Sep 17 00:00:00 2001
+From f5a6600ff8312a7c0f30273ab783c1d822749a73 Mon Sep 17 00:00:00 2001
 From: Jiyu Yang <jiyu.yang@nxp.com>
 Date: Thu, 11 Apr 2024 16:30:50 +0800
 Subject: [PATCH] egl: clear backgrounds black
@@ -13,18 +13,15 @@ Signed-off-by: Jiyu Yang <jiyu.yang@nxp.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/egl/opengles2/es2gears.c b/src/egl/opengles2/es2gears.c
-index db67f3a9..4e81afe7 100644
+index 9501f61..e421a8a 100644
 --- a/src/egl/opengles2/es2gears.c
 +++ b/src/egl/opengles2/es2gears.c
-@@ -515,7 +515,7 @@ gears_draw(void)
+@@ -350,7 +350,7 @@ gears_draw(void)
     GLfloat transform[16];
-    identity(transform);
+    mat4_identity(transform);
  
 -   glClearColor(0.0, 0.0, 0.0, 0.0);
 +   glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
     /* Translate and rotate the view */
--- 
-2.34.1
-
