@@ -1,0 +1,59 @@
+From 400c42cda81a859bd5950567eaffe394053ccc99 Mon Sep 17 00:00:00 2001
+From: Wujian Sun <wujian.sun_1@nxp.com>
+Date: Thu, 5 Dec 2024 10:32:05 +0800
+Subject: [PATCH] YOCIMX-8300 Fix mesa-demos build break on GCC 14
+
+| ../mesa-demos-8.5.0/src/egl/opengl/eglkms.c: In function 'main':
+| ../mesa-demos-8.5.0/src/egl/opengl/eglkms.c:190:24: error: passing
+argument 1 of 'eglGetDisplay' from incompatible pointer type
+[-Wincompatible-pointer-types]
+|   190 |    dpy = eglGetDisplay(gbm);
+|       |                        ^~~
+|       |                        |
+|       |                        struct gbm_device *
+| In file included from ../mesa-demos-8.5.0/src/egl/opengl/eglkms.c:33:
+
+Type' {aka 'struct wl_display *'} but argument is of type 'struct
+gbm_device *'
+|   143 | EGLAPI EGLDisplay EGLAPIENTRY eglGetDisplay
+(EGLNativeDisplayType display_id);
+|       |
+~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+| ../mesa-demos-8.5.0/src/egl/opengl/eglkms.c:229:50: error: passing
+argument 3 of 'eglCreateWindowSurface' from incompatible pointer type
+[-Wincompatible-pointer-types]
+|   229 |    surface = eglCreateWindowSurface(dpy, config, gs, NULL);
+|       |                                                  ^~
+|       |                                                  |
+|       |                                                  struct
+gbm_surface *
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/demos/-/merge_requests/205]
+
+Signed-off-by: Wujian Sun <wujian.sun_1@nxp.com>
+---
+ src/egl/opengl/eglkms.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/egl/opengl/eglkms.c b/src/egl/opengl/eglkms.c
+index 832962b..57adc7b 100644
+--- a/src/egl/opengl/eglkms.c
++++ b/src/egl/opengl/eglkms.c
+@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
+       goto close_fd;
+    }
+ 
+-   dpy = eglGetDisplay(gbm);
++   dpy = eglGetDisplay((EGLNativeDisplayType) gbm);
+    if (dpy == EGL_NO_DISPLAY) {
+       fprintf(stderr, "eglGetDisplay() failed\n");
+       ret = -1;
+@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
+    gs = gbm_surface_create(gbm, kms.mode.hdisplay, kms.mode.vdisplay,
+ 			   GBM_BO_FORMAT_XRGB8888,
+ 			   GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
+-   surface = eglCreateWindowSurface(dpy, config, gs, NULL);
++   surface = eglCreateWindowSurface(dpy, config, (EGLNativeWindowType) gs, NULL);
+ 
+    if (!eglMakeCurrent(dpy, surface, surface, ctx)) {
+       fprintf(stderr, "failed to make context current\n");
