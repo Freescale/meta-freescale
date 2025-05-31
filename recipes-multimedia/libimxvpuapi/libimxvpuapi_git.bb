@@ -14,7 +14,7 @@ SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH};proto
 
 S = "${WORKDIR}/git"
 
-inherit waf pkgconfig
+inherit waf pkgconfig python3native
 
 COMPATIBLE_MACHINE = "(mx6q-nxp-bsp|mx6dl-nxp-bsp)"
 
