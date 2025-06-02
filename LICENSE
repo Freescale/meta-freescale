@@ -99,7 +99,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-graphics/wayland/wayland-protocols_1.37.imx.bb: LICENSE = "MIT"
 ./recipes-graphics/wayland/weston_10.0.5.imx.bb: LICENSE = "MIT"
 ./recipes-graphics/wayland/weston_14.0.1.imx.bb: LICENSE = "MIT"
-./recipes-graphics/xwayland/xwayland_23.2.5.imx.bb: LICENSE = "MIT"
+./recipes-graphics/xwayland/xwayland_24.1.6.imx.bb: LICENSE = "MIT"
 ./recipes-kernel/ceetm/ceetm_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-kernel/kernel-modules/kernel-module-ar_git.bb: LICENSE = "GPL-2.0-only & BSD"
 ./recipes-kernel/kernel-modules/kernel-module-imx-gpu-viv_6.4.11.p2.2+fslc.bb: LICENSE = "GPL-2.0-only"
