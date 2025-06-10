@@ -7,7 +7,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 
 PV .= "+git${SRCPV}"
 
-SRC_URI = "git://github.com/nxp-imx/imx-atf.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/imx-atf.git;protocol=https;branch=${SRCBRANCH} \
+           file://0001-imx93-trdc-Fix-header-guard.patch"
 SRCBRANCH = "lf_v2.10"
 SRCREV = "78a14c75a06dea39036c44ae0f9d23acc7bcaef2"
 

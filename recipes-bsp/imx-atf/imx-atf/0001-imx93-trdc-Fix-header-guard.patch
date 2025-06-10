@@ -1,0 +1,35 @@
+From e82cafa7823cb2cad6ce933862b9ffdb880dba49 Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Tue, 10 Jun 2025 15:04:32 -0700
+Subject: [PATCH] imx93: trdc: Fix header guard
+
+```
+| In file included from drivers/nxp/trdc/imx_trdc.c:13:
+| include/drivers/nxp/trdc/imx_trdc.h:7: error: header guard 'IMX_TRDC_H' followed by '#define' of a different macro [-Werror=header-guard]
+|     7 | #ifndef IMX_TRDC_H
+| include/drivers/nxp/trdc/imx_trdc.h:8: note: 'IMX_XRDC_H' is defined here; did you mean 'IMX_TRDC_H'?
+|     8 | #define IMX_XRDC_H
+```
+
+Upstream-Status: Submitted [https://github.com/nxp-imx/imx-atf/pull/2]
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ include/drivers/nxp/trdc/imx_trdc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/drivers/nxp/trdc/imx_trdc.h b/include/drivers/nxp/trdc/imx_trdc.h
+index 7a6200c8d..8c759c65d 100644
+--- a/include/drivers/nxp/trdc/imx_trdc.h
++++ b/include/drivers/nxp/trdc/imx_trdc.h
+@@ -5,7 +5,7 @@
+  */
+ 
+ #ifndef IMX_TRDC_H
+-#define IMX_XRDC_H
++#define IMX_TRDC_H
+ 
+ #define MBC_BLK_ALL	U(255)
+ #define MRC_REG_ALL	U(16)
+-- 
+2.34.1
+
