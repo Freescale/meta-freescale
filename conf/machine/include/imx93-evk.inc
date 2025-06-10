@@ -35,7 +35,12 @@ IMXBOOT_TARGETS = \
         bb.utils.contains('UBOOT_CONFIG',  'ecc', '${IMXBOOT_TARGETS_ECC}', \
         bb.utils.contains('UBOOT_CONFIG', 'fspi', '${IMXBOOT_TARGETS_FSPI}', \
                                                   'INVALID', d), d), d)}"
-IMXBOOT_TARGETS_SD   = "flash_singleboot"
+# Note different SD targets for different Glitch Detection (GDET) modes:
+# | Target                     | Glitch Detection                                 |
+# | flash_singleboot           | None                                             |
+# | flash_singleboot_gdet      | Enabled                                          |
+# | flash_singleboot_gdet_auto | Enabled during EdgeLock Secure Enclave API calls |
+IMXBOOT_TARGETS_SD   = "flash_singleboot flash_singleboot_gdet flash_singleboot_gdet_auto"
 IMXBOOT_TARGETS_ECC  = "flash_singleboot"
 IMXBOOT_TARGETS_FSPI = "flash_singleboot_flexspi"
 
