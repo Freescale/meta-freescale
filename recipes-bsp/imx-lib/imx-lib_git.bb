@@ -12,7 +12,8 @@ PE = "1"
 
 PV = "5.9+${SRCPV}"
 
-SRC_URI = "git://github.com/nxp-imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/imx-lib.git;protocol=https;branch=${SRCBRANCH} \
+           file://0001-Fix-gcc-15-errors.patch"
 SRCBRANCH = "lf-6.12.3_1.0.0"
 SRCREV = "8f124c3914d82019849fb697baeb730e4cb1b547"
 
