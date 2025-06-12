@@ -1,0 +1,54 @@
+From 24e317b5cdc2b78735dfa7d4b2776b587b7a193f Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Thu, 12 Jun 2025 13:15:28 -0500
+Subject: [PATCH] Fix gcc 15 errors
+
+Fixes HDMI and IPU headers c23 violations:
+```
+In file included from mxc_hdmi-cec.c:40:
+hdmi-cec.h:54:23: error: 'bool' cannot be defined via 'typedef'
+   54 | typedef unsigned char bool;
+      |                       ^~~~
+hdmi-cec.h:54:23: note: 'bool' is a keyword with '-std=c23' onwards
+hdmi-cec.h:54:1: warning: useless type name in empty declaration
+   54 | typedef unsigned char bool;
+      | ^~~~~~~
+```
+
+Upstream-Status: Submitted
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ hdmi-cec/hdmi-cec.h | 2 --
+ ipu/ipu.h           | 3 ---
+ 2 files changed, 5 deletions(-)
+
+diff --git a/hdmi-cec/hdmi-cec.h b/hdmi-cec/hdmi-cec.h
+index 7d466c5..2b66208 100644
+--- a/hdmi-cec/hdmi-cec.h
++++ b/hdmi-cec/hdmi-cec.h
+@@ -51,8 +51,6 @@
+ #define false	0
+ #endif
+ 
+-typedef unsigned char bool;
+-
+ /*!
+  * Enumeration of device type.
+  */
+diff --git a/ipu/ipu.h b/ipu/ipu.h
+index 278385c..1a55875 100644
+--- a/ipu/ipu.h
++++ b/ipu/ipu.h
+@@ -30,9 +30,6 @@
+ #ifdef __KERNEL__
+ #include <linux/interrupt.h>
+ #else
+-#ifndef __cplusplus
+-typedef unsigned char bool;
+-#endif
+ #define irqreturn_t int
+ #define dma_addr_t int
+ #define u32 unsigned int
+-- 
+2.34.1
+
