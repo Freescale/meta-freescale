@@ -63,6 +63,9 @@ do_resolve_and_populate_binaries() {
                     else
                         bberror "ATF binary is undefined, result binary would be unusable!"
                     fi
+                    if [ "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '1' , '0' , d)}" = "1" ] ; then
+                        cp ${DEPLOY_DIR_IMAGE}/${OPTEE_BOOT_IMAGE} ${B}/${config}/
+                    fi
                 fi
             done
             unset  j
