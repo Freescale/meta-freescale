@@ -42,7 +42,10 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.12.3.. ^mainline/linux-6.12.y ^NXP/lf-6.12.y
+# $ git log --oneline  --no-merges v6.12.34.. ^mainline/linux-6.12.y ^NXP/lf-6.12.y
+# - 8d94e52076a1 Revert "firmware: arm_scmi: Fix i.MX build dependency"
+# - adefe4ecd9c6 Revert "PCI: imx6: Fix suspend/resume support on i.MX6QDL"
+# - 2837cecae149 imx8mp-olimex.dts: CSI GPIO pins
 # - 29efe53139ac hwrng: optee: support generic crypto
 # - 7f80ce9b7c82 arm64: dts: imx8mq: drop cpu-idle-states
 # - 5e3b6ecf85c4 of: enable using OF_DYNAMIC without OF_UNITTEST
@@ -68,14 +71,14 @@ require linux-imx.inc
 
 KBRANCH = "6.12-1.0.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "29efe53139acb64d96bfcc119cd10d10c552801b"
+SRCREV = "c63da44a120c9ad720877a74f0c94e2d9b08cab1"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.12.3"
+LINUX_VERSION = "6.12.34"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
