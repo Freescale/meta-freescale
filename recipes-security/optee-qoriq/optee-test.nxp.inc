@@ -12,7 +12,6 @@ inherit python3native cmake
 SRC_URI = "git://github.com/nxp-qoriq/optee_test.git;protocol=https;nobranch=1"
 SRCREV = "69722dab8c1f2683e30e0ee3b536053367e37aad"
 
-S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 TA_DEV_KIT_DIR ?= "${STAGING_INCDIR}/optee/export-user_ta"

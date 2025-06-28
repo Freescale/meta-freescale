@@ -2,8 +2,6 @@ require secure-obj.inc
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 
-S = "${WORKDIR}/git"
-
 DEPENDS:remove = " python3-pycryptodomex-native"
 DEPENDS:append = " python3-cryptography-native optee-os-qoriq-tadevkit"
 RDEPENDS:{PN}  += "secure-obj-module"

@@ -9,7 +9,7 @@ inherit fsl-eula-unpack autotools pkgconfig
 IMX_SRCREV_ABBREV = "ea4fe3f"
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 
-S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 SRC_URI[sha256sum] = "fc6e6a7c2417730b39eeddc26606c3d58a8f5d0a1521f44bbbd505657046858b"
 

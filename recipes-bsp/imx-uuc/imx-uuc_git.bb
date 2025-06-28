@@ -12,8 +12,6 @@ PV = "0.5.1+git${SRCPV}"
 SRC_URI = "git://github.com/NXPmicro/imx-uuc.git;protocol=https;branch=master"
 SRCREV = "25f65e10368aa07056f9536e88ed911ac7f38f99"
 
-S = "${WORKDIR}/git"
-
 do_install() {
     oe_runmake 'DESTDIR=${D}' install
 }

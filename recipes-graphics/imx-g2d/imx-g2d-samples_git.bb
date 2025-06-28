@@ -12,8 +12,6 @@ GPU_G2D_SAMPLES_SRC ?= "git://github.com/nxp-imx/g2d-samples.git;protocol=https"
 SRCBRANCH = "imx_2.3"
 SRCREV = "7d12c50c07d73650b4c97906ce917aff429238f8"
 
-S = "${WORKDIR}/git"
-
 inherit pkgconfig
 
 PACKAGECONFIG ??= "${PACKAGECONFIG_IMPLEMENTATION}"

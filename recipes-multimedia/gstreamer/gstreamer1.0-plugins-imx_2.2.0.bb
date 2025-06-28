@@ -18,8 +18,6 @@ SRCBRANCH ?= "master"
 SRCREV = "ce4f86e60f12c56574f727f3317fa8aa30a11387"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH};protocol=https"
 
-S = "${WORKDIR}/git"
-
 inherit pkgconfig meson use-imx-headers
 
 # libg2d on i.MX8 SoCs with a DPU is emulated via the DPU.

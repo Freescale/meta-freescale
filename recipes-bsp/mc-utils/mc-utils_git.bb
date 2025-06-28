@@ -10,8 +10,6 @@ inherit deploy
 SRC_URI = "git://github.com/nxp-qoriq/mc-utils;protocol=https;nobranch=1"
 SRCREV = "5ccc2688b72c4a05119a393cbe3573b5f81d10bc"
 
-S = "${WORKDIR}/git"
-
 MC_CFG ?= ""
 MC_CFG:ls1088a = "ls1088a"
 MC_CFG:ls2088a = "ls2088a"

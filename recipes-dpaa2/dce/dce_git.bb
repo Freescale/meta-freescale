@@ -12,8 +12,6 @@ SRCREV_qbman = "2f92993a9f34e5221d6b36c63b9e30ef703e9ac3"
 
 SRCREV_FORMAT = "default_qbman"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE = 'CROSS_COMPILE=${TARGET_PREFIX} CC="${TARGET_PREFIX}gcc ${TOOLCHAIN_OPTIONS}"'
 
 do_install () {

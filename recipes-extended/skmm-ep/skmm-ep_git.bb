@@ -12,8 +12,6 @@ SRC_URI = "git://github.com/nxp-qoriq-yocto-sdk/skmm-ep;protocol=https;nobranch=
 "
 SRCREV = "de6816c7d66129683bc62229b482ac3cf585d896"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE = 'ARCH=${TARGET_ARCH} MACHINE=${MACHINE} EXTRA_LDFLAGS="${LDFLAGS}"'
 
 export LIBEDIT_CFLAGS = "`pkg-config --cflags libedit`"

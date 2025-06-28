@@ -121,7 +121,7 @@ GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;prot
 SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
 SRCREV = "858ae5a1fb2bd2692ca7ebbd5bde2eee14e1842d"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BP}"
 
 inherit use-imx-headers
 

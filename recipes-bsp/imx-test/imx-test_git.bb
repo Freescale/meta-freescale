@@ -23,8 +23,6 @@ SRC_URI = "git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRAN
 SRCBRANCH = "lf-6.12.3_1.0.0"
 SRCREV = "92a497313016bfa536d561e13fcbad2d273ded4c"
 
-S = "${WORKDIR}/git"
-
 inherit module-base use-imx-headers
 
 INHIBIT_PACKAGE_STRIP = "1"

@@ -12,7 +12,6 @@ DEPENDS = "python3-pycryptodome-native python3-pyelftools-native python3-pycrypt
 SRC_URI = "git://github.com/nxp-qoriq/optee_os.git;protocol=https;nobranch=1"
 SRCREV = "735d98806dc26fbeeecad7f5e60ffeab8170c67e"
 
-S = "${WORKDIR}/git"
 B = "${WORKDIR}/build.${PLATFORM_FLAVOR}"
 
 PLATFORM_FLAVOR ?= "${MACHINE}"

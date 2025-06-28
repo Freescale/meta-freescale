@@ -14,7 +14,7 @@ IMX_SRCREV_ABBREV = "c0244a1"
 
 SRC_URI[sha256sum] = "713ba375f25490727fcc62bab5d5508f74de03204b4c153464b696b652c5c7df"
 
-S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 # SCR is the location and name of the Software Content Register file
 # relative to ${D}${D_SUBDIR}.

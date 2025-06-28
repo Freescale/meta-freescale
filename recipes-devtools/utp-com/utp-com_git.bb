@@ -11,8 +11,6 @@ SRC_URI = " \
 
 PV = "1.0+git${SRCPV}"
 
-S = "${WORKDIR}/git"
-
 do_configure[noexec] = "1"
 
 do_compile () {

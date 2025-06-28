@@ -14,8 +14,6 @@ SRCREV = "dffbb844e86f4a49058ffbb40548474059969c27"
 
 PV = "lf-6.6.52_2.2.0"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE += "PLAT=ele"
 
 TARGET_CC_ARCH += "${LDFLAGS}"

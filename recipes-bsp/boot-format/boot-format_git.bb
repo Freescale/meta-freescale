@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/nxp-qoriq-yocto-sdk/boot-format;protocol=https;nobra
            file://flags.patch"
 SRCREV = "4eb81a6797ef4e58bf7d9b2d58afb37a21c1f550"
 
-S = "${WORKDIR}/git"
 EXTRA_OEMAKE = 'CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"'
 
 do_install(){

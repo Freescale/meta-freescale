@@ -15,8 +15,6 @@ SRCBRANCH = "lf-6.12.y"
 LOCALVERSION = "-lts-${SRCBRANCH}"
 SRCREV = "37d02f4dcbbe6677dc9f5fc17f386c05d6a7bd7a"
 
-S = "${WORKDIR}/git"
-
 do_configure[noexec] = "1"
 
 do_compile[noexec] = "1"

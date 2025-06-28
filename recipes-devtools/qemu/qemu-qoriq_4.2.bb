@@ -17,8 +17,6 @@ SRC_URI = "gitsm://github.com/nxp-qoriq/qemu;protocol=https;nobranch=1 \
 
 SRCREV = "14fda5a42df6c72e890d6a97ff88c5852172604b"
 
-S = "${WORKDIR}/git"
-
 python() {
     d.appendVar('PROVIDES', ' ' + d.getVar('BPN').replace('-qoriq', ''))
     pkgs = d.getVar('PACKAGES').split()

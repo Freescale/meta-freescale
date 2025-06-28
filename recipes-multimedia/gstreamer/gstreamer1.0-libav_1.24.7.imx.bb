@@ -14,7 +14,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-${@get_gst_ver('${PV}')}.tar.xz"
 SRC_URI[sha256sum] = "c3e4179ba183c2d3101edf87ff70dd07e728c766a5fee34e6ecded76ca5802df"
 
-S = "${WORKDIR}/gst-libav-${@get_gst_ver('${PV}')}"
+S = "${UNPACKDIR}/gst-libav-${@get_gst_ver('${PV}')}"
 
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base ffmpeg"
 

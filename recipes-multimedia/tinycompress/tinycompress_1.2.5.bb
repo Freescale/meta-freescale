@@ -13,6 +13,4 @@ SRCREV = "f3ba6e5c2126f2fb07e3d890f990d50c3e204e67"
 
 EXTRA_OECONF:append = " --enable-pcm"
 
-S = "${WORKDIR}/git"
-
 inherit autotools pkgconfig

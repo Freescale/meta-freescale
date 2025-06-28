@@ -10,8 +10,6 @@ inherit deploy siteinfo
 SRC_URI = "git://github.com/nxp-qoriq/rcw;protocol=https;nobranch=1"
 SRCREV = "64abe70cf0abab053c37db460c12e367e6adf7a4"
 
-S = "${WORKDIR}/git"
-
 export PYTHON = "${USRBINPATH}/python3"
 
 M = "${@d.getVar('MACHINE').replace('-64b','').replace('-32b','').replace('-${SITEINFO_ENDIANNESS}','')}"

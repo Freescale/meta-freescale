@@ -13,8 +13,6 @@ SRC_URI = "git://github.com/KhronosGroup/Vulkan-Headers.git;branch=main;protocol
 
 SRCREV = "217e93c664ec6704ec2d8c36fa116c1a4a1e2d40"
 
-S = "${WORKDIR}/git"
-
 inherit cmake
 
 FILES:${PN} += "${datadir}/vulkan"

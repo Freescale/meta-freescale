@@ -10,8 +10,6 @@ inherit deploy
 SRC_URI = "git://github.com/NXP/qoriq-fm-ucode.git;nobranch=1;protocol=https"
 SRCREV = "41d603a1ad78e0bb61365500828d9f484bf9bf10"
 
-S = "${WORKDIR}/git"
-
 REGLEX ?= "${MACHINE}"
 REGLEX:t1023 = "t1024"
 REGLEX:t1040 = "t1040"

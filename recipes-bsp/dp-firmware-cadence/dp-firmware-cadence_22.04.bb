@@ -8,7 +8,7 @@ SRC_URI = "${FSL_MIRROR}/firmware-imx-8.16.bin;fsl-eula=true"
 
 SRC_URI[sha256sum] = "65f829a9e2597bffc58a680aaefa638122144a083633d1ae09b3aec1d9f8ab84"
 
-S = "${WORKDIR}/firmware-imx-8.16"
+S = "${UNPACKDIR}/firmware-imx-8.16"
 
 do_install () {
     install -d ${D}/boot

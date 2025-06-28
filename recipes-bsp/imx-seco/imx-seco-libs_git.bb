@@ -16,8 +16,6 @@ SRC_URI = "git://github.com/NXP/imx-seco-libs.git;protocol=https;branch=${SRCBRA
            file://0001-Fix-return-value-of-void-functions.patch"
 SRCREV = "273553f207425f773400be7a7f3a7c425d892d6f"
 
-S = "${WORKDIR}/git"
-
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 do_install () {

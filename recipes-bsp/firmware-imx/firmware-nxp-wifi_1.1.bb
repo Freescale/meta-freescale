@@ -13,8 +13,6 @@ SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRC
 SRCBRANCH = "lf-6.12.3_1.0.0"
 SRCREV = "eef7ef94bc44cacd3b068f66658ef33391547daa"
 
-S = "${WORKDIR}/git"
-
 inherit allarch
 
 CLEANBROKEN = "1"

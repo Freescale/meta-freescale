@@ -9,8 +9,6 @@ SRC_URI = "git://dpdk.org/git/apps/pktgen-dpdk;protocol=https;nobranch=1 \
 "
 SRCREV = "3a09aa916597fb9a97ee8eec50044cbdb9c4abde"
 
-S = "${WORKDIR}/git"
-
 DPAA_VER ?= "dpaa"
 export RTE_TARGET = "arm64-${DPAA_VER}-linuxapp-gcc"
 export RTE_SDK = "${RECIPE_SYSROOT}/usr/share/dpdk"

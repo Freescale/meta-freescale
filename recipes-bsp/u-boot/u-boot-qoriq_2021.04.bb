@@ -17,7 +17,6 @@ LIC_FILES_CHKSUM = " \
 SRC_URI = "git://github.com/nxp-qoriq/u-boot;protocol=https;nobranch=1"
 SRCREV = "1c0116f3da250c5a52858c53efb8b38c0963f477"
 
-S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 PV:append = "+fslgit"
 LOCALVERSION = "+fsl"

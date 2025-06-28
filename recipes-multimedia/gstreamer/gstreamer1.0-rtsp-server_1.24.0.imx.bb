@@ -12,7 +12,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${@get_gst_
 
 SRC_URI[sha256sum] = "5b0fa6b12ba95b1d336a4b274cbe19e982aa3e6819f1d97bfd8e0102b103ed9b"
 
-S = "${WORKDIR}/${PNREAL}-${@get_gst_ver("${PV}")}"
+S = "${UNPACKDIR}/${PNREAL}-${@get_gst_ver("${PV}")}"
 
 inherit meson pkgconfig upstream-version-is-even gobject-introspection
 

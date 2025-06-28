@@ -9,14 +9,14 @@ ISP_KERNEL_SRC ?= "git://github.com/nxp-imx/isp-vvcam.git;protocol=https"
 SRCBRANCH = "lf-6.12.y_1.0.0"
 SRCREV = "78d717bb22819df9d988ef1b4e3cca1acf61095d"
 
-S = "${WORKDIR}/git/vvcam/v4l2"
+S = "${UNPACKDIR}/${BP}/vvcam/v4l2"
 
 inherit module
 
 MODULES_MODULE_SYMVERS_LOCATION = "dwe"
 
 DEBUG_PREFIX_MAP:prepend = " \
-    -fmacro-prefix-map=${WORKDIR}/git/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
-    -fdebug-prefix-map=${WORKDIR}/git/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} "
+    -fmacro-prefix-map=${UNPACKDIR}/${BP}/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
+    -fdebug-prefix-map=${UNPACKDIR}/${BP}/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} "
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

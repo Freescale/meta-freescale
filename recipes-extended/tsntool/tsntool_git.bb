@@ -16,8 +16,6 @@ SRC_URI:append = " \
 	file://0001-tsntool-remove-redundant-parameters-from-BIN_LDFLAGS.patch \
 "
 
-S = "${WORKDIR}/git"
-
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 do_compile:prepend() {

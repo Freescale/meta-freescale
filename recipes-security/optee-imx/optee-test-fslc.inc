@@ -18,7 +18,6 @@ SRC_URI = "git://github.com/OP-TEE/optee_test.git;branch=master;protocol=https \
            file://run-ptest \
           "
 
-S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 EXTRA_OEMAKE += "TA_DEV_KIT_DIR=${TA_DEV_KIT_DIR} \

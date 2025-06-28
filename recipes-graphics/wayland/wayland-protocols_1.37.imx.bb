@@ -14,8 +14,6 @@ WAYLAND_PROTOCOLS_SRC ?= "git://github.com/nxp-imx/wayland-protocols-imx.git;pro
 SRCBRANCH = "wayland-protocols-imx-${@oe.utils.trim_version("${PV}", 2)}"
 SRCREV = "831a5389062e56dcb1aac4a5419e55e3002aafaf"
 
-S = "${WORKDIR}/git"
-
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
 
 # NOTE: For i.MX drop allarch since the recipe is SOCARCH

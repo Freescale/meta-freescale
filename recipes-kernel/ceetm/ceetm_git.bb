@@ -9,8 +9,6 @@ SRC_URI:append = " file://0001-Makefile-update-CFLAGS.patch \
 "
 DEPENDS = "iproute2"
 
-S = "${WORKDIR}/git"
-
 export IPROUTE2_DIR = "${STAGING_DIR_TARGET}"
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 export CROSS_COMPILE = "${WRAP_TARGET_PREFIX}"

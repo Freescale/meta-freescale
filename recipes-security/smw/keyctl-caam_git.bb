@@ -11,8 +11,6 @@ SRC_URI = "git://github.com/nxp-imx/keyctl_caam.git;protocol=https;branch=${SRCB
 
 SRCREV = "81dc06cdb9c4d0d4ba10459d85af9a8603774948"
 
-S = "${WORKDIR}/git"
-
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 do_install () {

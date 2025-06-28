@@ -8,6 +8,4 @@ SRC_URI = "git://github.com/boundarydevices/devregs.git;protocol=https;branch=ma
 
 PV = "1.0+${SRCPV}"
 
-S = "${WORKDIR}/git"
-
 inherit autotools

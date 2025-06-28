@@ -16,8 +16,6 @@ IMX_SYSTEM_MANAGER_SRC ?= "git://github.com/nxp-imx/imx-sm.git;protocol=https"
 SRCBRANCH = "master"
 SRCREV = "709deccd9338399eb39b5cf99a60eab4fa60d539"
 
-S = "${WORKDIR}/git"
-
 require imx-system-manager.inc
 
 PACKAGECONFIG ??= "m2"

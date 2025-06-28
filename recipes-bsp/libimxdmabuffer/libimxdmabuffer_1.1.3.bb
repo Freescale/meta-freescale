@@ -13,9 +13,6 @@ SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH};pr
            file://run-ptest \
           "
 
-
-S = "${WORKDIR}/git"
-
 inherit pkgconfig waf use-imx-headers ptest
 
 EXTRA_OECONF = "--imx-linux-headers-path=${STAGING_INCDIR_IMX} \

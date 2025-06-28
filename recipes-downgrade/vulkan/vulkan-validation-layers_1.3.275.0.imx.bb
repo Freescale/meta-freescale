@@ -11,8 +11,6 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=cd3c0bc366cd9b6a906e22f0bcb5910f"
 SRC_URI = "git://github.com/KhronosGroup/Vulkan-ValidationLayers.git;branch=vulkan-sdk-1.3.275;protocol=https"
 SRCREV = "780c65337e111c7385109c7b720d757a778e4fe2"
 
-S = "${WORKDIR}/git"
-
 REQUIRED_DISTRO_FEATURES = "vulkan"
 
 DEPENDS = "vulkan-headers vulkan-loader spirv-headers spirv-tools glslang vulkan-utility-libraries"

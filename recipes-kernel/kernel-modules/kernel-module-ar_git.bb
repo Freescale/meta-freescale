@@ -7,8 +7,6 @@ inherit module
 SRC_URI = "git://github.com/nxp-qoriq-yocto-sdk/auto-resp;branch=nxp/sdk-v2.0.x;protocol=https"
 SRCREV =  "9a74743167dcfcfbca5056eedbff9a52337c9712"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX} SYSROOT=${STAGING_DIR_TARGET}"
 export KERNEL_PATH
 

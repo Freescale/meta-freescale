@@ -10,8 +10,6 @@ SRC_URI = "git://github.com/boundarydevices/imx_usb_loader.git;protocol=https;br
 
 PV = "1.0+${SRCPV}"
 
-S = "${WORKDIR}/git"
-
 do_install () {
 	oe_runmake DESTDIR=${D} install
 }

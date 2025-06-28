@@ -17,7 +17,7 @@ IMX_SRCREV_ABBREV = "394336b"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
-S = "${WORKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
 PACKAGECONFIG ??= "${PACKAGECONFIG_VPU}"
 # Support Chips&Media VPU only

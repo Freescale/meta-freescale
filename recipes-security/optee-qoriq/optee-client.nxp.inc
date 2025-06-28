@@ -13,7 +13,6 @@ SRCREV = "7c9c423d00e96bf51debd5fe10fd70dce83be5cc"
 FILESEXTRAPATHS:prepend := "${THISDIR}/optee-client:"
 SRC_URI += "file://tee-supplicant.service"
 
-S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 OPTEE_ARCH ?= "arm32"

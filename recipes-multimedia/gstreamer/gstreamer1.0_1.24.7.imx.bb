@@ -103,7 +103,7 @@ GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
 SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
 SRCREV = "e0d37a7d773a502956f54eced8cd701ec7fa5ff5"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BP}"
 
 PACKAGECONFIG[tests] = "-Dtests=enabled,-Dtests=disabled"
 

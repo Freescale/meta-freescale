@@ -42,8 +42,6 @@ SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=
 SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
 SRCREV = "370510ef8137874339df18a2a35ec1d04d98fa0b"
 
-S = "${WORKDIR}/git"
-
 inherit meson pkgconfig use-imx-headers
 
 PLATFORM:mx6-nxp-bsp = "MX6"

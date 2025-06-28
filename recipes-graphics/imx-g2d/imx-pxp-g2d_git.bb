@@ -15,8 +15,6 @@ IMX_PXP_G2D_SRC ?= "git://github.com/nxp-imx/imx-g2d-pxp.git;protocol=https"
 SRCBRANCH = "imx_2.3"
 SRCREV = "f3aabbcb7977a0a17c962c62b02bc829855f8edf"
 
-S = "${WORKDIR}/git"
-
 inherit use-imx-headers
 
 EXTRA_OEMAKE = "PLATFORM=IMX93 INCLUDE='-I${STAGING_INCDIR_IMX}' DEST_DIR=${D}"

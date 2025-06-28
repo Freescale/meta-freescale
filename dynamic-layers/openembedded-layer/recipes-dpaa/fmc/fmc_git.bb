@@ -9,8 +9,6 @@ DEPENDS = "libxml2 fmlib tclap"
 SRC_URI = "git://github.com/nxp-qoriq/fmc;protocol=https;nobranch=1"
 SRCREV = "5b9f4b16a864e9dfa58cdcc860be278a7f66ac18"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE = 'FMD_USPACE_HEADER_PATH="${STAGING_INCDIR}/fmd" \
     FMD_USPACE_LIB_PATH="${STAGING_LIBDIR}" LIBXML2_HEADER_PATH="${STAGING_INCDIR}/libxml2" \
     TCLAP_HEADER_PATH="${STAGING_INCDIR}" '

@@ -7,8 +7,6 @@ inherit deploy
 SRC_URI = "git://github.com/nxp/qoriq-firmware-cortina.git;nobranch=1;protocol=https"
 SRCREV = "9143c2a3adede595966583c00ca4edc99ec698cf"
 
-S = "${WORKDIR}/git"
-
 do_install () {
     install -d ${D}/boot
     cp -fr ${S}/* ${D}/boot

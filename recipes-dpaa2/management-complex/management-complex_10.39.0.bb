@@ -9,8 +9,6 @@ INHIBIT_DEFAULT_DEPS = "1"
 SRC_URI = "git://github.com/nxp/qoriq-mc-binary;protocol=https;nobranch=1"
 SRCREV = "7d82686272f8a60b803818bbc7c5396819ee3b06"
 
-S = "${WORKDIR}/git"
-
 REGLEX:ls2088a = "ls2088a"
 REGLEX:ls2080a = "ls2080a"
 REGLEX:ls1088a = "ls1088a"

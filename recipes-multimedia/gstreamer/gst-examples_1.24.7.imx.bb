@@ -17,7 +17,7 @@ SRC_URI = "git://gitlab.freedesktop.org/gstreamer/gstreamer.git;protocol=https;b
 
 SRCREV = "0f1e984e41ce8d6d0758265d35e8b10d5815fde2"
 
-S = "${WORKDIR}/git/subprojects/gst-examples"
+S = "${UNPACKDIR}/${BP}/subprojects/gst-examples"
 
 inherit meson pkgconfig features_check
 

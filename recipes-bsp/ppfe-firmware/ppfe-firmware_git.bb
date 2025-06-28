@@ -10,8 +10,6 @@ inherit deploy
 SRC_URI = "git://github.com/NXP/qoriq-engine-pfe-bin.git;nobranch=1;protocol=https"
 SRCREV = "f55ee9f72090309bbb7ab71f48a498fc02909234"
 
-S = "${WORKDIR}/git"
-
 do_install () {
     install -d ${D}${nonarch_base_libdir}/firmware
     install -d ${D}/boot/engine-pfe-bin

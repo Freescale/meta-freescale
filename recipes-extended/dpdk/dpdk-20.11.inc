@@ -8,8 +8,6 @@ LIC_FILES_CHKSUM = "file://license/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4
 SRC_URI = "git://github.com/nxp-qoriq/dpdk;protocol=https;nobranch=1"
 SRCREV = "f74b8bd5ab1c6ff76e956fc202a56aea2d200270"
 
-S = "${WORKDIR}/git"
-
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
 
 CVE_PRODUCT = "data_plane_development_kit"

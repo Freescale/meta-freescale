@@ -15,7 +15,7 @@ RCONFLICTS:${PN} = "libfslparser"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 IMX_SRCREV_ABBREV = "c296eb2"
-S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 SRC_URI[sha256sum] = "997a7f79f291ef4b3c8dd3ba6f2f32c430c63feb4bb29d923f71da0d1ccf20a9"
 
