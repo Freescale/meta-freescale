@@ -8,8 +8,6 @@ PR = "r1"
 SRC_URI = "git://github.com/nxp-qoriq/fmlib;protocol=https;nobranch=1"
 SRCREV = "9fb916f255214013aa6003496c47bab0b5add2d9"
 
-S = "${WORKDIR}/git"
-
 CFLAGS += "-fmacro-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/debug/fmlib/git-r1 \
 		-fdebug-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/debug/fmlib/git-r1"
 

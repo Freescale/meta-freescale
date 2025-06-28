@@ -17,8 +17,6 @@ SRC_URI = " \
 SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
 SRCREV = "d8703ee3245797111ad21c52982efa8b6db33241"
 
-S = "${WORKDIR}/git"
-
 inherit autotools pkgconfig
 
 CFLAGS += " -Wno-error=implicit-function-declaration"

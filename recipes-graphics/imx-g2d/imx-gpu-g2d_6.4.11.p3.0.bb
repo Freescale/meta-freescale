@@ -15,7 +15,7 @@ IMX_SRCREV_ABBREV = "c600d03"
 SRC_URI[aarch64.sha256sum] = "e6c336c0b876efab7598a2d7817111772284487f646d5d83c400692f2cdfebe3"
 SRC_URI[arm.sha256sum] = "6e1a42f2c570582b8038d1b5c86dbdcd645e75cc10a1db23e716f662d1c1329f"
 
-S = "${WORKDIR}/${IMX_BIN_NAME}"
+S = "${UNPACKDIR}/${IMX_BIN_NAME}"
 
 inherit fsl-eula-unpack
 

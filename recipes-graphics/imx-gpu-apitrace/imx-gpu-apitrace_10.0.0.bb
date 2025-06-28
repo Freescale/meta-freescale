@@ -9,8 +9,6 @@ SRC_URI = "git://github.com/nxp-imx/apitrace-imx.git;protocol=https;branch=imx_1
 "
 SRCREV = "522cb2981289b7ba20d6dd4b4bf75097e079815b"
 
-S = "${WORKDIR}/git"
-
 inherit cmake pkgconfig perlnative python3native
 
 PACKAGECONFIG ??= " \

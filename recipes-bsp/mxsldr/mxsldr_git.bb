@@ -13,8 +13,6 @@ SRC_URI = "git://git.denx.de/mxsldr.git;branch=master \
 
 PV = "0.0.0+git${SRCPV}"
 
-S = "${WORKDIR}/git"
-
 inherit pkgconfig
 
 do_compile() {

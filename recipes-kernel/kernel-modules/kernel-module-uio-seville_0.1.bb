@@ -7,6 +7,6 @@ SRCREV = "0f31fbcbe9ab1ab9c424da34f70c82314b16f8de"
 
 inherit module
 
-S = "${WORKDIR}/git/uio-driver"
+S = "${UNPACKDIR}/${BP}/uio-driver"
 
 COMPATIBLE_MACHINE = "(t1040|t1042)"

@@ -13,7 +13,7 @@ SRC_URI:append:qoriq-ppc = " file://SoftFloat-powerpc-1.patch \
 SRC_URI[TestFloat.sha256sum] = "84d14aa42adefbda2ec9708b42946f7fa59f93689b042684bd027863481f8e4e"
 SRC_URI[SoftFloat.sha256sum] = "89d14b55113a2ba8cbda7011443ba1d298d381c89d939515d56c5f18f2febf81"
 
-S = "${WORKDIR}/TestFloat-2a"
+S = "${UNPACKDIR}/TestFloat-2a"
 
 do_unpack2(){
     mv ${UNPACKDIR}/SoftFloat-2b ${S}/SoftFloat-2b

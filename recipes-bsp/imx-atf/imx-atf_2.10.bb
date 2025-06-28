@@ -12,8 +12,6 @@ SRC_URI = "git://github.com/nxp-imx/imx-atf.git;protocol=https;branch=${SRCBRANC
 SRCBRANCH = "lf_v2.10"
 SRCREV = "78a14c75a06dea39036c44ae0f9d23acc7bcaef2"
 
-S = "${WORKDIR}/git"
-
 inherit deploy
 
 ATF_PLATFORM ??= "INVALID"

@@ -10,8 +10,6 @@ SRC_URI = "git://github.com/nxp-qoriq/ofp;protocol=https;nobranch=1"
 
 SRCREV = "fe66f4659f7d356f7aa73a8fb32fcf67c6cf1108"
 
-S = "${WORKDIR}/git"
-
 inherit autotools-brokensep pkgconfig
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

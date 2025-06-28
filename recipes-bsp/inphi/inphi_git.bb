@@ -7,8 +7,6 @@ inherit deploy
 SRC_URI = "git://github.com/nxp/qoriq-firmware-inphi.git;nobranch=1;protocol=https"
 SRCREV = "f22e9ff3bfed8342da6efb699e473b11fbad5695"
 
-S = "${WORKDIR}/git"
-
 do_install () {
     install -d ${D}/boot
     cp -fr ${S}/in112525-phy-ucode.txt ${D}/boot

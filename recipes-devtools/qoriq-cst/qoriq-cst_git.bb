@@ -21,8 +21,6 @@ SRC_URI = "git://github.com/nxp-qoriq/cst;protocol=https;nobranch=1 \
 "
 SRCREV = "e96dead3c339f6addb1600249be67e1884cdbcc5"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}"'
 CFLAGS:append = ' -Wno-deprecated-declarations'
 

@@ -7,8 +7,6 @@ SRC_URI = "git://github.com/nxp-qoriq/restool;protocol=https;nobranch=1 \
 "
 SRCREV = "8c45e04363bf2a984a87b24d1dac80a286dd40d8"
 
-S = "${WORKDIR}/git"
-
 inherit bash-completion
 
 EXTRA_OEMAKE = 'CC="${CC}" MANPAGE= EXTRA_CFLAGS="-O2 -Wno-missing-field-initializers -Wno-missing-braces -Wno-maybe-uninitialized -Wno-date-time"'
