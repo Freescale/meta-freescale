@@ -10,8 +10,6 @@ inherit module autotools-brokensep
 SRC_URI = "git://github.com/nxp-qoriq-yocto-sdk/ls-dbg;branch=nxp/master;protocol=https"
 SRCREV = "40501f6659e880d38508cdd34a4df2d348d1c68e"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OECONF += "--with-linux=${STAGING_KERNEL_DIR}"
 EXTRA_OEMAKE += 'SYSROOT="${D}"'
 

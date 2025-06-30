@@ -7,7 +7,7 @@ SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 SRC_URI[sha256sum] = "67a008bc64af4f3d9ad91465af3c0c3ac90ff8dcbcdaed96036eccc62880c7a3"
 IMX_SRCREV_ABBREV = "f2226b0"
 
-S = "${WORKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
 inherit fsl-eula-unpack
 

@@ -35,7 +35,7 @@ MCORE_TYPE:mx95-nxp-bsp  = "m7"
 
 SRC_URI = "${FSL_MIRROR}/${SOC}-${MCORE_TYPE}-demo-${PV}.bin;name=${SOC};fsl-eula=true"
 
-S = "${WORKDIR}/${SOC}-${MCORE_TYPE}-demo-${PV}"
+S = "${UNPACKDIR}/${SOC}-${MCORE_TYPE}-demo-${PV}"
 
 SCR = "SCR-${SOC}-${MCORE_TYPE}-demo.txt"
 

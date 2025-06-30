@@ -26,8 +26,6 @@ export RTE_TARGET = "${DPDK_RTE_TARGET}"
 export RTE_OUTPUT = "${S}/${RTE_TARGET}"
 export  MODULE_DIR = "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/net"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OEMAKE += 'ETHTOOL_LIB_PATH="${S}/examples/ethtool/lib/${RTE_TARGET}" RTE_SDK="${S}" \
     OPENSSL_PATH="${STAGING_DIR_HOST}" RTE_KERNELDIR="${STAGING_KERNEL_DIR}" \
     RTE_KERNELDIR_OUT="${STAGING_KERNEL_BUILDDIR}" EXAMPLES_BUILD_DIR="${RTE_TARGET}" \

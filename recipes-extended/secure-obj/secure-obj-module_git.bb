@@ -6,6 +6,6 @@ DEPENDS += "virtual/kernel"
 
 inherit module 
 
-S = "${WORKDIR}/git/securekeydev"
+S = "${UNPACKDIR}/${BP}/securekeydev"
 
 EXTRA_OEMAKE += 'KERNEL_SRC="${STAGING_KERNEL_DIR}"'

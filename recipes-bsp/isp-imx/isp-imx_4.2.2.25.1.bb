@@ -9,7 +9,7 @@ SRC_URI = " \
     ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
 "
 IMX_SRCREV_ABBREV = "327f21d"
-S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 SRC_URI[sha256sum] = "f57c6fe1c2dd1c8e5991a625d0b3a1dbfdfe6d39a1a116a904d543faa0f4f6f0"
 

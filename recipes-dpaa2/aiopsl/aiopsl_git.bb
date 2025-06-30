@@ -5,8 +5,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=faf479bdc4702d8033049f97e153f876"
 
 BASEDEPENDS = ""
 
-S = "${WORKDIR}/git"
-
 SRC_URI = "git://github.com/nxp-qoriq/aiopsl;protocol=https;nobranch=1"
 SRCREV = "87d83d8e99770325cc7ad9e10965c9959e7cb828"
 

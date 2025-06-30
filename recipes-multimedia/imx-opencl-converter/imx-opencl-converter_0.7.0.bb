@@ -10,7 +10,7 @@ IMX_SRCREV_ABBREV = "ad0094a"
 
 SRC_URI[sha256sum] = "d23ad4234f34ffcfb37d77c91345b935894937913a68995223d2f9f421eade46"
 
-S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 inherit fsl-eula-unpack autotools pkgconfig meson
 
 FILES:${PN} += "${datadir}/"

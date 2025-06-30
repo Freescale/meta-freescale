@@ -13,7 +13,7 @@ SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 SRC_URI[sha256sum] = "bd8dc01966076836aabff53f2463295294166595006e1db430db21b6ffa6b667"
 IMX_SRCREV_ABBREV = "0333596"
 
-S = "${WORKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
+S = "${UNPACKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
 do_compile[noexec] = "1"
 

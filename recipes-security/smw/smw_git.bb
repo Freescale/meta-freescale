@@ -19,7 +19,7 @@ SRC_URI = "git://github.com/nxp-imx/imx-smw.git;protocol=https;branch=release/ve
 SRCREV_smw = "f0570b3e8cb5f68d54edc4f9dd7cb984f6f604ed"
 SRCREV_psa = "463cb95ada820bc6f758d50066cf8c0ed5cc3a02"
 SRCREV_FORMAT = "smw_psa"
-S = "${WORKDIR}/git/smw"
+S = "${UNPACKDIR}/git/smw"
 
 inherit cmake python3native
 

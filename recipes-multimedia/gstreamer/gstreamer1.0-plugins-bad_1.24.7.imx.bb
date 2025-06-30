@@ -190,7 +190,7 @@ GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protoc
 SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
 SRCREV = "7bb1254fcb0a0dcb1ecb4ac21efbc5068151943d"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BP}"
 
 inherit use-imx-headers
 

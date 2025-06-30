@@ -18,8 +18,6 @@ SRC_URI = " \
 
 UPSTREAM_CHECK_GITTAGREGEX = "^(?P<pver>\d+(\.\d+)+)$"
 
-S = "${WORKDIR}/git"
-
 EXTRA_OECMAKE = " \
     -DBUILD_SHARED_LIBS=ON \
     -DCFG_TEE_FS_PARENT_PATH='${localstatedir}/lib/tee' \

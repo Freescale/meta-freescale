@@ -14,8 +14,6 @@ SRCBRANCH ?= "master"
 SRCREV = "37095a854aa176bb763a25ce98ceb6a787501271"
 SRC_URI = "git://github.com/Freescale/libimxvpuapi.git;branch=${SRCBRANCH};protocol=https"
 
-S = "${WORKDIR}/git"
-
 inherit waf pkgconfig use-imx-headers python3native
 
 IMX_PLATFORM:mx6-nxp-bsp = "imx6"

@@ -33,7 +33,6 @@ DEPENDS = " \
 
 inherit module bash-completion deploy setuptools3
 
-S = "${WORKDIR}/git"
 B = "${S}"
 
 JH_ARCH = "arm64"

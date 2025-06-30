@@ -8,8 +8,6 @@ inherit deploy
 SRC_URI = "git://github.com/NXP/qoriq-uefi-binary.git;nobranch=1;protocol=https"
 SRCREV = "55789d536850e00c6f2284fb28eaf21712cd276b"
 
-S = "${WORKDIR}/git"
-
 do_install () {
        if [ -d ${B}/${MACHINE} ]; then
            install -d ${D}/uefi

@@ -12,8 +12,6 @@ SRC_URI = "git://github.com/nxp-qoriq/gpp-aioptool;protocol=https;nobranch=1 \
 "
 SRCREV = "6ead470dde043f3ca67f1ba19b313dd64ec199e1"
 
-S = "${WORKDIR}/git"
-
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}" KERNEL_PATH="${STAGING_KERNEL_DIR}"'

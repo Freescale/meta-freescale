@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://LICENCE;md5=0f00d99239d922ffd13cabef83b33444"
 SRC_URI = "${FSL_MIRROR}/sof-imx-${PV}.tar.gz"
 SRC_URI[sha256sum] = "eb86c90aec92b3b376e7afca6aa5db4767b5d8868553595907ba37665329f16b"
 
-S = "${WORKDIR}/sof-imx-${PV}"
+S = "${UNPACKDIR}/sof-imx-${PV}"
 
 inherit allarch
 
