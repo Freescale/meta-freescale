@@ -1,0 +1,31 @@
+From 3443f18dc9ab8950071d6299c7a5da86055f3318 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Thu, 19 Jan 2023 15:51:24 +0000
+Subject: [PATCH] isp-imx: start_isp: don't report error if no camera is
+ configured
+
+The script currently returns '6' when no known camera is configured
+in the device tree. The end result is that the systemd imx8-isp.service
+goes to the failed state.
+Return '0' in that case as obviously the device tree doesn't have a
+camera configured and the service is not needed.
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ imx/start_isp.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/imx/start_isp.sh b/imx/start_isp.sh
+index 95cbc19..d603f8f 100755
+--- a/imx/start_isp.sh
++++ b/imx/start_isp.sh
+@@ -74,5 +74,5 @@ elif [ $NR_DEVICE_TREE_OS08A20 -eq 2 ]; then
+ else
+ 	# no device tree found exit with code no device or address
+ 	echo "No device tree found for Basler camera or os08a20, check dtb file!" >&2
+-	exit 6
++	exit 0
+ fi
+-- 
+2.35.3
