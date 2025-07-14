@@ -7,7 +7,10 @@ DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 jsoncpp patchelf-native"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '${ISP_SYSTEMD_PATCH}', '', d)} \
 "
+ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
+
 IMX_SRCREV_ABBREV = "327f21d"
 S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
