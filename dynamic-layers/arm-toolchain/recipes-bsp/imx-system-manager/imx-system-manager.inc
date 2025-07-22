@@ -18,7 +18,7 @@ SYSTEM_MANAGER_CONFIG ?= "INVALID"
 LDFLAGS[unexport] = "1"
 
 EXTRA_OEMAKE = " \
-    V=y \
+    V=1 \
     SM_CROSS_COMPILE=arm-none-eabi- \
     ${PACKAGECONFIG_CONFARGS} \
 "
