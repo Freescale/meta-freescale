@@ -8,6 +8,10 @@ DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 jsoncpp patchelf-native"
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '${ISP_SYSTEMD_PATCH}', '', d)} \
+    file://0002-appshell-cmake-bump-min-version-to-3.5.patch \
+    file://0003-appshell-cmake-drop-deprecated-use-of-target_link_li.patch \
+    file://0004-units-targets.cmake-fix-check-if-a-target-exists.patch \
+    file://0005-units-cmake-fix-use-of-add_dependencies.patch \
 "
 ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
 
@@ -16,7 +20,7 @@ S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 SRC_URI[sha256sum] = "8fa5094da6438505287f4dcc8033dad3057ab81bf98c858884f7c3a2e521b252"
 
-inherit fsl-eula-unpack cmake systemd use-imx-headers
+inherit fsl-eula-unpack cmake pkgconfig systemd use-imx-headers
 
 PACKAGECONFIG = ""
 # Note: building with tuningext fails with boost 1.87.
@@ -50,7 +54,7 @@ EXTRA_OECMAKE += " \
     -Wno-dev \
 "
 
-do_configure:prepend () {
+do_configure_disable:prepend () {
     # FIXME: should be rebuild.
     patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/bin/isp_media_server
     patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/lib/libmedia_server.so
@@ -61,9 +65,6 @@ do_configure:prepend () {
 }
 
 do_install() {
-    # FIXME: provided by the basler-camera package, do not install them here additionally
-    rm -f ${S}/dewarp/dewarp_config//daA3840_30mc*.json
-
     # The Makefile unconditionally installs tuningext even if it is not built
     if ${@bb.utils.contains('PACKAGECONFIG','tuningext','false','true',d)}; then
         touch ${B}/generated/release/bin/tuningext
