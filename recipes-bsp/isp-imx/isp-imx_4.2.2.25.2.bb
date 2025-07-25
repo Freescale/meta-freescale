@@ -2,7 +2,7 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
+LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
 DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 jsoncpp patchelf-native"
 
 SRC_URI = " \
@@ -11,10 +11,10 @@ SRC_URI = " \
 "
 ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
 
-IMX_SRCREV_ABBREV = "327f21d"
+IMX_SRCREV_ABBREV = "3cac1fb"
 S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
-SRC_URI[sha256sum] = "f57c6fe1c2dd1c8e5991a625d0b3a1dbfdfe6d39a1a116a904d543faa0f4f6f0"
+SRC_URI[sha256sum] = "8fa5094da6438505287f4dcc8033dad3057ab81bf98c858884f7c3a2e521b252"
 
 inherit fsl-eula-unpack cmake systemd use-imx-headers
 
@@ -39,7 +39,6 @@ EXTRA_OECMAKE += " \
     -DCMAKE_BUILD_TYPE=release \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
-    -DTUNINGEXT=1 \
     -DQTLESS=1 \
     -DFULL_SRC_COMPILE=1 \
     -DWITH_DRM=1 \
