@@ -1,0 +1,37 @@
+From db07010535d47d7d7eaf3865d97dcec045e19930 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Fri, 25 Jul 2025 09:57:22 +0000
+Subject: [PATCH 3/5] appshell: cmake: drop deprecated use of
+ target_link_libraries
+
+Works around:
+
+| CMake Error at display/CMakeLists.txt:48 (target_link_libraries):
+|   Cannot specify link libraries for target "wayland-client" which is not
+|   built by this project.
+
+caused by CMake 4 deprecating https://cmake.org/cmake/help/v3.5/policy/CMP0016.html
+
+CMP0016 states that the command is silently ignored, thus drop it.
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ appshell/display/CMakeLists.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/appshell/display/CMakeLists.txt b/appshell/display/CMakeLists.txt
+index 458a46b165b4..160755312368 100755
+--- a/appshell/display/CMakeLists.txt
++++ b/appshell/display/CMakeLists.txt
+@@ -43,7 +43,6 @@ if (WAYLAND_SUPPORT)
+     file(GLOB pub_headers *.h)
+     file(GLOB libsources *.cpp ./wayland-client/*.c)
+     include_directories(./wayland-client)
+-    target_link_libraries(wayland-client)
+ else (WAYLAND_SUPPORT)
+     file(GLOB pub_headers *.h)
+     file(GLOB libsources *.cpp)
+-- 
+2.42.0
+

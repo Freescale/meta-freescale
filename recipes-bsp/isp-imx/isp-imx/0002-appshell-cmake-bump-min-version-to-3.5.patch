@@ -1,0 +1,134 @@
+From 5b69b60bd4d0d5ed1474c6457561d48cdbabc778 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Fri, 25 Jul 2025 09:19:58 +0000
+Subject: [PATCH 2/5] appshell: cmake: bump min version to 3.5
+
+CMake 4 no longer supports min version set to before 3.5
+
+|  CMake Error at CMakeLists.txt:28 (cmake_minimum_required):
+|    Compatibility with CMake < 3.5 has been removed from CMake.
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ appshell/CMakeLists.txt                        | 2 +-
+ appshell/display/CMakeLists.txt                | 2 +-
+ appshell/display/wayland-client/CMakeLists.txt | 2 +-
+ appshell/v4l_drm_test/CMakeLists.txt           | 2 +-
+ appshell/vvext/CMakeLists.txt                  | 2 +-
+ appshell/yuv/CMakeLists.txt                    | 2 +-
+ units/CMakeLists.txt                           | 2 +-
+ units/isi/CMakeLists.txt                       | 2 +-
+ units/isi/drv/OS08a20/CMakeLists.txt           | 2 +-
+ units/isi/drv/OS08a20/calib/CMakeLists.txt     | 2 +-
+ 10 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/appshell/CMakeLists.txt b/appshell/CMakeLists.txt
+index 22092ce975b5..cf14e254c812 100644
+--- a/appshell/CMakeLists.txt
++++ b/appshell/CMakeLists.txt
+@@ -25,7 +25,7 @@
+ # *****************************************************************************/
+ 
+ 
+-cmake_minimum_required(VERSION 3.1.0)
++cmake_minimum_required(VERSION 3.5.0)
+ project(ISP_APP_SHELL)
+ 
+ if(DEFINED QTLESS)
+diff --git a/appshell/display/CMakeLists.txt b/appshell/display/CMakeLists.txt
+index 491f086adf55..458a46b165b4 100755
+--- a/appshell/display/CMakeLists.txt
++++ b/appshell/display/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.6)
+ 
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+ 
+diff --git a/appshell/display/wayland-client/CMakeLists.txt b/appshell/display/wayland-client/CMakeLists.txt
+index 78247528b0e4..0639d79d8346 100644
+--- a/appshell/display/wayland-client/CMakeLists.txt
++++ b/appshell/display/wayland-client/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.6)
+ 
+ set(WAYLAND_XML_PRIFIX ${SDKTARGETSYSROOT}/usr/share/wayland-protocols)
+ set(GEN_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/display/wayland-client)
+diff --git a/appshell/v4l_drm_test/CMakeLists.txt b/appshell/v4l_drm_test/CMakeLists.txt
+index cf4685c84204..309e5d465e99 100755
+--- a/appshell/v4l_drm_test/CMakeLists.txt
++++ b/appshell/v4l_drm_test/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ project(ISP_V4L_DRM_TEST)
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+diff --git a/appshell/vvext/CMakeLists.txt b/appshell/vvext/CMakeLists.txt
+index a5d6c12929fa..63c1eb5f7073 100755
+--- a/appshell/vvext/CMakeLists.txt
++++ b/appshell/vvext/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ project(ISP_V4L_DRM_TEST)
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+diff --git a/appshell/yuv/CMakeLists.txt b/appshell/yuv/CMakeLists.txt
+index 131766fcb5d4..0f3591918e08 100755
+--- a/appshell/yuv/CMakeLists.txt
++++ b/appshell/yuv/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ set (CMAKE_CXX_FLAGS_DEBUG "")
+ set (CMAKE_C_FLAGS_DEBUG "")
+ 
+diff --git a/units/CMakeLists.txt b/units/CMakeLists.txt
+index 37fa65ed4ea8..10abbef1c16c 100755
+--- a/units/CMakeLists.txt
++++ b/units/CMakeLists.txt
+@@ -24,7 +24,7 @@
+ # *
+ # *****************************************************************************/
+ 
+-cmake_minimum_required(VERSION 3.1.0)
++cmake_minimum_required(VERSION 3.5.0)
+ project(ISPcore_SW_STACK)
+ if( NOT DEFINED APPSHELL_TOP_COMPILE)
+ 
+diff --git a/units/isi/CMakeLists.txt b/units/isi/CMakeLists.txt
+index a91699b4a1a5..ea01aa7d9424 100755
+--- a/units/isi/CMakeLists.txt
++++ b/units/isi/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ # define module name
+ set (module isi)
+diff --git a/units/isi/drv/OS08a20/CMakeLists.txt b/units/isi/drv/OS08a20/CMakeLists.txt
+index d27dc97f7945..12c6e9ef993a 100755
+--- a/units/isi/drv/OS08a20/CMakeLists.txt
++++ b/units/isi/drv/OS08a20/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ # define module name & interface version
+ set (module os08a20)
+diff --git a/units/isi/drv/OS08a20/calib/CMakeLists.txt b/units/isi/drv/OS08a20/calib/CMakeLists.txt
+index b44b08248135..18119086b967 100755
+--- a/units/isi/drv/OS08a20/calib/CMakeLists.txt
++++ b/units/isi/drv/OS08a20/calib/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ # use upper level module name
+ 
+-- 
+2.42.0
+

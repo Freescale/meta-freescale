@@ -1,0 +1,51 @@
+From d7e06f57c067e50d86369577b8dc3bccdde6fd40 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Fri, 25 Jul 2025 10:44:40 +0000
+Subject: [PATCH 4/5] units/targets.cmake: fix check if a target exists
+
+| CMake Error at units/targets.cmake:35 (get_target_property):
+|   get_target_property() called with non-existent target "lib".
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ units/targets.cmake | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/units/targets.cmake b/units/targets.cmake
+index 663a024d9129..d78dbf8b8a45 100755
+--- a/units/targets.cmake
++++ b/units/targets.cmake
+@@ -32,8 +32,7 @@ add_dependencies(create_alldir ${module}_create_dir)
+ # Settings for target LIB
+ ###############################################################################
+ # check if lib target already exists and create it, this is to assure that only one target called lib will be generated
+-get_target_property(LIB_TARGET lib TYPE)
+-if(NOT LIB_TARGET)
++if(NOT TARGET lib)
+     add_custom_target(lib)
+ endif()
+ # the library itself is a dependency for the target lib
+@@ -83,8 +82,7 @@ if(HAVE_PUBLIC_HEADERS)
+ endif()
+ 
+ # check if lib_install target already exists and create it
+-get_target_property(LIB_INSTALL_TARGET lib_install TYPE)
+-if(NOT LIB_INSTALL_TARGET)
++if(NOT TARGET lib_install)
+     add_custom_target(lib_install)
+ endif()
+ 
+@@ -104,8 +102,7 @@ add_custom_target(${module}_copy_header
+                     COMMENT "Copying Headers of ${module}")
+ 
+ # check if copy_header target already exists and create it
+-get_target_property(COPY_HEADER_TARGET copy_header TYPE)
+-if(NOT COPY_HEADER_TARGET)
++if(NOT TARGET copy_header)
+     add_custom_target(copy_header)
+ endif()
+ # if copy_header is selected, modulename_copy_header target must be created
+-- 
+2.42.0
+
