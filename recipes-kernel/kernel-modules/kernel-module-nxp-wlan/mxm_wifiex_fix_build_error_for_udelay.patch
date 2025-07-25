@@ -1,0 +1,31 @@
+From f45013f26a7045e882e4a0ac99ae126571fa60af Mon Sep 17 00:00:00 2001
+From: Luke Wang <ziniu.wang_1@nxp.com>
+Date: Tue, 15 Oct 2024 15:49:48 +0800
+Subject: [PATCH] mxm_wifiex: fix build error for udelay
+
+When build on 32-bit platform, error log shows:
+ERROR: modpost: "__bad_udelay" [mwifiex/moal.ko] undefined!
+
+32-bit platform udelay has 2000us limition. Split it as workaround.
+
+Upstream-Status: Backport [https://github.com/nxp-imx/mwifiex/commit/f45013f26a7045e882e4a0ac99ae126571fa60af]
+
+Signed-off-by: Luke Wang <ziniu.wang_1@nxp.com>
+---
+ mlinux/moal_sdio_mmc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mlinux/moal_sdio_mmc.c b/mlinux/moal_sdio_mmc.c
+index 746f434..299829e 100644
+--- a/mlinux/moal_sdio_mmc.c
++++ b/mlinux/moal_sdio_mmc.c
+@@ -3322,7 +3322,8 @@ static int woal_sdiommc_reset_fw(moal_handle *handle)
+ 		ret = -EFAULT;
+ 		goto done;
+ 	}
+-	udelay(4000);
++	udelay(2000);
++	udelay(2000);
+ 	/** wait SOC fully wake up */
+ 	for (tries = 0; tries < MAX_POLL_TRIES; ++tries) {
+ 		ret = handle->ops.write_reg(handle, reset_reg, 0xba);
