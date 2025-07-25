@@ -1,0 +1,105 @@
+From b2bcca5c812b654e39d8709070266d6fbf37c121 Mon Sep 17 00:00:00 2001
+From: Luke Wang <ziniu.wang_1@nxp.com>
+Date: Tue, 15 Oct 2024 15:49:05 +0800
+Subject: [PATCH] mxm_wifiex: fix build error for 64-bit division
+
+When build on 32-bit platform, error log shows:
+ERROR: modpost: "__aeabi_uldivmod" [mwifiex/mlan.ko] undefined!
+ERROR: modpost: "__aeabi_ldivmod" [mwifiex/mlan.ko] undefined!
+
+32-bit platform need to use do_div() to support 64-bit division.
+
+Upstream-Status: Backport [https://github.com/nxp-imx/mwifiex/commit/fd7dd188a1ad7eb8bc110d30815e087362f91d72]
+
+Signed-off-by: Luke Wang <ziniu.wang_1@nxp.com>
+---
+ mlan/mlan_wmm.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
+
+diff --git a/mlan/mlan_wmm.c b/mlan/mlan_wmm.c
+index 6da49ea..8815ca5 100644
+--- a/mlan/mlan_wmm.c
++++ b/mlan/mlan_wmm.c
+@@ -840,11 +840,11 @@ static raListTbl *wlan_wmm_get_highest_priolist_ptr(pmlan_adapter pmadapter,
+  *
+  *  @return                 byte budget
+  */
+-static t_u32 wlan_wmm_get_byte_budget(t_u32 time_budget_us, t_u32 phy_rate_kbps)
++static t_u32 wlan_wmm_get_byte_budget(pmlan_adapter pmadapter, t_u32 time_budget_us, t_u32 phy_rate_kbps)
+ {
+ 	const t_u32 min_budget = MV_ETH_FRAME_LEN;
+-	t_u64 byte_budget =
+-		((t_u64)phy_rate_kbps * time_budget_us) / (8 * 1000u);
++	t_u64 byte_budget = pmadapter->callbacks.moal_do_div((t_u64)phy_rate_kbps * time_budget_us,
++		8 * 1000u);
+ 
+ 	if (byte_budget > INT_MAX)
+ 		return INT_MAX;
+@@ -891,7 +891,7 @@ wlan_wmm_allocate_sta_table(pmlan_adapter pmadapter, t_u8 *ra)
+ 
+ 	sta_table->budget.time_budget_init_us = pmadapter->init_para.tx_budget;
+ 	sta_table->budget.byte_budget_init = wlan_wmm_get_byte_budget(
+-		sta_table->budget.time_budget_init_us, default_rate);
++		pmadapter, sta_table->budget.time_budget_init_us, default_rate);
+ 	sta_table->budget.queue_packets = default_queue_packets;
+ 	sta_table->budget.phy_rate_kbps = default_rate;
+ 
+@@ -900,14 +900,14 @@ wlan_wmm_allocate_sta_table(pmlan_adapter pmadapter, t_u8 *ra)
+ 	sta_table->budget.mpdu_no_amsdu_pps_cap =
+ 		pmadapter->tx_mpdu_no_amsdu_pps;
+ 
+-        sta_table->budget.mpdu_with_amsdu_budget_init =
+-                ((t_u64)sta_table->budget.mpdu_with_amsdu_pps_cap *
+-                 sta_table->budget.time_budget_init_us) /
+-                1000000;
+-        sta_table->budget.mpdu_no_amsdu_budget_init =
+-                ((t_u64)sta_table->budget.mpdu_no_amsdu_pps_cap *
+-                 sta_table->budget.time_budget_init_us) /
+-                1000000;
++	sta_table->budget.mpdu_with_amsdu_budget_init = pmadapter->callbacks.moal_do_div(
++		(t_u64)sta_table->budget.mpdu_with_amsdu_pps_cap *
++		 sta_table->budget.time_budget_init_us,
++		1000000);
++	sta_table->budget.mpdu_no_amsdu_budget_init = pmadapter->callbacks.moal_do_div(
++		(t_u64)sta_table->budget.mpdu_no_amsdu_pps_cap *
++		 sta_table->budget.time_budget_init_us,
++		1000000);
+ 
+ 	for (i = 0; i < NELEMENTS(sta_table->budget.bytes); ++i) {
+ 		sta_table->budget.bytes[i] = sta_table->budget.byte_budget_init;
+@@ -3142,12 +3142,12 @@ static t_void wlan_wmm_update_queue_packets_budget(pmlan_adapter pmadapter,
+ 			list_entry, struct wmm_sta_table, active_sta_entry);
+ 		const t_u64 sta_capacity = sta->budget.byte_budget_init;
+ 		const t_u32 max_pkts_by_airtime =
+-			wlan_wmm_get_byte_budget(max_pending_tx_time_us,
++			wlan_wmm_get_byte_budget(pmadapter, max_pending_tx_time_us,
+ 						 sta->budget.phy_rate_kbps) /
+ 			MV_ETH_FRAME_LEN;
++		t_u32 sta_share = pmadapter->callbacks.moal_do_div((t_u64)queue_packets_limit * sta_capacity,
++									total_capacity);
+ 
+-		t_u32 sta_share =
+-			queue_packets_limit * sta_capacity / total_capacity;
+ 		sta_share = MAX(sta_share, min_sta_share);
+ 		sta_share = MIN(sta_share, queue_packets_limit * 7 / 8);
+ 		sta_share = MIN(sta_share, max_pkts_by_airtime);
+@@ -5183,6 +5183,7 @@ static void wlan_wmm_adjust_sta_tx_budget(pmlan_private priv,
+ 					  struct wmm_sta_table *sta,
+ 					  HostCmd_TX_RATE_QUERY *rate)
+ {
++	mlan_adapter *pmadapter = priv->adapter;
+ 	const t_u8 ppdu_type_legacy = 0;
+ 	const t_u8 ppdu_type_ht = 1;
+ 	const t_u8 ppdu_type_vht = 2;
+@@ -5210,7 +5211,7 @@ static void wlan_wmm_adjust_sta_tx_budget(pmlan_private priv,
+ 	if (phy_rate > 0) {
+ 		const t_u32 old_phy_rate = sta->budget.phy_rate_kbps;
+ 		sta->budget.byte_budget_init = wlan_wmm_get_byte_budget(
+-			sta->budget.time_budget_init_us, phy_rate);
++			pmadapter, sta->budget.time_budget_init_us, phy_rate);
+ 		sta->budget.phy_rate_kbps = phy_rate;
+ 
+ 		if (old_phy_rate / phy_rate >= 2 ||
+-- 
+2.25.1
+
