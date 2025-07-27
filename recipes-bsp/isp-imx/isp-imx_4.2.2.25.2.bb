@@ -2,21 +2,25 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
+LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
 DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 jsoncpp patchelf-native"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '${ISP_SYSTEMD_PATCH}', '', d)} \
+    file://0002-appshell-cmake-bump-min-version-to-3.5.patch \
+    file://0003-appshell-cmake-drop-deprecated-use-of-target_link_li.patch \
+    file://0004-units-targets.cmake-fix-check-if-a-target-exists.patch \
+    file://0005-units-cmake-fix-use-of-add_dependencies.patch \
 "
 ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
 
-IMX_SRCREV_ABBREV = "327f21d"
+IMX_SRCREV_ABBREV = "3cac1fb"
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
-SRC_URI[sha256sum] = "f57c6fe1c2dd1c8e5991a625d0b3a1dbfdfe6d39a1a116a904d543faa0f4f6f0"
+SRC_URI[sha256sum] = "8fa5094da6438505287f4dcc8033dad3057ab81bf98c858884f7c3a2e521b252"
 
-inherit fsl-eula-unpack cmake systemd use-imx-headers
+inherit fsl-eula-unpack cmake pkgconfig systemd use-imx-headers
 
 PACKAGECONFIG = ""
 # Note: building with tuningext fails with boost 1.87.
@@ -39,7 +43,6 @@ EXTRA_OECMAKE += " \
     -DCMAKE_BUILD_TYPE=release \
     -DISP_VERSION=ISP8000NANO_V1802 \
     -DPLATFORM=ARM64 \
-    -DTUNINGEXT=1 \
     -DQTLESS=1 \
     -DFULL_SRC_COMPILE=1 \
     -DWITH_DRM=1 \
@@ -51,7 +54,7 @@ EXTRA_OECMAKE += " \
     -Wno-dev \
 "
 
-do_configure:prepend () {
+do_configure_disable:prepend () {
     # FIXME: should be rebuild.
     patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/bin/isp_media_server
     patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/lib/libmedia_server.so
@@ -62,9 +65,6 @@ do_configure:prepend () {
 }
 
 do_install() {
-    # FIXME: provided by the basler-camera package, do not install them here additionally
-    rm -f ${S}/dewarp/dewarp_config//daA3840_30mc*.json
-
     # The Makefile unconditionally installs tuningext even if it is not built
     if ${@bb.utils.contains('PACKAGECONFIG','tuningext','false','true',d)}; then
         touch ${B}/generated/release/bin/tuningext
