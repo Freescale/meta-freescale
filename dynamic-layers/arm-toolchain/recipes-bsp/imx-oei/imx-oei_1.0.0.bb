@@ -29,6 +29,8 @@ EXTRA_OEMAKE = "\
     DEBUG=1 \
     OEI_CROSS_COMPILE=arm-none-eabi-"
 
+EXTRA_OEMAKE:append:mx95-generic-bsp = " r=${IMX_SOC_REV}"
+
 do_configure() {
     for oei_config in ${OEI_CONFIGS}; do
         oe_runmake clean oei=$oei_config
