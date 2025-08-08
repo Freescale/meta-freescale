@@ -42,8 +42,14 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.6.74.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
-# - e587f8fe42f6 firmware: se_fw: remove info_list from ro section
+# $ git log --oneline  --no-merges v6.6.101.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# - ff2e4152c6ac Fix merge error on pci/controller/dwc/pci-imx6.c
+# - 0e91a51824ac Fix the merge between 6.6.85 and imx branch
+# - db393a056f28 imx8mp-olimex.dts: CSI GPIO pins
+# - 8981bfbf2cd5 Reapply "LF-12740: mxc: vpu: hantro_v4l2: report performance statistics"
+# - 9a97c180b1c4 Fix spi-nxp-fspi merge error
+# - e587f8fe42f1 firmware: se_fw: remove info_list from ro section
+# - 0f638960dcff media: Kconfig: fix double VIDEO_DEV
 # - 198242c057e0 drivers:clk:imx:clk-imx8mp-audiomix: remove duplicated CLK_GATE_PARENT definition
 # - 4f5936d7391f Revert "usb: gadget: u_serial: Disable ep before setting port to null to fix the crash caused by port being null"
 # - 997b7e13e413 imx8mp-olimex.dts: Olimex iMX8MP-SOM-EVB-IND
@@ -79,14 +85,14 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.2.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "5ff4cf4d61e11f0fdf8d4e2e54fbb203e46d34b2"
+SRCREV = "36cee4c51e9a0660f6f07d8f116f0c1fd4d77d30"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.74"
+LINUX_VERSION = "6.6.101"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
