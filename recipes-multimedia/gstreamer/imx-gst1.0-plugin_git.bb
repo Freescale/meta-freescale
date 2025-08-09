@@ -38,7 +38,10 @@ RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
 PV = "4.9.3+git${SRCPV}"
 
-SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = " \
+    git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
+    file://0001-gplay2-fix-termio.h-no-longer-existing.patch \
+"
 SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
 SRCREV = "370510ef8137874339df18a2a35ec1d04d98fa0b"
 
