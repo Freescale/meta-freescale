@@ -1,0 +1,35 @@
+From b88aec4d7a8c8993c8c75f002a1f2af1635337d1 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Sat, 9 Aug 2025 08:20:50 +0000
+Subject: [PATCH] gplay2: fix termio.h no longer existing
+
+glibc 2.42 removed the long deprecated termio.h header which
+in 2.41 only included termios.h and sys/ioctl.h. [1]
+
+Replacing it with sys/ioctl.h seems to provide all the needed
+declaration for successfully compiling.
+
+[1] https://sourceware.org/git/?p=glibc.git;a=blob;f=NEWS#l91
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ tools/gplay2/gplay2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/gplay2/gplay2.c b/tools/gplay2/gplay2.c
+index 9e406b9ea8c7..98b3ee5cf666 100755
+--- a/tools/gplay2/gplay2.c
++++ b/tools/gplay2/gplay2.c
+@@ -26,7 +26,7 @@
+  */
+ 
+ 
+-#include <termio.h>
++#include <sys/ioctl.h>
+ #include <unistd.h>
+ #include <pthread.h>
+ #include <stdio.h>
+-- 
+2.42.0
+
