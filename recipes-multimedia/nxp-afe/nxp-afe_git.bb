@@ -9,7 +9,7 @@ PV = "1.0+git"
 SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
 SRC_URI = " git://github.com/nxp-imx/nxp-afe.git;protocol=https;branch=${SRCBRANCH}"
 
-SRCREV = "c6b8fee21376e724b8441f3cf6c04dee69b5242e" 
+SRCREV = "c6b8fee21376e724b8441f3cf6c04dee69b5242e"
 
 DEPENDS += "alsa-lib"
 
