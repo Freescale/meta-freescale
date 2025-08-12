@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2016 Freescale Semiconductor
-# Copyright (C) 2017-2024 NXP
+# Copyright (C) 2017-2021 NXP
 
 SUMMARY = "Kernel loadable module for Vivante GPU"
 DESCRIPTION = "Builds the Vivante GPU kernel driver as a loadable kernel module, \
@@ -11,8 +11,8 @@ SRC_URI = "${KERNEL_SRC};subpath=drivers/mxc/gpu-viv;destsuffix=git/src \
            file://Add-makefile.patch"
 KERNEL_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.6.y"
-LOCALVERSION = "-6.6.3-1.0.0"
-SRCREV = "3571388e9660f96b65b5fdcc093cc973ee502949"
+LOCALVERSION = "-6.6.52-2.2.1"
+SRCREV = "b1d8a6dd8bef36e0bb923afbfa0466935f0270d6"
 
 S = "${WORKDIR}/git"
 
