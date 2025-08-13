@@ -1,5 +1,5 @@
 # Copyright 2013-2016 (C) Freescale Semiconductor
-# Copyright 2017-2024 (C) NXP
+# Copyright 2017-2025 (C) NXP
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 #
@@ -13,15 +13,15 @@ i.MX Family Reference Boards. It includes support for many IPs such as GPU, VPU 
 require recipes-kernel/linux/linux-imx.inc
 
 SRCBRANCH = "lf-6.12.y"
-LOCALVERSION = "-6.12.3-1.1.0"
-SRCREV = "37d02f4dcbbe6677dc9f5fc17f386c05d6a7bd7a"
+LOCALVERSION = "-6.12.20-2.0.0"
+SRCREV = "dfaf2136deb2af2e60b994421281ba42f1c087e0"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.12.3"
+LINUX_VERSION = "6.12.20"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
