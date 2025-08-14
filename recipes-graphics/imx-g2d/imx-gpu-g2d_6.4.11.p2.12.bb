@@ -1,19 +1,19 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright 2017-2024 NXP
+# Copyright 2017-2022 NXP
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "G2D library using i.MX GPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837" 
+LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 DEPENDS = "libgal-imx"
 PROVIDES = "virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${IMX_BIN_NAME}.bin;name=${TARGET_ARCH};fsl-eula=true"
 IMX_BIN_NAME = "${BP}-${TARGET_ARCH}-${IMX_SRCREV_ABBREV}"
-IMX_SRCREV_ABBREV = "accdd64"
-SRC_URI[aarch64.sha256sum] = "780479f19142126ed58e12222b80f8f3b882ad3d223ff61b7ea02001f517ff03"
-SRC_URI[arm.sha256sum] = "cd4fd05dd6f6880edc3255c85fe08094a07ea4cd3eee947df004dcb8f37bc8fa"
+IMX_SRCREV_ABBREV = "4402ac2"
+SRC_URI[aarch64.sha256sum] = "f82208abc84453c94fdc737ed6267cd689e68c23af9e4154bee6ce0651c075b1"
+SRC_URI[arm.sha256sum] = "bdfe4d48da0239d264b766ad46b89982f78af04ca4d5051aaf7615473b4de86a"
 
 S = "${WORKDIR}/${IMX_BIN_NAME}"
 
