@@ -1,21 +1,18 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
-# Copyright (C) 2017-2023 NXP
+# Copyright (C) 2017-2023,2025 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale Multimedia VPU wrapper"
 LICENSE = "Proprietary"
 SECTION = "multimedia"
-LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
+LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
 
 DEPENDS = "virtual/imxvpu"
 DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
 
-SRC_URI = " \
-    git://github.com/NXP/imx-vpuwrap.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-vpu_wrapper_hantro_encoder-fix-missing-include.patch \
-"
-SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
-SRCREV = "d8703ee3245797111ad21c52982efa8b6db33241"
+SRC_URI = "git://github.com/NXP/imx-vpuwrap.git;protocol=https;branch=${SRCBRANCH}"
+SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
+SRCREV = "feeb9109a027d3a0f040b0bddb5f79a1daad3587"
 
 inherit autotools pkgconfig
 
