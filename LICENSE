@@ -95,7 +95,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-graphics/imx-g2d/imx-pxp-g2d_git.bb: LICENSE = "Proprietary"
 ./recipes-graphics/imx-gpu-apitrace/imx-gpu-apitrace_10.0.0.bb: LICENSE = "MIT"
 ./recipes-graphics/imx-gpu-viv/imx-gpu-viv-6.inc: LICENSE = "Proprietary"
-./recipes-graphics/mali/mali-imx_r50.2.bb: LICENSE = "Proprietary"
+./recipes-graphics/mali/mali-imx_r50.4.bb: LICENSE = "Proprietary"
 ./recipes-graphics/mesa/mesa-etnaviv-env_0.1.bb: LICENSE = "MIT"
 ./recipes-graphics/wayland/wayland-protocols_1.32.imx.bb: LICENSE = "MIT"
 ./recipes-graphics/wayland/weston_10.0.5.imx.bb: LICENSE = "MIT"
