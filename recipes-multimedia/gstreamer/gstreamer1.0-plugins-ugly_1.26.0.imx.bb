@@ -14,7 +14,7 @@ LICENSE_FLAGS = "commercial"
 SRC_URI = " \
             https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${@get_gst_ver("${PV}")}.tar.xz \
             "
-SRC_URI[sha256sum] = "c5d1cbdf71ab0c675bca236f70edfa1feb3f813fd4bfff563308f466d8805ca5"
+SRC_URI[sha256sum] = "a86b51c8454a813120848c803421f327d8c07aabcae461e0597cc49398c0fcde"
 
 S = "${WORKDIR}/gst-plugins-ugly-${@get_gst_ver("${PV}")}"
 
@@ -43,6 +43,7 @@ EXTRA_OEMESON += " \
 def get_gst_ver(v):
     return oe.utils.trim_version(v, 3)
 
+FILES:${PN}-amrnb += "${datadir}/gstreamer-1.0/presets/GstAmrnbEnc.prs"
 FILES:${PN}-x264 += "${datadir}/gstreamer-1.0/presets/GstX264Enc.prs"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

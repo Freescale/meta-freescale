@@ -9,9 +9,9 @@ REALPN = "gstreamer-vaapi"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "https://gstreamer.freedesktop.org/src/${REALPN}/${REALPN}-1.24.0.tar.xz"
+SRC_URI = "https://gstreamer.freedesktop.org/src/${REALPN}/${REALPN}-${@get_gst_ver("${PV}")}.tar.xz"
 
-SRC_URI[sha256sum] = "6b1f3b91ca65dedc67dc67a25dc1d1e464f11825a27ab9c7ac7c1bda67f03596"
+SRC_URI[sha256sum] = "573931d455f5a96f63db7c8d35d51322b8d287816e8c6a77d84cfbb9fa1351f1"
 
 S = "${WORKDIR}/${REALPN}-${@get_gst_ver('${PV}')}"
 DEPENDS = "libva gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
