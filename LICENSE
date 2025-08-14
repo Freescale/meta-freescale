@@ -91,7 +91,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-graphics/drm/libdrm_2.4.116.imx.bb: LICENSE = "MIT"
 ./recipes-graphics/imx-g2d/imx-dpu-g2d_2.2.2.bb: LICENSE = "Proprietary"
 ./recipes-graphics/imx-g2d/imx-g2d-samples_git.bb: LICENSE = "BSD-3-Clause"
-./recipes-graphics/imx-g2d/imx-gpu-g2d_6.4.11.p2.10.bb: LICENSE = "Proprietary"
+./recipes-graphics/imx-g2d/imx-gpu-g2d_6.4.11.p2.12.bb: LICENSE = "Proprietary"
 ./recipes-graphics/imx-g2d/imx-pxp-g2d_git.bb: LICENSE = "Proprietary"
 ./recipes-graphics/imx-gpu-apitrace/imx-gpu-apitrace_10.0.0.bb: LICENSE = "MIT"
 ./recipes-graphics/imx-gpu-viv/imx-gpu-viv-6.inc: LICENSE = "Proprietary"
