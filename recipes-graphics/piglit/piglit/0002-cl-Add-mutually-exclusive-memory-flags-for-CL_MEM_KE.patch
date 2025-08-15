@@ -1,0 +1,42 @@
+From 2673c2adc81a408a4238f786cb2d795a65308ce6 Mon Sep 17 00:00:00 2001
+From: Eric Guo <eric.guo@nxp.com>
+Date: Fri, 11 Apr 2025 17:15:40 +0800
+Subject: [PATCH] cl: Add mutually exclusive memory flags for
+ CL_MEM_KERNEL_READ_AND_WRITE
+
+Fix cl-api-create-buffer on mali DDK.
+
+Upstream-Status: Submitted [https://gitlab.freedesktop.org/mesa/piglit/-/merge_requests/1004]
+Signed-off-by: Eric Guo <eric.guo@nxp.com>
+---
+ tests/util/piglit-util-cl-enum.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/tests/util/piglit-util-cl-enum.c b/tests/util/piglit-util-cl-enum.c
+index 5d43bc102..f2c185c9c 100644
+--- a/tests/util/piglit-util-cl-enum.c
++++ b/tests/util/piglit-util-cl-enum.c
+@@ -979,7 +979,7 @@ PIGLIT_CL_DEFINE_ENUM_2(cl_command_queue_properties, 2, 2, 2, 4, 4 /* really? */
+ PIGLIT_CL_DEFINE_ENUM_PTR_2(cl_command_queue_properties);
+ 
+ 
+-PIGLIT_CL_DEFINE_ENUM(cl_mem_flags, cl_mem_flags_mutexes, 5, 5, 8, 8, 8) = {
++PIGLIT_CL_DEFINE_ENUM(cl_mem_flags, cl_mem_flags_mutexes, 5, 5, 8, 11, 11) = {
+ 	CL_MEM_READ_WRITE | CL_MEM_READ_ONLY,
+ 	CL_MEM_READ_WRITE | CL_MEM_WRITE_ONLY,
+ 	CL_MEM_READ_ONLY | CL_MEM_WRITE_ONLY,
+@@ -990,6 +990,11 @@ PIGLIT_CL_DEFINE_ENUM(cl_mem_flags, cl_mem_flags_mutexes, 5, 5, 8, 8, 8) = {
+ 	CL_MEM_HOST_WRITE_ONLY | CL_MEM_HOST_NO_ACCESS,
+ 	CL_MEM_HOST_READ_ONLY | CL_MEM_HOST_NO_ACCESS,
+ #endif //CL_VERSION_1_2
++#if defined(CL_VERSION_2_0)
++	CL_MEM_KERNEL_READ_AND_WRITE | CL_MEM_READ_ONLY,
++	CL_MEM_KERNEL_READ_AND_WRITE | CL_MEM_WRITE_ONLY,
++	CL_MEM_KERNEL_READ_AND_WRITE | CL_MEM_READ_WRITE,
++#endif //CL_VERSION_2_0
+ };
+ PIGLIT_CL_DEFINE_ENUM_PTR(cl_mem_flags, cl_mem_flags_mutexes);
+ 
+-- 
+2.34.1
+

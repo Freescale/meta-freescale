@@ -1,0 +1,30 @@
+From c14b65106687b1097f5d50a993707d8a2f99005b Mon Sep 17 00:00:00 2001
+From: jiajia Qian <jiajia.qian@nxp.com>
+Date: Tue, 19 Dec 2023 13:23:33 +0800
+Subject: [PATCH] tests: Fix cl test Include Directories: error : Error(0,8) :
+ Cannot find the header file include_test.h.
+
+Modified CMakeLists.txt to install include_test.h file in piglit/tests/cl/program/build/ folder.
+
+Modified the relative path in include-directories.cl from "tests/cl/program/build" to "../lib/piglit/tests/cl/program/build".
+
+Upstream-Status: Pending [https://gitlab.freedesktop.org/mesa/piglit/-/merge_requests/853]
+Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
+---
+ CMakeLists.txt                                | 1 +
+ tests/cl/program/build/include-directories.cl | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+Index: git/tests/cl/program/build/include-directories.cl
+===================================================================
+--- git.orig/tests/cl/program/build/include-directories.cl
++++ git/tests/cl/program/build/include-directories.cl
+@@ -2,7 +2,7 @@
+ [config]
+ name: Include Directories
+ clc_version_min: 10
+-build_options: -I . -I tests/cl/program/build
++build_options: -I . -I ../lib/piglit/tests/cl/program/build
+ !*/
+ 
+ #include "include_test.h"
