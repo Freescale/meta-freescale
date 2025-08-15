@@ -68,7 +68,7 @@ PACKAGECONFIG[headless] = "-Dbackend-headless=true,-Dbackend-headless=false"
 # Weston on framebuffer
 PACKAGECONFIG[fbdev] = "-Ddeprecated-backend-fbdev=true,-Ddeprecated-backend-fbdev=false,udev mtdev"
 # Weston on RDP
-PACKAGECONFIG[rdp] = "-Dbackend-rdp=true,-Dbackend-rdp=false,freerdp"
+PACKAGECONFIG[rdp] = "-Dbackend-rdp=true,-Dbackend-rdp=false,freerdp,freerdp"
 # weston-launch
 PACKAGECONFIG[launch] = "-Ddeprecated-weston-launch=true,-Ddeprecated-weston-launch=false,drm"
 # VA-API desktop recorder
@@ -144,7 +144,7 @@ RDEPENDS:${PN}-xwayland += "xwayland"
 
 RDEPENDS:${PN} += "xkeyboard-config"
 RRECOMMENDS:${PN} = "weston-init liberation-fonts"
-RRECOMMENDS:${PN}-dev += "wayland-protocols"
+RDEPENDS:${PN}-dev += "wayland-protocols-dev"
 
 USERADD_PACKAGES = "${PN}"
 GROUPADD_PARAM:${PN} = "--system weston-launch"
@@ -206,6 +206,6 @@ EXTRA_OEMESON += "-Ddeprecated-wl-shell=true"
 LDFLAGS:append:imxgpu:libc-musl = " -Wl,--allow-shlib-undefined"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-COMPATIBLE_MACHINE = "(imxfbdev|imxgpu)"
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 
 ########### End of i.MX overrides #########
