@@ -5,11 +5,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
 
 DEPENDS = "cairo"
 
-PV = "2.3+git${SRCPV}"
+PV = "2.4+git"
 
 SRC_URI = "${GPU_G2D_SAMPLES_SRC};branch=${SRCBRANCH}"
 GPU_G2D_SAMPLES_SRC ?= "git://github.com/nxp-imx/g2d-samples.git;protocol=https"
-SRCBRANCH = "imx_2.3"
+SRCBRANCH = "imx_2.4"
 SRCREV = "7d12c50c07d73650b4c97906ce917aff429238f8"
 
 inherit pkgconfig
@@ -21,6 +21,7 @@ PACKAGECONFIG_IMPLEMENTATION:mx95-nxp-bsp      = "dpu95"
 PACKAGECONFIG_IMPLEMENTATION:imxgpu2d          = "gpu-drm"
 PACKAGECONFIG_IMPLEMENTATION:imxgpu2d:imxfbdev = "gpu-fbdev"
 PACKAGECONFIG_IMPLEMENTATION:mx93-nxp-bsp      = "pxp"
+PACKAGECONFIG_IMPLEMENTATION:mx943-nxp-bsp     = "pxp"
 
 PACKAGECONFIG[dpu] = " \
     BUILD_IMPLEMENTATION=dpu, \
@@ -71,4 +72,4 @@ FILES:${PN} += "/opt"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
-COMPATIBLE_MACHINE = "(imxgpu2d|mx93-nxp-bsp|mx95-nxp-bsp)"
+COMPATIBLE_MACHINE = "(imxgpu2d|mx93-nxp-bsp|mx943-nxp-bsp|mx95-nxp-bsp)"
