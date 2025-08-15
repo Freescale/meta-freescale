@@ -1,0 +1,32 @@
+From 0c4ed8178a25135ced9df8c8a8909e2882bfe869 Mon Sep 17 00:00:00 2001
+From: Maged Elnaggar <maged.elnaggar@arm.com>
+Date: Tue, 17 Jun 2025 10:33:44 +0000
+Subject: [PATCH] Update minimum version of CMake
+
+Set CMake minimum required version range to 3.4.3...4.0
+to silence compatibility errors in CMake 4.0
+by explicitly opting into all policies up to 4.0
+
+Upstream-Status: Backport [https://gitlab.freedesktop.org/mesa/vulkan-wsi-layer/-/commit/1eafebc56a7f735cd4e8298956d596c64ac9f681]
+Signed-off-by: Maged Elnaggar <maged.elnaggar@arm.com>
+Change-Id: I2e0527dde4e764e9c17f519fc0ddd3c0e382fa31
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4dc800c..b91cd54 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,7 +20,7 @@
+ # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ # SOFTWARE.
+ 
+-cmake_minimum_required(VERSION 3.4.3)
++cmake_minimum_required(VERSION 3.4.3...4.0)
+ project(VkLayer_window_system_integration)
+ 
+ find_package(PkgConfig REQUIRED)
+-- 
+2.34.1
+
