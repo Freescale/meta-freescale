@@ -1,10 +1,10 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright 2017-2024 NXP
+# Copyright 2017-2025 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "G2D library using i.MX DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3" 
+LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359" 
 
 DEPENDS = "libdrm ${LIBGAL_IMX}"
 LIBGAL_IMX        = ""
@@ -15,13 +15,13 @@ PROVIDES += "virtual/libg2d"
 SRC_URI = "${FSL_MIRROR}/${IMX_BIN_NAME}.bin;fsl-eula=true;name=${IMX_SRC_URI_NAME}"
 IMX_BIN_NAME = "${BPN}-${IMX_SRC_URI_NAME}-${PV}-${IMX_SRCREV_ABBREV}"
 
-IMX_SRCREV_ABBREV = "8d2a88d"
+IMX_SRCREV_ABBREV = "9e8bbf1"
 IMX_SRC_URI_NAME = "v1"
-SRC_URI[v1.sha256sum] = "20325a7c6090b79e012339aed25fa4c3b760efcc32be339e389a36a15e44bdfc"
+SRC_URI[v1.sha256sum] = "67be9b56a5d2196613460d3cc3a734d7a088e2177377e27f83287766d5d8cf70"
 
-IMX_SRCREV_ABBREV:imxmali = "8d2a88d"
+IMX_SRCREV_ABBREV:imxmali = "9e8bbf1"
 IMX_SRC_URI_NAME:imxmali = "v2"
-SRC_URI[v2.sha256sum] = "eb7108256cb55d996c07f6941d0d4a76beaf73458494b2c902d907bc8228eeeb"
+SRC_URI[v2.sha256sum] = "f56dae607f89e0f414625657d8345c5d1b68b79d3ac61e50016fbe4d49a91402"
 
 S = "${UNPACKDIR}/${IMX_BIN_NAME}"
 
