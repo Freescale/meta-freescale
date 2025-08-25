@@ -24,6 +24,8 @@ PV = "2023.03+git${SRCPV}"
 IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
 SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
            file://arm-arm64-Makefile-Remove-march-option-from-Makefile.patch \
+           file://0001-YOCIMX-9281-1-Fix-gcc15-errors.patch \
+           file://0002-YOCIMX-9281-2-hypervisor-arm64-fix-strh-usage.patch \
           "
 
 DEPENDS = " \
@@ -109,6 +111,12 @@ RDEPENDS:pyjailhouse = " \
     python3-shell \
 "
 
-INSANE_SKIP:${PN} = "ldflags"
+INSANE_SKIP:${PN} = "ldflags buildpaths"
+INSANE_SKIP:${PN}-dbg = "buildpaths"
+
+# The QA error in package kernel-module-${KERNEL_VERSION} cannot be skipped with
+# INSANE_SKIP, so adjust at the ERROR_QA level
+ERROR_QA:remove = "buildpaths"
+INSANE_SKIP:kernel-module-${KERNEL_VERSION} = "buildpaths"
 
 COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx8ulp-nxp-bsp|mx9-nxp-bsp)"
