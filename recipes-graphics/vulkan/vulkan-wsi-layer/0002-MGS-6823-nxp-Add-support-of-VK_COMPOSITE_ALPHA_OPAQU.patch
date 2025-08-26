@@ -1,0 +1,243 @@
+From 4293d8835eaa45168c070793eefd8867c6ec7605 Mon Sep 17 00:00:00 2001
+From: Yuan Tian <yuan.tian@nxp.com>
+Date: Thu, 27 Jul 2023 18:25:16 +0800
+Subject: [PATCH 2/2] MGS-6823 [#nxp] Add support of
+ VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR feature
+
+Mali vulkan driver doesn't support VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR. It caused unwanted blending effect in many vulkan cases.
+Add support of this feature to solve the problem.
+
+Upstream-Status: Inappropriate [i.MX-specific]
+Signed-off-by: Yuan Tian <yuan.tian@nxp.com>
+Signed-off-by: Jiyu Yang <jiyu.yang@nxp.com>
+---
+ wsi/wayland/swapchain.cpp | 161 ++++++++++++++++++++++++++++++++++++++
+ wsi/wayland/swapchain.hpp |   9 +++
+ 2 files changed, 170 insertions(+)
+
+Index: git/wsi/wayland/swapchain.cpp
+===================================================================
+--- git.orig/wsi/wayland/swapchain.cpp
++++ git/wsi/wayland/swapchain.cpp
+@@ -38,6 +38,7 @@
+ #include <cstdio>
+ #include <climits>
+ #include <functional>
++#include <poll.h>
+ 
+ #include "util/drm/drm_utils.hpp"
+ #include "util/log.hpp"
+@@ -72,12 +73,152 @@ swapchain::~swapchain()
+       wsialloc_delete(m_wsi_allocator);
+    }
+    m_wsi_allocator = nullptr;
++   if (wlc.opaque_region)
++   {
++      wl_compositor_destroy(wlc.wl_compositor);
++      wl_registry_destroy(wlc.registry);
++      wl_region_destroy(wlc.opaque_region);
++      wlc = {0};
++   }
+    if (m_buffer_queue != nullptr)
+    {
+       wl_event_queue_destroy(m_buffer_queue);
+    }
+ }
+ 
++static inline int
++poll_event(struct wl_display *wl_dpy, short int events, int timeout)
++{
++   int ret;
++   struct pollfd pfd[1];
++
++   pfd[0].fd = wl_display_get_fd(wl_dpy);
++   pfd[0].events = events;
++
++   do
++   {
++      ret = poll(pfd, 1, timeout);
++   }
++   while (ret == -1 && errno == EINTR);
++
++   return ret;
++}
++
++static int
++dispatch_queue_op(struct wl_display *wl_dpy,
++                struct wl_event_queue *wl_queue, int timeout)
++{
++   int ret;
++
++   if (wl_display_prepare_read_queue(wl_dpy, wl_queue) == -1)
++   {
++      return wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
++   }
++
++   for (;;)
++   {
++      ret = wl_display_flush(wl_dpy);
++
++      if (ret != -1 || errno != EAGAIN)
++         break;
++
++      if (poll_event(wl_dpy, POLLOUT, -1) == -1)
++      {
++         wl_display_cancel_read(wl_dpy);
++         return -1;
++      }
++   }
++
++   /* Don't stop if flushing hits an EPIPE; continue so we can read any
++    * protocol error that may have triggered it. */
++   if (ret < 0 && errno != EPIPE)
++   {
++      wl_display_cancel_read(wl_dpy);
++      return -1;
++   }
++
++   ret = poll_event(wl_dpy, POLLIN, timeout);
++
++   /* cancel read when on error or timeout. */
++   if (ret == -1 || ret == 0)
++   {
++      wl_display_cancel_read(wl_dpy);
++      return ret;
++   }
++
++   if (wl_display_read_events(wl_dpy) == -1)
++      return -1;
++
++   return wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
++}
++
++static void
++sync_callback(void *data, struct wl_callback *callback, uint32_t serial)
++{
++   int *done = (int *)data;
++
++   *done = 1;
++   wl_callback_destroy(callback);
++}
++
++static const struct wl_callback_listener sync_listener = {
++   sync_callback
++};
++
++static int
++roundtrip_queue(struct wl_display *wl_dpy, struct wl_event_queue *wl_queue)
++{
++   struct wl_callback *callback;
++   int done, ret = 0;
++
++   done = 0;
++
++   /*
++    * This is to block read & dispatch events in other threads, so that the
++    * callback is with correct queue and listener when 'done' event.
++    */
++   while (wl_display_prepare_read_queue(wl_dpy, wl_queue) == -1)
++      wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
++
++   callback = wl_display_sync(wl_dpy);
++
++   if (callback == NULL)
++   {
++      wl_display_cancel_read(wl_dpy);
++      return -1;
++   }
++
++   wl_proxy_set_queue((struct wl_proxy *) callback, wl_queue);
++   wl_callback_add_listener(callback, &sync_listener, &done);
++
++   wl_display_cancel_read(wl_dpy);
++
++   while (!done && ret >= 0)
++      ret = dispatch_queue_op(wl_dpy, wl_queue, 5);
++
++   if (ret == -1 && !done)
++      wl_callback_destroy(callback);
++
++   return ret;
++}
++
++static void
++registry_handle_global(void *data, struct wl_registry *registry, uint32_t name,
++                       const char *interface, uint32_t version)
++{
++   wl_context *pwlc = (wl_context *)data;
++
++   if(!pwlc->wl_compositor)
++   {
++      pwlc->wl_compositor = (wl_compositor *)wl_registry_bind(registry, name, &wl_compositor_interface, 1);
++      wl_proxy_set_queue((struct wl_proxy *)pwlc->wl_compositor, pwlc->wl_queue);
++   }
++}
++
++static const struct wl_registry_listener registry_listener = {
++   registry_handle_global
++};
++
+ VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info,
+                                   bool &use_presentation_thread)
+ {
+@@ -124,6 +265,21 @@ VkResult swapchain::init_platform(VkDevi
+    use_presentation_thread =
+       WAYLAND_FIFO_PRESENTATION_THREAD_ENABLED && (m_present_mode != VK_PRESENT_MODE_MAILBOX_KHR);
+ 
++   if (swapchain_create_info->compositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
++   {
++      wlc.wl_queue = m_buffer_queue;
++      wlc.registry = wl_display_get_registry(m_display);
++      wl_proxy_set_queue((struct wl_proxy *)(wlc.registry), m_buffer_queue);
++      wl_registry_add_listener(wlc.registry, &registry_listener, &wlc);
++
++      roundtrip_queue(m_display, m_buffer_queue);
++
++      wlc.opaque_region = wl_compositor_create_region(wlc.wl_compositor);
++      wl_proxy_set_queue((struct wl_proxy *)(wlc.opaque_region), m_buffer_queue);
++
++      wl_region_add(wlc.opaque_region, 0, 0, swapchain_create_info->imageExtent.width, swapchain_create_info->imageExtent.height);
++   }
++
+    return VK_SUCCESS;
+ }
+ 
+@@ -494,6 +650,11 @@ void swapchain::present_image(const pend
+       set_error_state(VK_ERROR_SURFACE_LOST_KHR);
+    }
+ 
++   if (wlc.opaque_region)
++   {
++      wl_surface_set_opaque_region(m_surface, wlc.opaque_region);
++   }
++
+    wl_surface_attach(m_surface, image_data->buffer, 0, 0);
+ 
+    auto present_sync_fd = image_data->present_fence.export_sync_fd();
+Index: git/wsi/wayland/swapchain.hpp
+===================================================================
+--- git.orig/wsi/wayland/swapchain.hpp
++++ git/wsi/wayland/swapchain.hpp
+@@ -78,6 +78,14 @@ struct image_creation_parameters
+    }
+ };
+ 
++struct wl_context
++{
++   struct wl_event_queue *wl_queue;
++   struct wl_compositor *wl_compositor;
++   struct wl_registry *registry;
++   struct wl_region *opaque_region;
++};
++
+ class swapchain : public wsi::swapchain_base
+ {
+ public:
+@@ -190,6 +198,7 @@ private:
+ 
+    struct wl_display *m_display;
+    struct wl_surface *m_surface;
++   struct wl_context wlc = {0};
+    /** Raw pointer to the WSI Surface that this swapchain was created from. The Vulkan specification ensures that the
+     * surface is valid until swapchain is destroyed. */
+    surface *m_wsi_surface;

@@ -576,19 +576,20 @@ PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-dpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-pxp-g2d"
 
-PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "14.0.1.imx"
+PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "14.0.2.imx"
 # i.MX 6 & 7 stay on weston 10.0 for fbdev
 PREFERRED_VERSION_weston:mx6-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:mx7-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
-PREFERRED_VERSION_wayland-protocols:imx-nxp-bsp  ??= "1.37.imx"
+PREFERRED_VERSION_wayland-protocols:imx-nxp-bsp  ??= "1.41.imx"
 
 PREFERRED_VERSION_xwayland:imx-nxp-bsp ??= "24.1.6.imx"
 
 # Use i.MX libdrm Version
 PREFERRED_VERSION_libdrm:imx-nxp-bsp ??= "2.4.123.imx"
 
+PREFERRED_VERSION_glslang:imxvulkan                  ??= "1.3.275.0.imx"
 PREFERRED_VERSION_spirv-headers:imxvulkan            ??= "1.3.275.0.imx"
 PREFERRED_VERSION_spirv-tools:imxvulkan              ??= "1.3.275.0.imx"
 PREFERRED_VERSION_vulkan-headers:imxvulkan           ??= "1.3.275.0.imx"
