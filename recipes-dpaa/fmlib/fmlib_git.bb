@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=9c7bd5e45d066db084bdb3543d55b1ac"
 PR = "r1"
 
 SRC_URI = "git://github.com/nxp-qoriq/fmlib;protocol=https;nobranch=1"
-SRCREV = "9fb916f255214013aa6003496c47bab0b5add2d9"
+SRCREV = "7a58ecaf0d90d71d6b78d3ac7998282a472c4394"
 
 S = "${WORKDIR}/git"
 
