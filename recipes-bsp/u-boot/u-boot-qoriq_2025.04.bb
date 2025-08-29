@@ -10,20 +10,24 @@ LIC_FILES_CHKSUM = " \
     file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
     file://Licenses/bsd-2-clause.txt;md5=6a31f076f5773aabd8ff86191ad6fdd5 \
     file://Licenses/bsd-3-clause.txt;md5=4a1190eac56a9db675d58ebe86eaf50c \
-    file://Licenses/lgpl-2.0.txt;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
+    file://Licenses/lgpl-2.0.txt;md5=4cf66a4984120007c9881cc871cf49db \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-SRC_URI = "git://github.com/nxp-qoriq/u-boot;protocol=https;nobranch=1"
-SRCREV = "1c0116f3da250c5a52858c53efb8b38c0963f477"
+PV:append = "+${SRCPV}"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
+UBOOT_BRANCH ?= "lf_v2025.04"
+UBOOT_SRC ?= "git://github.com/nxp-qoriq/u-boot.git;protocol=https"
+SRC_URI = "${UBOOT_SRC};branch=${UBOOT_BRANCH}"
+SRCREV = "9383f8387dc76524524da69992db96c22195a57c"
+
 PV:append = "+fslgit"
 LOCALVERSION = "+fsl"
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "libgcc virtual/${TARGET_PREFIX}gcc bison-native bc-native swig-native python3-native python3-setuptools-native"
+DEPENDS = "libgcc virtual/cross-cc bison-native bc-native gnutls-native swig-native python3-native"
 DEPENDS:append:qoriq-arm64 = " dtc-native"
 DEPENDS:append:qoriq-arm = " dtc-native"
 DEPENDS:append:qoriq-ppc = " boot-format-native"
@@ -80,8 +84,6 @@ do_compile:append:qoriq() {
                         boot_format ${STAGING_DATADIR_NATIVE}/boot_format/${BOOTFORMAT_CONFIG} \
                             ${config}/u-boot-${type}.${UBOOT_SUFFIX} -spi ${config}/u-boot.format.bin
                         cp ${config}/u-boot.format.bin ${config}/u-boot-${type}.${UBOOT_SUFFIX}
-                    elif [ "qspi" = "${type}" ];then
-                        cp ${config}/${binary} ${config}/u-boot-${type}-${PV}-${PR}.${UBOOT_SUFFIX}
                     fi
                 fi
             done
@@ -92,6 +94,46 @@ do_compile:append:qoriq() {
     unset i
 }
 
+do_deploy:append:lx2162a () {
+    if [ -n "${UBOOT_CONFIG}" ]
+    then
+        for config in ${UBOOT_MACHINE}; do
+            i=$(expr $i + 1);
+            for type in ${UBOOT_CONFIG}; do
+                j=$(expr $j + 1);
+                if [ $j -eq $i ]
+                then
+                    if [ "tfa-verified-boot" = "${type}" ];then
+                        install -m 644 ${B}/${config}/u-boot.dtb ${DEPLOYDIR}/u-boot.dtb
+                    fi
+                fi
+            done
+            unset  j
+        done
+        unset  i
+    fi
+}
+
+do_deploy:append:ls102xa () {
+    if [ -n "${UBOOT_CONFIG}" ]
+    then
+        for config in ${UBOOT_MACHINE}; do
+            i=$(expr $i + 1);
+            for type in ${UBOOT_CONFIG}; do
+                j=$(expr $j + 1);
+                if [ $j -eq $i ]
+                then
+                    if expr "$type" : sdcard;then
+                        install -m 644 ${B}/${config}/u-boot-dtb.bin ${DEPLOYDIR}/u-boot-dtb.${UBOOT_SUFFIX}-${type}
+                        install -m 644 ${B}/${config}/spl/u-boot-spl.bin ${DEPLOYDIR}/u-boot-spl.${UBOOT_SUFFIX}-${type}
+                    fi
+                fi
+            done
+            unset  j
+        done
+        unset  i
+    fi
+}
 
 PACKAGES += "${PN}-images"
 FILES:${PN}-images += "/boot"
