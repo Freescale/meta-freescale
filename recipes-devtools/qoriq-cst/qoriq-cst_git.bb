@@ -16,10 +16,8 @@ inherit kernel-arch
 #SECURE_PRI_KEY = "/path/srk.pri"
 #SECURE_PUB_KEY = "/path/srk.pub"
 
-SRC_URI = "git://github.com/nxp-qoriq/cst;protocol=https;nobranch=1 \
-           file://0001-tools-Mark-struct-input_field-file_field-extern.patch \
-"
-SRCREV = "e96dead3c339f6addb1600249be67e1884cdbcc5"
+SRC_URI = "git://github.com/nxp-qoriq/cst;protocol=https;nobranch=1"
+SRCREV = "892d2ed3207d78a3cb5533eeb91bcc73967e3e36"
 
 EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}"'
 CFLAGS:append = ' -Wno-deprecated-declarations'
@@ -39,3 +37,5 @@ do_install () {
 
 FILES:${PN}-dbg += "${bindir}/cst/.debug"
 BBCLASSEXTEND = "native nativesdk"
+INSANE_SKIP:${PN}-dbg += " buildpaths"
+
