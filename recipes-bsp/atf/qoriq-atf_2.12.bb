@@ -9,7 +9,6 @@ PV:append = "+${SRCPV}"
 
 SRC_URI += "git://github.com/ARMmbed/mbedtls;protocol=https;nobranch=1;destsuffix=git/mbedtls;name=mbedtls \
     git://github.com/nxp/ddr-phy-binary;protocol=https;nobranch=1;destsuffix=git/ddr-phy-binary;name=ddr \
-    file://tf-a-tests-no-warn-rwx-segments.patch \
 "
 SRCREV_mbedtls = "0795874acdf887290b2571b193cafd3c4041a708"
 SRCREV_ddr = "fbc036b88acb6c06ffed02c898cbae9856ec75ba"

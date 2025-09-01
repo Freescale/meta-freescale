@@ -1,13 +1,13 @@
 inherit kernel qoriq_build_64bit_kernel siteinfo
-inherit fsl-kernel-localversion
+inherit fsl-kernel-localversion kernel-yocto
 
 SUMMARY = "Linux Kernel for NXP QorIQ platforms"
 SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
 
-DEPENDS:append = " libgcc"
+DEPENDS:append = " libgcc coreutils-native"
 # not put Images into /boot of rootfs, install kernel-image if needed
-RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""
+RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
 KERNEL_CC:append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD:append = " ${TOOLCHAIN_OPTIONS}"
@@ -21,12 +21,16 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 
 SCMVERSION ?= "y"
 LOCALVERSION = ""
+
 DELTA_KERNEL_DEFCONFIG ?= ""
 DELTA_KERNEL_DEFCONFIG:prepend:qoriq-arm64 = "lsdk.config "
 DELTA_KERNEL_DEFCONFIG:prepend:qoriq-arm = "multi_v7_lpae.config lsdk.config "
 
-do_merge_delta_config[depends] += "virtual/${TARGET_PREFIX}gcc:do_populate_sysroot bison-native:do_populate_sysroot"
+do_merge_delta_config[depends] += "virtual/cross-cc:do_populate_sysroot bison-native:do_populate_sysroot"
 do_merge_delta_config[dirs] = "${B}"
+do_kernel_metadata[noexec] = "1"
+do_kernel_configme[noexec] = "1"
+do_kernel_configcheck[noexec] = "1"
 
 do_merge_delta_config() {
     # create config with make config
@@ -42,15 +46,17 @@ do_merge_delta_config() {
     for deltacfg in ${DELTA_KERNEL_DEFCONFIG}; do
         if [ -f ${S}/arch/${ARCH}/configs/${deltacfg} ]; then
             oe_runmake  -C ${S} O=${B} ${deltacfg}
-        elif [ -f "${UNPACKDIR}/${deltacfg}" ]; then
-            ${S}/scripts/kconfig/merge_config.sh -m .config ${UNPACKDIR}/${deltacfg}
+        elif [ -f "${S}/${deltacfg}" ]; then
+            ${S}/scripts/kconfig/merge_config.sh -m .config ${S}/${deltacfg}
         elif [ -f "${deltacfg}" ]; then
             ${S}/scripts/kconfig/merge_config.sh -m .config ${deltacfg}
         fi
     done
     cp .config ${UNPACKDIR}/defconfig
 }
+
 addtask merge_delta_config before do_kernel_localversion after do_patch
 
 FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
+INSANE_SKIP:${PN}-src += " buildpaths"
 COMPATIBLE_MACHINE = "(qoriq)"

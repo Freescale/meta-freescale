@@ -8,7 +8,7 @@ DEPENDS += "dtc-native"
 inherit deploy
 
 SRC_URI = "git://github.com/nxp-qoriq/mc-utils;protocol=https;nobranch=1"
-SRCREV = "5ccc2688b72c4a05119a393cbe3573b5f81d10bc"
+SRCREV = "f5c4b2c9d2b1d5122a7d97f236894f87959b3831"
 
 MC_CFG ?= ""
 MC_CFG:ls1088a = "ls1088a"

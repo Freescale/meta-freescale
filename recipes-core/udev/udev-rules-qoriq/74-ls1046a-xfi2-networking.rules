@@ -1,1 +1,5 @@
+# Rules for handling the SDK DPAA ethernet ports
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="1af2000", NAME="fm1-mac10"
+
+# Rules for handling the Upstream DPAA ethernet ports
+SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", KERNELS=="1af2000*", NAME="fm1-mac10"

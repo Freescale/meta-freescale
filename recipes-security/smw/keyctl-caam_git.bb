@@ -17,5 +17,5 @@ do_install () {
 	oe_runmake DESTDIR=${D} install
 }
 
-COMPATIBLE_MACHINE = "(imx-generic-bsp)"
+COMPATIBLE_MACHINE = "(imx-generic-bsp|qoriq)"
 
