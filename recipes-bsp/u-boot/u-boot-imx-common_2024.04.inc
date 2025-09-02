@@ -4,9 +4,9 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRC_URI = "git://github.com/nxp-imx/uboot-imx.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf_v2024.04"
+SRCBRANCH = "lf_v2024.04_6.6.52_2.2.x"
 LOCALVERSION ?= "-imx_v2024.04_6.6.52-2.2.0"
-SRCREV = "6c4545203d123c246c5d7995f2893959506d28e0"
+SRCREV = "82d4220bc6b832128454b09814a52e674943bd9a"
 CVE_PRODUCT = "nxp:uboot_secondary_program_loader denx:u-boot"
 
 DEPENDS += " \
