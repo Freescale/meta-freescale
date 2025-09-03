@@ -92,13 +92,20 @@ LIC_FILES_CHKSUM = " \
 "
 
 # Use i.MX fork of GST for customizations
-SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz"
+SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz \
+                file://0001-tests-respect-the-idententaion-used-in-meson.patch \
+                file://0002-tests-add-support-for-install-the-tests.patch \
+                file://0003-tests-use-a-dictionaries-for-environment.patch \
+                file://0004-tests-add-helper-script-to-run-the-installed_tests.patch \
+"
 SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
 GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
-SRCREV = "eb286c0766a4fbbae70c8e9dda074f5a90e52e42"
+SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
+SRCREV = "1a8f23da16cd224574ab2386803149c76f2cb628"
 
 S = "${WORKDIR}/git"
+
+PACKAGECONFIG[tests] = "-Dtests=enabled,-Dtests=disabled"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 

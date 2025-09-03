@@ -118,8 +118,8 @@ SRC_URI:remove = " \
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
-SRCREV = "97b1a45e945d3784790cafd2fcc4f6cb16e739d7"
+SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
+SRCREV = "1493b6719e801154003172e89b5d30280b7cb6b6"
 
 S = "${WORKDIR}/git"
 
@@ -135,8 +135,6 @@ PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
 PACKAGECONFIG[viv-fb] = ",,virtual/libgles2"
 
-# GCC-14 otherwise errors out
-CFLAGS += "-Wno-error=incompatible-pointer-types"
 EXTRA_OEMESON += "-Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}""
 
 # links with imx-gpu libs which are pre-built for glibc

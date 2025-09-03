@@ -28,17 +28,19 @@ DEPENDS_IMX_OPENCL_CONVERTER               = "imx-opencl-converter"
 DEPENDS_IMX_OPENCL_CONVERTER:mx6-nxp-bsp   = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx7-nxp-bsp   = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx8mm-nxp-bsp = ""
+DEPENDS_IMX_OPENCL_CONVERTER:mx95-nxp-bsp   = "imx-opencl-converter"
 
 # For backwards compatibility
 RREPLACES:${PN}  = "gst1.0-fsl-plugin"
 RPROVIDES:${PN}  = "gst1.0-fsl-plugin"
 RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
-PV = "4.9.1+git${SRCPV}"
+PV = "4.9.2+git${SRCPV}"
 
-SRC_URI = "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
-SRCREV = "87135d5f084b6c61efa6671cddc3a5509ab11640"
+SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
+IMXGST_SRC ?= "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https"
+SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
+SRCREV = "ef9c1a080e739e6f0be878148d9f4a050dc83bec"
 
 S = "${WORKDIR}/git"
 
