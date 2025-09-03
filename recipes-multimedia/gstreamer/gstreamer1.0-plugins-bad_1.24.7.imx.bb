@@ -178,7 +178,7 @@ FILES:${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
 
 DEFAULT_PREFERENCE = "-1"
 
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=4fbd65380cdd255951079008b364516c"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770"
 
 DEPENDS:append:imxgpu2d = " virtual/libg2d"
 
@@ -190,8 +190,8 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 SRC_URI:append = " file://0001-autovideoconvert-add-imxvideoconvert_g2d.patch"
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.09.01_2408_L6.6.y"
-SRCREV = "7011fdfa6d60fb3ee1dc8545f675cfdb519203cd"
+SRCBRANCH = "MM_04.09.02_2410_L6.6.y"
+SRCREV = "bba296b75dfb3e7ae4c836255edbd2b3c085c269"
 
 S = "${WORKDIR}/git"
 
