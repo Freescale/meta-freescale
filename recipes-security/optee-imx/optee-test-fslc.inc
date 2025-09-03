@@ -1,12 +1,11 @@
 # Copied from meta-arm/recipes-security/optee/optee-test.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-scarthgap/imx-6.6.52-2.2.0.xml#L30
+# See:https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L30
 
 SUMMARY = "OP-TEE sanity testsuite"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Test suite"
 HOMEPAGE = "https://www.op-tee.org/"
 
 LICENSE = "BSD-2-Clause & GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
 inherit python3native ptest
 inherit deploy

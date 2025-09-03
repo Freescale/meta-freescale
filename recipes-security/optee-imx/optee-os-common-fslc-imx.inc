@@ -1,6 +1,5 @@
 # Copied from meta-imx/meta-imx-bsp/recipes-security/optee/optee-os-common-imx.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-scarthgap/imx-6.6.52-2.2.0.xml#L37
-
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L37
 require optee-os-fslc.inc
 
 DEPENDS:append:arm = "u-boot-mkimage-native"
@@ -38,6 +37,7 @@ OPTEEMACHINE:mx8mnul-nxp-bsp   = "imx-mx8mnevk"
 OPTEEMACHINE:mx8ulp-nxp-bsp    = "imx-mx8ulpevk"
 OPTEEMACHINE:mx91-nxp-bsp      = "imx-mx91evk"
 OPTEEMACHINE:mx93-nxp-bsp      = "imx-mx93evk"
+OPTEEMACHINE:mx943-nxp-bsp     = "imx-mx943evk"
 OPTEEMACHINE:mx95-nxp-bsp      = "imx-mx95evk"
 
 # Strip the leading imx-
