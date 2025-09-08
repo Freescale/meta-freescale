@@ -3,4 +3,4 @@
 require optee-os-fslc-imx.inc
 
 SRCBRANCH = "lf-6.6.52_2.2.0"
-SRCREV = "60beb308810f9561a67fdb435388a64c85eb6dcb"
+SRCREV = "ecea75b7fee5a3c8a2d9b99769ba78c4390c0e8b"

@@ -21,7 +21,7 @@ TEE_GROUP_NAME ?= "teeclnt"
 do_install:append () {
     if ${@oe.utils.conditional('VIRTUAL-RUNTIME_dev_manager', 'busybox-mdev', 'false', 'true', d)}; then
         install -d ${D}${nonarch_base_libdir}/udev/rules.d/
-        install -m 755 ${UNPACKDIR}/tee-udev.rules ${D}${nonarch_base_libdir}/udev/rules.d/
+        install -m 755 ${WORKDIR}/tee-udev.rules ${D}${nonarch_base_libdir}/udev/rules.d/
         sed -i -e "s/teeclnt/${TEE_GROUP_NAME}/" ${D}${nonarch_base_libdir}/udev/rules.d/tee-udev.rules
     fi
 
