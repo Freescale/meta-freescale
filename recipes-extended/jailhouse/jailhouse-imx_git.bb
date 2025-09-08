@@ -16,8 +16,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
 PROVIDES = "jailhouse"
 RPROVIDES:${PN} += "jailhouse"
 
-SRCBRANCH = "lf-6.12.3_1.0.0"
-SRCREV = "a68ba027402013ae444544d33ae676ddce9a6bbf"
+SRCBRANCH = "lf-6.12.20_2.0.0"
+SRCREV = "399d65450e9a377b4aaff4b0627619174e1c8c46"
 
 PV = "2023.03+git${SRCPV}"
 
