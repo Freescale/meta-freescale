@@ -15,7 +15,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-bsp/firmware-imx/firmware-sof-imx_2.3.0.bb: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/firmware-upower/firmware-upower_1.3.1.bb: LICENSE = "Proprietary"
 ./recipes-bsp/fsl-tlu/fsl-tlu_1.0.0.bb: LICENSE = "GPL-2.0-only"
-./recipes-bsp/imx-atf/imx-atf_2.10.bb: LICENSE = "BSD-3-Clause"
+./recipes-bsp/imx-atf/imx-atf_2.12.bb: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/imx-kobs/imx-kobs_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-bsp/imx-lib/imx-lib_git.bb: LICENSE = "LGPL-2.1-only"
 ./recipes-bsp/imx-mkimage/imx-boot_1.0.bb: LICENSE = "GPL-2.0-only"
