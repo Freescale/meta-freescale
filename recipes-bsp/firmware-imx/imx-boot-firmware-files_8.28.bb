@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2024 NXP
+# Copyright (C) 2018-2025 NXP
 SUMMARY = "Freescale i.MX Firmware files used for boot"
 
 require firmware-imx-${PV}.inc
