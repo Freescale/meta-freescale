@@ -14,14 +14,15 @@ DEPENDS:append:mx6-nxp-bsp    = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp    = " imx-lib"
 DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
 DEPENDS:append:mx93-nxp-bsp   = " imx-lib"
+DEPENDS:append:mx943-nxp-bsp  = " imx-lib"
 
 PE = "1"
 PV = "7.0+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
            file://memtool_profile"
-SRCBRANCH = "lf-6.12.3_1.0.0"
-SRCREV = "92a497313016bfa536d561e13fcbad2d273ded4c"
+SRCBRANCH = "lf-6.12.20_2.0.0"
+SRCREV = "38f9cf1f08bb6fcdd6aaf9191e0b53f02e02537b"
 
 inherit module-base use-imx-headers
 
@@ -40,6 +41,7 @@ PLATFORM:mx8-nxp-bsp = "IMX8"
 PLATFORM:mx8ulp-nxp-bsp = "IMX8ULP"
 PLATFORM:mx91-nxp-bsp = "IMX8"
 PLATFORM:mx93-nxp-bsp = "IMX8ULP"
+PLATFORM:mx943-nxp-bsp = "IMX8ULP"
 PLATFORM:mx95-nxp-bsp = "IMX8"
 
 PARALLEL_MAKE = "-j 1"
