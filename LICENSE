@@ -2,7 +2,7 @@
 
 This file lists all licenses used by recipes in the meta-freescale layer.
 
-./dynamic-layers/arm-toolchain/recipes-bsp/imx-oei/imx-oei_1.0.0.bb: LICENSE = "GPL-2.0-only"
+./dynamic-layers/arm-toolchain/recipes-bsp/imx-oei/imx-oei_1.0.0.bb: LICENSE = "BSD-3-Clause"
 ./dynamic-layers/arm-toolchain/recipes-bsp/imx-system-manager/imx-system-manager_1.0.0.bb: LICENSE = "BSD-3-Clause"
 ./dynamic-layers/openembedded-layer/recipes-dpaa/fmc/fmc_git.bb: LICENSE = "MIT"
 ./recipes-bsp/atf/qoriq-atf-2.12.inc: LICENSE = "BSD-3-Clause"
