@@ -1,13 +1,13 @@
-# Copied from meta-imx/meta-imx-bsp/recipes-security/optee/optee-os-tadevkit-imx.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L37
-
-require optee-os-common-fslc-imx.inc
+require optee-os.nxp.inc
 
 SUMMARY = "OP-TEE Trusted OS TA devkit"
 DESCRIPTION = "OP-TEE TA devkit for build TAs"
 HOMEPAGE = "https://www.op-tee.org/"
 
 DEPENDS += "python3-pycryptodome-native"
+
+OPTEE_OS_BRANCH = "lf-6.12.20_2.0.0"
+SRCREV = "87964807d80baf1dcfd89cafc66de34a1cf16bf3"
 
 do_install() {
     #install TA devkit
