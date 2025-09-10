@@ -1,5 +1,5 @@
 # Copied from meta-arm/recipes-security/optee/optee-os.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-scarthgap/imx-6.6.52-2.2.0.xml#L30
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L30
 
 SUMMARY = "OP-TEE Trusted OS"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Trusted side of the TEE"
@@ -27,7 +27,7 @@ EXTRA_OEMAKE += " \
     CFG_${OPTEE_CORE}_core=y \
     CROSS_COMPILE_core=${HOST_PREFIX} \
     CROSS_COMPILE_ta_${OPTEE_ARCH}=${HOST_PREFIX} \
-    NOWERROR=1 \
+    AFLAGS="${CFLAGS}" \
     ta-targets=ta_${OPTEE_ARCH} \
     O=${B} \
 "
@@ -40,7 +40,7 @@ AS[unexport] = "1"
 LD[unexport] = "1"
 
 do_compile:prepend() {
-	PLAT_LIBGCC_PATH=$(${CC} -print-libgcc-file-name)
+        PLAT_LIBGCC_PATH=$(${CC} -print-libgcc-file-name)
 }
 
 do_compile() {
@@ -79,8 +79,5 @@ FILES:${PN}-ta = "${nonarch_base_libdir}/optee_armtz/*"
 
 # note: "textrel" is not triggered on all archs
 INSANE_SKIP:${PN} = "textrel"
-# Build paths are currently embedded
-INSANE_SKIP:${PN} += "buildpaths"
 INSANE_SKIP:${PN}-dev = "staticdev"
 INHIBIT_PACKAGE_STRIP = "1"
-

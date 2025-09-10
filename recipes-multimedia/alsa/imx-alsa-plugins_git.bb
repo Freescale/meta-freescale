@@ -1,5 +1,5 @@
 # Copyright 2013-2016 Freescale Semiconductor
-# Copyright 2017-2024 NXP
+# Copyright 2017-2025 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale alsa-lib plugins"
@@ -20,8 +20,8 @@ inherit autotools pkgconfig use-imx-headers
 PV = "1.0.26+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-alsa-plugins.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "MM_04.09.03_2412_L6.12.y"
-SRCREV = "eaf0900662d6381bcc433165219280cca1752890"
+SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
+SRCREV = "40e45c8023f95c06c4ea10185ca85db7eb2dfcd8"
 
 S = "${WORKDIR}/git"
 

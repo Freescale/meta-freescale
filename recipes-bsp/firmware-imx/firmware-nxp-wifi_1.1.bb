@@ -1,4 +1,4 @@
-# Copyright 2020-2024 NXP
+# Copyright 2020-2025 NXP
 
 SUMMARY = "Wi-Fi firmware redistributed by NXP"
 DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP. Some \
@@ -7,11 +7,12 @@ should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=c0fb372b5d7f12181de23ef480f225f3"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=a93b654673e1bc8398ed1f30e0813359"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.12.3_1.0.0"
-SRCREV = "eef7ef94bc44cacd3b068f66658ef33391547daa"
+SRCBRANCH = "lf-6.12.20_2.0.0"
+SRCREV = "d31ea8aaba67e188ba0071a90da0364e3946c83a"
+
 
 S = "${WORKDIR}/git"
 
@@ -69,8 +70,10 @@ PACKAGES =+ " \
     ${PN}-nxp9098-pcie \
     ${PN}-nxp9098-common \
     ${PN}-nxp9098-sdio \
+    ${PN}-nxpaw693-pcie \
     ${PN}-nxpiw416-sdio \
     ${PN}-nxpiw610-sdio \
+    ${PN}-nxpiw610-usb \
     ${PN}-nxpiw612-sdio \
 "
 
@@ -162,6 +165,7 @@ RCONFLICTS:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 FILES:${PN}-nxpiw610-sdio += " \
     ${nonarch_base_libdir}/firmware/nxp/sd_iw610.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/sduart_iw610.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/sduartspi_iw610.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/uart_iw610_bt.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/uartspi_iw610.bin.se \
 "
@@ -169,6 +173,11 @@ RDEPENDS:${PN}-nxpiw610-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 RREPLACES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 RCONFLICTS:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
+
+FILES:${PN}-nxpiw610-usb += " \
+    ${nonarch_base_libdir}/firmware/nxp/usb*_iw610.bin.se \
+"
+RDEPENDS:${PN}-nxpiw610-usb += "${PN}-nxp-common"
 
 FILES:${PN}-nxpiw612-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/sduart_nw61x_v1.bin.se \
@@ -182,6 +191,12 @@ RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RREPLACES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RCONFLICTS:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 
+FILES:${PN}-nxpaw693-pcie += " \
+    ${nonarch_base_libdir}/firmware/nxp/pcie*aw693* \
+    ${nonarch_base_libdir}/firmware/nxp/uart*aw693* \
+"
+RDEPENDS:${PN}-nxpaw693-pcie += "${PN}-nxp-common"
+
 RDEPENDS:${PN}-all-sdio = " \
     ${PN}-nxp8801-sdio \
     ${PN}-nxp8987-sdio \
@@ -194,4 +209,9 @@ RDEPENDS:${PN}-all-sdio = " \
 RDEPENDS:${PN}-all-pcie = " \
     ${PN}-nxp8997-pcie \
     ${PN}-nxp9098-pcie \
+    ${PN}-nxpaw693-pcie \
+"
+
+RDEPENDS:${PN}-all-usb = " \
+    ${PN}-nxpiw610-usb \
 "

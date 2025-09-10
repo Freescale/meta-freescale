@@ -1,0 +1,35 @@
+From 5ffab66dda3e25f0b2ebc5115013c4234d048703 Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Mon, 21 Apr 2025 08:47:29 -0500
+Subject: [PATCH] tee-supplicant: Fix non-arch service unit install path
+
+A 64-bit build with multilib enabled fails:
+```
+ERROR: optee-client-4.4.0-r0 do_package: Didn't find service unit 'tee-supplicant@.service', specified in SYSTEMD_SERVICE:optee-client. Also looked for service unit 'tee-supplicant@.service'.
+```
+
+The problem is the service unit is installed in the arch-specific folder
+/usr/lib64/systemd/system, but it is non-arch and should be in
+/usr/lib/systemd/system.
+
+Upstream-Status: Pending
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ tee-supplicant/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tee-supplicant/CMakeLists.txt b/tee-supplicant/CMakeLists.txt
+index 8df9bef..3ea058c 100644
+--- a/tee-supplicant/CMakeLists.txt
++++ b/tee-supplicant/CMakeLists.txt
+@@ -119,6 +119,6 @@ endif()
+ ################################################################################
+ install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR})
+ configure_file(tee-supplicant@.service.in tee-supplicant@.service @ONLY)
+-install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/tee-supplicant@.service DESTINATION ${CMAKE_INSTALL_LIBDIR}/systemd/system)
++install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/tee-supplicant@.service DESTINATION lib/systemd/system)
+ configure_file(optee-udev.rules.in optee-udev.rules @ONLY)
+ install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/optee-udev.rules DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d)
+-- 
+2.34.1
+

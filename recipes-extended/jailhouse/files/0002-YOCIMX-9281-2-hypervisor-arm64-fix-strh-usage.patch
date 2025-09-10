@@ -1,0 +1,34 @@
+From 98f6f8dc23d6b3d4fe5b15045ccb3d3ef36747be Mon Sep 17 00:00:00 2001
+From: Peng Fan <peng.fan@nxp.com>
+Date: Mon, 25 Aug 2025 09:48:05 +0800
+Subject: [PATCH 2/2] YOCIMX-9281-2: hypervisor: arm64: fix strh usage
+
+hypervisor/arch/arm64/entry.S:555: Error: immediate offset out of range
+
+Per ARM spec:
+STRH (immediate)
+<pimm> Is the optional positive immediate byte offset, a multiple of 2 in
+the range 0 to 8190, defaulting to 0 and encoded in the "imm12" field
+as <pimm>/2.
+
+So align sdei_event to 2 bytes aligned.
+
+Upstream-Status: Pending
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+ hypervisor/arch/arm64/include/asm/percpu_fields.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hypervisor/arch/arm64/include/asm/percpu_fields.h b/hypervisor/arch/arm64/include/asm/percpu_fields.h
+index 32f42a53..844a9417 100644
+--- a/hypervisor/arch/arm64/include/asm/percpu_fields.h
++++ b/hypervisor/arch/arm64/include/asm/percpu_fields.h
+@@ -18,4 +18,4 @@
+ 	bool suspended;							\
+ 	bool suspending;						\
+ 	bool resuming;							\
+-	bool sdei_event;
++	bool sdei_event __attribute__((aligned(2)));
+-- 
+2.34.1
+

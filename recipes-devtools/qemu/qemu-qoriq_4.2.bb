@@ -15,7 +15,7 @@ SRC_URI = "gitsm://github.com/nxp-qoriq/qemu;protocol=https;nobranch=1 \
            file://0002-Add-subpackage-ptest-which-runs-all-unit-test-cases-.patch \
            "
 
-SRCREV = "14fda5a42df6c72e890d6a97ff88c5852172604b"
+SRCREV = "a46ddbbe661677dcfa342f00ab7ab71e5f6f1a09"
 
 S = "${WORKDIR}/git"
 

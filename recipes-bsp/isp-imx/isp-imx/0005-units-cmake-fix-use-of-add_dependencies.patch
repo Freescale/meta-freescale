@@ -1,0 +1,36 @@
+From 72d6160d1efc9df8bdee4e3dc9da67560f2206b4 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Fri, 25 Jul 2025 10:52:52 +0000
+Subject: [PATCH 5/5] units: cmake: fix use of add_dependencies
+
+With CMake 4 we get during configure:
+
+| CMake Error at isp-imx/4.2.2.25.2/sources/isp-imx-4.2.2.25.2-3cac1fb:
+|   The dependency target "drv/OS08a20" of target "copy_shell_libs_isi" does
+|   not exist.
+
+Comment out that the add_dependencies. The driver for OS08a20 is still
+part of the built packages.
+
+Upstream-Status: Pending
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+---
+ units/isi/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/units/isi/CMakeLists.txt b/units/isi/CMakeLists.txt
+index ea01aa7d9424..2f5c3d803e67 100755
+--- a/units/isi/CMakeLists.txt
++++ b/units/isi/CMakeLists.txt
+@@ -93,7 +93,7 @@ add_custom_target(copy_shell_libs_${module} ALL
+        COMMAND ${CMAKE_COMMAND} -E copy ${UNITS_TOP_DIRECTORY}/isi/drv/*/*.cfg  ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/bin/
+        COMMAND ${CMAKE_COMMAND} -E copy ${UNITS_TOP_DIRECTORY}/isi/drv/*.cfg  ${LIB_ROOT}/${CMAKE_BUILD_TYPE}/bin/
+ )
+-add_dependencies(copy_shell_libs_${module} drv/OS08a20)
++#add_dependencies(copy_shell_libs_${module} os08a20_shared)
+ 
+ endif (GENERATE_PARTITION_BUILD)
+ 
+-- 
+2.42.0
+
