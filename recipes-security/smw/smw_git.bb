@@ -13,8 +13,8 @@ DEPENDS:append:mx8qxp-nxp-bsp = " imx-seco-libs"
 DEPENDS:append:mx8dx-nxp-bsp  = " imx-seco-libs"
 DEPENDS:append:mx8ulp-nxp-bsp  = " imx-secure-enclave"
 
-SRC_URI = "git://github.com/nxp-imx/imx-smw.git;protocol=https;branch=release/version_2.x;name=smw;destsuffix=git/smw \
-           git://github.com/ARM-software/psa-arch-tests.git;protocol=https;branch=main;name=psa;destsuffix=git/psa-arch-tests \
+SRC_URI = "git://github.com/nxp-imx/imx-smw.git;protocol=https;branch=release/version_2.x;name=smw \
+           git://github.com/ARM-software/psa-arch-tests.git;protocol=https;branch=main;name=psa;destsuffix=${S}/psa-arch-tests \
            "
 SRCREV_smw = "f0570b3e8cb5f68d54edc4f9dd7cb984f6f604ed"
 SRCREV_psa = "463cb95ada820bc6f758d50066cf8c0ed5cc3a02"
