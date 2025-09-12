@@ -1,5 +1,3 @@
-FILESEXTRAPATHS:prepend:imx-nxp-bsp := "${THISDIR}/${PN}:"
-
 SRC_URI:append:imx-nxp-bsp = " \
     file://0001-LF-11869-change-mali-wsi-layer-activating-order.patch \
 "
