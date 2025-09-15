@@ -10,8 +10,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/odp:"
 
 SRC_URI = " \
 git://github.com/nxp-qoriq/odp;protocol=https;nobranch=1 \
-git://github.com/nxp-qoriq/qbman_userspace;protocol=https;nobranch=1;name=qbman;destsuffix=git/platform/linux-dpaa2/flib/qbman \
-git://github.com/nxp-qoriq/flib;protocol=https;nobranch=1;name=rta;destsuffix=git/platform/linux-dpaa2/flib/rta \
+git://github.com/nxp-qoriq/qbman_userspace;protocol=https;nobranch=1;name=qbman;destsuffix=${S}/platform/linux-dpaa2/flib/qbman \
+git://github.com/nxp-qoriq/flib;protocol=https;nobranch=1;name=rta;destsuffix=${S}/platform/linux-dpaa2/flib/rta \
 "
 
 SRC_URI += "file://0001-Fix-this-build-error.patch"
