@@ -11,22 +11,25 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec
 
 SRC_URI = " \
     https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu;downloadfilename=uuu-${PV};name=Linux \
-    https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu_mac;downloadfilename=uuu-${PV}_mac;name=Mac \
+    https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu_mac_x86;downloadfilename=uuu-${PV}_mac_x86;name=Mac_x86 \
+    https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu_mac_arm;downloadfilename=uuu-${PV}_mac_arm;name=Mac_arm \
     https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu.exe;downloadfilename=uuu-${PV}.exe;name=Windows \
 "
 
-SRC_URI[Linux.sha256sum] = "f863bba022202361d19e5026be0af408d307f78d2dbf2c139fb7eaaabd220442"
-SRC_URI[Mac.sha256sum] = "62da0bd7e333931fba100823aa50133621c7e6047be0546bc12e29c0ea78a4d8"
-SRC_URI[Windows.sha256sum] = "013ed8bb45e21b971b6b3a5802c5f154733913714bece0b020cb770a809cd206"
+SRC_URI[Linux.sha256sum] = "c609fe6c4d9656102f7e3139a70488ba3988c33332486c89e5fc6d85ccedd96a"
+SRC_URI[Mac_x86.sha256sum] = "cdbacab592661900d46e7f97f9c7dd8a720bf46b1c17f4dbb65adb372f5fc6cf"
+SRC_URI[Mac_arm.sha256sum] = "6f8854946dfbeeb36894baf0f5f555b918974d465f4b541457e65c926fdd6a6a"
+SRC_URI[Windows.sha256sum] = "a3c7241650c05dd6373a6aef086b34322c013103da729c1b446ec86694309939"
 
 S = "${WORKDIR}"
 
 inherit allarch
 
 do_install() {
-    install -D -m 0755 ${WORKDIR}/uuu-${PV}     ${D}${libdir}/uuu/uuu
-    install -D -m 0755 ${WORKDIR}/uuu-${PV}_mac ${D}${libdir}/uuu/uuu_mac
-    install -D -m 0644 ${WORKDIR}/uuu-${PV}.exe ${D}${libdir}/uuu/uuu.exe
+    install -D -m 0755 ${WORKDIR}/uuu-${PV}             ${D}${libdir}/uuu/uuu
+    install -D -m 0755 ${WORKDIR}/uuu-${PV}_mac_x86     ${D}${libdir}/uuu/uuu_mac_x86
+    install -D -m 0755 ${WORKDIR}/uuu-${PV}_mac_arm     ${D}${libdir}/uuu/uuu_mac_arm
+    install -D -m 0644 ${WORKDIR}/uuu-${PV}.exe         ${D}${libdir}/uuu/uuu.exe
 }
 
 # HACK! We are not aiming to run those binaries during the build but copy then for MFGTOOL bundle.
