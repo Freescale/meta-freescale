@@ -52,7 +52,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-devtools/qemu/qemu.inc: LICENSE = "GPL-2.0-only & LGPL-2.1-only"
 ./recipes-devtools/qoriq-cst/qoriq-cst_git.bb: LICENSE = "BSD-3-Clause"
 ./recipes-devtools/utp-com/utp-com_git.bb: LICENSE = "GPL-2.0-only"
-./recipes-devtools/uuu/uuu-bin_1.5.165.bb: LICENSE = "BSD-3-Clause & LGPL-2.1-or-later"
+./recipes-devtools/uuu/uuu-bin_1.5.233.bb: LICENSE = "BSD-3-Clause & LGPL-2.1-or-later"
 ./recipes-devtools/uuu/uuu_git.bb: LICENSE = "BSD-3-Clause"
 ./recipes-downgrade/spir/spirv-headers_1.3.275.0.imx.bb: LICENSE = "MIT"
 ./recipes-downgrade/spir/spirv-tools_1.3.275.0.imx.bb: LICENSE  = "Apache-2.0"
