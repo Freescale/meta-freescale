@@ -46,7 +46,7 @@ PROVIDES_OPENCL = " \
     opencl-headers \
     opencl-clhpp \
     opencl-icd-loader \
-    virtual/opencl-icd \
+    virtual/libopencl1 \
 "
 PROVIDES_OPENCL:mx7-nxp-bsp   = ""
 PROVIDES_OPENCL:mx8mm-nxp-bsp = ""

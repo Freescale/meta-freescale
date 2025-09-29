@@ -362,7 +362,7 @@ MACHINE_SOCARCH_FILTER:append:imxgpu = " \
     virtual/egl \
     virtual/libopenvg \
     virtual/mesa \
-    virtual/opencl-icd \
+    virtual/libopencl1 \
     libdrm \
     cairo \
     libgal-imx \
@@ -571,7 +571,7 @@ PREFERRED_PROVIDER_virtual/libgles3:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_opencl-clhpp:imxviv         ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-headers:imxviv       ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxviv    ?= "imx-gpu-viv"
-PREFERRED_PROVIDER_virtual/opencl-icd:imxviv   ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "imx-gpu-viv"
 
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-dpu-g2d"
