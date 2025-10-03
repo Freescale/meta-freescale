@@ -8,7 +8,3 @@ PACKAGE_ARCH:imx-nxp-bsp = "${MACHINE_SOCARCH}"
 SOLIBS:imx-nxp-bsp          = ".so*"
 FILES_SOLIBSDEV:imx-nxp-bsp = ""
 INSANE_SKIP:${PN}:imx-nxp-bsp += "dev-so"
-
-# Override default mesa drivers with i.MX GPU drivers
-RRECOMMENDS:${PN}:imxviv  = "libvulkan-imx"
-RRECOMMENDS:${PN}:imxmali = "mali-imx-libvulkan"

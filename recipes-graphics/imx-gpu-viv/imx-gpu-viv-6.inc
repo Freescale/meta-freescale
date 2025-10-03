@@ -346,6 +346,7 @@ FILES:libvulkan-imx = "\
     ${libdir}/libvulkan_VSI${REALSOLIBS} \
     ${sysconfdir}/vulkan"
 FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
+RPROVIDES:libvulkan-imx = "virtual-vulkan-icd"
 
 FILES:libspirv-imx = " \
     ${libdir}/libSPIRV_viv${SOLIBS} \

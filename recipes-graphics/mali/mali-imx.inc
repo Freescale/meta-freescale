@@ -46,6 +46,7 @@ FILES:${PN}-opencl-icd = " \
 FILES:${PN}-libvulkan = " \
     ${sysconfdir}/vulkan"
 RDEPENDS:${PN}-libvulkan = "vulkan-wsi-layer"
+RPROVIDES:${PN}-libvulkan = "virtual-vulkan-icd"
 
 FILES:${PN}-dev = " \
     ${bindir}/malisc"

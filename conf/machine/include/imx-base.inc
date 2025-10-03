@@ -577,6 +577,11 @@ PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-dpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-pxp-g2d"
 
+# Set preferred Vulkan ICD runtime
+PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa"
+PREFERRED_RPROVIDER_virtual-vulkan-icd:imxviv  ?= "libvulkan-imx"
+PREFERRED_RPROVIDER_virtual-vulkan-icd:imxmali ?= "mali-imx-libvulkan"
+
 PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "14.0.2.imx"
 # i.MX 6 & 7 stay on weston 10.0 for fbdev
 PREFERRED_VERSION_weston:mx6-nxp-bsp      ??= "10.0.5.imx"
