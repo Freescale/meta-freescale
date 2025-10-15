@@ -42,24 +42,22 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.12.34.. ^mainline/linux-6.12.y ^NXP/lf-6.12.y
-# - 8d94e52076a1 Revert "firmware: arm_scmi: Fix i.MX build dependency"
-# - adefe4ecd9c6 Revert "PCI: imx6: Fix suspend/resume support on i.MX6QDL"
-# - 2837cecae149 imx8mp-olimex.dts: CSI GPIO pins
-# - 29efe53139ac hwrng: optee: support generic crypto
-# - 7f80ce9b7c82 arm64: dts: imx8mq: drop cpu-idle-states
-# - 5e3b6ecf85c4 of: enable using OF_DYNAMIC without OF_UNITTEST
-# - 1bd794e571f6 gpu: drm: cadence: select hdmi helper
-# - d74361dc9bdc imx:dts:imx8mm-evkb: fix the pmic name to avoid duplicated label error
-# - 90900e871607 arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
-# - 24ef2924dd5f drm: of: Fix build without CONFIG_OF
-# - a97fe216ede5 i2c: imx: Remove unnecessary clock reconfiguration
-# - 93e7f87e7bc6 drm/imx: lcdifv3: Fix videomode settings
-# - ff2397021b0d clk: imx: imx8qm: add more resources to whitelist
-# - e0fc64f7a2f8 arm64: dts: imx8: img: add #address-cells and #size-cells to I2C MIPI CSI nodes
-# - 98b777bfa849 arm64: dts: imx8qm: add missing imx8-ss-cm40.dtsi include
-# - 2d0aefc287a7 arm64: imx_v8_defconfig: Enable CONFIG_GPIO_VF610
-# - 44aadbd00c61 imx8mp-olimex.dts: Olimex iMX8MP-SOM-EVB-IND
+# $ git log --oneline  --no-merges v6.12.49.. ^mainline/linux-6.12.y ^NXP/lf-6.12.y
+# - bacd5504126bb imx8mp-olimex.dts: CSI GPIO pins
+# - 3a7012e991c98 hwrng: optee: support generic crypto
+# - 6c0a3377748eb arm64: dts: imx8mq: drop cpu-idle-states
+# - 7db0692d9ff5e of: enable using OF_DYNAMIC without OF_UNITTEST
+# - eff98b934385c gpu: drm: cadence: select hdmi helper
+# - be5e175e43d93 imx:dts:imx8mm-evkb: fix the pmic name to avoid duplicated label error
+# - 76e18f5a57b3e arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
+# - 06b99391f850c drm: of: Fix build without CONFIG_OF
+# - 17ac89e381a9d i2c: imx: Remove unnecessary clock reconfiguration
+# - 6d157e81ccc53 drm/imx: lcdifv3: Fix videomode settings
+# - 0a355239e2df3 clk: imx: imx8qm: add more resources to whitelist
+# - c5c4869899b1c arm64: dts: imx8: img: add #address-cells and #size-cells to I2C MIPI CSI nodes
+# - 3159e7d086295 arm64: dts: imx8qm: add missing imx8-ss-cm40.dtsi include
+# - ffea393034d48 arm64: imx_v8_defconfig: Enable CONFIG_GPIO_VF610
+# - a8762ad609202 imx8mp-olimex.dts: Olimex iMX8MP-SOM-EVB-IND
 #
 # NOTE to upgraders:
 # This recipe should NOT collect individual patches, they should be applied to
@@ -69,16 +67,16 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 
 require linux-imx.inc
 
-KBRANCH = "6.12-1.0.x-imx"
+KBRANCH = "6.12-2.0.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "c63da44a120c9ad720877a74f0c94e2d9b08cab1"
+SRCREV = "77b58422ab0fa4480a0b89a5f1ebfb9d1a900aef"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.12.34"
+LINUX_VERSION = "6.12.49"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
