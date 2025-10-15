@@ -23,11 +23,13 @@ do_deploy:append:mx8m-generic-bsp() {
         for config in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
             for type in ${UBOOT_CONFIG}; do
+                builddir="${config}-${type}"
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]
                 then
+                    builddir="${config}-${type}"
                     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-                    install -m 0644 ${B}/${config}/u-boot-nodtb.bin ${DEPLOYDIR}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}-${type}
+                    install -m 0644 ${B}/${builddir}/u-boot-nodtb.bin ${DEPLOYDIR}/${BOOT_TOOLS}/u-boot-nodtb.bin-${MACHINE}-${type}
                     UBOOT_DTB_NAME_FLAGS="${type}:${UBOOT_DTB_NAME}"
                     for key_value in ${UBOOT_DTB_NAME_FLAGS}; do
                         local type_key="${key_value%%:*}"
@@ -37,11 +39,11 @@ do_deploy:append:mx8m-generic-bsp() {
                             bbnote "UBOOT_CONFIG = $type, UBOOT_DTB_NAME = $dtb_name"
                             # There is only one ${dtb_name}, the first one. All the other are with the type appended
                             if [ ! -f "${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}" ]; then
-                                install -m 0644 ${B}/${config}/arch/arm/dts/${dtb_name}  ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}
+                                install -m 0644 ${B}/${builddir}/arch/arm/dts/${dtb_name}  ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}
                             else
                                 bbwarn "Use custom wks.in for $dtb_name = $type"
                             fi
-                            install -m 0644 ${B}/${config}/arch/arm/dts/${dtb_name}  ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}-${type}
+                            install -m 0644 ${B}/${builddir}/arch/arm/dts/${dtb_name}  ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}-${type}
                         fi
                         unset type_key
                         unset dtb_name
