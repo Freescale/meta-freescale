@@ -601,6 +601,7 @@ PREFERRED_VERSION_spirv-tools:imxvulkan              ??= "1.3.275.0.imx"
 PREFERRED_VERSION_vulkan-headers:imxvulkan           ??= "1.3.275.0.imx"
 PREFERRED_VERSION_vulkan-loader:imxvulkan            ??= "1.3.275.0.imx"
 PREFERRED_VERSION_vulkan-tools:imxvulkan             ??= "1.3.275.0.imx"
+PREFERRED_VERSION_vulkan-utility-libraries:imxvulkan ??= "1.3.275.0.imx"
 PREFERRED_VERSION_vulkan-validation-layers:imxvulkan ??= "1.3.275.0.imx"
 
 # Use i.MX optee Version
