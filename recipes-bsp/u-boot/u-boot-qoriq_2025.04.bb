@@ -103,7 +103,8 @@ do_deploy:append:lx2162a () {
                 if [ $j -eq $i ]
                 then
                     if [ "tfa-verified-boot" = "${type}" ];then
-                        install -m 644 ${B}/${config}/u-boot.dtb ${DEPLOYDIR}/u-boot.dtb
+                        builddir="${config}-${type}"
+                        install -m 644 ${B}/${builddir/u-boot.dtb ${DEPLOYDIR}/u-boot.dtb
                     fi
                 fi
             done
@@ -123,8 +124,9 @@ do_deploy:append:ls102xa () {
                 if [ $j -eq $i ]
                 then
                     if expr "$type" : sdcard;then
-                        install -m 644 ${B}/${config}/u-boot-dtb.bin ${DEPLOYDIR}/u-boot-dtb.${UBOOT_SUFFIX}-${type}
-                        install -m 644 ${B}/${config}/spl/u-boot-spl.bin ${DEPLOYDIR}/u-boot-spl.${UBOOT_SUFFIX}-${type}
+                        builddir="${config}-${type}"
+                        install -m 644 ${B}/${builddir}/u-boot-dtb.bin ${DEPLOYDIR}/u-boot-dtb.${UBOOT_SUFFIX}-${type}
+                        install -m 644 ${B}/${builddir}/spl/u-boot-spl.bin ${DEPLOYDIR}/u-boot-spl.${UBOOT_SUFFIX}-${type}
                     fi
                 fi
             done
