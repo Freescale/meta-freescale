@@ -52,19 +52,20 @@ do_resolve_and_populate_binaries() {
         for config in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
             for type in ${UBOOT_CONFIG}; do
+                builddir="${config}-${type}"
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]; then
                     for firmware in ${IMX_BOOT_CONTAINER_FIRMWARE}; do
-                        bbnote "Copy firmware: ${firmware} from ${DEPLOY_DIR_IMAGE} -> ${B}/${config}/"
-                        cp ${DEPLOY_DIR_IMAGE}/${firmware} ${B}/${config}/
+                        bbnote "Copy firmware: ${firmware} from ${DEPLOY_DIR_IMAGE} -> ${B}/${builddir}/"
+                        cp ${DEPLOY_DIR_IMAGE}/${firmware} ${B}/${builddir}/
                     done
                     if [ -n "${ATF_MACHINE_NAME}" ]; then
-                        cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${config}/bl31.bin
+                        cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${B}/${builddir}/bl31.bin
                     else
                         bberror "ATF binary is undefined, result binary would be unusable!"
                     fi
                     if [ "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '1' , '0' , d)}" = "1" ] ; then
-                        cp ${DEPLOY_DIR_IMAGE}/${OPTEE_BOOT_IMAGE} ${B}/${config}/
+                        cp ${DEPLOY_DIR_IMAGE}/${OPTEE_BOOT_IMAGE} ${B}/${builddir}/
                     fi
                 fi
             done
@@ -90,10 +91,11 @@ do_deploy:append() {
         for config in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
             for type in ${UBOOT_CONFIG}; do
+                builddir="${config}-${type}"
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]
                 then
-                    install -m 0644 ${B}/${config}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}-${type}
+                    install -m 0644 ${B}/${builddir}/flash.bin  ${DEPLOYDIR}/flash.bin-${MACHINE}-${type}
                     # When there's more than one word in UBOOT_CONFIG,
                     # the first UBOOT_CONFIG listed will be the imx-boot binary
                     if [ ! -f "${DEPLOYDIR}/imx-boot" ]; then
