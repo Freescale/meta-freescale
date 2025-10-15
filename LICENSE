@@ -60,6 +60,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-downgrade/vulkan/vulkan-headers_1.3.275.0.imx.bb: LICENSE = "Apache-2.0 & MIT"
 ./recipes-downgrade/vulkan/vulkan-loader_1.3.275.0.imx.bb: LICENSE = "Apache-2.0"
 ./recipes-downgrade/vulkan/vulkan-tools_1.3.275.0.imx.bb: LICENSE = "Apache-2.0"
+./recipes-downgrade/vulkan/vulkan-utility-libraries_1.3.275.0.imx.bb: LICENSE = "Apache-2.0"
 ./recipes-downgrade/vulkan/vulkan-validation-layers_1.3.275.0.imx.bb: LICENSE = "Apache-2.0 & MIT"
 ./recipes-dpaa/eth-config/eth-config_git.bb: LICENSE = "BSD-3-Clause & GPL-2.0-or-later"
 ./recipes-dpaa/flib/flib_git.bb: LICENSE = "BSD-3-Clause & GPL-2.0-only"
