@@ -104,7 +104,7 @@ do_deploy:append:lx2162a () {
                 then
                     if [ "tfa-verified-boot" = "${type}" ];then
                         builddir="${config}-${type}"
-                        install -m 644 ${B}/${builddir/u-boot.dtb ${DEPLOYDIR}/u-boot.dtb
+                        install -m 644 ${B}/${builddir}/u-boot.dtb ${DEPLOYDIR}/u-boot.dtb
                     fi
                 fi
             done
