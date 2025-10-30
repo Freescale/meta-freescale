@@ -11,6 +11,8 @@ SRC_URI = "git://gitlab.freedesktop.org/mesa/vulkan-wsi-layer.git;protocol=https
            file://0003-Update-minimum-version-of-CMake.patch"
 SRCREV = "cb1a50cf7e640ad7306e673131ded98c0f133628"
 
+S = "${WORKDIR}/git"
+
 inherit cmake pkgconfig
 
 PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', 'headless', d)}"
