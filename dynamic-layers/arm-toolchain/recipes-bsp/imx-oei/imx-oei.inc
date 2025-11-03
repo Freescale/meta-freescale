@@ -11,12 +11,13 @@ OEI_CONFIGS ?= "UNDEFINED"
 OEI_CORE    ?= "UNDEFINED"
 OEI_SOC     ?= "UNDEFINED"
 OEI_BOARD   ?= "UNDEFINED"
+OEI_DEBUG   ?= "0"
 
 LDFLAGS[unexport] = "1"
 
 EXTRA_OEMAKE = "\
     board=${OEI_BOARD} \
-    DEBUG=1 \
+    DEBUG=${OEI_DEBUG} \
     OEI_CROSS_COMPILE=arm-none-eabi-"
 
 do_configure() {
