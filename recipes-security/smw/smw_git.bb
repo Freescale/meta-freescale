@@ -1,27 +1,54 @@
-# Copyright 2020-23 NXP
+# Copyright 2020-23, 2025 NXP
+require recipes-security/optee-imx/optee-fslc.inc
 
 SUMMARY = "NXP i.MX Security Middleware Library"
 DESCRIPTION = "NXP i.MX Security Middleware Library"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
 LICENSE = "Apache-2.0 & BSD-3-Clause & Zlib"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=8636bd68fc00cc6a3809b7b58b45f982 \
-                    file://../psa-arch-tests/LICENSE.md;md5=2a944942e1496af1886903d274dedb13"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=6087d19da5441648e33f85ae64cf2a7d \
+                    file://psa-arch-tests/LICENSE.md;md5=2a944942e1496af1886903d274dedb13"
 
-DEPENDS = "json-c optee-os optee-client python3-cryptography-native"
-DEPENDS:append:mx8qxp-nxp-bsp = " imx-seco-libs"
-DEPENDS:append:mx8dx-nxp-bsp  = " imx-seco-libs"
-DEPENDS:append:mx8ulp-nxp-bsp  = " imx-secure-enclave"
+DEPENDS = " \
+    python3-cryptography-native \
+    json-c \
+    optee-client \
+    optee-os-tadevkit \
+    sqlite3 \
+"
 
-SRC_URI = "git://github.com/nxp-imx/imx-smw.git;protocol=https;branch=release/version_2.x;name=smw;destsuffix=git/smw \
-           git://github.com/ARM-software/psa-arch-tests.git;protocol=https;branch=main;name=psa;destsuffix=git/psa-arch-tests \
+SMW_LIB_SRC ?= "git://github.com/nxp-imx/imx-smw.git;protocol=https"
+PSA_LIB_SRC ?= "git://github.com/ARM-software/psa-arch-tests.git;protocol=https"
+PSA_ARCH_TESTS_SRC_PATH = "psa-arch-tests"
+SRCBRANCH_smw = "release/version_5.x"
+SRCBRANCH_psa = "main"
+
+SRC_URI = "${SMW_LIB_SRC};branch=${SRCBRANCH_smw};name=smw \
+           ${PSA_LIB_SRC};branch=${SRCBRANCH_psa};name=psa;destsuffix=${S}/${PSA_ARCH_TESTS_SRC_PATH} \
            "
-SRCREV_smw = "f0570b3e8cb5f68d54edc4f9dd7cb984f6f604ed"
+SRCREV_smw = "8934fdecacb88b227d09690283e7e2578387b7ee"
 SRCREV_psa = "463cb95ada820bc6f758d50066cf8c0ed5cc3a02"
 SRCREV_FORMAT = "smw_psa"
-S = "${UNPACKDIR}/git/smw"
 
 inherit cmake python3native
+
+PACKAGECONFIG ??= "${PACKAGECONFIG_DRIVERS} ${PACKAGECONFIG_FEATURES}"
+PACKAGECONFIG_DRIVERS                = ""
+PACKAGECONFIG_DRIVERS:mx8x-nxp-bsp   = "ele-seco"
+PACKAGECONFIG_DRIVERS:mx8ulp-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx91-nxp-bsp   = "ele"
+PACKAGECONFIG_DRIVERS:mx93-nxp-bsp   = "ele"
+PACKAGECONFIG_DRIVERS:mx943-nxp-bsp  = "ele"
+PACKAGECONFIG_DRIVERS:mx95-nxp-bsp   = "ele"
+
+PACKAGECONFIG_FEATURES              = ""
+PACKAGECONFIG_FEATURES:mx91-nxp-bsp = "tls"
+PACKAGECONFIG_FEATURES:mx93-nxp-bsp = "tls"
+PACKAGECONFIG_FEATURES:mx943-nxp-bsp = "tls"
+
+PACKAGECONFIG[ele] = "-DELE_ROOT=${STAGING_DIR_HOST},,imx-secure-enclave,,,ele-seco"
+PACKAGECONFIG[ele-seco] = "-DSECO_ROOT=${STAGING_DIR_HOST},,imx-secure-enclave-seco,,,ele"
+PACKAGECONFIG[tls] = "-DENABLE_TLS=ON,-DENABLE_TLS=OFF,openssl"
 
 CFLAGS[unexport] = "1"
 CPPFLAGS[unexport] = "1"
@@ -31,34 +58,30 @@ LD[unexport] = "1"
 # setting the linker options
 TARGET_LDFLAGS:remove = "${DEBUG_PREFIX_MAP}"
 
-OPTEE_OS_TA_EXPORT_DIR:aarch64 = "${STAGING_INCDIR}/optee/export-user_ta_arm64"
-OPTEE_OS_TA_EXPORT_DIR:arm = "${STAGING_INCDIR}/optee/export-user_ta_arm32"
-
-# Needs to sign OPTEE TAs
-export OPENSSL_MODULES = "${STAGING_LIBDIR_NATIVE}/ossl-modules"
-
 EXTRA_OECMAKE = " \
-    -DTA_DEV_KIT_ROOT=${OPTEE_OS_TA_EXPORT_DIR} \
+    -DTA_DEV_KIT_ROOT=${TA_DEV_KIT_DIR} \
     -DTEEC_ROOT=${STAGING_DIR_HOST} \
     -DJSONC_ROOT="${COMPONENTS_DIR}/${TARGET_ARCH}/json-c/usr" \
-    -DPSA_ARCH_TESTS_SRC_PATH=../${PSA_ARCH_TESTS_SRC_PATH} \
+    -DPSA_ARCH_TESTS_SRC_PATH=${PSA_ARCH_TESTS_SRC_PATH} \
+    -DTEE_TA_DESTDIR=${nonarch_base_libdir} \
 "
-EXTRA_OECMAKE:append:mx8qxp-nxp-bsp = "-DSECO_ROOT=${STAGING_DIR_HOST}"
-EXTRA_OECMAKE:append:mx8dx-nxp-bsp = "-DSECO_ROOT=${STAGING_DIR_HOST}"
-EXTRA_OECMAKE:append:mx8ulp-nxp-bsp = "-DELE_ROOT=${STAGING_DIR_HOST}"
-EXTRA_OECMAKE_IMX:mx93-nxp-bsp = "-DELE_ROOT=${STAGING_DIR_HOST}"
 
 OECMAKE_TARGET_COMPILE += "build_tests"
 OECMAKE_TARGET_INSTALL += "install_tests"
 
-INSANE_SKIP_${PN}-tests = "textrel"
-
 PACKAGES =+ "${PN}-tests"
 
-FILES:${PN} += "${base_libdir}/optee_armtz/*"
+FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/*"
 
 FILES:${PN}-tests = "${bindir}/* ${datadir}/${BPN}/*"
 
+# Work around do_package_qa QA errors
+INSANE_SKIP:${PN}-dbg += "buildpaths"
+INSANE_SKIP:${PN}-dev += "buildpaths"
+INSANE_SKIP:${PN}-tests += "buildpaths"
+
 RDEPENDS:${PN}-tests += "bash cmake"
+
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
