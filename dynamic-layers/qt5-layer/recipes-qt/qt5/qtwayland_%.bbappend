@@ -6,4 +6,4 @@ PACKAGECONFIG:remove:mx7-nxp-bsp = "xcomposite-egl xcomposite-glx"
 
 # i.MX8 does never provide native x11, so required dependencies are not met
 PACKAGECONFIG:remove:mx8-nxp-bsp = "xcomposite-egl xcomposite-glx"
-PACKAGECONFIG:remove:mx95-nxp-bsp = "xcomposite-egl xcomposite-glx"
+PACKAGECONFIG:remove:mx9-nxp-bsp = "xcomposite-egl xcomposite-glx"
