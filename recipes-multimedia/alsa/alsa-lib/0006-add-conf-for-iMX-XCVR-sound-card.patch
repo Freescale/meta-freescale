@@ -1,4 +1,4 @@
-From faa9791070520f8d5e7060e5668efd1302c86c66 Mon Sep 17 00:00:00 2001
+From e6934385a773a8f6d713984716adbba5af0ead03 Mon Sep 17 00:00:00 2001
 From: Viorel Suman <viorel.suman@nxp.com>
 Date: Mon, 9 Mar 2020 14:25:46 +0200
 Subject: [PATCH] add conf for iMX XCVR sound card
@@ -71,10 +71,10 @@ index 3c29bd65d341..4502919e3bec 100644
  	ATIIXP.conf \
  	ATIIXP-SPDMA.conf \
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index dda71d99916e..6dab14855f25 100644
+index bbbf226a95a7..e6dd2cf69a9c 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
-@@ -60,6 +60,7 @@ VC4-HDMI cards.vc4-hdmi
+@@ -61,6 +61,7 @@ hda-acpi cards.HDA-Intel
  imx-cs42888 cards.CS42888
  imx-hdmi-soc cards.IMX-HDMI
  ak4458-audio cards.AK4458

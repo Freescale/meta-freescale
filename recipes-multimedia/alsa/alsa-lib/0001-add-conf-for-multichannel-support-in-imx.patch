@@ -1,4 +1,4 @@
-From 3fa81ebaf8bac6b167776888ae26c6c140d8aebc Mon Sep 17 00:00:00 2001
+From c9b12504edea5280b41645da703ac478c1341dcf Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <b02247@freescale.com>
 Date: Thu, 5 Jun 2014 17:37:47 +0800
 Subject: [PATCH] add conf for multichannel support in imx
@@ -202,13 +202,13 @@ index f387cf4197da..cbd2cd04227d 100644
  	ATIIXP.conf \
  	ATIIXP-SPDMA.conf \
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index a54824ae636b..0aa874d7434f 100644
+index e2d59aa770dc..e05c372a0cf7 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
-@@ -57,6 +57,8 @@ CMI8786 cards.CMI8788
- CMI8787 cards.CMI8788
+@@ -58,6 +58,8 @@ CMI8787 cards.CMI8788
  pistachio cards.pistachio-card
  VC4-HDMI cards.vc4-hdmi
+ hda-acpi cards.HDA-Intel
 +imx-cs42888 cards.CS42888
 +imx-hdmi-soc cards.IMX-HDMI
  
