@@ -1,4 +1,4 @@
-From 92d2b7d91bc1ec4068ee9371753bb24ad1108827 Mon Sep 17 00:00:00 2001
+From b582b2f3054fc402604b068d470c4eeb19b06e13 Mon Sep 17 00:00:00 2001
 From: Shengjiu Wang <shengjiu.wang@nxp.com>
 Date: Wed, 31 Jan 2018 15:06:53 +0800
 Subject: [PATCH] add ak4458 conf for multichannel support
@@ -112,11 +112,11 @@ index cbd2cd04227d..3c29bd65d341 100644
  	ATIIXP.conf \
  	ATIIXP-SPDMA.conf \
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index 0aa874d7434f..dda71d99916e 100644
+index e05c372a0cf7..bbbf226a95a7 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
-@@ -59,6 +59,7 @@ pistachio cards.pistachio-card
- VC4-HDMI cards.vc4-hdmi
+@@ -60,6 +60,7 @@ VC4-HDMI cards.vc4-hdmi
+ hda-acpi cards.HDA-Intel
  imx-cs42888 cards.CS42888
  imx-hdmi-soc cards.IMX-HDMI
 +ak4458-audio cards.AK4458

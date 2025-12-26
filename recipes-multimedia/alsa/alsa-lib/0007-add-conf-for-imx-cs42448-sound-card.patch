@@ -1,4 +1,4 @@
-From 38d84440a7bec9e26380f08f050b2ada772b822e Mon Sep 17 00:00:00 2001
+From 38bbc66434e1cbf71197bfbd5a3bf06efbfaa319 Mon Sep 17 00:00:00 2001
 From: Chancel Liu <chancel.liu@nxp.com>
 Date: Fri, 29 Jul 2022 16:12:37 +0800
 Subject: [PATCH] add conf for imx-cs42448 sound card
@@ -93,10 +93,10 @@ index 4502919e3bec..da2def3a9498 100644
  	ATIIXP.conf \
  	ATIIXP-SPDMA.conf \
 diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
-index 6dab14855f25..554db846f8e5 100644
+index e6dd2cf69a9c..a97ed9c289c6 100644
 --- a/src/conf/cards/aliases.conf
 +++ b/src/conf/cards/aliases.conf
-@@ -61,6 +61,7 @@ imx-cs42888 cards.CS42888
+@@ -62,6 +62,7 @@ imx-cs42888 cards.CS42888
  imx-hdmi-soc cards.IMX-HDMI
  ak4458-audio cards.AK4458
  imx-audio-xcvr cards.IMX-XCVR
