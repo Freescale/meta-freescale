@@ -1,0 +1,135 @@
+From b514647ccdd4e833b2d8fbba1a39547b80657987 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Tue, 26 Jun 2018 15:30:18 +0800
+Subject: [PATCH 2/9] unstable: Add hdr10-metadata protocol
+
+this protocol is used to support hdr10 video playback.
+HDR10 metadata is passed to compositor via this interface
+
+Upstream-Status: Pending
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+(cherry picked from commit 87ea413b40701fbb3d333264a1de3b168276bbcf)
+(cherry picked from commit 878f46b324fcefe5193d66c025c4c67bff09c253)
+---
+ meson.build                                   |  1 +
+ unstable/hdr10-metadata/README                |  4 +
+ .../hdr10-metadata-unstable-v1.xml            | 84 +++++++++++++++++++
+ 3 files changed, 89 insertions(+)
+ create mode 100644 unstable/hdr10-metadata/README
+ create mode 100644 unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml
+
+diff --git a/meson.build b/meson.build
+index 99a555d53a09..70b594d3b89c 100644
+--- a/meson.build
++++ b/meson.build
+@@ -43,6 +43,7 @@ unstable_protocols = {
+ 	'xdg-shell': ['v5', 'v6'],
+ 	'xwayland-keyboard-grab': ['v1'],
+ 	'alpha-compositing': ['v1'],
++	'hdr10-metadata': ['v1'],
+ }
+ 
+ staging_protocols = {
+diff --git a/unstable/hdr10-metadata/README b/unstable/hdr10-metadata/README
+new file mode 100644
+index 000000000000..58a82f802d12
+--- /dev/null
++++ b/unstable/hdr10-metadata/README
+@@ -0,0 +1,4 @@
++hdr10 metadata protocol
++
++Maintainers:
++Jared Hu <Jared Hu at nxp.com>
+diff --git a/unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml b/unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml
+new file mode 100644
+index 000000000000..5b1bac4aa29f
+--- /dev/null
++++ b/unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml
+@@ -0,0 +1,84 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<protocol name="hdr10_metadata_unstable_v1">
++
++  <copyright>
++    Copyright 2018 NXP
++
++    Permission is hereby granted, free of charge, to any person obtaining a
++    copy of this software and associated documentation files (the "Software"),
++    to deal in the Software without restriction, including without limitation
++    the rights to use, copy, modify, merge, publish, distribute, sublicense,
++    and/or sell copies of the Software, and to permit persons to whom the
++    Software is furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice (including the next
++    paragraph) shall be included in all copies or substantial portions of the
++    Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
++    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++    DEALINGS IN THE SOFTWARE.
++  </copyright>
++
++  <description summary="Protocol for sending hdr10 metadata to compositor">
++    This protocol specifies a set of interfaces used to set and control
++    hdr10 metadata of video contents.
++
++    Warning! The protocol described in this file is experimental and backward
++    incompatible changes may be made. Backward compatible changes may be added
++    together with the corresponding interface version bump. Backward
++    incompatible changes are done by bumping the version number in the protocol
++    and interface names and resetting the interface version. Once the protocol
++    is to be declared stable, the 'z' prefix and the version number in the
++    protocol and interface names are removed and the interface version number is
++    reset.
++  </description>
++
++  <interface name="zwp_hdr10_metadata_v1" version="1">
++    <description summary="hdr10_metadata">
++      The global interface exposing hdr10 metadata capabilities is
++      used to instantiate an interface extension for compositor.
++      This extended interface will then allow the client to pass hdr10 metadata
++      to compositor and send to display driver if supported.
++    </description>
++
++    <request name="destroy" type="destructor">
++      <description summary="unbind from the hdr10 metadata interface">
++        Informs the server that the client will not be using this
++        protocol object anymore. This does not affect any other objects.
++      </description>
++    </request>
++
++    <enum name="error">
++      <entry name="sending_meta_error" value="0"
++             summary="error occurs when compositor handle metadata"/>
++    </enum>
++
++    <request name="set_metadata">
++      <description summary="interface of setting and controling hdr10 metadata">
++        client can use this interface pass hdr10 metadata to server. Server need
++        use the recived metadata to enable hdr mode.
++      </description>
++
++      <arg name="eotf" type="uint" summary="supported eotf"/>
++      <arg name="type" type="uint" summary="supported type"/>
++      <arg name="display_primaries_red" type="uint"
++        summary="display primaries of red, high 16bits for x, and low 16bits for y"/>
++      <arg name="display_primaries_green" type="uint"
++        summary="display primaries of green, high 16bits for x, and low 16bits for y"/>
++      <arg name="display_primaries_blue" type="uint"
++        summary="display primaries of blue, high 16bits for x, and low 16bits for y"/>
++      <arg name="white_point" type="uint"
++        summary="white point, high 16bits for x, and low 16bits for blue"/>
++      <arg name="mastering_display_luminance" type="uint"
++        summary="max and min mastering display luminance, high 16 bits for max, and low 16 bits for min"/>
++      <arg name="max_cll" type="uint" summary="max content light level"/>
++      <arg name="max_fall" type="uint" summary="max frame average light level"/>
++    </request>
++  </interface>
++
++</protocol>
+-- 
+2.42.0
+

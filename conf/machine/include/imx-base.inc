@@ -588,8 +588,6 @@ PREFERRED_VERSION_weston:mx6-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:mx7-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
-PREFERRED_VERSION_wayland-protocols:imx-nxp-bsp  ??= "1.41.imx"
-
 PREFERRED_VERSION_xwayland:imx-nxp-bsp ??= "24.1.6.imx"
 
 # Use i.MX libdrm Version

@@ -1,0 +1,53 @@
+From fd0b31e5f7d1785464cc4b83371efc6222437725 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Wed, 5 Sep 2018 13:00:47 +0800
+Subject: [PATCH 3/9] linux-dmabuf: support passing buffer DTRC meta to
+ compositor
+
+DTRC meta is untilized to pass offset to DTRC in drm dcss driver
+to enable video tile compress
+
+Upstream-Status: Pending
+Signed-off-by: Haihua Hu <jared.hu@nxp.com>
+(cherry picked from commit 0f71ffe59cf4c3f050ff79ea18f96345fcf0061e)
+(cherry picked from commit bc76403e005be9162a09fe5bd3bdcd6b00cba7eb)
+---
+ .../linux-dmabuf/linux-dmabuf-unstable-v1.xml | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml b/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml
+index 6f11e925b68e..48d7ea003835 100644
+--- a/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml
++++ b/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml
+@@ -398,6 +398,28 @@
+       <arg name="format" type="uint" summary="DRM_FORMAT code"/>
+       <arg name="flags" type="uint" enum="flags" summary="see enum flags"/>
+     </request>
++
++    <request name="add_dtrc_meta">
++      <description summary="add dtrc meta in this dmabuf">
++        This request adds one dmabuf to the set in this
++        zwp_linux_buffer_params_v1.
++
++        The 64-bit unsigned value combined from modifier_hi and modifier_lo
++        is the dmabuf layout modifier. DRM AddFB2 ioctl calls this the
++        fb modifier, which is defined in drm_mode.h of Linux UAPI.
++        This is an opaque token. Drivers use this token to express tiling,
++        compression, etc. driver-specific modifications to the base format
++        defined by the DRM fourcc code.
++
++        This request raises the PLANE_IDX error if plane_idx is too large.
++        The error PLANE_SET is raised if attempting to set a plane that
++        was already set.
++      </description>
++      <arg name="rfc_chroma_offset" type="uint"
++           summary="high 32 bits of DTRC offset"/>
++      <arg name="rfc_luma_offset" type="uint"
++           summary="low 32 bits of DTRC offset"/>
++    </request>
+   </interface>
+ 
+   <interface name="zwp_linux_dmabuf_feedback_v1" version="5">
+-- 
+2.42.0
+
