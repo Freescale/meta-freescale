@@ -1,0 +1,28 @@
+From 9049175076c4d6706e6264f894680d5d1845e409 Mon Sep 17 00:00:00 2001
+From: Zelan Zou <zelan.zou@nxp.com>
+Date: Fri, 13 Sep 2024 04:22:13 +0200
+Subject: [PATCH] Makefile: Fix build error with gcc15 [YOCIMX-8305]
+
+Upstream-Status: Pending
+
+Signed-off-by: Zelan Zou <zelan.zou@nxp.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 9e55dad..60f8f7f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -8,7 +8,7 @@ LDFLAGS += -Wl,-export-dynamic
+ # if you are not using flex-builder. Download the iproute2 sources for the
+ # desired version and point to those instead.
+ ifneq ($(IPROUTE2_DIR),)
+-CFLAGS += -I$(IPROUTE2_DIR) -I$(IPROUTE2_DIR)/include -I$(IPROUTE2_DIR)/usr/include/ -I$(IPROUTE2_DIR)/usr/include/include
++CFLAGS += -I$(IPROUTE2_DIR) -I$(IPROUTE2_DIR)/include -I$(IPROUTE2_DIR)/usr/include/ -I$(IPROUTE2_DIR)/usr/include/include -Wno-error=incompatible-pointer-types
+ endif
+ 
+ MODDESTDIR := $(DESTDIR)/usr/lib/tc
+-- 
+2.25.1
+
