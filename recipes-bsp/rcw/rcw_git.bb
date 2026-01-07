@@ -8,7 +8,7 @@ DEPENDS += "tcl-native"
 inherit deploy siteinfo
 
 SRC_URI = "git://github.com/nxp-qoriq/rcw;protocol=https;nobranch=1"
-SRCREV = "45e69253690452656a4dfe933c4c9f55e1eb0f5f"
+SRCREV = "82fa0c6d03b00dc84b6a64ba91f42c35762dd903"
 
 export PYTHON = "${USRBINPATH}/python3"
 
