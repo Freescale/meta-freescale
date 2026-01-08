@@ -22,17 +22,11 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 SCMVERSION ?= "y"
 LOCALVERSION = ""
 
-DELTA_KERNEL_DEFCONFIG ?= ""
-DELTA_KERNEL_DEFCONFIG:prepend:qoriq-arm64 = "lsdk.config "
-DELTA_KERNEL_DEFCONFIG:prepend:qoriq-arm = "multi_v7_lpae.config lsdk.config "
+KBUILD_DEFCONFIG = "${KERNEL_DEFCONFIG}"
+EXTRA_KBUILD_DEFCONFIG:qoriq-arm64 = "lsdk.config"
+EXTRA_KBUILD_DEFCONFIG:qoriq-arm   = "multi_v7_lpae.config lsdk.config"
 
-do_merge_delta_config[depends] += "virtual/cross-cc:do_populate_sysroot bison-native:do_populate_sysroot"
-do_merge_delta_config[dirs] = "${B}"
-do_kernel_metadata[noexec] = "1"
-do_kernel_configme[noexec] = "1"
-do_kernel_configcheck[noexec] = "1"
-
-do_merge_delta_config() {
+do_configure() {
     # create config with make config
     oe_runmake  -C ${S} O=${B} ${KERNEL_DEFCONFIG}
 
@@ -41,9 +35,7 @@ do_merge_delta_config() {
         echo "CONFIG_CPU_BIG_ENDIAN=y" >> .config
         echo "CONFIG_MTD_CFI_BE_BYTE_SWAP=y" >> .config
     fi
-
-    # add config fragments
-    for deltacfg in ${DELTA_KERNEL_DEFCONFIG}; do
+    for deltacfg in ${EXTRA_KBUILD_DEFCONFIG}; do
         if [ -f ${S}/arch/${ARCH}/configs/${deltacfg} ]; then
             oe_runmake  -C ${S} O=${B} ${deltacfg}
         elif [ -f "${S}/${deltacfg}" ]; then
@@ -54,8 +46,6 @@ do_merge_delta_config() {
     done
     cp .config ${UNPACKDIR}/defconfig
 }
-
-addtask merge_delta_config before do_kernel_localversion after do_patch
 
 FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
 INSANE_SKIP:${PN}-src += " buildpaths"
