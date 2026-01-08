@@ -1,4 +1,4 @@
-# Copyright 2020-2021,2025 NXP
+# Copyright 2020-2021,2025-2026 NXP
 require recipes-security/optee-imx/optee-os-fslc.inc
 
 DEPENDS:append = " dtc-native"
@@ -9,7 +9,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/../optee-imx/optee-os:"
 
 SRC_URI:remove = "git://github.com/OP-TEE/optee_os.git;branch=master;protocol=https"
 SRC_URI:prepend = "${OPTEE_OS_SRC};branch=${OPTEE_OS_BRANCH} "
-SRC_URI:append = " file://0007-allow-setting-sysroot-for-clang.patch"
 
 OPTEE_OS_SRC ?= "git://github.com/nxp-qoriq/optee_os.git;protocol=https"
 
