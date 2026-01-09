@@ -30,22 +30,18 @@ do_install() {
     install -d ${D}${nonarch_base_libdir}/firmware/nxp
     install -d ${D}${nonarch_base_libdir}/firmware/brcm/
 
-    shopt -s nullglob
-
     # Install bcm4359-pcie
     for f in cyw-wifi-bt/*_CYW*/brcmfmac4359-pcie*; do
-        install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/brcm/$(basename $f)
+        [ -e $f ] && install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/brcm/$(basename $f)
     done
 
     for f in cyw-wifi-bt/*_CYW*/BCM4349B1*.hcd; do
-        install -D -m 0644 $f ${D}${sysconfdir}/firmware/$(basename $f)
+        [ -e $f ] && install -D -m 0644 $f ${D}${sysconfdir}/firmware/$(basename $f)
     done
 
     for f in nxp/FwImage_IW612_SD/*; do
-        install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/$(basename $f)
+        [ -e $f ] && install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/$(basename $f)
     done
-
-    shopt -u nullglob
 
     oe_runmake install INSTALLDIR=${D}${nonarch_base_libdir}/firmware/nxp
 
