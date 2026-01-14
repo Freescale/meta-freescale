@@ -76,8 +76,11 @@ MACHINE_FIRMWARE:append = " linux-firmware-ath10k"
 WKS_FILE_DEPENDS:append:imx-nxp-bsp = " imx-m7-demos"
 IMAGE_BOOT_FILES:append:imx-nxp-bsp = " \
     mcore-demos/imx8mp_m7_TCM_hello_world.bin \
-    mcore-demos/imx8mp_m7_TCM_low_power_wakeword.bin \
     mcore-demos/imx8mp_m7_TCM_rpmsg_lite_pingpong_rtos_linux_remote.bin \
     mcore-demos/imx8mp_m7_TCM_rpmsg_lite_str_echo_rtos.bin \
     mcore-demos/imx8mp_m7_TCM_sai_low_power_audio.bin \
+    mcore-demos/imx8mp_m7_DDR_hello_world.bin \
+    mcore-demos/imx8mp_m7_DDR_rpmsg_lite_pingpong_rtos_linux_remote.bin \
+    mcore-demos/imx8mp_m7_DDR_rpmsg_lite_str_echo_rtos.bin \
+    mcore-demos/imx8mp_m7_DDR_sai_low_power_audio.bin \
 "
