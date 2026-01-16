@@ -95,6 +95,7 @@ UBOOT_ENTRYPOINT:mx7-generic-bsp    ?= "0x80008000"
 UBOOT_ENTRYPOINT:mx7ulp-generic-bsp ?= "0x60008000"
 UBOOT_ENTRYPOINT:mx8m-generic-bsp   ?= "0x40480000"
 UBOOT_ENTRYPOINT:mx93-generic-bsp   ?= "0x80400000"
+UBOOT_ENTRYPOINT:mx943-generic-bsp  ?= "0x80400000"
 UBOOT_ENTRYPOINT:vf-generic-bsp     ?= "0x80008000"
 
 # Some SoC can utilize the boot container provided by U-Boot,
@@ -169,6 +170,7 @@ DEFAULTTUNE:mx8x-generic-bsp   ?= "cortexa35-crypto"
 DEFAULTTUNE:mx8ulp-generic-bsp ?= "cortexa35-crypto"
 DEFAULTTUNE:mx91-generic-bsp   ?= "cortexa55"
 DEFAULTTUNE:mx93-generic-bsp   ?= "cortexa55"
+DEFAULTTUNE:mx94-generic-bsp   ?= "cortexa55"
 DEFAULTTUNE:mx95-generic-bsp   ?= "cortexa55"
 
 INHERIT += "machine-overrides-extender"
@@ -227,6 +229,7 @@ MACHINEOVERRIDES_EXTENDER:mx8ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxd
 
 MACHINEOVERRIDES_EXTENDER:mx91:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:mx9-generic-bsp:mx9-nxp-bsp:mx91-generic-bsp:mx91-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx93:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx93-generic-bsp:mx93-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx943:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx94-generic-bsp:mx94-nxp-bsp:mx943-generic-bsp:mx943-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx95:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp"
 
 #######
@@ -272,6 +275,7 @@ MACHINEOVERRIDES_EXTENDER:mx8ulp:use-mainline-bsp = "imx-generic-bsp:imx-mainlin
 
 MACHINEOVERRIDES_EXTENDER:mx91:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx91-generic-bsp:mx91-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx93:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx93-generic-bsp:mx93-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx943:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx94-generic-bsp:mx94-mainline-bsp:mx943-generic-bsp:mx943-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx95:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx95-generic-bsp:mx95-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
@@ -305,6 +309,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8ulp \
     mx91 \
     mx93 \
+    mx943 \
     mx95 \
 "
 
@@ -335,6 +340,7 @@ MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp  = "-mx8xl"
 MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp  = "-mx8ulp"
 MACHINE_SOCARCH_SUFFIX:mx91-nxp-bsp    = "-mx91"
 MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp    = "-mx93"
+MACHINE_SOCARCH_SUFFIX:mx943-nxp-bsp   = "-mx943"
 MACHINE_SOCARCH_SUFFIX:mx95-nxp-bsp    = "-mx95"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
@@ -414,6 +420,7 @@ IMX_EXTRA_FIRMWARE:mx8x-generic-bsp   = "imx-sc-firmware imx-seco"
 IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx91-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
+IMX_EXTRA_FIRMWARE:mx943-nxp-bsp      = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
 PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
 PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
 IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
@@ -507,6 +514,7 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 # ELE extra Firmware
 SECOEXT_FIRMWARE_NAME ?= "UNDEFINED"
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx943${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
 
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN                ?= ""
@@ -576,6 +584,7 @@ PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-dpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-pxp-g2d"
+PREFERRED_PROVIDER_virtual/libg2d:mx943-nxp-bsp ?= "imx-pxp-g2d"
 
 # Set preferred Vulkan ICD runtime
 PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa"
@@ -687,6 +696,8 @@ HOSTTOOLS_NONFATAL:append:mx8-nxp-bsp = " sha384sum"
 
 # Add task to generate the mfgtool bundle for the image.
 IMAGE_CLASSES:append:imx-generic-bsp = " image_populate_mfgtool"
+
+SECO_FIRMWARE_NAME:mx943-generic-bsp ?= "mx943${IMX_SOC_REV_LOWER}-ahab-container.img"
 
 # Allow meta-imx to add NIP devices information until upstreamed.
 include conf/machine/include/imx-base-extend.inc
