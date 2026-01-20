@@ -1,6 +1,7 @@
 # Set generic compiler for system manager core
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "${SM_COMPILER}"
+DEPENDS:append:mx943-nxp-bsp = " srecord-native"
 SM_COMPILER ?= "gcc-arm-none-eabi-native"
 PROVIDES += "virtual/imx-system-manager"
 
@@ -41,4 +42,4 @@ do_deploy() {
         ${DEPLOYDIR}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}.bin
 }
 
-COMPATIBLE_MACHINE = "(mx95-generic-bsp)"
+COMPATIBLE_MACHINE = "(mx95-generic-bsp|mx943-generic-bsp)"
