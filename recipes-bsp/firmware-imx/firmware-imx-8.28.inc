@@ -1,6 +1,7 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright 2017-2025 NXP
 # Copyright (C) 2018 O.S. Systems Software LTDA.
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "base"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
