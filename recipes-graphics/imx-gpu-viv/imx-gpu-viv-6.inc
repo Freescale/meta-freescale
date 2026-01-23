@@ -4,6 +4,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "GPU driver and apps for i.MX"
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
