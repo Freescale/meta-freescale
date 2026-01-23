@@ -1,4 +1,5 @@
 SUMMARY = "Mesa environment variables for etnaviv on xserver"
+HOMEPAGE = "https://github.com/Freescale/meta-freescale/"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 

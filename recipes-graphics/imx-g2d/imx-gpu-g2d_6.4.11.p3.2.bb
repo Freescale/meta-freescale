@@ -4,6 +4,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "G2D library using i.MX GPU"
+HOMEPAGE = "https://www.nxp.com/"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359" 
 DEPENDS = "libgal-imx"
