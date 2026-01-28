@@ -1,6 +1,6 @@
 #
 # This class provides a support to build the boot container for
-# i.MX8M derivatives
+# i.MX8M and i.MX95 derivatives
 #
 # imx8m machines require a separate build target to be executed
 # due to the fact that final boot image is constructed using flash.bin
@@ -23,14 +23,22 @@
 # NOTE: A backwards-compatible symlink is added for 'flash.bin', named
 # 'imx-boot', during the deployment task.
 
+inherit use-imx-security-controller-firmware
+
 # Define ATF binary file to be deployed to the U-Boot build folder
 ATF_MACHINE_NAME = "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
+
+OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
 
 IMX_BOOT_CONTAINER_FIRMWARE_SOC ?= ""
 IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx8mq-generic-bsp = " \
     signed_dp_imx8m.bin \
     signed_hdmi_imx8m.bin \
+"
+IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx95-generic-bsp = " \
+    ${SECO_FIRMWARE_NAME} \
+    ${OEI_NAME} \
 "
 IMX_BOOT_CONTAINER_FIRMWARE ?= " \
     ${IMX_BOOT_CONTAINER_FIRMWARE_SOC} \
@@ -66,6 +74,9 @@ do_resolve_and_populate_binaries() {
                     fi
                     if [ "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '1' , '0' , d)}" = "1" ] ; then
                         cp ${DEPLOY_DIR_IMAGE}/${OPTEE_BOOT_IMAGE} ${B}/${builddir}/
+                    fi
+                    if [ -n "${SYSTEM_MANAGER_FIRMWARE_NAME}" ]; then
+                        cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin ${B}/${builddir}/m33_image.bin
                     fi
                 fi
             done
