@@ -106,6 +106,9 @@ UBOOT_PROVIDES_BOOT_CONTAINER = "0"
 # IMX_DEFAULT_BOOTLOADER.
 UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "${@oe.utils.ifelse(d.getVar('IMX_DEFAULT_BOOTLOADER') == 'u-boot-imx', '0', '1')}"
 
+# i.MX95 mainline U-Boot uses binman to assemble the boot container.
+UBOOT_PROVIDES_BOOT_CONTAINER:mx95-mainline-bsp = "1"
+
 # Trusted Firmware for Cortex-A (TF-A) can have different providers, either
 # from upstream or from NXP downstream fork. Below variable defines which TF-A
 # shall be taken into the build, and will be integrated into runtime image.
