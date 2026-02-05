@@ -14,14 +14,14 @@ require recipes-kernel/linux/linux-imx.inc
 
 SRCBRANCH = "lf-6.12.y"
 LOCALVERSION = "-6.12.20-2.0.0"
-SRCREV = "dfaf2136deb2af2e60b994421281ba42f1c087e0"
+SRCREV = "df24f9428e38740256a410b983003a478e72a7c0"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.12.20"
+LINUX_VERSION = "6.12.49"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
