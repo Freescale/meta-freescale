@@ -5,7 +5,7 @@
 ########### OE-core copy ##################
 # Upstream hash: 937817e5164f8af8452aec03ae3c45cb23d63df9
 
-require gstreamer1.0-plugins-common.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 SUMMARY = "'Base' GStreamer plugins and helper libraries"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
@@ -20,7 +20,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-ba
            "
 SRC_URI[sha256sum] = "edd4338b45c26a9af28c0d35aab964a024c3884ba6f520d8428df04212c8c93a"
 
-S = "${WORKDIR}/gst-plugins-base-${PV}"
+S = "${UNPACKDIR}/gst-plugins-base-${PV}"
 
 DEPENDS += "iso-codes util-linux zlib"
 
@@ -118,8 +118,8 @@ SRC_URI:remove = " \
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
-SRCREV = "bbe6aa6f5b666fda0b172c3e1f417c7eadb16549"
+SRCBRANCH = "MM_04.10.02_2510_L6.12.49"
+SRCREV = "bffed8720ea3c63978efd31365b03430d2c6d48f"
 
 S = "${UNPACKDIR}/${BP}"
 
