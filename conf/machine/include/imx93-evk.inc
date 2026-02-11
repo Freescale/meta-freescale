@@ -23,9 +23,10 @@ UBOOT_MAKE_TARGET = ""
 SPL_BINARY = "spl/u-boot-spl.bin"
 
 UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
+UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig"
 UBOOT_CONFIG[ecc]  = "${UBOOT_CONFIG_BASENAME}_inline_ecc_defconfig"
 UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_defconfig"
+UBOOT_CONFIG_IMAGE_FSTYPES[sd] = "sdcard"
 
 # Set ATF platform name
 ATF_PLATFORM = "imx93"
