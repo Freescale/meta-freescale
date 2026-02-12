@@ -1,4 +1,4 @@
-# Copyright 2020-2025 NXP
+# Copyright 2020-2026 NXP
 
 SUMMARY = "Wi-Fi firmware redistributed by NXP"
 DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP. Some \
@@ -7,11 +7,11 @@ should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=a93b654673e1bc8398ed1f30e0813359"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=bc649096ad3928ec06a8713b8d787eac"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.12.20_2.0.0"
-SRCREV = "d31ea8aaba67e188ba0071a90da0364e3946c83a"
+SRCBRANCH = "lf-6.12.49_2.2.0"
+SRCREV = "8c9b278016c97527b285f2fcbe53c2d428eb171d"
 
 
 inherit allarch
@@ -20,29 +20,12 @@ CLEANBROKEN = "1"
 ALLOW_EMPTY:${PN} = "1"
 ALLOW_EMPTY:${PN}-all-sdio = "1"
 ALLOW_EMPTY:${PN}-all-pcie = "1"
+ALLOW_EMPTY:${PN}-all-usb = "1"
 
-do_compile() {
-	:
-}
+do_compile[noexec] = "1"
 
 do_install() {
-
     install -d ${D}${nonarch_base_libdir}/firmware/nxp
-    install -d ${D}${nonarch_base_libdir}/firmware/brcm/
-
-    # Install bcm4359-pcie
-    for f in cyw-wifi-bt/*_CYW*/brcmfmac4359-pcie*; do
-        [ -e $f ] && install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/brcm/$(basename $f)
-    done
-
-    for f in cyw-wifi-bt/*_CYW*/BCM4349B1*.hcd; do
-        [ -e $f ] && install -D -m 0644 $f ${D}${sysconfdir}/firmware/$(basename $f)
-    done
-
-    for f in nxp/FwImage_IW612_SD/*; do
-        [ -e $f ] && install -D -m 0644 $f ${D}${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/$(basename $f)
-    done
-
     oe_runmake install INSTALLDIR=${D}${nonarch_base_libdir}/firmware/nxp
 
     # Upstream SDIO8997 and IW416 driver firmwares are located on mrvl folder
@@ -57,10 +40,10 @@ do_install() {
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduartiw416_combo.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouartiw416_combo_v0.bin
 }
 
+PACKAGES += "${PN}-all-sdio ${PN}-all-pcie ${PN}-all-usb"
 PACKAGES =+ " \
     ${PN}-bcm4359-pcie \
     ${PN}-nxp-common \
-    ${PN}-nxp8801-sdio \
     ${PN}-nxp8987-sdio \
     ${PN}-nxp8997-common \
     ${PN}-nxp8997-pcie \
@@ -84,11 +67,6 @@ FILES:${PN}-nxp-common = " \
     ${nonarch_base_libdir}/firmware/nxp/wifi_mod_para.conf \
     ${nonarch_base_libdir}/firmware/nxp/helper_uart_3000000.bin \
 "
-
-FILES:${PN}-nxp8801-sdio = " \
-    ${nonarch_base_libdir}/firmware/nxp/*8801* \
-"
-RDEPENDS:${PN}-nxp8801-sdio += "${PN}-nxp-common"
 
 FILES:${PN}-nxp8987-sdio = " \
     ${nonarch_base_libdir}/firmware/nxp/*8987* \
@@ -196,7 +174,6 @@ FILES:${PN}-nxpaw693-pcie += " \
 RDEPENDS:${PN}-nxpaw693-pcie += "${PN}-nxp-common"
 
 RDEPENDS:${PN}-all-sdio = " \
-    ${PN}-nxp8801-sdio \
     ${PN}-nxp8987-sdio \
     ${PN}-nxp9098-sdio \
     ${PN}-nxpiw416-sdio \
