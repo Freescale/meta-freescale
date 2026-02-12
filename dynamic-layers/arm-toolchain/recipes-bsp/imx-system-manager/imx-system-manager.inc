@@ -1,6 +1,7 @@
 # Set generic compiler for system manager core
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "${SM_COMPILER}"
+DEPENDS:append:mx943-nxp-bsp = " srecord-native"
 SM_COMPILER ?= "gcc-arm-none-eabi-native"
 PROVIDES += "virtual/imx-system-manager"
 
@@ -18,18 +19,15 @@ SYSTEM_MANAGER_CONFIG ?= "INVALID"
 LDFLAGS[unexport] = "1"
 
 EXTRA_OEMAKE = " \
-    V=1 \
+    CONFIG=${SYSTEM_MANAGER_CONFIG} \
     SM_CROSS_COMPILE=arm-none-eabi- \
+    V=1 \
     ${PACKAGECONFIG_CONFARGS} \
 "
 
 do_configure() {
-    oe_runmake config=${SYSTEM_MANAGER_CONFIG} clean
-    oe_runmake config=${SYSTEM_MANAGER_CONFIG} cfg
-}
-
-do_compile() {
-    oe_runmake config=${SYSTEM_MANAGER_CONFIG}
+    oe_runmake clean
+    oe_runmake cfg
 }
 
 do_install[noexec] = "1"
@@ -41,4 +39,4 @@ do_deploy() {
         ${DEPLOYDIR}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}.bin
 }
 
-COMPATIBLE_MACHINE = "(mx95-generic-bsp)"
+COMPATIBLE_MACHINE = "(mx95-generic-bsp|mx943-generic-bsp)"
