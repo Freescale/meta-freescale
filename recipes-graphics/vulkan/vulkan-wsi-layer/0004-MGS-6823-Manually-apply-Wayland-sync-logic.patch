@@ -1,0 +1,1391 @@
+From fb169424a5e1489bd2dde44469186458292df264 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vagner=20N=C3=B6rnberg?= <vagner.nornberg@ossystems.com.br>
+Date: Fri, 13 Feb 2026 11:26:37 -0300
+Subject: [PATCH] MGS-6823: Manually apply Wayland sync logic
+
+This patch adds support for VK_COMPOSITE_ALPHA_OPAQUE and includes
+necessary Wayland event polling logic for i.MX platforms.
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Vagner Nörnberg  <vagner.nornberg@ossystems.com.br>
+
+---
+ wsi/wayland/swapchain.cpp      | 163 ++++++++
+ wsi/wayland/swapchain.cpp.orig | 731 +++++++++++++++++++++++++++++++++
+ wsi/wayland/swapchain.cpp.rej  | 155 +++++++
+ wsi/wayland/swapchain.hpp      |   9 +
+ wsi/wayland/swapchain.hpp.orig | 236 +++++++++++
+ 5 files changed, 1294 insertions(+)
+ create mode 100644 wsi/wayland/swapchain.cpp.orig
+ create mode 100644 wsi/wayland/swapchain.cpp.rej
+ create mode 100644 wsi/wayland/swapchain.hpp.orig
+
+diff --git a/wsi/wayland/swapchain.cpp b/wsi/wayland/swapchain.cpp
+index 0638d2d..70bbe28 100644
+--- a/wsi/wayland/swapchain.cpp
++++ b/wsi/wayland/swapchain.cpp
+@@ -34,6 +34,7 @@
+ #include <cstdio>
+ #include <climits>
+ #include <functional>
++#include <poll.h>
+ 
+ #include "swapchain.hpp"
+ #include "util/drm/drm_utils.hpp"
+@@ -78,6 +79,15 @@ swapchain::~swapchain()
+       wsialloc_delete(m_wsi_allocator);
+    }
+    m_wsi_allocator = nullptr;
++
++   if (wlc.opaque_region)
++   {
++      wl_compositor_destroy(wlc.wl_compositor);
++      wl_registry_destroy(wlc.registry);
++      wl_region_destroy(wlc.opaque_region);
++      wlc = {0};
++   }
++
+    if (m_buffer_queue != nullptr)
+    {
+       wl_event_queue_destroy(m_buffer_queue);
+@@ -137,6 +147,139 @@ VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCr
+    return VK_SUCCESS;
+ }
+ 
++static inline int
++poll_event(struct wl_display *wl_dpy, short int events, int timeout)
++{
++   int ret;
++   struct pollfd pfd[1];
++
++   pfd[0].fd = wl_display_get_fd(wl_dpy);
++   pfd[0].events = events;
++
++   do
++   {
++      ret = poll(pfd, 1, timeout);
++   }
++   while (ret == -1 && errno == EINTR);
++
++   return ret;
++}
++
++static int
++dispatch_queue_op(struct wl_display *wl_dpy,
++                struct wl_event_queue *wl_queue, int timeout)
++{
++   int ret;
++
++   if (wl_display_prepare_read_queue(wl_dpy, wl_queue) == -1)
++   {
++      return wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
++   }
++
++   for (;;)
++   {
++      ret = wl_display_flush(wl_dpy);
++
++      if (ret != -1 || errno != EAGAIN)
++         break;
++
++      if (poll_event(wl_dpy, POLLOUT, -1) == -1)
++      {
++         wl_display_cancel_read(wl_dpy);
++         return -1;
++      }
++   }
++
++   /* Don't stop if flushing hits an EPIPE; continue so we can read any
++    * protocol error that may have triggered it. */
++   if (ret < 0 && errno != EPIPE)
++   {
++      wl_display_cancel_read(wl_dpy);
++      return -1;
++   }
++
++   ret = poll_event(wl_dpy, POLLIN, timeout);
++
++   /* cancel read when on error or timeout. */
++   if (ret == -1 || ret == 0)
++   {
++      wl_display_cancel_read(wl_dpy);
++      return ret;
++   }
++
++   if (wl_display_read_events(wl_dpy) == -1)
++      return -1;
++
++   return wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
++}
++
++static void
++sync_callback(void *data, struct wl_callback *callback, uint32_t serial)
++{
++   int *done = (int *)data;
++
++   *done = 1;
++   wl_callback_destroy(callback);
++}
++
++static const struct wl_callback_listener sync_listener = {
++   sync_callback
++};
++
++static int
++roundtrip_queue(struct wl_display *wl_dpy, struct wl_event_queue *wl_queue)
++{
++   struct wl_callback *callback;
++   int done, ret = 0;
++
++   done = 0;
++
++   /*
++    * This is to block read & dispatch events in other threads, so that the
++    * callback is with correct queue and listener when 'done' event.
++    */
++   while (wl_display_prepare_read_queue(wl_dpy, wl_queue) == -1)
++      wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
++
++   callback = wl_display_sync(wl_dpy);
++
++   if (callback == NULL)
++   {
++      wl_display_cancel_read(wl_dpy);
++      return -1;
++   }
++
++   wl_proxy_set_queue((struct wl_proxy *) callback, wl_queue);
++   wl_callback_add_listener(callback, &sync_listener, &done);
++
++   wl_display_cancel_read(wl_dpy);
++
++   while (!done && ret >= 0)
++      ret = dispatch_queue_op(wl_dpy, wl_queue, 5);
++
++   if (ret == -1 && !done)
++      wl_callback_destroy(callback);
++
++   return ret;
++}
++
++static void
++registry_handle_global(void *data, struct wl_registry *registry, uint32_t name,
++                       const char *interface, uint32_t version)
++{
++   wl_context *pwlc = (wl_context *)data;
++
++   if(!pwlc->wl_compositor)
++   {
++      pwlc->wl_compositor = (wl_compositor *)wl_registry_bind(registry, name, &wl_compositor_interface, 1);
++      wl_proxy_set_queue((struct wl_proxy *)pwlc->wl_compositor, pwlc->wl_queue);
++   }
++}
++
++static const struct wl_registry_listener registry_listener = {
++   registry_handle_global
++};
++
+ VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info,
+                                   bool &use_presentation_thread)
+ {
+@@ -171,6 +314,21 @@ VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKH
+    use_presentation_thread =
+       WAYLAND_FIFO_PRESENTATION_THREAD_ENABLED && (m_present_mode != VK_PRESENT_MODE_MAILBOX_KHR);
+ 
++   if (swapchain_create_info->compositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
++   {
++      wlc.wl_queue = m_buffer_queue;
++      wlc.registry = wl_display_get_registry(m_display);
++      wl_proxy_set_queue((struct wl_proxy *)(wlc.registry), m_buffer_queue);
++      wl_registry_add_listener(wlc.registry, &registry_listener, &wlc);
++
++      roundtrip_queue(m_display, m_buffer_queue);
++
++      wlc.opaque_region = wl_compositor_create_region(wlc.wl_compositor);
++      wl_proxy_set_queue((struct wl_proxy *)(wlc.opaque_region), m_buffer_queue);
++
++      wl_region_add(wlc.opaque_region, 0, 0, swapchain_create_info->imageExtent.width, swapchain_create_info->imageExtent.height);
++   }
++
+    return VK_SUCCESS;
+ }
+ 
+@@ -549,6 +707,11 @@ void swapchain::present_image(const pending_present_request &pending_present)
+       set_error_state(VK_ERROR_SURFACE_LOST_KHR);
+    }
+ 
++   if (wlc.opaque_region)
++   {
++      wl_surface_set_opaque_region(m_surface, wlc.opaque_region);
++   }
++
+    wl_surface_attach(m_surface, image_data->buffer, 0, 0);
+ 
+    auto present_sync_fd = image_data->present_fence.export_sync_fd();
+diff --git a/wsi/wayland/swapchain.cpp.orig b/wsi/wayland/swapchain.cpp.orig
+new file mode 100644
+index 0000000..0638d2d
+--- /dev/null
++++ b/wsi/wayland/swapchain.cpp.orig
+@@ -0,0 +1,731 @@
++/*
++ * Copyright (c) 2017-2025 Arm Limited.
++ *
++ * SPDX-License-Identifier: MIT
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to
++ * deal in the Software without restriction, including without limitation the
++ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
++ * sell copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in all
++ * copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ */
++
++#define VK_USE_PLATFORM_WAYLAND_KHR 1
++
++#include "surface_properties.hpp"
++#include <cstdint>
++#include <cstring>
++#include <cassert>
++#include <unistd.h>
++#include <cstdlib>
++#include <cerrno>
++#include <cstdio>
++#include <climits>
++#include <functional>
++
++#include "swapchain.hpp"
++#include "util/drm/drm_utils.hpp"
++#include "util/format_modifiers.hpp"
++#include "util/helpers.hpp"
++#include "util/log.hpp"
++#include "util/macros.hpp"
++#include "wl_helpers.hpp"
++
++#include <wsi/extensions/image_compression_control.hpp>
++#include <wsi/extensions/swapchain_maintenance.hpp>
++#include <wsi/extensions/present_id.hpp>
++
++#include "present_timing_handler.hpp"
++#include "present_id_wayland.hpp"
++#include "wp_presentation_feedback.hpp"
++
++namespace wsi
++{
++namespace wayland
++{
++
++swapchain::swapchain(layer::device_private_data &dev_data, const VkAllocationCallbacks *pAllocator,
++                     surface &wsi_surface)
++   : swapchain_base(dev_data, pAllocator)
++   , m_display(wsi_surface.get_wl_display())
++   , m_surface(wsi_surface.get_wl_surface())
++   , m_wsi_surface(&wsi_surface)
++   , m_buffer_queue(nullptr)
++   , m_wsi_allocator(nullptr)
++   , m_image_creation_parameters({}, m_allocator, {}, {})
++{
++   m_image_create_info.format = VK_FORMAT_UNDEFINED;
++}
++
++swapchain::~swapchain()
++{
++   teardown();
++
++   if (m_wsi_allocator != nullptr)
++   {
++      wsialloc_delete(m_wsi_allocator);
++   }
++   m_wsi_allocator = nullptr;
++   if (m_buffer_queue != nullptr)
++   {
++      wl_event_queue_destroy(m_buffer_queue);
++   }
++}
++
++VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info)
++{
++   auto compression_control = wsi_ext_image_compression_control::create(device, swapchain_create_info);
++   if (compression_control)
++   {
++      if (!add_swapchain_extension(m_allocator.make_unique<wsi_ext_image_compression_control>(*compression_control)))
++      {
++         return VK_ERROR_OUT_OF_HOST_MEMORY;
++      }
++   }
++
++   if (m_device_data.is_present_id_enabled())
++   {
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++      if (!add_swapchain_extension(m_allocator.make_unique<wsi_ext_present_id_wayland>()))
++#else
++      if (!add_swapchain_extension(m_allocator.make_unique<wsi_ext_present_id>()))
++#endif
++      {
++         return VK_ERROR_OUT_OF_HOST_MEMORY;
++      }
++   }
++
++   if (m_device_data.is_swapchain_maintenance1_enabled())
++   {
++      if (!add_swapchain_extension(m_allocator.make_unique<wsi_ext_swapchain_maintenance1>(m_allocator)))
++      {
++         return VK_ERROR_OUT_OF_HOST_MEMORY;
++      }
++   }
++
++   if (m_device_data.should_layer_handle_frame_boundary_events())
++   {
++      if (!add_swapchain_extension(m_allocator.make_unique<wsi_ext_frame_boundary>(m_device_data)))
++      {
++         return VK_ERROR_OUT_OF_HOST_MEMORY;
++      }
++   }
++
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++   bool swapchain_support_enabled = swapchain_create_info->flags & VK_SWAPCHAIN_CREATE_PRESENT_TIMING_BIT_EXT;
++   if (swapchain_support_enabled)
++   {
++      if (!add_swapchain_extension(wsi_ext_present_timing_wayland::create(m_allocator)))
++      {
++         return VK_ERROR_OUT_OF_HOST_MEMORY;
++      }
++   }
++#endif
++
++   return VK_SUCCESS;
++}
++
++VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info,
++                                  bool &use_presentation_thread)
++{
++   UNUSED(device);
++   UNUSED(swapchain_create_info);
++   UNUSED(use_presentation_thread);
++
++   if ((m_display == nullptr) || (m_surface == nullptr) || (m_wsi_surface->get_dmabuf_interface() == nullptr))
++   {
++      return VK_ERROR_INITIALIZATION_FAILED;
++   }
++
++   m_buffer_queue = wl_display_create_queue(m_display);
++   if (m_buffer_queue == nullptr)
++   {
++      WSI_LOG_ERROR("Failed to create buffer wl queue.");
++      return VK_ERROR_INITIALIZATION_FAILED;
++   }
++
++   WSIALLOC_ASSERT_VERSION();
++   if (wsialloc_new(&m_wsi_allocator) != WSIALLOC_ERROR_NONE)
++   {
++      WSI_LOG_ERROR("Failed to create wsi allocator.");
++      return VK_ERROR_INITIALIZATION_FAILED;
++   }
++
++   /*
++    * When VK_PRESENT_MODE_MAILBOX_KHR has been chosen by the application we don't
++    * initialize the page flip thread so the present_image function can be called
++    * during vkQueuePresent.
++    */
++   use_presentation_thread =
++      WAYLAND_FIFO_PRESENTATION_THREAD_ENABLED && (m_present_mode != VK_PRESENT_MODE_MAILBOX_KHR);
++
++   return VK_SUCCESS;
++}
++
++VWL_CAPI_CALL(void) buffer_release(void *data, struct wl_buffer *wayl_buffer) VWL_API_POST
++{
++   auto sc = reinterpret_cast<swapchain *>(data);
++   sc->release_buffer(wayl_buffer);
++}
++
++void swapchain::release_buffer(struct wl_buffer *wayl_buffer)
++{
++   uint32_t i;
++   for (i = 0; i < m_swapchain_images.size(); i++)
++   {
++      auto data = reinterpret_cast<wayland_image_data *>(m_swapchain_images[i].data);
++      if (data && data->buffer == wayl_buffer)
++      {
++         unpresent_image(i);
++         break;
++      }
++   }
++
++   /* check we found a buffer to unpresent */
++   assert(i < m_swapchain_images.size());
++}
++
++static struct wl_buffer_listener buffer_listener = { buffer_release };
++
++VkResult swapchain::get_surface_compatible_formats(const VkImageCreateInfo &info,
++                                                   util::vector<wsialloc_format> &importable_formats,
++                                                   util::vector<uint64_t> &exportable_modifers,
++                                                   util::vector<VkDrmFormatModifierPropertiesEXT> &drm_format_props)
++{
++   TRY_LOG(util::get_drm_format_properties(m_device_data.physical_device, info.format, drm_format_props),
++           "Failed to get format properties");
++
++   for (const auto &prop : drm_format_props)
++   {
++      bool is_supported = false;
++      drm_format_pair drm_format{ util::drm::vk_to_drm_format(info.format), prop.drmFormatModifier };
++
++      for (const auto &format : m_wsi_surface->get_formats())
++      {
++         if (format.fourcc == drm_format.fourcc && format.modifier == drm_format.modifier)
++         {
++            is_supported = true;
++            break;
++         }
++      }
++      if (!is_supported)
++      {
++         continue;
++      }
++
++      VkExternalImageFormatPropertiesKHR external_props = {};
++      external_props.sType = VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES_KHR;
++
++      VkImageFormatProperties2KHR format_props = {};
++      format_props.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2_KHR;
++      format_props.pNext = &external_props;
++
++      VkResult result = VK_SUCCESS;
++      {
++         VkPhysicalDeviceExternalImageFormatInfoKHR external_info = {};
++         external_info.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO_KHR;
++         external_info.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
++
++         VkPhysicalDeviceImageDrmFormatModifierInfoEXT drm_mod_info = {};
++         drm_mod_info.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT;
++         drm_mod_info.pNext = &external_info;
++         drm_mod_info.drmFormatModifier = prop.drmFormatModifier;
++         drm_mod_info.sharingMode = info.sharingMode;
++         drm_mod_info.queueFamilyIndexCount = info.queueFamilyIndexCount;
++         drm_mod_info.pQueueFamilyIndices = info.pQueueFamilyIndices;
++
++         VkPhysicalDeviceImageFormatInfo2KHR image_info = {};
++         image_info.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2_KHR;
++         image_info.pNext = &drm_mod_info;
++         image_info.format = info.format;
++         image_info.type = info.imageType;
++         image_info.tiling = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
++         image_info.usage = info.usage;
++         image_info.flags = info.flags;
++
++         VkImageCompressionControlEXT compression_control = {};
++
++         if (m_device_data.is_swapchain_compression_control_enabled())
++         {
++            auto *ext = get_swapchain_extension<wsi_ext_image_compression_control>();
++            if (ext)
++            {
++               compression_control = ext->get_compression_control_properties();
++               compression_control.pNext = image_info.pNext;
++               image_info.pNext = &compression_control;
++            }
++         }
++
++         result = m_device_data.instance_data.disp.GetPhysicalDeviceImageFormatProperties2KHR(
++            m_device_data.physical_device, &image_info, &format_props);
++      }
++      if (result != VK_SUCCESS)
++      {
++         continue;
++      }
++      if (format_props.imageFormatProperties.maxExtent.width < info.extent.width ||
++          format_props.imageFormatProperties.maxExtent.height < info.extent.height ||
++          format_props.imageFormatProperties.maxExtent.depth < info.extent.depth)
++      {
++         continue;
++      }
++      if (format_props.imageFormatProperties.maxMipLevels < info.mipLevels ||
++          format_props.imageFormatProperties.maxArrayLayers < info.arrayLayers)
++      {
++         continue;
++      }
++      if ((format_props.imageFormatProperties.sampleCounts & info.samples) != info.samples)
++      {
++         continue;
++      }
++
++      if (external_props.externalMemoryProperties.externalMemoryFeatures &
++          VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_KHR)
++      {
++         if (!exportable_modifers.try_push_back(drm_format.modifier))
++         {
++            return VK_ERROR_OUT_OF_HOST_MEMORY;
++         }
++      }
++
++      if (external_props.externalMemoryProperties.externalMemoryFeatures &
++          VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_KHR)
++      {
++         uint64_t flags =
++            (prop.drmFormatModifierTilingFeatures & VK_FORMAT_FEATURE_DISJOINT_BIT) ? 0 : WSIALLOC_FORMAT_NON_DISJOINT;
++         wsialloc_format import_format{ drm_format.fourcc, drm_format.modifier, flags };
++         if (!importable_formats.try_push_back(import_format))
++         {
++            return VK_ERROR_OUT_OF_HOST_MEMORY;
++         }
++      }
++   }
++
++   return VK_SUCCESS;
++}
++
++VkResult swapchain::allocate_wsialloc(VkImageCreateInfo &image_create_info, wayland_image_data *image_data,
++                                      util::vector<wsialloc_format> &importable_formats,
++                                      wsialloc_format *allocated_format, bool avoid_allocation)
++{
++   bool is_protected_memory = (image_create_info.flags & VK_IMAGE_CREATE_PROTECTED_BIT) != 0;
++   uint64_t allocation_flags = is_protected_memory ? WSIALLOC_ALLOCATE_PROTECTED : 0;
++   if (avoid_allocation)
++   {
++      allocation_flags |= WSIALLOC_ALLOCATE_NO_MEMORY;
++   }
++
++   if (m_device_data.is_swapchain_compression_control_enabled())
++   {
++      auto *ext = get_swapchain_extension<wsi_ext_image_compression_control>();
++      /* For Image compression control, additional requirements to be satisfied such as
++         existence of VkImageCompressionControlEXT in swaphain_create_info for
++         the ext to be added to the list. so we check whether we got a valid pointer
++         and proceed if yes. */
++      if (ext)
++      {
++         if (ext->get_bitmask_for_image_compression_flags() & VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT)
++         {
++            allocation_flags |= WSIALLOC_ALLOCATE_HIGHEST_FIXED_RATE_COMPRESSION;
++         }
++      }
++   }
++
++   wsialloc_allocate_info alloc_info = { importable_formats.data(), static_cast<unsigned>(importable_formats.size()),
++                                         image_create_info.extent.width, image_create_info.extent.height,
++                                         allocation_flags };
++
++   wsialloc_allocate_result alloc_result = { {}, { 0 }, { 0 }, { -1 }, false };
++   /* Clear buffer_fds and average_row_strides for error purposes */
++   for (int i = 0; i < WSIALLOC_MAX_PLANES; ++i)
++   {
++      alloc_result.buffer_fds[i] = -1;
++      alloc_result.average_row_strides[i] = -1;
++   }
++   const auto res = wsialloc_alloc(m_wsi_allocator, &alloc_info, &alloc_result);
++   if (res != WSIALLOC_ERROR_NONE)
++   {
++      WSI_LOG_ERROR("Failed allocation of DMA Buffer. WSI error: %d", static_cast<int>(res));
++      if (res == WSIALLOC_ERROR_NOT_SUPPORTED)
++      {
++         return VK_ERROR_FORMAT_NOT_SUPPORTED;
++      }
++      return VK_ERROR_OUT_OF_HOST_MEMORY;
++   }
++   *allocated_format = alloc_result.format;
++   auto &external_memory = image_data->external_mem;
++   external_memory.set_strides(alloc_result.average_row_strides);
++   external_memory.set_buffer_fds(alloc_result.buffer_fds);
++   external_memory.set_offsets(alloc_result.offsets);
++
++   uint32_t num_planes = util::drm::drm_fourcc_format_get_num_planes(alloc_result.format.fourcc);
++
++   if (!avoid_allocation)
++   {
++      uint32_t num_memory_planes = 0;
++
++      for (uint32_t i = 0; i < num_planes; ++i)
++      {
++         auto it = std::find(std::begin(alloc_result.buffer_fds) + i + 1, std::end(alloc_result.buffer_fds),
++                             alloc_result.buffer_fds[i]);
++         if (it == std::end(alloc_result.buffer_fds))
++         {
++            num_memory_planes++;
++         }
++      }
++
++      assert(alloc_result.is_disjoint == (num_memory_planes > 1));
++      external_memory.set_num_memories(num_memory_planes);
++   }
++
++   external_memory.set_format_info(alloc_result.is_disjoint, num_planes);
++   external_memory.set_memory_handle_type(VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT);
++   return VK_SUCCESS;
++}
++
++static VkResult fill_image_create_info(VkImageCreateInfo &image_create_info,
++                                       util::vector<VkSubresourceLayout> &image_plane_layouts,
++                                       VkImageDrmFormatModifierExplicitCreateInfoEXT &drm_mod_info,
++                                       VkExternalMemoryImageCreateInfoKHR &external_info,
++                                       wayland_image_data &image_data, uint64_t modifier)
++{
++   TRY_LOG_CALL(image_data.external_mem.fill_image_plane_layouts(image_plane_layouts));
++
++   if (image_data.external_mem.is_disjoint())
++   {
++      image_create_info.flags |= VK_IMAGE_CREATE_DISJOINT_BIT;
++   }
++
++   image_data.external_mem.fill_drm_mod_info(image_create_info.pNext, drm_mod_info, image_plane_layouts, modifier);
++   image_data.external_mem.fill_external_info(external_info, &drm_mod_info);
++   image_create_info.pNext = &external_info;
++   image_create_info.tiling = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
++   return VK_SUCCESS;
++}
++
++VkResult swapchain::allocate_image(wayland_image_data *image_data)
++{
++   util::vector<wsialloc_format> importable_formats(util::allocator(m_allocator, VK_SYSTEM_ALLOCATION_SCOPE_COMMAND));
++   auto &m_allocated_format = m_image_creation_parameters.m_allocated_format;
++   if (!importable_formats.try_push_back(m_allocated_format))
++   {
++      return VK_ERROR_OUT_OF_HOST_MEMORY;
++   }
++   TRY_LOG_CALL(allocate_wsialloc(m_image_create_info, image_data, importable_formats, &m_allocated_format, false));
++
++   return VK_SUCCESS;
++}
++
++VkResult swapchain::create_wl_buffer(const VkImageCreateInfo &image_create_info, swapchain_image &image,
++                                     wayland_image_data *image_data)
++{
++   /* create a wl_buffer using the dma_buf protocol */
++   zwp_linux_buffer_params_v1 *params = zwp_linux_dmabuf_v1_create_params(m_wsi_surface->get_dmabuf_interface());
++   uint32_t modifier_hi = m_image_creation_parameters.m_allocated_format.modifier >> 32;
++   uint32_t modifier_low = m_image_creation_parameters.m_allocated_format.modifier & 0xFFFFFFFF;
++   for (uint32_t plane = 0; plane < image_data->external_mem.get_num_planes(); plane++)
++   {
++      zwp_linux_buffer_params_v1_add(params, image_data->external_mem.get_buffer_fds()[plane], plane,
++                                     image_data->external_mem.get_offsets()[plane],
++                                     image_data->external_mem.get_strides()[plane], modifier_hi, modifier_low);
++   }
++
++   const auto fourcc = util::drm::vk_to_drm_format(image_create_info.format);
++   assert(image_create_info.extent.width <= INT32_MAX);
++   assert(image_create_info.extent.height <= INT32_MAX);
++   image_data->buffer = zwp_linux_buffer_params_v1_create_immed(params, image_create_info.extent.width,
++                                                                image_create_info.extent.height, fourcc, 0);
++   zwp_linux_buffer_params_v1_destroy(params);
++
++   wl_proxy_set_queue(reinterpret_cast<wl_proxy *>(image_data->buffer), m_buffer_queue);
++   auto res = wl_buffer_add_listener(image_data->buffer, &buffer_listener, this);
++   if (res < 0)
++   {
++      destroy_image(image);
++      return VK_ERROR_INITIALIZATION_FAILED;
++   }
++   return VK_SUCCESS;
++}
++
++VkResult swapchain::allocate_and_bind_swapchain_image(VkImageCreateInfo image_create_info, swapchain_image &image)
++{
++   std::unique_lock<std::recursive_mutex> image_status_lock(m_image_status_mutex);
++   image.status = swapchain_image::FREE;
++
++   assert(image.data != nullptr);
++   auto image_data = static_cast<wayland_image_data *>(image.data);
++   TRY_LOG(allocate_image(image_data), "Failed to allocate image");
++   image_status_lock.unlock();
++
++   TRY_LOG(create_wl_buffer(image_create_info, image, image_data), "Failed to create wl_buffer");
++
++   TRY_LOG(image_data->external_mem.import_memory_and_bind_swapchain_image(image.image),
++           "Failed to import memory and bind swapchain image");
++
++   /* Initialize presentation fence. */
++   auto present_fence = sync_fd_fence_sync::create(m_device_data);
++   if (!present_fence.has_value())
++   {
++      return VK_ERROR_OUT_OF_HOST_MEMORY;
++   }
++   image_data->present_fence = std::move(present_fence.value());
++
++   return VK_SUCCESS;
++}
++
++VkResult swapchain::create_swapchain_image(VkImageCreateInfo image_create_info, swapchain_image &image)
++{
++   /* Create image_data */
++   auto image_data = m_allocator.create<wayland_image_data>(1, m_device, m_allocator);
++   if (image_data == nullptr)
++   {
++      return VK_ERROR_OUT_OF_HOST_MEMORY;
++   }
++   image.data = image_data;
++
++   if (m_image_create_info.format == VK_FORMAT_UNDEFINED)
++   {
++      util::vector<wsialloc_format> importable_formats(
++         util::allocator(m_allocator, VK_SYSTEM_ALLOCATION_SCOPE_COMMAND));
++      util::vector<uint64_t> exportable_modifiers(util::allocator(m_allocator, VK_SYSTEM_ALLOCATION_SCOPE_COMMAND));
++
++      /* Query supported modifers. */
++      util::vector<VkDrmFormatModifierPropertiesEXT> drm_format_props(
++         util::allocator(m_allocator, VK_SYSTEM_ALLOCATION_SCOPE_COMMAND));
++
++      TRY_LOG_CALL(
++         get_surface_compatible_formats(image_create_info, importable_formats, exportable_modifiers, drm_format_props));
++
++      /* TODO: Handle exportable images which use ICD allocated memory in preference to an external allocator. */
++      if (importable_formats.empty())
++      {
++         WSI_LOG_ERROR("Export/Import not supported.");
++         return VK_ERROR_INITIALIZATION_FAILED;
++      }
++
++      wsialloc_format allocated_format = { 0, 0, 0 };
++      TRY_LOG_CALL(allocate_wsialloc(image_create_info, image_data, importable_formats, &allocated_format, true));
++
++      for (auto &prop : drm_format_props)
++      {
++         if (prop.drmFormatModifier == allocated_format.modifier)
++         {
++            image_data->external_mem.set_num_memories(prop.drmFormatModifierPlaneCount);
++         }
++      }
++
++      TRY_LOG_CALL(fill_image_create_info(
++         image_create_info, m_image_creation_parameters.m_image_layout, m_image_creation_parameters.m_drm_mod_info,
++         m_image_creation_parameters.m_external_info, *image_data, allocated_format.modifier));
++
++      m_image_create_info = image_create_info;
++      m_image_creation_parameters.m_allocated_format = allocated_format;
++   }
++
++   return m_device_data.disp.CreateImage(m_device, &m_image_create_info, get_allocation_callbacks(), &image.image);
++}
++
++void swapchain::present_image(const pending_present_request &pending_present)
++{
++   int res;
++   wayland_image_data *image_data =
++      reinterpret_cast<wayland_image_data *>(m_swapchain_images[pending_present.image_index].data);
++
++   /* if a frame is already pending, wait for a hint to present again */
++   if (!m_wsi_surface->wait_next_frame_event())
++   {
++      set_error_state(VK_ERROR_SURFACE_LOST_KHR);
++   }
++
++   wl_surface_attach(m_surface, image_data->buffer, 0, 0);
++
++   auto present_sync_fd = image_data->present_fence.export_sync_fd();
++   if (!present_sync_fd.has_value())
++   {
++      WSI_LOG_ERROR("Failed to export present fence.");
++      set_error_state(VK_ERROR_SURFACE_LOST_KHR);
++   }
++   else if (present_sync_fd->is_valid())
++   {
++      zwp_linux_surface_synchronization_v1_set_acquire_fence(m_wsi_surface->get_surface_sync_interface(),
++                                                             present_sync_fd->get());
++   }
++
++   /* TODO: work out damage */
++   wl_surface_damage(m_surface, 0, 0, INT32_MAX, INT32_MAX);
++
++   if (m_present_mode == VK_PRESENT_MODE_FIFO_KHR)
++   {
++      if (!m_wsi_surface->set_frame_callback())
++      {
++         set_error_state(VK_ERROR_SURFACE_LOST_KHR);
++      }
++   }
++
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++   if (m_device_data.is_present_id_enabled())
++   {
++      auto *ext = get_swapchain_extension<wsi_ext_present_id_wayland>(true);
++      if (m_wsi_surface->get_presentation_time_interface() != nullptr)
++      {
++         wp_presentation *pres = m_wsi_surface->get_presentation_time_interface();
++         struct wp_presentation_feedback *feedback = wp_presentation_feedback(pres, m_wsi_surface->get_wl_surface());
++         wl_proxy_set_queue(reinterpret_cast<wl_proxy *>(feedback), m_buffer_queue);
++         presentation_feedback *feedback_obj =
++            ext->insert_into_pending_present_feedback_list(pending_present.present_id, feedback);
++         if (feedback_obj == nullptr)
++         {
++            WSI_LOG_ERROR("Error adding to pending present feedback list");
++            set_error_state(VK_ERROR_SURFACE_LOST_KHR);
++            return;
++         }
++         register_wp_presentation_feedback_listener(feedback, feedback_obj);
++      }
++   }
++#endif
++
++   wl_surface_commit(m_surface);
++   res = wl_display_flush(m_display);
++   if (res < 0)
++   {
++      WSI_LOG_ERROR("error flushing the display");
++      /* Setting the swapchain as invalid */
++      set_error_state(VK_ERROR_SURFACE_LOST_KHR);
++   }
++
++   if (m_device_data.is_present_id_enabled())
++   {
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++      auto *ext = get_swapchain_extension<wsi_ext_present_id_wayland>(true);
++      if (m_wsi_surface->get_presentation_time_interface() == nullptr)
++#else
++      auto *ext = get_swapchain_extension<wsi_ext_present_id>(true);
++#endif
++      {
++         ext->mark_delivered(pending_present.present_id);
++      }
++   }
++}
++
++void swapchain::destroy_image(swapchain_image &image)
++{
++   std::unique_lock<std::recursive_mutex> image_status_lock(m_image_status_mutex);
++
++   if (image.status != swapchain_image::INVALID)
++   {
++      if (image.image != VK_NULL_HANDLE)
++      {
++         m_device_data.disp.DestroyImage(m_device, image.image, get_allocation_callbacks());
++         image.image = VK_NULL_HANDLE;
++      }
++
++      image.status = swapchain_image::INVALID;
++   }
++
++   image_status_lock.unlock();
++
++   if (image.data != nullptr)
++   {
++      auto image_data = reinterpret_cast<wayland_image_data *>(image.data);
++      if (image_data->buffer != nullptr)
++      {
++         wl_buffer_destroy(image_data->buffer);
++      }
++      m_allocator.destroy(1, image_data);
++      image.data = nullptr;
++   }
++}
++
++bool swapchain::free_image_found()
++{
++   for (auto &img : m_swapchain_images)
++   {
++      if (img.status == swapchain_image::FREE)
++      {
++         return true;
++      }
++   }
++   return false;
++}
++
++VkResult swapchain::get_free_buffer(uint64_t *timeout)
++{
++   int ms_timeout, res;
++
++   if (*timeout >= INT_MAX * 1000llu * 1000llu)
++   {
++      ms_timeout = INT_MAX;
++   }
++   else
++   {
++      ms_timeout = *timeout / 1000llu / 1000llu;
++   }
++
++   /* The current dispatch_queue implementation will return if any
++    * events are returned, even if no events are dispatched to the buffer
++    * queue. Therefore dispatch repeatedly until a buffer has been freed.
++    */
++   do
++   {
++      res = dispatch_queue(m_display, m_buffer_queue, ms_timeout);
++   } while (!free_image_found() && res > 0);
++
++   if (res > 0)
++   {
++      *timeout = 0;
++      return VK_SUCCESS;
++   }
++   else if (res == 0)
++   {
++      if (*timeout == 0)
++      {
++         return VK_NOT_READY;
++      }
++      else
++      {
++         return VK_TIMEOUT;
++      }
++   }
++   else
++   {
++      return VK_ERROR_SURFACE_LOST_KHR;
++   }
++}
++
++VkResult swapchain::image_set_present_payload(swapchain_image &image, VkQueue queue,
++                                              const queue_submit_semaphores &semaphores, const void *submission_pnext)
++{
++   auto image_data = reinterpret_cast<wayland_image_data *>(image.data);
++   return image_data->present_fence.set_payload(queue, semaphores, submission_pnext);
++}
++
++VkResult swapchain::image_wait_present(swapchain_image &, uint64_t)
++{
++   /* With explicit sync in use there is no need to wait for the present sync before submiting the image to the
++    * compositor. */
++   return VK_SUCCESS;
++}
++
++VkResult swapchain::bind_swapchain_image(VkDevice &device, const VkBindImageMemoryInfo *bind_image_mem_info,
++                                         const VkBindImageMemorySwapchainInfoKHR *bind_sc_info)
++{
++   UNUSED(device);
++   const wsi::swapchain_image &swapchain_image = m_swapchain_images[bind_sc_info->imageIndex];
++   auto image_data = reinterpret_cast<wayland_image_data *>(swapchain_image.data);
++   return image_data->external_mem.bind_swapchain_image_memory(bind_image_mem_info->image);
++}
++
++} // namespace wayland
++} // namespace wsi
+diff --git a/wsi/wayland/swapchain.cpp.rej b/wsi/wayland/swapchain.cpp.rej
+new file mode 100644
+index 0000000..f3c9e90
+--- /dev/null
++++ b/wsi/wayland/swapchain.cpp.rej
+@@ -0,0 +1,155 @@
++--- wsi/wayland/swapchain.cpp
+++++ wsi/wayland/swapchain.cpp
++@@ -73,12 +74,152 @@ swapchain::~swapchain()
++       wsialloc_delete(m_wsi_allocator);
++    }
++    m_wsi_allocator = nullptr;
+++   if (wlc.opaque_region)
+++   {
+++      wl_compositor_destroy(wlc.wl_compositor);
+++      wl_registry_destroy(wlc.registry);
+++      wl_region_destroy(wlc.opaque_region);
+++      wlc = {0};
+++   }
++    if (m_buffer_queue != nullptr)
++    {
++       wl_event_queue_destroy(m_buffer_queue);
++    }
++ }
++ 
+++static inline int
+++poll_event(struct wl_display *wl_dpy, short int events, int timeout)
+++{
+++   int ret;
+++   struct pollfd pfd[1];
+++
+++   pfd[0].fd = wl_display_get_fd(wl_dpy);
+++   pfd[0].events = events;
+++
+++   do
+++   {
+++      ret = poll(pfd, 1, timeout);
+++   }
+++   while (ret == -1 && errno == EINTR);
+++
+++   return ret;
+++}
+++
+++static int
+++dispatch_queue_op(struct wl_display *wl_dpy,
+++                struct wl_event_queue *wl_queue, int timeout)
+++{
+++   int ret;
+++
+++   if (wl_display_prepare_read_queue(wl_dpy, wl_queue) == -1)
+++   {
+++      return wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
+++   }
+++
+++   for (;;)
+++   {
+++      ret = wl_display_flush(wl_dpy);
+++
+++      if (ret != -1 || errno != EAGAIN)
+++         break;
+++
+++      if (poll_event(wl_dpy, POLLOUT, -1) == -1)
+++      {
+++         wl_display_cancel_read(wl_dpy);
+++         return -1;
+++      }
+++   }
+++
+++   /* Don't stop if flushing hits an EPIPE; continue so we can read any
+++    * protocol error that may have triggered it. */
+++   if (ret < 0 && errno != EPIPE)
+++   {
+++      wl_display_cancel_read(wl_dpy);
+++      return -1;
+++   }
+++
+++   ret = poll_event(wl_dpy, POLLIN, timeout);
+++
+++   /* cancel read when on error or timeout. */
+++   if (ret == -1 || ret == 0)
+++   {
+++      wl_display_cancel_read(wl_dpy);
+++      return ret;
+++   }
+++
+++   if (wl_display_read_events(wl_dpy) == -1)
+++      return -1;
+++
+++   return wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
+++}
+++
+++static void
+++sync_callback(void *data, struct wl_callback *callback, uint32_t serial)
+++{
+++   int *done = (int *)data;
+++
+++   *done = 1;
+++   wl_callback_destroy(callback);
+++}
+++
+++static const struct wl_callback_listener sync_listener = {
+++   sync_callback
+++};
+++
+++static int
+++roundtrip_queue(struct wl_display *wl_dpy, struct wl_event_queue *wl_queue)
+++{
+++   struct wl_callback *callback;
+++   int done, ret = 0;
+++
+++   done = 0;
+++
+++   /*
+++    * This is to block read & dispatch events in other threads, so that the
+++    * callback is with correct queue and listener when 'done' event.
+++    */
+++   while (wl_display_prepare_read_queue(wl_dpy, wl_queue) == -1)
+++      wl_display_dispatch_queue_pending(wl_dpy, wl_queue);
+++
+++   callback = wl_display_sync(wl_dpy);
+++
+++   if (callback == NULL)
+++   {
+++      wl_display_cancel_read(wl_dpy);
+++      return -1;
+++   }
+++
+++   wl_proxy_set_queue((struct wl_proxy *) callback, wl_queue);
+++   wl_callback_add_listener(callback, &sync_listener, &done);
+++
+++   wl_display_cancel_read(wl_dpy);
+++
+++   while (!done && ret >= 0)
+++      ret = dispatch_queue_op(wl_dpy, wl_queue, 5);
+++
+++   if (ret == -1 && !done)
+++      wl_callback_destroy(callback);
+++
+++   return ret;
+++}
+++
+++static void
+++registry_handle_global(void *data, struct wl_registry *registry, uint32_t name,
+++                       const char *interface, uint32_t version)
+++{
+++   wl_context *pwlc = (wl_context *)data;
+++
+++   if(!pwlc->wl_compositor)
+++   {
+++      pwlc->wl_compositor = (wl_compositor *)wl_registry_bind(registry, name, &wl_compositor_interface, 1);
+++      wl_proxy_set_queue((struct wl_proxy *)pwlc->wl_compositor, pwlc->wl_queue);
+++   }
+++}
+++
+++static const struct wl_registry_listener registry_listener = {
+++   registry_handle_global
+++};
+++
++ VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info,
++                                   bool &use_presentation_thread)
++ {
+diff --git a/wsi/wayland/swapchain.hpp b/wsi/wayland/swapchain.hpp
+index 951204b..5b38502 100644
+--- a/wsi/wayland/swapchain.hpp
++++ b/wsi/wayland/swapchain.hpp
+@@ -79,6 +79,14 @@ struct image_creation_parameters
+    }
+ };
+ 
++struct wl_context
++{
++   struct wl_event_queue *wl_queue;
++   struct wl_compositor *wl_compositor;
++   struct wl_registry *registry;
++   struct wl_region *opaque_region;
++};
++
+ class swapchain : public wsi::swapchain_base
+ {
+ public:
+@@ -200,6 +208,7 @@ private:
+ 
+    struct wl_display *m_display;
+    struct wl_surface *m_surface;
++   struct wl_context wlc = {0};
+    /** Raw pointer to the WSI Surface that this swapchain was created from. The Vulkan specification ensures that the
+     * surface is valid until swapchain is destroyed. */
+    surface *m_wsi_surface;
+diff --git a/wsi/wayland/swapchain.hpp.orig b/wsi/wayland/swapchain.hpp.orig
+new file mode 100644
+index 0000000..951204b
+--- /dev/null
++++ b/wsi/wayland/swapchain.hpp.orig
+@@ -0,0 +1,236 @@
++/*
++ * Copyright (c) 2017-2025 Arm Limited.
++ *
++ * SPDX-License-Identifier: MIT
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to
++ * deal in the Software without restriction, including without limitation the
++ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
++ * sell copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in all
++ * copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ */
++
++#pragma once
++
++#include "wsi/swapchain_base.hpp"
++#include "wl_helpers.hpp"
++
++extern "C" {
++#include <vulkan/vk_icd.h>
++}
++
++#ifndef __STDC_VERSION__
++#define __STDC_VERSION__ 0
++#endif
++#include <wayland-client.h>
++#include <linux-dmabuf-unstable-v1-client-protocol.h>
++#include "surface.hpp"
++#include "util/wsialloc/wsialloc.h"
++#include "util/custom_allocator.hpp"
++#include "wl_object_owner.hpp"
++
++#include <wsi/external_memory.hpp>
++
++namespace wsi
++{
++namespace wayland
++{
++
++struct wayland_image_data
++{
++   wayland_image_data(const VkDevice &device, const util::allocator &allocator)
++      : external_mem(device, allocator)
++      , buffer(nullptr)
++   {
++   }
++
++   external_memory external_mem;
++   wl_buffer *buffer;
++   sync_fd_fence_sync present_fence;
++};
++
++struct image_creation_parameters
++{
++   wsialloc_format m_allocated_format;
++   util::vector<VkSubresourceLayout> m_image_layout;
++   VkExternalMemoryImageCreateInfoKHR m_external_info;
++   VkImageDrmFormatModifierExplicitCreateInfoEXT m_drm_mod_info;
++
++   image_creation_parameters(wsialloc_format allocated_format, util::allocator allocator,
++                             VkExternalMemoryImageCreateInfoKHR external_info,
++                             VkImageDrmFormatModifierExplicitCreateInfoEXT drm_mod_info)
++      : m_allocated_format(allocated_format)
++      , m_image_layout(allocator)
++      , m_external_info(external_info)
++      , m_drm_mod_info(drm_mod_info)
++   {
++   }
++};
++
++class swapchain : public wsi::swapchain_base
++{
++public:
++   explicit swapchain(layer::device_private_data &dev_data, const VkAllocationCallbacks *allocator,
++                      surface &wsi_surface);
++
++   ~swapchain();
++
++   /* TODO: make the buffer destructor a friend? so this can be protected */
++   void release_buffer(struct wl_buffer *wl_buffer);
++
++protected:
++   /**
++    * @brief Initialize platform specifics.
++    */
++   VkResult init_platform(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info,
++                          bool &use_presentation_thread) override;
++
++   /**
++    * @brief Allocates and binds a new swapchain image.
++    *
++    * @param image_create_info Data to be used to create the image.
++    * @param image             Handle to the image.
++    *
++    * @return Returns VK_SUCCESS on success, otherwise an appropriate error code.
++    */
++   VkResult allocate_and_bind_swapchain_image(VkImageCreateInfo image_create_info, swapchain_image &image) override;
++
++   /**
++    * @brief Creates a new swapchain image.
++    *
++    * @param image_create_info Data to be used to create the image.
++    * @param image             Handle to the image.
++    *
++    * @return If image creation is successful returns VK_SUCCESS, otherwise
++    * will return VK_ERROR_OUT_OF_DEVICE_MEMORY or VK_ERROR_INITIALIZATION_FAILED
++    * depending on the error that occurred.
++    */
++   VkResult create_swapchain_image(VkImageCreateInfo image_create_info, swapchain_image &image) override;
++
++   /**
++    * @brief Method to present and image
++    *
++    * It sends the next image for presentation to the presentation engine.
++    *
++    * @param pending_present Information on the pending present request.
++    */
++   void present_image(const pending_present_request &pending_present) override;
++
++   /**
++    * @brief Method to release a swapchain image
++    *
++    * @param image Handle to the image about to be released.
++    */
++   void destroy_image(swapchain_image &image) override;
++
++   /**
++    * @brief Method to check if there are any free images
++    *
++    * @return true if any images are free, otherwise false.
++    */
++   bool free_image_found();
++
++   /**
++    * @brief Hook for any actions to free up a buffer for acquire
++    *
++    * @param[in,out] timeout time to wait, in nanoseconds. 0 doesn't block,
++    *                        UINT64_MAX waits indefinitely. The timeout should
++    *                        be updated if a sleep is required - this can
++    *                        be set to 0 if the semaphore is now not expected
++    *                        block.
++    */
++   VkResult get_free_buffer(uint64_t *timeout) override;
++
++   /**
++    * @brief Sets the present payload for a swapchain image.
++    *
++    * @param[in] image       The swapchain image for which to set a present payload.
++    * @param     queue       A Vulkan queue that can be used for any Vulkan commands needed.
++    * @param[in] sem_payload Array of Vulkan semaphores that constitute the payload.
++    * @param[in] submission_pnext Chain of pointers to attach to the payload submission.
++    *
++    * @return VK_SUCCESS on success or an error code otherwise.
++    */
++   VkResult image_set_present_payload(swapchain_image &image, VkQueue queue, const queue_submit_semaphores &semaphores,
++                                      const void *submission_pnext) override;
++
++   VkResult image_wait_present(swapchain_image &image, uint64_t timeout) override;
++
++   /**
++    * @brief Bind image to a swapchain
++    *
++    * @param device              is the logical device that owns the images and memory.
++    * @param bind_image_mem_info details the image we want to bind.
++    * @param bind_sc_info        describes the swapchain memory to bind to.
++    *
++    * @return VK_SUCCESS on success, otherwise on failure VK_ERROR_OUT_OF_HOST_MEMORY or VK_ERROR_OUT_OF_DEVICE_MEMORY
++    * can be returned.
++    */
++   VkResult bind_swapchain_image(VkDevice &device, const VkBindImageMemoryInfo *bind_image_mem_info,
++                                 const VkBindImageMemorySwapchainInfoKHR *bind_sc_info) override;
++
++private:
++   VkResult create_wl_buffer(const VkImageCreateInfo &image_create_info, swapchain_image &image,
++                             wayland_image_data *image_data);
++   VkResult allocate_image(wayland_image_data *image_data);
++   VkResult allocate_wsialloc(VkImageCreateInfo &image_create_info, wayland_image_data *image_data,
++                              util::vector<wsialloc_format> &importable_formats, wsialloc_format *allocated_format,
++                              bool avoid_allocation);
++
++   /**
++    * @brief Adds required extensions to the extension list of the swapchain
++    *
++    * @param device Vulkan device
++    * @param swapchain_create_info Swapchain create info
++    * @return VK_SUCCESS on success, other result codes on failure
++    */
++   VkResult add_required_extensions(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info) override;
++
++   struct wl_display *m_display;
++   struct wl_surface *m_surface;
++   /** Raw pointer to the WSI Surface that this swapchain was created from. The Vulkan specification ensures that the
++    * surface is valid until swapchain is destroyed. */
++   surface *m_wsi_surface;
++
++   /* The queue on which we dispatch buffer related events, mostly buffer_release */
++   struct wl_event_queue *m_buffer_queue;
++
++   /**
++    * @brief Handle to the WSI allocator.
++    */
++   wsialloc_allocator *m_wsi_allocator;
++
++   /**
++    * @brief Image creation parameters used for all swapchain images.
++    */
++   struct image_creation_parameters m_image_creation_parameters;
++
++   /**
++    * @brief Finds what formats are compatible with the requested swapchain image Vulkan Device and Wayland surface.
++    *
++    * @param      info               The Swapchain image creation info.
++    * @param[out] importable_formats A list of formats that can be imported to the Vulkan Device.
++    * @param[out] exportable_formats A list of formats that can be exported from the Vulkan Device.
++    *
++    * @return VK_SUCCESS or VK_ERROR_OUT_OF_HOST_MEMORY
++    */
++   VkResult get_surface_compatible_formats(const VkImageCreateInfo &info,
++                                           util::vector<wsialloc_format> &importable_formats,
++                                           util::vector<uint64_t> &exportable_modifers,
++                                           util::vector<VkDrmFormatModifierPropertiesEXT> &drm_format_props);
++};
++
++} // namespace wayland
++} // namespace wsi

@@ -7,9 +7,11 @@ PV = "0.0+git${SRCPV}"
 
 SRC_URI = "git://gitlab.freedesktop.org/mesa/vulkan-wsi-layer.git;protocol=https;branch=main \
            file://0001-MGS-6801-ccc-vkmark-on-wayland.patch \
-           file://0002-MGS-6823-nxp-Add-support-of-VK_COMPOSITE_ALPHA_OPAQU.patch \
-           file://0003-Update-minimum-version-of-CMake.patch"
-SRCREV = "cb1a50cf7e640ad7306e673131ded98c0f133628"
+           file://0003-Update-minimum-version-of-CMake.patch \
+           file://0004-MGS-6823-Manually-apply-Wayland-sync-logic.patch \
+           "
+
+SRCREV = "5097740a4575e69ea17f6910ff62eea59a380bbf"
 
 inherit cmake pkgconfig
 
@@ -52,3 +54,6 @@ do_install() {
 # Adjust packaging variables for unversioned library
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""
+
+# Append flags to suppress the specific warnings-as-errors causing the failure
+CXXFLAGS += "-Wno-error=missing-field-initializers -Wno-error=unused-parameter"
