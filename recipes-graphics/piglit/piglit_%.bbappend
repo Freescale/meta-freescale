@@ -20,4 +20,4 @@ PACKAGECONFIG_REMOVE:imxgpu:mx7-nxp-bsp  = "glx x11"
 
 PACKAGECONFIG[gbm] = "-DPIGLIT_USE_GBM=1,-DPIGLIT_USE_GBM=0,virtual/libgbm"
 
-CFLAGS:append:imxgpu:toolchain-clang = " -Wno-error=int-conversion"
+CFLAGS:append:imxgpu:toolchain-clang = " -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
