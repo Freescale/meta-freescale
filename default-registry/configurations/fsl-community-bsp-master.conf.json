@@ -1,0 +1,243 @@
+{
+    "description": "NXP/Freescale Community BSP - master branch configurations",
+    "sources": {
+        "bitbake": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "https://git.openembedded.org/bitbake"
+                    }
+                },
+                "branch": "master",
+                "rev": "master"
+            }
+        },
+        "openembedded-core": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "https://github.com/openembedded/openembedded-core"
+                    }
+                },
+                "branch": "master",
+                "rev": "master"
+            },
+            "path": "openembedded-core"
+        },
+        "meta-yocto": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "https://git.yoctoproject.org/meta-yocto"
+                    }
+                },
+                "branch": "master",
+                "rev": "master"
+            },
+            "path": "meta-yocto"
+        },
+        "meta-openembedded": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "https://github.com/openembedded/meta-openembedded"
+                    }
+                },
+                "branch": "master",
+                "rev": "master"
+            },
+            "path": "meta-openembedded"
+        },
+        "meta-freescale": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "https://github.com/Freescale/meta-freescale"
+                    }
+                },
+                "branch": "master",
+                "rev": "master"
+            },
+            "path": "meta-freescale"
+        },
+        "meta-freescale-3rdparty": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "https://github.com/Freescale/meta-freescale-3rdparty"
+                    }
+                },
+                "branch": "master",
+                "rev": "master"
+            },
+            "path": "meta-freescale-3rdparty"
+        },
+        "meta-freescale-distro": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "https://github.com/Freescale/meta-freescale-distro"
+                    }
+                },
+                "branch": "master",
+                "rev": "master"
+            },
+            "path": "meta-freescale-distro"
+        }
+    },
+    "bitbake-setup": {
+        "configurations": [
+        {
+            "bb-layers": [
+                "openembedded-core/meta",
+                "meta-yocto/meta-poky",
+                "meta-freescale",
+                "meta-freescale-3rdparty",
+                "meta-freescale-distro"
+            ],
+            "setup-dir-name": "$distro-$machine-master",
+            "oe-fragments-one-of": {
+                "machine": {
+                    "description": "Target machines",
+                    "options": [
+                        {"name": "machine/imx23evk",                "description": "NXP i.MX23 Evaluation Kit"},
+                        {"name": "machine/imx28evk",                "description": "NXP i.MX28 Evaluation Kit"},
+                        {"name": "machine/imx51evk",                "description": "NXP i.MX51 Evaluation Kit"},
+                        {"name": "machine/imx53qsb",                "description": "NXP i.MX53 Quick Start Board"},
+                        {"name": "machine/imx6qdlsabreauto",        "description": "NXP i.MX6QP/Q/DL SABRE Automotive"},
+                        {"name": "machine/imx6qdlsabresd",          "description": "NXP i.MX6QP/Q/DL SABRE Smart Device"},
+                        {"name": "machine/imx6slevk",               "description": "NXP i.MX6SL Evaluation Kit"},
+                        {"name": "machine/imx6sllevk",              "description": "NXP i.MX6SLL EVK"},
+                        {"name": "machine/imx6sxsabreauto",         "description": "NXP i.MX6SoloX Sabre Automotive"},
+                        {"name": "machine/imx6sxsabresd",           "description": "NXP i.MX6SoloX Sabre SD"},
+                        {"name": "machine/imx6ulevk",               "description": "NXP i.MX6UL EVK"},
+                        {"name": "machine/imx6ullevk",              "description": "NXP i.MX6ULL EVK"},
+                        {"name": "machine/imx6ulz-14x14-evk",       "description": "NXP i.MX6ULZ 14x14 EVK"},
+                        {"name": "machine/imx7dsabresd",            "description": "NXP i.MX7D SABRE Smart Device"},
+                        {"name": "machine/imx7ulpevk",              "description": "NXP i.MX7ULP EVK"},
+                        {"name": "machine/imx8dx-mek",              "description": "i.MX 8DualX Multisensory Enablement Kit"},
+                        {"name": "machine/imx8dxl-a1-ddr3l-evk",    "description": "NXP i.MX 8DualXLite A1 EVK with DDR3L"},
+                        {"name": "machine/imx8dxl-a1-lpddr4-evk",   "description": "NXP i.MX 8DualXLite A1 EVK with LPDDR4"},
+                        {"name": "machine/imx8dxl-b0-ddr3l-evk",    "description": "NXP i.MX 8DualXLite B0 EVK with DDR3L"},
+                        {"name": "machine/imx8dxl-b0-lpddr4-evk",   "description": "NXP i.MX 8DualXLite B0 EVK with LPDDR4"},
+                        {"name": "machine/imx8mm-ddr4-evk",         "description": "NXP i.MX 8M Mini EVK with DDR4"},
+                        {"name": "machine/imx8mm-lpddr4-evk",       "description": "NXP i.MX 8M Mini EVK with LPDDR4"},
+                        {"name": "machine/imx8mn-ddr4-evk",         "description": "NXP i.MX 8M Nano EVK with DDR4"},
+                        {"name": "machine/imx8mn-lpddr4-evk",       "description": "NXP i.MX 8M Nano EVK with LPDDR4"},
+                        {"name": "machine/imx8mnul-ddr3l-evk",      "description": "NXP i.MX 8M Nano UltraLite EVK with DDR3L"},
+                        {"name": "machine/imx8mp-ddr4-evk",         "description": "NXP i.MX 8M Plus EVK with DDR4"},
+                        {"name": "machine/imx8mp-lpddr4-evk",       "description": "NXP i.MX 8M Plus EVK with LPDDR4"},
+                        {"name": "machine/imx8mq-evk",              "description": "NXP i.MX 8M Quad Evaluation Kit"},
+                        {"name": "machine/imx8mq-lpddr4-wevk",      "description": "NXP i.MX 8M Quad LPDDR4 EVK with Wi-Fi"},
+                        {"name": "machine/imx8qm-mek",              "description": "i.MX 8QuadMax Multisensory Enablement Kit, rev B0"},
+                        {"name": "machine/imx8qxp-mek",             "description": "i.MX 8QuadXPlus Multisensory Enablement Kit"},
+                        {"name": "machine/imx8ulp-lpddr4-evk",      "description": "NXP i.MX 8ULP EVK with LPDDR4"},
+                        {"name": "machine/imx93-11x11-lpddr4x-evk", "description": "NXP i.MX 93 11x11 EVK with LPDDR4X"},
+                        {"name": "machine/imx93-14x14-lpddr4x-evk", "description": "NXP i.MX 93 14x14 EVK with LPDDR4X"},
+                        {"name": "machine/imx93-9x9-lpddr4-qsb",    "description": "NXP i.MX93 9x9 QSB with LPDDR4"},
+                        {"name": "machine/imx943-19x19-lpddr4-evk", "description": "NXP i.MX 943 19x19 EVK with LPDDR4"},
+                        {"name": "machine/imx95-19x19-verdin",      "description": "Toradex i.MX 95 19x19 Verdin Evaluation Kit"},
+                        {"name": "machine/ls1012afrwy",             "description": "NXP QorIQ LS1012AFRWY"},
+                        {"name": "machine/ls1012ardb",              "description": "NXP QorIQ LS1012ARDB"},
+                        {"name": "machine/ls1028ardb",              "description": "NXP LS1028ARDB (64-bit)"},
+                        {"name": "machine/ls1043ardb",              "description": "NXP QorIQ LS1043ARDB"},
+                        {"name": "machine/ls1046afrwy",             "description": "NXP LS1046A (64-bit)"},
+                        {"name": "machine/ls1046ardb",              "description": "NXP LS1046ARDB (64-bit)"},
+                        {"name": "machine/ls1088ardb",              "description": "NXP LS1088ARDB (64-bit)"},
+                        {"name": "machine/ls1088ardb-pb",           "description": "NXP LS1088ARDB-PB (64-bit)"},
+                        {"name": "machine/ls2088ardb",              "description": "NXP LS2088ARDB (64-bit)"},
+                        {"name": "machine/lx2160ardb",              "description": "NXP LX2160ARDB (64-bit)"},
+                        {"name": "machine/lx2162aqds",              "description": "NXP LX2162AQDS (64-bit)"},
+                        {"name": "machine/mpc8548cds",              "description": "NXP MPC8548CDS"},
+                        {"name": "machine/p1020rdb",                "description": "NXP QorIQ P1020 Reference"},
+                        {"name": "machine/p2020rdb",                "description": "NXP QorIQ P2020 Reference"},
+                        {"name": "machine/p2041rdb",                "description": "NXP QorIQ P2041 Reference"},
+                        {"name": "machine/p3041ds",                 "description": "NXP QorIQ P3041 Development"},
+                        {"name": "machine/p4080ds",                 "description": "NXP QorIQ P4080 Development"},
+                        {"name": "machine/p5040ds",                 "description": "NXP QorIQ P5040 Development"},
+                        {"name": "machine/p5040ds-64b",             "description": "NXP QorIQ P5040 Development (64-bit)"},
+                        {"name": "machine/t1024rdb",                "description": "NXP QorIQ T1024 Reference"},
+                        {"name": "machine/t1024rdb-64b",            "description": "NXP QorIQ T1024 Reference (64-bit)"},
+                        {"name": "machine/t1042d4rdb",              "description": "NXP QorIQ T1042D4 Reference"},
+                        {"name": "machine/t1042d4rdb-64b",          "description": "NXP QorIQ T1042D4 Reference (64-bit)"},
+                        {"name": "machine/t2080rdb",                "description": "NXP QorIQ T2080 Reference"},
+                        {"name": "machine/t2080rdb-64b",            "description": "NXP QorIQ T2080 Reference (64-bit)"},
+                        {"name": "machine/t4240rdb",                "description": "NXP QorIQ T4240 Reference"},
+                        {"name": "machine/t4240rdb-64b",            "description": "NXP QorIQ T4240 Reference (64-bit)"}
+                    ]
+                },
+                "distro": {
+                    "description": "Target Distributions",
+                    "options": [
+                        {"name": "distro/fsl",  "description": "FSL NXP BSP base distribution"},
+                        {"name": "distro/fslc", "description": "FSLC Community BSP base distribution"}
+                    ]
+                }
+            },
+            "configurations": [
+            {
+                "name": "fsl",
+                "description": "I will use the distro base configuration only (either FSL or FSLC)"
+            },
+            {
+                "name": "accept-fsl-eula",
+                "description": "Accept NXP EULA only",
+                "oe-fragments": [
+                    "freescale-layer/accept-fsl-eula"
+                ]
+            },
+            {
+                "name": "fsl-framebuffer",
+                "description": "Accept NXP EULA and configure FrameBuffer backend",
+                "oe-fragments": [
+                    "freescale-layer/eula/accept-fsl-eula",
+                    "freescale-layer/graphics/framebuffer"
+                ]
+            },
+            {
+                "name": "fsl-wayland",
+                "description": "Accept NXP EULA and configure Wayland with systemd",
+                "oe-fragments": [
+                    "freescale-layer/eula/accept-fsl-eula",
+                    "freescale-layer/init/systemd",
+                    "freescale-layer/graphics/wayland"
+                ]
+            },
+            {
+                "name": "fsl-xwayland",
+                "description": "Accept NXP EULA and configure XWayland with systemd",
+                "oe-fragments": [
+                    "freescale-layer/eula/accept-fsl-eula",
+                    "freescale-layer/init/systemd",
+                    "freescale-layer/graphics/xwayland"
+                ]
+            },
+            {
+                "name": "framebuffer",
+                "description": "Configure FrameBuffer backend",
+                "oe-fragments": [
+                    "freescale-layer/graphics/framebuffer"
+                ]
+            },
+            {
+                "name": "wayland",
+                "description": "Configure Wayland with systemd",
+                "oe-fragments": [
+                    "freescale-layer/init/systemd",
+                    "freescale-layer/graphics/wayland"
+                ]
+            },
+            {
+                "name": "xwayland",
+                "description": "Configure XWayland with systemd",
+                "oe-fragments": [
+                    "freescale-layer/init/systemd",
+                    "freescale-layer/graphics/xwayland"
+                ]
+            }
+            ]
+        }
+        ]
+    },
+    "version": "1.0"
+}
