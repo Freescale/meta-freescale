@@ -63,6 +63,7 @@ BOOT_STAGING:mx8m-generic-bsp  = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
 BOOT_STAGING:mx91-generic-bsp  = "${S}/iMX91"
 BOOT_STAGING:mx93-generic-bsp  = "${S}/iMX93"
+BOOT_STAGING:mx943-generic-bsp = "${S}/iMX94"
 BOOT_STAGING:mx95-generic-bsp  = "${S}/iMX95"
 
 SOC_FAMILY                    = "INVALID"
@@ -72,11 +73,17 @@ SOC_FAMILY:mx8x-generic-bsp   = "mx8x"
 SOC_FAMILY:mx8ulp-generic-bsp = "mx8ulp"
 SOC_FAMILY:mx91-generic-bsp   = "mx91"
 SOC_FAMILY:mx93-generic-bsp   = "mx93"
+SOC_FAMILY:mx943-generic-bsp  = "mx943"
 SOC_FAMILY:mx95-generic-bsp   = "mx95"
 
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 
 MKIMAGE_EXTRA_ARGS ?= ""
+MKIMAGE_EXTRA_ARGS:mx943-nxp-bsp ?= " \
+    OEI=${OEI_ENABLE} \
+    LPDDR_TYPE=${DDR_TYPE} \
+    MSEL=${MSEL_TYPE} \
+"
 MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp ?= " \
     OEI=${OEI_ENABLE} \
     LPDDR_TYPE=${DDR_TYPE} \
@@ -175,6 +182,14 @@ compile_mx93() {
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
+}
+
+compile_mx943() {
+    bbnote i.MX 943 boot binary build
+    compile_mx93
+
+    cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
+       ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
 }
 
 compile_mx95() {
@@ -346,6 +361,12 @@ deploy_mx93() {
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
+}
+
+deploy_mx943() {
+    deploy_mx93
+    install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
+                ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
 }
 
 deploy_mx95() {
