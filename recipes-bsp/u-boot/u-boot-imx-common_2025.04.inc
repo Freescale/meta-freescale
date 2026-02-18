@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
 UBOOT_SRC ?= "git://github.com/nxp-imx/uboot-imx.git;protocol=https"
-SRCBRANCH = "lf_v2024.04"
+SRCBRANCH = "lf_v2025.04"
 LOCALVERSION ?= "-${SRCBRANCH}"
-SRCREV = "e3219a5a73445219df605d1492687918d488055c"
+SRCREV = "4ddbad60eff308a5b356fb9ab8734ac382ddd692"
 
 DEPENDS += " \
     bc-native \
