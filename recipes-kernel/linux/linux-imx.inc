@@ -17,7 +17,7 @@ PROVIDES += "linux-mfgtool"
 # Set the PV to the correct kernel version to satisfy the kernel version sanity check
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
-SRC_URI = "git://github.com/nxp-imx/linux-imx;protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 
 # Tell to kernel class that we would like to use our defconfig to configure the kernel.
 # Otherwise, the --allnoconfig would be used per default which leads to mis-configured
