@@ -18,8 +18,8 @@ inherit allarch
 
 CLEANBROKEN = "1"
 ALLOW_EMPTY:${PN} = "1"
-ALLOW_EMPTY:${PN}-all-sdio = "1"
 ALLOW_EMPTY:${PN}-all-pcie = "1"
+ALLOW_EMPTY:${PN}-all-sdio = "1"
 ALLOW_EMPTY:${PN}-all-usb = "1"
 
 do_compile[noexec] = "1"
@@ -40,16 +40,18 @@ do_install() {
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduartiw416_combo.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouartiw416_combo_v0.bin
 }
 
-PACKAGES += "${PN}-all-sdio ${PN}-all-pcie ${PN}-all-usb"
 PACKAGES =+ " \
-    ${PN}-bcm4359-pcie \
+    ${PN}-all-pcie \
+    ${PN}-all-sdio \
+    ${PN}-all-usb \
+    \
     ${PN}-nxp-common \
     ${PN}-nxp8987-sdio \
     ${PN}-nxp8997-common \
     ${PN}-nxp8997-pcie \
     ${PN}-nxp8997-sdio \
-    ${PN}-nxp9098-pcie \
     ${PN}-nxp9098-common \
+    ${PN}-nxp9098-pcie \
     ${PN}-nxp9098-sdio \
     ${PN}-nxpaw693-pcie \
     ${PN}-nxpiw416-sdio \
@@ -58,9 +60,23 @@ PACKAGES =+ " \
     ${PN}-nxpiw612-sdio \
 "
 
-FILES:${PN}-bcm4359-pcie = " \
-    ${nonarch_base_libdir}/firmware/brcm/brcmfmac4359-pcie.* \
-    ${sysconfdir}/firmware/BCM4349B1_*.hcd \
+RDEPENDS:${PN}-all-sdio = " \
+    ${PN}-nxp8987-sdio \
+    ${PN}-nxp8997-sdio \
+    ${PN}-nxp9098-sdio \
+    ${PN}-nxpiw416-sdio \
+    ${PN}-nxpiw610-sdio \
+    ${PN}-nxpiw612-sdio \
+"
+
+RDEPENDS:${PN}-all-pcie = " \
+    ${PN}-nxp8997-pcie \
+    ${PN}-nxp9098-pcie \
+    ${PN}-nxpaw693-pcie \
+"
+
+RDEPENDS:${PN}-all-usb = " \
+    ${PN}-nxpiw610-usb \
 "
 
 FILES:${PN}-nxp-common = " \
@@ -129,6 +145,12 @@ RPROVIDES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 RREPLACES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 RCONFLICTS:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 
+FILES:${PN}-nxpaw693-pcie += " \
+    ${nonarch_base_libdir}/firmware/nxp/pcie*aw693* \
+    ${nonarch_base_libdir}/firmware/nxp/uart*aw693* \
+"
+RDEPENDS:${PN}-nxpaw693-pcie += "${PN}-nxp-common"
+
 FILES:${PN}-nxpiw416-sdio = " \
     ${nonarch_base_libdir}/firmware/mrvl/sdiouartiw416_combo_v0.bin \
     ${nonarch_base_libdir}/firmware/nxp/*iw416* \
@@ -166,27 +188,3 @@ RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RREPLACES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RCONFLICTS:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
-
-FILES:${PN}-nxpaw693-pcie += " \
-    ${nonarch_base_libdir}/firmware/nxp/pcie*aw693* \
-    ${nonarch_base_libdir}/firmware/nxp/uart*aw693* \
-"
-RDEPENDS:${PN}-nxpaw693-pcie += "${PN}-nxp-common"
-
-RDEPENDS:${PN}-all-sdio = " \
-    ${PN}-nxp8987-sdio \
-    ${PN}-nxp9098-sdio \
-    ${PN}-nxpiw416-sdio \
-    ${PN}-nxpiw610-sdio \
-    ${PN}-nxpiw612-sdio \
-"
-
-RDEPENDS:${PN}-all-pcie = " \
-    ${PN}-nxp8997-pcie \
-    ${PN}-nxp9098-pcie \
-    ${PN}-nxpaw693-pcie \
-"
-
-RDEPENDS:${PN}-all-usb = " \
-    ${PN}-nxpiw610-usb \
-"
