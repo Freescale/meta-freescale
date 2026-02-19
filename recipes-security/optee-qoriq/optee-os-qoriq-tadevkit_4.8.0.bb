@@ -6,8 +6,8 @@ HOMEPAGE = "https://www.op-tee.org/"
 
 DEPENDS += "python3-pycryptodome-native"
 
-OPTEE_OS_BRANCH = "lf-6.12.20_2.0.0"
-SRCREV = "87964807d80baf1dcfd89cafc66de34a1cf16bf3"
+OPTEE_OS_BRANCH = "lf-6.12.49_2.2.0"
+SRCREV = "b3883a773a9d15ec6439f9229e48f540c37e0d00"
 
 do_install() {
     #install TA devkit

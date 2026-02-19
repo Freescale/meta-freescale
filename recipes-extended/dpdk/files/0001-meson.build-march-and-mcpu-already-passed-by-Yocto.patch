@@ -14,21 +14,21 @@ diff --git a/config/meson.build b/config/meson.build
 index 2f150de3b8..41bb3e9ec4 100644
 --- a/config/meson.build
 +++ b/config/meson.build
-@@ -94,12 +94,12 @@ dpdk_conf.set('RTE_MACHINE', machine)
+@@ -127,12 +127,12 @@ dpdk_conf.set('RTE_MACHINE', cpu_instruction_set)
  machine_args = []
  
  # ppc64 does not support -march= at all, use -mcpu and -mtune for that
 -if host_machine.cpu_family().startswith('ppc')
--	machine_args += '-mcpu=' + machine
--	machine_args += '-mtune=' + machine
+-    machine_args += '-mcpu=' + cpu_instruction_set
+-    machine_args += '-mtune=' + cpu_instruction_set
 -else
--	machine_args += '-march=' + machine
+-    machine_args += '-march=' + cpu_instruction_set
 -endif
 +#if host_machine.cpu_family().startswith('ppc')
-+#	machine_args += '-mcpu=' + machine
-+#	machine_args += '-mtune=' + machine
++#    machine_args += '-mcpu=' + cpu_instruction_set
++#    machine_args += '-mtune=' + cpu_instruction_set
 +#else
-+#	machine_args += '-march=' + machine
++#    machine_args += '-march=' + cpu_instruction_set
 +#endif
  
  toolchain = cc.get_id()

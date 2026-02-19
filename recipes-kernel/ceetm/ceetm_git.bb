@@ -3,9 +3,9 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRC_URI = "git://github.com/nxp-qoriq/ceetm;protocol=https;nobranch=1"
-SRCREV = "27218bc625e83458db2301f6c07de133cb5f6792"
+SRCREV = "46b3565a48ca20f90ad601cef8250cdd35f18b22"
 SRC_URI:append = " file://0001-Makefile-update-CFLAGS.patch \
-    file://0001-use-new-api-tc_print_rate.patch \
+                   file://0001-Makefile-Fix-build-error-with-gcc15-YOCIMX-8305.patch \
 "
 DEPENDS = "iproute2"
 
