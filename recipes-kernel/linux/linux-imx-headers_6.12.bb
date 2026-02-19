@@ -9,11 +9,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRC_URI = " \
     git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-video-fbdev-mxc-make-uapi-ipu.h-pxp_dma.h-compatible.patch \
 "
 SRCBRANCH = "lf-6.12.y"
 LOCALVERSION = "-lts-${SRCBRANCH}"
-SRCREV = "dfaf2136deb2af2e60b994421281ba42f1c087e0"
+SRCREV = "df24f9428e38740256a410b983003a478e72a7c0"
 
 do_configure[noexec] = "1"
 
