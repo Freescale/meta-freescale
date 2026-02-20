@@ -553,10 +553,6 @@ PREFERRED_VERSION_gstreamer1.0-python:imx-nxp-bsp       ??= "1.26.0.imx"
 PREFERRED_VERSION_gstreamer1.0-rtsp-server:imx-nxp-bsp  ??= "1.26.0.imx"
 PREFERRED_VERSION_gstreamer1.0-vaapi:imx-nxp-bsp        ??= "1.26.0.imx"
 
-# GStreamer downgrade ffmpeg
-PREFERRED_VERSION_ffmpeg:mx8-nxp-bsp ??= "4.4.1"
-PREFERRED_VERSION_ffmpeg:mx9-nxp-bsp ??= "4.4.1"
-
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT:imxgpu = "1"
