@@ -21,8 +21,8 @@ PV = "7.0+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
            file://memtool_profile"
-SRCBRANCH = "lf-6.12.20_2.0.0"
-SRCREV = "38f9cf1f08bb6fcdd6aaf9191e0b53f02e02537b"
+SRCBRANCH = "lf-6.12.49_2.2.0"
+SRCREV = "b4c26645b742b795d4c21b888f3fd73afa8c0446"
 
 inherit module-base use-imx-headers
 
