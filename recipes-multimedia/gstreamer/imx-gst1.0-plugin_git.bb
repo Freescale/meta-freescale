@@ -38,10 +38,9 @@ PV = "4.10.0+git${SRCPV}"
 
 SRC_URI = " \
     git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-gplay2-fix-termio.h-no-longer-existing.patch \
 "
-SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
-SRCREV = "6861aec99901375f5ebcd5170ce1f5232cd38fd6"
+SRCBRANCH = "MM_04.10.02_2510_L6.12.49"
+SRCREV = "663b07393f6b43d3ede6078c161b646fc3ddba88"
 
 inherit meson pkgconfig use-imx-headers
 
@@ -90,8 +89,29 @@ FILES:${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
 FILES:${PN}-gplay = "${bindir}/gplay-1.0"
 FILES:${PN}-libgplaycore = "${libdir}/libgplaycore-1.0${SOLIBS}"
 FILES:${PN}-libgstfsl = "${libdir}/libgstfsl-1.0${SOLIBS}"
-FILES:${PN}-grecorder = "${bindir}/grecorder-1.0"
+FILES:${PN}-grecorder = " \
+    ${bindir}/grecorder-1.0 \
+    ${bindir}/pipewire_recorder.py \
+"
 FILES:${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
 FILES:${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
+
+TARGET_CFLAGS += "-I${S}/libs"
+TARGET_CPPFLAGS += "-I${S}/libs"
+
+# 2. Force the compiler to also look in the GStreamer include directory for phymem headers
+TARGET_CFLAGS += "-I${STAGING_INCDIR}/gstreamer-1.0"
+
+# 3. Force the dependencies to the NXP versions without using local.conf
+# We use the standard names but will trigger a clean to ensure the .imx version is used
+DEPENDS = " \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-bad \
+    libdrm \
+    imx-lib \
+"
+
+CFLAGS += "-I${S}/libs"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
