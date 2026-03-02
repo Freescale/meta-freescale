@@ -18,35 +18,39 @@ UBOOT_MAKE_TARGET = ""
 SPL_BINARY = "spl/u-boot-spl.bin"
 
 UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd] = "${UBOOT_CONFIG_BASENAME}_evk_defconfig,sdcard"
-UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_evk_fspi_defconfig"
+UBOOT_CONFIG[sd] = "${UBOOT_CONFIG_BASENAME}_defconfig"
+UBOOT_CONFIG[sd-ecc] = "${UBOOT_CONFIG_BASENAME}_defconfig"
+UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_fspi_defconfig"
+UBOOT_CONFIG_IMAGE_FSTYPES[sd] = "sdcard"
 
 ATF_PLATFORM = "imx95"
-OEI_CONFIGS = "ddr tcm"
 OEI_CORE   = "m33"
 OEI_SOC    = "mx95"
 OEI_BOARD  ?= "mx95lp5"
 DDR_TYPE   ?= "lpddr5"
 
-IMXBOOT_VARIANTS = "alt jailhouse netc sof"
+IMXBOOT_VARIANTS = "alt jailhouse netc rpmsg sof"
 
 # Multiple system manager configs by IMXBOOT_VARIANT
 SYSTEM_MANAGER_CONFIG = "${@bb.utils.contains('IMXBOOT_VARIANT', 'alt',       'mx95alt', \
                             bb.utils.contains('IMXBOOT_VARIANT', 'jailhouse', 'mx95evkjailhouse', \
                             bb.utils.contains('IMXBOOT_VARIANT', 'netc',      'mx95netc', \
+                            bb.utils.contains('IMXBOOT_VARIANT', 'rpmsg',     'mx95evkrpmsg', \
                             bb.utils.contains('IMXBOOT_VARIANT', 'sof',       'mx95evksof', \
-                                                                              'mx95evk', d), d), d), d)}"
+                                                                              'mx95evk', d), d), d), d), d)}"
 
 # imx-boot (flash.bin) targets based on UBOOT_CONFIG and IMXBOOT_VARIANT
 IMXBOOT_TARGETS_SD = "${@bb.utils.contains('IMXBOOT_VARIANT', 'alt',       '${IMXBOOT_TARGETS_BASENAME}_alt', \
                          bb.utils.contains('IMXBOOT_VARIANT', 'jailhouse', '${IMXBOOT_TARGETS_BASENAME}_jailhouse', \
                          bb.utils.contains('IMXBOOT_VARIANT', 'netc',      '${IMXBOOT_TARGETS_BASENAME}_netc', \
+                         bb.utils.contains('IMXBOOT_VARIANT', 'rpmsg',     '${IMXBOOT_TARGETS_BASENAME}_lpboot_sm_a55', \
                          bb.utils.contains('IMXBOOT_VARIANT', 'sof',       '${IMXBOOT_TARGETS_BASENAME}_a55', \
-                                                                           '${IMXBOOT_TARGETS_BASENAME}_all ${IMXBOOT_TARGETS_BASENAME}_a55', d), d), d), d)} \
+                                                                           '${IMXBOOT_TARGETS_BASENAME}_all ${IMXBOOT_TARGETS_BASENAME}_a55', d), d), d), d), d)} \
 "
 
-IMXBOOT_TARGETS = " \
-    ${@bb.utils.contains('UBOOT_CONFIG', 'fspi', '${IMXBOOT_TARGETS_BASENAME}_a55_flexspi', '${IMXBOOT_TARGETS_SD}', d)} \
+IMXBOOT_TARGETS = " ${@bb.utils.contains('UBOOT_CONFIG', 'fspi',   '${IMXBOOT_TARGETS_BASENAME}_a55_flexspi', \
+                       bb.utils.contains('UBOOT_CONFIG', 'sd-ecc', '${IMXBOOT_TARGETS_BASENAME}_all', \
+                                                                   '${IMXBOOT_TARGETS_SD}', d), d)} \
 "
 
 IMX_BOOT_SOC_TARGET = "iMX95"
