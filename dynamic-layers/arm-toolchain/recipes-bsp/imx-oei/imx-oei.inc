@@ -3,9 +3,15 @@ DEPENDS = "gcc-arm-none-eabi-native"
 
 inherit deploy
 
+PACKAGECONFIG ??= " \
+    ${@bb.utils.contains('UBOOT_CONFIG', 'sd-ecc', 'ecc', '', d)}"
+
+PACKAGECONFIG[ecc] = ""
+PACKAGECONFIG[tcm] = ""
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-OEI_CONFIGS ?= "UNDEFINED"
+OEI_CONFIGS ?= "ddr ${@bb.utils.filter('PACKAGECONFIG', 'tcm', d)}"
 OEI_CORE    ?= "UNDEFINED"
 OEI_SOC     ?= "UNDEFINED"
 OEI_BOARD   ?= "UNDEFINED"
@@ -16,11 +22,11 @@ LDFLAGS[unexport] = "1"
 
 EXTRA_OEMAKE = "\
     board=${OEI_BOARD} \
+    DDR_CONFIG=${@bb.utils.contains('PACKAGECONFIG', 'ecc', '${OEI_DDRCONFIG_ECC}', '${OEI_DDRCONFIG}', d)} \
     DEBUG=${OEI_DEBUG} \
     OEI_CROSS_COMPILE=arm-none-eabi-"
 
 EXTRA_OEMAKE:append:mx95-generic-bsp = " r=${IMX_SOC_REV}"
-EXTRA_OEMAKE:append = " ${@' DDR_CONFIG=${OEI_DDRCONFIG}' if d.getVar('OEI_DDRCONFIG') else ''}"
 
 do_configure() {
     for oei_config in ${OEI_CONFIGS}; do
