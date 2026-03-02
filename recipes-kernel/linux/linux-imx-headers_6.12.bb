@@ -1,4 +1,4 @@
-# Copyright 2017-2025 NXP
+# Copyright 2017-2026 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "Installs i.MX-specific kernel headers"
@@ -11,7 +11,7 @@ SRC_URI = " \
     git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH} \
 "
 SRCBRANCH = "lf-6.12.y"
-LOCALVERSION = "-lts-${SRCBRANCH}"
+LOCALVERSION = "-6.12.49-2.2.0"
 SRCREV = "df24f9428e38740256a410b983003a478e72a7c0"
 
 do_configure[noexec] = "1"
