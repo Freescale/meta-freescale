@@ -15,7 +15,7 @@ OEI_CONFIGS ?= "ddr ${@bb.utils.filter('PACKAGECONFIG', 'tcm', d)}"
 OEI_CORE    ?= "UNDEFINED"
 OEI_SOC     ?= "UNDEFINED"
 OEI_BOARD   ?= "UNDEFINED"
-OEI_DDRCONFIG  ?= ""
+OEI_DDR_CONFIG  ?= ""
 OEI_DEBUG   ?= "0"
 
 LDFLAGS[unexport] = "1"
@@ -29,9 +29,9 @@ EXTRA_OEMAKE:append:mx95-generic-bsp = " r=${IMX_SOC_REV}"
 
 python () {
     if 'ecc' in d.getVar('PACKAGECONFIG'):
-        ddr_conf = d.getVar('OEI_DDRCONFIG_ECC')
+        ddr_conf = d.getVar('OEI_DDR_CONFIG_ECC')
     else:
-        ddr_conf = d.getVar('OEI_DDRCONFIG')
+        ddr_conf = d.getVar('OEI_DDR_CONFIG')
     if ddr_conf:
         d.appendVar('EXTRA_OEMAKE', ' DDR_CONFIG='+ddr_conf)
 }
