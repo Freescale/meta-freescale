@@ -22,11 +22,19 @@ LDFLAGS[unexport] = "1"
 
 EXTRA_OEMAKE = "\
     board=${OEI_BOARD} \
-    DDR_CONFIG=${@bb.utils.contains('PACKAGECONFIG', 'ecc', '${OEI_DDRCONFIG_ECC}', '${OEI_DDRCONFIG}', d)} \
     DEBUG=${OEI_DEBUG} \
     OEI_CROSS_COMPILE=arm-none-eabi-"
 
 EXTRA_OEMAKE:append:mx95-generic-bsp = " r=${IMX_SOC_REV}"
+
+python () {
+    if 'ecc' in d.getVar('PACKAGECONFIG'):
+        ddr_conf = d.getVar('OEI_DDRCONFIG_ECC')
+    else:
+        ddr_conf = d.getVar('OEI_DDRCONFIG')
+    if ddr_conf:
+        d.appendVar('EXTRA_OEMAKE', ' DDR_CONFIG='+ddr_conf)
+}
 
 do_configure() {
     for oei_config in ${OEI_CONFIGS}; do
