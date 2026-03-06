@@ -33,7 +33,7 @@ UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
 UBOOT_SUFFIX = "bin"
 
 UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd]       = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
+UBOOT_CONFIG[sd]       = "${UBOOT_CONFIG_BASENAME}_defconfig"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
 

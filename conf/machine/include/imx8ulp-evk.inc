@@ -19,7 +19,7 @@ UBOOT_MAKE_TARGET = ""
 SPL_BINARY = "spl/u-boot-spl.bin"
 
 UBOOT_CONFIG ??= "sd"
-UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig,sdcard"
+UBOOT_CONFIG[sd]   = "${UBOOT_CONFIG_BASENAME}_defconfig"
 UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_defconfig"
 UBOOT_CONFIG[nd]   = "${UBOOT_CONFIG_BASENAME}_nd_defconfig"
 
