@@ -5,8 +5,8 @@
 ########### OE-core copy ##################
 # Upstream hash: 937817e5164f8af8452aec03ae3c45cb23d63df9
 
-require gstreamer1.0-plugins-common.inc
-require gstreamer1.0-plugins-license.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
 
 SUMMARY = "'Bad' GStreamer plugins and helper libraries "
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
@@ -18,8 +18,6 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad
            file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
            "
 SRC_URI[sha256sum] = "e64e75cdafd7ff2fc7fc34e855b06b1e3ed227cc06fa378d17bbcd76780c338c"
-
-S = "${WORKDIR}/gst-plugins-bad-${PV}"
 
 LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
@@ -181,16 +179,14 @@ DEFAULT_PREFERENCE = "-1"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770"
 
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
-                   file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
-                   file://0002-avoid-including-sys-poll.h-directly.patch \
-                   file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
-                   "
+           file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
+           file://0002-avoid-including-sys-poll.h-directly.patch \
+           file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
+           "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
-SRCREV = "4320364e6be53cae81ac2bca3ce0e09cf8707590"
-
-S = "${UNPACKDIR}/${BP}"
+SRCBRANCH = "MM_04.10.02_2510_L6.12.49"
+SRCREV = "d1e0c6a2f64164b1d746f5d47ef091d5d2b196ed"
 
 inherit use-imx-headers
 
@@ -220,4 +216,5 @@ EXTRA_OEMESON:remove = " \
 "
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+
 ########### End of i.MX overrides #########

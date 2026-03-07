@@ -6,13 +6,13 @@ SECTION = "multimedia"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://validate/COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343"
 
-SRC_URI = "https://gstreamer.freedesktop.org/src/gst-devtools/gst-devtools-${@get_gst_ver("${PV}")}.tar.xz \
+#S = "${WORKDIR}/gst-devtools-${PV}"
+
+SRC_URI = "https://gstreamer.freedesktop.org/src/gst-devtools/gst-devtools-${PV}.tar.xz \
            file://0001-connect-has-a-different-signature-on-musl.patch \
            "
 
-S = "${UNPACKDIR}/gst-devtools-${@get_gst_ver("${PV}")}"
-
-SRC_URI[sha256sum] = "eff33d7dc292bb074a2788ea887b6283398ffdefafa49fb7d08efe6658a65648"
+SRC_URI[sha256sum] = "dec8fc56d578d65c498e65e56efe44994c5d3f4e85dbbdff0242b441b32e19b2"
 
 DEPENDS = "json-glib glib-2.0 glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-base"
 RRECOMMENDS:${PN} = "git"
@@ -40,9 +40,6 @@ EXTRA_OEMESON += " \
     -Dvalidate=enabled \
     ${@gettext_oemeson(d)} \
 "
-# Drop .imx from PV
-def get_gst_ver(v):
-    return oe.utils.trim_version(v, 3)
 
 do_install:append () {
      for fn in ${bindir}/gst-validate-launcher \

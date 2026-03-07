@@ -11,10 +11,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
                     file://ext/libav/gstav.h;beginline=1;endline=18;md5=a752c35267d8276fd9ca3db6994fca9c \
                     "
 
-SRC_URI = "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-${@get_gst_ver('${PV}')}.tar.xz"
-SRC_URI[sha256sum] = "707a8b687ff5fddcee5b02415e2ec9b71b4ac44d0b7aec3b477364ceecbf1ecf"
+SRC_URI = "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-${PV}.tar.xz"
+SRC_URI[sha256sum] = "6e50a6222d509c52b19143f9a7bd3581e22c745d0c4bc27ddb07e1229bcc11b8"
 
-S = "${UNPACKDIR}/gst-libav-${@get_gst_ver('${PV}')}"
+S = "${UNPACKDIR}/gst-libav-${PV}"
 
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base ffmpeg"
 
@@ -24,11 +24,5 @@ EXTRA_OEMESON += " \
     -Dtests=disabled \
 "
 
-# Drop .imx from PV
-def get_gst_ver(v):
-    return oe.utils.trim_version(v, 3)
-
 FILES:${PN} += "${libdir}/gstreamer-1.0/*.so"
 FILES:${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
-
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
