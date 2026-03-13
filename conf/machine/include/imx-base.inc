@@ -590,7 +590,7 @@ PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-pxp-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:mx943-nxp-bsp ?= "imx-pxp-g2d"
 
 # Set preferred Vulkan ICD runtime
-PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa"
+PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa-vulkan-drivers"
 PREFERRED_RPROVIDER_virtual-vulkan-icd:imxviv  ?= "libvulkan-imx"
 PREFERRED_RPROVIDER_virtual-vulkan-icd:imxmali ?= "mali-imx-libvulkan"
 
