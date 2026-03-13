@@ -43,6 +43,7 @@ FILES:${PN}-libgles2 = " \
     ${libdir}/libGLESv2${SOLIBS}"
 FILES:${PN}-opencl-icd = " \
     ${sysconfdir}/OpenCL"
+RPROVIDES:${PN}-opencl-icd = "virtual-opencl-icd"
 FILES:${PN}-libvulkan = " \
     ${sysconfdir}/vulkan"
 RDEPENDS:${PN}-libvulkan = "vulkan-wsi-layer"

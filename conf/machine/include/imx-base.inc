@@ -579,6 +579,11 @@ PREFERRED_PROVIDER_opencl-headers:imxviv       ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxviv    ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "imx-gpu-viv"
 
+# Set preferred OpenCL ICD runtime
+PREFERRED_RPROVIDER_virtual-opencl-icd         ?= "libopencl-mesa"
+PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "libopencl-imx"
+PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-libopencl"
+
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-gpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-dpu-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-pxp-g2d"
