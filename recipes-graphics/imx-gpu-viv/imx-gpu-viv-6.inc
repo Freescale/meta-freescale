@@ -61,12 +61,6 @@ PROVIDES_OPENVX:mx8mm-nxp-bsp    = ""
 
 RPROVIDES:${PN}:imxgpu3d += "imx-gpu-viv"
 
-RPROVIDES_OPENCL               = "opencl-icd-loader-dev"
-RPROVIDES_OPENCL:mx7-nxp-bsp   = ""
-RPROVIDES_OPENCL:mx8mm-nxp-bsp = ""
-
-RPROVIDES:${PN}:append:imx-nxp-bsp = " ${RPROVIDES_OPENCL}"
-
 PE = "1"
 
 inherit fsl-eula-unpack
@@ -393,6 +387,9 @@ FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
 FILES:libopencl-imx-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 RDEPENDS:libopencl-imx = "libclc-imx"
+RPROVIDES:libopencl-imx               = "virtual-opencl-icd"
+RPROVIDES:libopencl-imx:mx7-nxp-bsp   = ""
+RPROVIDES:libopencl-imx:mx8mm-nxp-bsp = ""
 
 FILES:libopenvg-imx = "${libdir}/libOpenVG*${REALSOLIBS} ${libdir}/libOpenVG*${SOLIBS}"
 FILES:libopenvg-imx-dev = "${includedir}/VG ${libdir}/pkgconfig/vg.pc"
