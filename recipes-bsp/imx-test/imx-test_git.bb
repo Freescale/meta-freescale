@@ -1,6 +1,6 @@
 # Copyright (C) 2012-2016 O.S. Systems Software LTDA.
 # Copyright (C) 2013-2016 Freescale Semiconductor
-# Copyright (C) 2017-2022 NXP
+# Copyright (C) 2017-2022,2026 NXP
 
 SUMMARY = "Test programs for i.MX BSP"
 DESCRIPTION = "Unit tests for the i.MX BSP"
@@ -19,10 +19,12 @@ DEPENDS:append:mx943-nxp-bsp  = " imx-lib"
 PE = "1"
 PV = "7.0+${SRCPV}"
 
-SRC_URI = "git://github.com/nxp-imx/imx-test.git;protocol=https;branch=${SRCBRANCH} \
+SRC_URI = "${IMXTEST_SRC};branch=${SRCBRANCH} \
            file://memtool_profile"
-SRCBRANCH = "lf-6.12.49_2.2.0"
-SRCREV = "b4c26645b742b795d4c21b888f3fd73afa8c0446"
+
+IMXTEST_SRC ?= "git://github.com/nxp-imx/imx-test.git;protocol=https"
+SRCBRANCH = "lf-6.18.2_1.0.0"
+SRCREV = "e5dad74f8defd6108cac5ba21bf4ff268445d3ff"
 
 inherit module-base use-imx-headers
 

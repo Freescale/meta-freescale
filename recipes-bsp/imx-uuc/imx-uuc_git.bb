@@ -10,7 +10,7 @@ PR = "r1"
 PV = "0.5.1+git${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-uuc.git;protocol=https;branch=master"
-SRCREV = "25f65e10368aa07056f9536e88ed911ac7f38f99"
+SRCREV = "798d6ed8cf0971aec19c5f6c7c058450817fa378"
 
 do_install() {
     oe_runmake 'DESTDIR=${D}' install

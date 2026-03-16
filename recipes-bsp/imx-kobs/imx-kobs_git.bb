@@ -11,7 +11,7 @@ PV = "5.5+git${SRCPV}"
 SRC_URI = "git://github.com/NXPmicro/imx-kobs.git;protocol=https;branch=master \
            file://0001-Add-missing-includes-as-pointed-out-by-musl.patch \
 "
-SRCREV = "ff13a99a22aa73cca0e09a33c2ebb6a94ad698da"
+SRCREV = "c155f9e9d2e0008937c37d6e6f79e8436c099afa"
 
 inherit autotools pkgconfig
 

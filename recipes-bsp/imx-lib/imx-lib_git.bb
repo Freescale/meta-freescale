@@ -13,8 +13,8 @@ PE = "1"
 PV = "5.9+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.12.49_2.2.0"
-SRCREV = "72cb12630d42b0efdc30b8e896d0546e69089916"
+SRCBRANCH = "lf-6.18.2_1.0.0"
+SRCREV = "6cad1ba39d16247088f6a45dc07bbbf2cf96a332"
 
 inherit use-imx-headers
 
@@ -29,6 +29,8 @@ PLATFORM:mx7d-nxp-bsp   = "IMX7"
 PLATFORM:mx7ulp-nxp-bsp = "IMX7"
 PLATFORM:mx8ulp-nxp-bsp = "IMX8ULP"
 PLATFORM:mx9-nxp-bsp    = "IMX8ULP"
+PLATFORM:mx93-nxp-bsp   = "IMX8ULP"
+PLATFORM:mx943-nxp-bsp  = "IMX8ULP"
 
 PARALLEL_MAKE = "-j 1"
 EXTRA_OEMAKE = ""
