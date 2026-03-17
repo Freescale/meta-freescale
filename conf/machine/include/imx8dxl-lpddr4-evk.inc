@@ -8,6 +8,7 @@ KERNEL_DEVICETREE:append:use-nxp-bsp = " \
     freescale/${KERNEL_DEVICETREE_BASENAME}-lcdif.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-lpspi-slave.dtb \
     freescale/${KERNEL_DEVICETREE_BASENAME}-pcie-ep.dtb \
+    freescale/${KERNEL_DEVICETREE_BASENAME}-pcie-ep-rpmsg.dtb \
 "
 
 UBOOT_CONFIG_BASENAME = "imx8dxl_evk"
