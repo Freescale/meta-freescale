@@ -1,24 +1,17 @@
-# Copyright (C) 2020-2024 NXP
+# Copyright 2020-2025 NXP
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
+
 DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 jsoncpp patchelf-native"
 
-SRC_URI = " \
-    ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '${ISP_SYSTEMD_PATCH}', '', d)} \
-    file://0002-appshell-cmake-bump-min-version-to-3.5.patch \
-    file://0003-appshell-cmake-drop-deprecated-use-of-target_link_li.patch \
-    file://0004-units-targets.cmake-fix-check-if-a-target-exists.patch \
-    file://0005-units-cmake-fix-use-of-add_dependencies.patch \
-"
-ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
+SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
+SRC_URI[sha256sum] = "ab04d9eae4917591ca21f4ae13269c4e5a6f1b8e2f357cca1693682fa9a87249"
 
-IMX_SRCREV_ABBREV = "3cac1fb"
+IMX_SRCREV_ABBREV = "3cbd4a2"
+
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
-
-SRC_URI[sha256sum] = "8fa5094da6438505287f4dcc8033dad3057ab81bf98c858884f7c3a2e521b252"
 
 inherit fsl-eula-unpack cmake pkgconfig systemd use-imx-headers
 
@@ -52,17 +45,8 @@ EXTRA_OECMAKE += " \
     -D3A_SRC_BUILD=0 \
     -DIMX_G2D=ON \
     -Wno-dev \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 "
-
-do_configure_disable:prepend () {
-    # FIXME: should be rebuild.
-    patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/bin/isp_media_server
-    patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/mediacontrol/install/lib/libmedia_server.so
-    patchelf --replace-needed libjsoncpp.so.25 libjsoncpp.so.26 ${S}/tuningext/install/tuningext
-
-    # FIXME: Should be rebuild.
-    patchelf --replace-needed libtinyxml2.so.10 libtinyxml2.so.11 ${S}/appshell/shell_libs/ispcore/ARM64/libcam_device.so
-}
 
 do_install() {
     # The Makefile unconditionally installs tuningext even if it is not built
@@ -80,7 +64,6 @@ do_install() {
         install -d ${D}${systemd_system_unitdir}
         install -m 0644 ${S}/imx/imx8-isp.service ${D}${systemd_system_unitdir}
     fi
-
 }
 
 # The build contains a mix of versioned and unversioned libraries, so
@@ -96,6 +79,8 @@ FILES_SOLIBS_VERSIONED = " \
     ${libdir}/libcppnetlib-uri.so \
     ${libdir}/libos08a20.so \
 "
+
+INSANE_SKIP:${PN} = "already-stripped"
 
 RDEPENDS:${PN} = "libdrm"
 
