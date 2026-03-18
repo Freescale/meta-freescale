@@ -10,13 +10,12 @@ RCONFLICTS:${PN} = "kernel-module-nxp89xx"
 KERNEL_MODULE_PROBECONF += "moal"
 module_conf_moal = "options moal mod_para=nxp/wifi_mod_para.conf"
 
-SRCBRANCH = "lf-6.12.49_2.2.0"
-MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
 SRC_URI = " \
     ${MRVL_SRC};branch=${SRCBRANCH} \
-    file://mlinux-moal_main-lower-PRINTM_MMSG-log-level-to-KERN_INFO.patch \
 "
-SRCREV = "84ca65c9ff935d7f2999af100a82531c22c65234"
+MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
+SRCBRANCH = "lf-6.18.2_1.0.0"
+SRCREV = "a5fe4e194bf99315e349d81d77d6dfacec70757a"
 
 inherit module
 
