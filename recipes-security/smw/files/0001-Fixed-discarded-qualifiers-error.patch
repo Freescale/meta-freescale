@@ -1,0 +1,28 @@
+Upstream-Status: Pending
+
+diff --git a/osal/linux/obj_db.c b/osal/linux/obj_db.c
+index 446a08b1..18e4931b 100644
+--- a/osal/linux/obj_db.c
++++ b/osal/linux/obj_db.c
+@@ -1203,7 +1203,7 @@ static void close_db_file(struct obj_db *db)
+ static int create_directory(const char *filename)
+ {
+ 	int ret = -1;
+-	char *end = NULL;
++	const char *end = NULL;
+ 	char *directory = NULL;
+ 	size_t length = 0;
+ 	int *err = NULL;
+diff --git a/pkcs11/tests/callback.c b/pkcs11/tests/callback.c
+index 3e0ffbf4..02dc2f91 100644
+--- a/pkcs11/tests/callback.c
++++ b/pkcs11/tests/callback.c
+@@ -245,7 +245,7 @@ void tests_pkcs11_callback(void *lib_hdl, CK_VOID_PTR pfunc)
+ 
+ 	TEST_START();
+ 
+-	mp_args.testname = strrchr(__func__, '_');
++	mp_args.testname = (char *) strrchr(__func__, '_');
+ 	if (CHECK_EXPECTED(mp_args.testname, "Unable to get function name\n") ||
+ 	    !mp_args.testname)
+ 		goto end;
