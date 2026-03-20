@@ -1,5 +1,5 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright 2017-2021,2024-2025 NXP
+# Copyright 2017-2021,2024-2026 NXP
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 SUMMARY = "Freescale i.MX firmware"
 DESCRIPTION = "Freescale i.MX firmware such as for the VPU"
@@ -65,6 +65,10 @@ do_install() {
     mv ${D}${nonarch_base_libdir}/firmware/vpu/vpu_fw_imx8* ${D}${nonarch_base_libdir}/firmware/amphion/vpu/
     # Install i.MX 95 VPU firmware
     install -m 0644 ${S}/firmware/vpu/wave633c_codec_fw.bin ${D}${nonarch_base_libdir}/firmware
+    # Install i.MX 952 VPU firmware
+    install -d ${D}${nonarch_base_libdir}/firmware/cnm
+    install -m 0644 ${S}/firmware/vpu/coda980_enc_fw.bin ${D}${nonarch_base_libdir}/firmware/cnm
+    install -m 0644 ${S}/firmware/vpu/wave511_dec_fw.bin ${D}${nonarch_base_libdir}/firmware/cnm
 }
 
 #
@@ -157,7 +161,7 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-* ${PN}-easrc-* ${PN}-xcvr-* ${PN}-xu
 # is empty.
 # Therefore, we opt-out from producing -dev package here, since also for firmware
 # files it makes no sense.
-PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi ${PN}-vpu-amphion ${PN}-vpu-wave"
+PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi ${PN}-vpu-amphion ${PN}-vpu-coda980 ${PN}-vpu-wave511 ${PN}-vpu-wave"
 
 FILES:${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
 FILES:${PN}-hdmi = " \
@@ -166,6 +170,8 @@ FILES:${PN}-hdmi = " \
     ${nonarch_base_libdir}/firmware/dpfw.bin \
 "
 FILES:${PN}-vpu-amphion = "${nonarch_base_libdir}/firmware/amphion/vpu/*"
+FILES:${PN}-vpu-coda980 = "${nonarch_base_libdir}/firmware/cnm/coda980_enc_fw.bin"
+FILES:${PN}-vpu-wave511 = "${nonarch_base_libdir}/firmware/cnm/wave511_dec_fw.bin"
 FILES:${PN}-vpu-wave = "${nonarch_base_libdir}/firmware/wave633c_codec_fw.bin"
 
 COMPATIBLE_MACHINE = "(imx-generic-bsp)"
