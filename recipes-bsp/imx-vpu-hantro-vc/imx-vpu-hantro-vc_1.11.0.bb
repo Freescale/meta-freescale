@@ -2,18 +2,14 @@
 
 DESCRIPTION = "i.MX VC8000E Encoder library"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 inherit fsl-eula-unpack
 
-SRC_URI = " \
-    ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
-    file://0001-base_type.h-make-header-compatible-with-c23.patch \
-"
-IMX_SRCREV_ABBREV = "c0244a1"
+SRC_URI = " ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
+IMX_SRCREV_ABBREV = "5e18a84"
 
-SRC_URI[sha256sum] = "713ba375f25490727fcc62bab5d5508f74de03204b4c153464b696b652c5c7df"
-
+SRC_URI[sha256sum] = "04d2a9c5c75804a11a4500a0133dfc7d8e84f74254cee52c42075f5ecc229550"
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 # SCR is the location and name of the Software Content Register file
@@ -36,4 +32,5 @@ do_install () {
 FILES:${PN} = "/"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"
