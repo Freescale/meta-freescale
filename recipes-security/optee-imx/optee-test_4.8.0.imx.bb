@@ -1,4 +1,4 @@
-# Copyright 2017-2024 NXP
+# Copyright 2017-2024,2026 NXP
 
 require optee-test-fslc-imx.inc
 
@@ -9,5 +9,5 @@ LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a8fa504109e4cd7ea575bc49ea4be560 \
                     file://LICENSE-GPL;md5=10e86b5d2a6cb0e2b9dcfdd26a9ac58d"
 
 
-SRCBRANCH = "lf-6.12.20_2.0.0"
-SRCREV = "010f088f05b5ebf392c6e235d6e53d391755722f" 
+SRCBRANCH = "lf-6.18.2_1.0.0"
+SRCREV = "3383a744a5997fdb3457b3cbe95aea3ce27879b3"

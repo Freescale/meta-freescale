@@ -1,5 +1,5 @@
 # Copied from meta-arm/recipes-security/optee/optee-test.inc.
-# See:https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L30
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L32
 
 SUMMARY = "OP-TEE sanity testsuite"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Test suite"
@@ -12,6 +12,7 @@ inherit deploy
 require optee-fslc.inc
 
 DEPENDS = "optee-client optee-os-tadevkit python3-cryptography-native openssl"
+DEPENDS:append:toolchain-clang = " lld-native"
 
 SRC_URI = "git://github.com/OP-TEE/optee_test.git;branch=master;protocol=https \
            file://run-ptest \
