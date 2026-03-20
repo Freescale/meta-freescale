@@ -5,7 +5,7 @@
 ########### OE-core copy ##################
 # Upstream hash: 937817e5164f8af8452aec03ae3c45cb23d63df9
 
-require gstreamer1.0-plugins-common.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 SUMMARY = "'Base' GStreamer plugins and helper libraries"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
@@ -19,8 +19,6 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-ba
            file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch \
            "
 SRC_URI[sha256sum] = "edd4338b45c26a9af28c0d35aab964a024c3884ba6f520d8428df04212c8c93a"
-
-S = "${WORKDIR}/gst-plugins-base-${PV}"
 
 DEPENDS += "iso-codes util-linux zlib"
 
@@ -117,11 +115,12 @@ SRC_URI:remove = " \
     file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 
-GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
-SRCREV = "bbe6aa6f5b666fda0b172c3e1f417c7eadb16549"
+SRC_URI:append:mx93-nxp-bsp = "file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-build-for-gl-plugi.patch"
+SRC_URI:append:mx943-nxp-bsp = "file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-build-for-gl-plugi.patch"
 
-S = "${UNPACKDIR}/${BP}"
+GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
+SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
+SRCREV = "48718c61610e3628f3f162bb8d84ae213ae8516f"
 
 inherit use-imx-headers
 

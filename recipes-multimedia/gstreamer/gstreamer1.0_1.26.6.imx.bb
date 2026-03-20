@@ -20,8 +20,6 @@ inherit meson pkgconfig gettext upstream-version-is-even gobject-introspection p
 LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
                     file://gst/gst.h;beginline=1;endline=21;md5=e059138481205ee2c6fc1c079c016d0d"
 
-S = "${WORKDIR}/gstreamer-${PV}"
-
 SRC_URI = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz \
            file://run-ptest \
            file://0001-tests-respect-the-idententaion-used-in-meson.patch \
@@ -93,17 +91,15 @@ LIC_FILES_CHKSUM = " \
 
 # Use i.MX fork of GST for customizations
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz \
-                  file://0001-tests-respect-the-idententaion-used-in-meson.patch \
-                  file://0002-tests-add-support-for-install-the-tests.patch \
-                  file://0003-tests-use-a-dictionaries-for-environment.patch;striplevel=3 \
-                  file://0004-tests-add-helper-script-to-run-the-installed_tests.patch;striplevel=3 \
+                file://0001-tests-respect-the-idententaion-used-in-meson.patch \
+                file://0002-tests-add-support-for-install-the-tests.patch \
+                file://0003-tests-use-a-dictionaries-for-environment.patch;striplevel=3 \
+                file://0004-tests-add-helper-script-to-run-the-installed_tests.patch;striplevel=3 \
 "
 SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
 GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
-SRCREV = "dba94b66ed28cc6537608a68c31c8be52f6f53a5"
-
-S = "${UNPACKDIR}/${BP}"
+SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
+SRCREV = "524a14c8906597f4fd302190adbd3a8af3572866"
 
 PACKAGECONFIG[tests] = "-Dtests=enabled,-Dtests=disabled"
 

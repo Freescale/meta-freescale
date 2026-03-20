@@ -1,0 +1,67 @@
+From f85821d405ba287acc01b1c80205470f086b3d61 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Fri, 6 Feb 2026 15:12:52 +0900
+Subject: [PATCH 1/5] MMFMWK-9590 gstgl-1.0: disable gir build for gl plugin
+ libraries
+
+This is a workaround to only display gl gir build to avoid totally
+disable base library gir build. mesa-rvgpu-emu patch break gl gir
+build
+
+Upstream-Status: Inappropriate [i.MX specific]
+---
+ gst-libs/gst/gl/meson.build | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/gst-libs/gst/gl/meson.build b/gst-libs/gst/gl/meson.build
+index 837cf484e..ef981c8e3 100644
+--- a/gst-libs/gst/gl/meson.build
++++ b/gst-libs/gst/gl/meson.build
+@@ -1193,7 +1193,7 @@ if build_gstgl
+     description : 'Streaming media framework, OpenGL plugins libraries (OpenGL Prototypes)',
+   )
+ 
+-  if build_gir
++  if false
+     gir = {
+         'sources' : gl_sources + [gl_enumtypes_h] + [gl_enumtypes_c] + gir_gl_headers,
+         'namespace' : 'GstGL',
+@@ -1239,7 +1239,7 @@ if build_gstgl
+       description : 'Streaming media framework, OpenGL plugins libraries (X11 specifics)',
+     )
+     gl_x11_gir = []
+-    if build_gir
++    if false
+ 
+       doc_sources = []
+       foreach s: gl_x11_sources + gl_x11_headers
+@@ -1286,7 +1286,7 @@ if build_gstgl
+       description : 'Streaming media framework, OpenGL plugins libraries (Wayland specifics)',
+     )
+     gl_wayland_gir = []
+-    if build_gir
++    if false
+       doc_sources = []
+       foreach s: gl_wayland_sources + gl_wayland_headers
+         doc_sources += s.full_path()
+@@ -1331,7 +1331,7 @@ if build_gstgl
+       description : 'Streaming media framework, OpenGL plugins libraries (EGL specifics)',
+     )
+     gl_egl_gir = []
+-    if build_gir
++    if false
+       gir = {
+         'sources' : gl_egl_sources + gl_egl_headers,
+         'namespace' : 'GstGLEGL',
+@@ -1367,7 +1367,7 @@ if build_gstgl
+       description : 'Streaming media framework, OpenGL plugins libraries (Vivante Framebuffer specifics)',
+     )
+     gl_viv_fb_gir = []
+-    if build_gir
++    if false
+       gir = {
+         'sources' : gl_viv_fb_sources + gl_viv_fb_headers,
+         'namespace' : 'GstGLVivFB',
+-- 
+2.34.1
+

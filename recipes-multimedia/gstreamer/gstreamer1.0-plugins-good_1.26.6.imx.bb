@@ -5,7 +5,7 @@
 ########### OE-core copy ##################
 # Upstream hash: 937817e5164f8af8452aec03ae3c45cb23d63df9
 
-require gstreamer1.0-plugins-common.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 SUMMARY = "'Good' GStreamer plugins"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
@@ -17,7 +17,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-go
 
 SRC_URI[sha256sum] = "b67b31313a54c6929b82969d41d3cfdf2f58db573fb5f491e6bba5d84aea0778"
 
-S = "${WORKDIR}/gst-plugins-good-${PV}"
+S = "${UNPACKDIR}/gst-plugins-good-${PV}"
 
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
@@ -98,11 +98,15 @@ LIC_FILES_CHKSUM = " \
     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe \
 "
 # Enable pulsesink in gstreamer
-PACKAGECONFIG:append = "${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', ' pulseaudio', '', d)}"
+PACKAGECONFIG:append = " pulseaudio"
 
 # fb implementation of v4l2 uses libdrm
 DEPENDS += "${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
 DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
+
+# FIXME: imx93/943 DISTRO_FEATURES contains x11 but v4l2 implement by libdrm ?
+DEPENDS:append:mx93-nxp-bsp = " libdrm"
+DEPENDS:append:mx943-nxp-bsp = " libdrm"
 
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
                 file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
@@ -111,8 +115,8 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plu
 
 SRC_URI:prepend = "${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} "
 GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
-SRCREV = "6a0df1aee0ef2477dbacedd79df08c5bcb648e55"
+SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
+SRCREV = "447aebbd3c2b12a72f00316d60d7c86600a330f6"
 
 S = "${UNPACKDIR}/${BP}"
 

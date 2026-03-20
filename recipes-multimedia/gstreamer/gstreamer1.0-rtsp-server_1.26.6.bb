@@ -8,31 +8,35 @@ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base"
 
 PNREAL = "gst-rtsp-server"
 
-SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${@get_gst_ver("${PV}")}.tar.xz"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI[sha256sum] = "e983c039496e3f75e39696554ce74db4120e2465de17aa1cc37160568e9b40bc"
+SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${PV}.tar.xz \
+           file://0001-YOCIMX-9113-rtsp-examples-install-test-launch-and-te.patch \
+          "
 
-S = "${UNPACKDIR}/${PNREAL}-${@get_gst_ver("${PV}")}"
+SRC_URI[sha256sum] = "ce4e0b7dde7f17dc4f39ffb2dd3db64b0222d11d58be1c9820c20d30370d6f90"
+
+S = "${UNPACKDIR}/${PNREAL}-${PV}"
 
 inherit meson pkgconfig upstream-version-is-even gobject-introspection
 
 EXTRA_OEMESON += " \
     -Ddoc=disabled \
-    -Dexamples=disabled \
+    -Dexamples=enabled \
     -Dtests=disabled \
 "
 
 GIR_MESON_ENABLE_FLAG = "enabled"
 GIR_MESON_DISABLE_FLAG = "disabled"
 
-# Drop .imx from PV
-def get_gst_ver(v):
-    return oe.utils.trim_version(v, 3)
-
 # Starting with 1.8.0 gst-rtsp-server includes dependency-less plugins as well
-require gstreamer1.0-plugins-packaging.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
 CVE_PRODUCT += "gst-rtsp-server"
 
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
+########### i.MX overrides ################
 
+EXTRA_OEMESON:append:mx93-nxp-bsp = " -Dintrospection=disabled "
+EXTRA_OEMESON:append:mx943-nxp-bsp = " -Dintrospection=disabled "
+
+########### End of i.MX overrides #########

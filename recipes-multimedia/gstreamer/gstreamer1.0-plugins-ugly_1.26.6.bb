@@ -1,5 +1,5 @@
-require gstreamer1.0-plugins-common.inc
-require gstreamer1.0-plugins-license.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
+require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
 
 SUMMARY = "'Ugly GStreamer plugins"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
@@ -12,11 +12,12 @@ LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 LICENSE_FLAGS = "commercial"
 
 SRC_URI = " \
-            https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${@get_gst_ver("${PV}")}.tar.xz \
+            https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${PV}.tar.xz \
             "
-SRC_URI[sha256sum] = "a86b51c8454a813120848c803421f327d8c07aabcae461e0597cc49398c0fcde"
 
-S = "${UNPACKDIR}/gst-plugins-ugly-${@get_gst_ver("${PV}")}"
+SRC_URI[sha256sum] = "95032eee4580bb9826c008cbce5a2c3a78b980abb270c96a19b645f77255c491"
+
+S = "${UNPACKDIR}/gst-plugins-ugly-${PV}"
 
 DEPENDS += "gstreamer1.0-plugins-base"
 
@@ -39,11 +40,5 @@ EXTRA_OEMESON += " \
     -Dsidplay=disabled \
 "
 
-# Drop .imx from PV
-def get_gst_ver(v):
-    return oe.utils.trim_version(v, 3)
-
 FILES:${PN}-amrnb += "${datadir}/gstreamer-1.0/presets/GstAmrnbEnc.prs"
 FILES:${PN}-x264 += "${datadir}/gstreamer-1.0/presets/GstX264Enc.prs"
-
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

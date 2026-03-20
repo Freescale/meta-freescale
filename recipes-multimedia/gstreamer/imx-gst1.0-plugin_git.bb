@@ -1,8 +1,7 @@
 # Copyright (C) 2014,2016 Freescale Semiconductor
-# Copyright 2017-2021 NXP
+# Copyright 2017-2025 NXP
 # Copyright (C) 2012-2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
-
 DESCRIPTION = "Gstreamer freescale plugins"
 SECTION = "multimedia"
 LICENSE = "GPL-2.0-only & LGPL-2.0-only & LGPL-2.1-only"
@@ -15,11 +14,13 @@ DEPENDS = " \
     imx-codec \
     imx-parser \
     ${DEPENDS_IMXGPU} \
+    libinput \
 "
 DEPENDS:append:mx6-nxp-bsp = " imx-lib"
 DEPENDS:append:mx7-nxp-bsp = " imx-lib"
 DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
 DEPENDS:append:mx93-nxp-bsp = " imx-lib"
+DEPENDS:append:mx943-nxp-bsp = " imx-lib"
 DEPENDS:append:imxvpu = " imx-vpuwrap"
 DEPENDS:append:imxfbdev:imxgpu = " libdrm"
 DEPENDS_IMXGPU        = ""
@@ -34,14 +35,13 @@ RREPLACES:${PN}  = "gst1.0-fsl-plugin"
 RPROVIDES:${PN}  = "gst1.0-fsl-plugin"
 RCONFLICTS:${PN} = "gst1.0-fsl-plugin"
 
-PV = "4.10.0+git${SRCPV}"
+PV = "4.10.3+git${SRCPV}"
 
-SRC_URI = " \
-    git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https;branch=${SRCBRANCH} \
-    file://0001-gplay2-fix-termio.h-no-longer-existing.patch \
-"
-SRCBRANCH = "MM_04.10.0_2505_L6.12.20"
-SRCREV = "6861aec99901375f5ebcd5170ce1f5232cd38fd6"
+SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
+IMXGST_SRC ?= "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https"
+SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
+SRCREV = "0565fc515612908a353e8378e24f97de17cc56a6"
+
 
 inherit meson pkgconfig use-imx-headers
 
@@ -60,7 +60,7 @@ EXTRA_OEMESON = "-Dplatform=${PLATFORM} \
                  -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
 
-PACKAGES =+ "${PN}-gplay ${PN}-libgplaycore ${PN}-libgstfsl ${PN}-grecorder ${PN}-librecorder-engine ${PN}-libplayengine"
+PACKAGES =+ "${PN}-tools ${PN}-libgstfsl"
 
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
@@ -86,12 +86,9 @@ FILES:${PN} = "${libdir}/gstreamer-1.0/*.so ${datadir}"
 
 FILES:${PN}-dbg += "${libdir}/gstreamer-1.0/.debug"
 FILES:${PN}-dev += "${libdir}/gstreamer-1.0/*.la ${libdir}/pkgconfig/*.pc"
-FILES:${PN}-staticdev += "${libdir}/gstreamer-1.0/*.a"
-FILES:${PN}-gplay = "${bindir}/gplay-1.0"
-FILES:${PN}-libgplaycore = "${libdir}/libgplaycore-1.0${SOLIBS}"
+FILES:${PN}-tools += "${bindir}/* ${libdir}/librecorder_engine-1.0${SOLIBS}"
 FILES:${PN}-libgstfsl = "${libdir}/libgstfsl-1.0${SOLIBS}"
-FILES:${PN}-grecorder = "${bindir}/grecorder-1.0"
-FILES:${PN}-librecorder-engine = "${libdir}/librecorder_engine-1.0${SOLIBS}"
-FILES:${PN}-libplayengine = "${libdir}/libplayengine-1.0${SOLIBS}"
+
+INSANE_SKIP:${PN} = "build-deps"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
