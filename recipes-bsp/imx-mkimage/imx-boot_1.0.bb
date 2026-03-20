@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2024 NXP
+# Copyright (C) 2017-2024,2026 NXP
 
 require imx-mkimage_git.inc
 
@@ -7,25 +7,19 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 SECTION = "BSP"
 
-inherit use-imx-security-controller-firmware uboot-config
-
-DEPENDS += " \
-    u-boot \
-    ${IMX_EXTRA_FIRMWARE} \
-    imx-atf \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
-"
-# xxd is a dependency of fspi_packer.sh
 DEPENDS += "xxd-native"
-DEPENDS:append:mx8m-generic-bsp = " u-boot-mkimage-native dtc-native"
-DEPENDS:append:mx93-generic-bsp = " u-boot-mkimage-native dtc-native"
+DEPENDS:append:mx8m-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkeficapsule-native"
+DEPENDS:append:mx93-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkeficapsule-native"
+DEPENDS:append:mx95-generic-bsp = " u-boot-mkeficapsule-native"
 
-inherit deploy uuu_bootloader_tag
-
-UUU_BOOTLOADER = "imx-boot"
-
-# Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
-CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
+IMX_M4_DEMOS      = ""
+IMX_M4_DEMOS:mx8-nxp-bsp  = "imx-m4-demos:do_deploy"
+IMX_M4_DEMOS:mx8m-nxp-bsp = ""
+IMX_M4_DEMOS:mx8ulp-nxp-bsp = "imx-m33-demos:do_deploy"
+IMX_M4_DEMOS:mx91-nxp-bsp = ""
+IMX_M4_DEMOS:mx93-nxp-bsp = ""
+IMX_M4_DEMOS:mx943-nxp-bsp = "imx-mcore-demos:do_deploy"
+IMX_M4_DEMOS:mx95-nxp-bsp = "imx-m7-demos:do_deploy"
 
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
@@ -33,15 +27,28 @@ do_compile[depends] += " \
     virtual/bootloader:do_deploy \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
     imx-atf:do_deploy \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
-"
+    ${IMX_M4_DEMOS} \
+    ${@bb.utils.contains('UBOOT_CONFIG', 'crrm', '${CRRM_DEPLOY_DEPENDS}', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)}"
+CRRM_DEPLOY_DEPENDS ?= " \
+    virtual/kernel:do_deploy \
+    ${CRRM_INITRAMFS}:do_build"
+CRRM_INITRAMFS ??= "imx-image-crrm-initramfs"
+
+inherit use-imx-security-controller-firmware uboot-config
+inherit deploy uuu_bootloader_tag
+
+UUU_BOOTLOADER = "imx-boot"
+
+# Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
+CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
 
-OEI_ENABLE = "${@bb.utils.contains('DEPENDS', 'virtual/imx-oei', 'YES', 'NO', d)}"
 OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
+ATF_MACHINE_NAME:append = "${@bb.utils.contains('UBOOT_CONFIG', 'crrm', '-crrm', '', d)}"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 BOOT_VARIANT ?= ""
@@ -76,24 +83,48 @@ SOC_FAMILY:mx93-generic-bsp   = "mx93"
 SOC_FAMILY:mx943-generic-bsp  = "mx943"
 SOC_FAMILY:mx95-generic-bsp   = "mx95"
 
+M4_DEFAULT_IMAGE ?= "m4_image.bin"
+M4_DEFAULT_IMAGE:mx8qxp-nxp-bsp = "imx8qx_m4_TCM_power_mode_switch.bin"
+M4_DEFAULT_IMAGE:mx8dxl-nxp-bsp = "imx8dxl_m4_TCM_power_mode_switch.bin"
+M4_DEFAULT_IMAGE:mx8dx-nxp-bsp = "imx8qx_m4_TCM_power_mode_switch.bin"
+M4_DEFAULT_IMAGE:mx8ulp-nxp-bsp = "imx8ulp_m33_TCM_power_mode_switch.bin"
+M4_DEFAULT_IMAGE:mx91-nxp-bsp = ""
+M4_DEFAULT_IMAGE:mx93-nxp-bsp = ""
+M4_DEFAULT_IMAGE:mx943-nxp-bsp = ""
+M4_DEFAULT_IMAGE:mx95-nxp-bsp = "${M4_DEFAULT_IMAGE_MX95}"
+
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 
 MKIMAGE_EXTRA_ARGS ?= ""
 MKIMAGE_EXTRA_ARGS:mx943-nxp-bsp ?= " \
-    OEI=${OEI_ENABLE} \
+    OEI=YES \
     LPDDR_TYPE=${DDR_TYPE} \
     MSEL=${MSEL_TYPE} \
 "
 MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp ?= " \
-    OEI=${OEI_ENABLE} \
+    OEI=YES \
     LPDDR_TYPE=${DDR_TYPE} \
     ${@'LPDDR_FW_VERSION='+d.getVar('LPDDR_FW_VERSION') if d.getVar('LPDDR_FW_VERSION') else ''} \
     ${@bb.utils.contains('SYSTEM_MANAGER_CONFIG', 'mx95alt', 'MSEL=1', '', d)}"
+MKIMAGE_EXTRA_ARGS:imx95-19x19-lpddr5-frdm-pro ?= " \
+    ${MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp} \
+    QSPI_HEADER=./scripts/fspi_header-W25Q512NWEIQ"
+
 MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin ?= " \
     ${MKIMAGE_EXTRA_ARGS:mx95-nxp-bsp} \
     QSPI_HEADER=./scripts/fspi_header_133"
+MKIMAGE_EXTRA_ARGS:imx95-a1-19x19-verdin ?= " \
+    ${MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin} \
+"
 
 UBOOT_DTB_BINARY ?= "u-boot.dtb"
+
+CRRM_FILES = " \
+    ${KERNEL_IMAGETYPE}.gz \
+    ${KERNEL_IMAGETYPE}_crrm.gz \
+    ${KERNEL_DEVICETREE_BASENAME}.dtb \
+    ${KERNEL_DEVICETREE_BASENAME}-crrm.dtb \
+    ${CRRM_INITRAMFS}-${MACHINE}.cpio.zst.u-boot"
 
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
@@ -129,6 +160,10 @@ compile_mx8m() {
 
 compile_mx8() {
     bbnote 8QM boot binary build
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/imx8qm_m4_TCM_power_mode_switch_m40.bin \
+                                                             ${BOOT_STAGING}/m4_image.bin
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/imx8qm_m4_TCM_power_mode_switch_m41.bin \
+                                                             ${BOOT_STAGING}/m4_1_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
@@ -141,6 +176,7 @@ compile_mx8() {
 
 compile_mx8x() {
     bbnote 8QX boot binary build
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}   ${BOOT_STAGING}/m4_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
@@ -153,6 +189,7 @@ compile_mx8x() {
 
 compile_mx8ulp() {
     bbnote 8ULP boot binary build
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}   ${BOOT_STAGING}/m33_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/upower.bin          ${BOOT_STAGING}/upower.bin
@@ -188,6 +225,10 @@ compile_mx943() {
     bbnote i.MX 943 boot binary build
     compile_mx93
 
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE} ${BOOT_STAGING}/m33s_image.bin
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE} ${BOOT_STAGING}/m70_image.bin
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE} ${BOOT_STAGING}/m71_image.bin
+    cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
 }
@@ -196,6 +237,8 @@ compile_mx95() {
     bbnote i.MX 95 boot binary build
     compile_mx93
 
+    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}  ${BOOT_STAGING}/m7_image.bin
+    cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
 }
@@ -210,9 +253,13 @@ do_compile() {
             cp ${DEPLOY_DIR_IMAGE}/tee.bin ${BOOT_STAGING}/tee.bin-stmm
         fi
     fi
-    # Copy OEI firmware to SoC target folder to mkimage
-    if [ "${OEI_ENABLE}" = "YES" ]; then
-        cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
+    # Copy CRRM binaries to SoC target folder to mkimage
+    if [ ${@bb.utils.filter('UBOOT_CONFIG', 'crrm', d)} ]; then
+        for f in ${CRRM_FILES}; do
+            cp ${DEPLOY_DIR_IMAGE}/$f ${BOOT_STAGING}/$f
+        done
+        ln -sf ${CRRM_INITRAMFS}-${MACHINE}.cpio.zst.u-boot \
+            ${BOOT_STAGING}/initramfs.cpio.zst.u-boot
     fi
 
     for type in ${UBOOT_CONFIG}; do
@@ -250,11 +297,11 @@ do_compile() {
                         ;;
                     *stmm_capsule)
                         # target for flash_evk_stmm_capsule or
-                        # flash_singleboot_stmm_capsule
+                        # flash_singleboot_stmm_capsule or flash_lpboot_sm_all_stmm_capsule
                         cp ${RECIPE_SYSROOT_NATIVE}/${bindir}/mkeficapsule ${BOOT_STAGING}
-                        bbnote "building ${IMX_BOOT_SOC_TARGET} - TEE=tee.bin-stmm ${target}"
+                        bbnote "building ${IMX_BOOT_SOC_TARGET} - TEE=tee.bin-stmm ${MKIMAGE_EXTRA_ARGS} ${target}"
                         cp ${DEPLOY_DIR_IMAGE}/CRT.* ${BOOT_STAGING}
-                        make SOC=${IMX_BOOT_SOC_TARGET} TEE=tee.bin-stmm dtbs=${UBOOT_DTB_NAME} ${REV_OPTION} ${target}
+                        make SOC=${IMX_BOOT_SOC_TARGET} TEE=tee.bin-stmm ${MKIMAGE_EXTRA_ARGS} dtbs=${UBOOT_DTB_NAME} ${REV_OPTION} ${target}
                         ;;
                     *)
                         bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} ${MKIMAGE_EXTRA_ARGS} ${target}"
@@ -316,6 +363,8 @@ deploy_mx8m() {
 
 deploy_mx8() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/m4_image.bin         ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/m4_1_image.bin       ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
@@ -326,6 +375,7 @@ deploy_mx8() {
 
 deploy_mx8x() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/m4_image.bin         ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
@@ -336,6 +386,7 @@ deploy_mx8x() {
 
 deploy_mx8ulp() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/m33_image.bin        ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
@@ -365,12 +416,18 @@ deploy_mx93() {
 
 deploy_mx943() {
     deploy_mx93
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE}                ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE}                ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE}                ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
 }
 
 deploy_mx95() {
     deploy_mx93
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}         ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
 }
@@ -383,9 +440,12 @@ do_deploy() {
        install -m 0644 ${DEPLOY_DIR_IMAGE}/tee.bin ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 
-    # copy oei to deploy path
-    if [ "${OEI_ENABLE}" = "YES" ]; then
-        install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
+    # copy crrm to deploy path
+    if [ ${@bb.utils.filter('UBOOT_CONFIG', 'crrm', d)} ]; then
+        for f in ${CRRM_FILES}; do
+            cp ${DEPLOY_DIR_IMAGE}/$f                        ${DEPLOYDIR}/${BOOT_TOOLS}/$f
+        done
+        ln -s ${CRRM_INITRAMFS}-${MACHINE}.cpio.zst.u-boot   ${DEPLOYDIR}/${BOOT_TOOLS}/initramfs.cpio.zst.u-boot
     fi
 
     # copy makefile (soc.mak) for reference
