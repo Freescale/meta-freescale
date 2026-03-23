@@ -17,7 +17,10 @@ S = "${UNPACKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
 do_compile[noexec] = "1"
 
-do_install[noexec] = "1"
+do_install:append() {
+    install -d ${D}${base_libdir}/firmware/${PN}
+    install -m 0644 ${S}/firmware/seco/${SECO_FIRMWARE_NAME} ${D}${base_libdir}/firmware/${PN}
+}
 
 addtask deploy after do_install
 do_deploy () {
@@ -25,4 +28,5 @@ do_deploy () {
     install -m 0644 ${S}/firmware/seco/${SECO_FIRMWARE_NAME} ${DEPLOYDIR}
 }
 
+FILES:${PN} = "/"
 COMPATIBLE_MACHINE = "(mx8qm-generic-bsp|mx8qxp-generic-bsp|mx8dxl-generic-bsp|mx8dx-generic-bsp)"
