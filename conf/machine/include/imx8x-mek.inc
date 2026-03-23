@@ -55,8 +55,8 @@ IMX_DEFAULT_BOOTLOADER = "u-boot-imx"
 UBOOT_SUFFIX = "bin"
 
 IMXBOOT_TARGETS_SD = \
-    "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl', \
-                                                       'flash', d)}"
+    "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl flash_linux_m4', \
+                                                       'flash flash_regression_linux_m4', d)}"
 IMXBOOT_TARGETS_FSPI = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl_flexspi', \
                                                        'flash_flexspi', d)}"
