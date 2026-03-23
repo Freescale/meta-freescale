@@ -45,8 +45,8 @@ UBOOT_CONFIG[fspi] = "${UBOOT_CONFIG_BASENAME}_fspi_defconfig"
 IMX_BOOT_SEEK = "32"
 
 IMXBOOT_TARGETS_SD = \
-    "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl', \
-                                                       'flash', d)}"
+    "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl flash_linux_m4 flash_linux_m4_no_v2x ', \
+                                                       'flash flash_regression_linux_m4', d)}"
 IMXBOOT_TARGETS_FSPI = \
     "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'flash_spl_flexspi', \
                                                        'flash_flexspi', d)}"
