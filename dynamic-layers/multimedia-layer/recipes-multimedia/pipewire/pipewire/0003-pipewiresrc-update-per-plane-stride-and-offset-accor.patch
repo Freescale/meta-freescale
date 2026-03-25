@@ -1,0 +1,51 @@
+From f01c4d27819fc2897b10f7e2bc0f30bd183c45b8 Mon Sep 17 00:00:00 2001
+From: Elliot Chen <elliot.chen@nxp.com>
+Date: Sat, 28 Feb 2026 14:47:22 +0900
+Subject: [PATCH] pipewiresrc: update per-plane stride and offset according to
+ chunk info
+
+Upstream-Status: Pending
+
+---
+ meson.build              |  2 +-
+ src/gst/gstpipewiresrc.c | 11 +++++++++++
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index bca2c7a27..e290217e9 100644
+--- a/meson.build
++++ b/meson.build
+@@ -412,7 +412,7 @@ gst_deps_def = {
+   'gio-unix-2.0': {},
+   'gstreamer-1.0': {'version': '>= 1.10.0'},
+   'gstreamer-base-1.0': {},
+-  'gstreamer-video-1.0': {},
++  'gstreamer-video-1.0': {'version': '>= 1.22.0'},
+   'gstreamer-audio-1.0': {},
+   'gstreamer-allocators-1.0': {},
+ }
+diff --git a/src/gst/gstpipewiresrc.c b/src/gst/gstpipewiresrc.c
+index b0de17dfd..044c0d583 100644
+--- a/src/gst/gstpipewiresrc.c
++++ b/src/gst/gstpipewiresrc.c
+@@ -838,6 +838,17 @@ static GstBuffer *dequeue_buffer(GstPipeWireSrc *pwsrc)
+ 
+       video_size += d->chunk->size;
+     }
++
++    /* If the buffer number is smaller than the plane number,
++     * update the stride and offset for the remain planes.
++     */
++    if (n_datas && n_datas < n_planes) {
++      for (i = n_datas; i < n_planes; i++) {
++        meta->stride[i] = gst_video_format_info_extrapolate_stride (info->finfo, i, b->buffer->datas[0].chunk->stride);
++        meta->offset[i] = meta->offset[i-1] +
++            meta->stride[i-1] * GST_VIDEO_FORMAT_INFO_SCALE_HEIGHT (info->finfo, i-1, GST_VIDEO_INFO_HEIGHT(info));
++      }
++    }
+   }
+ 
+   if (b->buffer->n_datas != gst_buffer_n_memory(data->buf)) {
+-- 
+2.34.1
+

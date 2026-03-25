@@ -1,0 +1,41 @@
+From 5e89cf0818c555dff31a1ef9e02828c2541b7e1f Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
+Date: Mon, 31 Mar 2025 14:44:23 +0800
+Subject: [PATCH] systemd: allow pipewire user services for root
+
+Revert commit 9bc29b4b3 ("systemd: Disable pipewire user services for root")
+
+BT ofono service needs root permission for starting service.
+
+wireplumber[789]: 5:185m5:185mspa.bluez5: Failed to start HFP/HSP backend ofono
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ src/daemon/systemd/user/pipewire.service.in | 1 -
+ src/daemon/systemd/user/pipewire.socket     | 1 -
+ 2 files changed, 2 deletions(-)
+
+Index: pipewire-1.4.8/src/daemon/systemd/user/pipewire.service.in
+===================================================================
+--- pipewire-1.4.8.orig/src/daemon/systemd/user/pipewire.service.in
++++ pipewire-1.4.8/src/daemon/systemd/user/pipewire.service.in
+@@ -14,7 +14,6 @@ Description=PipeWire Multimedia Service
+ # After=pipewire.socket is not needed, as it is already implicit in the
+ # socket-service relationship, see systemd.socket(5).
+ Requires=pipewire.socket @PW_SERVICE_REQS@
+-ConditionUser=!root
+ 
+ [Service]
+ LockPersonality=yes
+Index: pipewire-1.4.8/src/daemon/systemd/user/pipewire.socket
+===================================================================
+--- pipewire-1.4.8.orig/src/daemon/systemd/user/pipewire.socket
++++ pipewire-1.4.8/src/daemon/systemd/user/pipewire.socket
+@@ -1,6 +1,5 @@
+ [Unit]
+ Description=PipeWire Multimedia System Sockets
+-ConditionUser=!root
+ 
+ [Socket]
+ Priority=6

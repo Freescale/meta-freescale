@@ -1,0 +1,30 @@
+From 71b5b04685e6b03b7e2325fed22c83d9c6300f65 Mon Sep 17 00:00:00 2001
+From: Haihua Hu <jared.hu@nxp.com>
+Date: Fri, 6 Feb 2026 17:32:34 +0900
+Subject: [PATCH] MMFMWK-9590 gstcuda: disable gir build for cuda plugin
+ libraries
+
+This is a workaround to only disable cuda gir build to avoid totally
+disable bad library gir build. mesa-rvgpu-emu patch break cuda gir build
+
+Upstream-Status: Inappropriate [i.MX specific]
+---
+ gst-libs/gst/cuda/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gst-libs/gst/cuda/meson.build b/gst-libs/gst/cuda/meson.build
+index 50ae0276ce..5e8a3d209b 100644
+--- a/gst-libs/gst/cuda/meson.build
++++ b/gst-libs/gst/cuda/meson.build
+@@ -157,7 +157,7 @@ gstcuda= library('gstcuda-' + api_version,
+ 
+ gen_sources = []
+ library_def = {'lib': gstcuda}
+-if build_gir
++if false
+   gir_includes = ['Gst-1.0', 'GstBase-1.0', 'GstVideo-1.0', 'CudaGst-1.0']
+   if gstglproto_dep.found()
+     gir_includes += ['GstGL-1.0']
+-- 
+2.34.1
+

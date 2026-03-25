@@ -526,20 +526,28 @@ MACHINE_GSTREAMER_1_0_PLUGIN:mx8ulp-nxp-bsp ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx93-nxp-bsp   ?= "imx-gst1.0-plugin"
 
 # GStreamer forked recipes
-PREFERRED_VERSION_gstreamer1.0:imx-nxp-bsp              ??= "1.26.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad:imx-nxp-bsp  ??= "1.26.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-base:imx-nxp-bsp ??= "1.26.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good:imx-nxp-bsp ??= "1.26.0.imx"
+PREFERRED_VERSION_gstreamer1.0:imx-nxp-bsp              ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad:imx-nxp-bsp  ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-base:imx-nxp-bsp ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good:imx-nxp-bsp ??= "1.26.6.imx"
 
 
 # GStreamer copied recipes
-PREFERRED_VERSION_gst-devtools:imx-nxp-bsp              ??= "1.26.0.imx"
+PREFERRED_VERSION_gst-devtools:imx-nxp-bsp              ??= "1.26.6.imx"
 PREFERRED_VERSION_gst-examples:imx-nxp-bsp              ??= "1.24.7.imx"
-PREFERRED_VERSION_gstreamer1.0-libav:imx-nxp-bsp        ??= "1.26.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly:imx-nxp-bsp ??= "1.26.0.imx"
-PREFERRED_VERSION_gstreamer1.0-python:imx-nxp-bsp       ??= "1.26.0.imx"
-PREFERRED_VERSION_gstreamer1.0-rtsp-server:imx-nxp-bsp  ??= "1.26.0.imx"
-PREFERRED_VERSION_gstreamer1.0-vaapi:imx-nxp-bsp        ??= "1.26.0.imx"
+PREFERRED_VERSION_gstreamer1.0-libav:imx-nxp-bsp        ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:imx-nxp-bsp ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0-python:imx-nxp-bsp       ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:imx-nxp-bsp  ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0-vaapi:imx-nxp-bsp        ??= "1.26.6.imx"
+
+# Use libcamera fork for certain SOCs
+PREFERRED_VERSION_libcamera ??= "${PREFERRED_VERSION_LIBCAMERA_IMX}"
+PREFERRED_VERSION_LIBCAMERA_IMX                = ""
+PREFERRED_VERSION_LIBCAMERA_IMX:mx95-nxp-bsp   = "0.6.0.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8mm-nxp-bsp  = "0.6.0.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8ulp-nxp-bsp = "0.6.0.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8mq-nxp-bsp  = "0.6.0.imx"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"

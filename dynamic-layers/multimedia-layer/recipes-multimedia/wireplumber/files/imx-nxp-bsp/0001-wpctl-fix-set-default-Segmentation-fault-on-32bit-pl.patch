@@ -1,0 +1,33 @@
+From 9cebf00856ef24b9a4d6306775013b10da821172 Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
+Date: Thu, 9 Nov 2023 15:15:04 +0800
+Subject: [PATCH] wpctl: fix set-default Segmentation fault on 32bit platform
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ src/tools/wpctl.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+Index: wireplumber-0.5.11/src/tools/wpctl.c
+===================================================================
+--- wireplumber-0.5.11.orig/src/tools/wpctl.c
++++ wireplumber-0.5.11/src/tools/wpctl.c
+@@ -832,9 +832,16 @@ set_default_parse_positional (gint argc,
+ static gboolean
+ set_default_prepare (WpCtl * self, GError ** error)
+ {
++  g_autoptr (WpPlugin) def_nodes_api = wp_plugin_find (self->core, "default-nodes-api");
++  guint32 id;
++
++  if (!translate_id (def_nodes_api, cmdline.set_default.id, &id, error)) {
++    fprintf(stderr, "Translate ID error.\n");
++    return FALSE;
++  }
+   wp_object_manager_add_interest (self->om, WP_TYPE_NODE,
+       WP_CONSTRAINT_TYPE_PW_GLOBAL_PROPERTY,
+-      "object.id", "=u", (guint32) cmdline.set_default.id,
++      "object.id", "=u", id,
+       NULL);
+   wp_object_manager_request_object_features (self->om, WP_TYPE_NODE,
+       WP_PIPEWIRE_OBJECT_FEATURES_MINIMAL);
