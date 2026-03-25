@@ -10,8 +10,8 @@ LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=bc649096ad3928ec06a8713b8d787eac"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.12.49_2.2.0"
-SRCREV = "8c9b278016c97527b285f2fcbe53c2d428eb171d"
+SRCBRANCH = "lf-6.18.2_1.0.0"
+SRCREV = "d7e4bb37b45bbf93faf888e0ca6763a29e28054a"
 
 
 inherit allarch
@@ -28,15 +28,12 @@ do_install() {
     install -d ${D}${nonarch_base_libdir}/firmware/nxp
     oe_runmake install INSTALLDIR=${D}${nonarch_base_libdir}/firmware/nxp
 
-    # Upstream SDIO8997 and IW416 driver firmwares are located on mrvl folder
+    # Upstream IW416 driver firmwares are located on mrvl folder
     install -d ${D}${nonarch_base_libdir}/firmware/mrvl
-    ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sdiouart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sdiouartiw416_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/mrvl/sdiouartiw416_combo_v0.bin
 
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sd9098_wlan_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdio9098_wlan_v1.bin
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduart9098_combo_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouart9098_combo_v1.bin
-    ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sd8997_wlan_v4.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdio8997_wlan_v4.bin
-    ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouart8997_combo_v4.bin
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sduartiw416_combo.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdiouartiw416_combo_v0.bin
 }
 
@@ -47,9 +44,6 @@ PACKAGES =+ " \
     \
     ${PN}-nxp-common \
     ${PN}-nxp8987-sdio \
-    ${PN}-nxp8997-common \
-    ${PN}-nxp8997-pcie \
-    ${PN}-nxp8997-sdio \
     ${PN}-nxp9098-common \
     ${PN}-nxp9098-pcie \
     ${PN}-nxp9098-sdio \
@@ -62,7 +56,6 @@ PACKAGES =+ " \
 
 RDEPENDS:${PN}-all-sdio = " \
     ${PN}-nxp8987-sdio \
-    ${PN}-nxp8997-sdio \
     ${PN}-nxp9098-sdio \
     ${PN}-nxpiw416-sdio \
     ${PN}-nxpiw610-sdio \
@@ -70,7 +63,6 @@ RDEPENDS:${PN}-all-sdio = " \
 "
 
 RDEPENDS:${PN}-all-pcie = " \
-    ${PN}-nxp8997-pcie \
     ${PN}-nxp9098-pcie \
     ${PN}-nxpaw693-pcie \
 "
@@ -91,33 +83,6 @@ RDEPENDS:${PN}-nxp8987-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 RREPLACES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 RCONFLICTS:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
-
-FILES:${PN}-nxp8997-common = " \
-    ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_8997.conf \
-    ${nonarch_base_libdir}/firmware/nxp/txpwrlimit_cfg_8997.conf \
-    ${nonarch_base_libdir}/firmware/nxp/uart8997_bt_v4.bin \
-"
-RDEPENDS:${PN}-nxp8997-common += "${PN}-nxp-common"
-RPROVIDES:${PN}-nxp8997-common = "linux-firmware-nxp8997-common"
-RREPLACES:${PN}-nxp8997-common = "linux-firmware-nxp8997-common"
-RCONFLICTS:${PN}-nxp8997-common = "linux-firmware-nxp8997-common"
-
-FILES:${PN}-nxp8997-pcie = " \
-    ${nonarch_base_libdir}/firmware/nxp/pci*8997* \
-"
-RDEPENDS:${PN}-nxp8997-pcie += "${PN}-nxp8997-common"
-RPROVIDES:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
-RREPLACES:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
-RCONFLICTS:${PN}-nxp8997-pcie = "linux-firmware-nxp8997-pcie"
-
-FILES:${PN}-nxp8997-sdio = " \
-    ${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin \
-    ${nonarch_base_libdir}/firmware/nxp/sd*8997* \
-"
-RDEPENDS:${PN}-nxp8997-sdio += "${PN}-nxp8997-common"
-RPROVIDES:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
-RREPLACES:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
-RCONFLICTS:${PN}-nxp8997-sdio = "linux-firmware-nxp8997-sdio"
 
 FILES:${PN}-nxp9098-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_909x.conf \
@@ -178,11 +143,11 @@ FILES:${PN}-nxpiw610-usb += " \
 RDEPENDS:${PN}-nxpiw610-usb += "${PN}-nxp-common"
 
 FILES:${PN}-nxpiw612-sdio = " \
-    ${nonarch_base_libdir}/firmware/nxp/sduart_nw61x_v1.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/sd_w61x_v1.bin.se \
-    ${nonarch_base_libdir}/firmware/nxp/uartspi_n61x_v1.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/sduart_nw61x_*.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/uartspi_n61x_*.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/uartuart_n61x_*.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/IW612_SD_RFTest/ \
-    ${nonarch_base_libdir}/firmware/nxp/uartuart_n61x_v1.bin.se \
 "
 RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"

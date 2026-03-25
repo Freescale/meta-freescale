@@ -8,7 +8,7 @@ require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 # inline NEON and FPU code generation
 DEFAULTTUNE:use-mainline-bsp = "cortexa53-crypto"
 
-MACHINE_FEATURES += "pci wifi bluetooth nxp8997-pcie nxp8997-sdio nxp9098-pcie nxp9098-sdio"
+MACHINE_FEATURES += "pci wifi bluetooth nxp9098-pcie nxp9098-sdio"
 
 # NXP BSP can consume proprietary jailhouse and Marvell drivers
 # OP-TEE is also applicable to NXP BSP, mainline BSP seems not to have
