@@ -1,5 +1,5 @@
 # Copied from meta-imx/meta-imx-bsp/recipes-security/optee/optee-os-common-imx.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L37
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L39
 require optee-os-fslc.inc
 
 DEPENDS:append:arm = "u-boot-mkimage-native"
@@ -8,7 +8,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/optee-os:"
 
 SRC_URI:remove = "git://github.com/OP-TEE/optee_os.git;branch=master;protocol=https"
 SRC_URI:prepend = "${OPTEE_OS_SRC};branch=${SRCBRANCH} "
-SRC_URI:append = " file://0007-allow-setting-sysroot-for-clang.patch"
 SRC_URI:remove = "file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
                   file://0002-optee-enable-clang-support.patch \
                   file://0003-core-link-add-no-warn-rwx-segments.patch"

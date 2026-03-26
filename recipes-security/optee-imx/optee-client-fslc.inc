@@ -1,5 +1,5 @@
 # Copied from meta-arm/recipes-security/optee/optee-client.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L30
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L32
 
 SUMMARY = "OP-TEE Client API"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Normal World Client side of the TEE"

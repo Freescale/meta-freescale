@@ -1,5 +1,5 @@
 # Copied from meta-imx/meta-imx-bsp/recipes-security/optee/optee-os-tadevkit-imx.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L37
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L39
 
 require optee-os-common-fslc-imx.inc
 
@@ -22,3 +22,6 @@ do_deploy() {
 }
 
 FILES:${PN} = "${includedir}/optee/"
+
+# Build paths are currently embedded
+INSANE_SKIP:${PN}-dev += "buildpaths"

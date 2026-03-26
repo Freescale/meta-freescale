@@ -1,5 +1,5 @@
 # Copied from meta-arm/recipes-security/optee/optee-os.inc.
-# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-walnascar/imx-6.12.20-2.0.0.xml#L30
+# See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L32
 
 SUMMARY = "OP-TEE Trusted OS"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Trusted side of the TEE"
@@ -15,7 +15,7 @@ CVE_PRODUCT = "linaro:op-tee op-tee:op-tee_os"
 
 DEPENDS = "python3-pyelftools-native python3-cryptography-native"
 
-DEPENDS:append:toolchain-clang = " compiler-rt"
+DEPENDS:append:toolchain-clang = " lld-native compiler-rt"
 
 SRC_URI = "git://github.com/OP-TEE/optee_os.git;branch=master;protocol=https"
 
@@ -33,14 +33,13 @@ EXTRA_OEMAKE += " \
 EXTRA_OEMAKE += " HOST_PREFIX=${HOST_PREFIX}"
 EXTRA_OEMAKE += " CROSS_COMPILE64=${HOST_PREFIX}"
 
+# Enable BTI in optee
+EXTRA_OEMAKE += "${@bb.utils.contains('MACHINE_FEATURES', 'arm-branch-protection', ' CFG_TA_BTI=1 CFG_CORE_PAUTH=y CFG_TA_PAUTH=y', '', d)}"
+
 LDFLAGS[unexport] = "1"
 CPPFLAGS[unexport] = "1"
 AS[unexport] = "1"
 LD[unexport] = "1"
-
-do_compile:prepend() {
-        PLAT_LIBGCC_PATH=$(${CC} -print-libgcc-file-name)
-}
 
 do_compile() {
     oe_runmake -C ${S} all
