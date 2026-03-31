@@ -28,8 +28,9 @@ do_install() {
     install -d ${D}${nonarch_base_libdir}/firmware/nxp
     oe_runmake install INSTALLDIR=${D}${nonarch_base_libdir}/firmware/nxp
 
-    # Upstream IW416 driver firmwares are located on mrvl folder
+    # Upstream ISDIO8997 and W416 driver firmwares are located on mrvl folder
     install -d ${D}${nonarch_base_libdir}/firmware/mrvl
+    ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sdiouart8997_combo_v4.bin ${D}${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sdiouartiw416_combo_v0.bin ${D}${nonarch_base_libdir}/firmware/mrvl/sdiouartiw416_combo_v0.bin
 
     ln -frs ${D}${nonarch_base_libdir}/firmware/nxp/sd9098_wlan_v1.bin ${D}${nonarch_base_libdir}/firmware/nxp/sdio9098_wlan_v1.bin
@@ -44,6 +45,7 @@ PACKAGES =+ " \
     \
     ${PN}-nxp-common \
     ${PN}-nxp8987-sdio \
+    ${PN}-nxp8997-sdio \
     ${PN}-nxp9098-common \
     ${PN}-nxp9098-pcie \
     ${PN}-nxp9098-sdio \
@@ -56,6 +58,7 @@ PACKAGES =+ " \
 
 RDEPENDS:${PN}-all-sdio = " \
     ${PN}-nxp8987-sdio \
+    ${PN}-nxp8997-sdio \
     ${PN}-nxp9098-sdio \
     ${PN}-nxpiw416-sdio \
     ${PN}-nxpiw610-sdio \
@@ -83,6 +86,10 @@ RDEPENDS:${PN}-nxp8987-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 RREPLACES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 RCONFLICTS:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
+
+FILES:${PN}-nxp8997-sdio = " \
+    ${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin \
+"
 
 FILES:${PN}-nxp9098-common = " \
     ${nonarch_base_libdir}/firmware/nxp/ed_mac_ctrl_V3_909x.conf \
