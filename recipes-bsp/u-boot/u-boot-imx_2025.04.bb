@@ -1,6 +1,6 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright 2018 (C) O.S. Systems Software LTDA.
-# Copyright 2017-2024 NXP
+# Copyright 2017-2026 NXP
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common_${PV}.inc
@@ -34,19 +34,31 @@ do_deploy:append:mx8m-generic-bsp() {
                     for key_value in ${UBOOT_DTB_NAME_FLAGS}; do
                         local type_key="${key_value%%:*}"
                         local dtb_name="${key_value#*:}"
+                        local dtb_path=""
                         if [ "$type_key" = "$type" ]
                         then
                             bbnote "UBOOT_CONFIG = $type, UBOOT_DTB_NAME = $dtb_name"
                             # There is only one ${dtb_name}, the first one. All the other are with the type appended
                             if [ ! -f "${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}" ]; then
-                                install -m 0644 ${B}/${builddir}/arch/arm/dts/${dtb_name}  ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}
+                                if [ -f "${B}/${builddir}/arch/arm/dts/${dtb_name}" ]; then
+                                    dtb_path="arch/arm/dts"
+                                elif [ -f "${B}/${builddir}/dts/upstream/src/arm64/freescale/${dtb_name}" ]; then
+                                    dtb_path="dts/upstream/src/arm64/freescale"
+                                else
+                                    bbfatal "DTB '${dtb_name}' not found in expected locations"
+                                fi
+                                bbnote "DTB found at ${B}/${builddir}/${dtb_path}/${dtb_name}"
+                                install -m 0644 ${B}/${builddir}/${dtb_path}/${dtb_name} ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}
                             else
                                 bbwarn "Use custom wks.in for $dtb_name = $type"
                             fi
-                            install -m 0644 ${B}/${builddir}/arch/arm/dts/${dtb_name}  ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}-${type}
+                            if [ -f "${B}/${builddir}/${dtb_path}/${dtb_name}" ]; then
+                                install -m 0644 ${B}/${builddir}/${dtb_path}/${dtb_name} ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}-${type}
+                            fi
                         fi
                         unset type_key
                         unset dtb_name
+                        unset dtb_path
                     done
 
                     unset UBOOT_DTB_NAME_FLAGS
@@ -62,6 +74,11 @@ do_deploy:append:mx8m-generic-bsp() {
 }
 
 do_deploy:append:mx93-generic-bsp() {
+    # Deploy CRT.* from u-boot for stmm
+    install -m 0644 ${S}/CRT.*     ${DEPLOYDIR}
+}
+
+do_deploy:append:mx95-generic-bsp() {
     # Deploy CRT.* from u-boot for stmm
     install -m 0644 ${S}/CRT.*     ${DEPLOYDIR}
 }
