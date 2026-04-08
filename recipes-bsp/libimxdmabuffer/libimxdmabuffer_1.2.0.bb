@@ -8,7 +8,7 @@ SECTION = "base"
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "faf547cc2345bfbf95507ab7e86530f85289bb5b"
+SRCREV = "d44deb80af881b82f394d44696433e6695022c8c"
 SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH};protocol=https \
            file://run-ptest \
           "
