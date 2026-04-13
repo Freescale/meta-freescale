@@ -1,5 +1,5 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright (C) 2017-2022 NXP
+# Copyright 2017-2022,2026 NXP
 
 require imx-mkimage_git.inc
 
