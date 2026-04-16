@@ -12,6 +12,6 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=b66f32a90f9577a5a3255c21d79bc619"
 SRC_URI = "${IMX_OEI_SRC};branch=${SRCBRANCH}"
 IMX_OEI_SRC ?= "git://github.com/nxp-imx/imx-oei.git;protocol=https"
 SRCBRANCH = "master"
-SRCREV = "49bfaa93e9d1fe213866bcb9507927a59a9ede5a"
+SRCREV = "fa9e9a29e8c8939cc360beafd01393ca393e439a"
 
 require imx-oei.inc

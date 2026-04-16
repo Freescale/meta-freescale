@@ -11,40 +11,39 @@ PACKAGECONFIG[tcm] = ""
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-OEI_CONFIGS ?= "ddr ${@bb.utils.filter('PACKAGECONFIG', 'tcm', d)}"
 OEI_CORE    ?= "UNDEFINED"
 OEI_SOC     ?= "UNDEFINED"
 OEI_BOARD   ?= "UNDEFINED"
-OEI_DDR_CONFIG  ?= ""
-OEI_DEBUG   ?= "0"
+OEI_CONFIGS ?= "ddr ${@bb.utils.filter('PACKAGECONFIG', 'tcm', d)}"
 
 LDFLAGS[unexport] = "1"
 
 EXTRA_OEMAKE = "\
     board=${OEI_BOARD} \
-    DEBUG=${OEI_DEBUG} \
+    DEBUG=1 \
     OEI_CROSS_COMPILE=arm-none-eabi-"
 
-EXTRA_OEMAKE:append:mx95-generic-bsp = " r=${IMX_SOC_REV}"
-
-python () {
-    if 'ecc' in d.getVar('PACKAGECONFIG'):
-        ddr_conf = d.getVar('OEI_DDR_CONFIG_ECC')
-    else:
-        ddr_conf = d.getVar('OEI_DDR_CONFIG')
-    if ddr_conf:
-        d.appendVar('EXTRA_OEMAKE', ' DDR_CONFIG='+ddr_conf)
-}
+EXTRA_OEMAKE:append:mx95-nxp-bsp = " r=${IMX_SOC_REV}"
 
 do_configure() {
+    if [ "${@bb.utils.filter('PACKAGECONFIG', 'ecc', d)}" ]; then
+        ddr_config=${OEI_DDR_CONFIG_ECC}
+    else
+        ddr_config=${OEI_DDR_CONFIG}
+    fi
     for oei_config in ${OEI_CONFIGS}; do
-        oe_runmake clean oei=$oei_config
+        oe_runmake clean oei=$oei_config DDR_CONFIG=$ddr_config
     done
 }
 
 do_compile() {
+    if [ "${@bb.utils.filter('PACKAGECONFIG', 'ecc', d)}" ]; then
+        ddr_config=${OEI_DDR_CONFIG_ECC}
+    else
+        ddr_config=${OEI_DDR_CONFIG}
+    fi
     for oei_config in ${OEI_CONFIGS}; do
-        oe_runmake oei=$oei_config
+        oe_runmake oei=$oei_config DDR_CONFIG=$ddr_config
     done
 }
 
