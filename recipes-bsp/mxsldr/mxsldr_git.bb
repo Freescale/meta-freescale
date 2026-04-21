@@ -7,7 +7,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRCREV = "c40d80472525e1d57dae5317c028b745968c0399"
-SRC_URI = "git://git.denx.de/mxsldr.git;branch=master \
+SRC_URI = "git://source.denx.de/denx/mxsldr.git;branch=master;protocol=https \
            file://0001-Do-not-ignore-OE-cflags-and-ldflags.patch \
            "
 
