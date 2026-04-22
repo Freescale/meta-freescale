@@ -82,6 +82,6 @@ FILES_SOLIBS_VERSIONED = " \
 
 INSANE_SKIP:${PN} = "already-stripped"
 
-RDEPENDS:${PN} = "libdrm"
+RDEPENDS:${PN} = "libdrm coreutils"
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"
