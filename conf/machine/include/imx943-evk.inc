@@ -36,8 +36,6 @@ UBOOT_CONFIG[sd]     = "${UBOOT_CONFIG_BASENAME}_defconfig"
 UBOOT_CONFIG[sd-ecc] = "${UBOOT_CONFIG_BASENAME}_defconfig"
 UBOOT_CONFIG[crrm]   = "${UBOOT_CONFIG_BASENAME}_xspi_crrm_defconfig"
 UBOOT_CONFIG[xspi]   = "${UBOOT_CONFIG_BASENAME}_xspi_defconfig"
-UBOOT_CONFIG_IMAGE_FSTYPES[sd]     = "sdcard"
-UBOOT_CONFIG_IMAGE_FSTYPES[sd-ecc] = "sdcard"
 
 ATF_PLATFORM = "imx94"
 OEI_CORE = "m33"
