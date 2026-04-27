@@ -597,7 +597,7 @@ PREFERRED_VERSION_weston:mx7-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:imx-mainline-bsp   = ""
 
 # Use i.MX libdrm Version
-PREFERRED_VERSION_libdrm:imx-nxp-bsp ??= "2.4.123.imx"
+PREFERRED_VERSION_libdrm:imx-nxp-bsp ??= "2.4.127.imx"
 
 PREFERRED_VERSION_glslang:imxvulkan                  ??= "1.3.275.0.imx"
 PREFERRED_VERSION_spirv-headers:imxvulkan            ??= "1.3.275.0.imx"
