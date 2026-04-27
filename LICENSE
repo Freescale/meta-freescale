@@ -3,14 +3,14 @@
 This file lists all licenses used by recipes in the meta-freescale layer.
 
 ./dynamic-layers/arm-toolchain/recipes-bsp/imx-oei/imx-oei_1.0.0.bb: LICENSE = "BSD-3-Clause"
-./dynamic-layers/arm-toolchain/recipes-bsp/imx-system-manager/imx-system-manager_2025q4.bb: LICENSE = "BSD-3-Clause"
+./dynamic-layers/arm-toolchain/recipes-bsp/imx-system-manager/imx-system-manager_2026q1.bb: LICENSE = "BSD-3-Clause"
 ./dynamic-layers/openembedded-layer/recipes-dpaa/fmc/fmc_git.bb: LICENSE = "MIT"
 ./recipes-bsp/atf/qoriq-atf-2.12.inc: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/boot-format/boot-format_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-bsp/ddr-phy/ddr-phy_git.bb: LICENSE = "NXP-Binary-EULA"
 ./recipes-bsp/dp-firmware-cadence/dp-firmware-cadence_22.04.bb: LICENSE = "Proprietary"
-./recipes-bsp/firmware-imx/firmware-ele-imx_2.0.2.bb: LICENSE = "Proprietary"
-./recipes-bsp/firmware-imx/firmware-imx-8.28.inc: LICENSE = "Proprietary"
+./recipes-bsp/firmware-imx/firmware-ele-imx_2.0.5.bb: LICENSE = "Proprietary"
+./recipes-bsp/firmware-imx/firmware-imx-8.31.inc: LICENSE = "Proprietary"
 ./recipes-bsp/firmware-imx/firmware-nxp-wifi_1.1.bb: LICENSE = "Proprietary"
 ./recipes-bsp/firmware-imx/firmware-sof-imx_2.3.0.bb: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/firmware-upower/firmware-upower_1.3.1.bb: LICENSE = "Proprietary"
