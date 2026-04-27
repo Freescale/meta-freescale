@@ -501,9 +501,12 @@ MACHINE_EXTRA_RRECOMMENDS += " \
     ${@bb.utils.filter('COMBINED_FEATURES', 'jailhouse', d)} \
 "
 
-# ELE extra Firmware
+# ELE extra Firmware,to be installed and accessed from userspace.
+# Note that multiple names can be given in order to install multiple versions
+# to a single rootfs.
 SECOEXT_FIRMWARE_NAME ?= "UNDEFINED"
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx943${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
 
 # GStreamer 1.0 plugins
