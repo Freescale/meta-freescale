@@ -120,7 +120,7 @@ do_install:append() {
         insert_line_after "ExecStart=" "Restart=on-failure" ${D}${systemd_system_unitdir}/weston.service
     else
         # Install weston-socket.sh for sysvinit as well
-        install -D -p -m0644 ${WORKDIR}/weston-socket.sh ${D}${sysconfdir}/profile.d/weston-socket.sh
+        install -D -p -m0644 ${S}/weston-socket.sh ${D}${sysconfdir}/profile.d/weston-socket.sh
     fi
 
     # Include commented gbm-format
