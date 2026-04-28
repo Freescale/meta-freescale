@@ -339,7 +339,6 @@ INSANE_SKIP:libgbm-imx += "dev-so"
 
 FILES:libvulkan-imx = "\
     ${libdir}/libvulkan_VSI${REALSOLIBS} \
-    ${libdir}/libvulkan_VSI${SOLIBS} \
     ${datadir}/vulkan"
 FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 RPROVIDES:libvulkan-imx = "virtual-vulkan-icd"

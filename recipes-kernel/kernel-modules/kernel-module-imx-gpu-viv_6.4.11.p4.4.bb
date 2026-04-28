@@ -11,7 +11,7 @@ SRC_URI = "${LINUX_IMX_SRC};subpath=drivers/mxc/gpu-viv;destsuffix=${BB_GIT_DEFA
            file://Add-makefile.patch"
 LINUX_IMX_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.18.y"
-LOCALVERSION = "-lts-${SRCBRANCH}"
+LOCALVERSION = "-6.18.2-1.0.0"
 SRCREV = "b9ab260bee4d15d079e39a373162eb6201c1cb4a"
 
 inherit module
