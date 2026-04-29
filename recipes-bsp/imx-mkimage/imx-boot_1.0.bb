@@ -12,22 +12,12 @@ DEPENDS:append:mx8m-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkef
 DEPENDS:append:mx93-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkeficapsule-native"
 DEPENDS:append:mx95-generic-bsp = " u-boot-mkeficapsule-native"
 
-IMX_M4_DEMOS      = ""
-IMX_M4_DEMOS:mx8-nxp-bsp  = "imx-m4-demos:do_deploy"
-IMX_M4_DEMOS:mx8m-nxp-bsp = ""
-IMX_M4_DEMOS:mx8ulp-nxp-bsp = "imx-m33-demos:do_deploy"
-IMX_M4_DEMOS:mx91-nxp-bsp = ""
-IMX_M4_DEMOS:mx93-nxp-bsp = ""
-IMX_M4_DEMOS:mx943-nxp-bsp = "imx-mcore-demos:do_deploy"
-IMX_M4_DEMOS:mx95-nxp-bsp = "imx-m7-demos:do_deploy"
-
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
 do_compile[depends] += " \
     virtual/bootloader:do_deploy \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
     imx-atf:do_deploy \
-    ${IMX_M4_DEMOS} \
     ${@bb.utils.contains('UBOOT_CONFIG', 'crrm', '${CRRM_DEPLOY_DEPENDS}', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)}"
 CRRM_DEPLOY_DEPENDS ?= " \
@@ -82,16 +72,6 @@ SOC_FAMILY:mx91-generic-bsp   = "mx91"
 SOC_FAMILY:mx93-generic-bsp   = "mx93"
 SOC_FAMILY:mx943-generic-bsp  = "mx943"
 SOC_FAMILY:mx95-generic-bsp   = "mx95"
-
-M4_DEFAULT_IMAGE ?= "m4_image.bin"
-M4_DEFAULT_IMAGE:mx8qxp-nxp-bsp = "imx8qx_m4_TCM_power_mode_switch.bin"
-M4_DEFAULT_IMAGE:mx8dxl-nxp-bsp = "imx8dxl_m4_TCM_power_mode_switch.bin"
-M4_DEFAULT_IMAGE:mx8dx-nxp-bsp = "imx8qx_m4_TCM_power_mode_switch.bin"
-M4_DEFAULT_IMAGE:mx8ulp-nxp-bsp = "imx8ulp_m33_TCM_power_mode_switch.bin"
-M4_DEFAULT_IMAGE:mx91-nxp-bsp = ""
-M4_DEFAULT_IMAGE:mx93-nxp-bsp = ""
-M4_DEFAULT_IMAGE:mx943-nxp-bsp = ""
-M4_DEFAULT_IMAGE:mx95-nxp-bsp = "${M4_DEFAULT_IMAGE_MX95}"
 
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 
@@ -160,10 +140,6 @@ compile_mx8m() {
 
 compile_mx8() {
     bbnote 8QM boot binary build
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/imx8qm_m4_TCM_power_mode_switch_m40.bin \
-                                                             ${BOOT_STAGING}/m4_image.bin
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/imx8qm_m4_TCM_power_mode_switch_m41.bin \
-                                                             ${BOOT_STAGING}/m4_1_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
@@ -176,7 +152,6 @@ compile_mx8() {
 
 compile_mx8x() {
     bbnote 8QX boot binary build
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}   ${BOOT_STAGING}/m4_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
@@ -189,7 +164,6 @@ compile_mx8x() {
 
 compile_mx8ulp() {
     bbnote 8ULP boot binary build
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}   ${BOOT_STAGING}/m33_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/upower.bin          ${BOOT_STAGING}/upower.bin
@@ -225,9 +199,6 @@ compile_mx943() {
     bbnote i.MX 943 boot binary build
     compile_mx93
 
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE} ${BOOT_STAGING}/m33s_image.bin
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE} ${BOOT_STAGING}/m70_image.bin
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE} ${BOOT_STAGING}/m71_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
@@ -237,7 +208,6 @@ compile_mx95() {
     bbnote i.MX 95 boot binary build
     compile_mx93
 
-    cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}  ${BOOT_STAGING}/m7_image.bin
     cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
@@ -363,8 +333,6 @@ deploy_mx8m() {
 
 deploy_mx8() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/m4_image.bin         ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/m4_1_image.bin       ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
@@ -375,7 +343,6 @@ deploy_mx8() {
 
 deploy_mx8x() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/m4_image.bin         ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
@@ -386,7 +353,6 @@ deploy_mx8x() {
 
 deploy_mx8ulp() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/m33_image.bin        ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
@@ -416,9 +382,6 @@ deploy_mx93() {
 
 deploy_mx943() {
     deploy_mx93
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE}                ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE}                ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE}                ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
@@ -426,7 +389,6 @@ deploy_mx943() {
 
 deploy_mx95() {
     deploy_mx93
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE}         ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
