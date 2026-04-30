@@ -7,7 +7,9 @@ New headers are installed in ${includedir}/imx."
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-SRC_URI = "${LINUX_IMX_SRC}"
+SRC_URI = "${LINUX_IMX_SRC} \
+           file://0001-ipu-uapi-Do-not-redefine-standard-integer-types.patch \
+"
 LINUX_IMX_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.18.y"
 LOCALVERSION = "-lts-${SRCBRANCH}"
