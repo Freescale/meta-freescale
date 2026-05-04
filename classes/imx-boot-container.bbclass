@@ -1,6 +1,6 @@
 #
 # This class provides a support to build the boot container for
-# i.MX8M and i.MX95 derivatives
+# i.MX8M, i.MX91, i.MX93 and i.MX95 derivatives
 #
 # imx8m machines require a separate build target to be executed
 # due to the fact that final boot image is constructed using flash.bin
@@ -35,6 +35,12 @@ IMX_BOOT_CONTAINER_FIRMWARE_SOC ?= ""
 IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx8mq-generic-bsp = " \
     signed_dp_imx8m.bin \
     signed_hdmi_imx8m.bin \
+"
+IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx91-generic-bsp = " \
+    ${SECO_FIRMWARE_NAME} \
+"
+IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx93-generic-bsp = " \
+    ${SECO_FIRMWARE_NAME} \
 "
 IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx95-generic-bsp = " \
     ${SECO_FIRMWARE_NAME} \
