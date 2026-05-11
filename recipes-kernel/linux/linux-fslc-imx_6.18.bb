@@ -43,13 +43,13 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # Additional commits may exist to better acommodate yocto builds.
 #
 # $ git log --oneline  --no-merges v6.18.24.. ^mainline/linux-6.18.y ^NXP/lf-6.18.y
-$ 6e811374f6340 drm/imx: lcdifv3: Fix videomode settings
-$ 40b594773feaf drm: of: Fix build without CONFIG_OF
-$ 40d5cc16c304a arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
-$ eff109d884f3b gpu: drm: cadence: select hdmi helper
-$ ddfe8741dab43 of: enable using OF_DYNAMIC without OF_UNITTEST
-$ 1b982f1a29bbc arm64: dts: imx8mq: drop cpu-idle-states
-$ de4b96e987407 hwrng: optee: support generic crypto
+# - 6e811374f6340 drm/imx: lcdifv3: Fix videomode settings
+# - 40b594773feaf drm: of: Fix build without CONFIG_OF
+# - 40d5cc16c304a arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
+# - eff109d884f3b gpu: drm: cadence: select hdmi helper
+# - ddfe8741dab43 of: enable using OF_DYNAMIC without OF_UNITTEST
+# - 1b982f1a29bbc arm64: dts: imx8mq: drop cpu-idle-states
+# - de4b96e987407 hwrng: optee: support generic crypto
 
 #
 # NOTE to upgraders:
