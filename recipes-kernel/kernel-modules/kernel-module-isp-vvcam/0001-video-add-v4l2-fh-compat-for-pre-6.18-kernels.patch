@@ -1,0 +1,88 @@
+From 35d5a732cc4b53897a0e6188fae5e9c8fd1b97a1 Mon Sep 17 00:00:00 2001
+From: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+Date: Mon, 11 May 2026 16:00:30 +0000
+Subject: [PATCH] video: add v4l2_fh compat for pre-6.18 kernels
+
+Linux v6.18 added file_to_v4l2_fh() and changed v4l2_fh_add() and
+v4l2_fh_del() to take the file pointer so the helpers can manage
+file->private_data internally.
+
+The relevant upstream commits are:
+  618882c92681 ("media: Wrap file->private_data access with a helper function")
+  47f4b1acb4d5 ("media: Set file->private_data in v4l2_fh_add()")
+  277966749f46 ("media: Reset file->private_data to NULL in v4l2_fh_del()")
+
+Add a small compatibility layer for older kernels that keeps
+file->private_data management in this driver.
+
+Upstream-Status: Inappropriate
+Signed-off-by: Ernest Van Hoecke <ernest.vanhoecke@toradex.com>
+---
+ video/video.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/video/video.c b/video/video.c
+index bccf466b05f5..ce8c7d725150 100644
+--- a/video/video.c
++++ b/video/video.c
+@@ -69,6 +69,30 @@
+ #include "vvdefs.h"
+ #include "vvsensor.h"
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 18, 0)
++static inline struct v4l2_fh *viv_file_to_v4l2_fh(struct file *file)
++{
++	return file->private_data;
++}
++
++static inline void viv_v4l2_fh_add(struct v4l2_fh *fh, struct file *file)
++{
++	file->private_data = fh;
++	v4l2_fh_add(fh);
++}
++
++static inline void viv_v4l2_fh_del(struct v4l2_fh *fh, struct file *file)
++{
++	v4l2_fh_del(fh);
++	file->private_data = NULL;
++}
++
++#define file_to_v4l2_fh(file) viv_file_to_v4l2_fh(file)
++#else
++#define viv_v4l2_fh_add(fh, file) v4l2_fh_add(fh, file)
++#define viv_v4l2_fh_del(fh, file) v4l2_fh_del(fh, file)
++#endif
++
+ #define DEF_PLANE_NO    (0)
+ 
+ static struct viv_video_device *vvdev[VIDEO_NODE_NUM];
+@@ -573,7 +597,7 @@ static int video_open(struct file *file)
+ 	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+ 
+ 	v4l2_fh_init(&handle->vfh, dev->video);
+-	v4l2_fh_add(&handle->vfh, file);
++	viv_v4l2_fh_add(&handle->vfh, file);
+ 
+ 	handle->vdev = dev;
+ 	handle->queue.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+@@ -589,7 +613,7 @@ static int video_open(struct file *file)
+ 	rc = vb2_queue_init(&handle->queue);
+ 	if (rc) {
+ 		pr_err("can't init vb queue\n");
+-		v4l2_fh_del(&handle->vfh, file);
++		viv_v4l2_fh_del(&handle->vfh, file);
+ 		v4l2_fh_exit(&handle->vfh);
+ 		kfree(handle);
+ 		return rc;
+@@ -654,7 +678,7 @@ static int video_close(struct file *file)
+ 				vb2_buffer_done(vb, VB2_BUF_STATE_ERROR);
+ 		}
+ 
+-		v4l2_fh_del(&handle->vfh, file);
++		viv_v4l2_fh_del(&handle->vfh, file);
+ 		v4l2_fh_exit(&handle->vfh);
+ 
+ 		{
+-- 
+2.43.0
+
