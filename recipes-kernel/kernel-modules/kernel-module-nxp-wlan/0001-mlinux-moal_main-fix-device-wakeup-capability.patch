@@ -1,0 +1,52 @@
+From 6342842b69302ad5530b07d8390102b0648f4b9a Mon Sep 17 00:00:00 2001
+From: Franz Schnyder <franz.schnyder@toradex.com>
+Date: Thu, 21 May 2026 11:29:47 +0200
+Subject: [PATCH] mlinux: moal_main: fix device wakeup capability
+
+Currently, the device is always advertised as being capable of
+waking up, even if no interrupt line has been allocated for it.
+
+Initialize the device only as wakeup capable if an interrupt has been
+registered.
+
+Upstream-Status: Pending
+Signed-off-by: Franz Schnyder <franz.schnyder@toradex.com>
+---
+ mlinux/moal_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/mlinux/moal_main.c b/mlinux/moal_main.c
+index 0214fc3..2d765b8 100644
+--- a/mlinux/moal_main.c
++++ b/mlinux/moal_main.c
+@@ -14331,6 +14331,11 @@ void woal_regist_oob_wakeup_irq(moal_handle *handle)
+ 		goto err_exit;
+ 	}
+ 
++	if (device_init_wakeup(dev, true)) {
++		dev_err(dev, "Failed to init wakeup for mwifiex\n");
++		goto err_exit;
++	}
++
+ 	disable_irq(handle->irq_oob_wakeup);
+ 
+ 	LEAVE();
+@@ -14353,6 +14358,7 @@ void woal_unregist_oob_wakeup_irq(moal_handle *handle)
+ 
+ 	ENTER();
+ 	if (handle->irq_oob_wakeup >= 0) {
++		device_init_wakeup(dev, false);
+ 		devm_free_irq(dev, handle->irq_oob_wakeup, handle);
+ 	}
+ 	LEAVE();
+@@ -14829,7 +14835,6 @@ moal_handle *woal_add_card(void *card, struct device *dev, moal_if_ops *if_ops,
+ 		PRINTM(MFATAL, "Firmware Init Failed\n");
+ 		goto err_init_fw;
+ 	}
+-	device_init_wakeup(dev, true);
+ #ifdef SD8887
+ 	if (IS_SD8887(handle->card_type)) {
+ 		if (handle->fw_release_number.minorRevNum == 75) {
+-- 
+2.43.0
+
