@@ -1,0 +1,32 @@
+From f1e283f16dc6d38552be6e691fbb2eed32a560cc Mon Sep 17 00:00:00 2001
+From: Markus Niebel <Markus.Niebel@ew.tq-group.com>
+Date: Tue, 19 May 2026 17:50:31 +0200
+Subject: [PATCH] ethosu.hpp: Fix gcc15 build issues
+
+https://gcc.gnu.org/gcc-15/porting_to.html#cxx
+Some C++ Standard Library headers are no longer
+including other headers that were being used
+internally by the library.
+
+Upstream-Status: Pending
+
+Signed-off-by: Markus Niebel <Markus.Niebel@ew.tq-group.com>
+---
+ driver_library/include/ethosu.hpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/driver_library/include/ethosu.hpp b/driver_library/include/ethosu.hpp
+index f8f7598..977a716 100644
+--- a/driver_library/include/ethosu.hpp
++++ b/driver_library/include/ethosu.hpp
+@@ -19,6 +19,7 @@
+ #pragma once
+ 
+ #include <algorithm>
++#include <cstdint>
+ #include <iostream>
+ #include <memory>
+ #include <string>
+-- 
+2.43.0
+
