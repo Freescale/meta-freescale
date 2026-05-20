@@ -10,8 +10,8 @@ DEPENDS = "flatbuffers python3-pybind11 python3-pybind11-native"
 
 SRC_URI = "${ETHOS_U_SRC};branch=${SRCBRANCH}"
 ETHOS_U_SRC ?= "git://github.com/nxp-imx/ethos-u-driver-stack-imx.git;protocol=https"
-SRCBRANCH = "lf-6.12.3_1.0.0"
-SRCREV = "a80c51d77c91f1a8266afc5d8056fb981de4b504"
+SRCBRANCH = "lf-6.18.2_1.0.0"
+SRCREV = "94658d758ef1116e574aa7cf16f96c9546fe932e"
 
 inherit cmake setuptools3
 
