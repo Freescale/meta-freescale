@@ -12,6 +12,7 @@ module_conf_moal = "options moal mod_para=nxp/wifi_mod_para.conf"
 
 SRC_URI = " \
     ${MRVL_SRC};branch=${SRCBRANCH} \
+    file://0001-mlinux-moal_main-fix-device-wakeup-capability.patch \
 "
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
 SRCBRANCH = "lf-6.18.2_1.0.0"
