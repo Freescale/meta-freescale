@@ -6,11 +6,11 @@ NXP_PATCHES = " \
     file://0003-linux-dmabuf-support-passing-buffer-DTRC-meta-to-com.patch \
 "
 
-SRC_URI:append:imx-nxp-bsp = " ${NXP_PATCHES}"
+SRC_URI:append:imx-nxp-bsp:class-target = " ${NXP_PATCHES}"
 
 # override the effect of "inherit allarch"
-python allarch_package_arch_handler:prepend:imx-nxp-bsp () {
+python allarch_package_arch_handler:prepend:imx-nxp-bsp:class-target () {
     return
 }
 
-PACKAGE_ARCH:imx-nxp-bsp = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:imx-nxp-bsp:class-target = "${MACHINE_SOCARCH}"
