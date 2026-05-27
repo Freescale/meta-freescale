@@ -176,63 +176,29 @@
             },
             "configurations": [
             {
-                "name": "fsl",
-                "description": "I will use the distro base configuration only (either FSL or FSLC)"
-            },
-            {
-                "name": "accept-fsl-eula",
-                "description": "Accept NXP EULA only",
+                "name": "fslc-framebuffer",
+                "description": "FSLC BSP with framebuffer backend",
                 "oe-fragments": [
-                    "freescale-layer/accept-fsl-eula"
-                ]
-            },
-            {
-                "name": "fsl-framebuffer",
-                "description": "Accept NXP EULA and configure FrameBuffer backend",
-                "oe-fragments": [
-                    "freescale-layer/eula/accept-fsl-eula",
+                    "freescale-layer/bsp/fslc",
                     "freescale-layer/graphics/framebuffer"
                 ]
             },
             {
-                "name": "fsl-wayland",
-                "description": "Accept NXP EULA and configure Wayland with systemd",
+                "name": "nxp-framebuffer",
+                "description": "Accept NXP EULA, NXP BSP with framebuffer backend",
                 "oe-fragments": [
                     "freescale-layer/eula/accept-fsl-eula",
-                    "freescale-layer/init/systemd",
-                    "freescale-layer/graphics/wayland"
-                ]
-            },
-            {
-                "name": "fsl-xwayland",
-                "description": "Accept NXP EULA and configure XWayland with systemd",
-                "oe-fragments": [
-                    "freescale-layer/eula/accept-fsl-eula",
-                    "freescale-layer/init/systemd",
-                    "freescale-layer/graphics/xwayland"
-                ]
-            },
-            {
-                "name": "framebuffer",
-                "description": "Configure FrameBuffer backend",
-                "oe-fragments": [
+                    "freescale-layer/bsp/nxp",
                     "freescale-layer/graphics/framebuffer"
                 ]
             },
             {
-                "name": "wayland",
-                "description": "Configure Wayland with systemd",
+                "name": "fslc-eula-framebuffer",
+                "description": "Accept NXP EULA, FSLC BSP with framebuffer backend",
                 "oe-fragments": [
-                    "freescale-layer/init/systemd",
-                    "freescale-layer/graphics/wayland"
-                ]
-            },
-            {
-                "name": "xwayland",
-                "description": "Configure XWayland with systemd",
-                "oe-fragments": [
-                    "freescale-layer/init/systemd",
-                    "freescale-layer/graphics/xwayland"
+                    "freescale-layer/eula/accept-fsl-eula",
+                    "freescale-layer/bsp/fslc",
+                    "freescale-layer/graphics/framebuffer"
                 ]
             }
             ]
