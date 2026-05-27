@@ -167,10 +167,10 @@
                     ]
                 },
                 "distro": {
-                    "description": "Target Distributions",
+                    "description": "Distribution",
                     "options": [
-                        {"name": "distro/fsl",  "description": "FSL NXP BSP base distribution"},
-                        {"name": "distro/fslc", "description": "FSLC Community BSP base distribution"}
+                        {"name": "distro/poky",    "description": "Poky reference distribution"},
+                        {"name": "distro/nodistro", "description": "No distribution policy"}
                     ]
                 }
             },
