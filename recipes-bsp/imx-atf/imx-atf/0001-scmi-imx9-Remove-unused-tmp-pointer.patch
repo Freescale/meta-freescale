@@ -1,0 +1,38 @@
+From 455e501513345b98ff93d9c214f2f17629edd318 Mon Sep 17 00:00:00 2001
+From: Franz Schnyder <franz.schnyder@toradex.com>
+Date: Fri, 29 May 2026 11:04:45 +0200
+Subject: [PATCH] scmi: imx9: Remove unused tmp pointer
+
+The scmi_per_lpm_mode_set function declares a tmp pointer but is never
+read. The newer GCC version 16.1.0 treats the unused pointer as
+-Wunused-but-set-variable. With -Werror, this breaks the build.
+
+Upstream-Status: Pending
+Signed-off-by: Franz Schnyder <franz.schnyder@toradex.com>
+---
+ drivers/arm/css/scmi/vendor/scmi_imx9.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/arm/css/scmi/vendor/scmi_imx9.c b/drivers/arm/css/scmi/vendor/scmi_imx9.c
+index 8319eeb69..3a0f5b95b 100644
+--- a/drivers/arm/css/scmi/vendor/scmi_imx9.c
++++ b/drivers/arm/css/scmi/vendor/scmi_imx9.c
+@@ -400,7 +400,6 @@ int scmi_per_lpm_mode_set(void *p, uint32_t cpu_id, uint32_t num_configs,
+ 	unsigned int token = 0;
+ 	int ret;
+ 	scmi_channel_t *ch = (scmi_channel_t *)p;
+-	struct scmi_per_lpm_config *tmp = cfg;
+ 
+ 	validate_scmi_channel(ch);
+ 
+@@ -428,7 +427,6 @@ int scmi_per_lpm_mode_set(void *p, uint32_t cpu_id, uint32_t num_configs,
+ 
+ 		if (num_configs > MAX_PER_LPI_CONFIGS_PER_CMD) {
+ 			num_configs -= MAX_PER_LPI_CONFIGS_PER_CMD;
+-			tmp += MAX_PER_LPI_CONFIGS_PER_CMD;
+ 		} else {
+ 			break;
+ 		}
+-- 
+2.43.0
+

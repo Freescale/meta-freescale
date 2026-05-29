@@ -7,7 +7,9 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;m
 
 PV .= "+git${SRCPV}"
 
-SRC_URI = "${ATF_SRC};branch=${SRCBRANCH}"
+SRC_URI = "${ATF_SRC};branch=${SRCBRANCH} \
+	   file://0001-scmi-imx9-Remove-unused-tmp-pointer.patch \
+"
 ATF_SRC ?= "git://github.com/nxp-imx/imx-atf.git;protocol=https"
 SRCBRANCH = "lf_v2.12"
 SRCREV = "4a2e9ef5f9f185bda68470b46365add008903b8c"
