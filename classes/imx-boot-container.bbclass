@@ -66,7 +66,7 @@ do_resolve_and_populate_binaries() {
         for config in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
             for type in ${UBOOT_CONFIG}; do
-                builddir="${config}-${type}"
+                builddir="${config}"
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]; then
                     for firmware in ${IMX_BOOT_CONTAINER_FIRMWARE}; do
@@ -108,7 +108,7 @@ do_deploy:append() {
         for config in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
             for type in ${UBOOT_CONFIG}; do
-                builddir="${config}-${type}"
+                builddir="${config}"
                 j=$(expr $j + 1);
                 if [ $j -eq $i ]
                 then
