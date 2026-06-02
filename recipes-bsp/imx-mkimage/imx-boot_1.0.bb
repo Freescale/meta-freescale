@@ -14,15 +14,20 @@ DEPENDS:append:mx95-generic-bsp = " u-boot-mkeficapsule-native"
 
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
-do_compile[depends] += " \
-    virtual/bootloader:do_deploy \
-    ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
-    imx-atf:do_deploy \
+DEPENDS += " \
+    virtual/bootloader \
+    ${IMX_EXTRA_FIRMWARE} \
+    imx-atf \
     ${@bb.utils.contains('UBOOT_CONFIG', 'crrm', '${CRRM_DEPLOY_DEPENDS}', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)}"
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
+"
+
+do_compile[deptask] = "do_deploy"
+do_compile[depends] += "${@bb.utils.contains('UBOOT_CONFIG', 'crrm', '${CRRM_INITRAMFS}:do_build', '', d)}"
+
 CRRM_DEPLOY_DEPENDS ?= " \
-    virtual/kernel:do_deploy \
-    ${CRRM_INITRAMFS}:do_build"
+    virtual/kernel \
+    ${CRRM_INITRAMFS}"
 CRRM_INITRAMFS ??= "imx-image-crrm-initramfs"
 
 inherit use-imx-security-controller-firmware uboot-config
