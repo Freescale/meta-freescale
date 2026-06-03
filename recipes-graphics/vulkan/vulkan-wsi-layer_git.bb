@@ -8,7 +8,8 @@ PV = "0.0+git${SRCPV}"
 SRC_URI = "git://gitlab.freedesktop.org/mesa/vulkan-wsi-layer.git;protocol=https;branch=main \
            file://0001-MGS-6801-ccc-vkmark-on-wayland.patch \
            file://0002-MGS-6823-nxp-Add-support-of-VK_COMPOSITE_ALPHA_OPAQU.patch \
-           file://0003-Update-minimum-version-of-CMake.patch"
+           file://0003-Update-minimum-version-of-CMake.patch \
+           file://0001-wayland-Add-C-guard-before-__STDC_VERSION__-define.patch"
 SRCREV = "cb1a50cf7e640ad7306e673131ded98c0f133628"
 
 inherit cmake pkgconfig
