@@ -1,0 +1,38 @@
+From 6e38ee09378bfa7edc97528967f0dd0bd810f2c6 Mon Sep 17 00:00:00 2001
+From: Tom Hochstein <tom.hochstein@nxp.com>
+Date: Thu, 9 Oct 2025 08:29:44 -0500
+Subject: [PATCH] xdg-shell: Add CMake minimum
+
+The build is broken:
+```
+| CMake Error in CMakeLists.txt:
+|   No cmake_minimum_required command is present.  A line of code such as
+|
+|     cmake_minimum_required(VERSION 4.1)
+|
+|   should be added at the top of the file.  The version specified may be lower
+|   if you wish to support older CMake versions for this project.  For more
+|   information run "cmake --help-policy CMP0000".
+```
+
+Upstream-Status: Pending
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+---
+ CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8d39c6c5..5cb52e32 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,7 @@
+ # Generate the client header and glue library from xdg-shell.xml
+ 
++cmake_minimum_required(VERSION 3.5)
++
+ include(FindPkgConfig)
+ 
+ if (NOT DEFINED WAYLAND_PROTOCOLS_DIR)
+-- 
+2.34.1
+

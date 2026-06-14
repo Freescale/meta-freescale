@@ -1,0 +1,52 @@
+From 59bc03d931270b6354690512d0c881eec8b97678 Mon Sep 17 00:00:00 2001
+From: Kim Kulling <kimkulling@users.noreply.github.com>
+Date: Fri, 25 Jul 2025 15:01:16 +0200
+Subject: [PATCH] X3D: Fix invalid vector::back usage (#6283)
+
+* X3D: Fix invalid vector::back usage
+
+Upstream-Status: Backport [https://github.com/assimp/assimp/commit/59bc03d931270b6354690512d0c881eec8b97678]
+---
+ code/AssetLib/X3D/X3DGeoHelper.cpp | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/code/AssetLib/X3D/X3DGeoHelper.cpp b/code/AssetLib/X3D/X3DGeoHelper.cpp
+index 1c962a460..b90956d2c 100644
+--- a/code/AssetLib/X3D/X3DGeoHelper.cpp
++++ b/code/AssetLib/X3D/X3DGeoHelper.cpp
+@@ -128,13 +128,17 @@ void X3DGeoHelper::rect_parallel_epiped(const aiVector3D &pSize, std::list<aiVec
+ 
+ #undef MESH_RectParallelepiped_CREATE_VERT
+ 
++static constexpr int InvalidIndex = -1;
++
+ void X3DGeoHelper::coordIdx_str2faces_arr(const std::vector<int32_t> &pCoordIdx, std::vector<aiFace> &pFaces, unsigned int &pPrimitiveTypes) {
+     std::vector<int32_t> f_data(pCoordIdx);
+     std::vector<unsigned int> inds;
+     unsigned int prim_type = 0;
+ 
+-    if (f_data.back() != (-1)) {
+-        f_data.push_back(-1);
++    if (!f_data.empty()) {
++        if (f_data.back() != InvalidIndex) {
++            f_data.push_back(InvalidIndex);
++        }
+     }
+ 
+     // reserve average size.
+@@ -191,8 +195,10 @@ mg_m_err:
+ void X3DGeoHelper::coordIdx_str2lines_arr(const std::vector<int32_t> &pCoordIdx, std::vector<aiFace> &pFaces) {
+     std::vector<int32_t> f_data(pCoordIdx);
+ 
+-    if (f_data.back() != (-1)) {
+-        f_data.push_back(-1);
++    if (!f_data.empty()) {
++        if (f_data.back() != InvalidIndex) {
++            f_data.push_back(InvalidIndex);
++        }
+     }
+ 
+     // reserve average size.
+-- 
+2.34.1
+
