@@ -1,28 +1,21 @@
-name: Backport labeled merged pull requests
+name: Backport merged pull requests
 on:
   pull_request_target:
-    types: [closed]
+    types: [closed, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  build:
+  backport:
     name: Create backport PRs
     runs-on: ubuntu-latest
-    # Only run when pull request is merged
-    # or when a comment containing `/backport` is created
+    # Run on merged PRs that carry a 'backport <branch>' label, whether the
+    # label was added before the merge or afterwards.
     if: github.event.pull_request.merged
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          # Required to find all branches
           fetch-depth: 0
-      - name: Create backport PRs
-        # Should be kept in sync with `version`
-        uses: zeebe-io/backport-action@v0.0.4
-        with:
-          # Required
-          # Version of the backport-action
-          # Must equal the version in `uses`
-          # Recommended: latest tag or `master`
-          version: v0.0.4
-
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          github_workspace: ${{ github.workspace }}
+      - uses: korthout/backport-action@v4
