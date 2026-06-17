@@ -28,14 +28,14 @@ Conflicts:
  create mode 100644 unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 
 diff --git a/meson.build b/meson.build
-index a78d698a730b..99a555d53a09 100644
+index 25d42ce..4eb37f0 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -42,6 +42,7 @@ unstable_protocols = {
- 	'xdg-output': ['v1'],
- 	'xdg-shell': ['v5', 'v6'],
- 	'xwayland-keyboard-grab': ['v1'],
-+	'alpha-compositing': ['v1'],
+@@ -45,6 +45,7 @@ unstable_protocols = {
+ 	'xdg-output': {'v1': []},
+ 	'xdg-shell': {'v5': [], 'v6': []},
+ 	'xwayland-keyboard-grab': {'v1': []},
++	'alpha-compositing': {'v1': []},
  }
  
  staging_protocols = {

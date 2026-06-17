@@ -19,14 +19,14 @@ Signed-off-by: Haihua Hu <jared.hu@nxp.com>
  create mode 100644 unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml
 
 diff --git a/meson.build b/meson.build
-index 99a555d53a09..70b594d3b89c 100644
+index 4eb37f0..c131e95 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -43,6 +43,7 @@ unstable_protocols = {
- 	'xdg-shell': ['v5', 'v6'],
- 	'xwayland-keyboard-grab': ['v1'],
- 	'alpha-compositing': ['v1'],
-+	'hdr10-metadata': ['v1'],
+@@ -46,6 +46,7 @@ unstable_protocols = {
+ 	'xdg-shell': {'v5': [], 'v6': []},
+ 	'xwayland-keyboard-grab': {'v1': []},
+ 	'alpha-compositing': {'v1': []},
++	'hdr10-metadata': {'v1': []},
  }
  
  staging_protocols = {
