@@ -18,4 +18,4 @@ do_compile[noexec] = "1"
 
 FILES:${PN} = "/*"
 ALLOW_EMPTY:${PN} = "1"
-INSANE_SKIP:${PN} = "debug-files dev-so"
+INSANE_SKIP:${PN} = "dev-so"
