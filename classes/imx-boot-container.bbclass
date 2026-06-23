@@ -26,7 +26,7 @@
 inherit use-imx-security-controller-firmware
 
 # Define ATF binary file to be deployed to the U-Boot build folder
-ATF_MACHINE_NAME = "bl31-${ATF_PLATFORM}.bin"
+ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
