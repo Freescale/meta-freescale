@@ -4,6 +4,10 @@ require optee-test-fslc.inc
 
 DEPENDS += "openssl"
 
+inherit features_check
+
+REQUIRED_MACHINE_FEATURES = "optee"
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/optee-test:"
 
 SRC_URI:remove = "git://github.com/OP-TEE/optee_test.git;branch=master;protocol=https"
