@@ -4,7 +4,11 @@ Welcome to `meta-freescale`. This document outlines our commitment to providing 
 
 This layer provides support for NXP's platforms for use with OpenEmbedded and/or Yocto Project.
 
-### Dependencies
+## Maintainer
+
+Otavio Salvador <otavio.salvador@ossystems.com.br>
+
+## Dependencies
 
 This layer depends on:
 
