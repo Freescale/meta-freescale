@@ -1,6 +1,6 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/imx-nxp-bsp:"
+FILESEXTRAPATHS:prepend:imx-nxp-bsp := "${THISDIR}/${PN}/imx-nxp-bsp:"
 
-SRC_URI += "${SRC_URI_IMX}"
+SRC_URI:append:imx-nxp-bsp = " ${SRC_URI_IMX}"
 SRC_URI_IMX             = ""
 SRC_URI_IMX:mx6-nxp-bsp = " \
     file://0001-Fix-pulseaudio-mutex-issue-when-do-pause-in-gstreame.patch \
@@ -16,7 +16,7 @@ SRC_URI_IMX:mx9-nxp-bsp = " \
 
 CACHED_CONFIGUREVARS:append:mx6-nxp-bsp = " ax_cv_PTHREAD_PRIO_INHERIT=no"
 
-do_install:append() {
+do_install:append:imx-nxp-bsp() {
     if [ -e "${UNPACKDIR}/daemon.conf" ] && [ -e "${UNPACKDIR}/default.pa" ]; then
         install -m 0644 ${UNPACKDIR}/daemon.conf ${D}${sysconfdir}/pulse/daemon.conf
         install -m 0644 ${UNPACKDIR}/default.pa ${D}${sysconfdir}/pulse/default.pa
