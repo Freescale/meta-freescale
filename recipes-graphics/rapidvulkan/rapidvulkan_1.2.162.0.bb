@@ -8,6 +8,8 @@ SRC_URI = "git://github.com/Unarmed1000/RapidVulkan;protocol=https;branch=master
 SRCREV = "e39a407c5ae880792d8843ada65a19dd26b3dca7"
 
 
-inherit cmake
+REQUIRED_DISTRO_FEATURES = "vulkan"
+
+inherit cmake features_check
 
 ALLOW_EMPTY:${PN} = "1"
