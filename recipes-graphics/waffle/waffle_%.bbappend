@@ -1,6 +1,6 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend:imxgpu := "${THISDIR}/${PN}:"
 
-SRC_URI += " \
+SRC_URI:append:imxgpu = " \
     file://0001-meson-Add-missing-wayland-dependency-on-EGL.patch \
     file://0002-meson-Separate-surfaceless-option-from-x11.patch \
 "
