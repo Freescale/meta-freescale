@@ -20,8 +20,10 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-fsl-gstreamer1.0-full \
     packagegroup-fsl-tools-gpu \
     packagegroup-fsl-tools-gpu-external \
-    packagegroup-fsl-tools-testapps \
-    packagegroup-fsl-tools-benchmark \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', \
+                         'packagegroup-fsl-tools-testapps', '', d)} \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', \
+                         'packagegroup-fsl-tools-benchmark', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', \
                          'firmwared', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', \
