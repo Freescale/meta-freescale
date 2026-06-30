@@ -10,7 +10,6 @@ inherit packagegroup
 
 NETWORK_TOOLS = "\
 	ethtool \
-	tcpdump \
 "
 
 NETWORK_TOOLS:append:qoriq = " \
