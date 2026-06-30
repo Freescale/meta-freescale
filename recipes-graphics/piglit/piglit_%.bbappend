@@ -8,8 +8,8 @@ PACKAGECONFIG:remove = " ${PACKAGECONFIG_REMOVE}"
 
 PACKAGECONFIG_APPEND ?= " \
     gbm \
-    opencl \
     ${@bb.utils.filter('DISTRO_FEATURES', 'vulkan', d)}"
+PACKAGECONFIG_APPEND:append:imxviv:mx8-nxp-bsp = " opencl"
 PACKAGECONFIG_APPEND:imxgpu:mx6-nxp-bsp  = ""
 PACKAGECONFIG_APPEND:imxgpu:mx7-nxp-bsp  = ""
 
