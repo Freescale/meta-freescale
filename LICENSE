@@ -4,6 +4,8 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 
 ./dynamic-layers/arm-toolchain/recipes-bsp/imx-oei/imx-oei_1.0.0.bb: LICENSE = "BSD-3-Clause"
 ./dynamic-layers/arm-toolchain/recipes-bsp/imx-system-manager/imx-system-manager_2026q1.bb: LICENSE = "BSD-3-Clause"
+./dynamic-layers/openembedded-layer/recipes-devtools/utp-com/utp-com_git.bb: LICENSE = "GPL-2.0-only"
+./dynamic-layers/openembedded-layer/recipes-devtools/uuu/uuu_git.bb: LICENSE = "BSD-3-Clause"
 ./dynamic-layers/openembedded-layer/recipes-dpaa/fmc/fmc_git.bb: LICENSE = "MIT"
 ./recipes-bsp/atf/qoriq-atf-2.12.inc: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/boot-format/boot-format_git.bb: LICENSE = "GPL-2.0-only"
@@ -54,9 +56,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-devtools/qemu/qemu-qoriq.inc: LICENSE = "GPL-2.0-only & LGPL-2.1-only"
 ./recipes-devtools/qoriq-cst/qoriq-cst_git.bb: LICENSE = "BSD-3-Clause"
 ./recipes-devtools/stb/stb_git.bb: LICENSE = "MIT"
-./recipes-devtools/utp-com/utp-com_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-devtools/uuu/uuu-bin_1.5.233.bb: LICENSE = "BSD-3-Clause & LGPL-2.1-or-later"
-./recipes-devtools/uuu/uuu_git.bb: LICENSE = "BSD-3-Clause"
 ./recipes-downgrade/glslang/glslang_1.3.275.0.imx.bb: LICENSE = "BSD-3-Clause & BSD-2-Clause & MIT & Apache-2.0 & GPL-3-with-bison-exception"
 ./recipes-downgrade/spir/spirv-headers_1.3.275.0.imx.bb: LICENSE = "MIT"
 ./recipes-downgrade/spir/spirv-tools_1.3.275.0.imx.bb: LICENSE  = "Apache-2.0"
