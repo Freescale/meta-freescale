@@ -12,7 +12,9 @@ SRC_URI = "git://gitlab.freedesktop.org/mesa/vulkan-wsi-layer.git;protocol=https
            file://0001-wayland-Add-C-guard-before-__STDC_VERSION__-define.patch"
 SRCREV = "cb1a50cf7e640ad7306e673131ded98c0f133628"
 
-inherit cmake pkgconfig
+REQUIRED_DISTRO_FEATURES = "vulkan"
+
+inherit cmake pkgconfig features_check
 
 PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', 'headless', d)}"
 
