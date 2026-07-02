@@ -18,6 +18,8 @@ DEPENDS += " \
     xxd-native \
 "
 
+DEPENDS:append:mx9-nxp-bsp = " efitools-native"
+
 B = "${WORKDIR}/build"
 
 inherit fsl-u-boot-localversion
