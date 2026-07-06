@@ -13,8 +13,6 @@ SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRC
 SRCBRANCH = "lf-6.18.2_1.0.0"
 SRCREV = "d7e4bb37b45bbf93faf888e0ca6763a29e28054a"
 
-COMPATIBLE_MACHINE = "(imx-generic-bsp)"
-
 inherit allarch
 
 CLEANBROKEN = "1"
