@@ -1,5 +1,5 @@
 SUMMARY = "C++ library for half precision floating point arithmetics"
-DESCRIPTION = "half is a C++ header-only library to provide an IEEE-754 conformant \ 
+DESCRIPTION = "half is a C++ header-only library to provide an IEEE-754 conformant \
 half-precision floating point type along with corresponding arithmetic operators, \
 type conversions and common mathematical functions."
 
