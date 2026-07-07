@@ -33,7 +33,7 @@ def gettext_oemeson(d):
 # Build GstValidateVideo
 PACKAGECONFIG[cairo] = "-Dcairo=enabled,-Dcairo=disabled,cairo"
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Ddoc=disabled \
     -Ddebug_viewer=disabled \
     -Dtests=disabled \

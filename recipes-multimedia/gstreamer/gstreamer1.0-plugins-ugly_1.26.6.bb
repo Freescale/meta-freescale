@@ -35,7 +35,7 @@ PACKAGECONFIG[x264]     = "-Dx264=enabled,-Dx264=disabled,x264"
 
 GSTREAMER_GPL = "${@bb.utils.filter('PACKAGECONFIG', 'a52dec cdio dvdread mpeg2dec x264', d)}"
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Ddoc=disabled \
     -Dsidplay=disabled \
 "

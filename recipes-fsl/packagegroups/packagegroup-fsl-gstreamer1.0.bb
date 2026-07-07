@@ -6,7 +6,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
 
-PACKAGES += " \
+PACKAGES += "\
     ${PN}-base \
     ${PN}-audio \
     ${PN}-video \

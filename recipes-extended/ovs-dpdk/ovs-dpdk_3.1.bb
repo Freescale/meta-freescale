@@ -27,8 +27,8 @@ do_install:append() {
     install -m 0755 ${S}/utilities/ovs-ofctl ${D}${bindir}/ovs-dpdk
 }
 
-INSANE_SKIP:${PN}-dbg += " buildpaths"
-INSANE_SKIP:${PN} += " buildpaths"
+INSANE_SKIP:${PN}-dbg += "buildpaths"
+INSANE_SKIP:${PN} += "buildpaths"
 
 ALLOW_EMPTY:${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"

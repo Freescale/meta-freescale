@@ -48,5 +48,5 @@ do_configure() {
 }
 
 FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
-INSANE_SKIP:${PN}-src += " buildpaths"
+INSANE_SKIP:${PN}-src += "buildpaths"
 COMPATIBLE_MACHINE = "(qoriq)"

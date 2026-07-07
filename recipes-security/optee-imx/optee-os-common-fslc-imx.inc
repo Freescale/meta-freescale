@@ -2,7 +2,7 @@
 # See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L39
 require optee-os-fslc.inc
 
-DEPENDS:append:arm = "u-boot-mkimage-native"
+DEPENDS:append:arm = " u-boot-mkimage-native"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/optee-os:"
 

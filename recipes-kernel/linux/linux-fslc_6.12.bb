@@ -14,7 +14,7 @@ require linux-imx.inc
 
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
-DEPENDS += " \
+DEPENDS += "\
     coreutils-native \
 "
 

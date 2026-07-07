@@ -25,9 +25,9 @@ EXTRA_OECMAKE = " \
 # libts uses /dev/tee devices too. Add a common variable to allow configuring the same group.
 TEE_GROUP_NAME ?= "tee"
 
-EXTRA_OECMAKE += " -DCFG_ENABLE_SYSTEMD=On -DSYSTEMD_UNIT_DIR=${systemd_system_unitdir}/"
-EXTRA_OECMAKE += " -DCFG_ENABLE_UDEV=On -DUDEV_UDEV_DIR=${nonarch_base_libdir}/udev/rules.d/"
-EXTRA_OECMAKE += " -DCFG_TEE_GROUP=${TEE_GROUP_NAME} -DCFG_TEEPRIV_GROUP=teepriv"
+EXTRA_OECMAKE += "-DCFG_ENABLE_SYSTEMD=On -DSYSTEMD_UNIT_DIR=${systemd_system_unitdir}/"
+EXTRA_OECMAKE += "-DCFG_ENABLE_UDEV=On -DUDEV_UDEV_DIR=${nonarch_base_libdir}/udev/rules.d/"
+EXTRA_OECMAKE += "-DCFG_TEE_GROUP=${TEE_GROUP_NAME} -DCFG_TEEPRIV_GROUP=teepriv"
 
 EXTRA_OECMAKE:append:toolchain-clang = " -DCFG_WERROR=0"
 
