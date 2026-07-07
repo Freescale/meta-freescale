@@ -168,13 +168,13 @@ do_compile() {
 
 do_install() {
     install -d ${D}/boot/atf/
-    cp srk.pri ${D}/boot/atf/
-    cp srk.pub ${D}/boot/atf/
-    cp *.pbl ${D}/boot/atf/
+    install -m 0644 srk.pri ${D}/boot/atf/
+    install -m 0644 srk.pub ${D}/boot/atf/
+    install -m 0644 *.pbl ${D}/boot/atf/
     if [ ! -e fuse_fip.bin ]; then
         rm -f fuse_scr.bin
     fi
-    cp *.bin ${D}/boot/atf/
+    install -m 0644 *.bin ${D}/boot/atf/
     chown -R root:root ${D}
 }
 
