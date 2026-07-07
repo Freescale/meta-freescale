@@ -9,7 +9,7 @@ SRCREV = "f22e9ff3bfed8342da6efb699e473b11fbad5695"
 
 do_install () {
     install -d ${D}/boot
-    cp -fr ${S}/in112525-phy-ucode.txt ${D}/boot
+    install -m 0644 ${S}/in112525-phy-ucode.txt ${D}/boot
 }
 
 do_deploy () {
@@ -23,4 +23,3 @@ FILES:${PN}-image += "/boot"
 
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-
