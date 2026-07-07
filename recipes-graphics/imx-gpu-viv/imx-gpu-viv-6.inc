@@ -9,12 +9,12 @@ SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
 
-DEPENDS += " \
+DEPENDS += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
        bb.utils.contains('DISTRO_FEATURES',     'x11', 'virtual/libx11 libxdamage libxext libxfixes', \
                                                        '', d), d)} \
 "
-DEPENDS += " \
+DEPENDS += "\
     ${@bb.utils.contains('DISTRO_FEATURES',     'x11', 'libxcb libxshmfence libxxf86vm', \
                                                        '', d)} \
 "
@@ -23,7 +23,7 @@ DEPENDS:append:mx8-nxp-bsp = " patchelf-native"
 
 DEPENDS:append:libc-musl = " gcompat"
 
-PROVIDES += " \
+PROVIDES += "\
     imx-gpu-viv \
     libgal-imx \
     virtual/egl \

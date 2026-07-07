@@ -104,7 +104,7 @@ PACKAGECONFIG[x265]            = "-Dx265=enabled,-Dx265=disabled,x265"
 
 GSTREAMER_GPL = "${@bb.utils.filter('PACKAGECONFIG', 'faad resindvd x265', d)}"
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Ddoc=disabled \
     -Daes=enabled \
     -Dcodecalpha=enabled \
@@ -185,8 +185,8 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
            "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 
-SRC_URI:append:mx93-nxp-bsp = "file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
-SRC_URI:append:mx943-nxp-bsp = "file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
+SRC_URI:append:mx93-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
+SRC_URI:append:mx943-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
 SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
@@ -213,7 +213,7 @@ PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
 PACKAGECONFIG[tinycompress]    = "-Dtinycompress=enabled,-Dtinycompress=disabled,tinycompress"
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
 

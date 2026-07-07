@@ -20,7 +20,7 @@ PACKAGECONFIG_GRAPHICS_IMX_GPU:mx95-nxp-bsp = " \
 PACKAGECONFIG_GRAPHICS:use-mainline-bsp ?= " \
     gles2 gbm kms"
 
-PACKAGECONFIG += " \
+PACKAGECONFIG += "\
     ${PACKAGECONFIG_PLATFORM}"
 
 PACKAGECONFIG_PLATFORM = ""
@@ -42,11 +42,11 @@ PACKAGECONFIG_PLATFORM_EGLFS:mx8-nxp-bsp = " \
 PACKAGECONFIG_PLATFORM:use-mainline-bsp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'eglfs', d)}"
 
-PACKAGECONFIG += " \
+PACKAGECONFIG += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '${PACKAGECONFIG_WAYLAND}', '', d)}"
 PACKAGECONFIG_WAYLAND = "wayland"
 
-PACKAGECONFIG += " \
+PACKAGECONFIG += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', '${PACKAGECONFIG_VULKAN}', '', d)}"
 PACKAGECONFIG_VULKAN = ""
 PACKAGECONFIG_VULKAN:imxgpu = " \

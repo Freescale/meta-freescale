@@ -54,7 +54,7 @@ def gettext_oemeson(d):
         return '-Dnls=disabled'
     return '-Dnls=enabled'
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Ddoc=disabled \
     -Dexamples=disabled \
     -Ddbghelp=disabled \

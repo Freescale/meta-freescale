@@ -20,7 +20,7 @@ S = "${UNPACKDIR}/${PNREAL}-${PV}"
 
 inherit meson pkgconfig upstream-version-is-even gobject-introspection
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Ddoc=disabled \
     -Dexamples=enabled \
     -Dtests=disabled \

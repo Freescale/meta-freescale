@@ -30,7 +30,7 @@ ATF_PLATFORM ??= "INVALID"
 # base address in source code.
 ATF_BOOT_UART_BASE ?= ""
 
-EXTRA_OEMAKE += " \
+EXTRA_OEMAKE += "\
     CROSS_COMPILE=${TARGET_PREFIX} \
     PLAT=${ATF_PLATFORM} \
     ${PACKAGECONFIG_CONFARGS} \

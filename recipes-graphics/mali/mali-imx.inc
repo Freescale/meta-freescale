@@ -28,7 +28,7 @@ PACKAGES =+ " \
     ${PN}-opencl-icd ${PN}-opencl-icd-dev"
 
 # Since libmali.so is loaded by dlopen, include it in the main package
-FILES:${PN} += " \
+FILES:${PN} += "\
     ${libdir}/libmali.so \
     ${nonarch_base_libdir}/firmware"
 FILES_SOLIBSDEV = ""

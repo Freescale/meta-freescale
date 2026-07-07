@@ -6,7 +6,7 @@ SECTION = "libs"
 LICENSE = "Apache-2.0 & BSD-2-Clause & GPL-2.0-or-later & LGPL-2.1-or-later & MIT & Proprietary"
 # Put EULA on separate line for automated recipe updates
 LIC_FILES_CHKSUM = "file://LICENSES/LA_OPT_NXP_Software_License.txt;md5=bc649096ad3928ec06a8713b8d787eac"
-LIC_FILES_CHKSUM += " \
+LIC_FILES_CHKSUM += "\
     file://COPYING;md5=6462e06298403caf09a22e67a7cc551a \
     file://LICENSES/Apache-2.0.txt;md5=3b83ef96387f14655fc854ddc3c6bd57 \
     file://LICENSES/BSD-2-Clause.txt;md5=63d6ee386b8aaba70b1bf15a79ca50f2 \

@@ -59,7 +59,7 @@ PACKAGECONFIG[pxp] = " \
     , \
     dpu dpu95 gpu-drm gpu-fbdev"
 
-EXTRA_OEMAKE += " \
+EXTRA_OEMAKE += "\
     SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
     ${PACKAGECONFIG_CONFARGS} \
 "

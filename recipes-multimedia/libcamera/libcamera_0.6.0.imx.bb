@@ -82,7 +82,7 @@ do_package_recalculate_ipa_signatures() {
     ${S}/src/ipa/ipa-sign-install.sh ${B}/src/ipa-priv-key.pem "${modules}"
 }
 
-FILES:${PN} += " ${libexecdir}/libcamera/v4l2-compat.so"
+FILES:${PN} += "${libexecdir}/libcamera/v4l2-compat.so"
 FILES:${PN}-gst = "${libdir}/gstreamer-1.0"
 FILES:${PN}-pycamera = "${PYTHON_SITEPACKAGES_DIR}/libcamera"
 
@@ -103,7 +103,7 @@ PACKAGECONFIG = "gst pycamera dng"
 
 ARM_PIPELINES .= ",nxp/neo"
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     --python.platlibdir=${PYTHON_SITEPACKAGES_DIR} \
 "
 

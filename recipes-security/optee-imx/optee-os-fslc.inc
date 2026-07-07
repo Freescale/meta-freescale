@@ -21,7 +21,7 @@ SRC_URI = "git://github.com/OP-TEE/optee_os.git;branch=master;protocol=https"
 
 B = "${WORKDIR}/build"
 
-EXTRA_OEMAKE += " \
+EXTRA_OEMAKE += "\
     PLATFORM=${OPTEEMACHINE} \
     CFG_${OPTEE_CORE}_core=y \
     CROSS_COMPILE_core=${HOST_PREFIX} \
@@ -30,8 +30,8 @@ EXTRA_OEMAKE += " \
     ta-targets=ta_${OPTEE_ARCH} \
     O=${B} \
 "
-EXTRA_OEMAKE += " HOST_PREFIX=${HOST_PREFIX}"
-EXTRA_OEMAKE += " CROSS_COMPILE64=${HOST_PREFIX}"
+EXTRA_OEMAKE += "HOST_PREFIX=${HOST_PREFIX}"
+EXTRA_OEMAKE += "CROSS_COMPILE64=${HOST_PREFIX}"
 
 # Enable BTI in optee
 EXTRA_OEMAKE += "${@bb.utils.contains('MACHINE_FEATURES', 'arm-branch-protection', ' CFG_TA_BTI=1 CFG_CORE_PAUTH=y CFG_TA_PAUTH=y', '', d)}"
