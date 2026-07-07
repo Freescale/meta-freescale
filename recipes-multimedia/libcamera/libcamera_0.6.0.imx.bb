@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI = " \
-        git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV} \
+        git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master \
 "
 
 SRCREV = "3e6f5d83e397e11cccd3844e121463748f56de39"
@@ -93,7 +93,7 @@ GLIBC_64BIT_TIME_FLAGS = ""
 
 ########### i.MX overrides ################
 
-SRC_URI:remove = "git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV}"
+SRC_URI:remove = "git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master"
 SRC_URI:prepend = "${LIBCAMERA_SRC};branch=${SRCBRANCH} "
 LIBCAMERA_SRC ?= "git://github.com/nxp-imx/libcamera.git;protocol=https"
 SRCBRANCH = "lf-6.18.2_1.0.0"
