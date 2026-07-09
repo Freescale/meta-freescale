@@ -3,13 +3,13 @@ SUMMARY = "NXP i.MX ELE firmware"
 DESCRIPTION = "EdgeLock Secure Enclave firmware for i.MX series SoCs"
 SECTION = "base"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 inherit fsl-eula-unpack use-imx-security-controller-firmware deploy
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-IMX_SRCREV_ABBREV = "d30b14a"
-SRC_URI[sha256sum] = "293a0e7957ca2a24c6c2edbc87b237141a4b7ef19b35257edce65a026d7cbc0a"
+IMX_SRCREV_ABBREV = "29313e0"
+SRC_URI[sha256sum] = "3af1a5e1336ae3379cf573ccdf34fd8adec99005c4abb70ea0f14af3ac5fb1ae"
 
 S = "${WORKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
