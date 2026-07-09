@@ -17,7 +17,7 @@ SRCREV = "1d2136e39789edb1eff730043caf2305ee2c173e"
 
 inherit autotools pkgconfig
 
-CFLAGS += " -Wno-error=implicit-function-declaration"
+CFLAGS += "-Wno-error=implicit-function-declaration"
 
 do_install:append() {
     # FIXME: Drop examples for now

@@ -77,7 +77,7 @@ PACKAGECONFIG[viv-fb]       = ",,virtual/libgles2 virtual/libg2d"
 
 OPENGL_WINSYS = "${@bb.utils.filter('PACKAGECONFIG', 'x11 gbm wayland dispmanx egl viv-fb', d)}"
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Ddoc=disabled \
     ${@get_opengl_cmdline_list('gl_api', d.getVar('OPENGL_APIS'), d)} \
     ${@get_opengl_cmdline_list('gl_platform', d.getVar('OPENGL_PLATFORMS'), d)} \
@@ -115,8 +115,8 @@ SRC_URI:remove = " \
     file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch"
 SRC_URI:prepend = "${GST1.0-PLUGINS-BASE_SRC};branch=${SRCBRANCH} "
 
-SRC_URI:append:mx93-nxp-bsp = "file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-build-for-gl-plugi.patch"
-SRC_URI:append:mx943-nxp-bsp = "file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-build-for-gl-plugi.patch"
+SRC_URI:append:mx93-nxp-bsp = " file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-build-for-gl-plugi.patch"
+SRC_URI:append:mx943-nxp-bsp = " file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-build-for-gl-plugi.patch"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
 SRCBRANCH = "MM_04.10.03_2512_L6.18.2"

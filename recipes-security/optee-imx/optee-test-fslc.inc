@@ -43,9 +43,9 @@ do_install () {
 
     # install path should match the value set in optee-client/tee-supplicant
     # default TEEC_LOAD_PATH is /lib
-    mkdir -p ${D}${nonarch_base_libdir}/optee_armtz/
+    install -d ${D}${nonarch_base_libdir}/optee_armtz/
     install -D -p -m0444 ${B}/ta/*/*.ta ${D}${nonarch_base_libdir}/optee_armtz/
-    mkdir -p ${D}${libdir}/tee-supplicant/plugins
+    install -d ${D}${libdir}/tee-supplicant/plugins
     install -D -p -m0444 ${B}/supp_plugin/*.plugin ${D}${libdir}/tee-supplicant/plugins/
 }
 

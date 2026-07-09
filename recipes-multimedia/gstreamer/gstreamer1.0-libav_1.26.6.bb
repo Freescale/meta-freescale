@@ -20,7 +20,7 @@ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base ffmpeg"
 
 inherit meson pkgconfig upstream-version-is-even
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     -Dtests=disabled \
 "
 

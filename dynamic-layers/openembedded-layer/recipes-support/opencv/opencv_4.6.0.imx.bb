@@ -264,7 +264,7 @@ SRCBRANCH = "4.6.0_imx"
 SRCREV_opencv = "d3440df40a6e90cd1d2a1b729bcbc16aa4d42f5d"
 
 # Add opencv_extra
-SRC_URI += " \
+SRC_URI += "\
     git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra;branch=master;protocol=https \
     file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=${UNPACKDIR}/extra \
 "
@@ -272,7 +272,7 @@ SRCREV_FORMAT:append = "_extra"
 SRCREV_extra = "936854e2b666853d6d0732a8eabc2d699f4fa3d8"
 
 # Patch DNN example
-SRC_URI += " \
+SRC_URI += "\
     file://OpenCV_DNN_examples.patch \
 "
 

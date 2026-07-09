@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "\
 "
 
 SRC_URI = " \
-        git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV} \
+        git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master \
 "
 
 SRCREV = "3e6f5d83e397e11cccd3844e121463748f56de39"
@@ -82,7 +82,7 @@ do_package_recalculate_ipa_signatures() {
     ${S}/src/ipa/ipa-sign-install.sh ${B}/src/ipa-priv-key.pem "${modules}"
 }
 
-FILES:${PN} += " ${libexecdir}/libcamera/v4l2-compat.so"
+FILES:${PN} += "${libexecdir}/libcamera/v4l2-compat.so"
 FILES:${PN}-gst = "${libdir}/gstreamer-1.0"
 FILES:${PN}-pycamera = "${PYTHON_SITEPACKAGES_DIR}/libcamera"
 
@@ -93,7 +93,7 @@ GLIBC_64BIT_TIME_FLAGS = ""
 
 ########### i.MX overrides ################
 
-SRC_URI:remove = "git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV}"
+SRC_URI:remove = "git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master"
 SRC_URI:prepend = "${LIBCAMERA_SRC};branch=${SRCBRANCH} "
 LIBCAMERA_SRC ?= "git://github.com/nxp-imx/libcamera.git;protocol=https"
 SRCBRANCH = "lf-6.18.2_1.0.0"
@@ -103,7 +103,7 @@ PACKAGECONFIG = "gst pycamera dng"
 
 ARM_PIPELINES .= ",nxp/neo"
 
-EXTRA_OEMESON += " \
+EXTRA_OEMESON += "\
     --python.platlibdir=${PYTHON_SITEPACKAGES_DIR} \
 "
 

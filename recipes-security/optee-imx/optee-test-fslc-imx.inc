@@ -17,6 +17,6 @@ OPTEE_TEST_SRC ?= "git://github.com/nxp-imx/imx-optee-test.git;protocol=https"
 
 EXTRA_OEMAKE:append:libc-musl = " OPTEE_OPENSSL_EXPORT=${STAGING_INCDIR}"
 CFLAGS:append:libc-musl = " -Wno-error=deprecated-declarations"
-CFLAGS += " -Wno-error=unterminated-string-initialization"
+CFLAGS += "-Wno-error=unterminated-string-initialization"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

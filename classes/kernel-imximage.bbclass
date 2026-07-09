@@ -17,7 +17,7 @@
 #
 # Copyright 2017 (C) O.S. Systems Software LTDA.
 
-DEPENDS:append = ' u-boot-mkimage-native'
+DEPENDS:append = " u-boot-mkimage-native"
 
 IMXIMAGE_ENTRYPOINT ?= "${UBOOT_ENTRYPOINT}"
 

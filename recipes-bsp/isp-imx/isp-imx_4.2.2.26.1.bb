@@ -34,7 +34,7 @@ LDFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-gold', ' -fuse-
 
 SYSTEMD_SERVICE:${PN} = "imx8-isp.service"
 
-EXTRA_OECMAKE += " \
+EXTRA_OECMAKE += "\
     -DSDKTARGETSYSROOT=${STAGING_DIR_HOST} \
     -DCMAKE_BUILD_TYPE=release \
     -DISP_VERSION=ISP8000NANO_V1802 \

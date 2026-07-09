@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 
 DEPENDS:remove = " python3-pycryptodomex-native"
 DEPENDS:append = " python3-cryptography-native optee-os-qoriq-tadevkit"
-RDEPENDS:{PN}  += "secure-obj-module"
+RDEPENDS:${PN} += "secure-obj-module"
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 export SECURE_STORAGE_PATH = "${S}/secure_storage_ta/ta/"
