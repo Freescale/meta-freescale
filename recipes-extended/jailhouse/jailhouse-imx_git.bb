@@ -96,7 +96,7 @@ FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DA
 FILES:${PN}:remove = "${libdir}/*"
 FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}"
 
-RDEPENDS:${PN} += " \
+RDEPENDS:${PN} += "\
     pyjailhouse \
     python3-curses \
     python3-datetime \

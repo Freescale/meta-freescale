@@ -156,7 +156,7 @@ GROUPADD_PARAM:${PN} = "--system weston-launch"
 SUMMARY = "Weston, a Wayland compositor, i.MX fork"
 
 LIC_FILES_CHKSUM:remove = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
-LIC_FILES_CHKSUM:append = "file://LICENSE;md5=d79ee9e66bb0f95d3386a7acae780b70"
+LIC_FILES_CHKSUM:append = " file://LICENSE;md5=d79ee9e66bb0f95d3386a7acae780b70"
 
 DEFAULT_PREFERENCE = "-1"
 

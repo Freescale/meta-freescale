@@ -14,7 +14,7 @@ DEPENDS:append:mx95-generic-bsp = " u-boot-mkeficapsule-native"
 
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
-DEPENDS += " \
+DEPENDS += "\
     virtual/bootloader \
     ${IMX_EXTRA_FIRMWARE} \
     imx-atf \

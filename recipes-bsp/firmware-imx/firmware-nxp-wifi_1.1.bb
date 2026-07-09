@@ -116,7 +116,7 @@ RPROVIDES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 RREPLACES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 RCONFLICTS:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 
-FILES:${PN}-nxpaw693-pcie += " \
+FILES:${PN}-nxpaw693-pcie += "\
     ${nonarch_base_libdir}/firmware/nxp/pcie*aw693* \
     ${nonarch_base_libdir}/firmware/nxp/uart*aw693* \
 "
@@ -131,7 +131,7 @@ RPROVIDES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 RREPLACES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 RCONFLICTS:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 
-FILES:${PN}-nxpiw610-sdio += " \
+FILES:${PN}-nxpiw610-sdio += "\
     ${nonarch_base_libdir}/firmware/nxp/sd_iw610.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/sduart_iw610.bin.se \
     ${nonarch_base_libdir}/firmware/nxp/sduartspi_iw610.bin.se \
@@ -143,7 +143,7 @@ RPROVIDES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 RREPLACES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 RCONFLICTS:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 
-FILES:${PN}-nxpiw610-usb += " \
+FILES:${PN}-nxpiw610-usb += "\
     ${nonarch_base_libdir}/firmware/nxp/usb*_iw610.bin.se \
 "
 RDEPENDS:${PN}-nxpiw610-usb += "${PN}-nxp-common"

@@ -1,4 +1,4 @@
-RDEPENDS:${PN} += " \
+RDEPENDS:${PN} += "\
     nativesdk-mxsldr \
     nativesdk-u-boot-mkimage \
     nativesdk-imx-usb-loader \

@@ -37,5 +37,5 @@ do_install () {
 
 FILES:${PN}-dbg += "${bindir}/cst/.debug"
 BBCLASSEXTEND = "native nativesdk"
-INSANE_SKIP:${PN}-dbg += " buildpaths"
+INSANE_SKIP:${PN}-dbg += "buildpaths"
 

@@ -10,9 +10,8 @@ SRCREV = "8837cce3c86b30c0931c319e9e1a8ca622ae5354"
 
 do_install() {
     install -d ${D}${sbindir}/fsl_tlu
-    find . -type f -exec cp {} ${D}${sbindir}/fsl_tlu/ \;
+    find . -type f -exec install -m 0644 {} ${D}${sbindir}/fsl_tlu/ \;
 }
 
 COMPATIBLE_MACHINE = "(e500mc)"
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-

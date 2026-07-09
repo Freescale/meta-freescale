@@ -131,7 +131,7 @@ RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8mm-nxp-bsp = ""
 RDEPENDS_VULKAN_LOADER       = ""
 RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp   = "vulkan-validation-layers vulkan-loader"
 RDEPENDS_VULKAN_LOADER:mx8mm-nxp-bsp = ""
-RDEPENDS:${PN} += " \
+RDEPENDS:${PN} += "\
     ${RDEPENDS_EMPTY_MAIN_PACKAGE} \
     ${RDEPENDS_EMPTY_MAIN_PACKAGE_MX8} \
     ${RDEPENDS_VULKAN_LOADER} \
