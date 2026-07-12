@@ -3,6 +3,7 @@
 require imx-mkimage_git.inc
 
 DESCRIPTION = "Generate Boot Loader for i.MX 8 device"
+HOMEPAGE = "https://github.com/nxp-imx/imx-mkimage"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 SECTION = "bsp"

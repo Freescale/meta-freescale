@@ -1,4 +1,5 @@
 DESCRIPTION = "PKTGEN DPDK"
+HOMEPAGE = "https://git.dpdk.org/apps/pktgen-dpdk/"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0245ceedaef59ae0129500b0ce1e8a45"
 

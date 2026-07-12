@@ -1,4 +1,5 @@
 DESCRIPTION = "Vulkan Window System Integration Layer"
+HOMEPAGE = "https://gitlab.freedesktop.org/mesa/vulkan-wsi-layer"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c2e771b72d60a13d2de384cb49055d00"
 DEPENDS = "libdrm vulkan-loader"

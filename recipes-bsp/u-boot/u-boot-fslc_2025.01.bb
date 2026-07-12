@@ -5,6 +5,7 @@ DESCRIPTION = "U-Boot based on mainline U-Boot used by FSL Community BSP in \
                order to provide support for some backported features and fixes, or because it \
                was submitted for revision and it takes some time to become part of a stable \
                version, or because it is not applicable for upstreaming."
+HOMEPAGE = "https://github.com/Freescale/u-boot-fslc"
 
 DEPENDS += "bc-native dtc-native python3-setuptools-native gnutls-native"
 
