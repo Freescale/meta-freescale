@@ -3,7 +3,7 @@ SUMMARY = "Samples for OpenGL ES"
 HOMEPAGE = "https://github.com/nxp-imx/apitrace-imx"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
-DEPENDS = "zlib libpng procps"
+DEPENDS = "libpng procps zlib"
 
 SRC_URI = "git://github.com/nxp-imx/apitrace-imx.git;protocol=https;branch=imx_10.0 \
            file://0001-dlsym-workaround-glibc-2.34-build-failure.patch \
