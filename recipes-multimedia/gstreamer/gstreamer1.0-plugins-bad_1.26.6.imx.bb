@@ -170,7 +170,6 @@ FILES:${PN}-opencv += "${datadir}/gst-plugins-bad/1.0/opencv*"
 FILES:${PN}-transcode += "${datadir}/gstreamer-1.0/encoding-profiles"
 FILES:${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
 
-
 ########### End of OE-core copy ###########
 
 ########### i.MX overrides ################
