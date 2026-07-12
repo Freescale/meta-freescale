@@ -20,9 +20,9 @@ MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
 
 RDEPENDS:${PN} = "\
     ${PN}-audio \
-    ${PN}-video \
-    ${PN}-network-base \
     ${PN}-debug \
+    ${PN}-network-base \
+    ${PN}-video \
 "
 
 # List of X11 specific plugins
