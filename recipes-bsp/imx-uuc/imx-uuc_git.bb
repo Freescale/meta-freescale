@@ -3,7 +3,7 @@
 SUMMARY = "A Daemon wait for NXP mfgtools host's command"
 HOMEPAGE = "https://github.com/nxp-imx/imx-uuc"
 SECTION = "base"
-DEPENDS = "virtual/kernel dosfstools-native"
+DEPENDS = "dosfstools-native virtual/kernel"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
