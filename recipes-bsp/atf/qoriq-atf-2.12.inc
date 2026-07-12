@@ -1,4 +1,5 @@
 DESCRIPTION = "ARM Trusted Firmware"
+HOMEPAGE = "https://github.com/nxp-qoriq/atf"
 
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://license.rst;md5=1dd070c98a281d18d9eefd938729b031"

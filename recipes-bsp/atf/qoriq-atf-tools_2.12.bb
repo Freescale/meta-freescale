@@ -1,5 +1,4 @@
 require qoriq-atf-${PV}.inc
-HOMEPAGE = "https://github.com/nxp-qoriq/atf"
 
 DEPENDS += "openssl"
 
