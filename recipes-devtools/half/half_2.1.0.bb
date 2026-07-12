@@ -2,6 +2,7 @@ SUMMARY = "C++ library for half precision floating point arithmetics"
 DESCRIPTION = "half is a C++ header-only library to provide an IEEE-754 conformant \
                half-precision floating point type along with corresponding arithmetic operators, \
                type conversions and common mathematical functions."
+HOMEPAGE = "https://half.sourceforge.net/"
 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=813a6278831975d26c115ed6f9c21831"

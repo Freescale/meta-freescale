@@ -1,4 +1,5 @@
 SUMMARY = "crconf -Linux crypto layer configuraton tool"
+HOMEPAGE = "https://sourceforge.net/projects/crconf/"
 SECTION = "base"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://Makefile;beginline=1;endline=5;md5=0f77fc44eb5911007ae4ac9f6736e111"

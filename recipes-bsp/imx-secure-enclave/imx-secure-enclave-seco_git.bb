@@ -2,6 +2,7 @@ require imx-secure-enclave.inc
 
 SUMMARY += "SECO"
 DESCRIPTION += "SECO"
+HOMEPAGE = "https://github.com/NXP/imx-secure-enclave"
 
 PLAT = "seco"
 

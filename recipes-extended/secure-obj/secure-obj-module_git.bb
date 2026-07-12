@@ -1,4 +1,5 @@
 require secure-obj.inc
+HOMEPAGE = "https://github.com/nxp-qoriq/secure_obj"
 
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 

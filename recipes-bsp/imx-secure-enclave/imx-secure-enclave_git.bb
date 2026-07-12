@@ -1,4 +1,5 @@
 require imx-secure-enclave.inc
+HOMEPAGE = "https://github.com/NXP/imx-secure-enclave"
 
 inherit systemd
 
