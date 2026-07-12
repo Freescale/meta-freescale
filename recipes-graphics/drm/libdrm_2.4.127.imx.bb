@@ -8,8 +8,8 @@ SECTION = "x11/base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=9eb1f4831351ab42d762c40b3ebb7add \
             file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c530816761e949dc71"
-PROVIDES = "drm"
 DEPENDS = "libpthread-stubs"
+PROVIDES = "drm"
 
 SRC_URI = "${IMX_LIBDRM_SRC};branch=${SRCBRANCH}"
 IMX_LIBDRM_SRC ?= "git://github.com/nxp-imx/libdrm-imx.git;protocol=https"
@@ -46,10 +46,6 @@ PACKAGES =+ "${PN}-tests ${PN}-drivers ${PN}-radeon ${PN}-nouveau ${PN}-omap \
              ${PN}-intel ${PN}-exynos ${PN}-freedreno ${PN}-amdgpu \
              ${PN}-etnaviv"
 
-RRECOMMENDS:${PN}-drivers = "${PN}-radeon ${PN}-nouveau ${PN}-omap ${PN}-intel \
-                             ${PN}-exynos ${PN}-freedreno ${PN}-amdgpu \
-                             ${PN}-etnaviv"
-
 FILES:${PN}-tests = "${bindir}/*"
 FILES:${PN}-radeon = "${libdir}/libdrm_radeon.so.*"
 FILES:${PN}-nouveau = "${libdir}/libdrm_nouveau.so.*"
@@ -59,6 +55,10 @@ FILES:${PN}-exynos = "${libdir}/libdrm_exynos.so.*"
 FILES:${PN}-freedreno = "${libdir}/libdrm_freedreno.so.*"
 FILES:${PN}-amdgpu = "${libdir}/libdrm_amdgpu.so.* ${datadir}/${PN}/amdgpu.ids"
 FILES:${PN}-etnaviv = "${libdir}/libdrm_etnaviv.so.*"
+
+RRECOMMENDS:${PN}-drivers = "${PN}-radeon ${PN}-nouveau ${PN}-omap ${PN}-intel \
+                             ${PN}-exynos ${PN}-freedreno ${PN}-amdgpu \
+                             ${PN}-etnaviv"
 
 BBCLASSEXTEND = "native nativesdk"
 
