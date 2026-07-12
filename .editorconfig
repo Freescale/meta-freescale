@@ -1,0 +1,32 @@
+# EditorConfig: deterministic whitespace enforcement for a Yocto/OE layer.
+# https://editorconfig.org — every modern editor applies these on save, and CI
+# can gate them with `editorconfig-checker`. Mirrors meta-openembedded's config
+# and the Yocto Recipe Style Guide: spaces, 4 wide, no tabs, trimmed, LF, final
+# newline. This complements oelint-adv (which handles semantic rules) and removes
+# the need for oelint's non-deterministic whitespace auto-fixes.
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+indent_style = space
+indent_size = 4
+
+# Makefiles require literal tabs.
+[Makefile]
+indent_style = tab
+
+# Markdown uses trailing whitespace for hard line breaks.
+[*.md]
+trim_trailing_whitespace = false
+
+# Never normalise patches — their bytes must match upstream exactly.
+[*.{patch,diff}]
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+charset = unset
+indent_style = unset
+indent_size = unset
