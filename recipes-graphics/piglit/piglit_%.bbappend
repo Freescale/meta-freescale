@@ -4,9 +4,9 @@ SRC_URI += "file://0001-tests-Fix-cl-test-Include-Directories-error-Error-0-.pat
             file://0002-cl-Add-mutually-exclusive-memory-flags-for-CL_MEM_KE.patch"
 
 PACKAGECONFIG:append = " ${PACKAGECONFIG_APPEND}"
-PACKAGECONFIG:remove = " ${PACKAGECONFIG_REMOVE}"
+PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
 
-PACKAGECONFIG_APPEND ?= " \
+PACKAGECONFIG_APPEND ?= "\
     gbm \
     ${@bb.utils.filter('DISTRO_FEATURES', 'vulkan', d)}"
 PACKAGECONFIG_APPEND:append:imxviv:mx8-nxp-bsp = " opencl"

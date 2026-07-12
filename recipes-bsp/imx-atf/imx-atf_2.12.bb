@@ -16,7 +16,7 @@ SRCREV = "4a2e9ef5f9f185bda68470b46365add008903b8c"
 
 inherit deploy
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${@bb.utils.filter('UBOOT_CONFIG', 'crrm', d)} \
     ${@bb.utils.filter('MACHINE_FEATURES', 'optee', d)}"
 

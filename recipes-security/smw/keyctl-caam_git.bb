@@ -11,11 +11,11 @@ SRC_URI = "git://github.com/nxp-imx/keyctl_caam.git;protocol=https;branch=${SRCB
 
 SRCREV = "71cb18f17d766145217a5517748e37e250b055bf"
 
-DEPENDS = " openssl"
+DEPENDS = "openssl"
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
-EXTRA_OEMAKE = " OPENSSL_PATH=${STAGING_INCDIR}"
+EXTRA_OEMAKE = "OPENSSL_PATH=${STAGING_INCDIR}"
 
 do_install () {
 	oe_runmake DESTDIR=${D} install

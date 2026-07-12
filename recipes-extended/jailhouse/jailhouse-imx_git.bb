@@ -28,7 +28,7 @@ SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
            file://0002-YOCIMX-9281-2-hypervisor-arm64-fix-strh-usage.patch \
           "
 
-DEPENDS = " \
+DEPENDS = "\
     make-native \
     python3-mako-native \
     python3-mako \
@@ -103,7 +103,7 @@ RDEPENDS:${PN} += "\
     python3-mmap \
 "
 
-RDEPENDS:pyjailhouse = " \
+RDEPENDS:pyjailhouse = "\
     python3-core \
     python3-ctypes \
     python3-fcntl \

@@ -49,7 +49,7 @@ do_install_ptest() {
             ${D}/${PTEST_PATH}/tests/qemu-iotests/common.env
 }
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     fdt sdl kvm aio libusb vhost numa \
     ${@bb.utils.filter('DISTRO_FEATURES', 'alsa xen', d)} \
 "

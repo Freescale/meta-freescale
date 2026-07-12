@@ -9,7 +9,7 @@ SRC_URI:append:imxgpu = " \
 
 REQUIRED_DISTRO_FEATURES:remove:imxgpu = "x11"
 
-PACKAGECONFIG:remove = " \
+PACKAGECONFIG:remove = "\
     ${PACKAGECONFIG_REMOVE_IF_2D_ONLY} \
     ${PACKAGECONFIG_REMOVE_IF_GPU}"
 PACKAGECONFIG_REMOVE_IF_2D_ONLY          = ""

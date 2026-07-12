@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
 LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 LICENSE_FLAGS = "commercial"
 
-SRC_URI = " \
+SRC_URI = "\
             https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${PV}.tar.xz \
             "
 
@@ -23,7 +23,7 @@ DEPENDS += "gstreamer1.0-plugins-base"
 
 GST_PLUGIN_SET_HAS_EXAMPLES = "0"
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${GSTREAMER_ORC} \
 "
 

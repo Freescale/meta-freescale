@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 PROVIDES = "virtual/imxvpu"
 
-SRC_URI = " \
+SRC_URI = "\
     ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
 "
 IMX_SRCREV_ABBREV = "52c7e45"
@@ -29,10 +29,10 @@ PLATFORM:mx8mp-nxp-bsp = "IMX8MP"
 #|  2086 |             ref_data = ref.virtual_address;
 
 CFLAGS += "-Wno-error=incompatible-pointer-types"
-EXTRA_OEMAKE = " \
-    CROSS_COMPILE="${HOST_PREFIX}" \
-    SDKTARGETSYSROOT="${STAGING_DIR_TARGET}" \
-    PLATFORM="${PLATFORM}" \
+EXTRA_OEMAKE = "\
+    CROSS_COMPILE="${HOST_PREFIX}"\
+    SDKTARGETSYSROOT="${STAGING_DIR_TARGET}"\
+    PLATFORM="${PLATFORM}"\
 "
 
 do_install () {

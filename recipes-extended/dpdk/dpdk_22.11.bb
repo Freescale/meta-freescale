@@ -25,7 +25,7 @@ DPDK_EXAMPLES ?= "l2fwd,l3fwd,l2fwd-crypto,ipsec-secgw,ip_fragmentation,ip_reass
 DPDK_APPS ?= "pdump,test-pmd,proc-info,test-crypto-perf"
 
 # kernel module is provide by dpdk-module recipe, so disable here
-EXTRA_OEMESON = " \
+EXTRA_OEMESON = "\
         -Denable_kmods=false \
         -Doptimization=3 \
         --cross-file ${S}/config/arm/arm64_poky_linux_gcc \

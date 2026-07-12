@@ -47,7 +47,7 @@ CACHED_DMA_HEAP_CONF = "--dma-heap-device-node-path=${CACHED_DMA_HEAP_DEVICE_NOD
 UNCACHED_DMA_HEAP_CONF = "--dma-heap-device-node-path=${UNCACHED_DMA_HEAP_DEVICE_NODE_PATH} \
                           --dma-heap-uncached-memory"
 
-PACKAGECONFIG ?= " "
+PACKAGECONFIG ?= ""
 PACKAGECONFIG:append:imxgpu2d         = " ${LIBG2D_PACKAGECONFIG}"
 PACKAGECONFIG:append:imxipu           = " ipu"
 PACKAGECONFIG:append:imxpxp           = " pxp"

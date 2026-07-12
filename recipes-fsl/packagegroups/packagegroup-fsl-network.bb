@@ -44,6 +44,6 @@ NETWORK_TOOLS:append:fsl-lsch3 = " \
 	spc \
 "
 
-RDEPENDS:${PN} = " \
+RDEPENDS:${PN} = "\
     ${NETWORK_TOOLS} \
 "

@@ -18,7 +18,7 @@ PACKAGES += "\
 
 MACHINE_GSTREAMER_1_0_PLUGIN ?= ""
 
-RDEPENDS:${PN} = " \
+RDEPENDS:${PN} = "\
     ${PN}-audio \
     ${PN}-video \
     ${PN}-network-base \
@@ -26,18 +26,18 @@ RDEPENDS:${PN} = " \
 "
 
 # List of X11 specific plugins
-GST_X11_PACKAGES = " \
+GST_X11_PACKAGES = "\
     gstreamer1.0-plugins-base-ximagesink \
     gstreamer1.0-plugins-base-xvimagesink \
 "
 
 # List of Wayland specific plugins
-GST_WAYLAND_PACKAGES = " \
+GST_WAYLAND_PACKAGES = "\
     gstreamer1.0-plugins-bad-waylandsink \
 "
 
 # basic plugins required in virtually every pipeline
-RDEPENDS:${PN}-base = " \
+RDEPENDS:${PN}-base = "\
     gstreamer1.0 \
     gstreamer1.0-plugins-base-playback \
     ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'gstreamer1.0-plugins-base-alsa', '', d)} \
@@ -52,14 +52,14 @@ RDEPENDS:${PN}-base = " \
     ${@bb.utils.contains("MACHINE_GSTREAMER_1_0_PLUGIN", "imx-gst1.0-plugin", "imx-gst1.0-plugin-tools", "", d)} \
 "
 
-RRECOMMENDS:${PN}-base = " \
+RRECOMMENDS:${PN}-base = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '${GST_X11_PACKAGES}', \
                           bb.utils.contains('DISTRO_FEATURES', 'wayland', \
                                             '${GST_WAYLAND_PACKAGES}', '', d), d)} \
 "
 
 # Basic audio plugins: parsers, demuxers, decoders
-RDEPENDS:${PN}-audio = " \
+RDEPENDS:${PN}-audio = "\
     ${PN}-base \
     gstreamer1.0-plugins-base-ogg \
     gstreamer1.0-plugins-good-audioparsers \
@@ -71,7 +71,7 @@ RDEPENDS:${PN}-audio = " \
 "
 
 # Basic video plugins: parsers, demuxers
-RDEPENDS:${PN}-video = " \
+RDEPENDS:${PN}-video = "\
     ${PN}-base \
     gstreamer1.0-plugins-base-subparse \
     gstreamer1.0-plugins-base-theora \
@@ -81,12 +81,12 @@ RDEPENDS:${PN}-video = " \
     gstreamer1.0-plugins-good-matroska \
 "
 
-RRECOMMENDS:${PN}-video = " \
+RRECOMMENDS:${PN}-video = "\
     ${PN}-audio \
 "
 
 # Additional video plugins from the -bad collection
-RDEPENDS:${PN}-video-bad = " \
+RDEPENDS:${PN}-video-bad = "\
     ${PN}-video \
     gstreamer1.0-plugins-bad-mpegpsdemux \
     gstreamer1.0-plugins-bad-mpegtsdemux \
@@ -94,7 +94,7 @@ RDEPENDS:${PN}-video-bad = " \
 "
 
 # Plugins used for diagnostics and debugging of pipelines
-RDEPENDS:${PN}-debug = " \
+RDEPENDS:${PN}-debug = "\
     ${PN}-base \
     gstreamer1.0-plugins-base-audiotestsrc \
     gstreamer1.0-plugins-base-videotestsrc \
@@ -103,14 +103,14 @@ RDEPENDS:${PN}-debug = " \
 "
 
 # Basic networking plugins required by most pipelines that receive and/or send data
-RDEPENDS:${PN}-network-base = " \
+RDEPENDS:${PN}-network-base = "\
     gstreamer1.0-plugins-base-tcp \
     gstreamer1.0-plugins-good-soup \
     gstreamer1.0-plugins-good-udp \
 "
 
 # Additional networking plugins
-RDEPENDS:${PN}-network = " \
+RDEPENDS:${PN}-network = "\
     ${PN}-network-base \
     gstreamer1.0-plugins-good-rtp \
     gstreamer1.0-plugins-good-rtpmanager \

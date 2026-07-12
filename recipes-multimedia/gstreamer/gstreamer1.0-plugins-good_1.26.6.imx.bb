@@ -30,7 +30,7 @@ RDEPENDS:${PN}-soup += "${MLPREFIX}${@bb.utils.contains('PACKAGECONFIG', 'soup2'
 
 PACKAGECONFIG_SOUP ?= "soup3"
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${GSTREAMER_ORC} \
     ${PACKAGECONFIG_SOUP} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'pulseaudio x11', d)} \
@@ -93,7 +93,7 @@ FILES:${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
 
 DEFAULT_PREFERENCE = "-1"
 
-LIC_FILES_CHKSUM = " \
+LIC_FILES_CHKSUM = "\
     file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770 \
     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe \
 "

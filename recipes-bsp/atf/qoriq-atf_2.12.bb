@@ -68,7 +68,7 @@ EXTRA_OEMAKE += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'fuse', 'fip_fuse FUSE_PROG=1 FUSE_PROV_FILE=fuse_scr.bin', '', d)} \
 "
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${@bb.utils.filter('COMBINED_FEATURES', 'optee', d)} \
 "
 PACKAGECONFIG[optee] = ",,optee-os-qoriq"

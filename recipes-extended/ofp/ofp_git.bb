@@ -16,7 +16,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 DEPENDS = "odp"
 
-EXTRA_OECONF = " \
+EXTRA_OECONF = "\
     --prefix=/usr \
     --libdir=${libdir} \
     --host=${SIMPLE_TARGET_SYS} \
