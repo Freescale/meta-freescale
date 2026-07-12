@@ -20,7 +20,7 @@ EXTRA_OEMAKE = "PLAT=${PLAT} OPENSSL_PATH=${STAGING_INCDIR} MBEDTLS_PATH=${STAGI
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 do_install() {
-	oe_runmake -C ${S} DESTDIR=${D} install_tests
+    oe_runmake -C ${S} DESTDIR=${D} install_tests
 }
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"

@@ -77,23 +77,23 @@ PACKAGECONFIG[valgrind] = ""
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
 PACKAGES =+ "\
-	libgles1-imx libgles1-imx-dev \
-	libgles2-imx libgles2-imx-dev \
-	libgles3-imx-dev \
-	libglslc-imx libglslc-imx-dev \
-	${PACKAGES_OPENCL} \
-	libopenvg-imx libopenvg-imx-dev \
-	libvdk-imx libvdk-imx-dev \
-	libegl-imx libegl-imx-dev \
-	libgal-imx libgal-imx-dev \
-	libvsc-imx \
-	${PACKAGES_GBM} \
-	imx-gpu-viv-tools \
-	imx-gpu-viv-demos \
-	${PACKAGES_VULKAN} \
-	${PACKAGES_OPENVX} \
-	libnn-imx \
-	libspirv-imx \
+    libgles1-imx libgles1-imx-dev \
+    libgles2-imx libgles2-imx-dev \
+    libgles3-imx-dev \
+    libglslc-imx libglslc-imx-dev \
+    ${PACKAGES_OPENCL} \
+    libopenvg-imx libopenvg-imx-dev \
+    libvdk-imx libvdk-imx-dev \
+    libegl-imx libegl-imx-dev \
+    libgal-imx libgal-imx-dev \
+    libvsc-imx \
+    ${PACKAGES_GBM} \
+    imx-gpu-viv-tools \
+    imx-gpu-viv-demos \
+    ${PACKAGES_VULKAN} \
+    ${PACKAGES_OPENVX} \
+    libnn-imx \
+    libspirv-imx \
 "
 
 PACKAGES_GBM                  = ""

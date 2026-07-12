@@ -24,12 +24,12 @@ do_compile() {
         for APP in  secure_storage_ta securekey_lib secure_obj-openssl-engine; do
             cd  ${APP}
             oe_runmake
-	    cd ..
+        cd ..
         done
 }
 
 do_install() {
-	install -d ${D}${bindir}
+    install -d ${D}${bindir}
         install -d ${D}${includedir}
         install -d ${D}${base_libdir}/optee_armtz
         install -d ${D}${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines

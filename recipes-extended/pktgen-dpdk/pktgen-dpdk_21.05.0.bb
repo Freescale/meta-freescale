@@ -23,8 +23,8 @@ do_configure:prepend() {
 }
 
 do_install() {
-	install -d ${D}${bindir}/
-	install -m 0755 app/pktgen ${D}${bindir}/
+    install -d ${D}${bindir}/
+    install -m 0755 app/pktgen ${D}${bindir}/
         install -m 0644 ${S}/Pktgen.lua ${D}${bindir}/
 }
 

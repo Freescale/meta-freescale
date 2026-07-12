@@ -9,39 +9,39 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 NETWORK_TOOLS = "\
-	ethtool \
+    ethtool \
 "
 
 NETWORK_TOOLS:append:qoriq = " \
-	ceetm \
-	dpdk \
-	ovs-dpdk \
-	pktgen-dpdk \
-	tsntool \
+    ceetm \
+    dpdk \
+    ovs-dpdk \
+    pktgen-dpdk \
+    tsntool \
 "
 
 # Data Place Acceleration Architecture
 NETWORK_TOOLS:append:fsl-lsch2 = " \
-	eth-config \
+    eth-config \
 "
 
 # 2nd generation Data Place Acceleration Architecture
 NETWORK_TOOLS:append:ls1088a = " \
-	aiopsl \
-	gpp-aioptool \
-	ofp \
+    aiopsl \
+    gpp-aioptool \
+    ofp \
 "
 
 NETWORK_TOOLS:append:ls2088a = " \
-	aiopsl \
-	gpp-aioptool \
-	ofp \
+    aiopsl \
+    gpp-aioptool \
+    ofp \
 "
 
 NETWORK_TOOLS:append:fsl-lsch3 = " \
-	dce \
-	restool \
-	spc \
+    dce \
+    restool \
+    spc \
 "
 
 RDEPENDS:${PN} = "\

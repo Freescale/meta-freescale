@@ -37,9 +37,9 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2020-25624.patch \
            file://CVE-2020-25723.patch \
            file://CVE-2020-28916.patch \
-	   file://CVE-2020-35517.patch \
-	   file://CVE-2020-29443.patch \
-	   file://CVE-2021-20203.patch \
+       file://CVE-2020-35517.patch \
+       file://CVE-2020-29443.patch \
+       file://CVE-2021-20203.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -58,17 +58,17 @@ do_install:append() {
 }
 
 do_compile_ptest() {
-	make buildtest-TESTS
+    make buildtest-TESTS
 }
 
 do_install_ptest() {
-	cp -rL ${B}/tests ${D}${PTEST_PATH}
-	find ${D}${PTEST_PATH}/tests -type f -name "*.[Sshcod]" | xargs -i rm -rf {}
+    cp -rL ${B}/tests ${D}${PTEST_PATH}
+    find ${D}${PTEST_PATH}/tests -type f -name "*.[Sshcod]" | xargs -i rm -rf {}
 
-	cp ${S}/tests/Makefile.include ${D}${PTEST_PATH}/tests
-	# Don't check the file genreated by configure
-	sed -i -e '/wildcard config-host.mak/d' \
-	       -e '$ {/endif/d}' ${D}${PTEST_PATH}/tests/Makefile.include
+    cp ${S}/tests/Makefile.include ${D}${PTEST_PATH}/tests
+    # Don't check the file genreated by configure
+    sed -i -e '/wildcard config-host.mak/d' \
+           -e '$ {/endif/d}' ${D}${PTEST_PATH}/tests/Makefile.include
         sed -i -e 's,${HOSTTOOLS_DIR}/python3,${bindir}/python3,' \
             ${D}/${PTEST_PATH}/tests/qemu-iotests/common.env
 }
@@ -104,11 +104,11 @@ B = "${WORKDIR}/build"
 EXTRA_OECONF:append = " --python=${HOSTTOOLS_DIR}/python3"
 
 do_configure:prepend:class-native() {
-	# Append build host pkg-config paths for native target since the host may provide sdl
-	BHOST_PKGCONFIG_PATH=$(PATH=/usr/bin:/bin pkg-config --variable pc_path pkg-config || echo "")
-	if [ ! -z "$BHOST_PKGCONFIG_PATH" ]; then
-		export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$BHOST_PKGCONFIG_PATH
-	fi
+    # Append build host pkg-config paths for native target since the host may provide sdl
+    BHOST_PKGCONFIG_PATH=$(PATH=/usr/bin:/bin pkg-config --variable pc_path pkg-config || echo "")
+    if [ ! -z "$BHOST_PKGCONFIG_PATH" ]; then
+        export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$BHOST_PKGCONFIG_PATH
+    fi
 }
 
 do_configure() {
@@ -117,8 +117,8 @@ do_configure() {
 do_configure[cleandirs] += "${B}"
 
 do_install () {
-	export STRIP=""
-	oe_runmake 'DESTDIR=${D}' install
+    export STRIP=""
+    oe_runmake 'DESTDIR=${D}' install
 }
 
 # The following fragment will create a wrapper for qemu-mips user emulation
@@ -128,10 +128,10 @@ do_install () {
 # the qemu-mips works fine.
 # IMPORTANT: This piece needs to be removed once the root cause is fixed!
 do_install:append() {
-	if [ -e "${D}/${bindir}/qemu-mips" ]; then
-		create_wrapper ${D}/${bindir}/qemu-mips \
-			QEMU_RESERVED_VA=0x0
-	fi
+    if [ -e "${D}/${bindir}/qemu-mips" ]; then
+        create_wrapper ${D}/${bindir}/qemu-mips \
+            QEMU_RESERVED_VA=0x0
+    fi
 }
 # END of qemu-mips workaround
 
