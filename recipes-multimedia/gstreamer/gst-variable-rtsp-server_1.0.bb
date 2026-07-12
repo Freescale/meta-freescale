@@ -18,7 +18,6 @@ SRC_URI = "\
 
 SRCREV = "490564815d8049dbdd79087f546835b673ba6e88"
 
-
 do_install() {
     install -m 0755 -D ${S}/bin/gst-variable-rtsp-server \
         ${D}/${bindir}/gst-variable-rtsp-server
