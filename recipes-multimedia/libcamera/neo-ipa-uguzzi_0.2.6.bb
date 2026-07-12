@@ -21,7 +21,6 @@ NEO_IPA_UGUZZI_SRC ?= "git://github.com/nxp-imx/neo-ipa-uguzzi;protocol=https"
 SRCBRANCH = "lf-6.18.2_1.0.0"
 SRCREV = "3c3b18e397a81fac2babe14dca01f4ada1ecc8b2"
 
-
 inherit meson pkgconfig
 
 FILES:${PN} += "${libdir}/libcamera ${datadir}/libcamera"
