@@ -1,7 +1,7 @@
 # Copyright 2021-2022 NXP
 DESCRIPTION = "NXP i.MX uPower firmware"
 LICENSE = "Proprietary"
-SECTION = "BSP"
+SECTION = "bsp"
 LIC_FILES_CHKSUM = "file://COPYING;md5=db4762b09b6bda63da103963e6e081de"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}.bin;fsl-eula=true"
