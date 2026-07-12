@@ -21,8 +21,8 @@ S = "${UNPACKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
 PACKAGECONFIG ??= "${PACKAGECONFIG_VPU}"
 # Support Chips&Media VPU only
-PACKAGECONFIG_VPU               = ""
-PACKAGECONFIG_VPU:mx6q-nxp-bsp  = "vpu"
+PACKAGECONFIG_VPU = ""
+PACKAGECONFIG_VPU:mx6q-nxp-bsp = "vpu"
 PACKAGECONFIG_VPU:mx6dl-nxp-bsp = "vpu"
 PACKAGECONFIG[vpu] = "--enable-vpu,--disable-vpu,virtual/imxvpu"
 

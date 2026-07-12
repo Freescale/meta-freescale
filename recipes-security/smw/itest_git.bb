@@ -15,15 +15,15 @@ inherit cmake
 
 PACKAGECONFIG:mx8dxl-nxp-bsp ??= "ele-seco"
 PACKAGECONFIG:mx8ulp-nxp-bsp ??= "ele"
-PACKAGECONFIG:mx91-nxp-bsp   ??= "ele"
-PACKAGECONFIG:mx93-nxp-bsp   ??= "ele"
-PACKAGECONFIG:mx943-nxp-bsp  ??= "ele ele-seco prime"
-PACKAGECONFIG:mx95-nxp-bsp   ??= "ele ele-seco"
-PACKAGECONFIG:mx952-nxp-bsp  ??= "ele ele-seco prime"
+PACKAGECONFIG:mx91-nxp-bsp ??= "ele"
+PACKAGECONFIG:mx93-nxp-bsp ??= "ele"
+PACKAGECONFIG:mx943-nxp-bsp ??= "ele ele-seco prime"
+PACKAGECONFIG:mx95-nxp-bsp ??= "ele ele-seco"
+PACKAGECONFIG:mx952-nxp-bsp ??= "ele ele-seco prime"
 
-PACKAGECONFIG[ele]      = "-DELE=1,,imx-secure-enclave"
+PACKAGECONFIG[ele] = "-DELE=1,,imx-secure-enclave"
 PACKAGECONFIG[ele-seco] = "-DV2X=1,,imx-secure-enclave-seco"
-PACKAGECONFIG[prime]    = "-DPRIME=1,,imx-secure-enclave-prime"
+PACKAGECONFIG[prime] = "-DPRIME=1,,imx-secure-enclave-prime"
 
 EXTRA_OECMAKE = "\
     -DOPENSSL_PATH="${STAGING_DIR_HOST}/usr"\

@@ -39,16 +39,16 @@ EXTRA_OEMESON += "-Dimx-headers-path=${STAGING_INCDIR_IMX} -Dv4l2-amphion=disabl
 
 PACKAGECONFIG ?= "uniaudiodec"
 PACKAGECONFIG:append:imxgpu2d = " g2d"
-PACKAGECONFIG:append:imxvpu   = " vpu"
-PACKAGECONFIG:append:imxipu   = " ipu"
-PACKAGECONFIG:append:imxpxp   = " pxp"
+PACKAGECONFIG:append:imxvpu = " vpu"
+PACKAGECONFIG:append:imxipu = " ipu"
+PACKAGECONFIG:append:imxpxp = " pxp"
 # The custom imxv4l2 source and sink elements are only
 # available on the i.MX6.
 # The 2D blitter sinks require an MXC framebuffer, which
 # is not available anymore on the i.MX8 (since these SoCs
 # now use KMS instead of the old Linux framebuffer).
-PACKAGECONFIG:append:mx6-nxp-bsp      = " imx2dvideosink v4l2-mxc-source-sink"
-PACKAGECONFIG:append:mx7-nxp-bsp      = " imx2dvideosink"
+PACKAGECONFIG:append:mx6-nxp-bsp = " imx2dvideosink v4l2-mxc-source-sink"
+PACKAGECONFIG:append:mx7-nxp-bsp = " imx2dvideosink"
 
 PACKAGECONFIG[g2d] = "-Dg2d=enabled ${LIBG2D_DPU_OPTION},-Dg2d=disabled,${LIBG2D_DEPENDENCIES}"
 PACKAGECONFIG[pxp] = "-Dpxp=enabled,-Dpxp=disabled,"

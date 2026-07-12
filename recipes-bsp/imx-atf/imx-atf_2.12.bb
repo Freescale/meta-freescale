@@ -70,7 +70,7 @@ do_configure[noexec] = "1"
 
 do_install[noexec] = "1"
 
-ANNOTATED_NAME        = "bl31-${ATF_PLATFORM}.bin"
+ANNOTATED_NAME = "bl31-${ATF_PLATFORM}.bin"
 ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG',  'crrm',  '-crrm', '', d)}"
 ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG', 'optee', '-optee', '', d)}"
 

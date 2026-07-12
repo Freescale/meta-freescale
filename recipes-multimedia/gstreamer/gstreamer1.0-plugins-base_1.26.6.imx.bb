@@ -44,36 +44,36 @@ X11DEPENDS = "virtual/libx11 libsm libxrender libxv"
 X11ENABLEOPTS = "-Dx11=enabled -Dxvideo=enabled -Dxshm=enabled"
 X11DISABLEOPTS = "-Dx11=disabled -Dxvideo=disabled -Dxshm=disabled"
 
-PACKAGECONFIG[alsa]         = "-Dalsa=enabled,-Dalsa=disabled,alsa-lib"
-PACKAGECONFIG[cdparanoia]   = "-Dcdparanoia=enabled,-Dcdparanoia=disabled,cdparanoia"
-PACKAGECONFIG[graphene]     = "-Dgl-graphene=enabled,-Dgl-graphene=disabled,graphene"
-PACKAGECONFIG[jpeg]         = "-Dgl-jpeg=enabled,-Dgl-jpeg=disabled,jpeg"
-PACKAGECONFIG[ogg]          = "-Dogg=enabled,-Dogg=disabled,libogg"
-PACKAGECONFIG[opus]         = "-Dopus=enabled,-Dopus=disabled,libopus"
-PACKAGECONFIG[pango]        = "-Dpango=enabled,-Dpango=disabled,pango"
-PACKAGECONFIG[png]          = "-Dgl-png=enabled,-Dgl-png=disabled,libpng"
+PACKAGECONFIG[alsa] = "-Dalsa=enabled,-Dalsa=disabled,alsa-lib"
+PACKAGECONFIG[cdparanoia] = "-Dcdparanoia=enabled,-Dcdparanoia=disabled,cdparanoia"
+PACKAGECONFIG[graphene] = "-Dgl-graphene=enabled,-Dgl-graphene=disabled,graphene"
+PACKAGECONFIG[jpeg] = "-Dgl-jpeg=enabled,-Dgl-jpeg=disabled,jpeg"
+PACKAGECONFIG[ogg] = "-Dogg=enabled,-Dogg=disabled,libogg"
+PACKAGECONFIG[opus] = "-Dopus=enabled,-Dopus=disabled,libopus"
+PACKAGECONFIG[pango] = "-Dpango=enabled,-Dpango=disabled,pango"
+PACKAGECONFIG[png] = "-Dgl-png=enabled,-Dgl-png=disabled,libpng"
 # This enables Qt5 QML examples in -base. The Qt5 GStreamer
 # qmlglsink and qmlglsrc plugins still exist in -good.
-PACKAGECONFIG[qt5]          = "-Dqt5=enabled,-Dqt5=disabled,qtbase qtdeclarative qtbase-native"
-PACKAGECONFIG[theora]       = "-Dtheora=enabled,-Dtheora=disabled,libtheora"
-PACKAGECONFIG[tremor]       = "-Dtremor=enabled,-Dtremor=disabled,tremor"
-PACKAGECONFIG[visual]       = "-Dlibvisual=enabled,-Dlibvisual=disabled,libvisual"
-PACKAGECONFIG[vorbis]       = "-Dvorbis=enabled,-Dvorbis=disabled,libvorbis"
-PACKAGECONFIG[x11]          = "${X11ENABLEOPTS},${X11DISABLEOPTS},${X11DEPENDS}"
+PACKAGECONFIG[qt5] = "-Dqt5=enabled,-Dqt5=disabled,qtbase qtdeclarative qtbase-native"
+PACKAGECONFIG[theora] = "-Dtheora=enabled,-Dtheora=disabled,libtheora"
+PACKAGECONFIG[tremor] = "-Dtremor=enabled,-Dtremor=disabled,tremor"
+PACKAGECONFIG[visual] = "-Dlibvisual=enabled,-Dlibvisual=disabled,libvisual"
+PACKAGECONFIG[vorbis] = "-Dvorbis=enabled,-Dvorbis=disabled,libvorbis"
+PACKAGECONFIG[x11] = "${X11ENABLEOPTS},${X11DISABLEOPTS},${X11DEPENDS}"
 
 # OpenGL API packageconfigs
-PACKAGECONFIG[opengl]       = ",,virtual/libgl libglu"
-PACKAGECONFIG[gles2]        = ",,virtual/libgles2"
+PACKAGECONFIG[opengl] = ",,virtual/libgl libglu"
+PACKAGECONFIG[gles2] = ",,virtual/libgles2"
 
 # OpenGL platform packageconfigs
-PACKAGECONFIG[egl]          = ",,virtual/egl"
-PACKAGECONFIG[glx]          = ",,virtual/libgl"
+PACKAGECONFIG[egl] = ",,virtual/egl"
+PACKAGECONFIG[glx] = ",,virtual/libgl"
 
 # OpenGL window systems (except for X11)
-PACKAGECONFIG[gbm]          = ",,virtual/libgbm libgudev libdrm"
-PACKAGECONFIG[wayland]      = ",,wayland-native wayland wayland-protocols libdrm"
-PACKAGECONFIG[dispmanx]     = ",,virtual/libomxil"
-PACKAGECONFIG[viv-fb]       = ",,virtual/libgles2 virtual/libg2d"
+PACKAGECONFIG[gbm] = ",,virtual/libgbm libgudev libdrm"
+PACKAGECONFIG[wayland] = ",,wayland-native wayland wayland-protocols libdrm"
+PACKAGECONFIG[dispmanx] = ",,virtual/libomxil"
+PACKAGECONFIG[viv-fb] = ",,virtual/libgles2 virtual/libg2d"
 
 OPENGL_WINSYS = "${@bb.utils.filter('PACKAGECONFIG', 'x11 gbm wayland dispmanx egl viv-fb', d)}"
 
@@ -128,7 +128,7 @@ PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
 PACKAGECONFIG_REMOVE ?= "jpeg"
 
 PACKAGECONFIG:append = " ${PACKAGECONFIG_G2D}"
-PACKAGECONFIG_G2D          ??= ""
+PACKAGECONFIG_G2D ??= ""
 PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"

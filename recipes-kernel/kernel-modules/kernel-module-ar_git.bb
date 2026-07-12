@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 inherit module
 
 SRC_URI = "git://github.com/nxp-qoriq-yocto-sdk/auto-resp;branch=nxp/sdk-v2.0.x;protocol=https"
-SRCREV =  "9a74743167dcfcfbca5056eedbff9a52337c9712"
+SRCREV = "9a74743167dcfcfbca5056eedbff9a52337c9712"
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX} SYSROOT=${STAGING_DIR_TARGET}"
 export KERNEL_PATH
