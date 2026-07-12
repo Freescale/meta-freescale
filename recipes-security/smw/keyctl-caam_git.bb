@@ -18,7 +18,7 @@ TARGET_CC_ARCH += "${LDFLAGS}"
 EXTRA_OEMAKE = "OPENSSL_PATH=${STAGING_INCDIR}"
 
 do_install () {
-	oe_runmake DESTDIR=${D} install
+    oe_runmake DESTDIR=${D} install
 }
 
 COMPATIBLE_MACHINE = "(imx-generic-bsp|qoriq)"

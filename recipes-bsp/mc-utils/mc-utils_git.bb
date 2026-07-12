@@ -20,20 +20,20 @@ MC_FLAVOUR ?= "${@oe.utils.ifelse(d.getVar('MACHINE').endswith('qds'), 'QDS', 'R
 MC_FOLDER ?= "${@d.getVar('MC_CFG').upper() + '-' + d.getVar('MC_FLAVOUR')}"
 
 do_compile () {
-	oe_runmake -C config
+    oe_runmake -C config
 }
 
 do_install () {
-	install -d ${D}/boot/mc-utils
-	if [ -e ${S}/config/${MC_CFG}/${MC_FOLDER} ]; then
-		cp -r ${S}/config/${MC_CFG}/${MC_FOLDER}/* ${D}/boot/mc-utils/
-	fi
-	find ${D}/boot/mc-utils/ ! -name "*.dtb" ! -type d -exec rm {} \;
+    install -d ${D}/boot/mc-utils
+    if [ -e ${S}/config/${MC_CFG}/${MC_FOLDER} ]; then
+        cp -r ${S}/config/${MC_CFG}/${MC_FOLDER}/* ${D}/boot/mc-utils/
+    fi
+    find ${D}/boot/mc-utils/ ! -name "*.dtb" ! -type d -exec rm {} \;
 }
 
 do_deploy () {
-	install -d ${DEPLOYDIR}/mc-utils
-	cp -r ${D}/boot/mc-utils/* ${DEPLOYDIR}/mc-utils/
+    install -d ${DEPLOYDIR}/mc-utils
+    cp -r ${D}/boot/mc-utils/* ${DEPLOYDIR}/mc-utils/
 }
 addtask deploy after do_install
 

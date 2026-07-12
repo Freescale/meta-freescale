@@ -7,7 +7,7 @@ HOMEPAGE = "http://dri.freedesktop.org"
 SECTION = "x11/base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=9eb1f4831351ab42d762c40b3ebb7add \
-		    file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c530816761e949dc71"
+            file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c530816761e949dc71"
 PROVIDES = "drm"
 DEPENDS = "libpthread-stubs"
 

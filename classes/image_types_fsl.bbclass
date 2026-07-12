@@ -38,7 +38,7 @@ do_image_wic[depends] += " \
 
 # We need to apply a fixup inside of the partition table
 IMAGE_CMD:wic:append:mxs-generic-bsp() {
-	# Change partition type for mxs processor family
-	bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
-	echo -n S | dd of=$out.wic bs=1 count=1 seek=450 conv=notrunc
+    # Change partition type for mxs processor family
+    bbnote "Setting partition type to 0x53 as required for mxs' SoC family."
+    echo -n S | dd of=$out.wic bs=1 count=1 seek=450 conv=notrunc
 }

@@ -14,7 +14,7 @@ PV = "1.0+git${SRCPV}"
 do_configure[noexec] = "1"
 
 do_compile () {
-	oe_runmake
+    oe_runmake
 }
 
 do_install () {

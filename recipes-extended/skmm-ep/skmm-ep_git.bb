@@ -18,11 +18,11 @@ export LIBEDIT_CFLAGS = "`pkg-config --cflags libedit`"
 export LIBEDIT_LDFLAGS = "`pkg-config --libs --static libedit`"
 
 do_compile () {
-	oe_runmake
+    oe_runmake
 }
 
 do_install () {
-	oe_runmake install DESTDIR=${D}
+    oe_runmake install DESTDIR=${D}
 }
 
 COMPATIBLE_MACHINE = "(p4080ds|t4240qds|c293pcie)"

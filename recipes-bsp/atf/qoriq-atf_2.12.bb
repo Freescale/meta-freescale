@@ -123,7 +123,7 @@ do_compile() {
             ;;
         esac
 
-	if [ -f ${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/$rcwimg ]; then
+    if [ -f ${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/$rcwimg ]; then
             make V=1 realclean
             if [ -f rot_key.pem ];then
                 mkdir -p build/${PLATFORM}/release/
