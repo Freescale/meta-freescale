@@ -1,7 +1,6 @@
 require u-boot-fslc-common_${PV}.inc
 
 DESCRIPTION = "U-boot bootloader mxsboot tool"
-HOMEPAGE = "https://github.com/Freescale/u-boot-fslc"
 SECTION = "bootloader"
 
 inherit python3native

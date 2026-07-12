@@ -2,7 +2,6 @@ require imx-secure-enclave.inc
 
 SUMMARY += "PRIME"
 DESCRIPTION += "PRIME"
-HOMEPAGE = "https://github.com/NXP/imx-secure-enclave"
 
 PLAT = "prime"
 
