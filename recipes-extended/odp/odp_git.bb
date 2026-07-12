@@ -4,9 +4,9 @@ inherit autotools-brokensep
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-DEPENDS = "openssl cunit libxml2"
+DEPENDS = "cunit libxml2 openssl"
 
-RDEPENDS:${PN} = "bash libcrypto libssl odp-module odp-counters"
+RDEPENDS:${PN} = "bash libcrypto libssl odp-counters odp-module"
 
 ODP_SOC ?= ""
 ODP_SOC:ls1043ardb = "LS1043"
