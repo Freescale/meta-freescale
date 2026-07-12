@@ -1,6 +1,7 @@
 # Copyright 2026 NXP
 SUMMARY = "NXP i.MX Itest"
 DESCRIPTION = "NXP i.MX Itest"
+HOMEPAGE = "https://github.com/nxp-imx/itest"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=8636bd68fc00cc6a3809b7b58b45f982"

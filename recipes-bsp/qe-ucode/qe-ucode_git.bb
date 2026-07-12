@@ -1,4 +1,5 @@
 DESCRIPTION = "qe microcode binary"
+HOMEPAGE = "https://github.com/NXP/qoriq-qe-ucode"
 SECTION = "qe-ucode"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c62f8109b4df15ca37ceeb5e4943626c"

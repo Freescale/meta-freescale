@@ -1,4 +1,5 @@
 SUMMARY = "Frame Manager Configuration tool"
+HOMEPAGE = "https://github.com/nxp-qoriq/fmc"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=a504ab5a8ff235e67c7301214749346c"
 

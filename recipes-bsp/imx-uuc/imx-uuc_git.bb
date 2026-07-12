@@ -1,6 +1,7 @@
 # Copyright (C) 2016 Freescale Semiconductor
 # Copyright (C) 2017-2019,2024-2025 NXP
 SUMMARY = "A Daemon wait for NXP mfgtools host's command"
+HOMEPAGE = "https://github.com/nxp-imx/imx-uuc"
 SECTION = "base"
 DEPENDS = "virtual/kernel dosfstools-native"
 LICENSE = "GPL-2.0-only"

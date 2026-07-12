@@ -1,4 +1,5 @@
 DESCRIPTION = "Tool used to send commands to hardware via NXP's UTP protocol"
+HOMEPAGE = "https://github.com/Freescale/utp_com"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=8264535c0c4e9c6c335635c4026a8022"
 

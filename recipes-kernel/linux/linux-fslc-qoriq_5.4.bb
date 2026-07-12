@@ -5,6 +5,7 @@ DESCRIPTION = "Linux kernel based on LTS kernel used by FSL Community BSP in ord
                provide support for some backported features and fixes, or because it was applied in linux-next \
                and takes some time to become part of a stable version, or because it is not applicable for \
                upstreaming."
+HOMEPAGE = "https://github.com/Freescale/linux-fslc"
 
 require recipes-kernel/linux/linux-qoriq.inc
 

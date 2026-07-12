@@ -1,4 +1,5 @@
 SUMMARY = "utility for security boot"
+HOMEPAGE = "https://github.com/nxp-qoriq/cst"
 SECTION = "cst"
 LICENSE = "BSD-3-Clause"
 

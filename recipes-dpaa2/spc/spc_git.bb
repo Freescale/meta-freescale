@@ -1,4 +1,5 @@
 SUMMARY = "Soft Parser Configuration tool"
+HOMEPAGE = "https://github.com/nxp-qoriq/spc"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=163b09a1c249a6ff2b28da1ceca2e0a8"
 

@@ -1,5 +1,6 @@
 SUMMARY = "The firmware of Cortex(R)-M33 for Arm(R) Ethos(TM)-U NPU"
 DESCRIPTION = "The firmware of Cortex(R)-M33 for Arm(R) Ethos(TM)-U NPU"
+HOMEPAGE = "https://github.com/nxp-imx/ethos-u-firmware"
 LICENSE = "Apache-2.0 & GPL-2.0-only & BSD-3-Clause"
 LIC_FILES_CHKSUM = "\
     file://LICENSE.txt;md5=e3fc50a88d0a364313df4b21ef20c29e \

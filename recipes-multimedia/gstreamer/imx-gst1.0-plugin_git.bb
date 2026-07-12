@@ -3,6 +3,7 @@
 # Copyright (C) 2012-2015 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 DESCRIPTION = "Gstreamer freescale plugins"
+HOMEPAGE = "https://github.com/nxp-imx/imx-gst1.0-plugin"
 SECTION = "multimedia"
 LICENSE = "GPL-2.0-only & LGPL-2.0-only & LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=fbc093901857fcd118f065f900982c24"

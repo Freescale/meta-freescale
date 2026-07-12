@@ -1,5 +1,6 @@
 SUMMARY = "i.MX G2D Samples"
 DESCRIPTION = "Set of sample applications for i.MX G2D"
+HOMEPAGE = "https://github.com/nxp-imx/g2d-samples"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
 
