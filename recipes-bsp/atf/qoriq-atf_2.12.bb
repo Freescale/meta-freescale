@@ -120,9 +120,9 @@ do_compile() {
         flexspi_nor)
             rcwimg="${RCWXSPI}${RCW_SUFFIX}"
             uefiboot="${UEFI_XSPIBOOT}"
-            ;;        
+            ;;
         esac
-            
+
 	if [ -f ${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/$rcwimg ]; then
             make V=1 realclean
             if [ -f rot_key.pem ];then

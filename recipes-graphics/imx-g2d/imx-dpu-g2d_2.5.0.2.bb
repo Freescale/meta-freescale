@@ -4,7 +4,7 @@
 
 DESCRIPTION = "G2D library using i.MX DPU"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac" 
+LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 DEPENDS = "libdrm ${LIBGAL_IMX}"
 LIBGAL_IMX        = ""

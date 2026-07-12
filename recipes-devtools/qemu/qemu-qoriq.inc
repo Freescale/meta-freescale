@@ -70,7 +70,7 @@ do_install_ptest() {
 	sed -i -e '/wildcard config-host.mak/d' \
 	       -e '$ {/endif/d}' ${D}${PTEST_PATH}/tests/Makefile.include
         sed -i -e 's,${HOSTTOOLS_DIR}/python3,${bindir}/python3,' \
-            ${D}/${PTEST_PATH}/tests/qemu-iotests/common.env 
+            ${D}/${PTEST_PATH}/tests/qemu-iotests/common.env
 }
 
 # QEMU_TARGETS is overridable variable

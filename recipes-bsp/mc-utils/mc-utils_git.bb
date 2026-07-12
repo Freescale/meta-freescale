@@ -20,7 +20,7 @@ MC_FLAVOUR ?= "${@oe.utils.ifelse(d.getVar('MACHINE').endswith('qds'), 'QDS', 'R
 MC_FOLDER ?= "${@d.getVar('MC_CFG').upper() + '-' + d.getVar('MC_FLAVOUR')}"
 
 do_compile () {
-	oe_runmake -C config 
+	oe_runmake -C config
 }
 
 do_install () {

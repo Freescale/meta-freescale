@@ -20,7 +20,7 @@ EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}" CFLAGS="${CFLAGS}"'
 do_compile() {
         export OPENSSL_PATH="${RECIPE_SYSROOT}/usr"
         export CROSS_COMPILE="${WRAP_TARGET_PREFIX}"
-        oe_runmake all 
+        oe_runmake all
 }
 
 do_install(){
