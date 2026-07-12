@@ -30,7 +30,6 @@ deploy_for_mx8m() {
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_hdmi_imx8m.bin ${DEPLOYDIR}
 }
 
-
 deploy_for_mx9() {
     # Synopsys DDR
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
