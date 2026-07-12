@@ -1,4 +1,4 @@
-SUMMARY = "An open source user space fast path TCP/IP stack" 
+SUMMARY = "An open source user space fast path TCP/IP stack"
 DESCRIPTION = "openfastpath is used to enable accelerated routing/forwarding for IPv4 and IPv6, \
                tunneling and termination for a variety of protocols."
 HOMEPAGE = "http://www.openfastpath.org"

@@ -21,7 +21,7 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 do_compile:prepend() {
         mkdir -p ${S}/include/linux
         cp -r ${STAGING_KERNEL_DIR}/include/uapi/linux/tsn.h ${S}/include/linux
-}     
+}
 do_install() {
     install -d ${D}${bindir} ${D}${libdir}
     install -m 0755 ${S}/tsntool ${D}${bindir}

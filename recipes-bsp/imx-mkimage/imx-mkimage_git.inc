@@ -1,5 +1,5 @@
 # Copyright 2017-2026 NXP
- 
+
 DEPENDS = "zlib-native openssl-native"
 
 SRC_URI = "${IMX_MKIMAGE_SRC};branch=${SRCBRANCH} \
