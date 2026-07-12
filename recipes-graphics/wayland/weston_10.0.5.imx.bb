@@ -169,12 +169,12 @@ SRCBRANCH = "weston-imx-10.0.5"
 SRCREV = "5223a3c86177709d25f86a96622c0829da955a0e"
 
 # Disable OpenGL for parts with GPU support for 2D but not 3D
-REQUIRED_DISTRO_FEATURES          = "opengl"
+REQUIRED_DISTRO_FEATURES = "opengl"
 REQUIRED_DISTRO_FEATURES:imxgpu2d = ""
 REQUIRED_DISTRO_FEATURES:imxgpu3d = "opengl"
-PACKAGECONFIG_OPENGL              = "opengl"
-PACKAGECONFIG_OPENGL:imxgpu2d     = ""
-PACKAGECONFIG_OPENGL:imxgpu3d     = "opengl"
+PACKAGECONFIG_OPENGL = "opengl"
+PACKAGECONFIG_OPENGL:imxgpu2d = ""
+PACKAGECONFIG_OPENGL:imxgpu3d = "opengl"
 
 PACKAGECONFIG_IMX_REMOVALS ?= "wayland x11"
 PACKAGECONFIG:remove = "${PACKAGECONFIG_IMX_REMOVALS}"
@@ -182,7 +182,7 @@ PACKAGECONFIG:append = " ${@bb.utils.filter('DISTRO_FEATURES', '${PACKAGECONFIG_
 
 PACKAGECONFIG:remove:imxfbdev = "kms"
 PACKAGECONFIG:append:imxfbdev = " fbdev clients"
-PACKAGECONFIG:append:imxgpu   = " imxgpu"
+PACKAGECONFIG:append:imxgpu = " imxgpu"
 PACKAGECONFIG:append:imxgpu2d = " imxg2d"
 
 SIMPLECLIENTS:imxfbdev = "damage,im,egl,shm,touch,dmabuf-v4l"

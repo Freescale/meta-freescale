@@ -19,14 +19,14 @@ EXTRA_OECONF = "\
     ${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', '', d)} \
 "
 
-HIFI4_PLATFORM               ?= "HIFI4_PLATFORM_IS_UNDEFINED"
-HIFI4_PLATFORM:mx8qm-nxp-bsp  = "imx8qmqxp"
+HIFI4_PLATFORM ?= "HIFI4_PLATFORM_IS_UNDEFINED"
+HIFI4_PLATFORM:mx8qm-nxp-bsp = "imx8qmqxp"
 HIFI4_PLATFORM:mx8qxp-nxp-bsp = "imx8qmqxp"
-HIFI4_PLATFORM:mx8dx-nxp-bsp  = "imx8qmqxp"
-HIFI4_PLATFORM:mx8mp-nxp-bsp  = "imx8mp"
+HIFI4_PLATFORM:mx8dx-nxp-bsp = "imx8qmqxp"
+HIFI4_PLATFORM:mx8mp-nxp-bsp = "imx8mp"
 HIFI4_PLATFORM:mx8ulp-nxp-bsp = "imx8ulp"
 
-UNSUPPORTED_TESTS                = "dsp_tflm"
+UNSUPPORTED_TESTS = "dsp_tflm"
 UNSUPPORTED_TESTS:mx8ulp-nxp-bsp = ""
 
 do_install:append () {

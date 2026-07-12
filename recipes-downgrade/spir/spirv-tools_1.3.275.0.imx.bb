@@ -1,10 +1,10 @@
-SUMMARY  = "The SPIR-V Tools project provides an API and commands for \
+SUMMARY = "The SPIR-V Tools project provides an API and commands for \
             processing SPIR-V modules"
 DESCRIPTION = "The project includes an assembler, binary module parser, \
                disassembler, validator, and optimizer for SPIR-V."
 HOMEPAGE = "https://github.com/KhronosGroup/SPIRV-Tools"
 SECTION = "graphics"
-LICENSE  = "Apache-2.0"
+LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 SRCREV = "f0cc85efdbbe3a46eae90e0f915dc1509836d0fc"

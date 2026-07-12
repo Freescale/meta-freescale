@@ -27,11 +27,11 @@ PACKAGECONFIG ??= "\
     ${GSTREAMER_ORC} \
 "
 
-PACKAGECONFIG[a52dec]   = "-Da52dec=enabled,-Da52dec=disabled,liba52"
-PACKAGECONFIG[cdio]     = "-Dcdio=enabled,-Dcdio=disabled,libcdio"
-PACKAGECONFIG[dvdread]  = "-Ddvdread=enabled,-Ddvdread=disabled,libdvdread"
+PACKAGECONFIG[a52dec] = "-Da52dec=enabled,-Da52dec=disabled,liba52"
+PACKAGECONFIG[cdio] = "-Dcdio=enabled,-Dcdio=disabled,libcdio"
+PACKAGECONFIG[dvdread] = "-Ddvdread=enabled,-Ddvdread=disabled,libdvdread"
 PACKAGECONFIG[mpeg2dec] = "-Dmpeg2dec=enabled,-Dmpeg2dec=disabled,mpeg2dec"
-PACKAGECONFIG[x264]     = "-Dx264=enabled,-Dx264=disabled,x264"
+PACKAGECONFIG[x264] = "-Dx264=enabled,-Dx264=disabled,x264"
 
 GSTREAMER_GPL = "${@bb.utils.filter('PACKAGECONFIG', 'a52dec cdio dvdread mpeg2dec x264', d)}"
 

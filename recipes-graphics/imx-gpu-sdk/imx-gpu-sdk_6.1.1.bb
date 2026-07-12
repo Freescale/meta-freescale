@@ -8,8 +8,8 @@ DEPENDS_BACKEND = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' libxdg-shell wayland', \
         bb.utils.contains('DISTRO_FEATURES',     'x11',               ' xrandr', \
                                                                              '', d), d)}"
-DEPENDS_MX8       = ""
-DEPENDS_MX8:mx8-nxp-bsp   = "\
+DEPENDS_MX8 = ""
+DEPENDS_MX8:mx8-nxp-bsp = "\
     glslang-native \
     opencv \
     rapidopencl \
@@ -51,22 +51,22 @@ WINDOW_SYSTEM = \
         bb.utils.contains('DISTRO_FEATURES',     'x11',         'X11', \
                                                                  'FB', d), d)}"
 
-FEATURES                  = "ConsoleHost,EarlyAccess,EGL,GoogleUnitTest,Lib_NlohmannJson,OpenVG,Test_RequireUserInputToExit,WindowHost"
-FEATURES:append:imxgpu    = ",HW_GPU_VIVANTE"
-FEATURES:append:imxgpu2d  = ",G2D"
-FEATURES:append:imxgpu3d  = ",OpenGLES2"
-FEATURES:append           = "${FEATURES_SOC}"
+FEATURES = "ConsoleHost,EarlyAccess,EGL,GoogleUnitTest,Lib_NlohmannJson,OpenVG,Test_RequireUserInputToExit,WindowHost"
+FEATURES:append:imxgpu = ",HW_GPU_VIVANTE"
+FEATURES:append:imxgpu2d = ",G2D"
+FEATURES:append:imxgpu3d = ",OpenGLES2"
+FEATURES:append = "${FEATURES_SOC}"
 
-FEATURES_SOC              = ""
-FEATURES_SOC:mx6q-nxp-bsp         = ",OpenGLES3"
-FEATURES_SOC:mx6dl-nxp-bsp        = ",OpenGLES3"
-FEATURES_SOC:mx8-nxp-bsp          = ",OpenCV4,Vulkan1.2,OpenGLES3.2,OpenCL1.2,OpenVX1.2"
-FEATURES_SOC:mx8mm-nxp-bsp        = ",OpenCV4"
+FEATURES_SOC = ""
+FEATURES_SOC:mx6q-nxp-bsp = ",OpenGLES3"
+FEATURES_SOC:mx6dl-nxp-bsp = ",OpenGLES3"
+FEATURES_SOC:mx8-nxp-bsp = ",OpenCV4,Vulkan1.2,OpenGLES3.2,OpenCL1.2,OpenVX1.2"
+FEATURES_SOC:mx8mm-nxp-bsp = ",OpenCV4"
 
-EXTENSIONS               = "*"
-EXTENSIONS:mx6q-nxp-bsp  = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_geometry_shader,OpenGLES3:GL_EXT_tessellation_shader"
+EXTENSIONS = "*"
+EXTENSIONS:mx6q-nxp-bsp = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_geometry_shader,OpenGLES3:GL_EXT_tessellation_shader"
 EXTENSIONS:mx6dl-nxp-bsp = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_geometry_shader,OpenGLES3:GL_EXT_tessellation_shader"
-EXTENSIONS:mx8m-nxp-bsp  = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_color_buffer_float"
+EXTENSIONS:mx8m-nxp-bsp = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_color_buffer_float"
 EXTENSIONS:mx8mm-nxp-bsp = "*"
 
 do_compile () {
@@ -119,8 +119,8 @@ RDEPENDS_EMPTY_MAIN_PACKAGE = "\
     rapidjson \
     stb \
 "
-RDEPENDS_EMPTY_MAIN_PACKAGE_MX8       = ""
-RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8-nxp-bsp   = "\
+RDEPENDS_EMPTY_MAIN_PACKAGE_MX8 = ""
+RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8-nxp-bsp = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'libxdg-shell', '', d)} \
     rapidopencl \
     rapidopenvx \
@@ -129,8 +129,8 @@ RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8-nxp-bsp   = "\
 RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8mm-nxp-bsp = ""
 # vulkan-loader is dynamically loaded, so need to add an explicit
 # dependency
-RDEPENDS_VULKAN_LOADER       = ""
-RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp   = "vulkan-validation-layers vulkan-loader"
+RDEPENDS_VULKAN_LOADER = ""
+RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp = "vulkan-validation-layers vulkan-loader"
 RDEPENDS_VULKAN_LOADER:mx8mm-nxp-bsp = ""
 RDEPENDS:${PN} += "\
     ${RDEPENDS_EMPTY_MAIN_PACKAGE} \

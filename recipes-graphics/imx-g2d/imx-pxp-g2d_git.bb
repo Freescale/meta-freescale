@@ -19,7 +19,7 @@ SRCREV = "7dd4ca631b894a29389dadda5bd112cfa576b2d9"
 inherit use-imx-headers
 
 EXTRA_OEMAKE = "PLATFORM=${IMX_PLATFORM} INCLUDE='-I${STAGING_INCDIR_IMX}' DEST_DIR=${D}"
-IMX_PLATFORM:mx93-nxp-bsp  = "IMX93"
+IMX_PLATFORM:mx93-nxp-bsp = "IMX93"
 IMX_PLATFORM:mx943-nxp-bsp = "IMX943"
 
 do_install() {

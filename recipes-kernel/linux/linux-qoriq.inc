@@ -24,7 +24,7 @@ LOCALVERSION = ""
 
 KBUILD_DEFCONFIG = "${KERNEL_DEFCONFIG}"
 EXTRA_KBUILD_DEFCONFIG:qoriq-arm64 = "lsdk.config"
-EXTRA_KBUILD_DEFCONFIG:qoriq-arm   = "multi_v7_lpae.config lsdk.config"
+EXTRA_KBUILD_DEFCONFIG:qoriq-arm = "multi_v7_lpae.config lsdk.config"
 
 do_configure() {
     # create config with make config

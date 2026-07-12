@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend:imx-nxp-bsp := "${THISDIR}/${PN}/imx-nxp-bsp:"
 
 SRC_URI:append:imx-nxp-bsp = " ${SRC_URI_IMX}"
-SRC_URI_IMX             = ""
+SRC_URI_IMX = ""
 SRC_URI_IMX:mx6-nxp-bsp = "\
     file://0001-Fix-pulseaudio-mutex-issue-when-do-pause-in-gstreame.patch \
     file://daemon.conf \
