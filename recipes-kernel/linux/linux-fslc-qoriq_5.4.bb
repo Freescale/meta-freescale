@@ -2,9 +2,9 @@
 
 SUMMARY = "Mainline/LTS rebased NXP/QorIQ patches + FSLC patches."
 DESCRIPTION = "Linux kernel based on LTS kernel used by FSL Community BSP in order to \
-provide support for some backported features and fixes, or because it was applied in linux-next \
-and takes some time to become part of a stable version, or because it is not applicable for \
-upstreaming."
+               provide support for some backported features and fixes, or because it was applied in linux-next \
+               and takes some time to become part of a stable version, or because it is not applicable for \
+               upstreaming."
 
 require recipes-kernel/linux/linux-qoriq.inc
 

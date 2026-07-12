@@ -1,5 +1,5 @@
 DESCRIPTION = 'Library for allocating and managing physically contiguous memory \
-               ("DMA memory" or "DMA buffers") on i.MX devices.'
+              ("DMA memory" or "DMA buffers") on i.MX devices.'
 HOMEPAGE = "https://github.com/Freescale/libimxdmabuffer"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=38fa42a5a6425b26d2919b17b1527324"
@@ -11,7 +11,7 @@ SRCBRANCH ?= "master"
 SRCREV = "d44deb80af881b82f394d44696433e6695022c8c"
 SRC_URI = "git://github.com/Freescale/libimxdmabuffer.git;branch=${SRCBRANCH};protocol=https \
            file://run-ptest \
-          "
+           "
 
 inherit pkgconfig waf use-imx-headers ptest
 

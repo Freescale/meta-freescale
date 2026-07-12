@@ -1,5 +1,5 @@
 DESCRIPTION = "A console-only image that includes full cmdline and \
-Freescale's networking packages (QorIQ DPAA/DPAA2) when available."
+               Freescale's networking packages (QorIQ DPAA/DPAA2) when available."
 
 IMAGE_FEATURES += "\
     debug-tweaks \
