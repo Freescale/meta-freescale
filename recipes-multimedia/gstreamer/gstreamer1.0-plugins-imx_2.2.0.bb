@@ -9,7 +9,7 @@ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base libimxdmabuffer"
 # for the uniaudio decoder, videoparsersbad for the VPU video decoder
 # the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
 # built (it is not a compile-time dependency however, hence RDEPENDS and not DEPENDS)
-RDEPENDS:gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
+RDEPENDS:gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-bad gstreamer1.0-plugins-good"
 RDEPENDS:gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
 RDEPENDS:gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
