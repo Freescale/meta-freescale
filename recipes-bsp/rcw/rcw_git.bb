@@ -1,5 +1,6 @@
 SUMMARY = "Reset Configuration Word"
 DESCRIPTION = "Reset Configuration Word - hardware boot-time parameters for the QorIQ targets"
+HOMEPAGE = "https://github.com/nxp-qoriq/rcw"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=44a0d0fad189770cc022af4ac6262cbe"
 

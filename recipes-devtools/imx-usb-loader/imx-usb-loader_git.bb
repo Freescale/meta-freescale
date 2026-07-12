@@ -1,4 +1,5 @@
 DESCRIPTION = "i.MX/Vybrid recovery utility"
+HOMEPAGE = "https://github.com/boundarydevices/imx_usb_loader"
 SECTION = "devel"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"

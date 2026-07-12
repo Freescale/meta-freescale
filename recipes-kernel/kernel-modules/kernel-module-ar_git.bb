@@ -1,4 +1,5 @@
 SUMMARY = "Auto Response Control Module"
+HOMEPAGE = "https://github.com/nxp-qoriq-yocto-sdk/auto-resp"
 LICENSE = "GPL-2.0-only & BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 

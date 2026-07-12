@@ -6,6 +6,7 @@
 # Upstream hash: f4b9dfa0c903bc94c344c657917a3fbb229c322f
 
 SUMMARY = "Linux libcamera framework"
+HOMEPAGE = "https://github.com/nxp-imx/libcamera"
 SECTION = "libs"
 
 LICENSE = "GPL-2.0-or-later & LGPL-2.1-or-later"

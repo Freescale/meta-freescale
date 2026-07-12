@@ -2,6 +2,7 @@
 
 SUMMARY = "NXP i.MX CRYPTO AF_ALG"
 DESCRIPTION = "NXP i.MX crypto af alg tool to perform symmetric operation"
+HOMEPAGE = "https://github.com/nxp-imx/crypto_af_alg"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4ef68f113b9400b1140be9b69208a816"

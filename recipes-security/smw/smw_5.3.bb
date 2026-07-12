@@ -2,6 +2,7 @@
 require recipes-security/optee-imx/optee-fslc.inc
 
 SUMMARY = "NXP i.MX Security Middleware Library"
+HOMEPAGE = "https://github.com/nxp-imx/imx-smw"
 DESCRIPTION = "NXP i.MX Security Middleware Library"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"

@@ -2,6 +2,7 @@
 
 SUMMARY = "NXP i.MX SECO library"
 DESCRIPTION = "Library for NXP i.MX Security Controller Subsystem"
+HOMEPAGE = "https://github.com/NXP/imx-seco-libs"
 SECTION = "base"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=d3c315c6eaa43e07d8c130dc3a04a011"

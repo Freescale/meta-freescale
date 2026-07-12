@@ -3,6 +3,7 @@
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 
 SUMMARY = "Nand boot write source"
+HOMEPAGE = "https://github.com/NXPmicro/imx-kobs"
 SECTION = "base"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=393a5ca445f6965873eca0259a17f833"

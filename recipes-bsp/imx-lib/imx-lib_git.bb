@@ -3,6 +3,7 @@
 # Copyright 2017 NXP
 
 DESCRIPTION = "Platform specific libraries for imx platform"
+HOMEPAGE = "https://github.com/nxp-imx/imx-lib"
 LICENSE = "LGPL-2.1-only"
 SECTION = "multimedia"
 

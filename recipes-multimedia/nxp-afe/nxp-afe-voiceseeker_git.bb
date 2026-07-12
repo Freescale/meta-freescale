@@ -1,6 +1,7 @@
 # Copyright 2025 NXP
 
 DESCRIPTION = "NXP RetuneDSP Voice Seeker Libraries"
+HOMEPAGE = "https://github.com/nxp-imx/imx-voiceui"
 SECTION = "multimedia"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=ca53281cc0caa7e320d4945a896fb837"

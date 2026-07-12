@@ -3,6 +3,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale alsa-lib plugins"
+HOMEPAGE = "https://github.com/nxp-imx/imx-alsa-plugins"
 LICENSE = "GPL-2.0-only"
 SECTION = "multimedia"
 DEPENDS = "alsa-lib"
