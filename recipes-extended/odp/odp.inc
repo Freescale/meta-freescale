@@ -1,6 +1,6 @@
 SUMMARY = "Open Data Plane Interface Implementation"
 DESCRIPTION = "OpenDataPlane (ODP) provides a data plane application programming \
-        environment that is easy to use, high performance, and portable between networking SoCs."
+               environment that is easy to use, high performance, and portable between networking SoCs."
 HOMEPAGE = "http://www.opendataplane.org"
 SECTION = "console/network"
 LICENSE = "BSD-3-Clause"
@@ -9,9 +9,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=ca6103dc75397fb6bec596187d6b7829"
 FILESEXTRAPATHS:prepend := "${THISDIR}/odp:"
 
 SRC_URI = "\
-git://github.com/nxp-qoriq/odp;protocol=https;nobranch=1 \
-git://github.com/nxp-qoriq/qbman_userspace;protocol=https;nobranch=1;name=qbman;destsuffix=${S}/platform/linux-dpaa2/flib/qbman \
-git://github.com/nxp-qoriq/flib;protocol=https;nobranch=1;name=rta;destsuffix=${S}/platform/linux-dpaa2/flib/rta \
+    git://github.com/nxp-qoriq/odp;protocol=https;nobranch=1 \
+    git://github.com/nxp-qoriq/qbman_userspace;protocol=https;nobranch=1;name=qbman;destsuffix=${S}/platform/linux-dpaa2/flib/qbman \
+    git://github.com/nxp-qoriq/flib;protocol=https;nobranch=1;name=rta;destsuffix=${S}/platform/linux-dpaa2/flib/rta \
 "
 
 SRC_URI += "file://0001-Fix-this-build-error.patch"

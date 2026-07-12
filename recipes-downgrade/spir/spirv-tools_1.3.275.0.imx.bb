@@ -1,7 +1,7 @@
 SUMMARY  = "The SPIR-V Tools project provides an API and commands for \
-processing SPIR-V modules"
+            processing SPIR-V modules"
 DESCRIPTION = "The project includes an assembler, binary module parser, \
-disassembler, validator, and optimizer for SPIR-V."
+               disassembler, validator, and optimizer for SPIR-V."
 HOMEPAGE = "https://github.com/KhronosGroup/SPIRV-Tools"
 SECTION = "graphics"
 LICENSE  = "Apache-2.0"

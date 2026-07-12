@@ -2,8 +2,8 @@
 
 SUMMARY = "Wi-Fi firmware redistributed by NXP"
 DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP. Some \
-is available in linux-firmware, but what is here is the latest and \
-should be preferred."
+               is available in linux-firmware, but what is here is the latest and \
+               should be preferred."
 
 SECTION = "kernel"
 LICENSE = "Proprietary"

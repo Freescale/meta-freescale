@@ -109,8 +109,8 @@ DEPENDS:append:mx93-nxp-bsp = " libdrm"
 DEPENDS:append:mx943-nxp-bsp = " libdrm"
 
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
-                file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
-                file://0001-v4l2-Define-ioctl_req_t-for-posix-linux-case.patch \
+                  file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
+                  file://0001-v4l2-Define-ioctl_req_t-for-posix-linux-case.patch \
 "
 
 SRC_URI:prepend = "${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} "

@@ -1,7 +1,7 @@
 SUMMARY = "uGuzzi IPA for the libcamera NXP NEO pipeline"
 DESCRIPTION = "\
-An Image Processing Algorithm library for libcamera, for i.MX95 ISP, \
-based on proprietary MM Solutions EAD uGuzzi 3A library"
+    An Image Processing Algorithm library for libcamera, for i.MX95 ISP, \
+    based on proprietary MM Solutions EAD uGuzzi 3A library"
 SECTION = "libs"
 LICENSE = "Apache-2.0 & BSD-2-Clause & GPL-2.0-or-later & LGPL-2.1-or-later & MIT & Proprietary"
 # Put EULA on separate line for automated recipe updates

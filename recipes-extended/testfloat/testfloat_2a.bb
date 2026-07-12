@@ -4,11 +4,11 @@ LICENSE = "TestFloat"
 LIC_FILES_CHKSUM = "file://testfloat/testfloat.txt;beginline=87;endline=95;md5=bdb2e8111838a48015c29bd97f5b6145"
 
 SRC_URI = "http://www.jhauser.us/arithmetic/TestFloat-2a.tar.Z;name=TestFloat \
-            http://www.jhauser.us/arithmetic/SoftFloat-2b.tar.Z;name=SoftFloat \
-          "
+           http://www.jhauser.us/arithmetic/SoftFloat-2b.tar.Z;name=SoftFloat \
+           "
 SRC_URI:append:qoriq-ppc = " file://SoftFloat-powerpc-1.patch \
-                              file://TestFloat-powerpc-E500v2-SPE-1.patch \
-                              file://Yocto-replace-COMPILE_PREFIX-gcc.patch \
+                            file://TestFloat-powerpc-E500v2-SPE-1.patch \
+                            file://Yocto-replace-COMPILE_PREFIX-gcc.patch \
                             "
 SRC_URI[TestFloat.sha256sum] = "84d14aa42adefbda2ec9708b42946f7fa59f93689b042684bd027863481f8e4e"
 SRC_URI[SoftFloat.sha256sum] = "89d14b55113a2ba8cbda7011443ba1d298d381c89d939515d56c5f18f2febf81"

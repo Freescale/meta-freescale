@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0245ceedaef59ae0129500b0ce1e8a45"
 DEPENDS += "libpcap dpdk lua lua-native"
 
 SRC_URI = "git://dpdk.org/git/apps/pktgen-dpdk;protocol=https;nobranch=1 \
-    file://fix-gcc11-mismatched-dealloc-error.patch \
+           file://fix-gcc11-mismatched-dealloc-error.patch \
 "
 SRCREV = "3a09aa916597fb9a97ee8eec50044cbdb9c4abde"
 

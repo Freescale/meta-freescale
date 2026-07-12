@@ -3,7 +3,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Packagegroup used by FSL Community to provide a set of packages and utilities \
-for hardware test."
+               for hardware test."
 SUMMARY = "FSL Community packagegroup - tools/testapps"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

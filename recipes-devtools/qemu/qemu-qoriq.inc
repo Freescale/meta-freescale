@@ -1,8 +1,8 @@
 SUMMARY = "Fast open source processor emulator"
 DESCRIPTION = "QEMU is a hosted virtual machine monitor: it emulates the \
-machine's processor through dynamic binary translation and provides a set \
-of different hardware and device models for the machine, enabling it to run \
-a variety of guest operating systems"
+               machine's processor through dynamic binary translation and provides a set \
+               of different hardware and device models for the machine, enabling it to run \
+               a variety of guest operating systems"
 HOMEPAGE = "http://qemu.org"
 LICENSE = "GPL-2.0-only & LGPL-2.1-only"
 
@@ -37,9 +37,9 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2020-25624.patch \
            file://CVE-2020-25723.patch \
            file://CVE-2020-28916.patch \
-       file://CVE-2020-35517.patch \
-       file://CVE-2020-29443.patch \
-       file://CVE-2021-20203.patch \
+           file://CVE-2020-35517.patch \
+           file://CVE-2020-29443.patch \
+           file://CVE-2021-20203.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -95,7 +95,7 @@ EXTRA_OECONF = "\
     --with-git=/bin/false \
     --disable-git-update \
     ${PACKAGECONFIG_CONFARGS} \
-    "
+"
 
 export LIBTOOL = "${HOST_SYS}-libtool"
 

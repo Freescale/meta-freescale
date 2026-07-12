@@ -19,9 +19,9 @@ SRC_URI:append:imxgpu2d = " \
 DEPENDS:append:imxgpu2d = " virtual/kernel virtual/libgles2"
 QT_GLFLAGS:imxgpu2d = "-opengl es2 -openvg"
 QT_CONFIG_FLAGS:append:imxgpu2d = " -I${STAGING_KERNEL_DIR}/include/uapi \
-                               -I${STAGING_KERNEL_DIR}/include/ \
-                               -DLINUX=1 -DEGL_API_FB=1 \
-                               -DQT_QPA_EXPERIMENTAL_TOUCHEVENT=1"
+                                   -I${STAGING_KERNEL_DIR}/include/ \
+                                   -DLINUX=1 -DEGL_API_FB=1 \
+                                   -DQT_QPA_EXPERIMENTAL_TOUCHEVENT=1"
 
 # The QT_CONFIG_FLAGS can pollute *.la files with -Dxxx
 do_compile:append:mx6-nxp-bsp () {

@@ -179,10 +179,10 @@ DEFAULT_PREFERENCE = "-1"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770"
 
 SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
-           file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
-           file://0002-avoid-including-sys-poll.h-directly.patch \
-           file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
-           "
+                  file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
+                  file://0002-avoid-including-sys-poll.h-directly.patch \
+                  file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
+                  "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 
 SRC_URI:append:mx93-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
