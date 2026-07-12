@@ -21,7 +21,7 @@ do_configure[noexec] = "1"
 
 do_compile[noexec] = "1"
 
-IMX_UAPI_HEADERS = " \
+IMX_UAPI_HEADERS = "\
     dma-buf.h \
     hantrodec.h \
     hx280enc.h \
@@ -38,7 +38,7 @@ IMX_UAPI_HEADERS = " \
     videodev2.h \
 "
 
-IMX_UAPI_HEADERS_SOUND = " \
+IMX_UAPI_HEADERS_SOUND = "\
     sound/compress_offload.h \
     sound/compress_params.h \
 "

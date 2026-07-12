@@ -26,7 +26,7 @@ DEPENDS += "gstreamer1.0-plugins-base"
 
 inherit gobject-introspection
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${GSTREAMER_ORC} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'directfb vulkan x11', d)} \
@@ -197,7 +197,7 @@ inherit use-imx-headers
 PACKAGE_ARCH:imxpxp = "${MACHINE_SOCARCH}"
 PACKAGE_ARCH:mx8-nxp-bsp = "${MACHINE_SOCARCH}"
 
-PACKAGECONFIG_REMOVE ?= " \
+PACKAGECONFIG_REMOVE ?= "\
     dtls vulkan \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', 'gl', d)} \
 "
@@ -217,7 +217,7 @@ EXTRA_OEMESON += "\
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
 "
 
-EXTRA_OEMESON:remove = " \
+EXTRA_OEMESON:remove = "\
     -Dkate=disabled \
 "
 

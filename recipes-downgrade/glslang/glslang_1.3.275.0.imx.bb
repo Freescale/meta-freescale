@@ -24,7 +24,7 @@ inherit cmake python3native
 
 DEPENDS = "spirv-tools"
 
-EXTRA_OECMAKE = " \
+EXTRA_OECMAKE = "\
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=ON \
     -DENABLE_PCH=OFF \

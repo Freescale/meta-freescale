@@ -83,7 +83,7 @@ do_install() {
 FILES_SOLIBSDEV = ""
 FILES:${PN} += "/opt ${libdir}/lib*${SOLIBSDEV}"
 FILES:${PN}-dev += "${FILES_SOLIBS_VERSIONED}"
-FILES_SOLIBS_VERSIONED = " \
+FILES_SOLIBS_VERSIONED = "\
     ${libdir}/libcppnetlib-client-connections.so \
     ${libdir}/libcppnetlib-server-parsers.so \
     ${libdir}/libcppnetlib-uri.so \

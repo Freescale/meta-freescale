@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
 
-PACKAGES = " \
+PACKAGES = "\
     ${PN}-base \
     ${PN}-mtd \
     ${PN}-extfs \
@@ -20,7 +20,7 @@ MACHINE_ESSENTIAL_EXTRA_RDEPENDS ?= ""
 # Distro can override the following VIRTUAL-RUNTIME providers:
 VIRTUAL-RUNTIME_keymaps ?= "keymaps"
 
-RDEPENDS:${PN}-base = " \
+RDEPENDS:${PN}-base = "\
     bash \
     imx-uuc \
     util-linux \
@@ -34,14 +34,14 @@ RDEPENDS:${PN}-base = " \
     ${MACHINE_ESSENTIAL_EXTRA_RDEPENDS} \
 "
 
-RDEPENDS:${PN}-mtd = " \
+RDEPENDS:${PN}-mtd = "\
     ${PN}-base \
     imx-kobs \
     mtd-utils \
     mtd-utils-ubifs \
 "
 
-RDEPENDS:${PN}-extfs = " \
+RDEPENDS:${PN}-extfs = "\
     ${PN}-base \
     e2fsprogs-mke2fs \
     e2fsprogs-e2fsck \

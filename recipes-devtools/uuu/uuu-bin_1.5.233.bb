@@ -9,7 +9,7 @@ LICENSE = "BSD-3-Clause & LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9 \
                     file://${COMMON_LICENSE_DIR}/LGPL-2.1-or-later;md5=2a4f4fd2128ea2f65047ee63fbca9f68"
 
-SRC_URI = " \
+SRC_URI = "\
     https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu;downloadfilename=uuu-${PV};name=Linux \
     https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu_mac_x86;downloadfilename=uuu-${PV}_mac_x86;name=Mac_x86 \
     https://github.com/nxp-imx/mfgtools/releases/download/uuu_${PV}/uuu_mac_arm;downloadfilename=uuu-${PV}_mac_arm;name=Mac_arm \

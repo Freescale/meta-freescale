@@ -11,12 +11,12 @@ SRCREV = "522cb2981289b7ba20d6dd4b4bf75097e079815b"
 
 inherit cmake pkgconfig perlnative python3native
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     egl \
     ${PACKAGECONFIG_BACKEND} \
     ${PACKAGECONFIG_GPU2D} \
 "
-PACKAGECONFIG_BACKEND = " \
+PACKAGECONFIG_BACKEND = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'waffle', \
        bb.utils.contains('DISTRO_FEATURES',     'x11',    'x11', \
                                                              '', d), d)} \

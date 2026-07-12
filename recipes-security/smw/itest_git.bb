@@ -24,9 +24,9 @@ PACKAGECONFIG[ele]      = "-DELE=1,,imx-secure-enclave"
 PACKAGECONFIG[ele-seco] = "-DV2X=1,,imx-secure-enclave-seco"
 PACKAGECONFIG[prime]    = "-DPRIME=1,,imx-secure-enclave-prime"
 
-EXTRA_OECMAKE = " \
-    -DOPENSSL_PATH="${STAGING_DIR_HOST}/usr" \
-    -DELE_LIB_PATH="${STAGING_DIR_HOST}/usr" \
+EXTRA_OECMAKE = "\
+    -DOPENSSL_PATH="${STAGING_DIR_HOST}/usr"\
+    -DELE_LIB_PATH="${STAGING_DIR_HOST}/usr"\
     -DLIB_PATH="${STAGING_DIR_HOST}${libdir}""
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"

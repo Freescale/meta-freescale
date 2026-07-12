@@ -6,7 +6,7 @@ PROVIDES += "u-boot"
 inherit fsl-u-boot-localversion
 
 LICENSE = "GPL-2.0-only & BSD-3-Clause & BSD-2-Clause & LGPL-2.0-only & LGPL-2.1-only"
-LIC_FILES_CHKSUM = " \
+LIC_FILES_CHKSUM = "\
     file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
     file://Licenses/bsd-2-clause.txt;md5=6a31f076f5773aabd8ff86191ad6fdd5 \
     file://Licenses/bsd-3-clause.txt;md5=4a1190eac56a9db675d58ebe86eaf50c \

@@ -30,7 +30,7 @@ PROVIDES += "\
     virtual/libopenvg \
     ${EXTRA_PROVIDES} \
 "
-EXTRA_PROVIDES = " \
+EXTRA_PROVIDES = "\
     ${PROVIDES_OPENCL} \
     ${PROVIDES_OPENVX} \
 "
@@ -43,7 +43,7 @@ EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
     virtual/libgbm \
 "
 
-PROVIDES_OPENCL = " \
+PROVIDES_OPENCL = "\
     opencl-headers \
     opencl-clhpp \
     opencl-icd-loader \
@@ -76,7 +76,7 @@ PACKAGECONFIG ?= ""
 PACKAGECONFIG[valgrind] = ""
 
 # Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
-PACKAGES =+ " \
+PACKAGES =+ "\
 	libgles1-imx libgles1-imx-dev \
 	libgles2-imx libgles2-imx-dev \
 	libgles3-imx-dev \
@@ -343,11 +343,11 @@ FILES:libvulkan-imx = "\
 FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 RPROVIDES:libvulkan-imx = "virtual-vulkan-icd"
 
-FILES:libspirv-imx = " \
+FILES:libspirv-imx = "\
     ${libdir}/libSPIRV_viv${SOLIBS} \
 "
 
-FILES:libopenvx-imx = " \
+FILES:libopenvx-imx = "\
     ${libdir}/libOpenVX${REALSOLIBS} \
     ${libdir}/libOpenVXC${SOLIBS} \
     ${libdir}/libOpenVXU${SOLIBS} \

@@ -29,7 +29,7 @@ inherit gobject-introspection
 PACKAGECONFIG_X11 = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'opengl glx', '', d)}"
 PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2 egl ${PACKAGECONFIG_X11}', '', d)}"
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${GSTREAMER_ORC} \
     ${PACKAGECONFIG_GL} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'alsa x11', d)} \
@@ -108,7 +108,7 @@ DEFAULT_PREFERENCE = "-1"
 
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770"
 
-SRC_URI:remove = " \
+SRC_URI:remove = "\
     https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PV}.tar.xz \
     file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
     file://0003-viv-fb-Make-sure-config.h-is-included.patch \

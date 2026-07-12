@@ -29,7 +29,7 @@ PACKAGECONFIG[wayland] = " \
     wayland wayland-native wayland-protocols,,, \
     headless"
 
-EXTRA_OECMAKE = " \
+EXTRA_OECMAKE = "\
     -DBUILD_WSI_DISPLAY=0 \
     -DBUILD_WSI_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN=1 \
     -DCMAKE_BUILD_TYPE=Release \

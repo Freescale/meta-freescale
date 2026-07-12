@@ -17,7 +17,7 @@ inherit module
 
 MODULES_MODULE_SYMVERS_LOCATION = "dwe"
 
-DEBUG_PREFIX_MAP:prepend = " \
+DEBUG_PREFIX_MAP:prepend = "\
     -fmacro-prefix-map=${UNPACKDIR}/${BP}/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} \
     -fdebug-prefix-map=${UNPACKDIR}/${BP}/vvcam=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR} "
 

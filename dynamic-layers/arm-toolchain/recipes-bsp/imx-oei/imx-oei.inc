@@ -3,7 +3,7 @@ DEPENDS = "gcc-arm-none-eabi-native"
 
 inherit deploy
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${@bb.utils.contains('UBOOT_CONFIG', 'sd-ecc', 'ecc', '', d)}"
 
 PACKAGECONFIG[ecc] = ""

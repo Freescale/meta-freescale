@@ -84,7 +84,7 @@ PTEST_BUILD_HOST_FILES = ""
 
 DEFAULT_PREFERENCE = "-1"
 
-LIC_FILES_CHKSUM = " \
+LIC_FILES_CHKSUM = "\
     file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
     file://gst/gst.h;beginline=1;endline=21;md5=e059138481205ee2c6fc1c079c016d0d \
 "
