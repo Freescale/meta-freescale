@@ -14,7 +14,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-devtools/gst-devtools-${PV}
 
 SRC_URI[sha256sum] = "dec8fc56d578d65c498e65e56efe44994c5d3f4e85dbbdff0242b441b32e19b2"
 
-DEPENDS = "json-glib glib-2.0 glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-base"
+DEPENDS = "glib-2.0 glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-base json-glib"
 RRECOMMENDS:${PN} = "git"
 
 FILES:${PN} += "${datadir}/gstreamer-1.0/* ${libdir}/gst-validate-launcher/* ${libdir}/gstreamer-1.0/*"
