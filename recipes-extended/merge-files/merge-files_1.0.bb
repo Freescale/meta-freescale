@@ -1,4 +1,7 @@
+SUMMARY = "Merge extra files into the rootfs"
 DESCRIPTION = "Merge prebuilt/extra files into rootfs"
+HOMEPAGE = "https://github.com/Freescale/meta-freescale/"
+SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
