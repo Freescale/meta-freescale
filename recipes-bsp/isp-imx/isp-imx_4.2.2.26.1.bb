@@ -1,6 +1,9 @@
 # Copyright 2020-2025 NXP
 
-DESCRIPTION = "i.MX Verisilicon Software ISP"
+SUMMARY = "i.MX VeriSilicon software ISP"
+DESCRIPTION = "VeriSilicon image signal processing (ISP) software stack for i.MX SoCs."
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "multimedia"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
