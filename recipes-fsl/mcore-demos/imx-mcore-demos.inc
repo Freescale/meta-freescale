@@ -2,6 +2,8 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "i.MX M4/M7/M33 core Demo images"
+DESCRIPTION = "Prebuilt demo firmware images for the Cortex-M auxiliary cores (M4/M7/M33) found on i.MX application processors."
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "app"
 LICENSE = "Proprietary"
 
