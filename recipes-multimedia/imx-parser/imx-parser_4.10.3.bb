@@ -2,22 +2,24 @@
 # Copyright (C) 2012-2016 Freescale Semiconductor
 # Copyright (C) 2017-2023 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
+SUMMARY = "i.MX multimedia parser libraries"
 DESCRIPTION = "Freescale Multimedia parser libs"
-LICENSE = "Proprietary"
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
-
-# For backwards compatibility
-PROVIDES += "libfslparser"
-RREPLACES:${PN} = "libfslparser"
-RPROVIDES:${PN} = "libfslparser"
-RCONFLICTS:${PN} = "libfslparser"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 IMX_SRCREV_ABBREV = "65603f3"
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 SRC_URI[sha256sum] = "03079bb0fa989dc50fadb66a0fcc7cf65423833c3def04085603d4b66e8f8c70"
+
+# For backwards compatibility
+PROVIDES += "libfslparser"
+RREPLACES:${PN} = "libfslparser"
+RPROVIDES:${PN} = "libfslparser"
+RCONFLICTS:${PN} = "libfslparser"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
