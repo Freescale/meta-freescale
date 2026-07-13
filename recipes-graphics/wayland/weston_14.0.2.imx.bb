@@ -155,7 +155,7 @@ GROUPADD_PARAM:${PN} = "--system weston-launch"
 
 SUMMARY = "Weston, a Wayland compositor, i.MX fork"
 LIC_FILES_CHKSUM:remove = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
-LIC_FILES_CHKSUM +=       "file://LICENSE;md5=d79ee9e66bb0f95d3386a7acae780b70"
+LIC_FILES_CHKSUM += "file://LICENSE;md5=d79ee9e66bb0f95d3386a7acae780b70"
 
 DEFAULT_PREFERENCE = "-1"
 
@@ -169,12 +169,12 @@ PACKAGECONFIG:remove = "${PACKAGECONFIG_IMX_REMOVALS}"
 PACKAGECONFIG_IMX_REMOVALS ?= "wayland x11"
 
 PACKAGECONFIG:append = " ${PACKAGECONFIG_G2D} ${PACKAGECONFIG_PIPEWIRE}"
-PACKAGECONFIG_G2D               ??= ""
-PACKAGECONFIG_G2D:imxgpu2d      ??= "imxg2d"
-PACKAGECONFIG_G2D:mx93-nxp-bsp  ??= "imxg2d"
+PACKAGECONFIG_G2D ??= ""
+PACKAGECONFIG_G2D:imxgpu2d ??= "imxg2d"
+PACKAGECONFIG_G2D:mx93-nxp-bsp ??= "imxg2d"
 PACKAGECONFIG_G2D:mx943-nxp-bsp ??= "imxg2d"
 
-PACKAGECONFIG_PIPEWIRE             ??= ""
+PACKAGECONFIG_PIPEWIRE ??= ""
 PACKAGECONFIG_PIPEWIRE:mx8-nxp-bsp ??= "pipewire"
 PACKAGECONFIG_PIPEWIRE:mx9-nxp-bsp ??= "pipewire"
 

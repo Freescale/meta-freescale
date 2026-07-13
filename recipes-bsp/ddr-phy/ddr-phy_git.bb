@@ -1,4 +1,5 @@
 SUMMARY = "DDR firmware repository"
+HOMEPAGE = "https://github.com/nxp/ddr-phy-binary"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=89cc852481956e861228286ac7430d74"
 

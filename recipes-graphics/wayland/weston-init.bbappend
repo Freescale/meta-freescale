@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 # OpenGL is not required for parts with GPU support for 2D but not 3D
-IMX_REQUIRED_DISTRO_FEATURES_REMOVE          = ""
+IMX_REQUIRED_DISTRO_FEATURES_REMOVE = ""
 IMX_REQUIRED_DISTRO_FEATURES_REMOVE:imxgpu2d = "opengl"
 IMX_REQUIRED_DISTRO_FEATURES_REMOVE:imxgpu3d = ""
 REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
@@ -20,34 +20,34 @@ PACKAGECONFIG ??= "\
 # Mainline BSPs dont support xwayland
 PACKAGECONFIG:remove:use-mainline-bsp = "xwayland"
 
-PACKAGECONFIG_GBM_FORMAT               ?= ""
+PACKAGECONFIG_GBM_FORMAT ?= ""
 PACKAGECONFIG_GBM_FORMAT:mx8mq-nxp-bsp ?= "gbm-format"
-PACKAGECONFIG_GBM_FORMAT:mx93-nxp-bsp  ?= "gbm-format"
+PACKAGECONFIG_GBM_FORMAT:mx93-nxp-bsp ?= "gbm-format"
 
 GBM_FORMAT_VALUE:mx8mq-nxp-bsp = "argb8888"
-GBM_FORMAT_VALUE:mx93-nxp-bsp  = "argb8888"
+GBM_FORMAT_VALUE:mx93-nxp-bsp = "argb8888"
 
-PACKAGECONFIG_REPAINT_WINDOW             ?= ""
+PACKAGECONFIG_REPAINT_WINDOW ?= ""
 PACKAGECONFIG_REPAINT_WINDOW:mx8-nxp-bsp ?= "repaint-window"
 PACKAGECONFIG_REPAINT_WINDOW:mx9-nxp-bsp ?= "repaint-window"
 
-PACKAGECONFIG_SIZE                     ?= ""
-PACKAGECONFIG_SIZE:mx8mq-nxp-bsp       ?= "size"
+PACKAGECONFIG_SIZE ?= ""
+PACKAGECONFIG_SIZE:mx8mq-nxp-bsp ?= "size"
 
 SIZE_VALUE:mx8mq-nxp-bsp = "1920x1080"
 
-HAS_G2D          = "false"
+HAS_G2D = "false"
 HAS_G2D:imxgpu2d = "true"
 
-PACKAGECONFIG_USE_G2D                ?= ""
-PACKAGECONFIG_USE_G2D:imxgpu2d       ?= "use-g2d"
-PACKAGECONFIG_USE_G2D:mx8qm-nxp-bsp  ?= ""
+PACKAGECONFIG_USE_G2D ?= ""
+PACKAGECONFIG_USE_G2D:imxgpu2d ?= "use-g2d"
+PACKAGECONFIG_USE_G2D:mx8qm-nxp-bsp ?= ""
 PACKAGECONFIG_USE_G2D:mx8qxp-nxp-bsp ?= ""
-PACKAGECONFIG_USE_G2D:mx8dx-nxp-bsp  ?= ""
-PACKAGECONFIG_USE_G2D:mx93-nxp-bsp   ?= "use-g2d"
-PACKAGECONFIG_USE_G2D:mx943-nxp-bsp   ?= "use-g2d"
+PACKAGECONFIG_USE_G2D:mx8dx-nxp-bsp ?= ""
+PACKAGECONFIG_USE_G2D:mx93-nxp-bsp ?= "use-g2d"
+PACKAGECONFIG_USE_G2D:mx943-nxp-bsp ?= "use-g2d"
 
-USE_G2D_VALUE             = "true"
+USE_G2D_VALUE = "true"
 USE_G2D_VALUE:mx6-nxp-bsp = "1"
 USE_G2D_VALUE:mx7-nxp-bsp = "1"
 

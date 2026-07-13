@@ -1,5 +1,6 @@
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 SUMMARY = "Samples for OpenGL ES"
+HOMEPAGE = "https://github.com/nxp-imx/apitrace-imx"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
 DEPENDS = "zlib libpng procps"
@@ -21,7 +22,7 @@ PACKAGECONFIG_BACKEND = "\
        bb.utils.contains('DISTRO_FEATURES',     'x11',    'x11', \
                                                              '', d), d)} \
 "
-PACKAGECONFIG_GPU2D                 = ""
+PACKAGECONFIG_GPU2D = ""
 PACKAGECONFIG_GPU2D:imxviv:imxgpu2d = "vivante"
 
 PACKAGECONFIG[egl] = "-DENABLE_EGL=ON,-DENABLE_EGL=OFF,virtual/egl"

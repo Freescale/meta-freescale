@@ -3,6 +3,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale alsa-lib plugins"
+HOMEPAGE = "https://github.com/nxp-imx/imx-alsa-plugins"
 LICENSE = "GPL-2.0-only"
 SECTION = "multimedia"
 DEPENDS = "alsa-lib"
@@ -27,7 +28,7 @@ SRCREV = "18eb79b6cf13fb988de7d4eef5b22eb60f8e2533"
 CFLAGS:append = " -I${STAGING_INCDIR_IMX}"
 
 PACKAGECONFIG ??= "${PACKAGECONFIG_SWPDM}"
-PACKAGECONFIG_SWPDM             = ""
+PACKAGECONFIG_SWPDM = ""
 PACKAGECONFIG_SWPDM:mx8-nxp-bsp = "swpdm"
 
 PACKAGECONFIG[swpdm] = "--enable-swpdm,--disable-swpdm,imx-sw-pdm"

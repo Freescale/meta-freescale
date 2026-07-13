@@ -1,4 +1,5 @@
 DESCRIPTION = "Frame Manager User Space Library"
+HOMEPAGE = "https://github.com/nxp-qoriq/fmlib"
 SECTION = "fman"
 LICENSE = "BSD-3-Clause & GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=9c7bd5e45d066db084bdb3543d55b1ac"

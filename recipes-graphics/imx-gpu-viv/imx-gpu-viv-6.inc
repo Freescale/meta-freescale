@@ -49,15 +49,15 @@ PROVIDES_OPENCL = "\
     opencl-icd-loader \
     virtual/libopencl1 \
 "
-PROVIDES_OPENCL:mx7-nxp-bsp   = ""
+PROVIDES_OPENCL:mx7-nxp-bsp = ""
 PROVIDES_OPENCL:mx8mm-nxp-bsp = ""
 
 # Note: OpenVX is fully supported on i.MX 8 QuadMax and 8 QuadPlus.
 # However, only limited support is provided on other i.MX 8 machines
 # as needed for i.MX machine learning packages.
-PROVIDES_OPENVX                  = ""
-PROVIDES_OPENVX:mx8-nxp-bsp      = "virtual/libopenvx"
-PROVIDES_OPENVX:mx8mm-nxp-bsp    = ""
+PROVIDES_OPENVX = ""
+PROVIDES_OPENVX:mx8-nxp-bsp = "virtual/libopenvx"
+PROVIDES_OPENVX:mx8mm-nxp-bsp = ""
 
 RPROVIDES:${PN}:imxgpu3d += "imx-gpu-viv"
 
@@ -96,19 +96,19 @@ PACKAGES =+ "\
     libspirv-imx \
 "
 
-PACKAGES_GBM                  = ""
-PACKAGES_GBM:mx8-nxp-bsp      = "libgbm-imx libgbm-imx-dev"
+PACKAGES_GBM = ""
+PACKAGES_GBM:mx8-nxp-bsp = "libgbm-imx libgbm-imx-dev"
 
-PACKAGES_OPENCL               = "libclc-imx libopencl-imx libopencl-imx-dev"
-PACKAGES_OPENCL:mx7-nxp-bsp   = ""
+PACKAGES_OPENCL = "libclc-imx libopencl-imx libopencl-imx-dev"
+PACKAGES_OPENCL:mx7-nxp-bsp = ""
 PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
 
 PACKAGES_OPENVX = \
     "${@bb.utils.contains("PROVIDES_OPENVX", "virtual/libopenvx", \
         "libopenvx-imx libopenvx-imx-dev", "", d)}"
 
-PACKAGES_VULKAN               = ""
-PACKAGES_VULKAN:imxvulkan     = "libvulkan-imx libvulkan-imx-dev"
+PACKAGES_VULKAN = ""
+PACKAGES_VULKAN:imxvulkan = "libvulkan-imx libvulkan-imx-dev"
 PACKAGES_VULKAN:mx8mm-nxp-bsp = "libvulkan-imx libvulkan-imx-dev"
 
 python __anonymous () {
@@ -166,16 +166,16 @@ IS_MX8:mx8-nxp-bsp = "1"
 
 PACKAGE_FP_TYPE = "hardfp"
 
-HAS_GBM     = "false"
+HAS_GBM = "false"
 HAS_GBM:mx8-nxp-bsp = "true"
 
-IMX_SOC        = "IMX_SOC_NOT_SET"
-IMX_SOC:mx8qm-nxp-bsp  = "mx8qm"
+IMX_SOC = "IMX_SOC_NOT_SET"
+IMX_SOC:mx8qm-nxp-bsp = "mx8qm"
 IMX_SOC:mx8qxp-nxp-bsp = "mx8qxp"
-IMX_SOC:mx8dx-nxp-bsp  = "mx8qxp"
-IMX_SOC:mx8mp-nxp-bsp  = "mx8mp"
-IMX_SOC:mx8mq-nxp-bsp  = "mx8mq"
-IMX_SOC:mx8mn-nxp-bsp  = "mx8mn"
+IMX_SOC:mx8dx-nxp-bsp = "mx8qxp"
+IMX_SOC:mx8mp-nxp-bsp = "mx8mp"
+IMX_SOC:mx8mq-nxp-bsp = "mx8mq"
+IMX_SOC:mx8mn-nxp-bsp = "mx8mn"
 IMX_SOC:mx8ulp-nxp-bsp = "mx8ulp"
 
 do_install () {
@@ -332,8 +332,8 @@ INSANE_SKIP:libgal-imx += "build-deps"
 
 FILES:libvsc-imx = "${libdir}/libVSC${SOLIBS}"
 
-FILES:libgbm-imx           = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBS} ${libdir}/libgbm_viv${SOLIBS}"
-FILES:libgbm-imx-dev       = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
+FILES:libgbm-imx = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBS} ${libdir}/libgbm_viv${SOLIBS}"
+FILES:libgbm-imx-dev = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
 RDEPENDS:libgbm-imx:append = " libdrm"
 INSANE_SKIP:libgbm-imx += "dev-so"
 
@@ -356,7 +356,7 @@ FILES:libopenvx-imx = "\
 "
 FILES:libopenvx-imx-dev = "${includedir}/VX ${libdir}/libOpenVX${SOLIBSDEV}"
 RDEPENDS:libopenvx-imx = "${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}"
-OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES               = ""
+OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES = ""
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx-dev"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8mp-nxp-bsp = "libclc-imx libopencl-imx-dev"
 INSANE_SKIP:libopenvx-imx += "dev-deps"
@@ -387,8 +387,8 @@ FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
 FILES:libopencl-imx-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 RDEPENDS:libopencl-imx = "libclc-imx"
-RPROVIDES:libopencl-imx               = "virtual-opencl-icd"
-RPROVIDES:libopencl-imx:mx7-nxp-bsp   = ""
+RPROVIDES:libopencl-imx = "virtual-opencl-icd"
+RPROVIDES:libopencl-imx:mx7-nxp-bsp = ""
 RPROVIDES:libopencl-imx:mx8mm-nxp-bsp = ""
 
 FILES:libopenvg-imx = "${libdir}/libOpenVG*${REALSOLIBS} ${libdir}/libOpenVG*${SOLIBS}"

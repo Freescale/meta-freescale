@@ -2,6 +2,7 @@
 require recipes-security/optee-imx/optee-fslc.inc
 
 SUMMARY = "NXP i.MX Security Middleware Library"
+HOMEPAGE = "https://github.com/nxp-imx/imx-smw"
 DESCRIPTION = "NXP i.MX Security Middleware Library"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
@@ -35,15 +36,15 @@ inherit cmake features_check python3native
 REQUIRED_MACHINE_FEATURES = "optee"
 
 PACKAGECONFIG ??= "${PACKAGECONFIG_DRIVERS} ${PACKAGECONFIG_FEATURES}"
-PACKAGECONFIG_DRIVERS                = ""
-PACKAGECONFIG_DRIVERS:mx8x-nxp-bsp   = "ele-seco"
+PACKAGECONFIG_DRIVERS = ""
+PACKAGECONFIG_DRIVERS:mx8x-nxp-bsp = "ele-seco"
 PACKAGECONFIG_DRIVERS:mx8ulp-nxp-bsp = "ele"
-PACKAGECONFIG_DRIVERS:mx91-nxp-bsp   = "ele"
-PACKAGECONFIG_DRIVERS:mx93-nxp-bsp   = "ele"
-PACKAGECONFIG_DRIVERS:mx943-nxp-bsp  = "ele"
-PACKAGECONFIG_DRIVERS:mx95-nxp-bsp   = "ele"
+PACKAGECONFIG_DRIVERS:mx91-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx93-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx943-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx95-nxp-bsp = "ele"
 
-PACKAGECONFIG_FEATURES              = ""
+PACKAGECONFIG_FEATURES = ""
 PACKAGECONFIG_FEATURES:mx91-nxp-bsp = "tls"
 PACKAGECONFIG_FEATURES:mx93-nxp-bsp = "tls"
 PACKAGECONFIG_FEATURES:mx943-nxp-bsp = "tls"

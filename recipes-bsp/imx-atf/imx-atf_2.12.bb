@@ -1,7 +1,8 @@
 # Copyright (C) 2017-2026 NXP
 
 DESCRIPTION = "i.MX ARM Trusted Firmware"
-SECTION = "BSP"
+HOMEPAGE = "https://github.com/nxp-imx/imx-atf"
+SECTION = "bsp"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"
 
@@ -69,7 +70,7 @@ do_configure[noexec] = "1"
 
 do_install[noexec] = "1"
 
-ANNOTATED_NAME        = "bl31-${ATF_PLATFORM}.bin"
+ANNOTATED_NAME = "bl31-${ATF_PLATFORM}.bin"
 ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG',  'crrm',  '-crrm', '', d)}"
 ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG', 'optee', '-optee', '', d)}"
 

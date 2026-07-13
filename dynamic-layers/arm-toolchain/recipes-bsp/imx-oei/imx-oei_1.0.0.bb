@@ -6,6 +6,7 @@ DESCRIPTION = "\
     OEI. The OEI then configures some aspects of the hardware such as DDR config, \
     init TCM ECC, etc. There could be multiple OEI images in the boot container. \
     After execution of OEI, the processor returns to ROM execution."
+HOMEPAGE = "https://github.com/nxp-imx/imx-oei"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=b66f32a90f9577a5a3255c21d79bc619"
 
