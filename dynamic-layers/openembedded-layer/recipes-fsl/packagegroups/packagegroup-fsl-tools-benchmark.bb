@@ -8,7 +8,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
 
-RDEPENDS:${PN} = " \
+RDEPENDS:${PN} = "\
     lmbench \
     bonnie++ \
     dbench \

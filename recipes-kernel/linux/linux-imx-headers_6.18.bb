@@ -3,7 +3,7 @@
 
 SUMMARY = "Installs i.MX-specific kernel headers"
 DESCRIPTION = "Installs i.MX-specific kernel headers to userspace. \
-New headers are installed in ${includedir}/imx."
+               New headers are installed in ${includedir}/imx."
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
@@ -21,7 +21,7 @@ do_configure[noexec] = "1"
 
 do_compile[noexec] = "1"
 
-IMX_UAPI_HEADERS = " \
+IMX_UAPI_HEADERS = "\
     dma-buf.h \
     hantrodec.h \
     hx280enc.h \
@@ -38,7 +38,7 @@ IMX_UAPI_HEADERS = " \
     videodev2.h \
 "
 
-IMX_UAPI_HEADERS_SOUND = " \
+IMX_UAPI_HEADERS_SOUND = "\
     sound/compress_offload.h \
     sound/compress_params.h \
 "

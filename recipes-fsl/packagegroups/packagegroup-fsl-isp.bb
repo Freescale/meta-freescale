@@ -5,11 +5,11 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 ISP_PKGS      ?= ""
-ISP_PKGS:mx8mp-nxp-bsp = " \
+ISP_PKGS:mx8mp-nxp-bsp = "\
     isp-imx \
     basler-camera \
     kernel-module-isp-vvcam \
 "
-RDEPENDS:${PN} = " \
+RDEPENDS:${PN} = "\
     ${ISP_PKGS} \
 "

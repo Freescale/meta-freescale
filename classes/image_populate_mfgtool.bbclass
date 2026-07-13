@@ -41,8 +41,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-MFGTOOL_FILESPATH ??= " \
-    ${@base_set_filespath(["%s/mfgtool" % p for p in "${BBPATH}".split(":")] \
+MFGTOOL_FILESPATH ??= "\
+    ${@base_set_filespath(["%s/mfgtool"% p for p in "${BBPATH}".split(":")] \
                              + ["${FILE_DIRNAME}/${BP}/mfgtool", \
                                 "${FILE_DIRNAME}/${BPN}/mfgtool", \
                                 "${FILE_DIRNAME}/files/mfgtool"] \

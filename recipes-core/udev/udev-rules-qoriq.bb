@@ -16,10 +16,10 @@ RULE:e6500 = "72-fsl-dpaa-persistent-networking.rules"
 RULE:e6500-64b = "72-fsl-dpaa-persistent-networking.rules"
 RULE:t1024 = "72-fsl-dpaa-persistent-networking.rules"
 RULE:qoriq-arm64 = "73-fsl-dpaa-persistent-networking.rules \
-    73-fsl-enetc-networking.rules \
+                    73-fsl-enetc-networking.rules \
 "
 RULE:ls1046a = "73-fsl-dpaa-persistent-networking.rules \
-    74-ls1046a-xfi2-networking.rules \
+                74-ls1046a-xfi2-networking.rules \
 "
 RULE:ls1012a = ""
 

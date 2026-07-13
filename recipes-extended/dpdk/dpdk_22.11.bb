@@ -9,7 +9,7 @@ DEPENDS = "python3-pyelftools-native"
 
 DPDK_SRC ?= "git://github.com/nxp-qoriq/dpdk;protocol=https"
 SRC_URI = "${DPDK_SRC};nobranch=1 \
-          file://0001-meson.build-march-and-mcpu-already-passed-by-Yocto.patch"
+           file://0001-meson.build-march-and-mcpu-already-passed-by-Yocto.patch"
 SRCREV = "e09ece7ebcda131ee3d5a45999ad3396ee2092ae"
 
 inherit meson pkgconfig
@@ -25,14 +25,14 @@ DPDK_EXAMPLES ?= "l2fwd,l3fwd,l2fwd-crypto,ipsec-secgw,ip_fragmentation,ip_reass
 DPDK_APPS ?= "pdump,test-pmd,proc-info,test-crypto-perf"
 
 # kernel module is provide by dpdk-module recipe, so disable here
-EXTRA_OEMESON = " \
-        -Denable_kmods=false \
-        -Doptimization=3 \
-        --cross-file ${S}/config/arm/arm64_poky_linux_gcc \
-        -Denable_driver_sdk=true \
+EXTRA_OEMESON = "\
+    -Denable_kmods=false \
+    -Doptimization=3 \
+    --cross-file ${S}/config/arm/arm64_poky_linux_gcc \
+    -Denable_driver_sdk=true \
         ${@bb.utils.contains('DISTRO_FEATURES', 'vpp', '-Dc_args="-Ofast -fPIC -ftls-model=local-dynamic"', '', d)} \
-        -Denable_examples_source_install=false \
-        -Denable_apps=${DPDK_APPS} \
+    -Denable_examples_source_install=false \
+    -Denable_apps=${DPDK_APPS} \
 "
 
 do_install:append(){

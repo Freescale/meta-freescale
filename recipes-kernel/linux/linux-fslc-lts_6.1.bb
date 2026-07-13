@@ -6,9 +6,9 @@
 
 SUMMARY = "FSL Community BSP Linux LTS based kernel with backported features and fixes"
 DESCRIPTION = "Linux kernel based on LTS kernel used by FSL Community BSP in order to \
-provide support for some backported features and fixes, or because it was applied in upstream \
-and will not become part of a LTS version, or because it is not applicable for \
-upstreaming in any form."
+               provide support for some backported features and fixes, or because it was applied in upstream \
+               and will not become part of a LTS version, or because it is not applicable for \
+               upstreaming in any form."
 
 require linux-imx.inc
 

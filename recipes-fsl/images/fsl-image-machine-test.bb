@@ -1,6 +1,6 @@
 DESCRIPTION = "A console-only image that includes gstreamer packages, \
-Freescale's multimedia packages (VPU and GPU) when available, and \
-test and benchmark applications."
+               Freescale's multimedia packages (VPU and GPU) when available, and \
+               test and benchmark applications."
 
 IMAGE_FEATURES += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', \

@@ -11,7 +11,7 @@ PACKAGES =+ "${PN}-crrm"
 
 RDEPENDS:${PN} = "${@bb.utils.contains('UBOOT_CONFIG', 'crrm', '${PN}-crrm', '', d)}"
 
-FILES:${PN}-crrm = " \
+FILES:${PN}-crrm = "\
     ${bindir}/ele_crrm_test \
     ${libdir}/lib*crrm${SOLIBS}"
 

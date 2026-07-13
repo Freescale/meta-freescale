@@ -8,7 +8,7 @@ PV = "1.0+git"
 
 SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
 NXPAFE_SRC ?= "git://github.com/nxp-imx/nxp-afe.git;protocol=https"
-SRC_URI = " ${NXPAFE_SRC};branch=${SRCBRANCH}"
+SRC_URI = "${NXPAFE_SRC};branch=${SRCBRANCH}"
 
 SRCREV = "7d518eb0b18f7c7faadeb3c3397f8b73f0012f3e"
 

@@ -9,7 +9,7 @@ SECTION = "libs"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://readme.md;beginline=19;endline=20;md5=ab03b667ee630c1abb1add70365a50fb"
 
-SRC_URI = " \
+SRC_URI = "\
     git://github.com/g-truc/gli;protocol=https;branch=master \
 "
 SRCREV = "0c171ee87fcfe35a7e0e0445adef06f92e0b6a91"

@@ -15,7 +15,7 @@ SRCREV = "2fb11a600af90c80b8bb23368d1d6831c5deb973"
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 do_install () {
-	oe_runmake DESTDIR=${D} install
+    oe_runmake DESTDIR=${D} install
 }
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

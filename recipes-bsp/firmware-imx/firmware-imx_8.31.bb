@@ -164,7 +164,7 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-* ${PN}-easrc-* ${PN}-xcvr-* ${PN}-xu
 PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi ${PN}-vpu-amphion ${PN}-vpu-coda980 ${PN}-vpu-wave511 ${PN}-vpu-wave"
 
 FILES:${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
-FILES:${PN}-hdmi = " \
+FILES:${PN}-hdmi = "\
     ${nonarch_base_libdir}/firmware/hdmitxfw.bin \
     ${nonarch_base_libdir}/firmware/hdmirxfw.bin \
     ${nonarch_base_libdir}/firmware/dpfw.bin \

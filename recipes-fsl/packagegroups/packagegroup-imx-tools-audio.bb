@@ -9,12 +9,12 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 inherit packagegroup
 
-ALSA_INSTALL = " \
+ALSA_INSTALL = "\
     alsa-utils \
     alsa-tools \
 "
 
-PULSEAUDIO_INSTALL = " \
+PULSEAUDIO_INSTALL = "\
     pulseaudio-server \
     pulseaudio-module-cli \
     pulseaudio-misc \
@@ -27,7 +27,7 @@ PULSEAUDIO_INSTALL = " \
                                            "", d)} \
 "
 
-RDEPENDS:${PN} = " \
+RDEPENDS:${PN} = "\
     ${@bb.utils.contains("DISTRO_FEATURES", "alsa",  "${ALSA_INSTALL}", "", d)} \
     ${@bb.utils.contains("DISTRO_FEATURES", "pulseaudio",  "${PULSEAUDIO_INSTALL}", "", d)} \
 "

@@ -12,7 +12,7 @@ S = "${UNPACKDIR}/${BP}/ThirdParty/Recipe/xdg-shell"
 
 inherit cmake pkgconfig
 
-EXTRA_OECMAKE = " \
+EXTRA_OECMAKE = "\
     -DWAYLAND_SCANNER=${STAGING_BINDIR_NATIVE}/wayland-scanner \
     -DWAYLAND_PROTOCOLS_DIR=${STAGING_DATADIR}/wayland-protocols \
 "

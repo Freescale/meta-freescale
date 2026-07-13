@@ -9,10 +9,10 @@ SRC_URI = "git://github.com/nxp-qoriq/fmlib;protocol=https;nobranch=1"
 SRCREV = "7a58ecaf0d90d71d6b78d3ac7998282a472c4394"
 
 CFLAGS += "-fmacro-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/debug/fmlib/git-r1 \
-		-fdebug-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/debug/fmlib/git-r1"
+           -fdebug-prefix-map=${STAGING_KERNEL_DIR}=/usr/src/debug/fmlib/git-r1"
 
 EXTRA_OEMAKE = "DESTDIR=${D} PREFIX=${prefix} LIB_DEST_DIR=${libdir} \
-        CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
+                CROSS_COMPILE=${TARGET_PREFIX} KERNEL_SRC=${STAGING_KERNEL_DIR}"
 
 TARGET_ARCH_FMLIB = "${DEFAULTTUNE}"
 TARGET_ARCH_FMLIB:qoriq-arm = "arm"

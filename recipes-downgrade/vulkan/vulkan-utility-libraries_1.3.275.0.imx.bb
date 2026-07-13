@@ -1,7 +1,7 @@
 SUMMARY = "Vulkan Utility Libraries"
 DESCRIPTION = "Common libraries created to share code across various \
-Vulkan repositories, solving long standing issues for Vulkan SDK \
-developers and users."
+               Vulkan repositories, solving long standing issues for Vulkan SDK \
+               developers and users."
 HOMEPAGE = "https://www.khronos.org/vulkan/"
 BUGTRACKER = "https://github.com/KhronosGroup/Vulkan-Utility-Libraries"
 SECTION = "libs"
@@ -18,7 +18,7 @@ DEPENDS = "vulkan-headers"
 
 EXTRA_OECMAKE = "\
     -DBUILD_TESTS=OFF \
-    "
+"
 
 inherit cmake features_check pkgconfig
 

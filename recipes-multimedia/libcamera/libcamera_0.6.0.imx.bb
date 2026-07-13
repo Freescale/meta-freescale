@@ -15,8 +15,8 @@ LIC_FILES_CHKSUM = "\
     file://LICENSES/LGPL-2.1-or-later.txt;md5=2a4f4fd2128ea2f65047ee63fbca9f68 \
 "
 
-SRC_URI = " \
-        git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master \
+SRC_URI = "\
+    git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master \
 "
 
 SRCREV = "3e6f5d83e397e11cccd3844e121463748f56de39"
@@ -44,7 +44,7 @@ LIBCAMERA_PIPELINES ??= "auto"
 LIBCAMERA_PIPELINES:arm ??= "${ARM_PIPELINES}"
 LIBCAMERA_PIPELINES:aarch64 ??= "${ARM_PIPELINES}"
 
-EXTRA_OEMESON = " \
+EXTRA_OEMESON = "\
     -Dpipelines=${LIBCAMERA_PIPELINES} \
     -Dv4l2=true \
     -Dcam=enabled \
