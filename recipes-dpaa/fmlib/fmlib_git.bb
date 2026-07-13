@@ -1,4 +1,5 @@
-DESCRIPTION = "Frame Manager User Space Library"
+SUMMARY = "Frame Manager userspace library"
+DESCRIPTION = "Userspace library to configure the QorIQ DPAA Frame Manager (FMan)."
 HOMEPAGE = "https://github.com/nxp-qoriq/fmlib"
 SECTION = "fman"
 LICENSE = "BSD-3-Clause & GPL-2.0-only"
