@@ -1,4 +1,5 @@
 DESCRIPTION = "PKCS library"
+HOMEPAGE = "https://github.com/nxp-qoriq/libpkcs11"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=803852533e29eb1d6d5e55ad3078b625"
 

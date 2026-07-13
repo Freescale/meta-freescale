@@ -1,4 +1,5 @@
 SUMMARY = "DPAA2 Management Complex Firmware"
+HOMEPAGE = "https://github.com/nxp/qoriq-mc-binary"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0701845051a61f6012009d7d6d11b32b"
 

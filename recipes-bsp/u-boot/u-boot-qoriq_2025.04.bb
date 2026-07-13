@@ -1,6 +1,7 @@
 require recipes-bsp/u-boot/u-boot.inc
 
 DESCRIPTION = "U-Boot provided by Freescale with focus on QorIQ boards"
+HOMEPAGE = "https://github.com/nxp-qoriq/u-boot"
 PROVIDES += "u-boot"
 
 inherit fsl-u-boot-localversion

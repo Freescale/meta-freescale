@@ -1,4 +1,5 @@
 SUMMARY = "Firmwares and Standalone Applications"
+HOMEPAGE = "https://github.com/nxp/qoriq-firmware-cortina"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=86d76166990962fa552f840ff08e5798"
 

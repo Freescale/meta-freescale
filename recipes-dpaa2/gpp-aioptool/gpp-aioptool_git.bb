@@ -2,6 +2,7 @@ DESCRIPTION = "AIOP Tool is a userspace application for performing operations \
                on an AIOP Tile using MC interfaces. This application enables the user to \
                fetch status of tile, load a valid ELF file and run it on a tile and get and set \
                time of day."
+HOMEPAGE = "https://github.com/nxp-qoriq/gpp-aioptool"
 SECTION = "dpaa2"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"

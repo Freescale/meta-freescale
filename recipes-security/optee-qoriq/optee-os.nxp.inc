@@ -17,9 +17,9 @@ REQUIRED_MACHINE_FEATURES = "optee"
 inherit features_check
 
 OPTEEMACHINE = "ls-${MACHINE}"
-OPTEEMACHINE:ls1088ardb-pb   = "ls-ls1088ardb"
-OPTEEMACHINE:ls1046afrwy     = "ls-ls1046ardb"
-OPTEEMACHINE:lx2162aqds      = "ls-lx2160aqds"
+OPTEEMACHINE:ls1088ardb-pb = "ls-ls1088ardb"
+OPTEEMACHINE:ls1046afrwy = "ls-ls1046ardb"
+OPTEEMACHINE:lx2162aqds = "ls-lx2160aqds"
 OPTEEMACHINE:lx2160ardb-rev2 = "ls-lx2160ardb"
 
 EXTRA_OEMAKE:append = " \

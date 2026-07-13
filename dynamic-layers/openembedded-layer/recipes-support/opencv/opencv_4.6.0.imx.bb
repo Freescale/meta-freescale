@@ -222,7 +222,7 @@ SUMMARY:python3-opencv = "Python bindings to opencv"
 FILES:python3-opencv = "${PYTHON_SITEPACKAGES_DIR}/*"
 RDEPENDS:python3-opencv = "python3-core python3-numpy"
 
-RDEPENDS:${PN}-apps  = "bash"
+RDEPENDS:${PN}-apps = "bash"
 
 do_compile:prepend() {
     # remove the build host info to improve reproducibility
@@ -282,10 +282,10 @@ PACKAGECONFIG:append:mx8-nxp-bsp = " dnn text"
 PACKAGECONFIG:append:mx9-nxp-bsp = " dnn text"
 
 PACKAGECONFIG:append = " ${PACKAGECONFIG_OPENCL}"
-PACKAGECONFIG_OPENCL                 = ""
-PACKAGECONFIG_OPENCL:mx8-nxp-bsp     = "opencl"
-PACKAGECONFIG_OPENCL:mx8dxl-nxp-bsp  = ""
-PACKAGECONFIG_OPENCL:mx8mm-nxp-bsp   = ""
+PACKAGECONFIG_OPENCL = ""
+PACKAGECONFIG_OPENCL:mx8-nxp-bsp = "opencl"
+PACKAGECONFIG_OPENCL:mx8dxl-nxp-bsp = ""
+PACKAGECONFIG_OPENCL:mx8mm-nxp-bsp = ""
 PACKAGECONFIG_OPENCL:mx8mnul-nxp-bsp = ""
 
 PACKAGECONFIG[openvx] = "-DWITH_OPENVX=ON -DOPENVX_ROOT=${STAGING_LIBDIR} -DOPENVX_LIB_CANDIDATES='OpenVX;OpenVXU',-DWITH_OPENVX=OFF,virtual/libopenvx,"

@@ -7,10 +7,10 @@ inherit deploy nopackages
 
 do_install[noexec] = "1"
 
-DEPLOY_FOR                  = ""
-DEPLOY_FOR:mx8-generic-bsp  = "mx8"
+DEPLOY_FOR = ""
+DEPLOY_FOR:mx8-generic-bsp = "mx8"
 DEPLOY_FOR:mx8m-generic-bsp = "mx8m"
-DEPLOY_FOR:mx9-generic-bsp  = "mx9"
+DEPLOY_FOR:mx9-generic-bsp = "mx9"
 
 deploy_for_mx8() {
     # Cadence HDMI
@@ -57,5 +57,5 @@ addtask deploy after do_install before do_build
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
-COMPATIBLE_MACHINE                  = "(mx8-generic-bsp|mx9-generic-bsp)"
+COMPATIBLE_MACHINE = "(mx8-generic-bsp|mx9-generic-bsp)"
 COMPATIBLE_MACHINE:mx8x-generic-bsp = "(^$)"

@@ -1,4 +1,5 @@
 DESCRIPTION = "DPAA2 Accelerated I/O Processing service layer"
+HOMEPAGE = "https://github.com/nxp-qoriq/aiopsl"
 SECTION = "dpaa2"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=faf479bdc4702d8033049f97e153f876"

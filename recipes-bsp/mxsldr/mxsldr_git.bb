@@ -2,6 +2,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Freescale i.MX233/i.MX28 USB loader"
+HOMEPAGE = "https://source.denx.de/denx/mxsldr"
 DEPENDS = "libusb1"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"

@@ -1,4 +1,5 @@
 DESCRIPTION = "Decompression Compression Engine Userspace Utils"
+HOMEPAGE = "https://github.com/nxp-qoriq/dce"
 SECTION = "dpaa2"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=956df5ea6cfe0a1dcf2dee7ca37c0cdf"

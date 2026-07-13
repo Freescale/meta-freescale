@@ -4,7 +4,7 @@ DESCRIPTION = "Add packages for ISP build"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
-ISP_PKGS      ?= ""
+ISP_PKGS ?= ""
 ISP_PKGS:mx8mp-nxp-bsp = "\
     isp-imx \
     basler-camera \

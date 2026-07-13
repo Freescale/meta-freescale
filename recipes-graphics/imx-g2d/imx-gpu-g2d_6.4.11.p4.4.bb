@@ -19,7 +19,7 @@ S = "${UNPACKDIR}/${IMX_BIN_NAME}"
 
 inherit fsl-eula-unpack
 
-SOC_INSTALL_DIR               = "SOC_INSTALL_DIR_NOT_SET"
+SOC_INSTALL_DIR = "SOC_INSTALL_DIR_NOT_SET"
 SOC_INSTALL_DIR:mx8mm-nxp-bsp = "mx8mm"
 
 do_install () {

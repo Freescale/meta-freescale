@@ -12,7 +12,7 @@ inherit packagegroup
 
 SOC_TOOLS_TEST = ""
 SOC_TOOLS_TEST:imx-nxp-bsp = "imx-test"
-SOC_TOOLS_TEST:imxgpu  = "imx-test imx-gpu-viv-demos"
+SOC_TOOLS_TEST:imxgpu = "imx-test imx-gpu-viv-demos"
 SOC_TOOLS_TEST:qoriq = "ceetm optee-test-qoriq"
 
 RDEPENDS:${PN} = "\

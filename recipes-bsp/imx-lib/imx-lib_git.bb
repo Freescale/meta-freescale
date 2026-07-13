@@ -3,6 +3,7 @@
 # Copyright 2017 NXP
 
 DESCRIPTION = "Platform specific libraries for imx platform"
+HOMEPAGE = "https://github.com/nxp-imx/imx-lib"
 LICENSE = "LGPL-2.1-only"
 SECTION = "multimedia"
 
@@ -18,19 +19,19 @@ SRCREV = "6cad1ba39d16247088f6a45dc07bbbf2cf96a332"
 
 inherit use-imx-headers
 
-PLATFORM:mx6q-nxp-bsp   = "IMX6Q"
-PLATFORM:mx6dl-nxp-bsp  = "IMX6Q"
-PLATFORM:mx6sl-nxp-bsp  = "IMX6S"
+PLATFORM:mx6q-nxp-bsp = "IMX6Q"
+PLATFORM:mx6dl-nxp-bsp = "IMX6Q"
+PLATFORM:mx6sl-nxp-bsp = "IMX6S"
 PLATFORM:mx6sll-nxp-bsp = "IMX6UL"
-PLATFORM:mx6sx-nxp-bsp  = "IMX6S"
-PLATFORM:mx6ul-nxp-bsp  = "IMX6UL"
+PLATFORM:mx6sx-nxp-bsp = "IMX6S"
+PLATFORM:mx6ul-nxp-bsp = "IMX6UL"
 PLATFORM:mx6ull-nxp-bsp = "IMX6UL"
-PLATFORM:mx7d-nxp-bsp   = "IMX7"
+PLATFORM:mx7d-nxp-bsp = "IMX7"
 PLATFORM:mx7ulp-nxp-bsp = "IMX7"
 PLATFORM:mx8ulp-nxp-bsp = "IMX8ULP"
-PLATFORM:mx9-nxp-bsp    = "IMX8ULP"
-PLATFORM:mx93-nxp-bsp   = "IMX8ULP"
-PLATFORM:mx943-nxp-bsp  = "IMX8ULP"
+PLATFORM:mx9-nxp-bsp = "IMX8ULP"
+PLATFORM:mx93-nxp-bsp = "IMX8ULP"
+PLATFORM:mx943-nxp-bsp = "IMX8ULP"
 
 PARALLEL_MAKE = "-j 1"
 EXTRA_OEMAKE = ""

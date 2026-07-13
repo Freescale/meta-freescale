@@ -1,4 +1,5 @@
 SUMMARY = "single-file public domain (or MIT licensed) libraries for C/C++"
+HOMEPAGE = "https://github.com/nothings/stb"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://stb.h;beginline=14418;endline=14433;md5=b10975d4c8155af1811ab611586f01d2"
 

@@ -1,6 +1,7 @@
 # Copyright 2025 NXP
 
 DESCRIPTION = "NXP Audio Front End (AFE) for incorporating Voice Assistants"
+HOMEPAGE = "https://github.com/nxp-imx/nxp-afe"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=7bdef19938f3503cfc4c586461f99012"
 

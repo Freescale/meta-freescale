@@ -3,9 +3,10 @@
 require imx-mkimage_git.inc
 
 DESCRIPTION = "Generate Boot Loader for i.MX 8 device"
+HOMEPAGE = "https://github.com/nxp-imx/imx-mkimage"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
-SECTION = "BSP"
+SECTION = "bsp"
 
 DEPENDS += "xxd-native"
 DEPENDS:append:mx8m-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkeficapsule-native"
@@ -50,7 +51,7 @@ BOOT_VARIANT ?= ""
 
 TOOLS_NAME ?= "mkimage_imx8"
 
-IMX_BOOT_SOC_TARGET       ?= "INVALID"
+IMX_BOOT_SOC_TARGET ?= "INVALID"
 
 DEPLOY_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 DEPLOY_OPTEE_STMM = "${@bb.utils.contains('MACHINE_FEATURES', 'optee stmm', 'true', 'false', d)}"
@@ -60,23 +61,23 @@ IMXBOOT_TARGETS ?= \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
                                                   'flash_multi_cores flash_dcd', d), d)}"
 
-BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
-BOOT_STAGING:mx8m-generic-bsp  = "${S}/iMX8M"
+BOOT_STAGING = "${S}/${IMX_BOOT_SOC_TARGET}"
+BOOT_STAGING:mx8m-generic-bsp = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
-BOOT_STAGING:mx91-generic-bsp  = "${S}/iMX91"
-BOOT_STAGING:mx93-generic-bsp  = "${S}/iMX93"
+BOOT_STAGING:mx91-generic-bsp = "${S}/iMX91"
+BOOT_STAGING:mx93-generic-bsp = "${S}/iMX93"
 BOOT_STAGING:mx943-generic-bsp = "${S}/iMX94"
-BOOT_STAGING:mx95-generic-bsp  = "${S}/iMX95"
+BOOT_STAGING:mx95-generic-bsp = "${S}/iMX95"
 
-SOC_FAMILY                    = "INVALID"
-SOC_FAMILY:mx8-generic-bsp    = "mx8"
-SOC_FAMILY:mx8m-generic-bsp   = "mx8m"
-SOC_FAMILY:mx8x-generic-bsp   = "mx8x"
+SOC_FAMILY = "INVALID"
+SOC_FAMILY:mx8-generic-bsp = "mx8"
+SOC_FAMILY:mx8m-generic-bsp = "mx8m"
+SOC_FAMILY:mx8x-generic-bsp = "mx8x"
 SOC_FAMILY:mx8ulp-generic-bsp = "mx8ulp"
-SOC_FAMILY:mx91-generic-bsp   = "mx91"
-SOC_FAMILY:mx93-generic-bsp   = "mx93"
-SOC_FAMILY:mx943-generic-bsp  = "mx943"
-SOC_FAMILY:mx95-generic-bsp   = "mx95"
+SOC_FAMILY:mx91-generic-bsp = "mx91"
+SOC_FAMILY:mx93-generic-bsp = "mx93"
+SOC_FAMILY:mx943-generic-bsp = "mx943"
+SOC_FAMILY:mx95-generic-bsp = "mx95"
 
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 

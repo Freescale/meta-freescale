@@ -1,4 +1,5 @@
 DESCRIPTION = "i.MX Register tool"
+HOMEPAGE = "https://github.com/boundarydevices/devregs"
 SECTION = "devel"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5003fa041d799dd5dd5f646b74e36924"

@@ -1,4 +1,5 @@
 DESCRIPTION = "Foundation Library"
+HOMEPAGE = "https://github.com/nxp-qoriq/flib"
 SECTION = "flib"
 LICENSE = "BSD-3-Clause & GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=9f6d1afdf6b0f6b3ba65c25ba589ee53"
