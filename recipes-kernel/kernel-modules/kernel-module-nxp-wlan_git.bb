@@ -1,5 +1,7 @@
 SUMMARY = "NXP Wi-Fi driver for module 88w8801/8987/8997/9098 IW416/610/612"
+DESCRIPTION = "Kernel driver for NXP 88W8801/8987/8997/9098 and IW416/610/612 Wi-Fi modules."
 HOMEPAGE = "https://github.com/nxp-imx/mwifiex"
+SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ab04ac0f249af12befccb94447c08b77"
 
