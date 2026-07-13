@@ -2,7 +2,10 @@
 # Copyright 2017-2025 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
+SUMMARY = "i.MX DPU G2D library"
 DESCRIPTION = "G2D library using i.MX DPU"
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "graphics"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
@@ -33,6 +36,8 @@ do_install () {
     cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
 }
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 RDEPENDS:${PN}:append:libc-musl = " gcompat"
 
@@ -42,5 +47,4 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxdpu)"
