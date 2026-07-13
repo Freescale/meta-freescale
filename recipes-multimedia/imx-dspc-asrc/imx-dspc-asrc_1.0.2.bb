@@ -1,7 +1,9 @@
 # Copyright 2019, 2025 NXP
+SUMMARY = "i.MX asynchronous sample rate converter"
 DESCRIPTION = "NXP Asynchronous Sample Rate Converter"
-LICENSE = "Proprietary"
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
