@@ -1,6 +1,8 @@
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 SUMMARY = "Samples for OpenGL ES"
+DESCRIPTION = "OpenGL ES / EGL API tracing, replay and inspection tools for i.MX GPUs."
 HOMEPAGE = "https://github.com/nxp-imx/apitrace-imx"
+SECTION = "graphics"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=aeb969185a143c3c25130bc2c3ef9a50"
 DEPENDS = "libpng procps zlib"
@@ -32,6 +34,8 @@ PACKAGECONFIG[waffle] = "-DENABLE_WAFFLE=ON,-DENABLE_WAFFLE=OFF,waffle"
 PACKAGECONFIG[x11] = "-DENABLE_X11=ON,-DENABLE_X11=OFF"
 PACKAGECONFIG[vivante] = "-DENABLE_VIVANTE=ON,-DENABLE_VIVANTE=OFF,virtual/libg2d"
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""
 FILES:${PN} += "\
@@ -44,7 +48,6 @@ EXTRA_OECMAKE += "\
     -DENABLE_STATIC_LIBSTDCXX=OFF \
     -DPython3_ROOT_DIR=/usr/bin/python3-native \
 "
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(imxgpu)"
 SECURITY_CFLAGS:toolchain-clang = ""
 
