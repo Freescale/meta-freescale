@@ -3,9 +3,11 @@
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
+SUMMARY = "i.MX multimedia codec libraries"
 DESCRIPTION = "Freescale Multimedia codec libs"
-LICENSE = "Proprietary"
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
 
 # Backward compatibility
