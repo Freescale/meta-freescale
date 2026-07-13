@@ -2,7 +2,10 @@
 # Copyright (C) 2013-2016 Freescale Semiconductor
 # Copyright (C) 2017-2020 NXP
 
+SUMMARY = "i.MX VPU library for Chips&Media VPU"
 DESCRIPTION = "Freescale VPU library for Chips&Media VPU"
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "multimedia"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=228c72f2a91452b8a03c4cab30f30ef9"
 
