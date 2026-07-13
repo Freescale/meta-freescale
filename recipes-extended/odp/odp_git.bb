@@ -28,7 +28,7 @@ EXTRA_OEMAKE = "CROSS_COMPILE="${TARGET_PREFIX}" \
 "
 
 CFLAGS += "-Wno-format-truncation -Wno-maybe-uninitialized -Wno-implicit-fallthrough -Wno-cpp -Wno-cast-function-type \
-          -Wno-stringop-truncation \
+           -Wno-stringop-truncation \
 "
 
 PACKAGECONFIG[perf] = "--enable-test-perf,,,"

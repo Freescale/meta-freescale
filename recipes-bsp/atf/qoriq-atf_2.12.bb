@@ -8,7 +8,7 @@ do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 PV:append = "+${SRCPV}"
 
 SRC_URI += "git://github.com/ARMmbed/mbedtls;protocol=https;nobranch=1;destsuffix=${S}/mbedtls;name=mbedtls \
-    git://github.com/nxp/ddr-phy-binary;protocol=https;nobranch=1;destsuffix=${S}/ddr-phy-binary;name=ddr \
+            git://github.com/nxp/ddr-phy-binary;protocol=https;nobranch=1;destsuffix=${S}/ddr-phy-binary;name=ddr \
 "
 SRCREV_mbedtls = "0795874acdf887290b2571b193cafd3c4041a708"
 SRCREV_ddr = "fbc036b88acb6c06ffed02c898cbae9856ec75ba"
@@ -68,7 +68,7 @@ EXTRA_OEMAKE += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'fuse', 'fip_fuse FUSE_PROG=1 FUSE_PROV_FILE=fuse_scr.bin', '', d)} \
 "
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     ${@bb.utils.filter('COMBINED_FEATURES', 'optee', d)} \
 "
 PACKAGECONFIG[optee] = ",,optee-os-qoriq"
@@ -120,10 +120,10 @@ do_compile() {
         flexspi_nor)
             rcwimg="${RCWXSPI}${RCW_SUFFIX}"
             uefiboot="${UEFI_XSPIBOOT}"
-            ;;        
+            ;;
         esac
-            
-	if [ -f ${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/$rcwimg ]; then
+
+    if [ -f ${DEPLOY_DIR_IMAGE}/rcw/${RCW_FOLDER}/$rcwimg ]; then
             make V=1 realclean
             if [ -f rot_key.pem ];then
                 mkdir -p build/${PLATFORM}/release/

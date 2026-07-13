@@ -8,7 +8,7 @@ DEPENDS_BACKEND = \
         bb.utils.contains('DISTRO_FEATURES',     'x11',               ' xrandr', \
                                                                              '', d), d)}"
 DEPENDS_MX8       = ""
-DEPENDS_MX8:mx8-nxp-bsp   = " \
+DEPENDS_MX8:mx8-nxp-bsp   = "\
     glslang-native \
     opencv \
     rapidopencl \
@@ -17,10 +17,10 @@ DEPENDS_MX8:mx8-nxp-bsp   = " \
     vulkan-headers \
     vulkan-loader \
 "
-DEPENDS_MX8:mx8mm-nxp-bsp = " \
+DEPENDS_MX8:mx8mm-nxp-bsp = "\
     opencv \
 "
-DEPENDS = " \
+DEPENDS = "\
     assimp \
     cmake-native \
     devil \
@@ -75,7 +75,7 @@ do_compile () {
     FslBuild.py -vvvvv -t sdk --UseFeatures [${FEATURES}] --UseExtensions [${EXTENSIONS}] --Variants [WindowSystem=${WINDOW_SYSTEM}] --BuildThreads ${@oe.utils.parallel_make(d)} -c install --CMakeInstallPrefix ${S}
 }
 
-REMOVALS = " \
+REMOVALS = "\
     GLES2/DeBayer \
     GLES2/DirectMultiSamplingVideoYUV \
     GLES3/DirectMultiSamplingVideoYUV \
@@ -108,7 +108,7 @@ INSANE_SKIP:${PN} += "already-stripped rpaths"
 
 # Unfortunately recipes with an empty main package, like header-only libraries,
 # are not included in the SDK. Use RDEPENDS as a workaround.
-RDEPENDS_EMPTY_MAIN_PACKAGE = " \
+RDEPENDS_EMPTY_MAIN_PACKAGE = "\
     fmt \
     gli \
     glm \
@@ -119,7 +119,7 @@ RDEPENDS_EMPTY_MAIN_PACKAGE = " \
     stb \
 "
 RDEPENDS_EMPTY_MAIN_PACKAGE_MX8       = ""
-RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8-nxp-bsp   = " \
+RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8-nxp-bsp   = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'libxdg-shell', '', d)} \
     rapidopencl \
     rapidopenvx \

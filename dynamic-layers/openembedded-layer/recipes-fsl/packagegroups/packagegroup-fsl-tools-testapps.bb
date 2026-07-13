@@ -3,7 +3,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 DESCRIPTION = "Packagegroup used by FSL Community to provide a set of packages and utilities \
-for hardware test."
+               for hardware test."
 SUMMARY = "FSL Community packagegroup - tools/testapps"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
@@ -15,7 +15,7 @@ SOC_TOOLS_TEST:imx-nxp-bsp = "imx-test"
 SOC_TOOLS_TEST:imxgpu  = "imx-test imx-gpu-viv-demos"
 SOC_TOOLS_TEST:qoriq = "ceetm optee-test-qoriq"
 
-RDEPENDS:${PN} = " \
+RDEPENDS:${PN} = "\
     alsa-utils \
     alsa-tools \
     dosfstools \

@@ -16,10 +16,10 @@ REQUIRED_DISTRO_FEATURES = "vulkan"
 DEPENDS += "vulkan-headers vulkan-loader vulkan-volk"
 
 EXTRA_OECMAKE = "\
-                 -DBUILD_TESTS=OFF \
-                 -DBUILD_CUBE=OFF \
-                 -DPYTHON_EXECUTABLE=${HOSTTOOLS_DIR}/python3 \
-                 "
+    -DBUILD_TESTS=OFF \
+    -DBUILD_CUBE=OFF \
+    -DPYTHON_EXECUTABLE=${HOSTTOOLS_DIR}/python3 \
+"
 
 # must choose x11 or wayland or both
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'wayland x11', d)}"

@@ -16,9 +16,9 @@ PV = "0.0.0+git${SRCPV}"
 inherit pkgconfig
 
 do_compile() {
-	oe_runmake
+    oe_runmake
 }
 do_install() {
-	oe_runmake install DESTDIR="${D}"
+    oe_runmake install DESTDIR="${D}"
 }
 BBCLASSEXTEND = "native nativesdk"

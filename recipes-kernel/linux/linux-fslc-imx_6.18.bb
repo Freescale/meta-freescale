@@ -5,9 +5,9 @@
 
 SUMMARY = "Linux Kernel provided by NXP and supported by Community"
 DESCRIPTION = "Linux Kernel provided by NXP as the part of release distribution. \
-Main focus is set on i.MX Family Reference Boards. \
-It includes support for many NXP Proprietary IPs (GPU, VPU, IPU). \
-Latest stable Kernel patchlevel is applied and maintained by Community."
+               Main focus is set on i.MX Family Reference Boards. \
+               It includes support for many NXP Proprietary IPs (GPU, VPU, IPU). \
+               Latest stable Kernel patchlevel is applied and maintained by Community."
 
 ###############################################################################
 # This recipe (and corresponding kernel repository and branch) receives updates

@@ -10,7 +10,7 @@ SRCREV = "4eb81a6797ef4e58bf7d9b2d58afb37a21c1f550"
 EXTRA_OEMAKE = 'CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"'
 
 do_install(){
-	oe_runmake DESTDIR=${D} PREFIX=${prefix} install
+    oe_runmake DESTDIR=${D} PREFIX=${prefix} install
 }
 
 PACKAGES =+ "${PN}-config"

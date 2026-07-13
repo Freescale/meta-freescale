@@ -8,7 +8,7 @@ REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 
 SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     no-idle-timeout \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xwayland', '', d)} \
     ${PACKAGECONFIG_GBM_FORMAT} \

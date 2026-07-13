@@ -10,14 +10,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=69663ab153298557a59c67a60a743e5b"
 
 inherit systemd update-rc.d cmake useradd
 
-SRC_URI = " \
+SRC_URI = "\
     git://github.com/OP-TEE/optee_client.git;branch=master;protocol=https \
     file://tee-supplicant.sh \
 "
 
 UPSTREAM_CHECK_GITTAGREGEX = "^(?P<pver>\d+(\.\d+)+)$"
 
-EXTRA_OECMAKE = " \
+EXTRA_OECMAKE = "\
     -DBUILD_SHARED_LIBS=ON \
     -DCFG_USE_PKGCONFIG=ON \
 "

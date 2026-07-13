@@ -23,7 +23,7 @@ PACKAGECONFIG_GL:use-mainline-bsp ?= "gles2 gbm kms"
 
 PACKAGECONFIG_PLATFORM          = ""
 PACKAGECONFIG_PLATFORM:imxgpu2d = "no-opengl linuxfb"
-PACKAGECONFIG_PLATFORM:imxgpu3d = " \
+PACKAGECONFIG_PLATFORM:imxgpu3d = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11',     '', \
        bb.utils.contains('DISTRO_FEATURES', 'wayland', '', \
                                                        'eglfs', d), d)}"

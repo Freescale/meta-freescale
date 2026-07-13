@@ -16,7 +16,7 @@ DEPENDS:append:toolchain-clang = " lld-native"
 
 SRC_URI = "git://github.com/OP-TEE/optee_test.git;branch=master;protocol=https \
            file://run-ptest \
-          "
+           "
 
 B = "${WORKDIR}/build"
 
@@ -25,7 +25,7 @@ EXTRA_OEMAKE += "TA_DEV_KIT_DIR=${TA_DEV_KIT_DIR} \
                  CROSS_COMPILE_HOST=${HOST_PREFIX} \
                  CROSS_COMPILE_TA=${HOST_PREFIX} \
                  O=${B} \
-               "
+                 "
 
 CFLAGS += "-Wno-error=deprecated-declarations"
 
@@ -58,7 +58,7 @@ addtask deploy before do_build after do_install
 
 FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/ \
                 ${libdir}/tee-supplicant/plugins/ \
-               "
+                "
 
 # Imports machine specific configs from staging to build
 PACKAGE_ARCH = "${MACHINE_ARCH}"

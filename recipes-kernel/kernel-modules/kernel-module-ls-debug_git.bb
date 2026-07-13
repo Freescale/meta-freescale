@@ -1,6 +1,6 @@
 SUMMARY = "Layerscape Debug File System Module"
 DESCRIPTION = "This package is the kernel module which is used for \
-ls102xa targets debug."
+               ls102xa targets debug."
 SECTION = "ls-debug"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=94263f12f9416f9fd0493c8f9e8085a3"

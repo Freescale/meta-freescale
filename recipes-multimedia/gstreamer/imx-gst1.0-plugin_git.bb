@@ -7,7 +7,7 @@ SECTION = "multimedia"
 LICENSE = "GPL-2.0-only & LGPL-2.0-only & LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=fbc093901857fcd118f065f900982c24"
 
-DEPENDS = " \
+DEPENDS = "\
     gstreamer1.0 \
     gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-bad \

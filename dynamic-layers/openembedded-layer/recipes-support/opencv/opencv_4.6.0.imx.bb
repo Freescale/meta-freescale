@@ -95,14 +95,14 @@ addtask unpack_extra after do_unpack before do_patch
 CMAKE_VERBOSE = "VERBOSE=1"
 
 EXTRA_OECMAKE = "-DOPENCV_EXTRA_MODULES_PATH=${S}/contrib/modules \
-    -DWITH_1394=OFF \
-    -DENABLE_PRECOMPILED_HEADERS=OFF \
-    -DCMAKE_SKIP_RPATH=ON \
-    -DOPENCV_ICV_HASH=${IPP_MD5} \
-    -DIPPROOT=${S}/ippicv_lnx \
-    -DOPENCV_GENERATE_PKGCONFIG=ON \
-    -DOPENCV_DOWNLOAD_PATH=${OPENCV_DLDIR} \
-    -DOPENCV_ALLOW_DOWNLOADS=OFF \
+                 -DWITH_1394=OFF \
+                 -DENABLE_PRECOMPILED_HEADERS=OFF \
+                 -DCMAKE_SKIP_RPATH=ON \
+                 -DOPENCV_ICV_HASH=${IPP_MD5} \
+                 -DIPPROOT=${S}/ippicv_lnx \
+                 -DOPENCV_GENERATE_PKGCONFIG=ON \
+                 -DOPENCV_DOWNLOAD_PATH=${OPENCV_DLDIR} \
+                 -DOPENCV_ALLOW_DOWNLOADS=OFF \
     ${@bb.utils.contains("TARGET_CC_ARCH", "-msse3", "-DENABLE_SSE=1 -DENABLE_SSE2=1 -DENABLE_SSE3=1 -DENABLE_SSSE3=1", "", d)} \
     ${@bb.utils.contains("TARGET_CC_ARCH", "-msse4.1", "-DENABLE_SSE=1 -DENABLE_SSE2=1 -DENABLE_SSE3=1 -DENABLE_SSSE3=1 -DENABLE_SSE41=1", "", d)} \
     ${@bb.utils.contains("TARGET_CC_ARCH", "-msse4.2", "-DENABLE_SSE=1 -DENABLE_SSE2=1 -DENABLE_SSE3=1 -DENABLE_SSSE3=1 -DENABLE_SSE41=1 -DENABLE_SSE42=1", "", d)} \
@@ -113,7 +113,7 @@ LDFLAGS:append:riscv32 = " -Wl,--no-as-needed -latomic -Wl,--as-needed"
 EXTRA_OECMAKE:append:x86 = " -DX86=ON"
 # disable sse4.1 and sse4.2 to fix 32bit build failure
 # https://github.com/opencv/opencv/issues/21597
-EXTRA_OECMAKE:remove:x86 = " -DENABLE_SSE41=1 -DENABLE_SSE42=1"
+EXTRA_OECMAKE:remove:x86 = "-DENABLE_SSE41=1 -DENABLE_SSE42=1"
 
 PACKAGECONFIG ??= "gapi python3 eigen jpeg png tiff v4l libv4l gstreamer samples tbb gphoto2 \
     ${@bb.utils.contains("DISTRO_FEATURES", "x11", "gtk", "", d)} \
@@ -169,7 +169,7 @@ PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'samples', '${PN}-samples', '
     ${@bb.utils.contains('PACKAGECONFIG', 'java', '${PN}-java', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'python2', 'python-${BPN}', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'python3', 'python3-${BPN}', '', d)} \
-    ${PN}-apps"
+             ${PN}-apps"
 
 python populate_packages:prepend () {
     cv_libdir = d.expand('${libdir}')

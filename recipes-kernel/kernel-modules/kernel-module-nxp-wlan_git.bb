@@ -10,7 +10,7 @@ RCONFLICTS:${PN} = "kernel-module-nxp89xx"
 KERNEL_MODULE_PROBECONF += "moal"
 module_conf_moal = "options moal mod_para=nxp/wifi_mod_para.conf"
 
-SRC_URI = " \
+SRC_URI = "\
     ${MRVL_SRC};branch=${SRCBRANCH} \
     file://0001-mlinux-moal_main-fix-device-wakeup-capability.patch \
 "
