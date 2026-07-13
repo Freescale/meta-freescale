@@ -1,4 +1,7 @@
 SUMMARY = "DP firmware"
+DESCRIPTION = "Cadence DisplayPort (HDP) firmware for i.MX8 SoCs."
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "bsp"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
 
@@ -21,8 +24,9 @@ do_deploy () {
 }
 addtask deploy before do_build after do_install
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/boot"
 
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
-PACKAGE_ARCH = "${MACHINE_ARCH}"
