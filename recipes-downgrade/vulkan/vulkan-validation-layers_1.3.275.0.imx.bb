@@ -13,7 +13,7 @@ SRCREV = "780c65337e111c7385109c7b720d757a778e4fe2"
 
 REQUIRED_DISTRO_FEATURES = "vulkan"
 
-DEPENDS = "vulkan-headers vulkan-loader spirv-headers spirv-tools glslang vulkan-utility-libraries"
+DEPENDS = "glslang spirv-headers spirv-tools vulkan-headers vulkan-loader vulkan-utility-libraries"
 
 # BUILD_TESTS            - Not required for OE builds
 # USE_ROBIN_HOOD_HASHING - Provides substantial performance improvements on all platforms.

@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/nxp-qoriq/ovs-dpdk"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ce5d23a6429dff345518758f13aaeab"
 
-DEPENDS = "dpdk python3-six-native coreutils-native autoconf-native automake-native"
+DEPENDS = "autoconf-native automake-native coreutils-native dpdk python3-six-native"
 RDEPENDS:${PN} = "bash libcrypto libssl python3"
 
 inherit python3native pkgconfig

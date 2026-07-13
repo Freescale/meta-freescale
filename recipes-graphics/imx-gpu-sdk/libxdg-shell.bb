@@ -2,7 +2,7 @@ SUMMARY = "Provides XDG shell header and glue code library"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${UNPACKDIR}/${BP}/License.md;md5=9d58a2573275ce8c35d79576835dbeb8"
 
-DEPENDS = "wayland-native wayland wayland-protocols"
+DEPENDS = "wayland wayland-native wayland-protocols"
 
 require imx-gpu-sdk-src.inc
 

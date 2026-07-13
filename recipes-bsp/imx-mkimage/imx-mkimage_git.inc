@@ -1,6 +1,6 @@
 # Copyright 2017-2026 NXP
 
-DEPENDS = "zlib-native openssl-native"
+DEPENDS = "openssl-native zlib-native"
 
 SRC_URI = "${IMX_MKIMAGE_SRC};branch=${SRCBRANCH} \
            file://0001-iMX8M-soc.mak-use-native-mkimage-from-sysroot.patch \

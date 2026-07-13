@@ -14,7 +14,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/${REALPN}/${REALPN}-${PV}.tar.x
 SRC_URI[sha256sum] = "d87c57244cecbd17bb030b698dcb67a66225de639f7c5b837391c4a8e5477667"
 
 S = "${UNPACKDIR}/${REALPN}-${PV}"
-DEPENDS = "libva gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
+DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base libva"
 
 inherit meson pkgconfig features_check upstream-version-is-even
 

@@ -17,7 +17,6 @@ LOCALVERSION = "-lts-${SRCBRANCH}"
 KBRANCH = "${SRCBRANCH}"
 SRCREV = "f49f45233f7b10006ce7e9c826ee882bb14ac8b5"
 
-
 do_configure[noexec] = "1"
 
 do_compile[noexec] = "1"
@@ -81,7 +80,7 @@ do_install() {
 ALLOW_EMPTY:${PN} = "1"
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS += "unifdef-native bison-native rsync-native"
+DEPENDS += "bison-native rsync-native unifdef-native"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 

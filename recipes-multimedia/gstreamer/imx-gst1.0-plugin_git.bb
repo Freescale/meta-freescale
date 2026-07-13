@@ -43,7 +43,6 @@ IMXGST_SRC ?= "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https"
 SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
 SRCREV = "0565fc515612908a353e8378e24f97de17cc56a6"
 
-
 inherit meson pkgconfig use-imx-headers
 
 PLATFORM:mx6-nxp-bsp = "MX6"

@@ -25,5 +25,4 @@ FILES:${PN} = "${libdir} /opt"
 INSANE_SKIP:${PN} = "already-stripped"
 RDEPENDS:${PN} += "isp-imx"
 
-
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

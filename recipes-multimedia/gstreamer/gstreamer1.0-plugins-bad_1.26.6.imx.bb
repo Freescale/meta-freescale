@@ -11,6 +11,7 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
 SUMMARY = "'Bad' GStreamer plugins and helper libraries "
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues"
+CVE_PRODUCT = "gst-plugins-bad"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
            file://0001-fix-maybe-uninitialized-warnings-when-compiling-with.patch \
@@ -168,7 +169,6 @@ FILES:${PN}-freeverb += "${datadir}/gstreamer-1.0/presets/GstFreeverb.prs"
 FILES:${PN}-opencv += "${datadir}/gst-plugins-bad/1.0/opencv*"
 FILES:${PN}-transcode += "${datadir}/gstreamer-1.0/encoding-profiles"
 FILES:${PN}-voamrwbenc += "${datadir}/gstreamer-1.0/presets/GstVoAmrwbEnc.prs"
-
 
 ########### End of OE-core copy ###########
 
