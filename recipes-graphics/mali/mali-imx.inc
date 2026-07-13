@@ -1,4 +1,6 @@
 SUMMARY = "Graphics libraries and driver for i.MX Mali GPU"
+DESCRIPTION = "Arm Mali GPU user-space graphics libraries and driver for i.MX SoCs."
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "libs"
 DEPENDS = "\
     libdrm \
