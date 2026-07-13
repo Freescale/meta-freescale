@@ -1,3 +1,4 @@
+SUMMARY = "AIOP Tool userspace application"
 DESCRIPTION = "AIOP Tool is a userspace application for performing operations \
                on an AIOP Tile using MC interfaces. This application enables the user to \
                fetch status of tile, load a valid ELF file and run it on a tile and get and set \
