@@ -1,6 +1,7 @@
 SUMMARY = "i.MX G2D Samples"
 DESCRIPTION = "Set of sample applications for i.MX G2D"
 HOMEPAGE = "https://github.com/nxp-imx/g2d-samples"
+SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
 
@@ -69,8 +70,8 @@ do_install() {
     oe_runmake install DESTDIR=${D}
 }
 
-FILES:${PN} += "/opt"
-
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
+FILES:${PN} += "/opt"
 
 COMPATIBLE_MACHINE = "(imxgpu2d|mx93-nxp-bsp|mx943-nxp-bsp|mx95-nxp-bsp)"
