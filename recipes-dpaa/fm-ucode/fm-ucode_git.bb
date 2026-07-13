@@ -1,3 +1,4 @@
+SUMMARY = "Fman microcode"
 DESCRIPTION = "Fman microcode binary"
 HOMEPAGE = "https://github.com/NXP/qoriq-fm-ucode"
 SECTION = "fm-ucode"
