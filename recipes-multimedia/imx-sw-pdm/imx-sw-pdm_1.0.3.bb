@@ -1,8 +1,10 @@
 # Copyright 2020,2023 NXP
 
+SUMMARY = "i.MX PDM-to-PCM software decimation library"
 DESCRIPTION = "NXP PDM to PCM Software Decimation SIMD Library"
-LICENSE = "Proprietary"
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=63a38e9f392d8813d6f1f4d0d6fbe657"
 
 SRC_URI = "${FSL_MIRROR}/${BP}.bin;fsl-eula=true"
