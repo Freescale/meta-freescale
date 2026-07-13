@@ -3,7 +3,10 @@
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
+SUMMARY = "i.MX GPU G2D library"
 DESCRIPTION = "G2D library using i.MX GPU"
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "graphics"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 DEPENDS = "libgal-imx"
