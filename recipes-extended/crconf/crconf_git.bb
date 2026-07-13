@@ -1,4 +1,5 @@
 SUMMARY = "crconf -Linux crypto layer configuraton tool"
+DESCRIPTION = "Command-line tool to configure the Linux kernel crypto layer (crconf)."
 HOMEPAGE = "https://sourceforge.net/projects/crconf/"
 SECTION = "base"
 LICENSE = "GPL-2.0-only"
