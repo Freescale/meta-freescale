@@ -1,3 +1,4 @@
+SUMMARY = "SKMM PCIe endpoint application"
 DESCRIPTION = "SKMM application for PCIe endpoint"
 HOMEPAGE = "https://github.com/nxp-qoriq-yocto-sdk/skmm-ep"
 SECTION = "skmm-ep"
