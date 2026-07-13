@@ -3,6 +3,7 @@
 # Copyright 2017-2024 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
+SUMMARY = "i.MX Vivante GPU driver"
 DESCRIPTION = "GPU driver and apps for i.MX"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "libs"
