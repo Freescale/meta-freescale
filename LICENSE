@@ -60,7 +60,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-devtools/uuu/uuu-bin_1.5.233.bb: LICENSE = "BSD-3-Clause & LGPL-2.1-or-later"
 ./recipes-downgrade/glslang/glslang_1.3.275.0.imx.bb: LICENSE = "BSD-3-Clause & BSD-2-Clause & MIT & Apache-2.0 & GPL-3-with-bison-exception"
 ./recipes-downgrade/spir/spirv-headers_1.3.275.0.imx.bb: LICENSE = "MIT"
-./recipes-downgrade/spir/spirv-tools_1.3.275.0.imx.bb: LICENSE  = "Apache-2.0"
+./recipes-downgrade/spir/spirv-tools_1.3.275.0.imx.bb: LICENSE = "Apache-2.0"
 ./recipes-downgrade/vulkan/vulkan-headers_1.3.275.0.imx.bb: LICENSE = "Apache-2.0 & MIT"
 ./recipes-downgrade/vulkan/vulkan-loader_1.3.275.0.imx.bb: LICENSE = "Apache-2.0"
 ./recipes-downgrade/vulkan/vulkan-tools_1.3.275.0.imx.bb: LICENSE = "Apache-2.0"
