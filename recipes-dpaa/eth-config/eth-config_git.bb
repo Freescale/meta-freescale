@@ -1,3 +1,4 @@
+SUMMARY = "Ethernet config files"
 DESCRIPTION = "Ethernet Configuration Files"
 HOMEPAGE = "https://github.com/nxp-qoriq/eth-config"
 SECTION = "eth-config"
