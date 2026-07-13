@@ -1,6 +1,7 @@
 # Copyright 2025 NXP
 
-DESCRIPTION = "NXP RetuneDSP Voice Seeker Libraries"
+SUMMARY = "NXP RetuneDSP Voice Seeker libraries"
+DESCRIPTION = "NXP RetuneDSP Voice Seeker far-field voice pickup libraries."
 HOMEPAGE = "https://github.com/nxp-imx/imx-voiceui"
 SECTION = "multimedia"
 LICENSE = "Proprietary"
