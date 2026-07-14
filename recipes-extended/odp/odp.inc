@@ -6,8 +6,6 @@ SECTION = "console/network"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ca6103dc75397fb6bec596187d6b7829"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/odp:"
-
 SRC_URI = "\
     git://github.com/nxp-qoriq/odp;protocol=https;nobranch=1 \
     git://github.com/nxp-qoriq/qbman_userspace;protocol=https;nobranch=1;name=qbman;destsuffix=${S}/platform/linux-dpaa2/flib/qbman \
