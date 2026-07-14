@@ -3,7 +3,7 @@ From: Naveen Saini <naveen.kumar.saini@intel.com>
 Date: Wed, 14 Apr 2021 16:03:10 +0800
 Subject: [PATCH] meson.build:-march and -mcpu already passed by Yocto
 
-Upstream-Status: Inappropriate
+Upstream-Status: Inappropriate [oe-specific]
 
 Signed-off-by: Naveen Saini <naveen.kumar.saini@intel.com>
 ---
