@@ -1,6 +1,9 @@
 # Copyright (C) 2016 Freescale Semiconductor
 # Copyright 2017-2022,2026 NXP
 
+# NOTE: uses 'inherit native' directly, so a '-native' filename (as
+# oelint.var.nativefilename suggests) would double the class suffix and break PN.
+# That finding is a false positive here and is not inline-suppressible.
 require imx-mkimage_git.inc
 
 SUMMARY = "i.MX boot image generation tool"
@@ -8,6 +11,8 @@ DESCRIPTION = "Tooling to assemble i.MX boot images (mkimage_imx8 and related)."
 HOMEPAGE = "https://github.com/nxp-imx/imx-mkimage"
 SECTION = "bsp"
 LICENSE = "GPL-2.0-only"
+# Source ships no standalone license file; reference the common GPL-2.0-only text.
+# nooelint: oelint.var.licenseremotefile
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 inherit deploy native
