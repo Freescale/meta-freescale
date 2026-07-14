@@ -1,20 +1,21 @@
 SUMMARY = "VA-API support to GStreamer"
-HOMEPAGE = "https://gstreamer.freedesktop.org/"
 DESCRIPTION = "gstreamer-vaapi consists of a collection of VA-API \
                based plugins for GStreamer and helper libraries: `vaapidecode', \
                `vaapiconvert', and `vaapisink'."
+HOMEPAGE = "https://gstreamer.freedesktop.org/"
+SECTION = "multimedia"
 
 REALPN = "gstreamer-vaapi"
 
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=4fbd65380cdd255951079008b364516c"
+DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base libva"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/${REALPN}/${REALPN}-${PV}.tar.xz"
 
 SRC_URI[sha256sum] = "d87c57244cecbd17bb030b698dcb67a66225de639f7c5b837391c4a8e5477667"
 
 S = "${UNPACKDIR}/${REALPN}-${PV}"
-DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base libva"
 
 inherit meson pkgconfig features_check upstream-version-is-even
 
@@ -25,8 +26,6 @@ EXTRA_OEMESON += "\
     -Dexamples=disabled \
     -Dtests=enabled \
 "
-
-PACKAGES =+ "${PN}-tests"
 
 # OpenGL packageconfig factored out to make it easy for distros
 # and BSP layers to pick either glx, egl, or no GL. By default,
@@ -47,7 +46,9 @@ PACKAGECONFIG[glx] = "-Dglx=enabled,-Dglx=disabled,virtual/libgl"
 PACKAGECONFIG[wayland] = "-Dwayland=enabled,-Dwayland=disabled,wayland-native wayland wayland-protocols"
 PACKAGECONFIG[x11] = "-Dx11=enabled,-Dx11=disabled,virtual/libx11 libxrandr libxrender"
 
+PACKAGES =+ "${PN}-tests"
+
 FILES:${PN} += "${libdir}/gstreamer-*/*.so"
 FILES:${PN}-dbg += "${libdir}/gstreamer-*/.debug"
 FILES:${PN}-dev += "${libdir}/gstreamer-*/*.a"
-FILES:${PN}-tests = "${bindir}/*"
+FILES:${PN}-tests += "${bindir}/*"
