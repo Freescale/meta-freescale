@@ -1,6 +1,9 @@
 # Copyright 2019-2022 NXP
 
-DESCRIPTION = "i.MX VC8000E Encoder library"
+SUMMARY = "i.MX VC8000E encoder library"
+DESCRIPTION = "Hantro VC8000E video encoder library for i.MX SoCs."
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "multimedia"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
@@ -29,8 +32,8 @@ do_install () {
     rm ${D}${D_SUBDIR}/${SCR}
 }
 
-FILES:${PN} = "/"
-
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
+FILES:${PN} = "/"
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

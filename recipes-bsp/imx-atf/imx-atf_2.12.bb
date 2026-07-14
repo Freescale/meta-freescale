@@ -1,6 +1,7 @@
 # Copyright (C) 2017-2026 NXP
 
-DESCRIPTION = "i.MX ARM Trusted Firmware"
+SUMMARY = "ARM Trusted Firmware for i.MX"
+DESCRIPTION = "ARM Trusted Firmware (TF-A) for NXP i.MX SoCs."
 HOMEPAGE = "https://github.com/nxp-imx/imx-atf"
 SECTION = "bsp"
 LICENSE = "BSD-3-Clause"
