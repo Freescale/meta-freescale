@@ -7,11 +7,12 @@ SECTION = "multimedia"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=7bdef19938f3503cfc4c586461f99012"
 
+DEPENDS += "alsa-lib"
+
 PV = "1.0+git"
 
 SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
 NXPAFE_SRC ?= "git://github.com/nxp-imx/nxp-afe.git;protocol=https"
-DEPENDS += "alsa-lib"
 
 SRC_URI = "${NXPAFE_SRC};branch=${SRCBRANCH}"
 
@@ -31,5 +32,8 @@ do_install() {
 }
 
 FILES:${PN} += "/unit_tests"
+# Prebuilt versioned .so shipped with an unversioned symlink in the main package.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "dev-so"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg += "buildpaths"
