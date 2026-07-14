@@ -1,8 +1,10 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+# General build fixes (cl test include dirs, GCC memory-flag error).
 SRC_URI += "file://0001-tests-Fix-cl-test-Include-Directories-error-Error-0-.patch \
             file://0002-cl-Add-mutually-exclusive-memory-flags-for-CL_MEM_KE.patch"
 
+# Dispatch lines consume machine-specialized helper vars below.
 PACKAGECONFIG:append = " ${PACKAGECONFIG_APPEND}"
 PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
 
