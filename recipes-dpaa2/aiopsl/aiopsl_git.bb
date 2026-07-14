@@ -1,3 +1,4 @@
+SUMMARY = "DPAA2 AIOP service layer"
 DESCRIPTION = "DPAA2 Accelerated I/O Processing service layer"
 HOMEPAGE = "https://github.com/nxp-qoriq/aiopsl"
 SECTION = "dpaa2"

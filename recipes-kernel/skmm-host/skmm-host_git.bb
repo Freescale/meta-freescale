@@ -1,3 +1,4 @@
+SUMMARY = "SKMM host driver"
 DESCRIPTION = "skmm host driver offload data to PCIe EP and push the data en-decrypted back to application"
 HOMEPAGE = "https://github.com/nxp-qoriq-yocto-sdk/skmm-host"
 SECTION = "c293-skmm-host"

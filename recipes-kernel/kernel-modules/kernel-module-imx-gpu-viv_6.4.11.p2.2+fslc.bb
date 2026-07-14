@@ -5,6 +5,7 @@ SUMMARY = "Kernel loadable module for Vivante GPU"
 DESCRIPTION = "This package uses an exact copy of the GPU kernel driver source code of \
                the same version as base and include fixes and improvements developed by FSL Community"
 HOMEPAGE = "https://github.com/Freescale/kernel-module-imx-gpu-viv"
+SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e"
 

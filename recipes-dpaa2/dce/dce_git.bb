@@ -1,3 +1,4 @@
+SUMMARY = "DPAA2 DCE userspace utilities"
 DESCRIPTION = "Decompression Compression Engine Userspace Utils"
 HOMEPAGE = "https://github.com/nxp-qoriq/dce"
 SECTION = "dpaa2"

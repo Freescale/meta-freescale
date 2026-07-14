@@ -1,5 +1,7 @@
+SUMMARY = "Floating-point implementation test suite"
 DESCRIPTION = "A program for testing floating-point implementation"
 HOMEPAGE = "http://www.jhauser.us/arithmetic/TestFloat.html"
+SECTION = "devel"
 LICENSE = "TestFloat"
 
 LIC_FILES_CHKSUM = "file://testfloat/testfloat.txt;beginline=87;endline=95;md5=bdb2e8111838a48015c29bd97f5b6145"

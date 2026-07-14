@@ -1,5 +1,7 @@
 SUMMARY = "DPAA2 Management Complex Firmware"
+DESCRIPTION = "DPAA2 Management Complex (MC) firmware for NXP QorIQ Layerscape SoCs."
 HOMEPAGE = "https://github.com/nxp/qoriq-mc-binary"
+SECTION = "bsp"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0701845051a61f6012009d7d6d11b32b"
 
