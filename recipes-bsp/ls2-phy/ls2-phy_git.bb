@@ -1,5 +1,7 @@
 SUMMARY = "Firmwares and Standalone Applications"
+DESCRIPTION = "Cortina PHY firmware and standalone applications for NXP QorIQ platforms"
 HOMEPAGE = "https://github.com/nxp/qoriq-firmware-cortina"
+SECTION = "firmware"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=86d76166990962fa552f840ff08e5798"
 
@@ -10,7 +12,7 @@ SRCREV = "9143c2a3adede595966583c00ca4edc99ec698cf"
 
 do_install () {
     install -d ${D}/boot
-    cp -fr ${S}/* ${D}/boot
+    install -m 0644 ${S}/* ${D}/boot
 }
 
 do_deploy () {
@@ -19,9 +21,10 @@ do_deploy () {
 }
 addtask deploy before do_build after do_install
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/boot"
 
 COMPATIBLE_MACHINE = "(qoriq)"
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 
