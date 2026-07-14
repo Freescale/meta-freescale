@@ -1,14 +1,14 @@
-SUMMARY = "The SPIR-V Tools project provides an API and commands for \
-            processing SPIR-V modules"
+SUMMARY = "API and command-line tools for processing SPIR-V modules"
 DESCRIPTION = "The project includes an assembler, binary module parser, \
                disassembler, validator, and optimizer for SPIR-V."
 HOMEPAGE = "https://github.com/KhronosGroup/SPIRV-Tools"
 SECTION = "graphics"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
+DEPENDS = "spirv-headers"
 
-SRCREV = "f0cc85efdbbe3a46eae90e0f915dc1509836d0fc"
 SRC_URI = "git://github.com/KhronosGroup/SPIRV-Tools.git;branch=main;protocol=https"
+SRCREV = "f0cc85efdbbe3a46eae90e0f915dc1509836d0fc"
 PE = "1"
 # These recipes need to be updated in lockstep with each other:
 # glslang, vulkan-headers, vulkan-loader, vulkan-tools, spirv-headers, spirv-tools
@@ -18,8 +18,6 @@ PE = "1"
 UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\d+(\.\d+)+)"
 
 inherit cmake
-
-DEPENDS = "spirv-headers"
 
 EXTRA_OECMAKE += "\
     -DSPIRV-Headers_SOURCE_DIR=${STAGING_EXECPREFIXDIR} \
@@ -40,7 +38,7 @@ SOLIBS = ".so"
 FILES_SOLIBSDEV = ""
 
 PACKAGES =+ "${PN}-lesspipe"
-FILES:${PN}-lesspipe = "${base_bindir}/spirv-lesspipe.sh"
+FILES:${PN}-lesspipe += "${base_bindir}/spirv-lesspipe.sh"
 RDEPENDS:${PN}-lesspipe += "${PN} bash"
 
 BBCLASSEXTEND = "native nativesdk"
