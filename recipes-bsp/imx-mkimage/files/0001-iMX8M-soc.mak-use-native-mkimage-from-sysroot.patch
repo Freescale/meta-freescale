@@ -15,7 +15,7 @@ Use it from the build sysroot, and do not pull the local version of it.
 
 Reinjected the original patch from Andrey Zhizhikin <andrey.z@gmail.com>
 
-Upstream-Status: Inappropriate [OE-specific]
+Upstream-Status: Inappropriate [oe-specific]
 Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@foundries.io>
 ---
 

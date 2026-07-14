@@ -1,5 +1,8 @@
 # Copyright 2017-2026 NXP
 
+# Canonical DEPENDS for this native tool; the require sits in the .bb so oelint
+# sees this base assignment as "after include".
+# nooelint: oelint.vars.dependsappend
 DEPENDS = "openssl-native zlib-native"
 
 SRC_URI = "${IMX_MKIMAGE_SRC};branch=${SRCBRANCH} \
