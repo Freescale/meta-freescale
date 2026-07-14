@@ -1,6 +1,9 @@
 # Copyright (C) 2017-2020,2026 NXP
 
-DESCRIPTION = "i.MX Hantro VPU library"
+SUMMARY = "i.MX Hantro VPU library"
+DESCRIPTION = "Hantro video processing unit (VPU) codec library for i.MX SoCs."
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "multimedia"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
@@ -39,7 +42,8 @@ do_install () {
     oe_runmake install DEST_DIR="${D}"
 }
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 FILES:${PN} += "/unit_tests"
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 COMPATIBLE_MACHINE = "(mx8mq-nxp-bsp|mx8mm-nxp-bsp|mx8mp-nxp-bsp)"

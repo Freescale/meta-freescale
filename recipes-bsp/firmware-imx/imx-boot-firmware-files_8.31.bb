@@ -1,5 +1,6 @@
 # Copyright (C) 2018-2026 NXP
 SUMMARY = "Freescale i.MX Firmware files used for boot"
+DESCRIPTION = "Prebuilt i.MX firmware blobs (HDMI, SECO and related) used during boot."
 
 require firmware-imx-${PV}.inc
 

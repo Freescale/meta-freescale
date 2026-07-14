@@ -1,7 +1,8 @@
 # Copyright (C) 2020-2022 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "Sound Open Firmware"
+SUMMARY = "Sound Open Firmware for i.MX"
+DESCRIPTION = "Sound Open Firmware (SOF) audio DSP firmware for i.MX SoCs."
 HOMEPAGE = "https://www.sofproject.org"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"

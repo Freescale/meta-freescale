@@ -1,6 +1,8 @@
-DESCRIPTION = "ARM Trusted Firmware"
+SUMMARY = "ARM Trusted Firmware for QorIQ"
+DESCRIPTION = "ARM Trusted Firmware (TF-A) for NXP QorIQ Layerscape SoCs."
 HOMEPAGE = "https://github.com/nxp-qoriq/atf"
 
+SECTION = "bsp"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://license.rst;md5=1dd070c98a281d18d9eefd938729b031"
 

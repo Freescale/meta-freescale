@@ -1,5 +1,8 @@
 # Copyright 2021 NXP
-DESCRIPTION = "i.MX Hantro V4L2 Daemon"
+SUMMARY = "i.MX Hantro V4L2 daemon"
+DESCRIPTION = "V4L2 userspace daemon for the Hantro VPU on i.MX SoCs."
+HOMEPAGE = "https://www.nxp.com/"
+SECTION = "multimedia"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=cd8bc2a79509c22fc9c1782a151210b1"
 

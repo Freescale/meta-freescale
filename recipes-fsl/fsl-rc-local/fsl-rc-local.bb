@@ -1,6 +1,9 @@
 # Copyright (C) 2012 O.S. Systems Software LTDA.
 
-DESCRIPTION = "Extra files for fsl-gui-image"
+SUMMARY = "Extra rc.local files for i.MX images"
+DESCRIPTION = "rc.local init snippets and helper files for Freescale/NXP images."
+HOMEPAGE = "https://github.com/Freescale/meta-freescale/"
+SECTION = "base"
 LICENSE = "LGPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=39ec502560ab2755c4555ee8416dfe42"
 
