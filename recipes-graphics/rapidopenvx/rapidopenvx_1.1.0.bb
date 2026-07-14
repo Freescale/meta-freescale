@@ -1,5 +1,7 @@
 SUMMARY = "Low level header only C++11 RAII wrapper classes for the OpenVX API"
+DESCRIPTION = "Header-only C++11 RAII wrapper classes that manage OpenVX API object lifetimes automatically."
 HOMEPAGE = "https://github.com/Unarmed1000/RapidOpenVX"
+SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=b98f636daed34d12d11e25f3185c0204"
 

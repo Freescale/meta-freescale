@@ -1,3 +1,4 @@
+SUMMARY = "Portable library to import 3D model formats"
 DESCRIPTION = "Open Asset Import Library is a portable Open Source library to import \
                various well-known 3D model formats in a uniform manner."
 HOMEPAGE = "http://www.assimp.org/"

@@ -1,5 +1,7 @@
 SUMMARY = "Soft Parser Configuration tool"
+DESCRIPTION = "Soft Parser Configuration tool for the DPAA Frame Manager."
 HOMEPAGE = "https://github.com/nxp-qoriq/spc"
+SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=163b09a1c249a6ff2b28da1ceca2e0a8"
 
