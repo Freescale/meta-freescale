@@ -43,6 +43,10 @@ do_install:append () {
     done
 }
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+# Package only the proprietary DSP artifacts installed into non-default paths.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${libdir}/imx-mm/audio-codec/dsp \
                ${libdir}/imx-mm/audio-codec/wrap \
                ${base_libdir}/firmware/imx/dsp \
@@ -50,12 +54,12 @@ FILES:${PN} = "${libdir}/imx-mm/audio-codec/dsp \
 "
 RDEPENDS:${PN} += "imx-dsp-codec-ext"
 
+# Prebuilt proprietary firmware/codec binaries; QA checks do not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "already-stripped arch ldflags dev-so"
 
 # Fix strip command failed: 'Unable to recognise the format of the input file'
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_SYSROOT_STRIP = "1"
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx8qm-nxp-bsp|mx8qxp-nxp-bsp|mx8dx-nxp-bsp|mx8mp-nxp-bsp|mx8ulp-nxp-bsp)"
