@@ -13,7 +13,7 @@ Patch adapted from:
 
 http://wiki.wandboard.org/index.php/Integrate_Qt5_into_yocto_sato_image_on_Wandboard
 
-Upstream-Status: Inappropriate [workaround]
+Upstream-Status: Inappropriate [embedded specific]
 
 Signed-off-by: Javier Viguera <javier.viguera@digi.com>
 ---
