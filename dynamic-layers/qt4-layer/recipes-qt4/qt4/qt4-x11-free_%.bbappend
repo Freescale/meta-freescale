@@ -1,1 +1,1 @@
-include qt4-imx-support.inc
+require qt4-imx-support.inc
