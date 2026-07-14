@@ -9,17 +9,14 @@ SECTION = "multimedia"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
+# For backwards compatibility
+PROVIDES += "libfslparser"
+
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 IMX_SRCREV_ABBREV = "65603f3"
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 SRC_URI[sha256sum] = "03079bb0fa989dc50fadb66a0fcc7cf65423833c3def04085603d4b66e8f8c70"
-
-# For backwards compatibility
-PROVIDES += "libfslparser"
-RREPLACES:${PN} = "libfslparser"
-RPROVIDES:${PN} = "libfslparser"
-RCONFLICTS:${PN} = "libfslparser"
 
 inherit fsl-eula-unpack autotools pkgconfig
 
@@ -37,6 +34,7 @@ python __set_insane_skip() {
     for p in d.getVar('PACKAGES').split():
         d.setVar("INSANE_SKIP:%s" % p, "ldflags dev-so textrel")
 }
+__set_insane_skip[doc] = "Skip QA checks that cannot be satisfied by the prebuilt parser binaries"
 
 do_package_qa[prefuncs] += "__set_insane_skip"
 
@@ -44,5 +42,10 @@ do_package_qa[prefuncs] += "__set_insane_skip"
 FILES:${PN} += "${libdir}/imx-mm/*/*${SOLIBS} ${libdir}/imx-mm/*/*${SOLIBSDEV}"
 
 INHIBIT_SYSROOT_STRIP = "1"
+
+# For backwards compatibility
+RREPLACES:${PN} = "libfslparser"
+RPROVIDES:${PN} = "libfslparser"
+RCONFLICTS:${PN} = "libfslparser"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
