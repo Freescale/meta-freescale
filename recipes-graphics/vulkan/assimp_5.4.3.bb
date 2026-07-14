@@ -26,10 +26,12 @@ remove_non_compliant_source() {
     # since many of the files are binary.
     rm -rf ${S}/test/models-nonbsd ${S}/scripts/StepImporter/schema_ifc2x3.exp
 }
+remove_non_compliant_source[doc] = "Delete non-BSD test models and schema files that must not be shipped"
 
 EXTRA_OECMAKE = "-DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_TESTS=OFF -DASSIMP_LIB_INSTALL_DIR=${baselib}"
 
 BBCLASSEXTEND = "native nativesdk"
 
 # Work around do_package_qa error
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev += "buildpaths"
