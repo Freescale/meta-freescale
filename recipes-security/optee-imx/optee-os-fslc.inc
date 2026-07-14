@@ -13,7 +13,7 @@ require optee-fslc.inc
 
 CVE_PRODUCT = "linaro:op-tee op-tee:op-tee_os"
 
-DEPENDS = "python3-pyelftools-native python3-cryptography-native"
+DEPENDS = "python3-cryptography-native python3-pyelftools-native"
 
 DEPENDS:append:toolchain-clang = " lld-native compiler-rt"
 
@@ -73,7 +73,6 @@ SYSROOT_DIRS += "${nonarch_base_libdir}/firmware"
 PACKAGES += "${PN}-ta"
 FILES:${PN} = "${nonarch_base_libdir}/firmware/"
 FILES:${PN}-ta = "${nonarch_base_libdir}/optee_armtz/*"
-
 
 # note: "textrel" is not triggered on all archs
 INSANE_SKIP:${PN} = "textrel"

@@ -8,7 +8,7 @@ LICENSE = "GPL-3.0-only"
 
 inherit pkgconfig
 
-DEPENDS = "gstreamer1.0 gstreamer1.0-rtsp-server glib-2.0"
+DEPENDS = "glib-2.0 gstreamer1.0 gstreamer1.0-rtsp-server"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
@@ -17,7 +17,6 @@ SRC_URI = "\
 "
 
 SRCREV = "490564815d8049dbdd79087f546835b673ba6e88"
-
 
 do_install() {
     install -m 0755 -D ${S}/bin/gst-variable-rtsp-server \

@@ -3,7 +3,6 @@ HOMEPAGE = "https://github.com/NXP/qoriq-engine-pfe-bin"
 LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=92723670f432558b9e2494ed177d2a85"
 
-
 INHIBIT_DEFAULT_DEPS = "1"
 
 inherit deploy

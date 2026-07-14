@@ -8,7 +8,7 @@ BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-examples/-/issues"
 LICENSE = "LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://playback/player/gtk/gtk-play.c;beginline=1;endline=20;md5=f8c72dae3d36823ec716a9ebcae593b9"
 
-DEPENDS = "glib-2.0 gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gtk+3 json-glib glib-2.0-native"
+DEPENDS = "glib-2.0 glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gtk+3 json-glib"
 
 SRC_URI = "git://gitlab.freedesktop.org/gstreamer/gstreamer.git;protocol=https;branch=1.26 \
            file://0001-Make-player-examples-installable.patch \

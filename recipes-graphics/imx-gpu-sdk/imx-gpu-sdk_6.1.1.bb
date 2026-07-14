@@ -45,7 +45,6 @@ DEPENDS:append:imxgpu3d = " virtual/libgles2"
 
 require imx-gpu-sdk-src.inc
 
-
 WINDOW_SYSTEM = \
     "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'Wayland_XDG', \
         bb.utils.contains('DISTRO_FEATURES',     'x11',         'X11', \
@@ -130,7 +129,7 @@ RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8mm-nxp-bsp = ""
 # vulkan-loader is dynamically loaded, so need to add an explicit
 # dependency
 RDEPENDS_VULKAN_LOADER = ""
-RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp = "vulkan-validation-layers vulkan-loader"
+RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp = "vulkan-loader vulkan-validation-layers"
 RDEPENDS_VULKAN_LOADER:mx8mm-nxp-bsp = ""
 RDEPENDS:${PN} += "\
     ${RDEPENDS_EMPTY_MAIN_PACKAGE} \

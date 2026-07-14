@@ -11,6 +11,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=38ec0c18112e9a92cffc4951661e85a5"
 
 inherit cmake pkgconfig
 
-DEPENDS = "libusb zlib bzip2 openssl zstd libtinyxml2"
+DEPENDS = "bzip2 libtinyxml2 libusb openssl zlib zstd"
 
 BBCLASSEXTEND = "native nativesdk"

@@ -43,7 +43,7 @@ RDEPENDS:${PN}-mtd = "\
 
 RDEPENDS:${PN}-extfs = "\
     ${PN}-base \
-    e2fsprogs-mke2fs \
     e2fsprogs-e2fsck \
+    e2fsprogs-mke2fs \
 "
 COMPATIBLE_MACHINE = "(imx-generic-bsp)"

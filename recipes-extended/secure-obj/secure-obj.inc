@@ -2,7 +2,7 @@ DESCRIPTION = "Secure Object"
 HOMEPAGE = "https://github.com/nxp-qoriq/secure_obj"
 LICENSE = "BSD-3-Clause"
 
-DEPENDS = "openssl optee-os-qoriq optee-client-qoriq"
+DEPENDS = "openssl optee-client-qoriq optee-os-qoriq"
 RDEPENDS:${PN} = "bash libcrypto libssl"
 
 DEPENDS += "python3-pycryptodomex-native"
