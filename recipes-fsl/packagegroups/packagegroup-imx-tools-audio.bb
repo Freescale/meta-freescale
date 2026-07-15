@@ -3,7 +3,14 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 SUMMARY = "Set of audio tools for inclusion on images"
+DESCRIPTION = "Package group that installs ALSA and PulseAudio user-space audio \
+               tools and utilities, selected according to the enabled audio \
+               DISTRO_FEATURES."
+SECTION = "multimedia"
 LICENSE = "MIT"
+# LIC_FILES_CHKSUM references the shared common-licenses copies as this
+# package group ships no source tree of its own.
+# nooelint: oelint.var.licenseremotefile
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
                     file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
