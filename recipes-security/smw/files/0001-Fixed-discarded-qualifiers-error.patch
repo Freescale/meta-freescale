@@ -1,5 +1,12 @@
-Upstream-Status: Pending
+From: Zelan Zou <zelan.zou@nxp.com>
+Subject: [PATCH] Fix discarded const qualifier errors
 
+Add the missing const qualifier and cast so the build does not fail with
+-Werror=discarded-qualifiers.
+
+Upstream-Status: Pending
+Signed-off-by: Zelan Zou <zelan.zou@nxp.com>
+---
 diff --git a/osal/linux/obj_db.c b/osal/linux/obj_db.c
 index 446a08b1..18e4931b 100644
 --- a/osal/linux/obj_db.c
