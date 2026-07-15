@@ -9,7 +9,7 @@ SECTION = "graphics"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
-DEPENDS = "libdrm ${LIBGAL_IMX}"
+DEPENDS = "${LIBGAL_IMX} libdrm"
 LIBGAL_IMX = ""
 LIBGAL_IMX:imxviv = "libgal-imx"
 
@@ -32,12 +32,15 @@ inherit fsl-eula-unpack
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
-    cp -d ${S}/g2d/usr/lib/*.so* ${D}${libdir}
-    cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
+    cp -R ${S}/g2d/usr/lib/*.so* ${D}${libdir}
+    cp -R ${S}/g2d/usr/include/* ${D}${includedir}
 }
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
+# musl needs gcompat for these glibc-built prebuilt blobs; their runtime
+# deps can't be mapped by QA.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 RDEPENDS:${PN}:append:libc-musl = " gcompat"
 
