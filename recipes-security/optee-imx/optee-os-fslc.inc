@@ -13,6 +13,8 @@ require optee-fslc.inc
 
 CVE_PRODUCT = "linaro:op-tee op-tee:op-tee_os"
 
+# full dependency set; the .inc chain defines none
+# nooelint: oelint.vars.dependsappend
 DEPENDS = "python3-cryptography-native python3-pyelftools-native"
 
 DEPENDS:append:toolchain-clang = " lld-native compiler-rt"
@@ -34,6 +36,8 @@ EXTRA_OEMAKE += "HOST_PREFIX=${HOST_PREFIX}"
 EXTRA_OEMAKE += "CROSS_COMPILE64=${HOST_PREFIX}"
 
 # Enable BTI in optee
+# leading space is inside the conditional ${@...} and separates the appended make flags
+# nooelint: oelint.vars.inconspaces oelint.vars.notneededspace
 EXTRA_OEMAKE += "${@bb.utils.contains('MACHINE_FEATURES', 'arm-branch-protection', ' CFG_TA_BTI=1 CFG_CORE_PAUTH=y CFG_TA_PAUTH=y', '', d)}"
 
 LDFLAGS[unexport] = "1"
@@ -71,10 +75,17 @@ addtask deploy before do_build after do_install
 SYSROOT_DIRS += "${nonarch_base_libdir}/firmware"
 
 PACKAGES += "${PN}-ta"
+# main package ships only the OP-TEE core firmware
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware/"
-FILES:${PN}-ta = "${nonarch_base_libdir}/optee_armtz/*"
+# dedicated -ta package ships the trusted applications
+FILES:${PN}-ta += "${nonarch_base_libdir}/optee_armtz/*"
 
 # note: "textrel" is not triggered on all archs
+# OP-TEE core firmware legitimately contains text relocations
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "textrel"
+# devkit static libs are intentional in the -dev package
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev = "staticdev"
 INHIBIT_PACKAGE_STRIP = "1"
