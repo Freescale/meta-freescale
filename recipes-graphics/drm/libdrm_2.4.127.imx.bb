@@ -46,15 +46,15 @@ PACKAGES =+ "${PN}-tests ${PN}-drivers ${PN}-radeon ${PN}-nouveau ${PN}-omap \
              ${PN}-intel ${PN}-exynos ${PN}-freedreno ${PN}-amdgpu \
              ${PN}-etnaviv"
 
-FILES:${PN}-tests = "${bindir}/*"
-FILES:${PN}-radeon = "${libdir}/libdrm_radeon.so.*"
-FILES:${PN}-nouveau = "${libdir}/libdrm_nouveau.so.*"
-FILES:${PN}-omap = "${libdir}/libdrm_omap.so.*"
-FILES:${PN}-intel = "${libdir}/libdrm_intel.so.*"
-FILES:${PN}-exynos = "${libdir}/libdrm_exynos.so.*"
-FILES:${PN}-freedreno = "${libdir}/libdrm_freedreno.so.*"
-FILES:${PN}-amdgpu = "${libdir}/libdrm_amdgpu.so.* ${datadir}/${PN}/amdgpu.ids"
-FILES:${PN}-etnaviv = "${libdir}/libdrm_etnaviv.so.*"
+FILES:${PN}-tests += "${bindir}/*"
+FILES:${PN}-radeon += "${libdir}/libdrm_radeon.so.*"
+FILES:${PN}-nouveau += "${libdir}/libdrm_nouveau.so.*"
+FILES:${PN}-omap += "${libdir}/libdrm_omap.so.*"
+FILES:${PN}-intel += "${libdir}/libdrm_intel.so.*"
+FILES:${PN}-exynos += "${libdir}/libdrm_exynos.so.*"
+FILES:${PN}-freedreno += "${libdir}/libdrm_freedreno.so.*"
+FILES:${PN}-amdgpu += "${libdir}/libdrm_amdgpu.so.* ${datadir}/${PN}/amdgpu.ids"
+FILES:${PN}-etnaviv += "${libdir}/libdrm_etnaviv.so.*"
 
 RRECOMMENDS:${PN}-drivers = "${PN}-radeon ${PN}-nouveau ${PN}-omap ${PN}-intel \
                              ${PN}-exynos ${PN}-freedreno ${PN}-amdgpu \
@@ -62,9 +62,13 @@ RRECOMMENDS:${PN}-drivers = "${PN}-radeon ${PN}-nouveau ${PN}-omap ${PN}-intel \
 
 BBCLASSEXTEND = "native nativesdk"
 
+# The i.MX vivante driver additions are kept together as one block.
+# nooelint: oelint.var.order.PACKAGES
 PACKAGES:prepend:imxgpu = "${PN}-vivante "
 RRECOMMENDS:${PN}-drivers:append:imxgpu = " ${PN}-vivante"
-FILES:${PN}-vivante = "${libdir}/libdrm_vivante.so.*"
+# nooelint: oelint.var.order.FILES
+FILES:${PN}-vivante += "${libdir}/libdrm_vivante.so.*"
+# nooelint: oelint.var.order.PACKAGECONFIG
 PACKAGECONFIG:append:imxgpu = " vivante"
 PACKAGECONFIG[vivante] = "-Dvivante=true,-Dvivante=false"
 
