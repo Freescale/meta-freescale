@@ -2,11 +2,21 @@ inherit kernel qoriq_build_64bit_kernel siteinfo
 inherit fsl-kernel-localversion kernel-yocto
 
 SUMMARY = "Linux Kernel for NXP QorIQ platforms"
+DESCRIPTION = "Linux kernel for NXP QorIQ / Layerscape platforms, tracking the NXP LSDK kernel tree."
 SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
 
 DEPENDS:append = " libgcc coreutils-native"
+
+# Set the PV to the correct kernel version to satisfy the kernel version sanity check
+PV = "${LINUX_VERSION}+git${SRCPV}"
+
 # not put Images into /boot of rootfs, install kernel-image if needed
+# ${KERNEL_PACKAGE_NAME}-image kernel sub-package
+# nooelint: oelint.vars.pkgspecific.FILES oelint.vars.specific
+FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
+# ${KERNEL_PACKAGE_NAME}-base kernel sub-package
+# nooelint: oelint.vars.pkgspecific.RDEPENDS oelint.vars.specific
 RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
 KERNEL_CC:append = " ${TOOLCHAIN_OPTIONS}"
@@ -15,9 +25,6 @@ KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
 
 ZIMAGE_BASE_NAME = "zImage-${PKGE}-${PKGV}-${PKGR}-${MACHINE}-${DATETIME}"
 ZIMAGE_BASE_NAME[vardepsexclude] = "DATETIME"
-
-# Set the PV to the correct kernel version to satisfy the kernel version sanity check
-PV = "${LINUX_VERSION}+git${SRCPV}"
 
 SCMVERSION ?= "y"
 LOCALVERSION = ""
@@ -47,6 +54,7 @@ do_configure() {
     cp .config ${UNPACKDIR}/defconfig
 }
 
-FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
+# cross-build leaves buildpaths in the -src package
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-src += "buildpaths"
 COMPATIBLE_MACHINE = "(qoriq)"
