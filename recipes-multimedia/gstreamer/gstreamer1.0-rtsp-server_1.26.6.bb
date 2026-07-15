@@ -1,4 +1,5 @@
 SUMMARY = "A library on top of GStreamer for building an RTSP server"
+DESCRIPTION = "gst-rtsp-server is a library on top of GStreamer for building an RTSP server that streams media to RTSP clients, handling session management, transport negotiation and the RTP/RTCP data flow."
 HOMEPAGE = "http://cgit.freedesktop.org/gstreamer/gst-rtsp-server/"
 SECTION = "multimedia"
 LICENSE = "LGPL-2.1-or-later"
@@ -7,8 +8,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770"
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base"
 
 PNREAL = "gst-rtsp-server"
-
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${PV}.tar.xz \
            file://0001-YOCIMX-9113-rtsp-examples-install-test-launch-and-te.patch \
