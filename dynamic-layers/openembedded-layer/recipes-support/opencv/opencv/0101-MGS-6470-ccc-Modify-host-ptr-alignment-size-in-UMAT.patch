@@ -1,0 +1,29 @@
+From 0a1c77e4c810999632d648f63775b7ea265bc25c Mon Sep 17 00:00:00 2001
+From: Eric Guo <eric.guo@nxp.com>
+Date: Tue, 9 Nov 2021 14:38:00 +0800
+Subject: [PATCH 1/4] MGS-6470 [#ccc] Modify host ptr alignment size in UMAT
+
+change CV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR from 4 to 64
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Eric Guo <eric.guo@nxp.com>
+---
+ modules/core/src/ocl.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/core/src/ocl.cpp b/modules/core/src/ocl.cpp
+index 8479667fd7..6eb7b5e425 100644
+--- a/modules/core/src/ocl.cpp
++++ b/modules/core/src/ocl.cpp
+@@ -245,7 +245,7 @@ static String getBuildExtraOptions()
+ }
+ 
+ static const bool CV_OPENCL_ENABLE_MEM_USE_HOST_PTR = utils::getConfigurationParameterBool("OPENCV_OPENCL_ENABLE_MEM_USE_HOST_PTR", true);
+-static const size_t CV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR = utils::getConfigurationParameterSizeT("OPENCV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR", 4);
++static const size_t CV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR = utils::getConfigurationParameterSizeT("OPENCV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR", 64);
+ 
+ 
+ struct UMat2D
+-- 
+2.34.1
+

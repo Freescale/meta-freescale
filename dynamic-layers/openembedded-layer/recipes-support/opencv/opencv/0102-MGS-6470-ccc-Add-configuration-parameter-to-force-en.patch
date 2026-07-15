@@ -1,0 +1,32 @@
+From 965365fff0815b8afc9833102d8e4e6c4ee1dda3 Mon Sep 17 00:00:00 2001
+From: Eric Guo <eric.guo@nxp.com>
+Date: Wed, 17 Nov 2021 15:04:23 +0800
+Subject: [PATCH 2/4] MGS-6470 [#ccc] Add configuration parameter to force
+ enable hostptr in OpenCL
+
+USAGE: `set OPENCV_OPENCL_ALIGNMENT_MEM_ALLOC_HOST_PTR=true`
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: Eric Guo <eric.guo@nxp.com>
+---
+ modules/core/src/ocl.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/modules/core/src/ocl.cpp b/modules/core/src/ocl.cpp
+index 6eb7b5e425..5c50b06865 100644
+--- a/modules/core/src/ocl.cpp
++++ b/modules/core/src/ocl.cpp
+@@ -5416,7 +5416,9 @@ public:
+     {
+         const Device& dev = ctx.device(0);
+         createFlags = 0;
+-        if ((usageFlags & USAGE_ALLOCATE_HOST_MEMORY) != 0)
++        bool allocHostPtr = utils::getConfigurationParameterBool("OPENCV_OPENCL_ALIGNMENT_MEM_ALLOC_HOST_PTR", false);
++
++        if ((usageFlags & USAGE_ALLOCATE_HOST_MEMORY) != 0 || allocHostPtr)
+             createFlags |= CL_MEM_ALLOC_HOST_PTR;
+ 
+         if (!isOpenCLCopyingForced() &&
+-- 
+2.34.1
+

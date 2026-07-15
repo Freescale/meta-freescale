@@ -1,17 +1,19 @@
-From 3c4daafb54f961e376104a461ca7ec114ff0331a Mon Sep 17 00:00:00 2001
+From c0e12bef26b4e4f10eb541c26f7fd7400addb67e Mon Sep 17 00:00:00 2001
 From: Ludek Slosarcik <ludek.slosarcik@nxp.com>
 Date: Fri, 14 Feb 2020 15:46:50 +0100
-Subject: [PATCH] opencv_dnn: added video device for 2 examples, and change text labels
+Subject: [PATCH] opencv_dnn: added video device for 2 examples, and change
+ text labels
 
 Signed-off-by: Ludek Slosarcik <ludek.slosarcik@nxp.com>
 
 Upstream-Status: Pending
+
 ---
  samples/cpp/logistic_regression.cpp |  2 +-
- samples/dnn/classification.cpp      |  7 ++++---
+ samples/dnn/classification.cpp      |  9 +++++----
  samples/dnn/object_detection.cpp    | 10 +++++-----
  samples/dnn/segmentation.cpp        |  2 +-
- samples/dnn/text_detection.cpp      |  5 +++--
+ samples/dnn/text_detection.cpp      |  3 ++-
  5 files changed, 14 insertions(+), 12 deletions(-)
 
 Index: git/samples/cpp/logistic_regression.cpp
@@ -128,8 +130,8 @@ Index: git/samples/dnn/text_detection.cpp
      "{ input i              | | Path to input image or video file. Skip this argument to capture frames from a camera.}"
 +    "{ device               | 0 | camera device number. }"
      "{ detModel dmp         | | Path to a binary .pb file contains trained detector network.}"
-     "{ width                | 320 | Preprocess input image by resizing to a specific width. It should be multiple by 32. }"
-     "{ height               | 320 | Preprocess input image by resizing to a specific height. It should be multiple by 32. }"
+     "{ width                | 320 | Preprocess input image by resizing to a specific width. It should be a multiple of 32. }"
+     "{ height               | 320 | Preprocess input image by resizing to a specific height. It should be a multiple of 32. }"
 @@ -106,7 +107,7 @@ int main(int argc, char** argv)
  
      // Open a video file or an image file or a camera stream.

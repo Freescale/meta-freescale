@@ -1,0 +1,152 @@
+From 504144ee0a126e7a11a5b1751b7dc0a80ed1cd0f Mon Sep 17 00:00:00 2001
+From: jiajia Qian <jiajia.qian@nxp.com>
+Date: Tue, 17 Mar 2026 14:19:35 +0800
+Subject: [PATCH] core(opencl): fix inplace transpose race by enforcing LLSS
+ ordering via local barrier
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The former inplace transpose implementation allowed a reordering of
+global-memory operations across work-items. Specifically, the intended
+LLSS (Load–Load–Store–Store) access pattern could be reordered by the
+GPU into LSLS (Load–Store–Load–Store), causing partially written tiles
+to be observed by other work-items and producing incorrect output.
+
+This patch introduces a tiled LDS-based algorithm and adds an explicit:
+
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+between the load and store phases.
+
+Upstream-Status: Backport
+[commit a3e129aad85abcd2b61f071796ff80f9ca215619]
+
+Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
+---
+ modules/core/src/matrix_transform.cpp | 10 +++-
+ modules/core/src/opencl/transpose.cl  | 69 ++++++++++++++++++++++++++-
+ 2 files changed, 75 insertions(+), 4 deletions(-)
+
+diff --git a/modules/core/src/matrix_transform.cpp b/modules/core/src/matrix_transform.cpp
+index c52fcc1e4f..84aa5ca778 100644
+--- a/modules/core/src/matrix_transform.cpp
++++ b/modules/core/src/matrix_transform.cpp
+@@ -146,10 +146,16 @@ static bool ocl_transpose( InputArray _src, OutputArray _dst )
+             return false;
+     }
+ 
++    String deviceMacro;
++    if (dev.isIntel())
++        deviceMacro = " -D INTEL_GPU";
++    else
++        deviceMacro = "";
++
+     ocl::Kernel k(kernelName.c_str(), ocl::core::transpose_oclsrc,
+-                  format("-D T=%s -D T1=%s -D cn=%d -D TILE_DIM=%d -D BLOCK_ROWS=%d -D rowsPerWI=%d%s",
++                  format("-D T=%s -D T1=%s -D cn=%d -D TILE_DIM=%d -D BLOCK_ROWS=%d -D rowsPerWI=%d%s%s",
+                          ocl::memopTypeToStr(type), ocl::memopTypeToStr(depth),
+-                         cn, TILE_DIM, BLOCK_ROWS, rowsPerWI, inplace ? " -D INPLACE" : ""));
++                         cn, TILE_DIM, BLOCK_ROWS, rowsPerWI, inplace ? " -D INPLACE" : "", deviceMacro.c_str()));
+     if (k.empty())
+         return false;
+ 
+diff --git a/modules/core/src/opencl/transpose.cl b/modules/core/src/opencl/transpose.cl
+index 01ea7dd9d5..ae4d7f08d3 100644
+--- a/modules/core/src/opencl/transpose.cl
++++ b/modules/core/src/opencl/transpose.cl
+@@ -53,10 +53,10 @@
+ #define TSIZE ((int)sizeof(T1)*3)
+ #endif
+ 
+-#ifndef INPLACE
+-
+ #define LDS_STEP      (TILE_DIM + 1)
+ 
++#ifndef INPLACE
++
+ __kernel void transpose(__global const uchar * srcptr, int src_step, int src_offset, int src_rows, int src_cols,
+                         __global uchar * dstptr, int dst_step, int dst_offset)
+ {
+@@ -120,6 +120,7 @@ __kernel void transpose(__global const uchar * srcptr, int src_step, int src_off
+ 
+ __kernel void transpose_inplace(__global uchar * srcptr, int src_step, int src_offset, int src_rows)
+ {
++#ifdef INTEL_GPU
+     int x = get_global_id(0);
+     int y = get_global_id(1) * rowsPerWI;
+ 
+@@ -141,6 +142,70 @@ __kernel void transpose_inplace(__global uchar * srcptr, int src_step, int src_o
+                 storepix(tmp, src);
+             }
+     }
++#else
++    int gp_x = get_group_id(0);
++    int gp_y = get_group_id(1);
++    int lx = get_local_id(0);
++    int ly = get_local_id(1);
++
++    __local T tile_a[TILE_DIM * LDS_STEP];
++    __local T tile_b[TILE_DIM * LDS_STEP];
++
++    if (gp_x > gp_y)
++    {
++        int x_a = gp_x * TILE_DIM + lx;
++        int y_a = gp_y * TILE_DIM + ly;
++        int x_b = gp_y * TILE_DIM + lx;
++        int y_b = gp_x * TILE_DIM + ly;
++
++        // Load
++        #pragma unroll
++        for (int i = 0; i < TILE_DIM; i += BLOCK_ROWS)
++        {
++            if (y_a + i < src_rows && x_a < src_rows)
++                tile_a[mad24(ly + i, LDS_STEP, lx)] =
++                    loadpix(srcptr + mad24(y_a + i, src_step, mad24(x_a, TSIZE, src_offset)));
++
++            if (y_b + i < src_rows && x_b < src_rows)
++                tile_b[mad24(ly + i, LDS_STEP, lx)] =
++                    loadpix(srcptr + mad24(y_b + i, src_step, mad24(x_b, TSIZE, src_offset)));
++        }
++
++        barrier(CLK_LOCAL_MEM_FENCE);
++
++        // Store (transposed)
++        #pragma unroll
++        for (int i = 0; i < TILE_DIM; i += BLOCK_ROWS)
++        {
++            if (y_b + i < src_rows && x_b < src_rows)
++                storepix(tile_a[mad24(lx, LDS_STEP, ly + i)],
++                        srcptr + mad24(y_b + i, src_step, mad24(x_b, TSIZE, src_offset)));
++
++            if (y_a + i < src_rows && x_a < src_rows)
++                storepix(tile_b[mad24(lx, LDS_STEP, ly + i)],
++                        srcptr + mad24(y_a + i, src_step, mad24(x_a, TSIZE, src_offset)));
++        }
++    }
++    else if (gp_x == gp_y)
++    {
++        int x = gp_x * TILE_DIM + lx;
++        int y = gp_y * TILE_DIM + ly;
++
++        #pragma unroll
++        for (int i = 0; i < TILE_DIM; i += BLOCK_ROWS)
++            if (y + i < src_rows && x < src_rows)
++                tile_a[mad24(ly + i, LDS_STEP, lx)] =
++                    loadpix(srcptr + mad24(y + i, src_step, mad24(x, TSIZE, src_offset)));
++
++        barrier(CLK_LOCAL_MEM_FENCE);
++
++        #pragma unroll
++        for (int i = 0; i < TILE_DIM; i += BLOCK_ROWS)
++            if (y + i < src_rows && x < src_rows)
++                storepix(tile_a[mad24(lx, LDS_STEP, ly + i)],
++                        srcptr + mad24(y + i, src_step, mad24(x, TSIZE, src_offset)));
++    }
++#endif
+ }
+ 
+ #endif // INPLACE
+-- 
+2.34.1
+
