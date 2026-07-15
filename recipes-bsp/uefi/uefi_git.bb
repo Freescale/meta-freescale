@@ -1,4 +1,5 @@
-DESCRIPTION = "Unified Extensible Firmware Interface"
+SUMMARY = "UEFI firmware for QorIQ platforms"
+DESCRIPTION = "Prebuilt UEFI (Unified Extensible Firmware Interface) firmware and GRUB binaries for NXP QorIQ platforms"
 HOMEPAGE = "https://github.com/NXP/qoriq-uefi-binary"
 SECTION = "bootloaders"
 LICENSE = "NXP-Binary-EULA"
@@ -26,9 +27,9 @@ do_deploy () {
 }
 addtask deploy before do_build after do_install
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/uefi/*"
-
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 COMPATIBLE_MACHINE = "(qoriq)"
