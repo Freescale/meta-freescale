@@ -10,11 +10,14 @@ DESCRIPTION = "Linux kernel based on LTS kernel used by FSL Community BSP in ord
                and will not become part of a LTS version, or because it is not applicable for \
                upstreaming in any form."
 HOMEPAGE = "https://github.com/Freescale/linux-fslc"
+SECTION = "kernel"
 
 require linux-imx.inc
 
 KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = "1"
 
+# deliberately points at the linux-fslc fork instead of the linux-imx.inc nxp-imx base
+# nooelint: oelint.var.override
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
@@ -27,8 +30,6 @@ LINUX_VERSION = "6.1.111"
 KBRANCH = "6.1.x+fslc"
 SRCREV = "195925841506cd58552d73ebabadd08d6016e4c6"
 
-KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
-KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v6_v7_defconfig"
