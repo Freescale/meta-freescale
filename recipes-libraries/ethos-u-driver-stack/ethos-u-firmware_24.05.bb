@@ -1,6 +1,9 @@
 SUMMARY = "The firmware of Cortex(R)-M33 for Arm(R) Ethos(TM)-U NPU"
-DESCRIPTION = "The firmware of Cortex(R)-M33 for Arm(R) Ethos(TM)-U NPU"
+DESCRIPTION = "Cortex(R)-M33 firmware image that drives the Arm(R) Ethos(TM)-U \
+               NPU on i.MX93, installed into the kernel firmware directory for \
+               loading at runtime."
 HOMEPAGE = "https://github.com/nxp-imx/ethos-u-firmware"
+SECTION = "firmware"
 LICENSE = "Apache-2.0 & GPL-2.0-only & BSD-3-Clause"
 LIC_FILES_CHKSUM = "\
     file://LICENSE.txt;md5=e3fc50a88d0a364313df4b21ef20c29e \
@@ -23,7 +26,12 @@ do_install () {
     install -m 0644 ${S}/${ETHOS_U_FIRMWARE} ${D}${nonarch_base_libdir}/firmware/ethosu_firmware
 }
 
+# The package ships only the firmware blob installed above, so FILES is set
+# explicitly to the firmware directory.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware/*"
+# The blob is a Cortex-M33 image, so its architecture never matches the target.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "arch"
 
 COMPATIBLE_MACHINE = "(mx93-nxp-bsp)"
