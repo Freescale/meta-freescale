@@ -2,6 +2,7 @@
 
 SUMMARY = "NXP i.MX SECO firmware"
 DESCRIPTION = "Firmware for i.MX Security Controller Subsystem"
+HOMEPAGE = "https://www.nxp.com/"
 SECTION = "base"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
@@ -28,5 +29,8 @@ do_deploy () {
     install -m 0644 ${S}/firmware/seco/${SECO_FIRMWARE_NAME} ${DEPLOYDIR}
 }
 
+# The prebuilt SECO firmware is deployed under /lib/firmware, so the main
+# package claims the root path explicitly (filesoverride).
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "/"
 COMPATIBLE_MACHINE = "(mx8qm-generic-bsp|mx8qxp-generic-bsp|mx8dxl-generic-bsp|mx8dx-generic-bsp)"
