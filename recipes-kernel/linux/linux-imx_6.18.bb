@@ -10,14 +10,14 @@ SUMMARY = "Linux Kernel provided and supported by NXP"
 DESCRIPTION = "Linux Kernel provided and supported by NXP with focus on \
                i.MX Family Reference Boards. It includes support for many IPs such as GPU, VPU and IPU."
 HOMEPAGE = "https://github.com/nxp-imx/linux-imx"
+SECTION = "kernel"
 
 require recipes-kernel/linux/linux-imx.inc
 
-LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
-
 DEPENDS += "coreutils-native"
 
+# adds the LINUX_IMX_SRC override hook over the linux-imx.inc default
+# nooelint: oelint.var.override
 SRC_URI = "${LINUX_IMX_SRC}"
 LINUX_IMX_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.18.y"
@@ -39,6 +39,8 @@ KBUILD_DEFCONFIG:mx9-generic-bsp = "imx_v8_defconfig"
 
 DEFAULT_PREFERENCE = "1"
 
+# fail-fast guard rejecting the deprecated DELTA_KERNEL_DEFCONFIG
+# nooelint: oelint.task.noanonpython
 python __anonymous () {
     import bb
     # Fail fast if DELTA_KERNEL_DEFCONFIG is present in the datastore (even if empty)

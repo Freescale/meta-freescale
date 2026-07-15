@@ -62,3 +62,4 @@ python kernel_devicetree_32bit_compatibility_update() {
 }
 addhandler kernel_devicetree_32bit_compatibility_update
 kernel_devicetree_32bit_compatibility_update[eventmask] = "bb.event.RecipeParsed"
+kernel_devicetree_32bit_compatibility_update[doc] = "Strip 32-bit dtb sub-folders from KERNEL_DEVICETREE for older kernel builds"
