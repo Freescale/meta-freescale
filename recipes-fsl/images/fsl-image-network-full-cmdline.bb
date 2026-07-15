@@ -1,6 +1,11 @@
+SUMMARY = "FSL Community console image with full cmdline and QorIQ networking"
 DESCRIPTION = "A console-only image that includes full cmdline and \
                Freescale's networking packages (QorIQ DPAA/DPAA2) when available."
+SECTION = "images"
 
+# This development image ships tools-profile and enables debug-tweaks
+# intentionally to allow unauthenticated console access during testing.
+# nooelint: oelint.var.badimagefeature.debug-tweaks
 IMAGE_FEATURES += "\
     debug-tweaks \
     tools-profile \
