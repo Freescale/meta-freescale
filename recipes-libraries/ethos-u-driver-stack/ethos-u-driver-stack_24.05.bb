@@ -4,6 +4,7 @@ DESCRIPTION = "The Linux driver stack for Arm(R) Ethos(TM)-U provides \
                inferences to an Arm Cortex(R)-M subsystem, consisting of an Arm \
                Cortex-M of choice and an Arm Ethos-U NPU."
 HOMEPAGE = "https://github.com/nxp-imx/ethos-u-driver-stack-imx"
+SECTION = "libs"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=e3fc50a88d0a364313df4b21ef20c29e"
 
@@ -25,11 +26,15 @@ do_configure() {
     cmake_do_configure
 }
 
+# The cmake_do_* and setuptools3_do_* helpers are all shell functions, so
+# these tasks are shell and must not carry a python prefix.
+# nooelint: oelint.task.pythonprefix
 do_compile () {
     cmake_do_compile
     setuptools3_do_compile
 }
 
+# nooelint: oelint.task.pythonprefix
 do_install () {
     cmake_do_install
     setuptools3_do_install
