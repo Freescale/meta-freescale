@@ -1,7 +1,13 @@
+SUMMARY = "FSL Community console test image with multimedia, GPU and benchmark tools"
 DESCRIPTION = "A console-only image that includes gstreamer packages, \
                Freescale's multimedia packages (VPU and GPU) when available, and \
                test and benchmark applications."
+SECTION = "images"
 
+# This is a development and test image (it ships tools-testapps, tools-profile
+# and benchmark applications), so debug-tweaks is intentional to allow
+# unauthenticated console access during testing.
+# nooelint: oelint.var.badimagefeature.debug-tweaks
 IMAGE_FEATURES += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', \
        bb.utils.contains('DISTRO_FEATURES',     'x11', 'x11-base', \
