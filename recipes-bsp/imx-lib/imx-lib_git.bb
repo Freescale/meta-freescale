@@ -2,10 +2,11 @@
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
 # Copyright 2017 NXP
 
+SUMMARY = "i.MX platform-specific libraries"
 DESCRIPTION = "Platform specific libraries for imx platform"
 HOMEPAGE = "https://github.com/nxp-imx/imx-lib"
-LICENSE = "LGPL-2.1-only"
 SECTION = "multimedia"
+LICENSE = "LGPL-2.1-only"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=fbc093901857fcd118f065f900982c24"
 
