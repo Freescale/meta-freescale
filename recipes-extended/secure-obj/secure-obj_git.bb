@@ -1,9 +1,12 @@
 require secure-obj.inc
 
+SUMMARY = "OP-TEE-backed secure object library and OpenSSL engine"
+SECTION = "security"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 
 DEPENDS:remove = "python3-pycryptodomex-native"
 DEPENDS:append = " python3-cryptography-native optee-os-qoriq-tadevkit"
+FILES:${PN} += "${base_libdir}/optee_armtz ${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines"
 RDEPENDS:${PN} += "secure-obj-module"
 
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
@@ -33,16 +36,19 @@ do_install() {
     install -d ${D}${includedir}
     install -d ${D}${base_libdir}/optee_armtz
     install -d ${D}${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines
-    cp ${S}/secure_storage_ta/ta/b05bcf48-9732-4efa-a9e0-141c7c888c34.ta ${D}${base_libdir}/optee_armtz
-    cp ${S}/securekey_lib/out/export/lib/libsecure_obj.so ${D}${libdir}
-    cp ${S}/secure_obj-openssl-engine/libeng_secure_obj.so ${D}${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines
-    cp ${S}/securekey_lib/out/export/app/*_app ${D}${bindir}
-    cp ${S}/securekey_lib/out/export/app/mp_verify ${D}${bindir}
-    cp ${S}/secure_obj-openssl-engine/app/sobj_eng_app ${D}${bindir}
-    cp ${S}/securekey_lib/out/export/include/*  ${D}${includedir}
+    install -m 0644 ${S}/secure_storage_ta/ta/b05bcf48-9732-4efa-a9e0-141c7c888c34.ta ${D}${base_libdir}/optee_armtz
+    install -m 0755 ${S}/securekey_lib/out/export/lib/libsecure_obj.so ${D}${libdir}
+    install -m 0755 ${S}/secure_obj-openssl-engine/libeng_secure_obj.so ${D}${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines
+    install -m 0755 ${S}/securekey_lib/out/export/app/*_app ${D}${bindir}
+    install -m 0755 ${S}/securekey_lib/out/export/app/mp_verify ${D}${bindir}
+    install -m 0755 ${S}/secure_obj-openssl-engine/app/sobj_eng_app ${D}${bindir}
+    install -m 0644 ${S}/securekey_lib/out/export/include/* ${D}${includedir}
     rm -rf ${D}${bindir}/test
 }
 
-FILES:${PN} += "${base_libdir}/optee_armtz ${libdir}/${ARCH}-linux-gnu/openssl-1.0.0/engines"
-INSANE_SKIP:${PN} = "dev-deps ldflags"
+# Prebuilt OP-TEE TA and OpenSSL engine link against toolchain libs and ship
+# dev files in the main package; INSANE_SKIP is unavoidable here.
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP:${PN} += "dev-deps"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev = "ldflags dev-elf"
