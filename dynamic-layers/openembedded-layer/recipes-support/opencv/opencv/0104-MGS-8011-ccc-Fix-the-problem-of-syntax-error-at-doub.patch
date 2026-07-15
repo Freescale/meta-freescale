@@ -1,0 +1,43 @@
+From 2766330540d5106e1cc5c44ab14f021e306859cb Mon Sep 17 00:00:00 2001
+From: jiajia Qian <jiajia.qian@nxp.com>
+Date: Tue, 7 Jan 2025 16:42:34 +0800
+Subject: [PATCH 4/4] MGS-8011 [#ccc] Fix the problem of syntax error at
+ 'double4' in opencv_test_imgproc.
+
+Since our driver does not support cl_khr_fp64 format data,
+
+disabled the related ocl function in opencv_test_imgproc to avoid the following error log:
+
+error: syntax error at 'double4'
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
+---
+ modules/imgproc/src/imgwarp.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/modules/imgproc/src/imgwarp.cpp b/modules/imgproc/src/imgwarp.cpp
+index dfc718bf87..0e8b9ce142 100644
+--- a/modules/imgproc/src/imgwarp.cpp
++++ b/modules/imgproc/src/imgwarp.cpp
+@@ -1349,6 +1349,7 @@ static bool ocl_remap(InputArray _src, OutputArray _dst, InputArray _map1, Input
+     interpolation &= ~WARP_RELATIVE_MAP;
+ 
+     const ocl::Device & dev = ocl::Device::getDefault();
++    bool doubleSupport = dev.doubleFPConfig() > 0;
+     int cn = _src.channels(), type = _src.type(), depth = _src.depth(),
+             rowsPerWI = dev.isIntel() ? 4 : 1;
+ 
+@@ -1356,6 +1357,9 @@ static bool ocl_remap(InputArray _src, OutputArray _dst, InputArray _map1, Input
+             || _map1.type() == CV_16SC1 || _map2.type() == CV_16SC1)
+         return false;
+ 
++    if (!doubleSupport && depth == CV_64F )
++        return false;
++
+     UMat src = _src.getUMat(), map1 = _map1.getUMat(), map2 = _map2.getUMat();
+ 
+     if( (map1.type() == CV_16SC2 && (map2.type() == CV_16UC1 || map2.empty())) ||
+-- 
+2.34.1
+

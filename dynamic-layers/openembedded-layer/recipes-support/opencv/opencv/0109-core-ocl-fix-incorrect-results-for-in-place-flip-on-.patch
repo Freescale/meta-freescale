@@ -1,0 +1,352 @@
+From ba879cd60f505c3239a6bc5c4b8eb6ca87d143c2 Mon Sep 17 00:00:00 2001
+From: jiajia Qian <jiajia.qian@nxp.com>
+Date: Thu, 16 Apr 2026 10:14:05 +0800
+Subject: [PATCH] core/ocl: fix incorrect results for in-place flip on strict
+ OpenCL implementations
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Previously, OpenCL in-place flip kernels (rows/cols/both) could produce
+incorrect results compared to the CPU implementation on strict OpenCL
+drivers such as Mesa. The kernels relied on implicit load–load–store–store
+(LLSS) ordering when src and dst alias, which is not guaranteed by the
+OpenCL memory model and may be reordered.
+
+Some vendor drivers happened to preserve the expected ordering, masking
+the issue, but Mesa correctly exposes the undefined behavior.
+
+This change introduces dedicated in-place flip kernels that:
+- Explicitly detect in-place execution (src == dst)
+- Stage data through local memory tiles
+- Enforce correct ordering with work-group barriers
+- Avoid global memory read/write aliasing hazards
+
+The non in-place path is unchanged.
+
+With this fix, OpenCL in-place flip produces correct and consistent results
+across drivers, matches CPU behavior, and complies with the OpenCL memory
+model.
+
+Upstream-Status: Backport [ba879cd60f505c3239a6bc5c4b8eb6ca87d143c2]
+Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
+---
+ modules/core/src/matrix_transform.cpp |  71 +++++++---
+ modules/core/src/opencl/flip.cl       | 196 ++++++++++++++++++++++++++
+ 2 files changed, 250 insertions(+), 17 deletions(-)
+
+diff --git a/modules/core/src/matrix_transform.cpp b/modules/core/src/matrix_transform.cpp
+index ce859e8eb8..245cd89843 100644
+--- a/modules/core/src/matrix_transform.cpp
++++ b/modules/core/src/matrix_transform.cpp
+@@ -973,7 +973,12 @@ static bool ocl_flip(InputArray _src, OutputArray _dst, int flipCode )
+     if (cn > 4)
+         return false;
+ 
+-    const char * kernelName;
++    Size size = _src.size();
++    _dst.create(size, type);
++    UMat src = _src.getUMat(), dst = _dst.getUMat();
++    bool inplace = (dst.u == src.u);
++
++    String kernelName;
+     if (flipCode == 0)
+         kernelName = "arithm_flip_rows", flipType = FLIP_ROWS;
+     else if (flipCode > 0)
+@@ -981,33 +986,65 @@ static bool ocl_flip(InputArray _src, OutputArray _dst, int flipCode )
+     else
+         kernelName = "arithm_flip_rows_cols", flipType = FLIP_BOTH;
+ 
++    if(inplace)
++        kernelName += "_inplace";
++
+     int pxPerWIy = (dev.isIntel() && (dev.type() & ocl::Device::TYPE_GPU)) ? 4 : 1;
+     kercn = (cn!=3 || flipType == FLIP_ROWS) ? std::max(kercn, cn) : cn;
++    const int TILE_SIZE = 32, BLOCK_ROWS = 8;
+ 
+-    ocl::Kernel k(kernelName, ocl::core::flip_oclsrc,
+-        format( "-D T=%s -D T1=%s -D DEPTH=%d -D cn=%d -D PIX_PER_WI_Y=%d -D kercn=%d",
++    ocl::Kernel k(kernelName.c_str(), ocl::core::flip_oclsrc,
++                format( "-D T=%s -D T1=%s -D DEPTH=%d -D cn=%d -D PIX_PER_WI_Y=%d -D kercn=%d -D TILE_SIZE=%d -D BLOCK_ROWS=%d%s",
+                 kercn != cn ? ocl::typeToStr(CV_MAKE_TYPE(depth, kercn)) : ocl::vecopTypeToStr(CV_MAKE_TYPE(depth, kercn)),
+-                kercn != cn ? ocl::typeToStr(depth) : ocl::vecopTypeToStr(depth), depth, cn, pxPerWIy, kercn));
++                kercn != cn ? ocl::typeToStr(depth) : ocl::vecopTypeToStr(depth), depth, cn, pxPerWIy, kercn, TILE_SIZE, BLOCK_ROWS,
++                inplace ? " -D INPLACE" : ""));
+     if (k.empty())
+         return false;
+ 
+-    Size size = _src.size();
+-    _dst.create(size, type);
+-    UMat src = _src.getUMat(), dst = _dst.getUMat();
+-
+     int cols = size.width * cn / kercn, rows = size.height;
+-    cols = flipType == FLIP_COLS ? (cols + 1) >> 1 : cols;
+-    rows = flipType & FLIP_ROWS ? (rows + 1) >> 1 : rows;
++    int work_cols = flipType == FLIP_COLS ? (cols + 1) >> 1 : cols;
++    int work_rows = flipType & FLIP_ROWS ? (rows + 1) >> 1 : rows;
++
++    if (inplace)
++    {
++        k.args(ocl::KernelArg::ReadWriteNoSize(dst), rows, cols);
++
++        int gs_cols, gs_rows;
++        if (flipType == FLIP_COLS)
++        {
++            gs_cols = work_cols;
++            gs_rows = rows;
++        }
++        else if (flipType == FLIP_ROWS)
++        {
++            gs_cols = cols;
++            gs_rows = work_rows;
++        }
++        else // FLIP_BOTH
++        {
++            gs_cols = cols;
++            gs_rows = rows;
++        }
+ 
+-    k.args(ocl::KernelArg::ReadOnlyNoSize(src),
+-           ocl::KernelArg::WriteOnly(dst, cn, kercn), rows, cols);
++        size_t globalsize[2] = {
++            (size_t)divUp(gs_cols, TILE_SIZE) * TILE_SIZE,
++            (size_t)divUp(gs_rows, TILE_SIZE) * BLOCK_ROWS
++        };
++        size_t localsize[2] = { TILE_SIZE, BLOCK_ROWS };
++        return k.run(2, globalsize, localsize, false);
++    }
++    else
++    {
++        k.args(ocl::KernelArg::ReadOnlyNoSize(src),
++           ocl::KernelArg::WriteOnly(dst, cn, kercn), work_rows, work_cols);
+ 
+-    size_t maxWorkGroupSize = dev.maxWorkGroupSize();
+-    CV_Assert(maxWorkGroupSize % 4 == 0);
++        size_t maxWorkGroupSize = dev.maxWorkGroupSize();
++        CV_Assert(maxWorkGroupSize % 4 == 0);
+ 
+-    size_t globalsize[2] = { (size_t)cols, ((size_t)rows + pxPerWIy - 1) / pxPerWIy },
+-            localsize[2] = { maxWorkGroupSize / 4, 4 };
+-    return k.run(2, globalsize, (flipType == FLIP_COLS) && !dev.isIntel() ? localsize : NULL, false);
++        size_t globalsize[2] = { (size_t)work_cols, ((size_t)work_rows + pxPerWIy - 1) / pxPerWIy };
++        size_t localsize[2]  = { maxWorkGroupSize / 4, 4 };
++        return k.run(2, globalsize, (flipType == FLIP_COLS) && !dev.isIntel() ? localsize : NULL, false);
++    }
+ }
+ 
+ #endif
+diff --git a/modules/core/src/opencl/flip.cl b/modules/core/src/opencl/flip.cl
+index afd14e4e1f..dbe23c73a4 100644
+--- a/modules/core/src/opencl/flip.cl
++++ b/modules/core/src/opencl/flip.cl
+@@ -63,6 +63,9 @@
+ #endif
+ #define TSIZE ((int)sizeof(T1)*3)
+ #endif
++#define LDS_STEP (TILE_SIZE + 1)
++
++#ifndef INPLACE
+ 
+ __kernel void arithm_flip_rows(__global const uchar * srcptr, int src_step, int src_offset,
+                                __global uchar * dstptr, int dst_step, int dst_offset,
+@@ -183,3 +186,196 @@ __kernel void arithm_flip_cols(__global const uchar * srcptr, int src_step, int
+         }
+     }
+ }
++
++#else
++
++__kernel void arithm_flip_rows_inplace(__global uchar * srcptr, int src_step, int src_offset,
++                                       int rows, int cols)
++{
++    int gp_x = get_group_id(0);
++    int gp_y = get_group_id(1);
++    int lx = get_local_id(0);
++    int ly = get_local_id(1);
++
++    __local T tile_top[TILE_SIZE * LDS_STEP];
++    __local T tile_bottom[TILE_SIZE * LDS_STEP];
++
++    int half_rows = (rows + 1) / 2;
++
++    int x = gp_x * TILE_SIZE + lx;
++    int y_top = gp_y * TILE_SIZE + ly;
++    int y_bottom = rows - 1 - y_top;
++
++    #pragma unroll
++    for (int i = 0; i < TILE_SIZE; i += BLOCK_ROWS)
++    {
++        if (x < cols && y_top + i < half_rows)
++        {
++            int curr_y_top = y_top + i;
++            int curr_y_bottom = rows - 1 - curr_y_top;
++
++            T val_top = loadpix(srcptr + mad24(curr_y_top, src_step, mad24(x, TSIZE, src_offset)));
++            T val_bottom = loadpix(srcptr + mad24(curr_y_bottom, src_step, mad24(x, TSIZE, src_offset)));
++
++            tile_top[mad24(ly + i, LDS_STEP, lx)] = val_top;
++            tile_bottom[mad24(ly + i, LDS_STEP, lx)] = val_bottom;
++        }
++    }
++    barrier(CLK_LOCAL_MEM_FENCE);
++
++    #pragma unroll
++    for (int i = 0; i < TILE_SIZE; i += BLOCK_ROWS)
++    {
++        if (x < cols && y_top + i < half_rows)
++        {
++            int curr_y_top = y_top + i;
++            int curr_y_bottom = rows - 1 - curr_y_top;
++
++            storepix(tile_bottom[mad24(ly + i, LDS_STEP, lx)],
++                    srcptr + mad24(curr_y_top, src_step, mad24(x, TSIZE, src_offset)));
++
++            if (curr_y_top != curr_y_bottom)
++            {
++                storepix(tile_top[mad24(ly + i, LDS_STEP, lx)],
++                        srcptr + mad24(curr_y_bottom, src_step, mad24(x, TSIZE, src_offset)));
++            }
++        }
++    }
++}
++
++__kernel void arithm_flip_rows_cols_inplace(__global uchar * srcptr, int src_step, int src_offset,
++                                            int rows, int cols)
++{
++    int gp_x = get_group_id(0);
++    int gp_y = get_group_id(1);
++    int lx = get_local_id(0);
++    int ly = get_local_id(1);
++
++    __local T tile_first[TILE_SIZE * LDS_STEP];
++    __local T tile_second[TILE_SIZE * LDS_STEP];
++
++    int total_pixels = rows * cols;
++    int half_pixels = (total_pixels + 1) / 2;
++
++    int x_first = gp_x * TILE_SIZE + lx;
++    int y_first = gp_y * TILE_SIZE + ly;
++
++    int x_second = cols - 1 - x_first;
++    int y_second = rows - 1 - y_first;
++
++    #pragma unroll
++    for (int i = 0; i < TILE_SIZE; i += BLOCK_ROWS)
++    {
++        int curr_y_first = y_first + i;
++        int curr_y_second = rows - 1 - curr_y_first;
++        int linear_idx = curr_y_first * cols + x_first;
++
++        if (x_first < cols && curr_y_first < rows && linear_idx < half_pixels)
++        {
++            T val_first = loadpix(srcptr + mad24(curr_y_first, src_step, mad24(x_first, TSIZE, src_offset)));
++            T val_second = loadpix(srcptr + mad24(curr_y_second, src_step, mad24(x_second, TSIZE, src_offset)));
++
++#if kercn == 2
++#if cn == 1
++            val_first = val_first.s10;
++            val_second = val_second.s10;
++#endif
++#elif kercn == 4
++#if cn == 1
++            val_first = val_first.s3210;
++            val_second = val_second.s3210;
++#elif cn == 2
++            val_first = val_first.s2301;
++            val_second = val_second.s2301;
++#endif
++#endif
++            tile_first[mad24(ly + i, LDS_STEP, lx)] = val_first;
++            tile_second[mad24(ly + i, LDS_STEP, lx)] = val_second;
++        }
++    }
++    barrier(CLK_LOCAL_MEM_FENCE);
++
++    #pragma unroll
++    for (int i = 0; i < TILE_SIZE; i += BLOCK_ROWS)
++    {
++        int curr_y_first = y_first + i;
++        int curr_y_second = rows - 1 - curr_y_first;
++        int linear_idx = curr_y_first * cols + x_first;
++
++        if (x_first < cols && curr_y_first < rows && linear_idx < half_pixels)
++        {
++            storepix(tile_second[mad24(ly + i, LDS_STEP, lx)],
++                    srcptr + mad24(curr_y_first, src_step, mad24(x_first, TSIZE, src_offset)));
++
++            if (linear_idx != total_pixels - 1 - linear_idx)
++            {
++                storepix(tile_first[mad24(ly + i, LDS_STEP, lx)],
++                        srcptr + mad24(curr_y_second, src_step, mad24(x_second, TSIZE, src_offset)));
++            }
++        }
++    }
++}
++
++__kernel void arithm_flip_cols_inplace(__global uchar * srcptr, int src_step, int src_offset,
++                                       int rows, int cols)
++{
++    int gp_x = get_group_id(0);
++    int gp_y = get_group_id(1);
++    int lx = get_local_id(0);
++    int ly = get_local_id(1);
++
++    __local T tile_left[TILE_SIZE * LDS_STEP];
++    __local T tile_right[TILE_SIZE * LDS_STEP];
++
++    int half_cols = (cols + 1) / 2;
++
++    int x_left = gp_x * TILE_SIZE + lx;
++    int y = gp_y * TILE_SIZE + ly;
++    int x_right = cols - 1 - x_left;
++
++    #pragma unroll
++    for (int i = 0; i < TILE_SIZE; i += BLOCK_ROWS)
++    {
++        if (y + i < rows && x_left < half_cols)
++        {
++            T val_left = loadpix(srcptr + mad24(y + i, src_step, mad24(x_left, TSIZE, src_offset)));
++            T val_right = loadpix(srcptr + mad24(y + i, src_step, mad24(x_right, TSIZE, src_offset)));
++
++#if kercn == 2
++#if cn == 1
++            val_left = val_left.s10;
++            val_right = val_right.s10;
++#endif
++#elif kercn == 4
++#if cn == 1
++            val_left = val_left.s3210;
++            val_right = val_right.s3210;
++#elif cn == 2
++            val_left = val_left.s2301;
++            val_right = val_right.s2301;
++#endif
++#endif
++            tile_left[mad24(ly + i, LDS_STEP, lx)] = val_left;
++            tile_right[mad24(ly + i, LDS_STEP, lx)] = val_right;
++        }
++    }
++    barrier(CLK_LOCAL_MEM_FENCE);
++
++    #pragma unroll
++    for (int i = 0; i < TILE_SIZE; i += BLOCK_ROWS)
++    {
++        if (y + i < rows && x_left < half_cols)
++        {
++            storepix(tile_right[mad24(ly + i, LDS_STEP, lx)],
++                    srcptr + mad24(y + i, src_step, mad24(x_left, TSIZE, src_offset)));
++
++            if (x_left != x_right)
++            {
++                storepix(tile_left[mad24(ly + i, LDS_STEP, lx)],
++                        srcptr + mad24(y + i, src_step, mad24(x_right, TSIZE, src_offset)));
++            }
++        }
++    }
++}
++
++#endif // INPLACE
+\ No newline at end of file
+-- 
+2.34.1
+

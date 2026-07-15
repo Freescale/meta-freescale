@@ -4,6 +4,7 @@ Date: Tue, 1 Sep 2020 14:57:07 -0500
 Subject: [PATCH] Add smaller version of download_models.py
 
 Upstream-Status: Pending
+
 Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
 ---
  testdata/dnn/download_models_basic.py | 159 ++++++++++++++++++++++++++

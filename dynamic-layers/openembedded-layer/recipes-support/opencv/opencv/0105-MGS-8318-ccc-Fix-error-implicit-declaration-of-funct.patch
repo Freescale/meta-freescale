@@ -1,0 +1,34 @@
+From e5d7ecd9acd3805e90f5d491044813c034d3b014 Mon Sep 17 00:00:00 2001
+From: jiajia Qian <jiajia.qian@nxp.com>
+Date: Fri, 8 Aug 2025 14:19:57 +0800
+Subject: [PATCH] MGS-8318 [#ccc] Fix error:implicit declaration of function
+ 'sub_group_reduce_add' is invalid in OpenCL.
+
+The OpenCL extension cl_khr_subgroups is not supported in OpenCL 1.2.
+
+This feature requires at least OpenCL 2.0 or higher. By default, the C++ C language standard used
+
+is C++ C 1.2. Therefore, specify OpenCL version to 3.0 in the build-options.
+
+Upstream-Status: Inappropriate [i.MX specific]
+Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
+---
+ modules/video/src/dis_flow.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/video/src/dis_flow.cpp b/modules/video/src/dis_flow.cpp
+index 75090d093d..9954645ca7 100644
+--- a/modules/video/src/dis_flow.cpp
++++ b/modules/video/src/dis_flow.cpp
+@@ -1101,7 +1101,7 @@ bool DISOpticalFlowImpl::ocl_PatchInverseSearch(UMat &src_U,
+         subgroups_build_options = " -DCV_USE_SUBGROUPS=1";
+ 
+     String build_options = cv::format(
+-                "-DDIS_BORDER_SIZE=%d -DDIS_PATCH_SIZE=%d -DDIS_PATCH_STRIDE=%d",
++                "-cl-std=CL3.0 -DDIS_BORDER_SIZE=%d -DDIS_PATCH_SIZE=%d -DDIS_PATCH_STRIDE=%d",
+                 border_size, patch_size, patch_stride
+             ) + subgroups_build_options;
+ 
+-- 
+2.34.1
+
