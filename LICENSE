@@ -7,7 +7,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./dynamic-layers/openembedded-layer/recipes-devtools/utp-com/utp-com_git.bb: LICENSE = "GPL-2.0-only"
 ./dynamic-layers/openembedded-layer/recipes-devtools/uuu/uuu_git.bb: LICENSE = "BSD-3-Clause"
 ./dynamic-layers/openembedded-layer/recipes-dpaa/fmc/fmc_git.bb: LICENSE = "MIT"
-./dynamic-layers/openembedded-layer/recipes-support/opencv/opencv_4.6.0.imx.bb: LICENSE = "Apache-2.0"
+./dynamic-layers/openembedded-layer/recipes-support/opencv/opencv_4.13.0.imx.bb: LICENSE = "Apache-2.0"
 ./recipes-bsp/atf/qoriq-atf-2.12.inc: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/boot-format/boot-format_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-bsp/ddr-phy/ddr-phy_git.bb: LICENSE = "NXP-Binary-EULA"
