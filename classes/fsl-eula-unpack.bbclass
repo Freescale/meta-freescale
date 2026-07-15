@@ -133,11 +133,14 @@ FSL_EULA_FILE_MD5SUM ?= "${FSL_EULA_FILE_MD5SUM_LA_OPT_NXP_SOFTWARE_LICENSE_V63}
 
 LIC_FILES_CHKSUM_LAYER ?= "file://${FSL_EULA_FILE};md5=${FSL_EULA_FILE_MD5SUM}"
 LIC_FILES_CHKSUM_LAYER[vardepsexclude] += "FSL_EULA_FILE"
+# The EULA text is shipped by the layer (FSL_EULA_FILE), not the recipe source
+# tree, so this reference intentionally points outside the sources.
+# nooelint: oelint.var.licenseremotefile
 LIC_FILES_CHKSUM:append = " ${LIC_FILES_CHKSUM_LAYER}"
 
 LIC_FILES_CHKSUM[vardepsexclude] += "FSL_EULA_FILE"
 
-do_fetch:prepend() {
+python do_fetch:prepend() {
     if "Proprietary" not in d.getVar("LICENSE"):
         bb.fatal("The recipe LICENSE should include Proprietary but is " + d.getVar("LICENSE") + ".")
 }
@@ -164,6 +167,7 @@ python do_unpack() {
     bb.build.exec_func('fsl_bin_do_unpack', d)
 }
 
+fsl_bin_do_unpack[doc] = "Unpack the EULA-gated SRC_URI entries after the EULA has been accepted"
 python fsl_bin_do_unpack() {
     src_uri = (d.getVar('SRC_URI') or "").split()
     if len(src_uri) == 0:
