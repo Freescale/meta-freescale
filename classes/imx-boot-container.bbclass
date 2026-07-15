@@ -27,6 +27,9 @@ inherit use-imx-security-controller-firmware
 
 # Define ATF binary file to be deployed to the U-Boot build folder
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
+# The append concatenates an "-optee" suffix directly onto the filename, so the
+# missing leading space is intentional (a space would break the name).
+# nooelint: oelint.vars.inconspaces
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
@@ -61,6 +64,7 @@ do_resolve_and_populate_binaries[depends] += " \
 
 # Define an additional task that collects binary output from dependent packages
 # and deploys them into the U-Boot build folder
+do_resolve_and_populate_binaries[doc] = "Collect the ATF, DDR, SECO/OEI and optional OP-TEE firmware binaries into the U-Boot build folder for the boot container"
 do_resolve_and_populate_binaries() {
     if [ -n "${UBOOT_CONFIG}" ]; then
         for config in ${UBOOT_MACHINE}; do
