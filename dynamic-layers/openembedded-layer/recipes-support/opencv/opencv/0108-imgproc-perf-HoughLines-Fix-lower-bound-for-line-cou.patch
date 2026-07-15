@@ -1,0 +1,31 @@
+From 2751419022d65b7d9260c87c7806db0f32a1c359 Mon Sep 17 00:00:00 2001
+From: Samaresh Kumar Singh <ssam3003@gmail.com>
+Date: Thu, 5 Mar 2026 19:21:36 -0600
+Subject: [PATCH 2/2] [imgproc][perf][HoughLines] Fix lower bound for line
+ count check
+
+With thetaStep=0.1 rad, theta=PI/2 is not a sampled accumulator bin, so horizontal lines fall below the vote threshold and are not detected.
+Only the 3 vertical lines (at theta=0, always an exact bin) are reliably found in that case. Lower the EXPECT_GE bound from 6 to 3 to reflect the worst-case guarantee across all thetaStep values and backends.
+
+Fixes regression introduced in fa4b117.
+Upstream-Status: Submitted [under review]
+---
+ modules/imgproc/perf/opencl/perf_houghlines.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/imgproc/perf/opencl/perf_houghlines.cpp b/modules/imgproc/perf/opencl/perf_houghlines.cpp
+index bffd895f2b..95c61667fc 100644
+--- a/modules/imgproc/perf/opencl/perf_houghlines.cpp
++++ b/modules/imgproc/perf/opencl/perf_houghlines.cpp
+@@ -55,7 +55,7 @@ OCL_PERF_TEST_P(HoughLinesFixture, HoughLines, Combine(OCL_TEST_SIZES,
+     lines.copyTo(result);
+     std::sort(result.begin<Vec2f>(), result.end<Vec2f>(), Vec2fComparator());
+ 
+-    EXPECT_GE((size_t)result.total(), 6u);
++    EXPECT_GE((size_t)result.total(), 3u);
+     EXPECT_LT((size_t)result.total(), 50u);
+ 
+     SANITY_CHECK_NOTHING();
+-- 
+2.34.1
+
