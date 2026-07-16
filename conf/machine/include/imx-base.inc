@@ -618,8 +618,8 @@ PREFERRED_VERSION_optee-test:imx-nxp-bsp   ??= "4.8.0.imx"
 PREFERRED_VERSION_optee-os-tadevkit:imx-nxp-bsp   ??= "4.8.0.imx"
 
 # Use i.MX opencv Version
-PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.6.0.imx"
-PREFERRED_VERSION_opencv:mx9-nxp-bsp ??= "4.6.0.imx"
+PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.13.0.imx"
+PREFERRED_VERSION_opencv:mx9-nxp-bsp ??= "4.13.0.imx"
 
 # Handle default kernel
 IMX_DEFAULT_KERNEL:imx-mainline-bsp ??= "linux-fslc"
