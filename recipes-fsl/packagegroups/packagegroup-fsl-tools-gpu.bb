@@ -2,8 +2,9 @@
 # Copyright (C) 2015, 2016 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "Package group used by FSL Community to add the packages which provide GPU support."
 SUMMARY = "FSL Community package group - tools/gpu"
+DESCRIPTION = "Package group used by FSL Community to add the packages which provide GPU support."
+SECTION = "graphics"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
