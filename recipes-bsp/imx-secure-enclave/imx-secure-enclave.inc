@@ -1,12 +1,17 @@
 # Copyright 2021-2025 NXP
 
 SUMMARY = "NXP i.MX SECURE ENCLAVE library"
-DESCRIPTION = "NXP IMX SECURE ENCLAVE library"
+DESCRIPTION = "Library providing access to the NXP i.MX Secure Enclave \
+               (EdgeLock Enclave) on-chip security subsystem, exposing its \
+               cryptographic and key-management services to userspace."
 HOMEPAGE = "https://github.com/NXP/imx-secure-enclave"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=8636bd68fc00cc6a3809b7b58b45f982"
 
+# Canonical DEPENDS for the library; this .inc is the base definition, so the
+# plain assignment is intentional (the require sits at the top of the .bb).
+# nooelint: oelint.vars.dependsappend
 DEPENDS = "mbedtls openssl"
 
 SRC_URI = "${SECURE_ENCLAVE_LIB_SRC};branch=${SRCBRANCH}"

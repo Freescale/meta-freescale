@@ -7,6 +7,9 @@ DESCRIPTION = "Unit tests for the i.MX BSP"
 HOMEPAGE = "https://github.com/nxp-imx/imx-test"
 SECTION = "base"
 LICENSE = "GPL-2.0-or-later"
+# The license text is not shipped in the source tree, so reference the
+# common-licenses copy; this is intentionally a local (non-remote) file.
+# nooelint: oelint.var.licenseremotefile
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-or-later;md5=fed54355545ffd980b814dab4a3b312c"
 
 DEPENDS = "alsa-lib freetype libdrm"
@@ -85,6 +88,6 @@ do_install() {
 }
 
 FILES:${PN} += "/unit_tests ${ROOT_HOME}/.profile"
-RDEPENDS:${PN} = "bash"
-
 FILES:${PN}-dbg += "/unit_tests/.debug"
+
+RDEPENDS:${PN} = "bash"
