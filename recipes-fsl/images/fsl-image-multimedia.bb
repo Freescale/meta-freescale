@@ -1,6 +1,8 @@
+SUMMARY = "Console image with GStreamer and i.MX multimedia (VPU/GPU) packages"
 DESCRIPTION = "A console-only image that includes gstreamer packages and \
                Freescale's multimedia packages (VPU and GPU) when available for the specific \
                machine."
+SECTION = "multimedia"
 
 IMAGE_FEATURES += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'weston', \
