@@ -1,6 +1,7 @@
+SUMMARY = "FSL Community package group - set of commonly used GStreamer 1.0 plugins"
 DESCRIPTION = "Package group used by FSL Community to provide audio, video, networking and debug \
                GStreamer plugins with the required hardware acceleration (if supported by the SoC)."
-SUMMARY = "FSL Community package group - set of commonly used GStreamer 1.0 plugins"
+SECTION = "multimedia"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -37,19 +38,23 @@ GST_WAYLAND_PACKAGES = "\
 "
 
 # basic plugins required in virtually every pipeline
+# Literal package names are ordered alphabetically, with the machine/distro
+# conditional entries grouped last; the linter's tokenizer mis-sorts the
+# conditional ${@...} entries, so the check is suppressed.
+# nooelint: oelint.vars.dependsordered
 RDEPENDS:${PN}-base = "\
     gstreamer1.0 \
-    gstreamer1.0-plugins-base-playback \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'gstreamer1.0-plugins-base-alsa', '', d)} \
     gstreamer1.0-plugins-base-audioconvert \
     gstreamer1.0-plugins-base-audioresample \
     gstreamer1.0-plugins-base-gio \
+    gstreamer1.0-plugins-base-playback \
     gstreamer1.0-plugins-base-typefindfunctions \
     gstreamer1.0-plugins-base-videoconvertscale \
     gstreamer1.0-plugins-base-volume \
     gstreamer1.0-plugins-good-autodetect \
-    ${MACHINE_GSTREAMER_1_0_PLUGIN} \
     ${@bb.utils.contains("MACHINE_GSTREAMER_1_0_PLUGIN", "imx-gst1.0-plugin", "imx-gst1.0-plugin-tools", "", d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'gstreamer1.0-plugins-base-alsa', '', d)} \
+    ${MACHINE_GSTREAMER_1_0_PLUGIN} \
 "
 
 RRECOMMENDS:${PN}-base = "\
@@ -59,6 +64,9 @@ RRECOMMENDS:${PN}-base = "\
 "
 
 # Basic audio plugins: parsers, demuxers, decoders
+# Packages are grouped per sub-package (RDEPENDS with its RRECOMMENDS) for
+# readability rather than grouping all RDEPENDS before all RRECOMMENDS.
+# nooelint: oelint.var.order.RDEPENDS
 RDEPENDS:${PN}-audio = "\
     ${PN}-base \
     gstreamer1.0-plugins-base-ogg \
@@ -86,6 +94,7 @@ RRECOMMENDS:${PN}-video = "\
 "
 
 # Additional video plugins from the -bad collection
+# nooelint: oelint.var.order.RDEPENDS
 RDEPENDS:${PN}-video-bad = "\
     ${PN}-video \
     gstreamer1.0-plugins-bad-mpegpsdemux \

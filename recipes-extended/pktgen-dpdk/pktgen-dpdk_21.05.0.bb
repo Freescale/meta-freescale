@@ -1,5 +1,9 @@
-DESCRIPTION = "PKTGEN DPDK"
+SUMMARY = "Traffic generator powered by DPDK"
+DESCRIPTION = "Pktgen is a high-performance software traffic generator built on \
+               the DPDK fast packet processing framework, used to send and \
+               receive test traffic at line rate for network benchmarking."
 HOMEPAGE = "https://git.dpdk.org/apps/pktgen-dpdk/"
+SECTION = "console/network"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0245ceedaef59ae0129500b0ce1e8a45"
 
@@ -29,6 +33,9 @@ do_install() {
     install -m 0644 ${S}/Pktgen.lua ${D}${bindir}/
 }
 
+# DPDK's meson build links the app without propagating the distro LDFLAGS,
+# so the ldflags QA check is skipped for this package.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "ldflags"
 INHIBIT_PACKAGE_STRIP = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"

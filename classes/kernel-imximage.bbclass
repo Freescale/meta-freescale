@@ -21,10 +21,12 @@ DEPENDS:append = " u-boot-mkimage-native"
 
 IMXIMAGE_ENTRYPOINT ?= "${UBOOT_ENTRYPOINT}"
 
+imx_mkimage[doc] = "Wrap uboot-mkimage to add an i.MX imximage DCD header to a kernel binary"
 imx_mkimage() {
     uboot-mkimage -n $1 -T imximage -e ${IMXIMAGE_ENTRYPOINT} -d $2 $2.imx
 }
 
+gen_imximage[doc] = "Generate DCD-header kernel images for each device tree during do_deploy"
 gen_imximage() {
     if [ -z "${IMXIMAGE_ENTRYPOINT}" ]; then
         bbfatal "IMXIMAGE_ENTRYPOINT must have a valid value"
