@@ -15,6 +15,7 @@ LOCALVERSION ??= "+fslc"
 # LINUX_VERSION_EXTENSION is used as CONFIG_LOCALVERSION by kernel-yocto class
 LINUX_VERSION_EXTENSION ?= "${@bb.utils.contains('SCMVERSION', 'y', '', '${LOCALVERSION}', d)}"
 
+do_kernel_localversion[doc] = "Append the FSL LOCALVERSION and, when SCMVERSION is set, the git revision to the kernel .config"
 do_kernel_localversion[dirs] += "${S} ${B}"
 do_kernel_localversion() {
 

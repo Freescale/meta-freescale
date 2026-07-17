@@ -25,6 +25,10 @@
 #
 # Copyright 2013-2016 (C) O.S. Systems Software LTDA.
 
+# Parse-time logic is required: PACKAGE_ARCH and PACKAGE_EXTRA_ARCHS are chosen
+# by inspecting PROVIDES/DEPENDS against the SOCARCH filters and the multilib
+# tunes, which cannot be expressed declaratively.
+# nooelint: oelint.task.noanonpython
 python __anonymous () {
     machine_arch_filter = set((d.getVar("MACHINE_ARCH_FILTER") or "").split())
     machine_socarch_filter = set((d.getVar("MACHINE_SOCARCH_FILTER") or "").split())

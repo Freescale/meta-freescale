@@ -26,6 +26,9 @@ SECO_FIRMWARE_NAME:mx91-generic-bsp ?= "mx91${IMX_SOC_REV_LOWER}-ahab-container.
 SECO_FIRMWARE_NAME:mx93-generic-bsp ?= "mx93${IMX_SOC_REV_LOWER}-ahab-container.img"
 SECO_FIRMWARE_NAME:mx95-generic-bsp ?= "mx95${IMX_SOC_REV_LOWER}-ahab-container.img"
 
+# Parse-time guard: SoCs that require a SECO firmware must fail parsing early
+# (SkipRecipe) when SECO_FIRMWARE_NAME is undefined, which needs anonymous python.
+# nooelint: oelint.task.noanonpython
 python () {
     if "mx8m-generic-bsp" in d.getVar('MACHINEOVERRIDES').split(":"):
         return # We need to allow the recipes to be parsed for this case

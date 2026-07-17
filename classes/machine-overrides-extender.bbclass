@@ -43,6 +43,9 @@ def machine_overrides_extender(d):
 
     return ':'.join(machine_overrides)
 
+# This is a ConfigParsed event handler (addhandler below), not a task, so a
+# task[doc] docstring does not apply.
+# nooelint: oelint.task.docstrings
 python machine_overrides_extender_handler() {
     # Ideally we'd use a separate variable name for this however
     # historically NXP BSPs used this. We save it to a known good name
@@ -56,6 +59,9 @@ python machine_overrides_extender_handler() {
 machine_overrides_extender_handler[eventmask] = "bb.event.ConfigParsed"
 addhandler machine_overrides_extender_handler
 
+# This is a RecipeParsed event handler (addhandler below), not a task, so a
+# task[doc] docstring does not apply.
+# nooelint: oelint.task.docstrings
 python machineoverrides_filtered_out_qa_handler() {
     filtered_out = (d.getVar('MACHINEOVERRIDES_EXTENDER_FILTER_OUT') or "").split()
     qa_error = d.getVar('MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR')

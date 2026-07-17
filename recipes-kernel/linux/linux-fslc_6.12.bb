@@ -10,14 +10,17 @@ DESCRIPTION = "Linux kernel based on mainline kernel used by FSL Community BSP i
                and takes some time to become part of a stable version, or because it is not applicable for \
                upstreaming."
 HOMEPAGE = "https://github.com/Freescale/linux-fslc"
+SECTION = "kernel"
 
 require linux-imx.inc
-
-SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 DEPENDS += "\
     coreutils-native \
 "
+
+# linux-fslc replaces the kernel source defined in linux-imx.inc.
+# nooelint: oelint.var.override
+SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.

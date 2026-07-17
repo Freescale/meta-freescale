@@ -5,6 +5,8 @@ inherit deploy
 DEPENDS += "bc-native openssl openssl-native qoriq-cst-native rcw u-boot u-boot-mkimage-native"
 do_compile[depends] += "u-boot:do_deploy rcw:do_deploy uefi:do_deploy"
 
+# Version suffix must join without a leading space to stay a valid PV.
+# nooelint: oelint.vars.inconspaces
 PV:append = "+${SRCPV}"
 
 SRC_URI += "git://github.com/ARMmbed/mbedtls;protocol=https;nobranch=1;destsuffix=${S}/mbedtls;name=mbedtls \
@@ -13,6 +15,11 @@ SRC_URI += "git://github.com/ARMmbed/mbedtls;protocol=https;nobranch=1;destsuffi
 SRCREV_mbedtls = "0795874acdf887290b2571b193cafd3c4041a708"
 SRCREV_ddr = "fbc036b88acb6c06ffed02c898cbae9856ec75ba"
 SRCREV_FORMAT = "atf"
+
+PACKAGECONFIG ??= "\
+    ${@bb.utils.filter('COMBINED_FEATURES', 'optee', d)} \
+"
+PACKAGECONFIG[optee] = ",,optee-os-qoriq"
 
 COMPATIBLE_MACHINE = "(qoriq)"
 
@@ -68,11 +75,8 @@ EXTRA_OEMAKE += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'fuse', 'fip_fuse FUSE_PROG=1 FUSE_PROV_FILE=fuse_scr.bin', '', d)} \
 "
 
-PACKAGECONFIG ??= "\
-    ${@bb.utils.filter('COMBINED_FEATURES', 'optee', d)} \
-"
-PACKAGECONFIG[optee] = ",,optee-os-qoriq"
-
+# Parse-time validation that arm-cot implies secure; needs an anonymous python.
+# nooelint: oelint.task.noanonpython
 python() {
     if bb.utils.contains("DISTRO_FEATURES", "arm-cot", True, False, d):
         if not bb.utils.contains("DISTRO_FEATURES", "secure", True, False, d):
