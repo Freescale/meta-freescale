@@ -7,7 +7,7 @@ SUMMARY = "i.MX Vivante GPU driver"
 DESCRIPTION = "GPU driver and apps for i.MX"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "libs"
-LICENSE = "Proprietary"
+LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
 
 DEPENDS += "\

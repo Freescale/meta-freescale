@@ -6,7 +6,7 @@ HOMEPAGE = "https://github.com/nxp-imx/imx-smw"
 DESCRIPTION = "NXP i.MX Security Middleware Library"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
-LICENSE = "Apache-2.0 & BSD-3-Clause & Zlib"
+LICENSE = "Apache-2.0 AND BSD-3-Clause AND Zlib"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ff20c8e51b28869d9cdec70a818d163f \
                     file://${PSA_ARCH_TESTS_SRC_PATH}/LICENSE.md;md5=2a944942e1496af1886903d274dedb13"
 

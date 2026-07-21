@@ -1,7 +1,7 @@
 DESCRIPTION = "Unified Extensible Firmware Interface"
 HOMEPAGE = "https://github.com/NXP/qoriq-uefi-binary"
 SECTION = "bootloaders"
-LICENSE = "NXP-Binary-EULA"
+LICENSE = "LicenseRef-NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA;md5=343ec8f06efc37467a6de53686fa6315"
 
 inherit deploy

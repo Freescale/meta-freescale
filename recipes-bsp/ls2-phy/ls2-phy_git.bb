@@ -2,7 +2,7 @@ SUMMARY = "Firmwares and Standalone Applications"
 DESCRIPTION = "Cortina PHY firmware and standalone applications for NXP QorIQ platforms"
 HOMEPAGE = "https://github.com/nxp/qoriq-firmware-cortina"
 SECTION = "firmware"
-LICENSE = "NXP-Binary-EULA"
+LICENSE = "LicenseRef-NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://EULA.txt;md5=86d76166990962fa552f840ff08e5798"
 
 inherit deploy

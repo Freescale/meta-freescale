@@ -3,7 +3,7 @@
 # Copyright (C) 2018 O.S. Systems Software LTDA.
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "base"
-LICENSE = "Proprietary"
+LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 # Note: This .inc file is used from differently named recipes, so the package
