@@ -2,7 +2,7 @@ SUMMARY = "Auto Response Control Module"
 DESCRIPTION = "Kernel module providing QorIQ SEC auto-response control."
 HOMEPAGE = "https://github.com/nxp-qoriq-yocto-sdk/auto-resp"
 SECTION = "kernel"
-LICENSE = "GPL-2.0-only & BSD"
+LICENSE = "BSD-3-Clause OR GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b5881ecf398da8a03a3f4c501e29d287"
 
 inherit module

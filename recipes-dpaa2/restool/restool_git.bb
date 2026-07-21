@@ -2,7 +2,7 @@ SUMMARY = "DPAA2 Resource Manager Tool"
 DESCRIPTION = "Userspace resource manager tool for DPAA2 objects on NXP QorIQ SoCs."
 HOMEPAGE = "https://github.com/nxp-qoriq/restool"
 SECTION = "base"
-LICENSE = "BSD-3-Clause | GPL-2.0-or-later"
+LICENSE = "BSD-3-Clause OR GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=83af78c71766dd5fb1c1c3dd64a75ee7"
 
 SRC_URI = "git://github.com/nxp-qoriq/restool;protocol=https;nobranch=1"

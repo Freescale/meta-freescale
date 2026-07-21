@@ -4,7 +4,7 @@ SUMMARY = "NXP RetuneDSP Voice Seeker libraries"
 DESCRIPTION = "NXP RetuneDSP Voice Seeker far-field voice pickup libraries."
 HOMEPAGE = "https://github.com/nxp-imx/imx-voiceui"
 SECTION = "multimedia"
-LICENSE = "Proprietary"
+LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=ca53281cc0caa7e320d4945a896fb837"
 
 inherit pkgconfig
