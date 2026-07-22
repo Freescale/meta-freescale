@@ -2,7 +2,7 @@ SUMMARY = "SEC descriptor foundation library"
 DESCRIPTION = "Foundation library of frame descriptors for the QorIQ SEC (crypto) block."
 HOMEPAGE = "https://github.com/nxp-qoriq/flib"
 SECTION = "flib"
-LICENSE = "BSD-3-Clause & GPL-2.0-only"
+LICENSE = "BSD-3-Clause AND GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=9f6d1afdf6b0f6b3ba65c25ba589ee53"
 
 SRC_URI = "git://github.com/nxp-qoriq/flib;protocol=https;nobranch=1"

@@ -6,7 +6,7 @@ SUMMARY = "i.MX multimedia parser libraries"
 DESCRIPTION = "Freescale Multimedia parser libs"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "Proprietary"
+LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"

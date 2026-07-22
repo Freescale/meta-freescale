@@ -8,7 +8,7 @@ DESCRIPTION = "Freescale/NXP GStreamer 1.0 plugins providing hardware-accelerate
                i.MX SoCs."
 HOMEPAGE = "https://github.com/nxp-imx/imx-gst1.0-plugin"
 SECTION = "multimedia"
-LICENSE = "GPL-2.0-only & LGPL-2.0-only & LGPL-2.1-only"
+LICENSE = "GPL-2.0-only AND LGPL-2.0-only AND LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=fbc093901857fcd118f065f900982c24"
 
 DEPENDS = "\

@@ -5,7 +5,7 @@ SUMMARY = "i.MX System Controller firmware"
 DESCRIPTION = "System Controller Unit (SCU) firmware for i.MX8 QuadMax/QuadXPlus SoCs."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "bsp"
-LICENSE = "Proprietary"
+LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 inherit fsl-eula-unpack pkgconfig deploy

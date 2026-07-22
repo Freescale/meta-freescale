@@ -4,7 +4,7 @@ SUMMARY = "i.MX Hantro VPU library"
 DESCRIPTION = "Hantro video processing unit (VPU) codec library for i.MX SoCs."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "Proprietary"
+LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 PROVIDES = "virtual/imxvpu"

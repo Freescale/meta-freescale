@@ -4,7 +4,7 @@ DESCRIPTION = "\
     based on proprietary MM Solutions EAD uGuzzi 3A library"
 HOMEPAGE = "https://github.com/nxp-imx/neo-ipa-uguzzi"
 SECTION = "libs"
-LICENSE = "Apache-2.0 & BSD-2-Clause & GPL-2.0-or-later & LGPL-2.1-or-later & MIT & Proprietary"
+LICENSE = "Apache-2.0 AND BSD-2-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND LicenseRef-Proprietary"
 # Put EULA on separate line for automated recipe updates
 LIC_FILES_CHKSUM = "file://LICENSES/LA_OPT_NXP_Software_License.txt;md5=bc649096ad3928ec06a8713b8d787eac"
 LIC_FILES_CHKSUM += "\
