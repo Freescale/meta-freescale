@@ -5,7 +5,16 @@ DESCRIPTION = "ARM Trusted Firmware (TF-A) for NXP i.MX SoCs."
 HOMEPAGE = "https://github.com/nxp-imx/imx-atf"
 SECTION = "bsp"
 LICENSE = "BSD-3-Clause"
+# Source ships no standalone license file; reference the common BSD-3-Clause text.
+# nooelint: oelint.var.licenseremotefile
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"
+
+# Baremetal, just need a compiler
+INHIBIT_DEFAULT_DEPS = "1"
+DEPENDS = "virtual/cross-cc"
+
+# Bring in clang compiler if using clang as default
+DEPENDS:append:toolchain-clang = " clang-cross-${TARGET_ARCH}"
 
 PV .= "+git${SRCPV}"
 
@@ -44,13 +53,6 @@ LDFLAGS[unexport] = "1"
 AS[unexport] = "1"
 LD[unexport] = "1"
 
-# Baremetal, just need a compiler
-INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "virtual/cross-cc"
-
-# Bring in clang compiler if using clang as default
-DEPENDS:append:toolchain-clang = " clang-cross-${TARGET_ARCH}"
-
 # CC and LD introduce arguments which conflict with those otherwise provided by
 # this recipe. The heads of these variables excluding those arguments
 # are therefore used instead.
@@ -71,8 +73,12 @@ do_configure[noexec] = "1"
 
 do_install[noexec] = "1"
 
+# The appends join without a leading space to build the contiguous bl31
+# filename, so the inconspaces leading-space convention does not apply here.
 ANNOTATED_NAME = "bl31-${ATF_PLATFORM}.bin"
-ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG',  'crrm',  '-crrm', '', d)}"
+# nooelint: oelint.vars.inconspaces
+ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG', 'crrm', '-crrm', '', d)}"
+# nooelint: oelint.vars.inconspaces
 ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG', 'optee', '-optee', '', d)}"
 
 addtask deploy after do_compile

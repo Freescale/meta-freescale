@@ -1,4 +1,6 @@
 Upstream-Status: Pending
+Signed-off-by: Tom Hochstein <tom.hochstein@nxp.com>
+
 Index: git/mkspecs/linux-oe-g++/qmake.conf
 ===================================================================
 --- git.orig/mkspecs/linux-oe-g++/qmake.conf	2017-06-26 10:20:57.139653321 -0500

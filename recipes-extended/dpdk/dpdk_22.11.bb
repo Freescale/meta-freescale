@@ -1,5 +1,8 @@
-DESCRIPTION = "Data Plane Development Kit"
+SUMMARY = "Data Plane Development Kit"
+DESCRIPTION = "The Data Plane Development Kit (DPDK) is a set of libraries and \
+               drivers for fast userspace packet processing."
 HOMEPAGE = "http://dpdk.org"
+SECTION = "libs"
 LICENSE = "BSD-3-Clause AND GPL-2.0-only AND LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://license/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
                     file://license/lgpl-2.1.txt;md5=4b54a1fd55a448865a0b32d41598759d \
@@ -40,6 +43,8 @@ do_install:append(){
     cp -rf ${S}/nxp/* ${D}/${sysconfdir}/dpdk
 }
 
+# DPDK ships versioned and unversioned .so in the main runtime package.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "dev-so"
 
 RDEPENDS:${PN} += "bash pciutils python3-core python3-pyelftools"

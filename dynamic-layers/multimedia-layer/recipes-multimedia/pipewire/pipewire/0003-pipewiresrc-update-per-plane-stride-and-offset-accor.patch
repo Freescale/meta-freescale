@@ -5,6 +5,7 @@ Subject: [PATCH] pipewiresrc: update per-plane stride and offset according to
  chunk info
 
 Upstream-Status: Pending
+Signed-off-by: Elliot Chen <elliot.chen@nxp.com>
 
 ---
  meson.build              |  2 +-

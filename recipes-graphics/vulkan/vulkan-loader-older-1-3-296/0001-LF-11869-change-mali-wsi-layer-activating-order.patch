@@ -3,7 +3,7 @@ From: Yuan Tian <yuan.tian@nxp.com>
 Date: Sat, 27 Apr 2024 06:06:54 +0800
 Subject: [PATCH] LF-11869 change mali wsi layer activating order
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 
 Signed-off-by: Yuan Tian <yuan.tian@nxp.com>
 ---

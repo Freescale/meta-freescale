@@ -9,6 +9,8 @@ SRC_URI:append:imxgpu = " \
 
 REQUIRED_DISTRO_FEATURES:remove:imxgpu = "x11"
 
+# Dispatch line consumes machine-specialized helper vars; the helpers below
+# default to "" and are overridden per i.MX GPU variant.
 PACKAGECONFIG:remove = "\
     ${PACKAGECONFIG_REMOVE_IF_2D_ONLY} \
     ${PACKAGECONFIG_REMOVE_IF_GPU}"

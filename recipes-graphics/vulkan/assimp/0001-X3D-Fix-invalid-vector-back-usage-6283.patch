@@ -6,6 +6,7 @@ Subject: [PATCH] X3D: Fix invalid vector::back usage (#6283)
 * X3D: Fix invalid vector::back usage
 
 Upstream-Status: Backport [https://github.com/assimp/assimp/commit/59bc03d931270b6354690512d0c881eec8b97678]
+Signed-off-by: Kim Kulling <kimkulling@users.noreply.github.com>
 ---
  code/AssetLib/X3D/X3DGeoHelper.cpp | 14 ++++++++++----
  1 file changed, 10 insertions(+), 4 deletions(-)

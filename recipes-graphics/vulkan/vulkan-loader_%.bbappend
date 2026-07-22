@@ -11,4 +11,6 @@ PACKAGE_ARCH:imx-nxp-bsp = "${MACHINE_SOCARCH}"
 # libvulkan.so is loaded dynamically, so put it in the main package
 SOLIBS:imx-nxp-bsp = ".so*"
 FILES_SOLIBSDEV:imx-nxp-bsp = ""
-INSANE_SKIP:${PN}:imx-nxp-bsp += "dev-so"
+# Unversioned .so lives in the main package by design (loaded dynamically).
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP:${PN}:append:imx-nxp-bsp = " dev-so"

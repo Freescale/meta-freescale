@@ -5,14 +5,15 @@ SRC_URI:append:imxgpu = " \
 "
 
 OPENGL_PKGCONFIGS:remove:imxgpu = "${OPENGL_PKGCONFIGS_REMOVE_IMXGPU}"
+# Base default specialized by the machine overrides below.
 OPENGL_PKGCONFIGS_REMOVE_IMXGPU = ""
 OPENGL_PKGCONFIGS_REMOVE_IMXGPU:imx-nxp-bsp = "glamor glx"
 OPENGL_PKGCONFIGS_REMOVE_IMXGPU:mx8-nxp-bsp = "glx"
+
+PACKAGE_ARCH:imxgpu = "${MACHINE_SOCARCH}"
 
 # links with imx-gpu libs which are pre-built for glibc
 # gcompat will address it during runtime
 LDFLAGS:append:imxgpu:libc-musl = " -Wl,--allow-shlib-undefined"
 
 RDEPENDS:${PN}:append:imxgpu:libc-musl = " gcompat"
-
-PACKAGE_ARCH:imxgpu = "${MACHINE_SOCARCH}"

@@ -1,5 +1,8 @@
-INHIBIT_DEFAULT_DEPS = "1"
+# Canonical DEPENDS for this baremetal recipe.
+# nooelint: oelint.vars.dependsappend
 DEPENDS = "gcc-arm-none-eabi-native"
+INHIBIT_DEFAULT_DEPS = "1"
+PROVIDES += "virtual/imx-oei"
 
 inherit deploy
 
@@ -16,6 +19,7 @@ OEI_CORE ?= "UNDEFINED"
 OEI_SOC ?= "UNDEFINED"
 OEI_BOARD ?= "UNDEFINED"
 OEI_DDR_CONFIG ?= ""
+OEI_DDR_CONFIG_ECC ?= ""
 OEI_DEBUG ?= "0"
 
 LDFLAGS[unexport] = "1"
@@ -27,15 +31,6 @@ EXTRA_OEMAKE = "\
 
 EXTRA_OEMAKE:append:mx95-generic-bsp = " r=${IMX_SOC_REV}"
 
-python () {
-    if 'ecc' in d.getVar('PACKAGECONFIG'):
-        ddr_conf = d.getVar('OEI_DDR_CONFIG_ECC')
-    else:
-        ddr_conf = d.getVar('OEI_DDR_CONFIG')
-    if ddr_conf:
-        d.appendVar('EXTRA_OEMAKE', ' DDR_CONFIG='+ddr_conf)
-}
-
 do_configure() {
     for oei_config in ${OEI_CONFIGS}; do
         oe_runmake clean oei=$oei_config
@@ -43,8 +38,13 @@ do_configure() {
 }
 
 do_compile() {
+    # Use the ECC DDR timing when the ecc PACKAGECONFIG is enabled.
+    ddr_config="${OEI_DDR_CONFIG}"
+    if echo " ${PACKAGECONFIG} " | grep -q " ecc "; then
+        ddr_config="${OEI_DDR_CONFIG_ECC}"
+    fi
     for oei_config in ${OEI_CONFIGS}; do
-        oe_runmake oei=$oei_config
+        oe_runmake ${ddr_config:+DDR_CONFIG=$ddr_config} oei=$oei_config
     done
 }
 
@@ -60,9 +60,9 @@ do_deploy() {
     cp -rf ${D}/firmware/* ${DEPLOYDIR}/
 }
 
+# Firmware-only package; the single custom path deliberately replaces defaults.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "/firmware"
 SYSROOT_DIRS += "/firmware"
-
-PROVIDES += "virtual/imx-oei"
 
 COMPATIBLE_MACHINE = "(mx95-generic-bsp|mx943-generic-bsp)"
