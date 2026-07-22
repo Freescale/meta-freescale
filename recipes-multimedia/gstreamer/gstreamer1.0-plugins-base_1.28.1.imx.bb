@@ -119,8 +119,8 @@ SRC_URI:append:mx93-nxp-bsp = " file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-bu
 SRC_URI:append:mx943-nxp-bsp = " file://0001-MMFMWK-9590-gstgl-1.0-disable-gir-build-for-gl-plugi.patch"
 
 GST1.0-PLUGINS-BASE_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-base.git;protocol=https"
-SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
-SRCREV = "48718c61610e3628f3f162bb8d84ae213ae8516f"
+SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+SRCREV = "500aeb1b0dc50198005bd60459a38b42c7359d1d"
 
 inherit use-imx-headers
 
