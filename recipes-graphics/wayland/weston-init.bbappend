@@ -61,14 +61,17 @@ PACKAGECONFIG[xwayland] = ",,"
 update_file() {
     sed -i -e "s,$1,$2," $3
 }
+update_file[doc] = "Replace occurrences of pattern (arg1) with text (arg2) in file (arg3)"
 
 insert_line_before() {
     sed -i -e "/$1/i $2" $3
 }
+insert_line_before[doc] = "Insert line (arg2) before lines matching pattern (arg1) in file (arg3)"
 
 insert_line_after() {
     sed -i -e "/$1/a $2" $3
 }
+insert_line_after[doc] = "Insert line (arg2) after lines matching pattern (arg1) in file (arg3)"
 
 do_install:append() {
     # Replace the template variables
@@ -107,7 +110,7 @@ do_install:append() {
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         # Add weston.log back, used by NXP for testing
-        update_file "ExecStart=/usr/bin/weston " "ExecStart=/usr/bin/weston --log=\$\{XDG_RUNTIME_DIR\}/weston.log " ${D}${systemd_system_unitdir}/weston.service
+        update_file "ExecStart=${bindir}/weston " "ExecStart=${bindir}/weston --log=\$\{XDG_RUNTIME_DIR\}/weston.log " ${D}${systemd_system_unitdir}/weston.service
 
         # FIXME: weston should be run as weston, not as root
         update_file "User=weston" "User=root" ${D}${systemd_system_unitdir}/weston.service

@@ -39,6 +39,8 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILES:${PN} += "${libdir}/nxp-afe/* \
                 /unit_tests/* \
 "
+# Prebuilt versioned .so shipped with an unversioned symlink in the main package.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "dev-so"
 
 COMPATIBLE_MACHINE = "(mx8-nxp-bsp|mx9-nxp-bsp)"

@@ -1,5 +1,12 @@
+# Shared i.MX support fragment, only ever included by qt4 bbappends.
+# nooelint: oelint.vars.outofcontext
 FILESEXTRAPATHS:prepend := "${THISDIR}/qt4:"
 
+DEPENDS:append:imxgpu2d = " virtual/kernel virtual/libgles2"
+
+# Kernel shared-workdir dependency is only needed on mx6; keep it as an
+# anonymous python guard on MACHINEOVERRIDES families.
+# nooelint: oelint.task.noanonpython
 python __anonymous () {
     families = ['mx6']
     cur_families = (d.getVar('MACHINEOVERRIDES') or '').split(':')
@@ -15,8 +22,6 @@ SRC_URI:append:imxgpu2d = " \
     file://0001-config.tests-add-DEFINES-to-compile-egl-test-with-im.patch \
     file://0002-config.tests-add-DEFINES-to-compile-egl4gles1-test-w.patch \
 "
-
-DEPENDS:append:imxgpu2d = " virtual/kernel virtual/libgles2"
 QT_GLFLAGS:imxgpu2d = "-opengl es2 -openvg"
 QT_CONFIG_FLAGS:append:imxgpu2d = " -I${STAGING_KERNEL_DIR}/include/uapi \
                                    -I${STAGING_KERNEL_DIR}/include/ \

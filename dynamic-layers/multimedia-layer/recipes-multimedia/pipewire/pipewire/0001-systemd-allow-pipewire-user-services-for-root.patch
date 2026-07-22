@@ -9,7 +9,7 @@ BT ofono service needs root permission for starting service.
 
 wireplumber[789]: 5:185m5:185mspa.bluez5: Failed to start HFP/HSP backend ofono
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 ---
  src/daemon/systemd/user/pipewire.service.in | 1 -
