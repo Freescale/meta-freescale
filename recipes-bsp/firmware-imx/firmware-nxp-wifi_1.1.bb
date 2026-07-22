@@ -7,7 +7,7 @@ DESCRIPTION = "Additional Wi-Fi firmware redistributed by NXP. Some \
 HOMEPAGE = "https://github.com/nxp-imx/imx-firmware"
 
 SECTION = "kernel"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=bc649096ad3928ec06a8713b8d787eac"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"

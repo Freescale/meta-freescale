@@ -6,7 +6,7 @@ SUMMARY = "i.MX PXP G2D library"
 DESCRIPTION = "G2D library using i.MX PXP"
 HOMEPAGE = "https://github.com/nxp-imx/imx-g2d-pxp"
 SECTION = "graphics"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=a93b654673e1bc8398ed1f30e0813359"
 
 PROVIDES += "virtual/libg2d"

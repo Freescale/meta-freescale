@@ -3,7 +3,7 @@ SUMMARY = "i.MX multimedia OpenCL converter library"
 DESCRIPTION = "NXP Multimedia opencl converter lib"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 DEPENDS = "virtual/libopencl1"
 

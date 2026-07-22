@@ -4,7 +4,7 @@ DESCRIPTION = "A userspace library implementing the ALSA compress-offload API, \
                the DSP without decoding them on the CPU."
 HOMEPAGE = "https://github.com/alsa-project/tinycompress"
 SECTION = "multimedia"
-LICENSE = "BSD-3-Clause OR LGPL-2.1-only"
+LICENSE = "LGPL-2.1-only | BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=cf9105c1a2d4405cbe04bbe3367373a0"
 DEPENDS = "alsa-lib"
 

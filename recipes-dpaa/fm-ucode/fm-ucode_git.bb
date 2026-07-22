@@ -2,7 +2,7 @@ SUMMARY = "Fman microcode"
 DESCRIPTION = "Fman microcode binary"
 HOMEPAGE = "https://github.com/NXP/qoriq-fm-ucode"
 SECTION = "fm-ucode"
-LICENSE = "LicenseRef-NXP-Binary-EULA"
+LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=12e248d404ce1ea8bed0148fcf127e69"
 
 PR = "r1"

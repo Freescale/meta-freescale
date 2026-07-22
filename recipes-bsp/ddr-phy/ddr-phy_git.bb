@@ -2,7 +2,7 @@ SUMMARY = "DDR firmware repository"
 DESCRIPTION = "DDR PHY training firmware binaries for NXP LX2160A/LX2162A SoCs"
 HOMEPAGE = "https://github.com/nxp/ddr-phy-binary"
 SECTION = "firmware"
-LICENSE = "LicenseRef-NXP-Binary-EULA"
+LICENSE = "NXP-Binary-EULA"
 LIC_FILES_CHKSUM = "file://NXP-Binary-EULA.txt;md5=89cc852481956e861228286ac7430d74"
 
 inherit deploy

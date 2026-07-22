@@ -5,7 +5,7 @@ SUMMARY = "Universal Update Utility - Binaries"
 DESCRIPTION = "Image deploy tool for i.MX chips"
 HOMEPAGE = "https://github.com/nxp-imx/mfgtools"
 
-LICENSE = "BSD-3-Clause AND LGPL-2.1-or-later"
+LICENSE = "BSD-3-Clause & LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9 \
                     file://${COMMON_LICENSE_DIR}/LGPL-2.1-or-later;md5=2a4f4fd2128ea2f65047ee63fbca9f68"
 

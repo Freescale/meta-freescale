@@ -4,7 +4,7 @@ SUMMARY = "i.MX VC8000E encoder library"
 DESCRIPTION = "Hantro VC8000E video encoder library for i.MX SoCs."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 inherit fsl-eula-unpack

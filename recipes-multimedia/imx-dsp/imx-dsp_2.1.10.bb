@@ -4,7 +4,7 @@ SUMMARY = "i.MX DSP wrapper, firmware and codec libraries"
 DESCRIPTION = "i.MX DSP Wrapper, Firmware Binary, Codec Libraries"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
 
 inherit fsl-eula-unpack autotools pkgconfig

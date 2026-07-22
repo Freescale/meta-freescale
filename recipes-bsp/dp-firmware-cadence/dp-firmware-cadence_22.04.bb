@@ -2,7 +2,7 @@ SUMMARY = "DP firmware"
 DESCRIPTION = "Cadence DisplayPort (HDP) firmware for i.MX8 SoCs."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "bsp"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d3c315c6eaa43e07d8c130dc3a04a011"
 
 inherit deploy fsl-eula-unpack

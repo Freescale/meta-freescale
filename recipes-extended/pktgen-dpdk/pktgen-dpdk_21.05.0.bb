@@ -4,7 +4,7 @@ DESCRIPTION = "Pktgen is a high-performance software traffic generator built on 
                receive test traffic at line rate for network benchmarking."
 HOMEPAGE = "https://git.dpdk.org/apps/pktgen-dpdk/"
 SECTION = "console/network"
-LICENSE = "BSD-3-Clause"
+LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0245ceedaef59ae0129500b0ce1e8a45"
 
 DEPENDS += "dpdk libpcap lua lua-native"

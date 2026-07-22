@@ -6,7 +6,7 @@ SUMMARY = "i.MX DPU G2D library"
 DESCRIPTION = "G2D library using i.MX DPU"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "graphics"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 DEPENDS = "libdrm ${LIBGAL_IMX}"

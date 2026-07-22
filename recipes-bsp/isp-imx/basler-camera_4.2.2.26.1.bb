@@ -4,7 +4,7 @@ SUMMARY = "Basler camera binary drivers"
 DESCRIPTION = "Basler camera binary drivers for the i.MX ISP."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 IMX_SRCREV_ABBREV = "dd86758"

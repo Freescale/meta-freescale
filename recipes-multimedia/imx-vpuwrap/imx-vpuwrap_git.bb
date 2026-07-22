@@ -6,7 +6,7 @@ SUMMARY = "i.MX VPU wrapper library"
 DESCRIPTION = "Freescale Multimedia VPU wrapper"
 HOMEPAGE = "https://github.com/NXP/imx-vpuwrap"
 SECTION = "multimedia"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 
 DEPENDS = "virtual/imxvpu"

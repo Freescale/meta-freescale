@@ -4,7 +4,7 @@ DESCRIPTION = "Cortex(R)-M33 firmware image that drives the Arm(R) Ethos(TM)-U \
                loading at runtime."
 HOMEPAGE = "https://github.com/nxp-imx/ethos-u-firmware"
 SECTION = "firmware"
-LICENSE = "Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only"
+LICENSE = "Apache-2.0 & GPL-2.0-only & BSD-3-Clause"
 LIC_FILES_CHKSUM = "\
     file://LICENSE.txt;md5=e3fc50a88d0a364313df4b21ef20c29e \
     file://LICENSE-GPL-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \

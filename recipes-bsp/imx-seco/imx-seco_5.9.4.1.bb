@@ -3,7 +3,7 @@
 SUMMARY = "NXP i.MX SECO firmware"
 DESCRIPTION = "Firmware for i.MX Security Controller Subsystem"
 SECTION = "base"
-LICENSE = "LicenseRef-Proprietary"
+LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=ca53281cc0caa7e320d4945a896fb837"
 
 inherit fsl-eula-unpack use-imx-security-controller-firmware deploy

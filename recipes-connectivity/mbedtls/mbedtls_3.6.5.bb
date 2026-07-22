@@ -17,7 +17,7 @@ DESCRIPTION = "mbedtls is a lean open source crypto library          \
 
 HOMEPAGE = "https://tls.mbed.org/"
 
-LICENSE = "Apache-2.0 OR GPL-2.0-or-later"
+LICENSE = "Apache-2.0 | GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=379d5819937a6c2f1ef1630d341e026d"
 
 SECTION = "libs"
