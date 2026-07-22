@@ -14,7 +14,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${PV}.tar.x
            file://0001-YOCIMX-9113-rtsp-examples-install-test-launch-and-te.patch \
            "
 
-SRC_URI[sha256sum] = "ce4e0b7dde7f17dc4f39ffb2dd3db64b0222d11d58be1c9820c20d30370d6f90"
+SRC_URI[sha256sum] = "6cd0e86af20cfb749bdc24d2f5c30f4e60a3e8d198ae4e02e754b9937bdbf832"
 
 S = "${UNPACKDIR}/${PNREAL}-${PV}"
 
