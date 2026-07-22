@@ -1,7 +1,8 @@
 # Copyright 2018-2023 NXP
 
 SUMMARY = "i.MX DSP codec wrapper and library extension"
-DESCRIPTION = "i.MX DSP Codec Wrapper and Lib owned by NXP"
+DESCRIPTION = "i.MX DSP codec wrapper and library extension providing additional \
+               audio codecs for the i.MX DSP framework."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
 LICENSE = "Proprietary"

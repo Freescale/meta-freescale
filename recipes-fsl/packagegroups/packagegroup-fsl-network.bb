@@ -1,8 +1,9 @@
 # Copyright (C) 2020 Jens Rehsack <sno@netbsd.org>
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-DESCRIPTION = "Package group used by FSL Community to add the packages which provide (QorIQ) networking support."
 SUMMARY = "FSL Community package group - networking"
+DESCRIPTION = "Package group used by FSL Community to add the packages which provide (QorIQ) networking support."
+SECTION = "console/network"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

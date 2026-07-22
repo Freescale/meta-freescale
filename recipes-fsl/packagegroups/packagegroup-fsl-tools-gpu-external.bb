@@ -1,10 +1,11 @@
 # Copyright (C) 2014, 2016 Freescale Semiconductor
 # Copyright (C) 2015, 2016 O.S. Systems Software LTDA.
 # Released under the MIT license (see COPYING.MIT for the terms)
+SUMMARY = "FSL Community Package group - tools/gpu/external"
 DESCRIPTION = "Package group used by FSL Community to provide graphic packages used \
                to test the several hardware accelerated graphics APIs including packages not \
                provided by Freescale."
-SUMMARY = "FSL Community Package group - tools/gpu/external"
+SECTION = "graphics"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
