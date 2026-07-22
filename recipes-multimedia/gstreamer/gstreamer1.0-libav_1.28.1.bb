@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
                     "
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-${PV}.tar.xz"
-SRC_URI[sha256sum] = "6e50a6222d509c52b19143f9a7bd3581e22c745d0c4bc27ddb07e1229bcc11b8"
+SRC_URI[sha256sum] = "bfa91aaca38d0fd8addcdd559e35b7541e3f32a5f410194ec4ba18040defee9b"
 
 S = "${UNPACKDIR}/gst-libav-${PV}"
 

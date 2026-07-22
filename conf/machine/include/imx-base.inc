@@ -529,19 +529,19 @@ MACHINE_GSTREAMER_1_0_PLUGIN:mx8ulp-nxp-bsp ?= "imx-gst1.0-plugin"
 MACHINE_GSTREAMER_1_0_PLUGIN:mx93-nxp-bsp   ?= "imx-gst1.0-plugin"
 
 # GStreamer forked recipes
-PREFERRED_VERSION_gstreamer1.0:imx-nxp-bsp              ??= "1.26.6.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad:imx-nxp-bsp  ??= "1.26.6.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-base:imx-nxp-bsp ??= "1.26.6.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good:imx-nxp-bsp ??= "1.26.6.imx"
+PREFERRED_VERSION_gstreamer1.0:imx-nxp-bsp              ??= "1.28.1.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad:imx-nxp-bsp  ??= "1.28.1.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-base:imx-nxp-bsp ??= "1.28.1.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good:imx-nxp-bsp ??= "1.28.1.imx"
 
 
 # GStreamer copied recipes
-PREFERRED_VERSION_gst-devtools:imx-nxp-bsp              ??= "1.26.6"
-PREFERRED_VERSION_gst-examples:imx-nxp-bsp              ??= "1.26.6"
-PREFERRED_VERSION_gstreamer1.0-libav:imx-nxp-bsp        ??= "1.26.6"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly:imx-nxp-bsp ??= "1.26.6"
-PREFERRED_VERSION_gstreamer1.0-python:imx-nxp-bsp       ??= "1.26.6"
-PREFERRED_VERSION_gstreamer1.0-rtsp-server:imx-nxp-bsp  ??= "1.26.6"
+PREFERRED_VERSION_gst-devtools:imx-nxp-bsp              ??= "1.28.1"
+PREFERRED_VERSION_gst-examples:imx-nxp-bsp              ??= "1.28.1"
+PREFERRED_VERSION_gstreamer1.0-libav:imx-nxp-bsp        ??= "1.28.1"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:imx-nxp-bsp ??= "1.28.1"
+PREFERRED_VERSION_gstreamer1.0-python:imx-nxp-bsp       ??= "1.28.1"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:imx-nxp-bsp  ??= "1.28.1"
 PREFERRED_VERSION_gstreamer1.0-vaapi:imx-nxp-bsp        ??= "1.26.6"
 
 # Use libcamera fork for certain SOCs
