@@ -1,5 +1,8 @@
 SUMMARY = "Frame Manager Configuration tool"
+DESCRIPTION = "Tool that compiles the DPAA Frame Manager configuration and policy \
+               XML files for NXP QorIQ SoCs."
 HOMEPAGE = "https://github.com/nxp-qoriq/fmc"
+SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=a504ab5a8ff235e67c7301214749346c"
 
