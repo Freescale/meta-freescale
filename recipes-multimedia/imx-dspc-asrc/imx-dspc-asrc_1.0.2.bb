@@ -1,6 +1,6 @@
 # Copyright 2019, 2025 NXP
 SUMMARY = "i.MX asynchronous sample rate converter"
-DESCRIPTION = "NXP Asynchronous Sample Rate Converter"
+DESCRIPTION = "NXP asynchronous sample rate converter (ASRC) library for the i.MX DSP-based audio processing pipeline."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
 LICENSE = "LicenseRef-Proprietary"

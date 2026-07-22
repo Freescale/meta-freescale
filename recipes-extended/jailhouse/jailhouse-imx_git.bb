@@ -1,4 +1,5 @@
 SUMMARY = "Jailhouse, i.MX fork"
+DESCRIPTION = "Jailhouse partitioning hypervisor (NXP i.MX fork), providing the kernel module and user-space management tools."
 HOMEPAGE = "https://github.com/siemens/jailhouse"
 SECTION = "jailhouse"
 LICENSE = "GPL-2.0-only"
