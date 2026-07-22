@@ -10,9 +10,12 @@ DESCRIPTION = "Linux kernel based on LTS kernel used by FSL Community BSP in ord
                and will not become part of a LTS version, or because it is not applicable for \
                upstreaming in any form."
 HOMEPAGE = "https://github.com/Freescale/linux-fslc"
+SECTION = "kernel"
 
 require linux-imx.inc
 
+# deliberately points at the linux-fslc fork instead of the linux-imx.inc nxp-imx base
+# nooelint: oelint.var.override
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition

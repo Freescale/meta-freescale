@@ -2,14 +2,15 @@
 require recipes-security/optee-imx/optee-fslc.inc
 
 SUMMARY = "NXP i.MX Security Middleware Library"
+DESCRIPTION = "NXP i.MX Security Middleware (SMW) provides a generic API abstracting the cryptographic and secure key management operations of the i.MX secure subsystems."
 HOMEPAGE = "https://github.com/nxp-imx/imx-smw"
-DESCRIPTION = "NXP i.MX Security Middleware Library"
 SECTION = "base"
-LICENSE = "BSD-3-Clause"
 LICENSE = "Apache-2.0 AND BSD-3-Clause AND Zlib"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ff20c8e51b28869d9cdec70a818d163f \
                     file://${PSA_ARCH_TESTS_SRC_PATH}/LICENSE.md;md5=2a944942e1496af1886903d274dedb13"
 
+# full dependency set defined by this recipe
+# nooelint: oelint.vars.dependsappend
 DEPENDS = "\
     json-c \
     optee-client \
@@ -74,16 +75,21 @@ EXTRA_OECMAKE = "\
 OECMAKE_TARGET_COMPILE += "build_tests"
 OECMAKE_TARGET_INSTALL += "install_tests"
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 PACKAGES =+ "${PN}-tests"
 
 FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/*"
 
+# cross-build leaves buildpaths in -dbg
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg = "buildpaths"
 
-FILES:${PN}-tests = "${bindir}/* ${datadir}/${BPN}/*"
+# dedicated -tests sub-package payload
+FILES:${PN}-tests += "${bindir}/* ${datadir}/${BPN}/*"
 RDEPENDS:${PN}-tests = "cmake"
+# cross-build leaves buildpaths in -tests
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-tests = "buildpaths"
-
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

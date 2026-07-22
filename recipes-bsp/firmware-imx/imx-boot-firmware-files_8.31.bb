@@ -19,6 +19,7 @@ deploy_for_mx8() {
     install -m 0644 ${S}/firmware/hdmi/cadence/hdmirxfw.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/dpfw.bin ${DEPLOYDIR}
 }
+deploy_for_mx8[doc] = "Deploy the Cadence HDMI firmware blobs for i.MX8"
 
 deploy_for_mx8m() {
     # Synopsys DDR
@@ -30,6 +31,7 @@ deploy_for_mx8m() {
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_dp_imx8m.bin ${DEPLOYDIR}
     install -m 0644 ${S}/firmware/hdmi/cadence/signed_hdmi_imx8m.bin ${DEPLOYDIR}
 }
+deploy_for_mx8m[doc] = "Deploy the Synopsys DDR and Cadence DP/HDMI firmware blobs for i.MX8M"
 
 deploy_for_mx9() {
     # Synopsys DDR
@@ -37,7 +39,10 @@ deploy_for_mx9() {
         install -m 0644 ${S}/firmware/ddr/synopsys/${ddr_firmware} ${DEPLOYDIR}
     done
 }
+deploy_for_mx9[doc] = "Deploy the Synopsys DDR firmware blobs for i.MX9"
 
+# injects the deploy_for_* helpers as do_deploy vardeps
+# nooelint: oelint.task.noanonpython
 python () {
     # Manually add the required functions as dependencies otherwise they won't be included in the
     # final run script.

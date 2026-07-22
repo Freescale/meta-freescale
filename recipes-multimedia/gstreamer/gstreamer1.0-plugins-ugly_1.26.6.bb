@@ -1,15 +1,18 @@
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
 
-SUMMARY = "'Ugly GStreamer plugins"
+SUMMARY = "'Ugly' GStreamer plugins"
+DESCRIPTION = "A set of good-quality GStreamer 1.0 plugins that might pose distribution problems, covering codecs and elements such as A52, CDIO, DVD read, MPEG-2 and x264."
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-ugly/-/issues"
-
-LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
-                    "
+SECTION = "multimedia"
 
 LICENSE = "GPL-2.0-or-later AND LGPL-2.1-or-later"
 LICENSE_FLAGS = "commercial"
+LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+                    "
+
+DEPENDS += "gstreamer1.0-plugins-base"
 
 SRC_URI = "\
     https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${PV}.tar.xz \
@@ -18,8 +21,6 @@ SRC_URI = "\
 SRC_URI[sha256sum] = "95032eee4580bb9826c008cbce5a2c3a78b980abb270c96a19b645f77255c491"
 
 S = "${UNPACKDIR}/gst-plugins-ugly-${PV}"
-
-DEPENDS += "gstreamer1.0-plugins-base"
 
 GST_PLUGIN_SET_HAS_EXAMPLES = "0"
 
@@ -40,5 +41,9 @@ EXTRA_OEMESON += "\
     -Dsidplay=disabled \
 "
 
+# ${PN}-amrnb per-plugin sub-package
+# nooelint: oelint.vars.pkgspecific.FILES oelint.vars.specific
 FILES:${PN}-amrnb += "${datadir}/gstreamer-1.0/presets/GstAmrnbEnc.prs"
+# ${PN}-x264 per-plugin sub-package
+# nooelint: oelint.vars.pkgspecific.FILES oelint.vars.specific
 FILES:${PN}-x264 += "${datadir}/gstreamer-1.0/presets/GstX264Enc.prs"

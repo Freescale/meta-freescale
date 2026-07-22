@@ -1,23 +1,17 @@
 # Copyright (C) 2018 O.S. Systems Software LTDA.
-DESCRIPTION = "GStreamer 1.0 plugins for i.MX platforms"
+SUMMARY = "GStreamer 1.0 plugins for i.MX hardware acceleration"
+DESCRIPTION = "GStreamer 1.0 plugins exposing the i.MX hardware video, audio and 2D blitter acceleration blocks (VPU, IPU, PxP, G2D and the uniaudio codecs) as GStreamer elements."
 HOMEPAGE = "https://github.com/Freescale/gstreamer-imx"
+SECTION = "multimedia"
 LICENSE = "LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
-SECTION = "multimedia"
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base libimxdmabuffer"
-# add the audioparsers and the videoparsersbad plugins as RDEPENDS ; audioparsers
-# for the uniaudio decoder, videoparsersbad for the VPU video decoder
-# the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
-# built (it is not a compile-time dependency however, hence RDEPENDS and not DEPENDS)
-RDEPENDS:gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-bad gstreamer1.0-plugins-good"
-RDEPENDS:gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
-RDEPENDS:gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "ce4f86e60f12c56574f727f3317fa8aa30a11387"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH};protocol=https"
+SRCREV = "ce4f86e60f12c56574f727f3317fa8aa30a11387"
 
 inherit pkgconfig meson use-imx-headers
 
@@ -63,5 +57,13 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
 # the following line is required to produce one package for each plugin
 PACKAGES_DYNAMIC = "^${PN}-.*"
+
+# add the audioparsers and the videoparsersbad plugins as RDEPENDS ; audioparsers
+# for the uniaudio decoder, videoparsersbad for the VPU video decoder
+# the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
+# built (it is not a compile-time dependency however, hence RDEPENDS and not DEPENDS)
+RDEPENDS:gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-bad gstreamer1.0-plugins-good"
+RDEPENDS:gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
+RDEPENDS:gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 COMPATIBLE_MACHINE = "(mx6dl-nxp-bsp|mx6q-nxp-bsp|mx6sl-nxp-bsp|mx6sx-nxp-bsp|mx6ul-nxp-bsp|mx6ull-nxp-bsp|mx7d-nxp-bsp|mx8-nxp-bsp)"

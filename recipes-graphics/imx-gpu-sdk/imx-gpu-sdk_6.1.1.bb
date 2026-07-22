@@ -5,10 +5,9 @@ SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://License.md;md5=9d58a2573275ce8c35d79576835dbeb8"
 
-DEPENDS_BACKEND = \
-    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' libxdg-shell wayland', \
-        bb.utils.contains('DISTRO_FEATURES',     'x11',               ' xrandr', \
-                                                                             '', d), d)}"
+DEPENDS_BACKEND = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' libxdg-shell wayland', \
+                      bb.utils.contains('DISTRO_FEATURES', 'x11', ' xrandr', \
+                                        '', d), d)}"
 DEPENDS_MX8 = ""
 DEPENDS_MX8:mx8-nxp-bsp = "\
     glslang-native \
@@ -22,6 +21,8 @@ DEPENDS_MX8:mx8-nxp-bsp = "\
 DEPENDS_MX8:mx8mm-nxp-bsp = "\
     opencv \
 "
+# trailing ${DEPENDS_BACKEND}/${DEPENDS_MX8} expansions are unsortable
+# nooelint: oelint.vars.dependsordered
 DEPENDS = "\
     assimp \
     cmake-native \
@@ -46,15 +47,22 @@ DEPENDS:append:imxgpu3d = " virtual/libgles2"
 
 require imx-gpu-sdk-src.inc
 
-WINDOW_SYSTEM = \
-    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'Wayland_XDG', \
-        bb.utils.contains('DISTRO_FEATURES',     'x11',         'X11', \
-                                                                 'FB', d), d)}"
+WINDOW_SYSTEM = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'Wayland_XDG', \
+                    bb.utils.contains('DISTRO_FEATURES', 'x11', 'X11', \
+                                      'FB', d), d)}"
 
 FEATURES = "ConsoleHost,EarlyAccess,EGL,GoogleUnitTest,Lib_NlohmannJson,OpenVG,Test_RequireUserInputToExit,WindowHost"
+# FEATURES is a comma-separated list; the leading comma is the separator, no space
+# nooelint: oelint.vars.inconspaces
 FEATURES:append:imxgpu = ",HW_GPU_VIVANTE"
+# FEATURES is a comma-separated list; the leading comma is the separator, no space
+# nooelint: oelint.vars.inconspaces
 FEATURES:append:imxgpu2d = ",G2D"
+# FEATURES is a comma-separated list; the leading comma is the separator, no space
+# nooelint: oelint.vars.inconspaces
 FEATURES:append:imxgpu3d = ",OpenGLES2"
+# FEATURES_SOC expands to a leading-comma token; no space
+# nooelint: oelint.vars.inconspaces
 FEATURES:append = "${FEATURES_SOC}"
 
 FEATURES_SOC = ""
@@ -104,7 +112,9 @@ do_install () {
 }
 
 FILES:${PN} += "/opt/${PN}"
-FILES:${PN}-dbg += "/opt/${PN}/*/*/.debug /usr/src/debug"
+FILES:${PN}-dbg += "/opt/${PN}/*/*/.debug"
+# prebuilt/relocated SDK sample binaries under /opt are already stripped and carry rpaths
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "already-stripped rpaths"
 
 # Unfortunately recipes with an empty main package, like header-only libraries,
@@ -132,6 +142,8 @@ RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8mm-nxp-bsp = ""
 RDEPENDS_VULKAN_LOADER = ""
 RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp = "vulkan-loader vulkan-validation-layers"
 RDEPENDS_VULKAN_LOADER:mx8mm-nxp-bsp = ""
+# entries are ${...} expansions, unsortable
+# nooelint: oelint.vars.dependsordered
 RDEPENDS:${PN} += "\
     ${RDEPENDS_EMPTY_MAIN_PACKAGE} \
     ${RDEPENDS_EMPTY_MAIN_PACKAGE_MX8} \

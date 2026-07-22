@@ -2,10 +2,13 @@
 # Released under the MIT License (see COPYING.MIT for the terms)
 
 SUMMARY = "Universal Update Utility - Binaries"
-DESCRIPTION = "Image deploy tool for i.MX chips"
+DESCRIPTION = "Prebuilt Universal Update Utility (uuu) binaries for Linux, macOS and Windows, used to deploy images to i.MX chips as part of the manufacturing-tool bundle."
 HOMEPAGE = "https://github.com/nxp-imx/mfgtools"
+SECTION = "console/utils"
 
 LICENSE = "BSD-3-Clause AND LGPL-2.1-or-later"
+# prebuilt binaries ship no source tree; use common-licenses
+# nooelint: oelint.var.licenseremotefile
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9 \
                     file://${COMMON_LICENSE_DIR}/LGPL-2.1-or-later;md5=2a4f4fd2128ea2f65047ee63fbca9f68"
 
@@ -31,6 +34,10 @@ do_install() {
 }
 
 # HACK! We are not aiming to run those binaries during the build but copy then for MFGTOOL bundle.
+# prebuilt cross-platform binaries are only bundled, never run on target
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "arch file-rdeps"
+# package ships only the prebuilt uuu binaries under ${libdir}/uuu
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${libdir}/uuu"
 SYSROOT_DIRS = "${libdir}/uuu"
