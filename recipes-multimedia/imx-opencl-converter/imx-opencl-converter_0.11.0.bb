@@ -1,6 +1,6 @@
 # Copyright 2023-2025 NXP
 SUMMARY = "i.MX multimedia OpenCL converter library"
-DESCRIPTION = "NXP Multimedia opencl converter lib"
+DESCRIPTION = "NXP i.MX multimedia OpenCL converter library that offloads pixel-format conversion to the GPU."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
 LICENSE = "Proprietary"
