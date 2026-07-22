@@ -2,7 +2,7 @@ SUMMARY = "Ethernet config files"
 DESCRIPTION = "Ethernet Configuration Files"
 HOMEPAGE = "https://github.com/nxp-qoriq/eth-config"
 SECTION = "eth-config"
-LICENSE = "BSD-3-Clause & GPL-2.0-or-later"
+LICENSE = "BSD-3-Clause AND GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=47716bd5b656aa5e298a132a64d2d1e4"
 
 PR = "r2"
