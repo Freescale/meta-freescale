@@ -3,6 +3,7 @@
 # Copyright 2018 (C) O.S. Systems Software LTDA.
 
 SUMMARY = "Nand boot write source"
+DESCRIPTION = "Tool to write bootloader images to NAND flash using the i.MX Boot Control Block (BCB) format."
 HOMEPAGE = "https://github.com/NXPmicro/imx-kobs"
 SECTION = "base"
 LICENSE = "GPL-2.0-only"
