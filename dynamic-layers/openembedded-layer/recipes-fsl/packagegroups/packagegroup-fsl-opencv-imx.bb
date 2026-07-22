@@ -1,4 +1,7 @@
-DESCRIPTION = "Add packages for opencv i.MX build"
+SUMMARY = "OpenCV applications and samples for i.MX"
+DESCRIPTION = "Packages providing the OpenCV computer-vision library on i.MX, \
+               including example applications, samples and the Python 3 bindings."
+SECTION = "multimedia"
 
 inherit packagegroup
 
