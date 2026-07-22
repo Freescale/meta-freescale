@@ -1,4 +1,5 @@
-DESCRIPTION = "qe microcode binary"
+SUMMARY = "QorIQ QE microcode"
+DESCRIPTION = "QUICC Engine (QE) microcode binary for NXP QorIQ SoCs"
 HOMEPAGE = "https://github.com/NXP/qoriq-qe-ucode"
 SECTION = "qe-ucode"
 LICENSE = "LicenseRef-NXP-Binary-EULA"
@@ -20,9 +21,10 @@ do_deploy () {
 }
 addtask deploy before do_build after do_install
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/boot/*"
 
 COMPATIBLE_MACHINE = "(qoriq)"
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 

@@ -1,3 +1,4 @@
+SUMMARY = "QorIQ DPAA Management Complex config utilities"
 DESCRIPTION = "The Management Complex (MC) is a key component of DPAA"
 HOMEPAGE = "https://github.com/nxp-qoriq/mc-utils"
 SECTION = "mc-utils"
@@ -38,7 +39,7 @@ do_deploy () {
 }
 addtask deploy after do_install
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/boot"
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"

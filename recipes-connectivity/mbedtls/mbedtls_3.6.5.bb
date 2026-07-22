@@ -16,11 +16,12 @@ DESCRIPTION = "mbedtls is a lean open source crypto library          \
 "
 
 HOMEPAGE = "https://tls.mbed.org/"
+SECTION = "libs"
 
 LICENSE = "Apache-2.0 OR GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=379d5819937a6c2f1ef1630d341e026d"
 
-SECTION = "libs"
+PROVIDES += "polarssl"
 
 SRC_URI = "gitsm://github.com/Mbed-TLS/mbedtls.git;protocol=https;branch=mbedtls-3.6;tag=v${PV} \
            file://run-ptest \
@@ -44,11 +45,9 @@ PACKAGECONFIG[tests] = "-DENABLE_TESTING=ON,-DENABLE_TESTING=OFF"
 # For now the only way to enable PSA is to explicitly pass a -D via CFLAGS
 CFLAGS:append = "${@bb.utils.contains('PACKAGECONFIG', 'psa', ' -DMBEDTLS_USE_PSA_CRYPTO', '', d)}"
 
-PROVIDES += "polarssl"
-RPROVIDES:${PN} = "polarssl"
-
 PACKAGES =+ "${PN}-programs"
-FILES:${PN}-programs = "${bindir}/"
+FILES:${PN}-programs += "${bindir}/"
+RPROVIDES:${PN} = "polarssl"
 
 ALTERNATIVE:${PN}-programs = "${@bb.utils.contains('PACKAGECONFIG', 'programs', 'hello', '', d)}"
 ALTERNATIVE_LINK_NAME[hello] = "${bindir}/hello"
@@ -72,7 +71,7 @@ sysroot_stage_all:append() {
 do_install_ptest () {
     install -d ${D}${PTEST_PATH}/tests
     install -d ${D}${PTEST_PATH}/framework
-    cp -f ${B}/tests/test_suite_* ${D}${PTEST_PATH}/tests/
+    install -m 0755 ${B}/tests/test_suite_* ${D}${PTEST_PATH}/tests/
     find ${D}${PTEST_PATH}/tests/ -type f -name "*.c" -delete
-    cp -fR ${S}/framework/data_files ${D}${PTEST_PATH}/framework/
+    cp -R ${S}/framework/data_files ${D}${PTEST_PATH}/framework/
 }

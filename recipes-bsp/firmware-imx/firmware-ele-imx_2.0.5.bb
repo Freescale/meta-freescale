@@ -29,6 +29,8 @@ do_deploy () {
 }
 addtask deploy after do_install before do_build
 
+# Package the deployed ELE firmware blob explicitly (filesoverride).
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware"
 
 RREPLACES:${PN} = "firmware-sentinel"
