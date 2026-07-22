@@ -17,4 +17,4 @@ part u-boot --source rawcopy --sourceparams="file=imx-boot.tagged" --ondisk mmcb
 part /boot --source bootimg-partition --ondisk mmcblk --fstype=vfat --label boot --active --align 8192 --fixed-size 256
 part / --source rootfs --ondisk mmcblk --fstype=ext4 --label root --align 8192
 
-bootloader --ptable msdos
+bootloader --ptable ${IMX_BOOTLOADER_PTABLE}

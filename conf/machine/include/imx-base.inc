@@ -682,6 +682,8 @@ SOC_DEFAULT_WKS_FILE:mx8-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
 SOC_DEFAULT_WKS_FILE:mx9-generic-bsp ?= "imx-imx-boot-bootpart.wks.in"
 
 WKS_FILE ?= "${SOC_DEFAULT_WKS_FILE}"
+IMX_BOOTLOADER_PTABLE             ?= "msdos"
+IMX_BOOTLOADER_PTABLE:use-nxp-bsp ?= "gpt"
 
 SERIAL_CONSOLES = "115200;ttymxc0"
 SERIAL_CONSOLES:mxs-generic-bsp = "115200;ttyAMA0"
