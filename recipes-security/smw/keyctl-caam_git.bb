@@ -7,12 +7,12 @@ SECTION = "base"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=8636bd68fc00cc6a3809b7b58b45f982"
 
+DEPENDS = "openssl"
+
 SRCBRANCH = "lf-6.18.2_1.0.0"
 SRC_URI = "git://github.com/nxp-imx/keyctl_caam.git;protocol=https;branch=${SRCBRANCH}"
 
 SRCREV = "71cb18f17d766145217a5517748e37e250b055bf"
-
-DEPENDS = "openssl"
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
