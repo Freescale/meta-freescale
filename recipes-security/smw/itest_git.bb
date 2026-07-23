@@ -1,6 +1,6 @@
 # Copyright 2026 NXP
 SUMMARY = "NXP i.MX Itest"
-DESCRIPTION = "NXP i.MX Itest"
+DESCRIPTION = "NXP i.MX Itest, an integration test suite exercising the i.MX secure enclave (EdgeLock Enclave and SECO) interfaces."
 HOMEPAGE = "https://github.com/nxp-imx/itest"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
