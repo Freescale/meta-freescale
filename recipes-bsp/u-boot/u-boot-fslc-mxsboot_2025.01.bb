@@ -6,7 +6,6 @@ SECTION = "bootloader"
 inherit python3native
 
 DEPENDS += "\
-    bison-native \
     dtc \
     gnutls \
     openssl \
