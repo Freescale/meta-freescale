@@ -21,4 +21,6 @@ do_install() {
     cp -r sof* ${D}${nonarch_base_libdir}/firmware/imx/
 }
 
+# Package the installed SOF firmware/topology tree explicitly (filesoverride).
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware/imx"

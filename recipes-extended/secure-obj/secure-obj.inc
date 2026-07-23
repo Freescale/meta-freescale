@@ -1,10 +1,11 @@
-DESCRIPTION = "Secure Object"
+DESCRIPTION = "OP-TEE trusted application, key management library and OpenSSL engine for storing and using cryptographic keys inside the QorIQ ARM TrustZone secure world"
 HOMEPAGE = "https://github.com/nxp-qoriq/secure_obj"
 LICENSE = "BSD-3-Clause"
 
+# Canonical DEPENDS definition for the secure-obj recipes; oelint's
+# dependsappend rule wants only appends in an included file.
+# nooelint: oelint.vars.dependsappend
 DEPENDS = "openssl optee-client-qoriq optee-os-qoriq"
-RDEPENDS:${PN} = "bash libcrypto libssl"
-
 DEPENDS += "python3-pycryptodomex-native"
 
 inherit python3native
@@ -23,6 +24,10 @@ EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}"'
 ALLOW_EMPTY:${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 PARALLEL_MAKE = ""
+# Build links against toolchain libs without the distro LDFLAGS QA can track.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "ldflags"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
 DEBUG_BUILD = "1"
+
+RDEPENDS:${PN} = "bash libcrypto libssl"

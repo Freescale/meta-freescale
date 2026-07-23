@@ -163,15 +163,15 @@ PACKAGES_DYNAMIC = "${PN}-vpu-* ${PN}-sdma-* ${PN}-easrc-* ${PN}-xcvr-* ${PN}-xu
 # files it makes no sense.
 PACKAGES = "${PN} ${PN}-epdc ${PN}-hdmi ${PN}-vpu-amphion ${PN}-vpu-coda980 ${PN}-vpu-wave511 ${PN}-vpu-wave"
 
-FILES:${PN}-epdc = "${nonarch_base_libdir}/firmware/imx/epdc/"
-FILES:${PN}-hdmi = "\
+FILES:${PN}-epdc += "${nonarch_base_libdir}/firmware/imx/epdc/"
+FILES:${PN}-hdmi += "\
     ${nonarch_base_libdir}/firmware/hdmitxfw.bin \
     ${nonarch_base_libdir}/firmware/hdmirxfw.bin \
     ${nonarch_base_libdir}/firmware/dpfw.bin \
 "
-FILES:${PN}-vpu-amphion = "${nonarch_base_libdir}/firmware/amphion/vpu/*"
-FILES:${PN}-vpu-coda980 = "${nonarch_base_libdir}/firmware/cnm/coda980_enc_fw.bin"
-FILES:${PN}-vpu-wave511 = "${nonarch_base_libdir}/firmware/cnm/wave511_dec_fw.bin"
-FILES:${PN}-vpu-wave = "${nonarch_base_libdir}/firmware/wave633c_codec_fw.bin"
+FILES:${PN}-vpu-amphion += "${nonarch_base_libdir}/firmware/amphion/vpu/*"
+FILES:${PN}-vpu-coda980 += "${nonarch_base_libdir}/firmware/cnm/coda980_enc_fw.bin"
+FILES:${PN}-vpu-wave511 += "${nonarch_base_libdir}/firmware/cnm/wave511_dec_fw.bin"
+FILES:${PN}-vpu-wave += "${nonarch_base_libdir}/firmware/wave633c_codec_fw.bin"
 
 COMPATIBLE_MACHINE = "(imx-generic-bsp)"

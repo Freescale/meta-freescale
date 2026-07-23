@@ -1,11 +1,12 @@
 # Copyright (C) 2016 Freescale Semiconductor
 # Copyright (C) 2017-2019,2024-2025 NXP
 SUMMARY = "A Daemon wait for NXP mfgtools host's command"
+DESCRIPTION = "Update Utility Client daemon that waits for commands from the NXP mfgtools host during manufacturing programming."
 HOMEPAGE = "https://github.com/nxp-imx/imx-uuc"
 SECTION = "base"
-DEPENDS = "dosfstools-native virtual/kernel"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
+DEPENDS = "dosfstools-native virtual/kernel"
 
 PR = "r1"
 PV = "0.5.1+git${SRCPV}"
