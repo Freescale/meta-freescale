@@ -6,15 +6,13 @@ SECTION = "console/network"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=fbe4957c430eed6cc20521d4eb429fae"
 
+DEPENDS = "odp"
+
 SRC_URI = "git://github.com/nxp-qoriq/ofp;protocol=https;nobranch=1"
 
 SRCREV = "fe66f4659f7d356f7aa73a8fb32fcf67c6cf1108"
 
 inherit autotools-brokensep pkgconfig
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
-DEPENDS = "odp"
 
 EXTRA_OECONF = "\
     --prefix=/usr \
@@ -22,6 +20,8 @@ EXTRA_OECONF = "\
     --host=${SIMPLE_TARGET_SYS} \
     --with-odp=${STAGING_DIR_TARGET} \
 "
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 do_configure () {
     export SIMPLE_TARGET_SYS="$(echo ${TARGET_SYS} | sed s:${TARGET_VENDOR}::g)"

@@ -10,9 +10,9 @@ SRC_URI = "\
     file://mesa-etnaviv.sh \
 "
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 S = "${UNPACKDIR}"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"

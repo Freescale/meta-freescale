@@ -1,5 +1,7 @@
-DESCRIPTION = "Boot format utility for booting from eSDHC/eSPI"
+SUMMARY = "Boot format utility for eSDHC/eSPI"
+DESCRIPTION = "Utility to format the boot partition for booting NXP QorIQ boards from eSDHC or eSPI."
 HOMEPAGE = "https://github.com/nxp-qoriq-yocto-sdk/boot-format"
+SECTION = "bootloaders"
 LICENSE = "GPL-2.0-only"
 PR = "r6"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
