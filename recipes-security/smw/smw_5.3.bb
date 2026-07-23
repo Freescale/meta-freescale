@@ -2,8 +2,8 @@
 require recipes-security/optee-imx/optee-fslc.inc
 
 SUMMARY = "NXP i.MX Security Middleware Library"
+DESCRIPTION = "NXP i.MX Security Middleware (SMW) library providing a unified API to the i.MX platform hardware security subsystems (e.g. EdgeLock Enclave and SECO) for key management and cryptographic operations."
 HOMEPAGE = "https://github.com/nxp-imx/imx-smw"
-DESCRIPTION = "NXP i.MX Security Middleware Library"
 SECTION = "base"
 LICENSE = "BSD-3-Clause"
 LICENSE = "Apache-2.0 AND BSD-3-Clause AND Zlib"
