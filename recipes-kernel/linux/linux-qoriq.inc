@@ -2,6 +2,7 @@ inherit kernel qoriq_build_64bit_kernel siteinfo
 inherit fsl-kernel-localversion kernel-yocto
 
 SUMMARY = "Linux Kernel for NXP QorIQ platforms"
+DESCRIPTION = "Linux kernel for NXP QorIQ and Layerscape processors, based on the NXP lf (Layerscape factory) kernel tree."
 SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
 
