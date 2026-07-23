@@ -2,7 +2,7 @@
 # Released under the MIT License (see COPYING.MIT for the terms)
 
 SUMMARY = "Universal Update Utility - Binaries"
-DESCRIPTION = "Image deploy tool for i.MX chips"
+DESCRIPTION = "Prebuilt Universal Update Utility (uuu) binaries used to download and deploy bootloader and OS images to NXP i.MX chips over USB."
 HOMEPAGE = "https://github.com/nxp-imx/mfgtools"
 
 LICENSE = "BSD-3-Clause AND LGPL-2.1-or-later"
