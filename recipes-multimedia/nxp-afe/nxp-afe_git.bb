@@ -1,4 +1,4 @@
-# Copyright 2025 NXP
+# Copyright 2025-2026 NXP
 
 SUMMARY = "NXP Audio Front End (AFE)"
 DESCRIPTION = "NXP Audio Front End (AFE) for incorporating Voice Assistants"
@@ -11,7 +11,7 @@ DEPENDS += "alsa-lib"
 
 PV = "1.0+git"
 
-SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
+SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
 NXPAFE_SRC ?= "git://github.com/nxp-imx/nxp-afe.git;protocol=https"
 
 SRC_URI = "${NXPAFE_SRC};branch=${SRCBRANCH}"

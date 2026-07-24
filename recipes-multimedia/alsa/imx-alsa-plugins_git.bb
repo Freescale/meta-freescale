@@ -18,8 +18,8 @@ PV = "1.0.26+${SRCPV}"
 
 SRC_URI = "${IMXALSA_SRC};branch=${SRCBRANCH}"
 IMXALSA_SRC ?= "git://github.com/nxp-imx/imx-alsa-plugins.git;protocol=https"
-SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
-SRCREV = "18eb79b6cf13fb988de7d4eef5b22eb60f8e2533"
+SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+SRCREV = "ec87e3d701047980e5e723811413ce47b9f4012e"
 
 inherit autotools pkgconfig use-imx-headers
 
