@@ -34,10 +34,10 @@ do_deploy () {
 }
 addtask deploy before do_build after do_install
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/boot"
 ALLOW_EMPTY:${PN} = "1"
 
 COMPATIBLE_MACHINE = "(e500mc|e5500|e5500-64b|e6500|e6500-64b|fsl-lsch2)"
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 

@@ -2,9 +2,6 @@ require recipes-bsp/u-boot/u-boot.inc
 
 DESCRIPTION = "U-Boot provided by Freescale with focus on QorIQ boards"
 HOMEPAGE = "https://github.com/nxp-qoriq/u-boot"
-PROVIDES += "u-boot"
-
-inherit fsl-u-boot-localversion
 
 LICENSE = "BSD-2-Clause AND BSD-3-Clause AND GPL-2.0-only AND LGPL-2.0-only AND LGPL-2.1-only"
 LIC_FILES_CHKSUM = "\
@@ -15,22 +12,26 @@ LIC_FILES_CHKSUM = "\
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
+INHIBIT_DEFAULT_DEPS = "1"
+DEPENDS = "bc-native bison-native gnutls-native libgcc python3-native swig-native virtual/cross-cc"
+DEPENDS:append:qoriq-arm64 = " dtc-native"
+DEPENDS:append:qoriq-arm = " dtc-native"
+DEPENDS:append:qoriq-ppc = " boot-format-native"
+
+PROVIDES += "u-boot"
+
 PV:append = "+${SRCPV}"
+PV:append = "+fslgit"
 
 UBOOT_BRANCH ?= "lf_v2025.04"
 UBOOT_SRC ?= "git://github.com/nxp-qoriq/u-boot.git;protocol=https"
 SRC_URI = "${UBOOT_SRC};branch=${UBOOT_BRANCH}"
 SRCREV = "4ddbad60eff308a5b356fb9ab8734ac382ddd692"
 
-B = "${UNPACKDIR}/build"
-PV:append = "+fslgit"
-LOCALVERSION = "+fsl"
+inherit fsl-u-boot-localversion
 
-INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "bc-native bison-native gnutls-native libgcc python3-native swig-native virtual/cross-cc"
-DEPENDS:append:qoriq-arm64 = " dtc-native"
-DEPENDS:append:qoriq-arm = " dtc-native"
-DEPENDS:append:qoriq-ppc = " boot-format-native"
+B = "${UNPACKDIR}/build"
+LOCALVERSION = "+fsl"
 
 python () {
     if d.getVar("TCMODE") == "external-fsl":
