@@ -10,12 +10,12 @@ LIC_FILES_CHKSUM = "file://playback/player/gtk/gtk-play.c;beginline=1;endline=20
 
 DEPENDS = "glib-2.0 glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gtk+3 json-glib"
 
-SRC_URI = "git://gitlab.freedesktop.org/gstreamer/gstreamer.git;protocol=https;branch=1.26 \
+SRC_URI = "git://gitlab.freedesktop.org/gstreamer/gstreamer.git;protocol=https;branch=1.28;tag=${PV} \
            file://0001-Make-player-examples-installable.patch \
            file://gst-player.desktop \
            "
 
-SRCREV = "6cbdcfaca66dd52cdc4670d6f5122c68b9161170"
+SRCREV = "dcb37e20147e3b59344bab1e1cbb57e908cc6b92"
 
 S = "${UNPACKDIR}/${BP}/subprojects/gst-examples"
 

@@ -1,24 +1,27 @@
 # Copyright (C) 2012-2018 O.S. Systems Software LTDA.
 # Copyright (C) 2012-2016 Freescale Semiconductor
-# Copyright (C) 2017-2023 NXP
+# Copyright (C) 2017-2023,2026 NXP
 # Released under the MIT license (see COPYING.MIT for the terms)
 SUMMARY = "i.MX multimedia parser libraries"
 DESCRIPTION = "Freescale Multimedia parser libs"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "LicenseRef-Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
+LICENSE = "BSD-3-Clause"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=6f862c6751ebcaa393467694c7b0c69a"
 
 # For backwards compatibility
 PROVIDES += "libfslparser"
 
-SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-IMX_SRCREV_ABBREV = "65603f3"
-S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
+PV = "4.11.0+git"
 
-SRC_URI[sha256sum] = "03079bb0fa989dc50fadb66a0fcc7cf65423833c3def04085603d4b66e8f8c70"
+SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+IMXPARSER_SRC ?= "git://github.com/nxp-imx/imx-parser;protocol=https"
+SRC_URI = "${IMXPARSER_SRC};branch=${SRCBRANCH}"
+SRCREV = "302063af37c2edfabc9cec96516aefa9ed38bc2e"
 
-inherit fsl-eula-unpack autotools pkgconfig
+CFLAGS += "-Wno-error=pointer-to-int-cast -Wno-error=int-to-pointer-cast"
+
+inherit pkgconfig meson
 
 # Choose between 32-bit and 64-bit binaries and between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', \

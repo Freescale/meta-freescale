@@ -8,7 +8,7 @@ LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c34deae4e395ca07e725ab0076a5f740"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${PV}.tar.xz"
-SRC_URI[sha256sum] = "a4b5bfe039b7267fe8cdd48d106ab20cf88cda600f800d84f3d07724079edf1f"
+SRC_URI[sha256sum] = "d47cea95adb95ba10443ed7812c7c5fa0807aef43b98cd1c6d8fb9f9a86f7085"
 
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base python3-pygobject"
 DEPENDS:append = " gstreamer1.0-plugins-bad"
