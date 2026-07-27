@@ -7,13 +7,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 DEPENDS = "iproute2"
 
-SRC_URI = "git://github.com/nxp-qoriq/ceetm;protocol=https;nobranch=1 \
-           file://0001-Makefile-update-CFLAGS.patch \
-           file://0001-Makefile-Fix-build-error-with-gcc15-YOCIMX-8305.patch \
-"
+SRC_URI = "git://github.com/nxp-qoriq/ceetm;protocol=https;nobranch=1"
 SRCREV = "46b3565a48ca20f90ad601cef8250cdd35f18b22"
 
-export IPROUTE2_DIR = "${STAGING_DIR_TARGET}"
+export IPROUTE2_DIR = "${STAGING_DIR_TARGET}/usr/include"
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 export CROSS_COMPILE = "${WRAP_TARGET_PREFIX}"
 
