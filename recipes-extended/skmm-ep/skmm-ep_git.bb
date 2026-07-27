@@ -7,8 +7,6 @@ LIC_FILES_CHKSUM = "file://Makefile;endline=30;md5=39e58bedc879163c9338596e52df5
 
 DEPENDS = "libedit openssl virtual/kernel"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
 SRC_URI = "git://github.com/nxp-qoriq-yocto-sdk/skmm-ep;protocol=https;nobranch=1 \
            file://add-two-missing-header-files.patch \
 "
@@ -28,3 +26,4 @@ do_install () {
 }
 
 COMPATIBLE_MACHINE = "(p4080ds|t4240qds|c293pcie)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
