@@ -9,7 +9,7 @@ It acomodates to [1].
 
 [1] https://git.yoctoproject.org/poky/commit/?id=04eac1f2b67eac5f892a9e0f8fcfe54849923af5
 
-Upstream-Status: Inappropriate [See above]
+Upstream-Status: Inappropriate [oe-specific]
 
 Signed-off-by: Daiane Angolini <daiane.angolini@foundries.io>
 ---
