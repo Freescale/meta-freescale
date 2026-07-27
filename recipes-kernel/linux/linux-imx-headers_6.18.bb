@@ -8,6 +8,9 @@ HOMEPAGE = "https://github.com/nxp-imx/linux-imx"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
+INHIBIT_DEFAULT_DEPS = "1"
+DEPENDS += "bison-native rsync-native unifdef-native"
+
 SRC_URI = "${LINUX_IMX_SRC} \
            file://0001-ipu-uapi-Do-not-redefine-standard-integer-types.patch \
 "
@@ -78,9 +81,6 @@ do_install() {
 # package, therefore causing the -dev package also to be skipped effectively not
 # populating it into SDK
 ALLOW_EMPTY:${PN} = "1"
-
-INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS += "bison-native rsync-native unifdef-native"
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
