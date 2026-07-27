@@ -4,6 +4,7 @@ DESCRIPTION = "QEMU is a hosted virtual machine monitor: it emulates the \
                of different hardware and device models for the machine, enabling it to run \
                a variety of guest operating systems"
 HOMEPAGE = "http://qemu.org"
+SECTION = "devel"
 LICENSE = "GPL-2.0-only AND LGPL-2.1-only"
 
 RDEPENDS:${PN}-ptest = "bash make"

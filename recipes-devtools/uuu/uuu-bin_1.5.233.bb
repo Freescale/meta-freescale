@@ -4,6 +4,7 @@
 SUMMARY = "Universal Update Utility - Binaries"
 DESCRIPTION = "Prebuilt Universal Update Utility (uuu) binaries used to download and deploy bootloader and OS images to NXP i.MX chips over USB."
 HOMEPAGE = "https://github.com/nxp-imx/mfgtools"
+SECTION = "console/utils"
 
 LICENSE = "BSD-3-Clause AND LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9 \

@@ -1,6 +1,5 @@
 SUMMARY = "OpenGL Image Library"
-DESCRIPTION = "OpenGL Image (GLI) is a header only C++ \
-image library for graphics software."
+DESCRIPTION = "OpenGL Image (GLI) is a header only C++ image library for graphics software."
 HOMEPAGE = "http://gli.g-truc.net"
 BUGTRACKER = "https://github.com/g-truc/gli/issues"
 
