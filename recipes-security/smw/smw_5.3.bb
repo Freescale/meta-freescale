@@ -74,6 +74,8 @@ EXTRA_OECMAKE = "\
 OECMAKE_TARGET_COMPILE += "build_tests"
 OECMAKE_TARGET_INSTALL += "install_tests"
 
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 PACKAGES =+ "${PN}-tests"
 
 FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/*"
@@ -83,7 +85,5 @@ INSANE_SKIP:${PN}-dbg = "buildpaths"
 FILES:${PN}-tests = "${bindir}/* ${datadir}/${BPN}/*"
 RDEPENDS:${PN}-tests = "cmake"
 INSANE_SKIP:${PN}-tests = "buildpaths"
-
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

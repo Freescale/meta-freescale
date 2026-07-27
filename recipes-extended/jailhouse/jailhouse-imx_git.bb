@@ -14,27 +14,25 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
                     file://driver/jailhouse.h;beginline=9;endline=36;md5=2825581c1666c44a17955dc574cfbfb3 \
 "
 
-PROVIDES = "jailhouse"
-RPROVIDES:${PN} += "jailhouse"
-
-SRCBRANCH = "lf-6.12.20_2.0.0"
-SRCREV = "399d65450e9a377b4aaff4b0627619174e1c8c46"
-
-PV = "2023.03+git${SRCPV}"
-
-IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
-SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
-           file://arm-arm64-Makefile-Remove-march-option-from-Makefile.patch \
-           file://0001-YOCIMX-9281-1-Fix-gcc15-errors.patch \
-           file://0002-YOCIMX-9281-2-hypervisor-arm64-fix-strh-usage.patch \
-           "
-
 DEPENDS = "\
     make-native \
     python3-mako-native \
     python3-mako \
     dtc-native \
 "
+
+PROVIDES = "jailhouse"
+
+PV = "2023.03+git${SRCPV}"
+
+SRCBRANCH = "lf-6.12.20_2.0.0"
+IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
+SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
+           file://arm-arm64-Makefile-Remove-march-option-from-Makefile.patch \
+           file://0001-YOCIMX-9281-1-Fix-gcc15-errors.patch \
+           file://0002-YOCIMX-9281-2-hypervisor-arm64-fix-strh-usage.patch \
+           "
+SRCREV = "399d65450e9a377b4aaff4b0627619174e1c8c46"
 
 inherit module bash-completion deploy setuptools3
 
@@ -110,6 +108,8 @@ RDEPENDS:pyjailhouse = "\
     python3-fcntl \
     python3-shell \
 "
+
+RPROVIDES:${PN} += "jailhouse"
 
 INSANE_SKIP:${PN} = "ldflags buildpaths"
 INSANE_SKIP:${PN}-dbg = "buildpaths"

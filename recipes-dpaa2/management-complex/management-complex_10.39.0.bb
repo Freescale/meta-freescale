@@ -33,10 +33,10 @@ do_deploy () {
 }
 addtask deploy before do_build after do_install
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/boot"
 
 INHIBIT_PACKAGE_STRIP = "1"
 
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
-PACKAGE_ARCH = "${MACHINE_ARCH}"
