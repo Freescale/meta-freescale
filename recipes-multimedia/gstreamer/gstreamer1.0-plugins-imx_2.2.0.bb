@@ -2,23 +2,16 @@
 SUMMARY = "GStreamer 1.0 plugins for i.MX platforms"
 DESCRIPTION = "GStreamer 1.0 plugins providing hardware-accelerated video and audio elements (VPU decoders/encoders, G2D/IPU-based blitters and uniaudio) for NXP i.MX platforms."
 HOMEPAGE = "https://github.com/Freescale/gstreamer-imx"
+SECTION = "multimedia"
 LICENSE = "LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=55ca817ccb7d5b5b66355690e9abc605"
-SECTION = "multimedia"
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base libimxdmabuffer"
-# add the audioparsers and the videoparsersbad plugins as RDEPENDS ; audioparsers
-# for the uniaudio decoder, videoparsersbad for the VPU video decoder
-# the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
-# built (it is not a compile-time dependency however, hence RDEPENDS and not DEPENDS)
-RDEPENDS:gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-bad gstreamer1.0-plugins-good"
-RDEPENDS:gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
-RDEPENDS:gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 PV .= "+git${SRCPV}"
 
 SRCBRANCH ?= "master"
-SRCREV = "ce4f86e60f12c56574f727f3317fa8aa30a11387"
 SRC_URI = "git://github.com/Freescale/gstreamer-imx.git;branch=${SRCBRANCH};protocol=https"
+SRCREV = "ce4f86e60f12c56574f727f3317fa8aa30a11387"
 
 inherit pkgconfig meson use-imx-headers
 
@@ -59,6 +52,14 @@ PACKAGECONFIG[imx2dvideosink] = "-Dimx2d-videosink=true,-Dimx2d-videosink=false,
 PACKAGECONFIG[v4l2-mxc-source-sink] = "-Dv4l2-mxc-source-sink=true,-Dv4l2-mxc-source-sink=false,"
 PACKAGECONFIG[uniaudiodec] = "-Duniaudiodec=enabled,-Duniaudiodec=disabled,imx-codec"
 PACKAGECONFIG[mp3encoder] = "-Dmp3encoder=enabled,-Dmp3encoder=disabled,imx-codec"
+
+# add the audioparsers and the videoparsersbad plugins as RDEPENDS ; audioparsers
+# for the uniaudio decoder, videoparsersbad for the VPU video decoder
+# the gstreamer1.0-plugins-imx RDEPENDS is necessary to ensure the -good recipe is
+# built (it is not a compile-time dependency however, hence RDEPENDS and not DEPENDS)
+RDEPENDS:gstreamer1.0-plugins-imx = "gstreamer1.0-plugins-bad gstreamer1.0-plugins-good"
+RDEPENDS:gstreamer1.0-plugins-imx-imxaudio = "gstreamer1.0-plugins-good-audioparsers"
+RDEPENDS:gstreamer1.0-plugins-imx-imxvpu = "gstreamer1.0-plugins-bad-videoparsersbad"
 
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc
 
