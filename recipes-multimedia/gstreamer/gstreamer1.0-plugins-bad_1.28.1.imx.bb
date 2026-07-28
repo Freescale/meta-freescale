@@ -185,6 +185,10 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plug
                   "
 SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 
+# The cuda gir patch carries no Signed-off-by. It is an NXP-internal change
+# that arrived here without one, and a sign-off is a certification only its
+# author can make, so there is nothing here for us to correct.
+# nooelint: oelint.file.patchsignedoff
 SRC_URI:append:mx93-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
 SRC_URI:append:mx943-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
 
