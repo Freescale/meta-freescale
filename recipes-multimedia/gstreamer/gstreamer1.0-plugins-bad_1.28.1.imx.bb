@@ -204,14 +204,13 @@ PACKAGECONFIG_REMOVE ?= "\
 PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
 PACKAGECONFIG:remove:mx93-nxp-bsp = "gl"
 PACKAGECONFIG:remove:mx943-nxp-bsp = "gl"
-PACKAGECONFIG:append:mx8-nxp-bsp = " kms tinycompress"
+PACKAGECONFIG:append:mx8-nxp-bsp = " kms"
 
 PACKAGECONFIG:append = " ${PACKAGECONFIG_G2D}"
 PACKAGECONFIG_G2D ??= ""
 PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
-PACKAGECONFIG[tinycompress] = "-Dtinycompress=enabled,-Dtinycompress=disabled,tinycompress"
 
 EXTRA_OEMESON += "\
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
