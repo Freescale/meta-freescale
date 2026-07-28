@@ -9,6 +9,7 @@ DESCRIPTION = "\
     and pin control via a client RPC API based on ARM's System Control and \
     Management Interface (SCMI)."
 HOMEPAGE = "https://github.com/nxp-imx/imx-sm"
+SECTION = "firmware"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=f2a70813bc08547f509361c08b718861"
 

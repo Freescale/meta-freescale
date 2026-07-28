@@ -7,7 +7,7 @@ Subject: [PATCH 2/2] MGS-6823 [#nxp] Add support of
 Mali vulkan driver doesn't support VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR. It caused unwanted blending effect in many vulkan cases.
 Add support of this feature to solve the problem.
 
-Upstream-Status: Inappropriate [i.MX-specific]
+Upstream-Status: Inappropriate [embedded specific]
 Signed-off-by: Yuan Tian <yuan.tian@nxp.com>
 Signed-off-by: Jiyu Yang <jiyu.yang@nxp.com>
 ---
