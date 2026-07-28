@@ -17,7 +17,7 @@ Index: gst-examples/playback/player/gst-play/meson.build
 ===================================================================
 --- gst-examples.orig/playback/player/gst-play/meson.build
 +++ gst-examples/playback/player/gst-play/meson.build
-@@ -2,5 +2,6 @@ executable('gst-play',
+@@ -2,5 +2,6 @@
      ['gst-play.c',
       'gst-play-kb.c',
       'gst-play-kb.h'],
@@ -28,10 +28,10 @@ Index: gst-examples/playback/player/gtk/meson.build
 ===================================================================
 --- gst-examples.orig/playback/player/gtk/meson.build
 +++ gst-examples/playback/player/gtk/meson.build
-@@ -20,5 +20,6 @@ if gtk_dep.found()
+@@ -21,5 +21,6 @@
         'gtk-video-renderer.h',
         'gtk-video-renderer.c'],
        c_args :  extra_c_args,
 +      install: true,
-       dependencies : [gst_dep, gsttag_dep, gstplay_dep, gtk_dep, x11_dep])
+       dependencies : [gst_dep, gsttag_dep, gstplay_dep, gtk_dep, x11_dep, gmodule_dep])
  endif
