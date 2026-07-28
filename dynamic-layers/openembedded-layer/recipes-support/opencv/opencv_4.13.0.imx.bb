@@ -259,6 +259,13 @@ SRC_URI:prepend = "\
     git://github.com/opencv/opencv_contrib.git;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/contrib;name=contrib;branch=4.x;protocol=https;tag=${IMX_BASE_VERSION} "
 
 # i.MX patches
+#
+# 0107 and 0108 carry no Signed-off-by. They came in from upstream review
+# rather than from this layer, and a sign-off is a certification only their
+# author can make, so there is nothing here for us to correct. Note this
+# covers the whole block: a patch added below without a sign-off will not be
+# reported either.
+# nooelint: oelint.file.patchsignedoff
 SRC_URI += "\
     file://0101-MGS-6470-ccc-Modify-host-ptr-alignment-size-in-UMAT.patch \
     file://0102-MGS-6470-ccc-Add-configuration-parameter-to-force-en.patch \

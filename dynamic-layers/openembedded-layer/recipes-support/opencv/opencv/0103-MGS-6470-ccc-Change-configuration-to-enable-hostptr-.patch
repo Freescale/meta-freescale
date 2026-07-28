@@ -4,7 +4,7 @@ Date: Thu, 9 Dec 2021 15:25:42 +0800
 Subject: [PATCH 3/4] MGS-6470 [#ccc] Change configuration to enable hostptr in
  OpenCL by default.
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 Signed-off-by: Eric Guo <eric.guo@nxp.com>
 ---
  modules/core/src/ocl.cpp | 2 +-
