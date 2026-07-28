@@ -7,7 +7,7 @@ Subject: [PATCH] MMFMWK-9590 gstcuda: disable gir build for cuda plugin
 This is a workaround to only disable cuda gir build to avoid totally
 disable bad library gir build. mesa-rvgpu-emu patch break cuda gir build
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 ---
  gst-libs/gst/cuda/meson.build | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
