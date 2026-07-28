@@ -34,12 +34,12 @@ DEPENDS_IMX_OPENCL_CONVERTER:mx6-nxp-bsp = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx7-nxp-bsp = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx8mm-nxp-bsp = ""
 
-PV = "4.10.3+git${SRCPV}"
+PV = "4.11.0+git${SRCPV}"
 
 SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
 IMXGST_SRC ?= "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https"
-SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
-SRCREV = "0565fc515612908a353e8378e24f97de17cc56a6"
+SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+SRCREV = "e0b7f80ac98c866e9396aff8cd93221b65ba8667"
 
 inherit meson pkgconfig use-imx-headers
 
@@ -52,6 +52,8 @@ PLATFORM:mx7-nxp-bsp = "MX7D"
 PLATFORM:mx7ulp-nxp-bsp = "MX7ULP"
 PLATFORM:mx8-nxp-bsp = "MX8"
 PLATFORM:mx9-nxp-bsp = "MX9"
+
+CFLAGS:append = " -Wno-maybe-uninitialized -Wno-unused-but-set-variable"
 
 # Todo add a mechanism to map possible build targets
 EXTRA_OEMESON = "-Dplatform=${PLATFORM} \
@@ -82,7 +84,7 @@ FILES:${PN}-libgstfsl += "${libdir}/libgstfsl-1.0${SOLIBS}"
 
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
-RDEPENDS:${PN} += "${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux imx-parser"
+RDEPENDS:${PN} += "${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux imx-parser imx-mp4-parser"
 RDEPENDS:${PN}:append:mx8qm-nxp-bsp = " imx-dsp"
 RDEPENDS:${PN}:append:mx8qxp-nxp-bsp = " imx-dsp"
 RDEPENDS:${PN}:append:mx8dx-nxp-bsp = " imx-dsp"

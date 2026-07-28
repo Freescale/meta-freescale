@@ -189,8 +189,8 @@ SRC_URI:append:mx93-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-buil
 SRC_URI:append:mx943-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
 
 GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.10.03_2512_L6.18.2"
-SRCREV = "81b6888efe936153b88c32b22a12d60bf9395054"
+SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+SRCREV = "ae93b57a6a238604c305ca79e25d6248b5bab5d6"
 
 inherit use-imx-headers
 
