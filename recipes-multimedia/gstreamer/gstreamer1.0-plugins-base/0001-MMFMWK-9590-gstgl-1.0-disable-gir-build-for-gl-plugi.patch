@@ -8,7 +8,7 @@ This is a workaround to only display gl gir build to avoid totally
 disable base library gir build. mesa-rvgpu-emu patch break gl gir
 build
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 ---
  gst-libs/gst/gl/meson.build | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
