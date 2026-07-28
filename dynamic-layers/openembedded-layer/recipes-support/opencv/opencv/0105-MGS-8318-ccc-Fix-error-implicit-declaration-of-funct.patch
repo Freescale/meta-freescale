@@ -10,7 +10,7 @@ This feature requires at least OpenCL 2.0 or higher. By default, the C++ C langu
 
 is C++ C 1.2. Therefore, specify OpenCL version to 3.0 in the build-options.
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
 ---
  modules/video/src/dis_flow.cpp | 2 +-

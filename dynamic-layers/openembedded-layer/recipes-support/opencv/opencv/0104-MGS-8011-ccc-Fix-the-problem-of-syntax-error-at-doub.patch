@@ -10,7 +10,7 @@ disabled the related ocl function in opencv_test_imgproc to avoid the following 
 
 error: syntax error at 'double4'
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
 ---
  modules/imgproc/src/imgwarp.cpp | 4 ++++

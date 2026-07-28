@@ -5,7 +5,7 @@ Subject: [PATCH 1/4] MGS-6470 [#ccc] Modify host ptr alignment size in UMAT
 
 change CV_OPENCL_ALIGNMENT_MEM_USE_HOST_PTR from 4 to 64
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 Signed-off-by: Eric Guo <eric.guo@nxp.com>
 ---
  modules/core/src/ocl.cpp | 2 +-
