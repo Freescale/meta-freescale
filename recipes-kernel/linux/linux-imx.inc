@@ -60,5 +60,6 @@ python kernel_devicetree_32bit_compatibility_update() {
         bb.warn("Updating KERNEL_DEVICETREE, removing sub-folders for older kernel. Use -D for more details. Set KERNEL_DEVICETREE_32BIT_COMPATIBILITY_UPDATE = \"0\" to disable.")
         d.setVar('KERNEL_DEVICETREE', output)
 }
+kernel_devicetree_32bit_compatibility_update[doc] = "Strip device tree sub-folders from KERNEL_DEVICETREE for older 32-bit kernels that keep the dtb files flat"
 addhandler kernel_devicetree_32bit_compatibility_update
 kernel_devicetree_32bit_compatibility_update[eventmask] = "bb.event.RecipeParsed"
