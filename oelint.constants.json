@@ -165,6 +165,7 @@
     "replacements": {
         "distros": [
             "imx-nxp-bsp",
+            "poky-agl",
             "use-mainline-bsp",
             "use-nxp-bsp"
         ],
