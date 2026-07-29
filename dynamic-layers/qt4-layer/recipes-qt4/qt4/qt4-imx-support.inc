@@ -1,5 +1,4 @@
 # Shared i.MX support fragment, only ever included by qt4 bbappends.
-# nooelint: oelint.vars.outofcontext
 FILESEXTRAPATHS:prepend := "${THISDIR}/qt4:"
 
 DEPENDS:append:imxgpu2d = " virtual/kernel virtual/libgles2"
