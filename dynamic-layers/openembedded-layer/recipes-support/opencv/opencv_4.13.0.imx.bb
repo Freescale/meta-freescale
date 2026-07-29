@@ -308,7 +308,7 @@ do_install:append() {
     install -d ${D}${datadir}/opencv4/samples/data
     cp -r ${S}/samples/data/* ${D}${datadir}/opencv4/samples/data
     install -d ${D}${datadir}/opencv4/samples/bin/
-    cp -f bin/example_* ${D}${datadir}/opencv4/samples/bin/
+    install -m 0755 bin/example_* ${D}${datadir}/opencv4/samples/bin/
     if ${@bb.utils.contains('PACKAGECONFIG', 'tests-imx', 'true', 'false', d)}; then
         cp -r share/opencv4/testdata/cv/face/* ${D}${datadir}/opencv4/testdata/cv/face/
     fi
