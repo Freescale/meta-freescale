@@ -45,6 +45,7 @@ python fsl_vivante_kernel_driver_handler () {
         e.data.appendVar('RREPLACES:${KERNEL_PACKAGE_NAME}-base', ' ${MLPREFIX}kernel-module-imx-gpu-viv')
         e.data.appendVar('RCONFLICTS:${KERNEL_PACKAGE_NAME}-base', ' ${MLPREFIX}kernel-module-imx-gpu-viv')
 }
+fsl_vivante_kernel_driver_handler[doc] = "Let the kernel base package provide kernel-module-imx-gpu-viv when the Vivante driver is built into the kernel instead of as a module"
 
 addhandler fsl_vivante_kernel_driver_handler
 fsl_vivante_kernel_driver_handler[eventmask] = "bb.event.RecipePreFinalise"
