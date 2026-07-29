@@ -146,6 +146,7 @@ make_qemu_wrapper() {
                         GTK_THEME=Adwaita
         done
 }
+make_qemu_wrapper[doc] = "Wrap the installed qemu-system-* binaries so they find the gdk-pixbuf loaders, fontconfig and GTK theme at runtime"
 
 # Disable kvm/virgl/mesa on targets that do not support it
 PACKAGECONFIG:remove:darwin = "kvm virglrenderer glx gtk+"

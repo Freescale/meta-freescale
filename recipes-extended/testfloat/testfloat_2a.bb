@@ -29,6 +29,7 @@ do_unpack2(){
         echo -e "\nERROR: command dos2unix or fromdos not found\n" && return 1
     fi
 }
+do_unpack2[doc] = "Move the SoftFloat sources into ${S} and convert the shipped DOS line endings"
 addtask do_unpack2 after do_unpack before do_patch
 
 do_compile(){
