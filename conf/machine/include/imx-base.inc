@@ -448,7 +448,6 @@ MACHINE_FIRMWARE:append:mx8mq-generic-bsp    = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave"
-MACHINE_FIRMWARE:append:imx-mainline-bsp     = " linux-firmware-imx-sdma-imx6q linux-firmware-imx-sdma-imx7d firmware-imx-vpu-imx6q firmware-imx-vpu-imx6d"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
