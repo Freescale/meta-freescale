@@ -15,24 +15,22 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
 "
 
 DEPENDS = "\
-    make-native \
-    python3-mako-native \
-    python3-mako \
     dtc-native \
+    make-native \
+    python3-mako \
+    python3-mako-native \
 "
 
 PROVIDES = "jailhouse"
 
 PV = "2023.03+git${SRCPV}"
 
-SRCBRANCH = "lf-6.12.20_2.0.0"
+SRCBRANCH = "lf-6.18.20_2.0.0"
 IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
 SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
            file://arm-arm64-Makefile-Remove-march-option-from-Makefile.patch \
-           file://0001-YOCIMX-9281-1-Fix-gcc15-errors.patch \
-           file://0002-YOCIMX-9281-2-hypervisor-arm64-fix-strh-usage.patch \
            "
-SRCREV = "399d65450e9a377b4aaff4b0627619174e1c8c46"
+SRCREV = "8d6d397f7f88f4bd0d9f99933a13163266d09099"
 
 inherit module bash-completion deploy setuptools3
 
@@ -88,7 +86,7 @@ do_install:append() {
     install ${B}/inmates/tools/${JH_ARCH}/linux-loader.bin ${D}${INMATES_DIR}/tools/${JH_ARCH}
 }
 
-PACKAGE_BEFORE_PN = "pyjailhouse"
+PACKAGE_BEFORE_PN += "pyjailhouse"
 
 FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
 # Remove libdir/* appended by setuptools3-base.bbclass for module split to work correctly

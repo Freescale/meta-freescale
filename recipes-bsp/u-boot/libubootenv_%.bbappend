@@ -38,6 +38,7 @@ def fixup_uboot_config_dependency(d):
 python fixup_uboot_config_dependency_handler() {
     fixup_uboot_config_dependency(d)
 }
+fixup_uboot_config_dependency_handler[doc] = "Borrow UBOOT_MACHINE and UBOOT_CONFIG from IMX_DEFAULT_BOOTLOADER so libubootenv passes the uboot-config sanity check"
 
 fixup_uboot_config_dependency_handler[eventmask] = "bb.event.RecipePreFinalise"
 addhandler fixup_uboot_config_dependency_handler

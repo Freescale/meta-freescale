@@ -17,6 +17,7 @@ IMAGE_CMD:uboot-mxsboot-sdcard() {
     ln -sf ${IMAGE_NAME}.uboot-mxsboot-sdcard \
            ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.uboot-mxsboot-sdcard
 }
+IMAGE_CMD:uboot-mxsboot-sdcard[doc] = "Wrap U-Boot in an mxs bootstream for SD card boot on the i.MX23 and i.MX28 families"
 
 # U-Boot mxsboot generation for NAND
 do_image_uboot_mxsboot_nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
@@ -28,6 +29,7 @@ IMAGE_CMD:uboot-mxsboot-nand() {
     ln -sf ${IMAGE_NAME}.uboot-mxsboot-nand \
            ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.uboot-mxsboot-nand
 }
+IMAGE_CMD:uboot-mxsboot-nand[doc] = "Wrap U-Boot in an mxs bootstream for NAND boot on the i.MX23 and i.MX28 families"
 
 # In case we are building for i.MX23 or i.MX28 we need to have the
 # image stream built before the wic generation

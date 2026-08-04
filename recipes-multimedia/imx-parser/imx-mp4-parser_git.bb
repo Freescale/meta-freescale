@@ -29,6 +29,7 @@ python __set_insane_skip() {
     for p in d.getVar('PACKAGES').split():
         d.setVar("INSANE_SKIP:%s" % p, "ldflags dev-so textrel buildpaths")
 }
+__set_insane_skip[doc] = "Skip QA checks that cannot be satisfied by the prebuilt parser binaries"
 
 do_package_qa[prefuncs] += "__set_insane_skip"
 
