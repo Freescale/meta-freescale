@@ -9,6 +9,7 @@ DESCRIPTION = "Linux Kernel provided by NXP as the part of release distribution.
                It includes support for many NXP Proprietary IPs (GPU, VPU, IPU). \
                Latest stable Kernel patchlevel is applied and maintained by Community."
 HOMEPAGE = "https://github.com/Freescale/linux-fslc"
+SECTION = "kernel"
 
 ###############################################################################
 # This recipe (and corresponding kernel repository and branch) receives updates

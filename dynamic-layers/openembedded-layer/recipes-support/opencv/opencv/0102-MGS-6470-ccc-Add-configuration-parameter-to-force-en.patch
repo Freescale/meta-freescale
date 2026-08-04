@@ -6,7 +6,7 @@ Subject: [PATCH 2/4] MGS-6470 [#ccc] Add configuration parameter to force
 
 USAGE: `set OPENCV_OPENCL_ALIGNMENT_MEM_ALLOC_HOST_PTR=true`
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 Signed-off-by: Eric Guo <eric.guo@nxp.com>
 ---
  modules/core/src/ocl.cpp | 4 +++-

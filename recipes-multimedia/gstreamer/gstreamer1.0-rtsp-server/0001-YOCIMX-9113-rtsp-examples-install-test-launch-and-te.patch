@@ -7,7 +7,7 @@ Subject: [PATCH] YOCIMX-9113 rtsp examples: install test-launch and test-uri
 gstreamer community has no plan to install these binary as test tool
 https://discourse.gstreamer.org/t/gst-rtsp-server-examples-are-not-installed-by-default/4806
 
-Upstream-Status: Inappropriate [i.MX specific]
+Upstream-Status: Inappropriate [embedded specific]
 
 Signed-off-by: Haihua Hu <jared.hu@nxp.com>
 ---

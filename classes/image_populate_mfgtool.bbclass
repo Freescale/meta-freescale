@@ -102,6 +102,7 @@ python do_populate_mfgtool() {
     # Generate MFGTOOL bundle.
     bb.build.exec_func('generate_mfgtool_bundle', d)
 }
+do_populate_mfgtool[doc] = "Fetch the scripts listed in MFGTOOLCONFIG and generate the manufacturing tool bundle from them"
 
 generate_mfgtool_bundle() {
     bbnote "Processing uuu files ..."
@@ -137,3 +138,4 @@ generate_mfgtool_bundle() {
     ln -fs mfgtool-bundle-${PN}-${MACHINE}.tar.gz \
           ${DEPLOY_DIR_IMAGE}/mfgtool-bundle-${PN}.tar.gz
 }
+generate_mfgtool_bundle[doc] = "Expand the .uuu.in templates for the machine and deploy the resulting uuu scripts, uuu binaries and extra files"

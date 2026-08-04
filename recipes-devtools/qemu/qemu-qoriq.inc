@@ -66,7 +66,7 @@ do_install_ptest() {
     cp -rL ${B}/tests ${D}${PTEST_PATH}
     find ${D}${PTEST_PATH}/tests -type f -name "*.[Sshcod]" | xargs -i rm -rf {}
 
-    cp ${S}/tests/Makefile.include ${D}${PTEST_PATH}/tests
+    install -m 0644 ${S}/tests/Makefile.include ${D}${PTEST_PATH}/tests
     # Don't check the file genreated by configure
     sed -i -e '/wildcard config-host.mak/d' \
            -e '$ {/endif/d}' ${D}${PTEST_PATH}/tests/Makefile.include
@@ -146,6 +146,7 @@ make_qemu_wrapper() {
                         GTK_THEME=Adwaita
         done
 }
+make_qemu_wrapper[doc] = "Wrap the installed qemu-system-* binaries so they find the gdk-pixbuf loaders, fontconfig and GTK theme at runtime"
 
 # Disable kvm/virgl/mesa on targets that do not support it
 PACKAGECONFIG:remove:darwin = "kvm virglrenderer glx gtk+"

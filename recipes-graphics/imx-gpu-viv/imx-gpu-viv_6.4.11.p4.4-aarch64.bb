@@ -18,7 +18,7 @@ do_install:prepend() {
 do_install:append() {
     if [ "${IS_MX8}" = "1" ]; then
         if [ ! -z "${PACKAGES_VULKAN}" ]; then
-            mkdir -p ${D}${datadir}/vulkan/icd.d
+            install -d ${D}${datadir}/vulkan/icd.d
             mv ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json ${D}${datadir}/vulkan/icd.d/verisilicon_icd.json
         fi
     fi

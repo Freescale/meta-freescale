@@ -144,6 +144,7 @@ compile_mx8m() {
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}               ${BOOT_STAGING}/u-boot.bin
 
 }
+compile_mx8m[doc] = "Stage the DDR, HDMI/DP, SPL, ATF and U-Boot binaries for the i.MX 8M boot container"
 
 compile_mx8() {
     bbnote 8QM boot binary build
@@ -156,6 +157,7 @@ compile_mx8() {
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
 }
+compile_mx8[doc] = "Stage the SCFW, ATF, SECO and U-Boot binaries for the i.MX 8QM boot container"
 
 compile_mx8x() {
     bbnote 8QX boot binary build
@@ -168,6 +170,7 @@ compile_mx8x() {
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
 }
+compile_mx8x[doc] = "Stage the SECO, SCFW, ATF and U-Boot binaries for the i.MX 8QX boot container"
 
 compile_mx8ulp() {
     bbnote 8ULP boot binary build
@@ -180,11 +183,13 @@ compile_mx8ulp() {
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
 }
+compile_mx8ulp[doc] = "Stage the SECO, ATF, uPower and U-Boot binaries for the i.MX 8ULP boot container"
 
 compile_mx91() {
     bbnote i.MX 91 boot binary build
     compile_mx93
 }
+compile_mx91[doc] = "Stage the i.MX 91 boot container binaries, which are the same as for i.MX 93"
 
 compile_mx93() {
     bbnote i.MX 93 boot binary build
@@ -201,6 +206,7 @@ compile_mx93() {
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
 }
+compile_mx93[doc] = "Stage the DDR, SECO/ELE, ATF and U-Boot binaries for the i.MX 93 boot container"
 
 compile_mx943() {
     bbnote i.MX 943 boot binary build
@@ -210,6 +216,7 @@ compile_mx943() {
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
 }
+compile_mx943[doc] = "Stage the i.MX 93 binaries plus the OEI and System Manager firmware for the i.MX 943 boot container"
 
 compile_mx95() {
     bbnote i.MX 95 boot binary build
@@ -219,6 +226,7 @@ compile_mx95() {
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
 }
+compile_mx95[doc] = "Stage the i.MX 93 binaries plus the OEI and System Manager firmware for the i.MX 95 boot container"
 
 do_compile() {
     # mkimage for i.MX8
@@ -337,6 +345,7 @@ deploy_mx8m() {
     install -m 0755 ${BOOT_STAGING}/${TOOLS_NAME}            ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0755 ${BOOT_STAGING}/mkimage_fit_atf.sh       ${DEPLOYDIR}/${BOOT_TOOLS}
 }
+deploy_mx8m[doc] = "Deploy the i.MX 8M DDR and HDMI/DP firmware together with the mkimage helpers to the boot tools folder"
 
 deploy_mx8() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
@@ -347,6 +356,7 @@ deploy_mx8() {
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 }
+deploy_mx8[doc] = "Deploy the i.MX 8QM SECO firmware, mkimage tool and SPL to the boot tools folder"
 
 deploy_mx8x() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
@@ -357,6 +367,7 @@ deploy_mx8x() {
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 }
+deploy_mx8x[doc] = "Deploy the i.MX 8QX SECO firmware, mkimage tool and SPL to the boot tools folder"
 
 deploy_mx8ulp() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
@@ -367,10 +378,12 @@ deploy_mx8ulp() {
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 }
+deploy_mx8ulp[doc] = "Deploy the i.MX 8ULP SECO firmware, mkimage tool and SPL to the boot tools folder"
 
 deploy_mx91() {
     deploy_mx93
 }
+deploy_mx91[doc] = "Deploy the i.MX 91 boot tools, which are the same as for i.MX 93"
 
 deploy_mx93() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
@@ -386,6 +399,7 @@ deploy_mx93() {
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 }
+deploy_mx93[doc] = "Deploy the i.MX 93 DDR and SECO/ELE firmware, mkimage tool and SPL to the boot tools folder"
 
 deploy_mx943() {
     deploy_mx93
@@ -393,6 +407,7 @@ deploy_mx943() {
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
 }
+deploy_mx943[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 943"
 
 deploy_mx95() {
     deploy_mx93
@@ -400,6 +415,7 @@ deploy_mx95() {
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
 }
+deploy_mx95[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 95"
 
 do_deploy() {
     deploy_${SOC_FAMILY}

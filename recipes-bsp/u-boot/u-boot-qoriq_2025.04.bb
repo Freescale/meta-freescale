@@ -2,6 +2,7 @@ require recipes-bsp/u-boot/u-boot.inc
 
 DESCRIPTION = "U-Boot provided by Freescale with focus on QorIQ boards"
 HOMEPAGE = "https://github.com/nxp-qoriq/u-boot"
+SECTION = "bootloaders"
 
 LICENSE = "BSD-2-Clause AND BSD-3-Clause AND GPL-2.0-only AND LGPL-2.0-only AND LGPL-2.1-only"
 LIC_FILES_CHKSUM = "\

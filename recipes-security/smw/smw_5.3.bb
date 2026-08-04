@@ -20,6 +20,10 @@ DEPENDS = "\
 
 SRC_URI = "${SMW_LIB_SRC};branch=${SRCBRANCH_smw};name=smw \
            ${PSA_LIB_SRC};branch=${SRCBRANCH_psa};name=psa;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/${PSA_ARCH_TESTS_SRC_PATH}"
+# The qualifiers fix carries no Signed-off-by, and no From: header either, so
+# there is no author to recover one from. A sign-off is a certification the
+# signer makes, so inventing one here would be wrong.
+# nooelint: oelint.file.patchsignedoff
 SRC_URI += "file://0001-Fixed-discarded-qualifiers-error.patch"
 SMW_LIB_SRC ?= "git://github.com/nxp-imx/imx-smw.git;protocol=https"
 PSA_LIB_SRC ?= "git://github.com/ARM-software/psa-arch-tests.git;protocol=https"

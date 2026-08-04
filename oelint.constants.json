@@ -4,8 +4,7 @@
         "known": [
             "do_image_uboot_mxsboot_nand",
             "do_image_uboot_mxsboot_sdcard",
-            "do_image_wic",
-            "module_conf_moal"
+            "do_image_wic"
         ]
     },
     "variables": {
@@ -122,6 +121,7 @@
             "LICENSE_FLAGS",
             "MC_FLAVOUR",
             "MFGTOOL_FILESPATH",
+            "module_conf_moal",
             "NETWORK_TOOLS",
             "ODP_BUILD_TYPE",
             "OEI_CORE",
@@ -165,6 +165,7 @@
     "replacements": {
         "distros": [
             "imx-nxp-bsp",
+            "poky-agl",
             "use-mainline-bsp",
             "use-nxp-bsp"
         ],
