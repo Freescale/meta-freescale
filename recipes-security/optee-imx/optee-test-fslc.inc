@@ -56,9 +56,9 @@ do_deploy () {
 
 addtask deploy before do_build after do_install
 
+# Imports machine specific configs from staging to build
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/ \
                 ${libdir}/tee-supplicant/plugins/ \
                 "
-
-# Imports machine specific configs from staging to build
-PACKAGE_ARCH = "${MACHINE_ARCH}"
