@@ -19,7 +19,9 @@ REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 
 SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
-PACKAGECONFIG ??= "\
+# Scoped to imx-generic-bsp: unscoped this re-defaulted oe-core's PACKAGECONFIG
+# on every machine, adding 'no-idle-timeout' to ones this layer does not own.
+PACKAGECONFIG:imx-generic-bsp ??= "\
     no-idle-timeout \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xwayland', '', d)} \
     ${PACKAGECONFIG_GBM_FORMAT} \
@@ -96,7 +98,10 @@ insert_line_after() {
 }
 insert_line_after[doc] = "Insert line (arg2) after lines matching pattern (arg1) in file (arg3)"
 
-do_install:append() {
+# Scoped to imx-generic-bsp: unscoped this ran everywhere and roughly doubled
+# oe-core's do_install. Every branch is driven by an i.MX PACKAGECONFIG or by
+# the i.MX weston.config.
+do_install:append:imx-generic-bsp() {
     # Replace the template variables
     sed -i -e 's,@bindir@,${bindir},g' ${D}${sysconfdir}/xdg/weston/weston.ini
 
