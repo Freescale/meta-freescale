@@ -7,7 +7,7 @@ HOMEPAGE = "https://github.com/Freescale/u-boot-fslc"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
 
-DEPENDS += "flex-native bison-native"
+DEPENDS += "bison-native flex-native"
 
 PV = "2025.01+fslc+git${SRCPV}"
 
