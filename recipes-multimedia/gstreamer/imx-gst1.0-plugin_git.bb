@@ -84,7 +84,7 @@ FILES:${PN}-libgstfsl += "${libdir}/libgstfsl-1.0${SOLIBS}"
 
 # Add codec list that the beep plugin run-time depended
 BEEP_RDEPENDS = "imx-codec-aac imx-codec-mp3 imx-codec-oggvorbis"
-RDEPENDS:${PN} += "${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux imx-parser imx-mp4-parser"
+RDEPENDS:${PN} += "${BEEP_RDEPENDS} gstreamer1.0-plugins-good-id3demux imx-mp4-parser imx-parser"
 RDEPENDS:${PN}:append:mx8qm-nxp-bsp = " imx-dsp"
 RDEPENDS:${PN}:append:mx8qxp-nxp-bsp = " imx-dsp"
 RDEPENDS:${PN}:append:mx8dx-nxp-bsp = " imx-dsp"
