@@ -4,6 +4,7 @@
 SUMMARY = "OP-TEE sanity testsuite"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Test suite"
 HOMEPAGE = "https://www.op-tee.org/"
+SECTION = "base"
 
 LICENSE = "BSD-2-Clause & GPL-2.0-only"
 
