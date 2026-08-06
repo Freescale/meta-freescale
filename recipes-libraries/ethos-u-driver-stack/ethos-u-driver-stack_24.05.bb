@@ -34,6 +34,7 @@ do_compile () {
     setuptools3_do_compile
 }
 
+# Shell task for the same reason as do_compile above.
 # nooelint: oelint.task.pythonprefix
 do_install () {
     cmake_do_install

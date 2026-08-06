@@ -28,5 +28,6 @@ do_compile[noexec] = "1"
 # nooelint: oelint.var.filesoverride
 FILES:${PN} = "/*"
 ALLOW_EMPTY:${PN} = "1"
+# The dev-so skip described in the note above FILES:${PN}.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "dev-so"

@@ -42,6 +42,7 @@ PARALLEL_MAKE = ""
 # package, so the ldflags/dev-deps/dev-elf QA checks do not apply cleanly here.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "ldflags dev-deps"
+# Same reason as above, for the -dev package.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev = "ldflags dev-elf"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
