@@ -15,36 +15,7 @@ inherit pkgconfig ptest
 LIC_FILES_CHKSUM = "file://COPYING;md5=441c28d2cf86e15a37fa47e15a72fbac \
                     file://COPYING.LIB;endline=24;md5=8c5efda6cf1e1b03dcfd0e6c0d271c7f"
 
-SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
-           file://powerpc_rom.bin \
-           file://run-ptest \
-           file://0001-qemu-Add-missing-wacom-HID-descriptor.patch \
-           file://0002-Add-subpackage-ptest-which-runs-all-unit-test-cases-.patch \
-           file://0003-qemu-Add-addition-environment-space-to-boot-loader-q.patch \
-           file://0004-qemu-disable-Valgrind.patch \
-           file://0005-qemu-native-set-ld.bfd-fix-cflags-and-set-some-envir.patch \
-           file://0006-chardev-connect-socket-to-a-spawned-command.patch \
-           file://0007-apic-fixup-fallthrough-to-PIC.patch \
-           file://0008-linux-user-Fix-webkitgtk-hangs-on-32-bit-x86-target.patch \
-           file://0009-Fix-webkitgtk-builds.patch \
-           file://0010-configure-Add-pkg-config-handling-for-libgcrypt.patch \
-           file://0001-Add-enable-disable-udev.patch \
-           file://0001-qemu-Do-not-include-file-if-not-exists.patch \
-           file://find_datadir.patch \
-           file://usb-fix-setup_len-init.patch \
-           file://0001-target-mips-Increase-number-of-TLB-entries-on-the-34.patch \
-           file://CVE-2020-24352.patch \
-           file://CVE-2020-29129-CVE-2020-29130.patch \
-           file://CVE-2020-25624.patch \
-           file://CVE-2020-25723.patch \
-           file://CVE-2020-28916.patch \
-           file://CVE-2020-35517.patch \
-           file://CVE-2020-29443.patch \
-           file://CVE-2021-20203.patch \
-           "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
-
-SRC_URI[sha256sum] = "c9174eb5933d9eb5e61f541cd6d1184cd3118dfe4c5c4955bc1bdc4d390fa4e5"
 
 COMPATIBLE_HOST:mipsarchn32 = "null"
 COMPATIBLE_HOST:mipsarchn64 = "null"
