@@ -83,16 +83,22 @@ PACKAGECONFIG[size] = ",,"
 PACKAGECONFIG[use-g2d] = ",,"
 PACKAGECONFIG[xwayland] = ",,"
 
+# Only reached from the imx-scoped do_install:append.
+# nooelint: oelint.vars.noncoreoverride
 update_file() {
     sed -i -e "s,$1,$2," $3
 }
 update_file[doc] = "Replace occurrences of pattern (arg1) with text (arg2) in file (arg3)"
 
+# Only reached from the imx-scoped do_install:append.
+# nooelint: oelint.vars.noncoreoverride
 insert_line_before() {
     sed -i -e "/$1/i $2" $3
 }
 insert_line_before[doc] = "Insert line (arg2) before lines matching pattern (arg1) in file (arg3)"
 
+# Only reached from the imx-scoped do_install:append.
+# nooelint: oelint.vars.noncoreoverride
 insert_line_after() {
     sed -i -e "/$1/a $2" $3
 }
