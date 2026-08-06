@@ -4,6 +4,7 @@
 SUMMARY = "OP-TEE Client API"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Normal World Client side of the TEE"
 HOMEPAGE = "https://www.op-tee.org/"
+SECTION = "base"
 
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=69663ab153298557a59c67a60a743e5b"
