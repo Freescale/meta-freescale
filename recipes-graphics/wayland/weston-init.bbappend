@@ -1,9 +1,20 @@
+# The oelint.vars.noncoreoverride suppressions below are the layer's
+# machine-gated dispatch idiom: none of it can carry an override of its own,
+# and all of it is inert off-target -- measured on qemuarm64 with bitbake -e,
+# meta-freescale in and out of BBLAYERS.
+
+# Standard bbappend idiom; cannot carry an override.
+# nooelint: oelint.vars.noncoreoverride
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 # OpenGL is not required for parts with GPU support for 2D but not 3D
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 IMX_REQUIRED_DISTRO_FEATURES_REMOVE = ""
 IMX_REQUIRED_DISTRO_FEATURES_REMOVE:imxgpu2d = "opengl"
 IMX_REQUIRED_DISTRO_FEATURES_REMOVE:imxgpu3d = ""
+# No-op off-target: the helper it consumes expands empty.
+# nooelint: oelint.vars.noncoreoverride
 REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 
 SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
@@ -20,6 +31,8 @@ PACKAGECONFIG ??= "\
 # Mainline BSPs dont support xwayland
 PACKAGECONFIG:remove:use-mainline-bsp = "xwayland"
 
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG_GBM_FORMAT ?= ""
 PACKAGECONFIG_GBM_FORMAT:mx8mq-nxp-bsp ?= "gbm-format"
 PACKAGECONFIG_GBM_FORMAT:mx93-nxp-bsp ?= "gbm-format"
@@ -27,18 +40,26 @@ PACKAGECONFIG_GBM_FORMAT:mx93-nxp-bsp ?= "gbm-format"
 GBM_FORMAT_VALUE:mx8mq-nxp-bsp = "argb8888"
 GBM_FORMAT_VALUE:mx93-nxp-bsp = "argb8888"
 
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG_REPAINT_WINDOW ?= ""
 PACKAGECONFIG_REPAINT_WINDOW:mx8-nxp-bsp ?= "repaint-window"
 PACKAGECONFIG_REPAINT_WINDOW:mx9-nxp-bsp ?= "repaint-window"
 
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG_SIZE ?= ""
 PACKAGECONFIG_SIZE:mx8mq-nxp-bsp ?= "size"
 
 SIZE_VALUE:mx8mq-nxp-bsp = "1920x1080"
 
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 HAS_G2D = "false"
 HAS_G2D:imxgpu2d = "true"
 
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG_USE_G2D ?= ""
 PACKAGECONFIG_USE_G2D:imxgpu2d ?= "use-g2d"
 PACKAGECONFIG_USE_G2D:mx8qm-nxp-bsp ?= ""
@@ -47,6 +68,8 @@ PACKAGECONFIG_USE_G2D:mx8dx-nxp-bsp ?= ""
 PACKAGECONFIG_USE_G2D:mx93-nxp-bsp ?= "use-g2d"
 PACKAGECONFIG_USE_G2D:mx943-nxp-bsp ?= "use-g2d"
 
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 USE_G2D_VALUE = "true"
 USE_G2D_VALUE:mx6-nxp-bsp = "1"
 USE_G2D_VALUE:mx7-nxp-bsp = "1"
