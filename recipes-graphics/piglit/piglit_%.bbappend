@@ -17,16 +17,19 @@ SRC_URI += "file://0001-tests-Fix-cl-test-Include-Directories-error-Error-0-.pat
             file://0002-cl-Add-mutually-exclusive-memory-flags-for-CL_MEM_KE.patch"
 
 # Dispatch lines consume machine-specialized helper vars below.
+# No-op off-target: the helper it consumes expands empty.
+# nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG:append = " ${PACKAGECONFIG_APPEND}"
 # No-op off-target: the helper it consumes expands empty.
 # nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG:remove = "${PACKAGECONFIG_REMOVE}"
 
-# The gbm/vulkan default is scoped to imx-generic-bsp. Unscoped it applied to
-# every machine in the build, which pulled virtual/libgbm, glslang-native and
-# vulkan-loader into piglit's DEPENDS and flipped PIGLIT_BUILD_VK_TESTS on for
-# machines this layer does not own. The mx6/mx7 clears below still win over
-# this because their overrides come later in OVERRIDES.
+# The gbm/vulkan default is scoped to imx-generic-bsp; unscoped it pulled
+# virtual/libgbm, glslang-native and vulkan-loader into DEPENDS and flipped
+# PIGLIT_BUILD_VK_TESTS on for machines this layer does not own. The mx6/mx7
+# clears below still win, their overrides coming later in OVERRIDES. The empty
+# base default cannot itself be scoped.
+# nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG_APPEND ?= ""
 PACKAGECONFIG_APPEND:imx-generic-bsp ?= "\
     gbm \
