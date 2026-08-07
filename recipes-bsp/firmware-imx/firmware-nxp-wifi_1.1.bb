@@ -75,7 +75,9 @@ RDEPENDS:${PN}-all-usb = "\
 "
 
 # The firmware is split into per-chip sub-packages; each block keeps its FILES
-# beside the matching R* vars for readability.
+# beside the matching R* vars for readability. oelint.var.order wants a flat
+# FILES-before-R* order across the whole recipe, which a per-package layout
+# cannot satisfy; R* ordering has no build effect, so the layout wins.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxp-common += "\
     ${nonarch_base_libdir}/firmware/nxp/wifi_mod_para.conf \
@@ -90,6 +92,7 @@ RPROVIDES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 RREPLACES:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 RCONFLICTS:${PN}-nxp8987-sdio = "linux-firmware-nxp8987-sdio"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxp8997-sdio += "\
     ${nonarch_base_libdir}/firmware/mrvl/sdiouart8997_combo_v4.bin \
@@ -105,6 +108,7 @@ RPROVIDES:${PN}-nxp9098-common = "linux-firmware-nxp9098-common"
 RREPLACES:${PN}-nxp9098-common = "linux-firmware-nxp9098-common"
 RCONFLICTS:${PN}-nxp9098-common = "linux-firmware-nxp9098-common"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxp9098-pcie += "\
     ${nonarch_base_libdir}/firmware/nxp/pcie*9098* \
@@ -114,6 +118,7 @@ RPROVIDES:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
 RREPLACES:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
 RCONFLICTS:${PN}-nxp9098-pcie = "linux-firmware-nxp9098-pcie"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxp9098-sdio += "\
     ${nonarch_base_libdir}/firmware/nxp/sd*9098* \
@@ -123,6 +128,7 @@ RPROVIDES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 RREPLACES:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 RCONFLICTS:${PN}-nxp9098-sdio = "linux-firmware-nxp9098-sdio"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxpaw693-pcie += "\
     ${nonarch_base_libdir}/firmware/nxp/pcie*aw693* \
@@ -130,6 +136,7 @@ FILES:${PN}-nxpaw693-pcie += "\
 "
 RDEPENDS:${PN}-nxpaw693-pcie += "${PN}-nxp-common"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxpiw416-sdio += "\
     ${nonarch_base_libdir}/firmware/mrvl/sdiouartiw416_combo_v0.bin \
@@ -140,6 +147,7 @@ RPROVIDES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 RREPLACES:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 RCONFLICTS:${PN}-nxpiw416-sdio = "linux-firmware-nxpiw416-sdio"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxpiw610-sdio += "\
     ${nonarch_base_libdir}/firmware/nxp/sd_iw610.bin.se \
@@ -153,12 +161,14 @@ RPROVIDES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 RREPLACES:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 RCONFLICTS:${PN}-nxpiw610-sdio = "linux-firmware-nxpiw610-sdio"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxpiw610-usb += "\
     ${nonarch_base_libdir}/firmware/nxp/usb*_iw610.bin.se \
 "
 RDEPENDS:${PN}-nxpiw610-usb += "${PN}-nxp-common"
 
+# Per-package block; see the note above FILES:${PN}-nxp-common.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-nxpiw612-sdio += "\
     ${nonarch_base_libdir}/firmware/nxp/sd_w61x_v1.bin.se \

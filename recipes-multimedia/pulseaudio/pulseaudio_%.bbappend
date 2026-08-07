@@ -1,6 +1,10 @@
 FILESEXTRAPATHS:prepend:imx-nxp-bsp := "${THISDIR}/${PN}/imx-nxp-bsp:"
 
 SRC_URI:append:imx-nxp-bsp = " ${SRC_URI_IMX}"
+# Fallback default for the machine overrides below; it cannot carry an
+# override for the machines it is the fallback for, and every consumer of it
+# is override-scoped, so it is inert off-target.
+# nooelint: oelint.vars.noncoreoverride
 SRC_URI_IMX = ""
 SRC_URI_IMX:mx6-nxp-bsp = "\
     file://0001-Fix-pulseaudio-mutex-issue-when-do-pause-in-gstreame.patch \

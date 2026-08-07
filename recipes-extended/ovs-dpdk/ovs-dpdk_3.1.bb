@@ -35,6 +35,7 @@ do_install:append() {
 # check rather than fail packaging.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg += "buildpaths"
+# Same buildpaths reason as above, for the main package.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "buildpaths"
 

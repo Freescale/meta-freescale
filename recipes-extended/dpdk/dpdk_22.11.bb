@@ -1,7 +1,7 @@
 SUMMARY = "Data Plane Development Kit"
 DESCRIPTION = "The Data Plane Development Kit (DPDK) is a set of libraries and \
                drivers for fast userspace packet processing."
-HOMEPAGE = "http://dpdk.org"
+HOMEPAGE = "https://www.dpdk.org"
 SECTION = "libs"
 LICENSE = "BSD-3-Clause AND GPL-2.0-only AND LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://license/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263 \

@@ -50,5 +50,6 @@ do_install() {
 # dev files in the main package; INSANE_SKIP is unavoidable here.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "dev-deps"
+# Same reason as above, for the -dev package.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev = "ldflags dev-elf"

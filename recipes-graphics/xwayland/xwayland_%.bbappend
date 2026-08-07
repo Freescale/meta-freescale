@@ -1,3 +1,10 @@
+# The oelint.vars.noncoreoverride suppressions below are the layer's
+# machine-gated dispatch idiom: none of it can carry an override of its own,
+# and all of it is inert off-target -- measured on qemuarm64 with bitbake -e,
+# meta-freescale in and out of BBLAYERS.
+
+# Standard bbappend idiom; cannot carry an override.
+# nooelint: oelint.vars.noncoreoverride
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI:append:imxgpu = " \
@@ -6,6 +13,8 @@ SRC_URI:append:imxgpu = " \
 
 OPENGL_PKGCONFIGS:remove:imxgpu = "${OPENGL_PKGCONFIGS_REMOVE_IMXGPU}"
 # Base default specialized by the machine overrides below.
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 OPENGL_PKGCONFIGS_REMOVE_IMXGPU = ""
 OPENGL_PKGCONFIGS_REMOVE_IMXGPU:imx-nxp-bsp = "glamor glx"
 OPENGL_PKGCONFIGS_REMOVE_IMXGPU:mx8-nxp-bsp = "glx"

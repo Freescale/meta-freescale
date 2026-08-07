@@ -66,8 +66,10 @@ BBCLASSEXTEND = "native nativesdk"
 # nooelint: oelint.var.order.PACKAGES
 PACKAGES:prepend:imxgpu = "${PN}-vivante "
 RRECOMMENDS:${PN}-drivers:append:imxgpu = " ${PN}-vivante"
+# Part of the vivante block, see above.
 # nooelint: oelint.var.order.FILES
 FILES:${PN}-vivante += "${libdir}/libdrm_vivante.so.*"
+# Part of the vivante block, see above.
 # nooelint: oelint.var.order.PACKAGECONFIG
 PACKAGECONFIG:append:imxgpu = " vivante"
 PACKAGECONFIG[vivante] = "-Dvivante=true,-Dvivante=false"
