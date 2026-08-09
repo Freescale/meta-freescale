@@ -76,8 +76,10 @@ do_install[noexec] = "1"
 # The appends join without a leading space to build the contiguous bl31
 # filename, so the inconspaces leading-space convention does not apply here.
 ANNOTATED_NAME = "bl31-${ATF_PLATFORM}.bin"
+# Contiguous filename append, see above.
 # nooelint: oelint.vars.inconspaces
 ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG', 'crrm', '-crrm', '', d)}"
+# Contiguous filename append, see above.
 # nooelint: oelint.vars.inconspaces
 ANNOTATED_NAME:append = "${@bb.utils.contains('PACKAGECONFIG', 'optee', '-optee', '', d)}"
 

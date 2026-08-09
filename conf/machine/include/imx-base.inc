@@ -698,6 +698,18 @@ HOSTTOOLS_NONFATAL:append:mx8-nxp-bsp = " sha384sum"
 # Add task to generate the mfgtool bundle for the image.
 IMAGE_CLASSES:append:imx-generic-bsp = " image_populate_mfgtool"
 
+# i.MX host tools for the SDK. Deliberately not a bbappend to
+# nativesdk-packagegroup-sdk-host: that packagegroup has a fixed PACKAGE_ARCH
+# (${SDK_ARCH}-nativesdk), so varying its RDEPENDS by MACHINE would emit
+# different content under one package architecture. TOOLCHAIN_HOST_TASK is
+# consumed by the SDK recipe, which is already machine-specific.
+TOOLCHAIN_HOST_TASK:append:imx-generic-bsp = " \
+    nativesdk-imx-usb-loader \
+    nativesdk-mxsldr \
+    nativesdk-u-boot-mkimage \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'nativesdk-wayland', '', d)} \
+"
+
 SECO_FIRMWARE_NAME:mx943-generic-bsp ?= "mx943${IMX_SOC_REV_LOWER}-ahab-container.img"
 
 # Allow meta-imx to add NIP devices information until upstreamed.

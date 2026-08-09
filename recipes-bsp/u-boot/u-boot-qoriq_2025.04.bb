@@ -14,7 +14,7 @@ LIC_FILES_CHKSUM = "\
 "
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "bc-native bison-native gnutls-native libgcc python3-native swig-native virtual/cross-cc"
+DEPENDS += "bc-native bison-native gnutls-native libgcc python3-native swig-native virtual/cross-cc"
 DEPENDS:append:qoriq-arm64 = " dtc-native"
 DEPENDS:append:qoriq-arm = " dtc-native"
 DEPENDS:append:qoriq-ppc = " boot-format-native"

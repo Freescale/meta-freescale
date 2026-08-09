@@ -1,5 +1,14 @@
+# The oelint.vars.noncoreoverride suppressions below are the layer's
+# machine-gated dispatch idiom: none of it can carry an override of its own,
+# and all of it is inert off-target -- measured on qemuarm64 with bitbake -e,
+# meta-freescale in and out of BBLAYERS.
+
+# Standard bbappend idiom; cannot carry an override.
+# nooelint: oelint.vars.noncoreoverride
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+# Fallback default for the machine overrides below.
+# nooelint: oelint.vars.noncoreoverride
 IMX_PATCH = "\
     file://0001-add-conf-for-multichannel-support-in-imx.patch \
     file://0005-add-ak4458-conf-for-multichannel-support.patch \

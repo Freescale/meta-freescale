@@ -6,8 +6,9 @@ SECTION = "multimedia"
 
 inherit packagegroup
 
-# Entries are ordered alphabetically (conditional ${@...} first); the linter's
-# tokenizer mis-sorts the two conditional entries, so the check is suppressed.
+# Entries are grouped conditional-first, then alphabetically; oelint sorts the
+# expanded [branch:true] form, in which they land out of order. Load-bearing
+# despite oelint.file.inlinesuppress_na, which is a false positive here.
 # nooelint: oelint.vars.dependsordered
 RDEPENDS:${PN} = "\
     ${@bb.utils.contains('LICENSE_FLAGS_ACCEPTED', 'commercial', 'packagegroup-fsl-gstreamer1.0-commercial', '', d)} \

@@ -4,6 +4,7 @@
 SUMMARY = "OP-TEE sanity testsuite"
 DESCRIPTION = "Open Portable Trusted Execution Environment - Test suite"
 HOMEPAGE = "https://www.op-tee.org/"
+SECTION = "base"
 
 LICENSE = "BSD-2-Clause & GPL-2.0-only"
 
@@ -56,9 +57,9 @@ do_deploy () {
 
 addtask deploy before do_build after do_install
 
+# Imports machine specific configs from staging to build
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/ \
                 ${libdir}/tee-supplicant/plugins/ \
                 "
-
-# Imports machine specific configs from staging to build
-PACKAGE_ARCH = "${MACHINE_ARCH}"
