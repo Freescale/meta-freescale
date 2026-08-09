@@ -35,5 +35,7 @@ FILES:${PN} += "/unit_tests"
 # Prebuilt versioned .so shipped with an unversioned symlink in the main package.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "dev-so"
+# do_install ships only the prebuilt binaries from deploy_afe/, so their debug
+# info carries NXP's build paths and cannot be scrubbed from here.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg += "buildpaths"

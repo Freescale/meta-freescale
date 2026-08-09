@@ -31,11 +31,6 @@ RDEPENDS:${PN}:class-target += "bash"
 
 EXTRA_OECONF:append:class-target = " --target-list=${@get_qemu_target_list(d)}"
 EXTRA_OECONF:append:class-target:mipsarcho32 = "${@bb.utils.contains('BBEXTENDCURR', 'multilib', ' --disable-capstone', '', d)}"
-EXTRA_OECONF:append:class-nativesdk = " --target-list=${@get_qemu_target_list(d)}"
-
-do_install:append:class-nativesdk() {
-     ${@bb.utils.contains('PACKAGECONFIG', 'gtk+', 'make_qemu_wrapper', '', d)}
-}
 
 do_install_ptest() {
         cp -rL ${B}/tests ${D}${PTEST_PATH}
@@ -53,7 +48,6 @@ PACKAGECONFIG ??= "\
     fdt sdl kvm aio libusb vhost numa \
     ${@bb.utils.filter('DISTRO_FEATURES', 'alsa xen', d)} \
 "
-PACKAGECONFIG:class-nativesdk ??= "fdt sdl kvm"
 
 PACKAGECONFIG[xkbcommon] = ",,"
 PACKAGECONFIG[libudev] = ",,"

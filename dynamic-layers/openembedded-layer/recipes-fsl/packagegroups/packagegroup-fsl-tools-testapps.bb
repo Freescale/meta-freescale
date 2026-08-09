@@ -16,8 +16,9 @@ SOC_TOOLS_TEST:imx-nxp-bsp = "imx-test"
 SOC_TOOLS_TEST:imxgpu = "imx-test imx-gpu-viv-demos"
 SOC_TOOLS_TEST:qoriq = "ceetm optee-test-qoriq"
 
-# Entries are ordered alphabetically (conditional ${@...} and ${SOC_TOOLS_TEST}
-# first); the linter's tokenizer mis-sorts this mix, so the check is suppressed.
+# Entries are grouped conditional-first, then alphabetically; oelint sorts the
+# expanded [branch:true] form, in which they land out of order. Load-bearing
+# despite oelint.file.inlinesuppress_na, which is a false positive here.
 # nooelint: oelint.vars.dependsordered
 RDEPENDS:${PN} = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'fsl-rc-local', '', d)} \
