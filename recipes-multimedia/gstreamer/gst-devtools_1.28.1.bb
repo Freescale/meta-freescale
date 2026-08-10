@@ -6,6 +6,8 @@ SECTION = "multimedia"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://validate/COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343"
 
+DEPENDS = "glib-2.0 glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-base json-glib"
+
 #S = "${WORKDIR}/gst-devtools-${PV}"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-devtools/gst-devtools-${PV}.tar.xz \
@@ -14,10 +16,8 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-devtools/gst-devtools-${PV}
 
 SRC_URI[sha256sum] = "a4e49cd082972a132ca5f54be52a3c386db37c4cb0e487e017ba00d83a5f985d"
 
-DEPENDS = "glib-2.0 glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-base json-glib"
-RRECOMMENDS:${PN} = "git"
-
 FILES:${PN} += "${datadir}/gstreamer-1.0/* ${libdir}/gst-validate-launcher/* ${libdir}/gstreamer-1.0/*"
+RRECOMMENDS:${PN} = "git"
 
 inherit meson pkgconfig gettext upstream-version-is-even gobject-introspection
 
