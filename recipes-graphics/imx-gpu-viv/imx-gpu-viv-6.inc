@@ -318,7 +318,7 @@ do_install:append:libc-musl() {
 
 ALLOW_EMPTY:${PN} = "1"
 
-FILES:libclc-imx = "${libdir}/libCLC${SOLIBS}"
+FILES:libclc-imx += "${libdir}/libCLC${SOLIBS}"
 
 FILES:libegl-imx += "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBS} "
 FILES:libegl-imx-dev += "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
@@ -338,24 +338,24 @@ FILES:libgbm-imx-dev += "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
 RDEPENDS:libgbm-imx:append = " libdrm"
 INSANE_SKIP:libgbm-imx += "dev-so"
 
-FILES:libvulkan-imx = "\
+FILES:libvulkan-imx += "\
     ${libdir}/libvulkan_VSI${REALSOLIBS} \
     ${datadir}/vulkan"
-FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
+FILES:libvulkan-imx-dev += "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 RPROVIDES:libvulkan-imx = "virtual-vulkan-icd"
 
 FILES:libspirv-imx += "\
     ${libdir}/libSPIRV_viv${SOLIBS} \
 "
 
-FILES:libopenvx-imx = "\
+FILES:libopenvx-imx += "\
     ${libdir}/libOpenVX${REALSOLIBS} \
     ${libdir}/libOpenVXC${SOLIBS} \
     ${libdir}/libOpenVXU${SOLIBS} \
     ${libdir}/libOvx*${SOLIBS} \
     ${libdir}/libArchModelSw${SOLIBS} \
 "
-FILES:libopenvx-imx-dev = "${includedir}/VX ${libdir}/libOpenVX${SOLIBSDEV}"
+FILES:libopenvx-imx-dev += "${includedir}/VX ${libdir}/libOpenVX${SOLIBSDEV}"
 RDEPENDS:libopenvx-imx = "${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES = ""
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx-dev"
@@ -382,11 +382,11 @@ RDEPENDS:libgles2-imx-dev += "libgles3-imx-dev"
 
 FILES:libglslc-imx += "${libdir}/libGLSLC${SOLIBS}"
 
-FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
-                       ${libdir}/libVivanteOpenCL${SOLIBS} \
-                       ${libdir}/libLLVM_viv${SOLIBS} \
-                       ${sysconfdir}/OpenCL/vendors/Vivante.icd"
-FILES:libopencl-imx-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
+FILES:libopencl-imx += "${libdir}/libOpenCL${REALSOLIBS} \
+                        ${libdir}/libVivanteOpenCL${SOLIBS} \
+                        ${libdir}/libLLVM_viv${SOLIBS} \
+                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
+FILES:libopencl-imx-dev += "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 RDEPENDS:libopencl-imx = "libclc-imx"
 RPROVIDES:libopencl-imx = "virtual-opencl-icd"
 RPROVIDES:libopencl-imx:mx7-nxp-bsp = ""
@@ -397,8 +397,8 @@ FILES:libopenvg-imx-dev += "${includedir}/VG ${libdir}/pkgconfig/vg.pc"
 # libEGL does dlopen of libOpenVG.so
 INSANE_SKIP:libopenvg-imx += "dev-so"
 
-FILES:libvdk-imx = "${libdir}/libVDK*${REALSOLIBS}"
-FILES:libvdk-imx-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
+FILES:libvdk-imx += "${libdir}/libVDK*${REALSOLIBS}"
+FILES:libvdk-imx-dev += "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
 
 FILES:imx-gpu-viv-tools += "${bindir}/gmem_info"
 

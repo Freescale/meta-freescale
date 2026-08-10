@@ -9,8 +9,12 @@ SRC_URI[sha256sum] = "8cc97005a7469c0e83139cf1b9a8106fa6f0a84fb6f87d0f6bb9808408
 do_install:prepend() {
     if [ "${IS_MX8}" = "1" ]; then
         if [ ! -z "${PACKAGES_VULKAN}" ]; then
-            mkdir -p ${S}/gpu-core/etc/vulkan/icd.d
-            mv ${S}/gpu-core/usr/share/vulkan/icd.d/verisilicon_icd.json ${S}/gpu-core/etc/vulkan/icd.d/imx_icd.json
+            # Idempotent: this rewrites ${S}, which do_unpack does not restore
+            # when do_install re-runs on its own, so skip once already moved.
+            if [ -f ${S}/gpu-core/usr/share/vulkan/icd.d/verisilicon_icd.json ]; then
+                mkdir -p ${S}/gpu-core/etc/vulkan/icd.d
+                mv ${S}/gpu-core/usr/share/vulkan/icd.d/verisilicon_icd.json ${S}/gpu-core/etc/vulkan/icd.d/imx_icd.json
+            fi
         fi
     fi
 }
