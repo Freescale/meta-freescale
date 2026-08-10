@@ -6,11 +6,11 @@ SECTION = "multimedia"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=6f862c6751ebcaa393467694c7b0c69a"
 
+DEPENDS += "imx-parser"
+
 inherit pkgconfig meson
 
 PV = "4.11.0+git"
-
-DEPENDS += "imx-parser"
 
 SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
 IMXMP4PARSER_SRC ?= "git://github.com/nxp-imx/imx-mp4-parser.git;protocol=https"
