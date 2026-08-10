@@ -5,11 +5,13 @@ SUMMARY = "'Ugly GStreamer plugins"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-ugly/-/issues"
 
+LICENSE = "GPL-2.0-or-later AND LGPL-2.1-or-later"
+LICENSE_FLAGS = "commercial"
+
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
                     "
 
-LICENSE = "GPL-2.0-or-later AND LGPL-2.1-or-later"
-LICENSE_FLAGS = "commercial"
+DEPENDS += "gstreamer1.0-plugins-base"
 
 SRC_URI = "\
     https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${PV}.tar.xz \
@@ -18,8 +20,6 @@ SRC_URI = "\
 SRC_URI[sha256sum] = "4082f3cb063fccc3ffc04e5ab0854bafde82d1b373eb3c9eaa28115dd3f95a78"
 
 S = "${UNPACKDIR}/gst-plugins-ugly-${PV}"
-
-DEPENDS += "gstreamer1.0-plugins-base"
 
 GST_PLUGIN_SET_HAS_EXAMPLES = "0"
 
