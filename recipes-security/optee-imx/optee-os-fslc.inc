@@ -72,7 +72,7 @@ SYSROOT_DIRS += "${nonarch_base_libdir}/firmware"
 
 PACKAGES += "${PN}-ta"
 FILES:${PN} = "${nonarch_base_libdir}/firmware/"
-FILES:${PN}-ta = "${nonarch_base_libdir}/optee_armtz/*"
+FILES:${PN}-ta += "${nonarch_base_libdir}/optee_armtz/*"
 
 # note: "textrel" is not triggered on all archs
 INSANE_SKIP:${PN} = "textrel"

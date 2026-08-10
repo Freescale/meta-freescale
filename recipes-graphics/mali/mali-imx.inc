@@ -35,37 +35,37 @@ FILES:${PN} += "\
     ${nonarch_base_libdir}/firmware"
 FILES_SOLIBSDEV = ""
 INSANE_SKIP:${PN} = "dev-so"
-FILES:${PN}-libegl = "\
+FILES:${PN}-libegl += "\
     ${libdir}/libEGL${SOLIBS}"
-FILES:${PN}-libgbm = "\
+FILES:${PN}-libgbm += "\
     ${libdir}/libgbm${SOLIBS}"
-FILES:${PN}-libgles1 = "\
+FILES:${PN}-libgles1 += "\
     ${libdir}/libGLESv1_CM${SOLIBS}"
-FILES:${PN}-libgles2 = "\
+FILES:${PN}-libgles2 += "\
     ${libdir}/libGLESv2${SOLIBS}"
-FILES:${PN}-opencl-icd = "\
+FILES:${PN}-opencl-icd += "\
     ${sysconfdir}/OpenCL"
 RPROVIDES:${PN}-opencl-icd = "virtual-opencl-icd"
-FILES:${PN}-libvulkan = "\
+FILES:${PN}-libvulkan += "\
     ${sysconfdir}/vulkan"
 RDEPENDS:${PN}-libvulkan = "vulkan-wsi-layer"
 RPROVIDES:${PN}-libvulkan = "virtual-vulkan-icd"
 
 FILES:${PN}-dev = "\
     ${bindir}/malisc"
-FILES:${PN}-libegl-dev = "\
+FILES:${PN}-libegl-dev += "\
     ${includedir}/EGL \
     ${includedir}/KHR \
     ${libdir}/libEGL${SOLIBSDEV} \
     ${libdir}/pkgconfig/egl.pc"
-FILES:${PN}-libgbm-dev = "\
+FILES:${PN}-libgbm-dev += "\
     ${includedir}/gbm.h \
     ${libdir}/libgbm${SOLIBSDEV} \
     ${libdir}/pkgconfig/gbm.pc"
 
 # Consolidate GLES dev packages
 PACKAGES =+ "${PN}-libgles-dev"
-FILES:${PN}-libgles-dev = "\
+FILES:${PN}-libgles-dev += "\
     ${includedir}/GLES* \
     ${libdir}/libGLES*${SOLIBSDEV} \
     ${libdir}/pkgconfig/gles*.pc"
@@ -80,7 +80,7 @@ RDEPENDS:${PN}-libgles1-dev = "${PN}-libgles-dev"
 RDEPENDS:${PN}-libgles2-dev = "${PN}-libgles-dev"
 RDEPENDS:${PN}-libgles3-dev = "${PN}-libgles-dev"
 
-FILES:${PN}-opencl-icd-dev = "\
+FILES:${PN}-opencl-icd-dev += "\
     ${bindir}/mali_clcc"
 
 python __anonymous() {

@@ -84,8 +84,8 @@ do_package_recalculate_ipa_signatures() {
 }
 
 FILES:${PN} += "${libexecdir}/libcamera/v4l2-compat.so"
-FILES:${PN}-gst = "${libdir}/gstreamer-1.0"
-FILES:${PN}-pycamera = "${PYTHON_SITEPACKAGES_DIR}/libcamera"
+FILES:${PN}-gst += "${libdir}/gstreamer-1.0"
+FILES:${PN}-pycamera += "${PYTHON_SITEPACKAGES_DIR}/libcamera"
 
 # libcamera-v4l2 explicitly sets _FILE_OFFSET_BITS=32 to get access to
 # both 32 and 64 bit file APIs.
