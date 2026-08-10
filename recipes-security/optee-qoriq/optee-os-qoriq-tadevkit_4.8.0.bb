@@ -21,4 +21,7 @@ do_deploy() {
     echo "Do not inherit do_deploy from optee-os."
 }
 
+# Inert: ${PN}-dev precedes ${PN} in PACKAGES and already claims ${includedir},
+# so it takes the headers and ${PN} ships empty. Revisit; intent unevidenced.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${includedir}/optee/"

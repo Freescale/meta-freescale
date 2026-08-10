@@ -132,6 +132,8 @@ PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland',
              libweston-${WESTON_MAJOR_VERSION} ${PN}-examples"
 
 FILES:${PN}-dev += "${libdir}/${BPN}/libexec_weston.so"
+# Kept byte-identical to oe-core's weston recipe.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${sysconfdir} ${bindir}/weston ${bindir}/weston-terminal ${bindir}/weston-info ${bindir}/weston-launch ${bindir}/wcap-decode ${libexecdir} ${libdir}/${BPN}/*.so* ${datadir}"
 
 FILES:libweston-${WESTON_MAJOR_VERSION} += "${libdir}/lib*${SOLIBS} ${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.so"

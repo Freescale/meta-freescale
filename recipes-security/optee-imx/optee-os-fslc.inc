@@ -71,6 +71,9 @@ addtask deploy before do_build after do_install
 SYSROOT_DIRS += "${nonarch_base_libdir}/firmware"
 
 PACKAGES += "${PN}-ta"
+# Replaces the OE defaults deliberately; ${PN} still carries the TAs, since
+# optee-os-fslc-imx.inc:26 adds optee_armtz back and ${PN} precedes ${PN}-ta.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware/"
 FILES:${PN}-ta += "${nonarch_base_libdir}/optee_armtz/*"
 

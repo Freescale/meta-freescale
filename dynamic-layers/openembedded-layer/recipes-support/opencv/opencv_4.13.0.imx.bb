@@ -183,8 +183,12 @@ python populate_packages:prepend () {
 
 PACKAGES_DYNAMIC += "^libopencv-.*"
 
+# Main package deliberately empty; everything ships in subpackages.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = ""
 FILES:${PN}-dbg += "${datadir}/OpenCV/java/.debug/* ${datadir}/OpenCV/samples/bin/.debug/*"
+# The dynamic libopencv-* packages own the .so dev symlinks.
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-dev = "${includedir} ${libdir}/pkgconfig  ${libdir}/cmake/opencv4/*.cmake"
 FILES:${PN}-staticdev += "${libdir}/opencv4/3rdparty/*.a"
 FILES:${PN}-apps += "${bindir}/* ${datadir}/opencv4 ${datadir}/licenses"

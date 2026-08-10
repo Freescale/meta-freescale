@@ -18,4 +18,6 @@ do_deploy:append () {
     install -m 644 ${D}${nonarch_base_libdir}/firmware/* ${DEPLOYDIR}/optee/
 }
 
+# Firmware and trusted-application payload only.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/optee_armtz/ ${nonarch_base_libdir}/firmware/"

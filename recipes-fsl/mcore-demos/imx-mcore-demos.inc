@@ -66,6 +66,8 @@ addtask deploy after do_install
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
+# Firmware-only package; the single custom path deliberately replaces defaults.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware"
 
 INSANE_SKIP:${PN} = "arch"

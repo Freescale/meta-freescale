@@ -24,6 +24,8 @@ do_install() {
 
 SYSTEMD_AUTO_ENABLE = "enable"
 
+# Prebuilt camera stack installed under ${libdir} and /opt.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${libdir} /opt"
 INSANE_SKIP:${PN} = "already-stripped"
 RDEPENDS:${PN} += "isp-imx"

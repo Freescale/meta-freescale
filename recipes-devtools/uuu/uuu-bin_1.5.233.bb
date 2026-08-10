@@ -33,5 +33,7 @@ do_install() {
 
 # HACK! We are not aiming to run those binaries during the build but copy then for MFGTOOL bundle.
 INSANE_SKIP:${PN} += "arch file-rdeps"
+# Prebuilt host binaries for the MFGTOOL bundle, matching SYSROOT_DIRS below.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${libdir}/uuu"
 SYSROOT_DIRS = "${libdir}/uuu"

@@ -34,6 +34,8 @@ do_install () {
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
+# Prebuilt firmware lands in several non-default paths.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "/"
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"

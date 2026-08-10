@@ -51,6 +51,8 @@ FILES:${PN}-libvulkan += "\
 RDEPENDS:${PN}-libvulkan = "vulkan-wsi-layer"
 RPROVIDES:${PN}-libvulkan = "virtual-vulkan-icd"
 
+# Only malisc; headers and .so symlinks belong to the split -dev packages below.
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-dev = "\
     ${bindir}/malisc"
 FILES:${PN}-libegl-dev += "\
