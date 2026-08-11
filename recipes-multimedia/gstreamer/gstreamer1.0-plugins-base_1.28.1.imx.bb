@@ -13,14 +13,14 @@ BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-base/-/issues
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770"
 
+DEPENDS += "iso-codes util-linux zlib"
+
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PV}.tar.xz \
            file://0001-ENGR00312515-get-caps-from-src-pad-when-query-caps.patch \
            file://0003-viv-fb-Make-sure-config.h-is-included.patch \
            file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch \
            "
 SRC_URI[sha256sum] = "edd4338b45c26a9af28c0d35aab964a024c3884ba6f520d8428df04212c8c93a"
-
-DEPENDS += "iso-codes util-linux zlib"
 
 inherit gobject-introspection
 

@@ -8,13 +8,12 @@ SECTION = "libs"
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=4ca2d6799091aaa98a8520f1b793939b"
+DEPENDS = "vulkan-headers"
 
 SRC_URI = "git://github.com/KhronosGroup/Vulkan-Utility-Libraries.git;branch=main;protocol=https"
 SRCREV = "4cfc176e3242b4dbdfd3f6c5680c5d8f2cb7db45"
 
 REQUIRED_DISTRO_FEATURES = "vulkan"
-
-DEPENDS = "vulkan-headers"
 
 EXTRA_OECMAKE = "\
     -DBUILD_TESTS=OFF \

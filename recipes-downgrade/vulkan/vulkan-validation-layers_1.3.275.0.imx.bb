@@ -7,13 +7,12 @@ SECTION = "libs"
 
 LICENSE = "Apache-2.0 AND MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=cd3c0bc366cd9b6a906e22f0bcb5910f"
+DEPENDS = "glslang spirv-headers spirv-tools vulkan-headers vulkan-loader vulkan-utility-libraries"
 
 SRC_URI = "git://github.com/KhronosGroup/Vulkan-ValidationLayers.git;branch=vulkan-sdk-1.3.275;protocol=https"
 SRCREV = "780c65337e111c7385109c7b720d757a778e4fe2"
 
 REQUIRED_DISTRO_FEATURES = "vulkan"
-
-DEPENDS = "glslang spirv-headers spirv-tools vulkan-headers vulkan-loader vulkan-utility-libraries"
 
 # BUILD_TESTS            - Not required for OE builds
 # USE_ROBIN_HOOD_HASHING - Provides substantial performance improvements on all platforms.
