@@ -3,14 +3,14 @@
 
 SUMMARY = "i.MX233/i.MX28 USB loader"
 DESCRIPTION = "Freescale i.MX233/i.MX28 USB loader"
-HOMEPAGE = "https://source.denx.de/denx/mxsldr"
+HOMEPAGE = "https://github.com/Freescale/mxsldr"
 SECTION = "devel"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 DEPENDS = "libusb1"
 
 PV = "0.0.0+git${SRCPV}"
-SRC_URI = "git://source.denx.de/denx/mxsldr.git;branch=master;protocol=https \
+SRC_URI = "git://github.com/Freescale/mxsldr.git;branch=master;protocol=https \
            file://0001-Do-not-ignore-OE-cflags-and-ldflags.patch \
            "
 SRCREV = "c40d80472525e1d57dae5317c028b745968c0399"
