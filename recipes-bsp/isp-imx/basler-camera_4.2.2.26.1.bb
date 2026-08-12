@@ -24,6 +24,8 @@ do_install() {
 
 SYSTEMD_AUTO_ENABLE = "enable"
 
+# The Basler camera stack installs into ${libdir} and /opt and is packed explicitly.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${libdir} /opt"
 INSANE_SKIP:${PN} = "already-stripped"
 RDEPENDS:${PN} += "isp-imx"
