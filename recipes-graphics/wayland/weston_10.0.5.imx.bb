@@ -132,13 +132,22 @@ PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland',
              libweston-${WESTON_MAJOR_VERSION} ${PN}-examples"
 
 FILES:${PN}-dev += "${libdir}/${BPN}/libexec_weston.so"
+# Main package is curated to weston's own binaries, config and plugins; the
+# shared libraries are split out into the libweston-${WESTON_MAJOR_VERSION} package.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${bindir}/weston ${bindir}/weston-terminal ${bindir}/weston-info ${bindir}/weston-launch ${bindir}/wcap-decode ${libexecdir} ${libdir}/${BPN}/*.so* ${datadir}"
 
+# libweston-*, -examples and -xwayland are split packages with no default FILES,
+# so '=' is a complete definition. Kept byte-identical to oe-core weston to avoid
+# fork drift; suppress the append-preference warning.
+# nooelint: oelint.var.filesoverride
 FILES:libweston-${WESTON_MAJOR_VERSION} = "${libdir}/lib*${SOLIBS} ${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.so"
 SUMMARY:libweston-${WESTON_MAJOR_VERSION} = "Helper library for implementing 'wayland window managers'."
 
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-examples = "${bindir}/*"
 
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-xwayland = "${libdir}/libweston-${WESTON_MAJOR_VERSION}/xwayland.so"
 RDEPENDS:${PN}-xwayland += "xwayland"
 
