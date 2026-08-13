@@ -66,6 +66,9 @@ addtask deploy after do_install
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
+# The recipe installs only the M-core demo firmware and packs exactly that
+# directory into the main package.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware"
 
 INSANE_SKIP:${PN} = "arch"
