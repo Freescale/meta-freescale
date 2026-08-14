@@ -33,5 +33,8 @@ do_install() {
 
 # HACK! We are not aiming to run those binaries during the build but copy then for MFGTOOL bundle.
 INSANE_SKIP:${PN} += "arch file-rdeps"
+# Prebuilt uuu host binaries are staged under ${libdir}/uuu for the MFGTOOL
+# bundle only; the main package holds exactly that directory.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${libdir}/uuu"
 SYSROOT_DIRS = "${libdir}/uuu"

@@ -318,94 +318,94 @@ do_install:append:libc-musl() {
 
 ALLOW_EMPTY:${PN} = "1"
 
-FILES:libclc-imx = "${libdir}/libCLC${SOLIBS}"
+FILES:libclc-imx += "${libdir}/libCLC${SOLIBS}"
 
-FILES:libegl-imx = "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBS} "
-FILES:libegl-imx-dev = "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
+FILES:libegl-imx += "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBS} "
+FILES:libegl-imx-dev += "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 # libEGL.so is used by some demo apps from Freescale
 INSANE_SKIP:libegl-imx += "dev-so"
 
-FILES:libgal-imx = "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
+FILES:libgal-imx += "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 RDEPENDS:libgal-imx += "${@bb.utils.contains('PACKAGECONFIG', 'valgrind', 'valgrind', '', d)}"
 RPROVIDES:libgal-imx += "libgal-imx"
 RRECOMMENDS:libgal-imx += "kernel-module-imx-gpu-viv"
 INSANE_SKIP:libgal-imx += "build-deps"
 
-FILES:libvsc-imx = "${libdir}/libVSC${SOLIBS}"
+FILES:libvsc-imx += "${libdir}/libVSC${SOLIBS}"
 
-FILES:libgbm-imx = "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBS} ${libdir}/libgbm_viv${SOLIBS}"
-FILES:libgbm-imx-dev = "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
+FILES:libgbm-imx += "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBS} ${libdir}/libgbm_viv${SOLIBS}"
+FILES:libgbm-imx-dev += "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
 RDEPENDS:libgbm-imx:append = " libdrm"
 INSANE_SKIP:libgbm-imx += "dev-so"
 
-FILES:libvulkan-imx = "\
+FILES:libvulkan-imx += "\
     ${libdir}/libvulkan_VSI${REALSOLIBS} \
     ${datadir}/vulkan"
-FILES:libvulkan-imx-dev = "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
+FILES:libvulkan-imx-dev += "${includedir}/vulkan ${libdir}/libvulkan_VSI${SOLIBSDEV}"
 RPROVIDES:libvulkan-imx = "virtual-vulkan-icd"
 
-FILES:libspirv-imx = "\
+FILES:libspirv-imx += "\
     ${libdir}/libSPIRV_viv${SOLIBS} \
 "
 
-FILES:libopenvx-imx = "\
+FILES:libopenvx-imx += "\
     ${libdir}/libOpenVX${REALSOLIBS} \
     ${libdir}/libOpenVXC${SOLIBS} \
     ${libdir}/libOpenVXU${SOLIBS} \
     ${libdir}/libOvx*${SOLIBS} \
     ${libdir}/libArchModelSw${SOLIBS} \
 "
-FILES:libopenvx-imx-dev = "${includedir}/VX ${libdir}/libOpenVX${SOLIBSDEV}"
+FILES:libopenvx-imx-dev += "${includedir}/VX ${libdir}/libOpenVX${SOLIBSDEV}"
 RDEPENDS:libopenvx-imx = "${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES = ""
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx-dev"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8mp-nxp-bsp = "libclc-imx libopencl-imx-dev"
 INSANE_SKIP:libopenvx-imx += "dev-deps"
 
-FILES:libgles1-imx = "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
-FILES:libgles1-imx-dev = "${includedir}/GLES ${libdir}/pkgconfig/glesv1_cm.pc"
+FILES:libgles1-imx += "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
+FILES:libgles1-imx-dev += "${includedir}/GLES ${libdir}/pkgconfig/glesv1_cm.pc"
 RPROVIDES:libgles1-imx = "libgles-imx"
 RPROVIDES:libgles1-imx-dev = "libgles-imx-dev"
 # libEGL does dlopen of libGLESv1.so
 INSANE_SKIP:libgles1-imx += "dev-so"
 
-FILES:libgles2-imx = "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
-FILES:libgles2-imx-dev = "${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
+FILES:libgles2-imx += "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
+FILES:libgles2-imx-dev += "${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
 RDEPENDS:libgles2-imx = "libglslc-imx"
 # libEGL does dlopen of libGLESv2.so
 INSANE_SKIP:libgles2-imx += "dev-so"
 
-FILES:libgles3-imx-dev = "${includedir}/GLES3"
+FILES:libgles3-imx-dev += "${includedir}/GLES3"
 # as long as there is no libgles3: ship libgles3-dev along with
 # libgles2-dev - otherwise GLES3 headers have to be added manually
 RDEPENDS:libgles2-imx-dev += "libgles3-imx-dev"
 
-FILES:libglslc-imx = "${libdir}/libGLSLC${SOLIBS}"
+FILES:libglslc-imx += "${libdir}/libGLSLC${SOLIBS}"
 
-FILES:libopencl-imx = "${libdir}/libOpenCL${REALSOLIBS} \
+FILES:libopencl-imx += "${libdir}/libOpenCL${REALSOLIBS} \
                        ${libdir}/libVivanteOpenCL${SOLIBS} \
                        ${libdir}/libLLVM_viv${SOLIBS} \
                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
-FILES:libopencl-imx-dev = "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
+FILES:libopencl-imx-dev += "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 RDEPENDS:libopencl-imx = "libclc-imx"
 RPROVIDES:libopencl-imx = "virtual-opencl-icd"
 RPROVIDES:libopencl-imx:mx7-nxp-bsp = ""
 RPROVIDES:libopencl-imx:mx8mm-nxp-bsp = ""
 
-FILES:libopenvg-imx = "${libdir}/libOpenVG*${REALSOLIBS} ${libdir}/libOpenVG*${SOLIBS}"
-FILES:libopenvg-imx-dev = "${includedir}/VG ${libdir}/pkgconfig/vg.pc"
+FILES:libopenvg-imx += "${libdir}/libOpenVG*${REALSOLIBS} ${libdir}/libOpenVG*${SOLIBS}"
+FILES:libopenvg-imx-dev += "${includedir}/VG ${libdir}/pkgconfig/vg.pc"
 # libEGL does dlopen of libOpenVG.so
 INSANE_SKIP:libopenvg-imx += "dev-so"
 
-FILES:libvdk-imx = "${libdir}/libVDK*${REALSOLIBS}"
-FILES:libvdk-imx-dev = "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
+FILES:libvdk-imx += "${libdir}/libVDK*${REALSOLIBS}"
+FILES:libvdk-imx-dev += "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
 
-FILES:imx-gpu-viv-tools = "${bindir}/gmem_info"
+FILES:imx-gpu-viv-tools += "${bindir}/gmem_info"
 
-FILES:imx-gpu-viv-demos = "/opt"
+FILES:imx-gpu-viv-demos += "/opt"
 INSANE_SKIP:imx-gpu-viv-demos += "rpaths dev-deps"
 
-FILES:libnn-imx = "${libdir}/libNN*${SOLIBS}"
+FILES:libnn-imx += "${libdir}/libNN*${SOLIBS}"
 
 # It will use gcompat at runtime therefore checking for these at compile time wont be useful as
 # they dont match musl/gcompat but it should run fine
