@@ -18,4 +18,7 @@ do_deploy:append () {
     install -m 644 ${D}${nonarch_base_libdir}/firmware/* ${DEPLOYDIR}/optee/
 }
 
+# OP-TEE installs the trusted-application store and firmware tree; the main
+# package holds exactly those directories.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/optee_armtz/ ${nonarch_base_libdir}/firmware/"

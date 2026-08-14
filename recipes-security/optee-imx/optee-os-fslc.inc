@@ -72,8 +72,10 @@ addtask deploy before do_build after do_install
 SYSROOT_DIRS += "${nonarch_base_libdir}/firmware"
 
 PACKAGES += "${PN}-ta"
+# OP-TEE installs only its firmware image tree; the main package holds it explicitly.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware/"
-FILES:${PN}-ta = "${nonarch_base_libdir}/optee_armtz/*"
+FILES:${PN}-ta += "${nonarch_base_libdir}/optee_armtz/*"
 
 # note: "textrel" is not triggered on all archs
 INSANE_SKIP:${PN} = "textrel"

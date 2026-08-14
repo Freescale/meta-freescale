@@ -183,12 +183,24 @@ python populate_packages:prepend () {
 
 PACKAGES_DYNAMIC += "^libopencv-.*"
 
+# Main package is intentionally empty (see ALLOW_EMPTY below); everything is
+# split into the sub-packages and the PACKAGES_DYNAMIC libopencv-* packages.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = ""
 FILES:${PN}-dbg += "${datadir}/OpenCV/java/.debug/* ${datadir}/OpenCV/samples/bin/.debug/*"
+# -dev is curated to headers/pkgconfig/cmake; the per-library dev symlinks are
+# packaged by the PACKAGES_DYNAMIC libopencv-* packages, not the main -dev.
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-dev = "${includedir} ${libdir}/pkgconfig  ${libdir}/cmake/opencv4/*.cmake"
 FILES:${PN}-staticdev += "${libdir}/opencv4/3rdparty/*.a"
+# -apps/-java/-samples are recipe-specific split packages (no default FILES), so
+# the '=' is a complete definition. Kept byte-identical to meta-oe
+# opencv_4.13.0.bb to avoid fork drift; suppress the append-preference warning.
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-apps = "${bindir}/* ${datadir}/opencv4 ${datadir}/licenses"
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-java = "${datadir}/OpenCV/java"
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-samples = "${datadir}/opencv4/samples/"
 
 INSANE_SKIP:${PN}-java = "libdir"
@@ -197,6 +209,9 @@ INSANE_SKIP:${PN}-dbg = "libdir"
 ALLOW_EMPTY:${PN} = "1"
 
 SUMMARY:python3-opencv = "Python bindings to opencv"
+# Recipe-specific split package (no default FILES); '=' is a complete definition.
+# Kept byte-identical to meta-oe opencv_4.13.0.bb to avoid fork drift.
+# nooelint: oelint.var.filesoverride
 FILES:python3-opencv = "${PYTHON_SITEPACKAGES_DIR}/*"
 RDEPENDS:python3-opencv = "python3-core python3-numpy"
 

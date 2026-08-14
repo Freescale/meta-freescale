@@ -86,7 +86,7 @@ FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/*"
 
 INSANE_SKIP:${PN}-dbg = "buildpaths"
 
-FILES:${PN}-tests = "${bindir}/* ${datadir}/${BPN}/*"
+FILES:${PN}-tests += "${bindir}/* ${datadir}/${BPN}/*"
 RDEPENDS:${PN}-tests = "cmake"
 INSANE_SKIP:${PN}-tests = "buildpaths"
 

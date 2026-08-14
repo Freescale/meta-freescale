@@ -84,7 +84,12 @@ do_package_recalculate_ipa_signatures() {
 }
 
 FILES:${PN} += "${libexecdir}/libcamera/v4l2-compat.so"
+# -gst/-pycamera are split packages with no default FILES, so '=' is a complete
+# definition. Kept byte-identical to meta-multimedia libcamera to avoid fork
+# drift; suppress the append-preference warning.
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-gst = "${libdir}/gstreamer-1.0"
+# nooelint: oelint.var.filesoverride
 FILES:${PN}-pycamera = "${PYTHON_SITEPACKAGES_DIR}/libcamera"
 
 # libcamera-v4l2 explicitly sets _FILE_OFFSET_BITS=32 to get access to

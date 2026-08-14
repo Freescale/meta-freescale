@@ -21,4 +21,6 @@ do_deploy() {
     echo "Do not inherit do_deploy from optee-os."
 }
 
+# The TA devkit ships only its headers under ${includedir}/optee, packed explicitly.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "${includedir}/optee/"

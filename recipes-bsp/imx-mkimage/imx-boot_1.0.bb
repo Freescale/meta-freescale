@@ -482,6 +482,8 @@ do_deploy() {
 addtask deploy before do_build after do_compile
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+# The bootloader image is deployed under /boot and packed there explicitly.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "/boot"
 
 COMPATIBLE_MACHINE = "(mx8-generic-bsp|mx9-generic-bsp)"

@@ -34,6 +34,9 @@ do_install () {
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
+# Prebuilt VPU firmware/libraries are installed under a fixed layout and the
+# whole tree is packed into the main package.
+# nooelint: oelint.var.filesoverride
 FILES:${PN} = "/"
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"
