@@ -11,6 +11,9 @@ HOMEPAGE = "http://opencv.org/"
 SECTION = "libs"
 
 LICENSE = "Apache-2.0"
+# Re-set in the i.MX overrides section below; kept here to preserve the
+# verbatim meta-openembedded copy (see header). UPSTREAM-PARITY.
+# nooelint: oelint.var.override
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 ARM_INSTRUCTION_SET:armv4 = "arm"
