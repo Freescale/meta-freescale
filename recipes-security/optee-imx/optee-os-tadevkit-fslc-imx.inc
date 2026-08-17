@@ -22,8 +22,14 @@ do_deploy() {
 }
 
 # The TA devkit ships only its headers under ${includedir}/optee, packed
-# explicitly.
+# explicitly. This deliberately replaces the "${nonarch_base_libdir}/firmware/"
+# default from optee-os-fslc.inc (the devkit has no firmware payload), so
+# oelint.var.override flags the shared value as fully replaced. The include's
+# FILES:${PN} itself overrides the bitbake.conf default with a hard "=", so a
+# "?=" here would let that config default win instead; and the devkit content
+# is not additive to the base package. Keep the full replacement. JUSTIFIED.
 # nooelint: oelint.var.filesoverride
+# nooelint: oelint.var.override
 FILES:${PN} = "${includedir}/optee/"
 
 # The TA devkit -dev package embeds build paths in its generated files, so the
