@@ -12,6 +12,9 @@ HOMEPAGE = "http://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://bugzilla.gnome.org/enter_bug.cgi?product=Gstreamer"
 SECTION = "multimedia"
 LICENSE = "LGPL-2.1-or-later"
+# Overridden in the i.MX overrides section below; kept here to preserve the
+# verbatim OE-core copy (see header). UPSTREAM-PARITY.
+# nooelint: oelint.var.override
 LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
                     file://gst/gst.h;beginline=1;endline=21;md5=e059138481205ee2c6fc1c079c016d0d"
 
