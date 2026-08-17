@@ -20,6 +20,9 @@ SRC_URI = "\
     git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV} \
 "
 
+# Re-set in the i.MX overrides section below for the nxp-imx fork; kept here
+# to preserve the verbatim meta-openembedded copy (see header). UPSTREAM-PARITY.
+# nooelint: oelint.var.override
 SRCREV = "e2e7c015cee997b9f992376fd2c29fa2d8813e1b"
 
 PE = "1"
