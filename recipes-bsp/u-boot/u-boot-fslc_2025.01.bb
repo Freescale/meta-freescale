@@ -11,8 +11,6 @@ DEPENDS += "bc-native dtc-native python3-setuptools-native gnutls-native"
 
 PROVIDES += "u-boot u-boot-mfgtool"
 
-B = "${WORKDIR}/build"
-
 # FIXME: Allow linking of 'tools' binaries with native libraries
 #        used for generating the boot logo and other tools used
 #        during the build process.
