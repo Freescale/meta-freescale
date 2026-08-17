@@ -14,6 +14,9 @@ BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues"
 CVE_PRODUCT = "gst-plugins-bad"
 
 LICENSE = "GPL-2.0-or-later AND LGPL-2.1-or-later"
+# Overridden in the i.MX overrides section below; kept here to preserve the
+# verbatim OE-core copy (see header). UPSTREAM-PARITY.
+# nooelint: oelint.var.override
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 DEPENDS += "gstreamer1.0-plugins-base"
