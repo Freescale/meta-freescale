@@ -17,9 +17,15 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-go
 
 SRC_URI[sha256sum] = "b67b31313a54c6929b82969d41d3cfdf2f58db573fb5f491e6bba5d84aea0778"
 
+# Overridden in the i.MX overrides section below; kept here to preserve the
+# verbatim OE-core copy (see header). UPSTREAM-PARITY.
+# nooelint: oelint.var.override
 S = "${UNPACKDIR}/gst-plugins-good-${PV}"
 
 LICENSE = "LGPL-2.1-or-later"
+# Overridden in the i.MX overrides section below; kept here to preserve the
+# verbatim OE-core copy (see header). UPSTREAM-PARITY.
+# nooelint: oelint.var.override
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
                     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
 
