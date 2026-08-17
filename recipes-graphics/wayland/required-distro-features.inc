@@ -4,5 +4,5 @@ inherit features_check
 
 # requires pam enabled if started via systemd
 #
-REQUIRED_DISTRO_FEATURES = "wayland opengl ${@oe.utils.conditional('VIRTUAL-RUNTIME_init_manager', 'systemd', 'pam', '', d)}"
+REQUIRED_DISTRO_FEATURES ?= "wayland opengl ${@oe.utils.conditional('VIRTUAL-RUNTIME_init_manager', 'systemd', 'pam', '', d)}"
 
