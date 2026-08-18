@@ -22,8 +22,12 @@ do_deploy() {
 }
 
 # The TA devkit ships only its headers under ${includedir}/optee, packed
-# explicitly.
-# nooelint: oelint.var.filesoverride
+# explicitly. This deliberately replaces the "${nonarch_base_libdir}/firmware/"
+# default from optee-os-fslc.inc (the devkit has no firmware payload). The
+# include's FILES:${PN} overrides the bitbake.conf default with a hard "=", so
+# a "?=" here would let that config default win instead; and the devkit content
+# is not additive to the base package. Keep the full replacement.
+# nooelint: oelint.var.filesoverride oelint.var.override
 FILES:${PN} = "${includedir}/optee/"
 
 # Build paths are currently embedded

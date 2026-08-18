@@ -38,4 +38,4 @@ python () {
         raise bb.parse.SkipRecipe("This SoC requires 'SECO_FIRMWARE_NAME', define it in 'use-imx-security-controller-firmware' bbclass")
 }
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH ?= "${MACHINE_SOCARCH}"

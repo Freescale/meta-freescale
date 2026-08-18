@@ -8,7 +8,7 @@ DESCRIPTION = "GPU driver and apps for i.MX"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "libs"
 LICENSE = "LicenseRef-Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
+LIC_FILES_CHKSUM ?= "file://COPYING;md5=ea25d099982d035af85d193c88a1b479"
 
 DEPENDS += "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \

@@ -18,8 +18,6 @@ DEPENDS += "\
     coreutils-native \
 "
 
-# linux-fslc replaces the kernel source defined in linux-imx.inc.
-# nooelint: oelint.var.override
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
