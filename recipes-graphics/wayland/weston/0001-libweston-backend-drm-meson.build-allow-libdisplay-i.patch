@@ -13,8 +13,6 @@ Signed-off-by: Alexander Kanavin <alex@linutronix.de>
  libweston/backend-drm/meson.build | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/libweston/backend-drm/meson.build b/libweston/backend-drm/meson.build
-index 002669e..a8f2ea5 100644
 --- a/libweston/backend-drm/meson.build
 +++ b/libweston/backend-drm/meson.build
 @@ -4,7 +4,7 @@ endif
@@ -22,7 +20,7 @@ index 002669e..a8f2ea5 100644
  dep_libdisplay_info = dependency(
  	'libdisplay-info',
 -	version: ['>= 0.1.1', '< 0.3.0'],
-+	version: ['>= 0.1.1', '< 0.4.0'],
++	version: ['>= 0.1.1', '< 0.6.0'],
  	fallback: ['display-info', 'di_dep'],
  	default_options: [
  		'werror=false',
