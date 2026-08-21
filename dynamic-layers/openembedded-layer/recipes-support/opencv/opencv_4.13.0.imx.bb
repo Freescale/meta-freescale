@@ -79,14 +79,15 @@ addtask unpack_extra after do_unpack before do_patch
 
 CMAKE_VERBOSE = "VERBOSE=1"
 
-EXTRA_OECMAKE = "-DOPENCV_EXTRA_MODULES_PATH=${S}/contrib/modules \
-                 -DWITH_1394=OFF \
-                 -DENABLE_PRECOMPILED_HEADERS=OFF \
-                 -DCMAKE_SKIP_RPATH=ON \
-                 -DWITH_IPP=OFF \
-                 -DOPENCV_GENERATE_PKGCONFIG=ON \
-                 -DOPENCV_DOWNLOAD_PATH=${OPENCV_DLDIR} \
-                 -DOPENCV_ALLOW_DOWNLOADS=OFF \
+EXTRA_OECMAKE = " \
+    -DOPENCV_EXTRA_MODULES_PATH=${S}/contrib/modules \
+    -DWITH_1394=OFF \
+    -DENABLE_PRECOMPILED_HEADERS=OFF \
+    -DCMAKE_SKIP_RPATH=ON \
+    -DWITH_IPP=OFF \
+    -DOPENCV_GENERATE_PKGCONFIG=ON \
+    -DOPENCV_DOWNLOAD_PATH=${OPENCV_DLDIR} \
+    -DOPENCV_ALLOW_DOWNLOADS=OFF \
     ${@bb.utils.contains("TARGET_CC_ARCH", "-msse3", "-DCPU_DISPATCH=SSE,SSE2,SSE3,SSSE3", "", d)} \
     ${@bb.utils.contains("TARGET_CC_ARCH", "-msse4.1", "-DCPU_DISPATCH=SSE,SSE2,SSE3,SSSE3,SSE41", "", d)} \
     ${@bb.utils.contains("TARGET_CC_ARCH", "-msse4.2", "-DCPU_DISPATCH=SSE,SSE2,SSE3,SSSE3,SSE41,SSE42", "", d)} \
@@ -98,9 +99,11 @@ LDFLAGS:append:riscv32 = " -Wl,--no-as-needed -latomic -Wl,--as-needed"
 EXTRA_OECMAKE:append:x86 = " -DX86=ON"
 EXTRA_OECMAKE:append:aarch64 = " -DKLEIDICV_SOURCE_PATH=${S}/3rdparty/kleidicv"
 
-PACKAGECONFIG ??= "python3 eigen jpeg png tiff v4l libv4l samples tbb \
+PACKAGECONFIG ??= " \
+    python3 eigen jpeg png tiff v4l libv4l samples tbb \
     ${@bb.utils.contains_any('DISTRO_FEATURES', '${GTK3DISTROFEATURES}', 'gtk', '', d)}"
-PACKAGECONFIG:append:class-target = " gapi gstreamer gphoto2 \
+PACKAGECONFIG:append:class-target = " \
+    gapi gstreamer gphoto2 \
     ${@bb.utils.contains_any("LICENSE_FLAGS_ACCEPTED", "commercial_ffmpeg commercial", "libav", "", d)}"
 
 # TBB does not build for powerpc so disable that package config
@@ -145,11 +148,12 @@ export ANT_DIR = "${STAGING_DIR_NATIVE}/usr/share/ant/"
 
 TARGET_CC_ARCH += "-I${S}/include "
 
-PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'samples', '${PN}-samples', '', d)} \
+PACKAGES += " \
+    ${@bb.utils.contains('PACKAGECONFIG', 'samples', '${PN}-samples', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'oracle-java', '${PN}-java', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'java', '${PN}-java', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'python3', 'python3-${BPN}', '', d)} \
-             ${PN}-apps"
+    ${PN}-apps"
 
 python populate_packages:prepend () {
     cv_libdir = d.expand('${libdir}')
