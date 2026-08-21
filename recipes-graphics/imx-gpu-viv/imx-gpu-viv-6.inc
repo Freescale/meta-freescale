@@ -383,9 +383,9 @@ RDEPENDS:libgles2-imx-dev += "libgles3-imx-dev"
 FILES:libglslc-imx += "${libdir}/libGLSLC${SOLIBS}"
 
 FILES:libopencl-imx += "${libdir}/libOpenCL${REALSOLIBS} \
-                       ${libdir}/libVivanteOpenCL${SOLIBS} \
-                       ${libdir}/libLLVM_viv${SOLIBS} \
-                       ${sysconfdir}/OpenCL/vendors/Vivante.icd"
+                        ${libdir}/libVivanteOpenCL${SOLIBS} \
+                        ${libdir}/libLLVM_viv${SOLIBS} \
+                        ${sysconfdir}/OpenCL/vendors/Vivante.icd"
 FILES:libopencl-imx-dev += "${includedir}/CL ${libdir}/libOpenCL${SOLIBSDEV}"
 RDEPENDS:libopencl-imx = "libclc-imx"
 RPROVIDES:libopencl-imx = "virtual-opencl-icd"
