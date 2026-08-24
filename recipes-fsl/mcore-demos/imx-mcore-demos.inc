@@ -71,4 +71,7 @@ PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 # nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware"
 
+# The package ships Cortex-M firmware, whose ELF machine type differs from the
+# Cortex-A BSP target, so the arch QA check flags it by design.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "arch"
