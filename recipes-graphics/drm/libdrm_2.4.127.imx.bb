@@ -1,4 +1,8 @@
 SUMMARY = "Userspace interface to the kernel DRM services"
+# Continuation lines stay flush-left, as in the OE-core recipe: the value is
+# prose and each line is concatenated into the string, so indenting it would
+# inject spaces into DESCRIPTION. UPSTREAM-PARITY.
+# nooelint: oelint.vars.multilineident
 DESCRIPTION = "The runtime library for accessing the kernel DRM services.  DRM \
 stands for \"Direct Rendering Manager\", which is the kernel portion of the \
 \"Direct Rendering Infrastructure\" (DRI).  DRI is required for many hardware \
@@ -7,7 +11,7 @@ HOMEPAGE = "http://dri.freedesktop.org"
 SECTION = "x11/base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=9eb1f4831351ab42d762c40b3ebb7add \
-            file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c530816761e949dc71"
+                    file://xf86drm.c;beginline=9;endline=32;md5=c8a3b961af7667c530816761e949dc71"
 DEPENDS = "libpthread-stubs"
 PROVIDES = "drm"
 
