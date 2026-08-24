@@ -93,6 +93,9 @@ FILES_SOLIBS_VERSIONED = "\
     ${libdir}/libos08a20.so \
 "
 
+# The prebuilt ISP and sensor driver libraries are shipped already stripped, so
+# the already-stripped QA check does not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "already-stripped"
 
 RDEPENDS:${PN} = "libdrm"
