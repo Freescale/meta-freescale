@@ -77,7 +77,11 @@ PACKAGES += "${PN}-ta"
 FILES:${PN} = "${nonarch_base_libdir}/firmware/"
 FILES:${PN}-ta += "${nonarch_base_libdir}/optee_armtz/*"
 
-# note: "textrel" is not triggered on all archs
+# The OP-TEE OS image contains text relocations by design (not triggered on all
+# archs) and the -dev package ships the TA devkit static libraries, so the textrel
+# and staticdev QA checks do not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "textrel"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev = "staticdev"
 INHIBIT_PACKAGE_STRIP = "1"
