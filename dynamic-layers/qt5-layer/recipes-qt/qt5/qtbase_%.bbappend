@@ -25,10 +25,12 @@ PACKAGECONFIG_GL_IMX_GPU:mx8-nxp-bsp = "gbm kms"
 PACKAGECONFIG_GL_IMX_GPU:mx95-nxp-bsp = "gbm kms"
 
 PACKAGECONFIG_GL:imxpxp = "gles2"
-PACKAGECONFIG_GL:imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', ' gl', '', d)} \
-                             ${PACKAGECONFIG_GL_IMX_GPU}"
-PACKAGECONFIG_GL:imxgpu3d = "gles2 \
-                             ${PACKAGECONFIG_GL_IMX_GPU}"
+PACKAGECONFIG_GL:imxgpu2d = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'gl', '', d)} \
+    ${PACKAGECONFIG_GL_IMX_GPU}"
+PACKAGECONFIG_GL:imxgpu3d = " \
+    gles2 \
+    ${PACKAGECONFIG_GL_IMX_GPU}"
 PACKAGECONFIG_GL:use-mainline-bsp ?= "gles2 gbm kms"
 
 # Fallback default for the machine overrides below.
