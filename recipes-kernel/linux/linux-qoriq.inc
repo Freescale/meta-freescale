@@ -51,5 +51,8 @@ do_configure() {
     cp .config ${UNPACKDIR}/defconfig
 }
 
+# The kernel -src package ships generated build files (Makefiles, configs) that
+# reference build paths, so the buildpaths QA check cannot pass for it.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-src += "buildpaths"
 COMPATIBLE_MACHINE = "(qoriq)"
