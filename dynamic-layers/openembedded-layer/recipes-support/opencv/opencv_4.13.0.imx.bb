@@ -210,7 +210,13 @@ FILES:${PN}-java = "${datadir}/OpenCV/java"
 # nooelint: oelint.var.filesoverride
 FILES:${PN}-samples = "${datadir}/opencv4/samples/"
 
+# Kept byte-identical to meta-openembedded meta-oe/recipes-support/opencv/
+# opencv_*.bb (the verbatim copy section above). Diverging from the upstream
+# recipe to satisfy this check would create fork drift on every re-sync.
+# UPSTREAM-PARITY.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-java = "libdir"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg = "libdir"
 
 ALLOW_EMPTY:${PN} = "1"
