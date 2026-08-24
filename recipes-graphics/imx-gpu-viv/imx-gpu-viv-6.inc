@@ -323,12 +323,16 @@ FILES:libclc-imx += "${libdir}/libCLC${SOLIBS}"
 FILES:libegl-imx += "${libdir}/libEGL${REALSOLIBS} ${libdir}/libEGL${SOLIBS} "
 FILES:libegl-imx-dev += "${includedir}/EGL ${includedir}/KHR ${libdir}/pkgconfig/egl.pc"
 # libEGL.so is used by some demo apps from Freescale
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:libegl-imx += "dev-so"
 
 FILES:libgal-imx += "${libdir}/libGAL${SOLIBS} ${libdir}/libGAL_egl${SOLIBS}"
 RDEPENDS:libgal-imx += "${@bb.utils.contains('PACKAGECONFIG', 'valgrind', 'valgrind', '', d)}"
 RPROVIDES:libgal-imx += "libgal-imx"
 RRECOMMENDS:libgal-imx += "kernel-module-imx-gpu-viv"
+# Prebuilt Vivante blob: its build-time dependencies are not expressed as recipe
+# DEPENDS, so the build-deps QA check cannot be satisfied here.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:libgal-imx += "build-deps"
 
 FILES:libvsc-imx += "${libdir}/libVSC${SOLIBS}"
@@ -336,6 +340,8 @@ FILES:libvsc-imx += "${libdir}/libVSC${SOLIBS}"
 FILES:libgbm-imx += "${libdir}/libgbm*${REALSOLIBS} ${libdir}/libgbm${SOLIBS} ${libdir}/libgbm_viv${SOLIBS}"
 FILES:libgbm-imx-dev += "${libdir}/pkgconfig/gbm.pc ${includedir}/gbm.h"
 RDEPENDS:libgbm-imx:append = " libdrm"
+# libgbm ships its unversioned .so in the runtime package for dlopen consumers.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:libgbm-imx += "dev-so"
 
 FILES:libvulkan-imx += "\
@@ -360,6 +366,9 @@ RDEPENDS:libopenvx-imx = "${OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES}"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES = ""
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8qm-nxp-bsp = "libclc-imx libopencl-imx-dev"
 OPENCL_VX_INTRINSIC_EXTENSION_PACKAGES:mx8mp-nxp-bsp = "libclc-imx libopencl-imx-dev"
+# The runtime package pulls -dev packages (OpenCL/VX intrinsic extensions) by
+# design; the dev-deps QA check does not fit this prebuilt driver layout.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:libopenvx-imx += "dev-deps"
 
 FILES:libgles1-imx += "${libdir}/libGLESv1*${REALSOLIBS} ${libdir}/libGLESv1*${SOLIBS} ${libdir}/libGLES_*${REALSOLIBS} ${libdir}/libGLES_*${SOLIBS}"
@@ -367,12 +376,14 @@ FILES:libgles1-imx-dev += "${includedir}/GLES ${libdir}/pkgconfig/glesv1_cm.pc"
 RPROVIDES:libgles1-imx = "libgles-imx"
 RPROVIDES:libgles1-imx-dev = "libgles-imx-dev"
 # libEGL does dlopen of libGLESv1.so
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:libgles1-imx += "dev-so"
 
 FILES:libgles2-imx += "${libdir}/libGLESv2${REALSOLIBS} ${libdir}/libGLESv2${SOLIBS}"
 FILES:libgles2-imx-dev += "${includedir}/GLES2 ${libdir}/pkgconfig/glesv2.pc"
 RDEPENDS:libgles2-imx = "libglslc-imx"
 # libEGL does dlopen of libGLESv2.so
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:libgles2-imx += "dev-so"
 
 FILES:libgles3-imx-dev += "${includedir}/GLES3"
@@ -395,6 +406,7 @@ RPROVIDES:libopencl-imx:mx8mm-nxp-bsp = ""
 FILES:libopenvg-imx += "${libdir}/libOpenVG*${REALSOLIBS} ${libdir}/libOpenVG*${SOLIBS}"
 FILES:libopenvg-imx-dev += "${includedir}/VG ${libdir}/pkgconfig/vg.pc"
 # libEGL does dlopen of libOpenVG.so
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:libopenvg-imx += "dev-so"
 
 FILES:libvdk-imx += "${libdir}/libVDK*${REALSOLIBS}"
@@ -403,11 +415,15 @@ FILES:libvdk-imx-dev += "${includedir}/*vdk*.h ${libdir}/libVDK${SOLIBSDEV}"
 FILES:imx-gpu-viv-tools += "${bindir}/gmem_info"
 
 FILES:imx-gpu-viv-demos += "/opt"
+# Prebuilt demo binaries under /opt carry vendor rpaths and link the -dev
+# packages; the rpaths and dev-deps QA checks do not apply to them.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:imx-gpu-viv-demos += "rpaths dev-deps"
 
 FILES:libnn-imx += "${libdir}/libNN*${SOLIBS}"
 
 # It will use gcompat at runtime therefore checking for these at compile time wont be useful as
 # they dont match musl/gcompat but it should run fine
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 
