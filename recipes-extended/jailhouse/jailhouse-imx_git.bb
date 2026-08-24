@@ -109,12 +109,18 @@ RDEPENDS:pyjailhouse = "\
 
 RPROVIDES:${PN} += "jailhouse"
 
+# The hypervisor firmware and inmate binaries are linked bare-metal (the recipe
+# passes LDFLAGS="") and the vendor Makefile bakes build paths into them, so the
+# ldflags and buildpaths QA checks cannot pass for these packages.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "ldflags buildpaths"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg = "buildpaths"
 
 # The QA error in package kernel-module-${KERNEL_VERSION} cannot be skipped with
 # INSANE_SKIP, so adjust at the ERROR_QA level
 ERROR_QA:remove = "buildpaths"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:kernel-module-${KERNEL_VERSION} = "buildpaths"
 
 COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx8ulp-nxp-bsp|mx9-nxp-bsp)"
