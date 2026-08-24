@@ -31,7 +31,9 @@ FILES:${PN} += "${libdir}/libcamera ${datadir}/libcamera"
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""
 
-# Pre-built binaries are already stripped, so skip the QA test
+# Pre-built binaries are already stripped, so the already-stripped QA check
+# does not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "already-stripped"
 
 COMPATIBLE_MACHINE = "(mx95-generic-bsp)"
