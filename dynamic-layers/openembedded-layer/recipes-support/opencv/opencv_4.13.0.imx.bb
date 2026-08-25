@@ -145,7 +145,7 @@ export ANT_DIR = "${STAGING_DIR_NATIVE}/usr/share/ant/"
 
 TARGET_CC_ARCH += "-I${S}/include "
 
-PACKAGES += " \
+PACKAGES += "\
     ${@bb.utils.contains('PACKAGECONFIG', 'samples', '${PN}-samples', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'oracle-java', '${PN}-java', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'java', '${PN}-java', '', d)} \
@@ -308,6 +308,9 @@ SRC_URI += "\
     git://github.com/opencv/opencv_extra.git;destsuffix=extra;name=extra;branch=4.x;protocol=https \
     file://0001-Add-smaller-version-of-download_models.py.patch;patchdir=${UNPACKDIR}/extra \
 "
+# SRCREV_FORMAT is an underscore-joined list of SRC_URI names; the appended
+# component must attach directly with no leading space.
+# nooelint: oelint.vars.inconspaces
 SRCREV_FORMAT:append = "_extra"
 SRCREV_extra = "b6db059e9b80072d80d009d2ab344f8606a8e964"
 
