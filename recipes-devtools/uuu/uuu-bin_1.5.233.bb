@@ -31,7 +31,10 @@ do_install() {
     install -D -m 0644 ${UNPACKDIR}/uuu-${PV}.exe       ${D}${libdir}/uuu/uuu.exe
 }
 
-# HACK! We are not aiming to run those binaries during the build but copy then for MFGTOOL bundle.
+# These prebuilt binaries are bundled for the MFGTOOL package, not run on target,
+# so their foreign arch and unresolved file-rdeps are expected and the arch and
+# file-rdeps QA checks do not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "arch file-rdeps"
 # Prebuilt uuu host binaries are staged under ${libdir}/uuu for the MFGTOOL
 # bundle only; the main package holds exactly that directory.

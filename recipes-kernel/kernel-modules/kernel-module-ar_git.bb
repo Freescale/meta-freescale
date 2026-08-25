@@ -28,6 +28,9 @@ do_install(){
 }
 
 FILES:${PN} += "${bindir}/"
+# The userspace tools are linked by the module Makefile via CROSS_COMPILE and do
+# not consume the OE LDFLAGS, so the ldflags QA check cannot pass here.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "ldflags"
 COMPATIBLE_MACHINE = "(t1040|t1042)"
 

@@ -24,6 +24,9 @@ EXTRA_OECONF:append:mx8ulp-nxp-bsp = " --enable-imx8ulp"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+# Prebuilt NXP DSP codec blob (shipped as a .bin under EULA, not built from
+# source), so the arch, dev-so and ldflags QA checks cannot apply to it.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "arch dev-so ldflags"
 
 FILES:${PN} += "${libdir}/imx-mm/audio-codec/dsp ${datadir}/imx-mm"

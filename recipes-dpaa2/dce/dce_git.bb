@@ -20,5 +20,8 @@ do_install () {
     oe_runmake install DESTDIR=${D}
 }
 
+# The upstream Makefile controls linking through its own CC/CROSS_COMPILE and does
+# not consume the OE LDFLAGS, so the ldflags QA check cannot pass here.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "ldflags"
 COMPATIBLE_MACHINE = "(qoriq-arm64)"

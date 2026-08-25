@@ -84,10 +84,14 @@ PACKAGES =+ "${PN}-tests"
 
 FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/*"
 
+# The debug package and the test binaries embed build paths that the upstream
+# build does not sanitize, so the buildpaths QA check cannot pass for them.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg = "buildpaths"
 
 FILES:${PN}-tests += "${bindir}/* ${datadir}/${BPN}/*"
 RDEPENDS:${PN}-tests = "cmake"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-tests = "buildpaths"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
