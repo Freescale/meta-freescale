@@ -2,6 +2,9 @@ require qoriq-atf-${PV}.inc
 
 DEPENDS += "openssl"
 
+# PV is a version string; the appended part concatenates with a leading '+'
+# and must not contain a space.
+# nooelint: oelint.vars.inconspaces
 PV:append = "+${SRCPV}"
 
 EXTRA_OEMAKE = "fiptool V=1 PLAT=lx2162aqds HOSTCC='${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}'"

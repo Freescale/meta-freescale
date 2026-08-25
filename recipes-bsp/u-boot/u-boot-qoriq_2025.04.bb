@@ -21,7 +21,11 @@ DEPENDS:append:qoriq-ppc = " boot-format-native"
 
 PROVIDES += "u-boot"
 
+# PV is a version string; the appended parts concatenate with a leading '+'
+# and must not contain a space.
+# nooelint: oelint.vars.inconspaces
 PV:append = "+${SRCPV}"
+# nooelint: oelint.vars.inconspaces
 PV:append = "+fslgit"
 
 UBOOT_BRANCH ?= "lf_v2025.04"

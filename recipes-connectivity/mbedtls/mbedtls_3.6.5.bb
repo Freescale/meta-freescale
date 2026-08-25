@@ -43,7 +43,7 @@ PACKAGECONFIG[psa] = ""
 PACKAGECONFIG[tests] = "-DENABLE_TESTING=ON,-DENABLE_TESTING=OFF"
 
 # For now the only way to enable PSA is to explicitly pass a -D via CFLAGS
-CFLAGS:append = "${@bb.utils.contains('PACKAGECONFIG', 'psa', ' -DMBEDTLS_USE_PSA_CRYPTO', '', d)}"
+CFLAGS:append = " ${@bb.utils.contains('PACKAGECONFIG', 'psa', '-DMBEDTLS_USE_PSA_CRYPTO', '', d)}"
 
 PACKAGES =+ "${PN}-programs"
 FILES:${PN}-programs += "${bindir}/"

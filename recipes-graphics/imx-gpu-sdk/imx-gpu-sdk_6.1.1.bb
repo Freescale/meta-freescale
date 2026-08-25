@@ -51,10 +51,18 @@ WINDOW_SYSTEM = \
         bb.utils.contains('DISTRO_FEATURES',     'x11',         'X11', \
                                                                  'FB', d), d)}"
 
+# FEATURES is a comma-separated list passed to FslBuild.py as
+# --UseFeatures [${FEATURES}], so each appended token starts with a comma
+# and must NOT start with a space. A leading space would inject an invalid
+# feature name into the build.
 FEATURES = "ConsoleHost,EarlyAccess,EGL,GoogleUnitTest,Lib_NlohmannJson,OpenVG,Test_RequireUserInputToExit,WindowHost"
+# nooelint: oelint.vars.inconspaces
 FEATURES:append:imxgpu = ",HW_GPU_VIVANTE"
+# nooelint: oelint.vars.inconspaces
 FEATURES:append:imxgpu2d = ",G2D"
+# nooelint: oelint.vars.inconspaces
 FEATURES:append:imxgpu3d = ",OpenGLES2"
+# nooelint: oelint.vars.inconspaces
 FEATURES:append = "${FEATURES_SOC}"
 
 FEATURES_SOC = ""

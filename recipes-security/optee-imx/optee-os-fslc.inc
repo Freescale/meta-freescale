@@ -41,7 +41,7 @@ EXTRA_OEMAKE += "HOST_PREFIX=${HOST_PREFIX}"
 EXTRA_OEMAKE += "CROSS_COMPILE64=${HOST_PREFIX}"
 
 # Enable BTI in optee
-EXTRA_OEMAKE += "${@bb.utils.contains('MACHINE_FEATURES', 'arm-branch-protection', ' CFG_TA_BTI=1 CFG_CORE_PAUTH=y CFG_TA_PAUTH=y', '', d)}"
+EXTRA_OEMAKE += "${@bb.utils.contains('MACHINE_FEATURES', 'arm-branch-protection', 'CFG_TA_BTI=1 CFG_CORE_PAUTH=y CFG_TA_PAUTH=y', '', d)}"
 
 LDFLAGS[unexport] = "1"
 CPPFLAGS[unexport] = "1"
