@@ -31,10 +31,11 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.x
            "
 SRC_URI[sha256sum] = "4408d7930f381809e85917acc19712f173261ba85bdf20c5567b2a21b1193b61"
 
-PACKAGECONFIG ??= "${@bb.utils.contains('PTEST_ENABLED', '1', 'tests', '', d)} \
-                   check \
-                   debug \
-                   tools"
+PACKAGECONFIG ??= "\
+    ${@bb.utils.contains('PTEST_ENABLED', '1', 'tests', '', d)} \
+    check \
+    debug \
+    tools"
 
 PACKAGECONFIG[debug] = "-Dgst_debug=true,-Dgst_debug=false"
 PACKAGECONFIG[tracer-hooks] = "-Dtracer_hooks=true,-Dtracer_hooks=false"
