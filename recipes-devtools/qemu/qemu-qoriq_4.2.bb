@@ -30,7 +30,7 @@ python() {
 RDEPENDS:${PN}:class-target += "bash"
 
 EXTRA_OECONF:append:class-target = " --target-list=${@get_qemu_target_list(d)}"
-EXTRA_OECONF:append:class-target:mipsarcho32 = "${@bb.utils.contains('BBEXTENDCURR', 'multilib', ' --disable-capstone', '', d)}"
+EXTRA_OECONF:append:class-target:mipsarcho32 = " ${@bb.utils.contains('BBEXTENDCURR', 'multilib', '--disable-capstone', '', d)}"
 
 do_install_ptest() {
         cp -rL ${B}/tests ${D}${PTEST_PATH}

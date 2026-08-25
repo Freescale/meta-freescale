@@ -128,8 +128,8 @@ do_install:append() {
     fi
 }
 
-PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland', '', d)} \
-             libweston-${WESTON_MAJOR_VERSION} ${PN}-examples"
+PACKAGES += "libweston-${WESTON_MAJOR_VERSION} ${PN}-examples"
+PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland', '', d)}"
 
 FILES:${PN}-dev += "${libdir}/${BPN}/libexec_weston.so"
 # Main package is curated to weston's own binaries, config and plugins; the

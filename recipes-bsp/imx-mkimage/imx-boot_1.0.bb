@@ -45,7 +45,12 @@ SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
 OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
+# ATF_MACHINE_NAME is a filename used as ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}.
+# The appended tokens are hyphen-joined name suffixes and must not start with a
+# space, or the resulting path would contain a space and the copy would fail.
+# nooelint: oelint.vars.inconspaces
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('UBOOT_CONFIG', 'crrm', '-crrm', '', d)}"
+# nooelint: oelint.vars.inconspaces
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 BOOT_VARIANT ?= ""
