@@ -34,6 +34,9 @@ do_install() {
     install -m 0644 ${S}/include/imx-swpdm.h ${D}${includedir}/imx-mm/audio-codec/swpdm
 }
 
+# The library ships prebuilt objects that are already stripped, so the
+# already-stripped QA check does not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "already-stripped"
 
 FILES:${PN} += "${datadir}/imx-mm ${libdir}/*"

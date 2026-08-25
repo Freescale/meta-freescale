@@ -158,6 +158,9 @@ PACKAGECONFIG[vhost] = "--enable-vhost-net,--disable-vhost-net,,"
 PACKAGECONFIG[ust] = "--enable-trace-backend=ust,--enable-trace-backend=nop,lttng-ust,"
 PACKAGECONFIG[pie] = "--enable-pie,--disable-pie,,"
 
+# QEMU ships firmware and BIOS blobs built for guest architectures other than
+# the build target, so the arch QA check flags them by design.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "arch"
 
 FILES:${PN} += "${datadir}/icons"

@@ -30,5 +30,7 @@ do_deploy() {
 # nooelint: oelint.var.filesoverride oelint.var.override
 FILES:${PN} = "${includedir}/optee/"
 
-# Build paths are currently embedded
+# The TA devkit -dev package embeds build paths in its generated files, so the
+# buildpaths QA check cannot pass for it.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev += "buildpaths"

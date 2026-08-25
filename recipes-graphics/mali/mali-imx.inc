@@ -34,6 +34,9 @@ FILES:${PN} += "\
     ${libdir}/libmali.so \
     ${nonarch_base_libdir}/firmware"
 FILES_SOLIBSDEV = ""
+# libmali.so is shipped in the main package for dlopen consumers (above), so the
+# dev-so QA check does not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "dev-so"
 FILES:${PN}-libegl += "\
     ${libdir}/libEGL${SOLIBS}"

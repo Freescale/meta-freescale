@@ -27,6 +27,9 @@ SYSTEMD_AUTO_ENABLE = "enable"
 # The Basler camera stack installs into ${libdir} and /opt and is packed explicitly.
 # nooelint: oelint.var.filesoverride
 FILES:${PN} = "${libdir} /opt"
+# The Basler camera stack ships prebuilt binaries that are already stripped, so
+# the already-stripped QA check does not apply.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "already-stripped"
 RDEPENDS:${PN} += "isp-imx"
 

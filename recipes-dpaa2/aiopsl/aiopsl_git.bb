@@ -25,6 +25,9 @@ do_install () {
 }
 
 FILES:${PN} += "/usr/aiop/*"
+# The package ships AIOP accelerator-core firmware, whose ELF machine type is not
+# the host BSP arch, so the arch QA check flags it by design.
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} += "arch"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
