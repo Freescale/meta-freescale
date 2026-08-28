@@ -1,5 +1,12 @@
 {
     "comment": "Layer-specific oelint-adv constant DB. contrib/oelint/run-oelint.sh passes this file via --constantmods so standalone lint runs know about real variables/overrides that normally come from the full bitbake metadata context.",
+    "oelint-require-file-ignore": [
+        "recipes-bsp/u-boot/u-boot.inc",
+        "recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc",
+        "recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc",
+        "recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc",
+        "u-boot-fslc-common_${PV}.inc"
+    ],
     "functions": {
         "known": [
             "do_image_uboot_mxsboot_nand",
