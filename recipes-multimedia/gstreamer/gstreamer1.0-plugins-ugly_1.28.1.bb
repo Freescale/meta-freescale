@@ -42,3 +42,8 @@ EXTRA_OEMESON += "\
 
 FILES:${PN}-amrnb += "${datadir}/gstreamer-1.0/presets/GstAmrnbEnc.prs"
 FILES:${PN}-x264 += "${datadir}/gstreamer-1.0/presets/GstX264Enc.prs"
+
+# The per-plugin split packages (${PN}-*, libgst*) are created dynamically by
+# PACKAGES_DYNAMIC, which OE-core sets in gstreamer1.0-plugins-packaging.inc
+# (pulled in through the required gstreamer1.0-plugins-common.inc above).
+PACKAGES_DYNAMIC = "^${PN}-.* ^libgst.*"
