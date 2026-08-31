@@ -20,9 +20,9 @@ require optee-fslc.inc
 
 CVE_PRODUCT = "linaro:op-tee op-tee:op-tee_os"
 
-DEPENDS = "python3-cryptography-native python3-pyelftools-native"
+DEPENDS:append = " python3-cryptography-native python3-pyelftools-native"
 
-DEPENDS:append:toolchain-clang = " lld-native compiler-rt"
+DEPENDS:append:toolchain-clang = " compiler-rt lld-native"
 
 SRC_URI = "git://github.com/OP-TEE/optee_os.git;branch=master;protocol=https"
 

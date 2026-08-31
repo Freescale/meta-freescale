@@ -23,6 +23,8 @@ DEPENDS_MX8:mx8mm-nxp-bsp = "\
     opencv \
 "
 DEPENDS = "\
+    ${DEPENDS_BACKEND} \
+    ${DEPENDS_MX8} \
     assimp \
     cmake-native \
     devil \
@@ -38,8 +40,6 @@ DEPENDS = "\
     rapidjson \
     stb \
     zlib \
-    ${DEPENDS_BACKEND} \
-    ${DEPENDS_MX8} \
 "
 DEPENDS:append:imxgpu2d = " virtual/libg2d virtual/libopenvg"
 DEPENDS:append:imxgpu3d = " virtual/libgles2"
@@ -144,8 +144,8 @@ RDEPENDS_VULKAN_LOADER = ""
 RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp = "vulkan-loader vulkan-validation-layers"
 RDEPENDS_VULKAN_LOADER:mx8mm-nxp-bsp = ""
 RDEPENDS:${PN} += "\
-    ${RDEPENDS_EMPTY_MAIN_PACKAGE} \
     ${RDEPENDS_EMPTY_MAIN_PACKAGE_MX8} \
+    ${RDEPENDS_EMPTY_MAIN_PACKAGE} \
     ${RDEPENDS_VULKAN_LOADER} \
 "
 

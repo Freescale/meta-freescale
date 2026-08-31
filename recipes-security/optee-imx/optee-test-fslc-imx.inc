@@ -2,8 +2,6 @@
 # See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L39
 require optee-test-fslc.inc
 
-DEPENDS += "openssl"
-
 inherit features_check
 
 REQUIRED_MACHINE_FEATURES = "optee"
