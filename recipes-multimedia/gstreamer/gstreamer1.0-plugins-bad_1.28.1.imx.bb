@@ -229,4 +229,9 @@ EXTRA_OEMESON:remove = "\
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 
+# The per-plugin split packages (${PN}-*, libgst*) are created dynamically by
+# PACKAGES_DYNAMIC, which OE-core sets in gstreamer1.0-plugins-packaging.inc
+# (pulled in through the required gstreamer1.0-plugins-common.inc above).
+PACKAGES_DYNAMIC = "^${PN}-.* ^libgst.*"
+
 ########### End of i.MX overrides #########
