@@ -101,7 +101,7 @@ LIC_FILES_CHKSUM = "\
 PACKAGECONFIG:append = " pulseaudio"
 
 # fb implementation of v4l2 uses libdrm
-DEPENDS += "${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
+DEPENDS:append = " ${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
 DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
 
 # FIXME: imx93/943 DISTRO_FEATURES contains x11 but v4l2 implement by libdrm ?
