@@ -7,7 +7,7 @@ DESCRIPTION = "U-Boot based on mainline U-Boot used by FSL Community BSP in \
                version, or because it is not applicable for upstreaming."
 SECTION = "bootloaders"
 
-DEPENDS += "bc-native dtc-native python3-setuptools-native gnutls-native"
+DEPENDS:append = " bc-native dtc-native gnutls-native python3-setuptools-native"
 
 PROVIDES += "u-boot u-boot-mfgtool"
 
