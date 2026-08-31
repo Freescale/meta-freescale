@@ -189,6 +189,12 @@ python populate_packages:prepend () {
 }
 
 PACKAGES_DYNAMIC += "^libopencv-.*"
+# ${PN}-java, ${PN}-samples and python3-opencv are added to PACKAGES only under
+# the matching PACKAGECONFIG (java/oracle-java, samples, python3) via the
+# bb.utils.contains() expressions above. Declare them here so their
+# FILES/RDEPENDS/SUMMARY/INSANE_SKIP assignments are recognised even when the
+# current parse does not enable those PACKAGECONFIG options.
+PACKAGES_DYNAMIC += "^${PN}-java$ ^${PN}-samples$ ^python3-opencv$"
 
 # Main package is intentionally empty (see ALLOW_EMPTY below); everything is
 # split into the sub-packages and the PACKAGES_DYNAMIC libopencv-* packages.
