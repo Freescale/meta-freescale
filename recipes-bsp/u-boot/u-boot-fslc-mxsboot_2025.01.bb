@@ -5,7 +5,7 @@ SECTION = "bootloader"
 
 inherit python3native
 
-DEPENDS += "\
+DEPENDS:append = " \
     dtc \
     gnutls \
     openssl \
