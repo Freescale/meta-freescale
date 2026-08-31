@@ -9,14 +9,14 @@ SECTION = "bsp"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-DEPENDS += "xxd-native"
+DEPENDS:append = " xxd-native"
 DEPENDS:append:mx8m-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkeficapsule-native"
 DEPENDS:append:mx93-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkeficapsule-native"
 DEPENDS:append:mx95-generic-bsp = " u-boot-mkeficapsule-native"
 
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
-DEPENDS += "\
+DEPENDS:append = " \
     virtual/bootloader \
     ${IMX_EXTRA_FIRMWARE} \
     imx-atf \
