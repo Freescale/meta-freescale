@@ -20,5 +20,7 @@ COMPATIBLE_MACHINE = "(qoriq-arm64)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 RDEPENDS:${PN} += "bash dtc"
+# Package declared by the bash-completion class, invisible to standalone lint.
+# nooelint: oelint.vars.specific
 RDEPENDS:${PN}-bash-completion += "bash"
 
