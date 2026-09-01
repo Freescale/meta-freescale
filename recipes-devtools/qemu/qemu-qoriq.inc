@@ -34,7 +34,7 @@ do_compile_ptest() {
 }
 
 do_install_ptest() {
-    cp -rL ${B}/tests ${D}${PTEST_PATH}
+    cp --no-preserve=ownership -rL ${B}/tests ${D}${PTEST_PATH}
     find ${D}${PTEST_PATH}/tests -type f -name "*.[Sshcod]" | xargs -i rm -rf {}
 
     install -m 0644 ${S}/tests/Makefile.include ${D}${PTEST_PATH}/tests

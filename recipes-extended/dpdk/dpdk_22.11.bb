@@ -40,7 +40,7 @@ EXTRA_OEMESON = "\
 
 do_install:append(){
     install -d ${D}/${sysconfdir}/dpdk
-    cp -rf ${S}/nxp/* ${D}/${sysconfdir}/dpdk
+    cp --no-preserve=ownership -rf ${S}/nxp/* ${D}/${sysconfdir}/dpdk
 }
 
 # DPDK ships versioned and unversioned .so in the main runtime package.
