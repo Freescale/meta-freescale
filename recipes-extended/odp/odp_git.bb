@@ -50,10 +50,10 @@ do_install:append () {
     install -d ${D}${includedir}/odp/flib/mc
     install -d ${D}${includedir}/odp/flib/qbman/include/drivers
 
-    cp -rf ${S}/platform/linux-dpaa2/include/* ${D}${includedir}/odp/
-    cp -rf ${S}/platform/linux-dpaa2/kni/*.h ${D}${includedir}/odp/kni/
-    cp -rf ${S}/kern/*.h ${D}${includedir}/odp/kern/
-    cp -rf ${S}/platform/linux-dpaa2/flib/mc/*.h ${D}${includedir}/odp/flib/mc/
+    cp --no-preserve=ownership -rf ${S}/platform/linux-dpaa2/include/* ${D}${includedir}/odp/
+    cp --no-preserve=ownership -rf ${S}/platform/linux-dpaa2/kni/*.h ${D}${includedir}/odp/kni/
+    cp --no-preserve=ownership -rf ${S}/kern/*.h ${D}${includedir}/odp/kern/
+    cp --no-preserve=ownership -rf ${S}/platform/linux-dpaa2/flib/mc/*.h ${D}${includedir}/odp/flib/mc/
 
     sed -i -e 's#platform/linux-dpaa2/##g' ${D}${includedir}/odp/kern/*.h
 }
