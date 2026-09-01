@@ -184,17 +184,17 @@ do_install () {
     install -d ${D}${includedir}
     install -d ${D}${bindir}
 
-    cp -P ${S}/gpu-core/usr/lib/*.so* ${D}${libdir}
-    cp -r ${S}/gpu-core/usr/include/* ${D}${includedir}
-    cp -r ${S}/gpu-demos/opt ${D}
-    cp -r ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
+    cp --no-preserve=ownership -P ${S}/gpu-core/usr/lib/*.so* ${D}${libdir}
+    cp --no-preserve=ownership -r ${S}/gpu-core/usr/include/* ${D}${includedir}
+    cp --no-preserve=ownership -r ${S}/gpu-demos/opt ${D}
+    cp --no-preserve=ownership -r ${S}/gpu-tools/gmem-info/usr/bin/* ${D}${bindir}
 
     # Use vulkan header from vulkan-headers recipe to support vkmark
     rm -rf ${D}${includedir}/vulkan/
 
     # Install SOC-specific drivers
     if [ -d ${S}/gpu-core/usr/lib/${IMX_SOC} ]; then
-        cp -r ${S}/gpu-core/usr/lib/${IMX_SOC}/* ${D}${libdir}
+        cp --no-preserve=ownership -r ${S}/gpu-core/usr/lib/${IMX_SOC}/* ${D}${libdir}
     fi
 
     install -d ${D}${libdir}/pkgconfig
@@ -213,15 +213,15 @@ do_install () {
             install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gl.pc ${D}${libdir}/pkgconfig/gl.pc
         fi
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
-        cp -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
+        cp --no-preserve=ownership -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
     elif [ "${IS_MX8}" != "1" ]; then
         # Framebuffer backend for i.MX 6 and 7
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_linuxfb.pc ${D}${libdir}/pkgconfig/egl.pc
-        cp -r ${S}/gpu-core/usr/lib/fb/* ${D}${libdir}
+        cp --no-preserve=ownership -r ${S}/gpu-core/usr/lib/fb/* ${D}${libdir}
     else
         # Framebuffer backend for i.MX 8 and beyond
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl.pc         ${D}${libdir}/pkgconfig/egl.pc
-        cp -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
+        cp --no-preserve=ownership -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
         set -f
         for f in ${FILES:libvdk-imx} ${FILES:libvdk-imx-dev}; do
             set +f
