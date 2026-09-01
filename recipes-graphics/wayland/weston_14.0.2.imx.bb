@@ -135,6 +135,10 @@ do_install:append() {
 PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'xwayland', '${PN}-xwayland', '', d)}"
 PACKAGES += "libweston-${WESTON_MAJOR_VERSION} ${PN}-examples"
 
+# ${PN}-xwayland is only added to PACKAGES under the xwayland PACKAGECONFIG
+# (above); declare it so its FILES/RDEPENDS are recognised when it is not.
+PACKAGES_DYNAMIC += "^${PN}-xwayland$"
+
 FILES:${PN}-dev += "${libdir}/${BPN}/libexec_weston.so"
 # Main package is curated to weston's own binaries, config and plugins; the
 # shared libraries are split out into the libweston-${WESTON_MAJOR_VERSION} package.
