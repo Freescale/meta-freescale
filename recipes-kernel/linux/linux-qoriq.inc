@@ -11,9 +11,13 @@ DEPENDS:append = " libgcc coreutils-native"
 # Set the PV to the correct kernel version to satisfy the kernel version sanity check
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
+# Package declared by kernel.bbclass PACKAGES, invisible to standalone lint.
+# nooelint: oelint.vars.specific
 FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
 
 # not put Images into /boot of rootfs, install kernel-image if needed
+# Package declared by kernel.bbclass PACKAGES, invisible to standalone lint.
+# nooelint: oelint.vars.specific
 RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
 KERNEL_CC:append = " ${TOOLCHAIN_OPTIONS}"

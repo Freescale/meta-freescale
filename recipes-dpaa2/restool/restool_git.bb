@@ -20,5 +20,8 @@ COMPATIBLE_MACHINE = "(qoriq-arm64)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 RDEPENDS:${PN} += "bash dtc"
+# ${PN}-bash-completion is added to PACKAGES by the bash-completion class
+# (inherited above); declare it so its RDEPENDS is recognised by standalone lint.
+PACKAGES_DYNAMIC += "^${PN}-bash-completion$"
 RDEPENDS:${PN}-bash-completion += "bash"
 

@@ -112,6 +112,13 @@ PACKAGES_VULKAN = ""
 PACKAGES_VULKAN:imxvulkan = "libvulkan-imx libvulkan-imx-dev"
 PACKAGES_VULKAN:mx8mm-nxp-bsp = "libvulkan-imx libvulkan-imx-dev"
 
+# libgbm-imx, libvulkan-imx and libopenvx-imx (and their -dev variants) enter
+# PACKAGES only through the machine-conditional PACKAGES_GBM/_VULKAN and the
+# PROVIDES_OPENVX-gated PACKAGES_OPENVX above. Declare them as potentially
+# present so their FILES/RDEPENDS/RPROVIDES/INSANE_SKIP assignments are
+# recognised even when the current parse does not activate those conditions.
+PACKAGES_DYNAMIC += "^libgbm-imx ^libvulkan-imx ^libopenvx-imx"
+
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
         if has_vivante_kernel_driver_support != '1':
