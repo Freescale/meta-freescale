@@ -28,11 +28,11 @@ SOC_INSTALL_DIR:mx8mm-nxp-bsp = "mx8mm"
 do_install () {
     install -d ${D}${libdir}
     install -d ${D}${includedir}
-    cp -d ${S}/g2d/usr/lib/*.so* ${D}${libdir}
+    cp --no-preserve=ownership -d ${S}/g2d/usr/lib/*.so* ${D}${libdir}
     if [ -d ${S}/g2d/usr/lib/${SOC_INSTALL_DIR} ]; then
-        cp -d ${S}/g2d/usr/lib/${SOC_INSTALL_DIR}/*.so* ${D}${libdir}
+        cp --no-preserve=ownership -d ${S}/g2d/usr/lib/${SOC_INSTALL_DIR}/*.so* ${D}${libdir}
     fi
-    cp -Pr ${S}/g2d/usr/include/* ${D}${includedir}
+    cp --no-preserve=ownership -Pr ${S}/g2d/usr/include/* ${D}${includedir}
 }
 
 # The packaged binaries have been stripped of debug info, so disable
