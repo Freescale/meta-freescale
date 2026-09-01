@@ -13,7 +13,7 @@ do_install() {
     #install TA devkit
     install -d ${D}${includedir}/optee/export-user_ta/
     for f in ${B}/export-ta_${OPTEE_ARCH}/* ; do
-        cp -aR $f ${D}${includedir}/optee/export-user_ta/
+        cp -aR --no-preserve=ownership $f ${D}${includedir}/optee/export-user_ta/
     done
 }
 
