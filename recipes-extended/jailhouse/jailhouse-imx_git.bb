@@ -120,7 +120,8 @@ INSANE_SKIP:${PN}-dbg = "buildpaths"
 # The QA error in package kernel-module-${KERNEL_VERSION} cannot be skipped with
 # INSANE_SKIP, so adjust at the ERROR_QA level
 ERROR_QA:remove = "buildpaths"
-# nooelint: oelint.vars.insaneskip
+# Dynamic module package from the kernel-module-split class, invisible to standalone lint.
+# nooelint: oelint.vars.insaneskip oelint.vars.specific
 INSANE_SKIP:kernel-module-${KERNEL_VERSION} = "buildpaths"
 
 COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx8ulp-nxp-bsp|mx9-nxp-bsp)"
