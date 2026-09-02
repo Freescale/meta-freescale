@@ -15,11 +15,6 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 # nooelint: oelint.vars.specific
 FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
 
-# not put Images into /boot of rootfs, install kernel-image if needed
-# Package declared by kernel.bbclass PACKAGES, invisible to standalone lint.
-# nooelint: oelint.vars.specific
-RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
-
 KERNEL_CC:append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD:append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
