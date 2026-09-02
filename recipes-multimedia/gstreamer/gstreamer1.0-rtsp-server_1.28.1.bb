@@ -8,8 +8,6 @@ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base"
 
 PNREAL = "gst-rtsp-server"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
 SRC_URI = "https://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${PV}.tar.xz \
            file://0001-YOCIMX-9113-rtsp-examples-install-test-launch-and-te.patch \
            "
