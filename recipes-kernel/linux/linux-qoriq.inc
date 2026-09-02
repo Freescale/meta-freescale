@@ -13,9 +13,6 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 
 FILES:${KERNEL_PACKAGE_NAME}-image += "/boot/zImage*"
 
-# not put Images into /boot of rootfs, install kernel-image if needed
-RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""
-
 KERNEL_CC:append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD:append = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_EXTRA_ARGS += "LOADADDR=${UBOOT_ENTRYPOINT}"
