@@ -4,8 +4,6 @@ require optee-os-fslc.inc
 
 DEPENDS:append:arm = " u-boot-mkimage-native"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/optee-os:"
-
 SRC_URI:remove = "git://github.com/OP-TEE/optee_os.git;branch=master;protocol=https"
 SRC_URI:prepend = "${OPTEE_OS_SRC};branch=${SRCBRANCH} "
 SRC_URI:remove = "file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
