@@ -66,7 +66,6 @@ PE = "1"
 
 inherit fsl-eula-unpack
 
-FILESEXTRAPATHS:append := "${THISDIR}/imx-gpu-viv:"
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 
 S = "${UNPACKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
