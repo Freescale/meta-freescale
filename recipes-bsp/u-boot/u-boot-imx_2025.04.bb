@@ -4,6 +4,7 @@
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-imx-common_${PV}.inc
+SUMMARY = "U-Boot bootloader for the NXP i.MX reference boards"
 HOMEPAGE = "https://github.com/nxp-imx/uboot-imx"
 SECTION = "bootloaders"
 

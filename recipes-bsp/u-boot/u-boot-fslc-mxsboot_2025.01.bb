@@ -1,6 +1,7 @@
 require u-boot-fslc-common_${PV}.inc
 
-DESCRIPTION = "U-boot bootloader mxsboot tool"
+SUMMARY = "mxsboot boot-stream tool from the FSL Community BSP U-Boot"
+DESCRIPTION = "The mxsboot tool from the FSL Community BSP U-Boot. It converts a U-Boot binary into the boot stream format that the i.MX23 and i.MX28 boot ROM reads from SD or NAND."
 SECTION = "bootloader"
 
 inherit python3native

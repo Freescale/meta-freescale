@@ -9,6 +9,7 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
 
 SUMMARY = "'Bad' GStreamer plugins and helper libraries "
+DESCRIPTION = "GStreamer plugins that do not yet meet the standard of the other plugin sets, because each one still lacks a code review, documentation, tests, an active maintainer or wide use."
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues"
 CVE_PRODUCT = "gst-plugins-bad"
