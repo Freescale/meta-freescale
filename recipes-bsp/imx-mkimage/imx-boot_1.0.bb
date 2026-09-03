@@ -7,7 +7,7 @@ DESCRIPTION = "Generate Boot Loader for i.MX 8 device"
 HOMEPAGE = "https://github.com/nxp-imx/imx-mkimage"
 SECTION = "bsp"
 LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=59530bdf33659b29e73d4adb9f9f6552"
 
 DEPENDS:append = " xxd-native"
 DEPENDS:append:mx8m-generic-bsp = " u-boot-mkimage-native dtc-native u-boot-mkeficapsule-native"
