@@ -1,18 +1,10 @@
-# The oelint.vars.noncoreoverride suppressions below are the layer's
-# machine-gated dispatch idiom: none of it can carry an override of its own,
-# and all of it is inert off-target -- measured on qemuarm64 with bitbake -e,
-# meta-freescale in and out of BBLAYERS.
-
 # Standard bbappend idiom; cannot carry an override.
 # nooelint: oelint.vars.noncoreoverride
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-# General build fixes (cl test include dirs, GCC memory-flag error).
-#
-# Deliberately unscoped and NOT suppressed: this really does patch piglit on
-# every machine, so the finding is correct. Scoping it would break non-i.MX
-# builds that currently succeed only because these fix genuine upstream
-# errors. The real fix is to send both patches to openembedded-core.
+# Both fix upstream cl tests generally, not on i.MX only, so scoping them would
+# leave the tests broken on every other machine. Both are filed upstream.
+# nooelint: oelint.vars.noncoreoverride
 SRC_URI += "file://0001-tests-Fix-cl-test-Include-Directories-error-Error-0-.patch \
             file://0002-cl-Add-mutually-exclusive-memory-flags-for-CL_MEM_KE.patch"
 
