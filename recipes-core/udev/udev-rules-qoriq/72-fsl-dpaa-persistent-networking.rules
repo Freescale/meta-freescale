@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Rules for handling naming the DPAA FMan ethernet ports in a consistent way
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4e0000", NAME="fm1-mac1"
 SUBSYSTEM=="net", DRIVERS=="fsl_dpa*", ATTR{device_addr}=="ffe4e2000", NAME="fm1-mac2"
