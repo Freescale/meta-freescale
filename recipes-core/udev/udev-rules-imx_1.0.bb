@@ -3,7 +3,7 @@ DESCRIPTION = "udev rules for Freescale i.MX SOCs"
 HOMEPAGE = "https://github.com/Freescale/meta-freescale/"
 SECTION = "base"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+LIC_FILES_CHKSUM = "file://10-imx.rules;beginline=1;endline=1;md5=b2dccaa94b3629a08bfb4f983cad6f89"
 
 SRC_URI = "file://10-imx.rules"
 

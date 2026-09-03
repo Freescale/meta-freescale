@@ -7,7 +7,7 @@ DESCRIPTION = "Builds the Vivante GPU kernel driver as a loadable kernel module,
 HOMEPAGE = "https://github.com/nxp-imx/linux-imx"
 SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
+LIC_FILES_CHKSUM = "file://src/hal/kernel/gc_hal_kernel.h;beginline=1;endline=53;md5=3d2a1d218039b0a6f5b4b4c3a9f42931"
 
 SRC_URI = "${LINUX_IMX_SRC};subpath=drivers/mxc/gpu-viv;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/src \
            file://Add-makefile.patch"
