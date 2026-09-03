@@ -6,7 +6,7 @@ DESCRIPTION = "AIOP Tool is a userspace application for performing operations \
 HOMEPAGE = "https://github.com/nxp-qoriq/gpp-aioptool"
 SECTION = "dpaa2"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=386a6287daa6504b7e7e5014ddfb3987"
 
 SRC_URI = "git://github.com/nxp-qoriq/gpp-aioptool;protocol=https;nobranch=1 \
            file://0001-remove-libio.h.patch \

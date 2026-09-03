@@ -3,7 +3,7 @@ DESCRIPTION = "A full featured cross-platform image library"
 HOMEPAGE = "https://openil.sourceforge.net/"
 SECTION = "libs"
 LICENSE = "LGPL-2.1-only"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/LGPL-2.1-only;md5=1a6d268fd218675ffea8be556788b780"
+LIC_FILES_CHKSUM = "file://../LICENSE;md5=fc178bcd425090939a8b634d1d6a9594"
 PR = "r0"
 
 DEPENDS = "jpeg libpng tiff xz"

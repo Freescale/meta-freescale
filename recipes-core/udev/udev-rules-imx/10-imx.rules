@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Create symlinks for i.mx keypads and touchscreens
 #SUBSYSTEM=="input" KERNEL=="event*" ATTRS{name}=="mxckpd",     SYMLINK+="input/keyboard0"
 #SUBSYSTEM=="input" KERNEL=="event*" ATTRS{name}=="mxc_ts",     SYMLINK+="input/ts0"

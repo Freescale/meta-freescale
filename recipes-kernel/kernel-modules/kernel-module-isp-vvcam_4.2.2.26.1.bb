@@ -5,7 +5,7 @@ DESCRIPTION = "Kernel loadable module for ISP"
 HOMEPAGE = "https://github.com/nxp-imx/isp-vvcam"
 SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://${S}/../LICENSE;md5=64381a6ea83b48c39fe524c85f65fb44"
+LIC_FILES_CHKSUM = "file://../LICENSE;md5=64381a6ea83b48c39fe524c85f65fb44"
 
 SRC_URI = "${ISP_KERNEL_SRC};branch=${SRCBRANCH} \
            file://0001-video-add-v4l2-fh-compat-for-pre-6.18-kernels.patch \
