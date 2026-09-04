@@ -103,9 +103,8 @@ PACKAGES_OPENCL = "libclc-imx libopencl-imx libopencl-imx-dev"
 PACKAGES_OPENCL:mx7-nxp-bsp = ""
 PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
 
-PACKAGES_OPENVX = \
-    "${@bb.utils.contains("PROVIDES_OPENVX", "virtual/libopenvx", \
-        "libopenvx-imx libopenvx-imx-dev", "", d)}"
+PACKAGES_OPENVX = "${@bb.utils.contains("PROVIDES_OPENVX", "virtual/libopenvx", \
+                      "libopenvx-imx libopenvx-imx-dev", "", d)}"
 
 PACKAGES_VULKAN = ""
 PACKAGES_VULKAN:imxvulkan = "libvulkan-imx libvulkan-imx-dev"
