@@ -5,10 +5,8 @@ SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://License.md;md5=9d58a2573275ce8c35d79576835dbeb8"
 
-DEPENDS_BACKEND = \
-    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' libxdg-shell wayland', \
-        bb.utils.contains('DISTRO_FEATURES',     'x11',               ' xrandr', \
-                                                                             '', d), d)}"
+DEPENDS_BACKEND = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' libxdg-shell wayland', \
+                      bb.utils.contains('DISTRO_FEATURES', 'x11', ' xrandr', '', d), d)}"
 DEPENDS_MX8 = ""
 DEPENDS_MX8:mx8-nxp-bsp = "\
     glslang-native \
@@ -46,10 +44,8 @@ DEPENDS:append:imxgpu3d = " virtual/libgles2"
 
 require imx-gpu-sdk-src.inc
 
-WINDOW_SYSTEM = \
-    "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'Wayland_XDG', \
-        bb.utils.contains('DISTRO_FEATURES',     'x11',         'X11', \
-                                                                 'FB', d), d)}"
+WINDOW_SYSTEM = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'Wayland_XDG', \
+                    bb.utils.contains('DISTRO_FEATURES', 'x11', 'X11', 'FB', d), d)}"
 
 # FEATURES is a comma-separated list passed to FslBuild.py as
 # --UseFeatures [${FEATURES}], so each appended token starts with a comma
