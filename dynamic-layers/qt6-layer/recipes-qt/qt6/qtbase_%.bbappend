@@ -56,9 +56,12 @@ PACKAGECONFIG_PLATFORM_EGLFS:mx8-nxp-bsp = "\
 PACKAGECONFIG_PLATFORM:use-mainline-bsp = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'eglfs', d)}"
 
-PACKAGECONFIG += "\
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '${PACKAGECONFIG_WAYLAND}', '', d)}"
-PACKAGECONFIG_WAYLAND = "wayland"
+# meta-qt6 carries the wayland knob in PACKAGECONFIG_GRAPHICS, which the machine
+# assignments above replace. Restore it on the machines this layer provides.
+PACKAGECONFIG:append:imx-generic-bsp = "\
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)}"
+PACKAGECONFIG:append:qoriq = "\
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)}"
 
 # No-op off-target: the helper it consumes expands empty.
 # nooelint: oelint.vars.noncoreoverride
