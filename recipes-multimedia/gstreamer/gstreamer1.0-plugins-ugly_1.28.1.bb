@@ -2,6 +2,7 @@ require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-license.inc
 
 SUMMARY = "'Ugly GStreamer plugins"
+DESCRIPTION = "GStreamer plugins with good quality code and correct functionality that can still be a problem to distribute, because the licence of the plugin or of a library it needs is a concern."
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-ugly/-/issues"
 

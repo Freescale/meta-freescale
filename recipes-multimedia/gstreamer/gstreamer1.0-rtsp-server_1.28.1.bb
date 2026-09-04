@@ -1,4 +1,5 @@
 SUMMARY = "A library on top of GStreamer for building an RTSP server"
+DESCRIPTION = "A GStreamer library that supplies the objects an application needs to build an RTSP server, such as media factories, session pools and stream transports."
 HOMEPAGE = "http://cgit.freedesktop.org/gstreamer/gst-rtsp-server/"
 SECTION = "multimedia"
 LICENSE = "LGPL-2.1-or-later"

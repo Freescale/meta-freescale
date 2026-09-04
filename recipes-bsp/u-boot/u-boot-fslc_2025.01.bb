@@ -1,6 +1,7 @@
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-fslc-common_${PV}.inc
 
+SUMMARY = "Mainline U-Boot bootloader for the FSL Community BSP"
 DESCRIPTION = "U-Boot based on mainline U-Boot used by FSL Community BSP in \
                order to provide support for some backported features and fixes, or because it \
                was submitted for revision and it takes some time to become part of a stable \

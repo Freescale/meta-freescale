@@ -6,6 +6,7 @@
 # Upstream hash: f4b9dfa0c903bc94c344c657917a3fbb229c322f
 
 SUMMARY = "Linux libcamera framework"
+DESCRIPTION = "A camera stack for Linux that hides the complexity of modern camera hardware, and gives applications one interface for capture, 3A control and pipeline handling."
 HOMEPAGE = "https://github.com/nxp-imx/libcamera"
 SECTION = "libs"
 

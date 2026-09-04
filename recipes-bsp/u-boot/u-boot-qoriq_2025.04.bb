@@ -1,5 +1,6 @@
 require recipes-bsp/u-boot/u-boot.inc
 
+SUMMARY = "U-Boot bootloader for NXP QorIQ boards"
 DESCRIPTION = "U-Boot provided by Freescale with focus on QorIQ boards"
 HOMEPAGE = "https://github.com/nxp-qoriq/u-boot"
 SECTION = "bootloaders"

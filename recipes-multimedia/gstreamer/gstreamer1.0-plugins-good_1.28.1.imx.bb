@@ -8,6 +8,7 @@
 require recipes-multimedia/gstreamer/gstreamer1.0-plugins-common.inc
 
 SUMMARY = "'Good' GStreamer plugins"
+DESCRIPTION = "GStreamer plugins with good quality code and correct functionality that carry the preferred licence: LGPL for the plugin code and an LGPL-compatible licence for the supporting libraries."
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues"
 

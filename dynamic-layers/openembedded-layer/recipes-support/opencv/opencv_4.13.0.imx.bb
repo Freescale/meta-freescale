@@ -7,6 +7,7 @@
 # Upstream hash: 9b77eae6988e98adbec5323d2491afc6b327c91a
 
 SUMMARY = "Opencv : The Open Computer Vision Library"
+DESCRIPTION = "A computer vision and machine learning library that gives applications a common infrastructure for image processing, video analysis, camera calibration, object detection and machine learning."
 HOMEPAGE = "http://opencv.org/"
 SECTION = "libs"
 
