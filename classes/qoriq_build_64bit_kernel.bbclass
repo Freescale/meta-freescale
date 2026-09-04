@@ -1,10 +1,9 @@
 inherit features_check
 REQUIRED_DISTRO_FEATURES:e6500 += "multiarch"
 
-# oelint.vars.noncoreoverride fires on the anonymous python below and is not
-# suppressed: oelint anchors it to the preceding line, so a directive there
-# only moves the anchor onto itself. This is a bbclass, so it affects only
-# recipes that inherit it, and the body is inert unless BUILD_64BIT_KERNEL is "1".
+# BUILD_64BIT_KERNEL is this class's interface, not a machine override: any
+# machine that sets it gets the promotion, and in-tree only e6500.inc does.
+# nooelint: oelint.vars.noncoreoverride
 python () {
     promote_kernel = d.getVar('BUILD_64BIT_KERNEL', False)
     if promote_kernel == "1":

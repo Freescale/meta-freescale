@@ -6,21 +6,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/qt4:"
 
 DEPENDS:append:imxgpu2d = " virtual/kernel virtual/libgles2"
 
-# Kernel shared-workdir dependency is only needed on mx6; keep it as an
-# anonymous python guard on MACHINEOVERRIDES families.
-# oelint.vars.noncoreoverride also fires here and is not suppressed: for an
-# anonymous python block oelint anchors the finding to the preceding line, so a
-# directive there only moves the anchor onto itself. The handler tests
-# MACHINEOVERRIDES for the mx6 family first, so it is a no-op elsewhere.
-# nooelint: oelint.task.noanonpython
-python __anonymous () {
-    families = ['mx6']
-    cur_families = (d.getVar('MACHINEOVERRIDES') or '').split(':')
-    if any(map(lambda x: x in cur_families,
-               families)):
-        d.appendVarFlag('do_configure', 'depends', ' virtual/kernel:do_shared_workdir')
-}
-
 SRC_URI:append:imxgpu2d = " \
     file://0001-Add-support-for-i.MX-codecs-to-phonon.patch \
     file://0002-i.MX-video-renderer-Allow-v4l-device-from-environmen.patch \

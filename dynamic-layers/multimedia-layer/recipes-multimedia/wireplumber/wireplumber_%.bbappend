@@ -19,4 +19,3 @@ do_install:append:imx-nxp-bsp () {
     install -m 0644 ${UNPACKDIR}/80-disable-logind.conf ${D}${datadir}/wireplumber/wireplumber.conf.d
 }
 
-FILES:${PN}:append = " ${datadir}/wireplumber/wireplumber.conf.d"
