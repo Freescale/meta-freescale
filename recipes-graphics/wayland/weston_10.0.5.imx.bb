@@ -5,6 +5,9 @@
 ########### OE-core copy ##################
 # Upstream hash: 4b42fd87da290ddea098605aea3a5cce1fb432a7
 
+# Overridden in the i.MX overrides section below; kept here to preserve the
+# verbatim OE-core copy (see header). UPSTREAM-PARITY.
+# nooelint: oelint.var.override
 SUMMARY = "Weston, a Wayland compositor"
 DESCRIPTION = "Weston is the reference implementation of a Wayland compositor"
 HOMEPAGE = "http://wayland.freedesktop.org"

@@ -1,8 +1,14 @@
 # Copied from meta-arm/recipes-security/optee/optee-os.inc.
 # See: https://github.com/nxp-imx/imx-manifest/blob/imx-linux-whinlatter/imx-6.18.2-1.0.0.xml#L32
 
+# SUMMARY/DESCRIPTION/HOMEPAGE are the verbatim meta-arm values (see header),
+# kept identical to the mirrored source rather than reworked locally. The
+# optee-os-tadevkit variants re-set SUMMARY/DESCRIPTION for the devkit.
+# nooelint: oelint.var.override
 SUMMARY = "OP-TEE Trusted OS"
+# nooelint: oelint.var.override
 DESCRIPTION = "Open Portable Trusted Execution Environment - Trusted side of the TEE"
+# nooelint: oelint.var.override
 HOMEPAGE = "https://www.op-tee.org/"
 SECTION = "base"
 
