@@ -6,6 +6,8 @@ COMPATIBLE_MACHINE = "(qoriq)"
 
 DEPENDS += "bison-native glib-2.0 pixman zlib"
 
+PROVIDES += "qemu"
+
 SRC_URI = "gitsm://github.com/nxp-qoriq/qemu;protocol=https;nobranch=1 \
            file://powerpc_rom.bin \
            file://run-ptest \
@@ -14,8 +16,10 @@ SRC_URI = "gitsm://github.com/nxp-qoriq/qemu;protocol=https;nobranch=1 \
 
 SRCREV = "a46ddbbe661677dcfa342f00ab7ab71e5f6f1a09"
 
+# The rename must follow PACKAGES, not a copy of it: BitBake cannot generate
+# RPROVIDES:<pkg> variable names declaratively.
+# nooelint: oelint.task.noanonpython
 python() {
-    d.appendVar('PROVIDES', ' ' + d.getVar('BPN').replace('-qoriq', ''))
     pkgs = d.getVar('PACKAGES').split()
     for p in pkgs:
         if '-qoriq' in p:
