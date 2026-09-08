@@ -39,6 +39,9 @@ inherit fsl-u-boot-localversion
 B = "${UNPACKDIR}/build"
 LOCALVERSION = "+fsl"
 
+# A machine in this family needs a multilib cross toolchain. When the
+# configuration builds none, only a parse-time raise can drop the recipe.
+# nooelint: oelint.task.noanonpython
 python () {
     if d.getVar("TCMODE") == "external-fsl":
         return
