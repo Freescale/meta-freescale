@@ -90,30 +90,57 @@ RDEPENDS:${PN}-libgles3-dev = "${PN}-libgles-dev"
 FILES:${PN}-opencl-icd-dev += "\
     ${bindir}/mali_clcc"
 
-python __anonymous() {
+# The GPU interface packages keep their ${PN}- prefix: Debian renaming would
+# drop it and collide with the generic mesa package names.
+DEBIAN_NOAUTONAME:${PN}-libegl = "1"
+DEBIAN_NOAUTONAME:${PN}-libegl-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgbm = "1"
+DEBIAN_NOAUTONAME:${PN}-libgbm-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles1 = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles1-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles2 = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles2-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles3 = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles3-dev = "1"
 
-    # Avoid Debian-renaming
-    for p in (("libegl",    "libegl1"      ),
-              ("libgbm",    "libgbm1"      ),
-              ("libgles1",  "libglesv1-cm1"),
-              ("libgles2",  "libglesv2-2"  ),
-              ("libgles3",                 )):
-        fullp = "${PN}-" + p[0]
-        pkgs = "".join(' %s' % i for i in p)
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:"  + fullp, pkgs)
-        d.appendVar("RPROVIDES:"  + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-        # libmali.so is loaded with dlopen, so an explicit runtime dependency is necessary
-        d.appendVar("RDEPENDS:"   + fullp, "${PN}")
+RREPLACES:${PN}-libegl += "libegl libegl1"
+RREPLACES:${PN}-libegl-dev += "libegl-dev"
+RREPLACES:${PN}-libgbm += "libgbm libgbm1"
+RREPLACES:${PN}-libgbm-dev += "libgbm-dev"
+RREPLACES:${PN}-libgles1 += "libgles1 libglesv1-cm1"
+RREPLACES:${PN}-libgles1-dev += "libgles1-dev"
+RREPLACES:${PN}-libgles2 += "libgles2 libglesv2-2"
+RREPLACES:${PN}-libgles2-dev += "libgles2-dev"
+RREPLACES:${PN}-libgles3 += "libgles3"
+RREPLACES:${PN}-libgles3-dev += "libgles3-dev"
 
-        # For -dev, the first element is both the Debian and original name
-        fullp += "-dev"
-        pkgs = p[0] + "-dev"
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:"  + fullp, pkgs)
-        d.appendVar("RPROVIDES:"  + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-}
+# libmali.so is loaded with dlopen, so an explicit runtime dependency is necessary
+RDEPENDS:${PN}-libegl += "${PN}"
+RDEPENDS:${PN}-libgbm += "${PN}"
+RDEPENDS:${PN}-libgles1 += "${PN}"
+RDEPENDS:${PN}-libgles2 += "${PN}"
+RDEPENDS:${PN}-libgles3 += "${PN}"
+
+RPROVIDES:${PN}-libegl += "libegl libegl1"
+RPROVIDES:${PN}-libegl-dev += "libegl-dev"
+RPROVIDES:${PN}-libgbm += "libgbm libgbm1"
+RPROVIDES:${PN}-libgbm-dev += "libgbm-dev"
+RPROVIDES:${PN}-libgles1 += "libgles1 libglesv1-cm1"
+RPROVIDES:${PN}-libgles1-dev += "libgles1-dev"
+RPROVIDES:${PN}-libgles2 += "libgles2 libglesv2-2"
+RPROVIDES:${PN}-libgles2-dev += "libgles2-dev"
+RPROVIDES:${PN}-libgles3 += "libgles3"
+RPROVIDES:${PN}-libgles3-dev += "libgles3-dev"
+
+RCONFLICTS:${PN}-libegl += "libegl libegl1"
+RCONFLICTS:${PN}-libegl-dev += "libegl-dev"
+RCONFLICTS:${PN}-libgbm += "libgbm libgbm1"
+RCONFLICTS:${PN}-libgbm-dev += "libgbm-dev"
+RCONFLICTS:${PN}-libgles1 += "libgles1 libglesv1-cm1"
+RCONFLICTS:${PN}-libgles1-dev += "libgles1-dev"
+RCONFLICTS:${PN}-libgles2 += "libgles2 libglesv2-2"
+RCONFLICTS:${PN}-libgles2-dev += "libgles2-dev"
+RCONFLICTS:${PN}-libgles3 += "libgles3"
+RCONFLICTS:${PN}-libgles3-dev += "libgles3-dev"
 
 COMPATIBLE_MACHINE = "(mx95-nxp-bsp)"
