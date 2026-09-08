@@ -7,8 +7,6 @@ HOMEPAGE = "http://qemu.org"
 SECTION = "devel"
 LICENSE = "GPL-2.0-only & LGPL-2.1-only"
 
-RDEPENDS:${PN}-ptest = "bash make"
-
 require qemu-targets.inc
 inherit pkgconfig ptest
 
@@ -164,3 +162,5 @@ make_qemu_wrapper[doc] = "Wrap the installed qemu-system-* binaries so they find
 INSANE_SKIP:${PN} = "arch"
 
 FILES:${PN} += "${datadir}/icons"
+
+RDEPENDS:${PN}-ptest += "bash make"
