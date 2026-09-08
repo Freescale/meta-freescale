@@ -59,6 +59,9 @@ do_populate_mfgtool[dirs] += "${DEPLOY_DIR_IMAGE} ${WORKDIR}"
 do_populate_mfgtool[recrdeptask] += "do_deploy"
 do_populate_mfgtool[depends] += "uuu-bin:do_populate_sysroot"
 
+# MFGTOOLCONFIG is parsed like PACKAGECONFIG: BitBake cannot enumerate varflags
+# declaratively, and do_populate_mfgtool[depends] must exist before the task graph.
+# nooelint: oelint.task.noanonpython
 python () {
     depends = []
     deploy_files = ""
