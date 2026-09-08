@@ -75,7 +75,8 @@ PACKAGECONFIG ?= ""
 # Enables valgrind annotations for libgal-imx
 PACKAGECONFIG[valgrind] = ""
 
-# Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
+# Note: if you add a package here, see the Debian-rename block at the end of
+# this file to prevent a naming conflict.
 PACKAGES =+ "\
     libgles1-imx libgles1-imx-dev \
     libgles2-imx libgles2-imx-dev \
@@ -136,33 +137,10 @@ INHIBIT_SYSROOT_STRIP = "1"
 REALSOLIBS := "${SOLIBS}"
 SOLIBS = "${SOLIBSDEV}"
 
-python __anonymous() {
-    # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
-    # the source we cannot fix it. Disable the insane check for now.
-    packages = d.getVar('PACKAGES').split()
-    for p in packages:
-        d.appendVar("INSANE_SKIP:%s" % p, " ldflags")
-
-    # For the packages that make up the OpenGL interfaces, inject variables so that
-    # they don't get Debian-renamed (which would remove the -imx suffix).
-    for p in (("libegl", "libegl1"),
-              ("libgles1", "libglesv1-cm1"), ("libgles2", "libglesv2-2"),
-              ("libgles3",), ("libgbm",)):
-        fullp = p[0] + "-imx"
-        pkgs = "".join(' %s' % i for i in p)
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:" + fullp, pkgs)
-        d.appendVar("RPROVIDES:" + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-
-        # For -dev, the first element is both the Debian and original name
-        fullp += "-dev"
-        pkgs = " " + p[0] + "-dev"
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:" + fullp, pkgs)
-        d.appendVar("RPROVIDES:" + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-}
+# FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
+# the source we cannot fix it. Disable the insane check for now.
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP += "ldflags"
 
 IS_MX6SL = "0"
 IS_MX6SL:mx6sl-nxp-bsp = "1"
@@ -432,3 +410,44 @@ FILES:libnn-imx += "${libdir}/libNN*${SOLIBS}"
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 
+# The OpenGL interface packages keep their -imx suffix: Debian renaming would
+# drop it and collide with the generic mesa package names.
+DEBIAN_NOAUTONAME:libegl-imx = "1"
+DEBIAN_NOAUTONAME:libegl-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgles1-imx = "1"
+DEBIAN_NOAUTONAME:libgles1-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgles2-imx = "1"
+DEBIAN_NOAUTONAME:libgles2-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgles3-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgbm-imx = "1"
+DEBIAN_NOAUTONAME:libgbm-imx-dev = "1"
+
+RREPLACES:libegl-imx += "libegl libegl1"
+RREPLACES:libegl-imx-dev += "libegl-dev"
+RREPLACES:libgles1-imx += "libgles1 libglesv1-cm1"
+RREPLACES:libgles1-imx-dev += "libgles1-dev"
+RREPLACES:libgles2-imx += "libgles2 libglesv2-2"
+RREPLACES:libgles2-imx-dev += "libgles2-dev"
+RREPLACES:libgles3-imx-dev += "libgles3-dev"
+RREPLACES:libgbm-imx += "libgbm"
+RREPLACES:libgbm-imx-dev += "libgbm-dev"
+
+RPROVIDES:libegl-imx += "libegl libegl1"
+RPROVIDES:libegl-imx-dev += "libegl-dev"
+RPROVIDES:libgles1-imx += "libgles1 libglesv1-cm1"
+RPROVIDES:libgles1-imx-dev += "libgles1-dev"
+RPROVIDES:libgles2-imx += "libgles2 libglesv2-2"
+RPROVIDES:libgles2-imx-dev += "libgles2-dev"
+RPROVIDES:libgles3-imx-dev += "libgles3-dev"
+RPROVIDES:libgbm-imx += "libgbm"
+RPROVIDES:libgbm-imx-dev += "libgbm-dev"
+
+RCONFLICTS:libegl-imx += "libegl libegl1"
+RCONFLICTS:libegl-imx-dev += "libegl-dev"
+RCONFLICTS:libgles1-imx += "libgles1 libglesv1-cm1"
+RCONFLICTS:libgles1-imx-dev += "libgles1-dev"
+RCONFLICTS:libgles2-imx += "libgles2 libglesv2-2"
+RCONFLICTS:libgles2-imx-dev += "libgles2-dev"
+RCONFLICTS:libgles3-imx-dev += "libgles3-dev"
+RCONFLICTS:libgbm-imx += "libgbm"
+RCONFLICTS:libgbm-imx-dev += "libgbm-dev"
