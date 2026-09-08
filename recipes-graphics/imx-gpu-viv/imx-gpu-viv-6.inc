@@ -116,6 +116,9 @@ PACKAGES_VULKAN:mx8mm-nxp-bsp = "libvulkan-imx libvulkan-imx-dev"
 # recognised even when the current parse does not activate those conditions.
 PACKAGES_DYNAMIC += "^libgbm-imx ^libvulkan-imx ^libopenvx-imx"
 
+# MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT is a machine capability flag that a
+# machine conf may set on its own, so COMPATIBLE_MACHINE cannot express this skip.
+# nooelint: oelint.task.noanonpython
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
         if has_vivante_kernel_driver_support != '1':
