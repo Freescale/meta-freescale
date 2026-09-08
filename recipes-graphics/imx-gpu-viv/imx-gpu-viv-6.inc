@@ -157,7 +157,7 @@ python __anonymous() {
 
         # For -dev, the first element is both the Debian and original name
         fullp += "-dev"
-        pkgs = p[0] + "-dev"
+        pkgs = " " + p[0] + "-dev"
         d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
         d.appendVar("RREPLACES:" + fullp, pkgs)
         d.appendVar("RPROVIDES:" + fullp, pkgs)
