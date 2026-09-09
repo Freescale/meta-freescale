@@ -27,9 +27,6 @@ SRCREV = "ae93b57a6a238604c305ca79e25d6248b5bab5d6"
 
 inherit use-imx-headers
 
-PACKAGE_ARCH:imxpxp = "${MACHINE_SOCARCH}"
-PACKAGE_ARCH:mx8-nxp-bsp = "${MACHINE_SOCARCH}"
-
 PACKAGECONFIG_REMOVE ?= "\
     dtls vulkan \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '', 'gl', d)} \
@@ -44,6 +41,9 @@ PACKAGECONFIG_G2D ??= ""
 PACKAGECONFIG_G2D:imxgpu2d ??= "g2d"
 
 PACKAGECONFIG[g2d] = ",,virtual/libg2d"
+
+PACKAGE_ARCH:imxpxp = "${MACHINE_SOCARCH}"
+PACKAGE_ARCH:mx8-nxp-bsp = "${MACHINE_SOCARCH}"
 
 EXTRA_OEMESON += "\
     -Dc_args="${CFLAGS} -I${STAGING_INCDIR_IMX}" \
