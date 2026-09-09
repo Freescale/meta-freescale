@@ -29,11 +29,15 @@ SRCREV = "e2e7c015cee997b9f992376fd2c29fa2d8813e1b"
 
 PE = "1"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.DEPENDS
 DEPENDS = "chrpath-native gnutls libevent libyaml python3-jinja2-native python3-ply-native python3-pyyaml-native udev"
 DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'qt', 'qtbase qtbase-native', '', d)}"
 
 PACKAGES =+ "${PN}-gst ${PN}-pycamera"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.PACKAGECONFIG
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[dng] = ",,tiff"
 PACKAGECONFIG[gst] = "-Dgstreamer=enabled,-Dgstreamer=disabled,gstreamer1.0 gstreamer1.0-plugins-base"
@@ -88,6 +92,8 @@ do_package_recalculate_ipa_signatures() {
     ${S}/src/ipa/ipa-sign-install.sh ${B}/src/ipa-priv-key.pem "${modules}"
 }
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.FILES
 FILES:${PN} += "${libexecdir}/libcamera/v4l2-compat.so"
 # -gst/-pycamera are split packages with no default FILES, so '=' is a complete
 # definition. Kept byte-identical to meta-multimedia libcamera to avoid fork
