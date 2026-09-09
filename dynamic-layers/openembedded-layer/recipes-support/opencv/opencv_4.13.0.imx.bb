@@ -228,6 +228,8 @@ INSANE_SKIP:${PN}-dbg = "libdir"
 
 ALLOW_EMPTY:${PN} = "1"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.SUMMARY
 SUMMARY:python3-opencv = "Python bindings to opencv"
 # Recipe-specific split package (no default FILES); '=' is a complete definition.
 # Kept byte-identical to meta-oe opencv_4.13.0.bb to avoid fork drift.
