@@ -9,9 +9,6 @@ LIC_FILES_CHKSUM = "\
     file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770 \
     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe \
 "
-# Enable pulsesink in gstreamer
-PACKAGECONFIG:append = " pulseaudio"
-
 # fb implementation of v4l2 uses libdrm
 DEPENDS:append = " ${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
 DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
@@ -31,6 +28,9 @@ SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
 SRCREV = "59dc51ce285f65dfde65c4484eb1da8b51c18841"
 
 S = "${UNPACKDIR}/${BP}"
+
+# Enable pulsesink in gstreamer
+PACKAGECONFIG:append = " pulseaudio"
 
 COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
 
