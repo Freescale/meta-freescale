@@ -35,6 +35,8 @@ inherit meson pkgconfig useradd
 #
 require ${THISDIR}/required-distro-features.inc
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.DEPENDS
 DEPENDS = "cairo gdk-pixbuf glib-2.0 libdisplay-info libinput libxkbcommon \
            pango pixman virtual/egl wayland wayland-native wayland-protocols"
 
@@ -150,6 +152,8 @@ FILES:${PN} = "${sysconfdir} ${bindir}/weston ${bindir}/weston-terminal ${bindir
 # fork drift; suppress the append-preference warning.
 # nooelint: oelint.var.filesoverride
 FILES:libweston-${WESTON_MAJOR_VERSION} = "${libdir}/lib*${SOLIBS} ${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.so"
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.SUMMARY
 SUMMARY:libweston-${WESTON_MAJOR_VERSION} = "Helper library for implementing 'wayland window managers'."
 
 # nooelint: oelint.var.filesoverride
@@ -161,6 +165,8 @@ RDEPENDS:${PN}-xwayland += "xwayland"
 
 RDEPENDS:${PN} += "xkeyboard-config"
 RRECOMMENDS:${PN} = "weston-init liberation-fonts"
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.RDEPENDS
 RDEPENDS:${PN}-dev += "wayland-protocols-dev"
 
 USERADD_PACKAGES = "${PN}"
