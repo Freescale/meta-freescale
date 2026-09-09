@@ -23,6 +23,10 @@ SRC_URI = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downlo
            file://systemd-notify.weston-start \
            "
 
+# The required .inc removes this tarball from SRC_URI and fetches the NXP git
+# fork instead, so this checksum and SRCREV never apply to the same item.
+# UPSTREAM-PARITY.
+# nooelint: oelint.vars.srcurimutualex
 SRC_URI[sha256sum] = "89646ca0d9f8d413c2767e5c3828eaa3fa149c2a105b3729a6894fa7cf1549e7"
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"

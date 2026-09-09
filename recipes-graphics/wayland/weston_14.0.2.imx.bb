@@ -24,6 +24,10 @@ SRC_URI = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downlo
            file://0001-libweston-backend-drm-meson.build-allow-libdisplay-i.patch \
            "
 
+# The required .inc removes this tarball from SRC_URI and fetches the NXP git
+# fork instead, so this checksum and SRCREV never apply to the same item.
+# UPSTREAM-PARITY.
+# nooelint: oelint.vars.srcurimutualex
 SRC_URI[sha256sum] = "b47216b3530da76d02a3a1acbf1846a9cd41d24caa86448f9c46f78f20b6e0ac"
 
 UPSTREAM_CHECK_URI = "https://gitlab.freedesktop.org/wayland/weston/-/tags"

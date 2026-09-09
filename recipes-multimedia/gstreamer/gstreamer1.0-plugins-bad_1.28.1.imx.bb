@@ -27,6 +27,10 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad
            file://0002-avoid-including-sys-poll.h-directly.patch \
            file://0004-opencv-resolve-missing-opencv-data-dir-in-yocto-buil.patch \
            "
+# The required .inc removes this tarball from SRC_URI and fetches the NXP git
+# fork instead, so this checksum and SRCREV never apply to the same item.
+# UPSTREAM-PARITY.
+# nooelint: oelint.vars.srcurimutualex
 SRC_URI[sha256sum] = "e64e75cdafd7ff2fc7fc34e855b06b1e3ed227cc06fa378d17bbcd76780c338c"
 
 inherit gobject-introspection
