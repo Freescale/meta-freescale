@@ -1,4 +1,4 @@
-# i.MX customization for weston_14.0.2.imx.bb.
+# i.MX customization for weston_15.0.1.imx.bb.
 # Not a standalone recipe: required by that .bb, and must stay beside
 # it. Keeping it separate lets the .bb remain a verbatim copy of the
 # OE-core original.
@@ -12,11 +12,11 @@ DEFAULT_PREFERENCE = "-1"
 SRC_URI:remove = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downloads/${BPN}-${PV}.tar.xz"
 SRC_URI:prepend = "${WESTON_SRC};branch=${SRCBRANCH} "
 WESTON_SRC ?= "git://github.com/nxp-imx/weston-imx.git;protocol=https"
-SRCBRANCH = "weston-imx-14.0.2"
-SRCREV = "be99fd1adad7e77c8c31926b09520ade5cdaca35"
+SRCBRANCH = "weston-imx-15.0.1"
+SRCREV = "82cf0ec8f3853e2cb754637da957dcd537c08be9"
 
 PACKAGECONFIG:remove = "${PACKAGECONFIG_IMX_REMOVALS}"
-PACKAGECONFIG_IMX_REMOVALS ?= "wayland x11"
+PACKAGECONFIG_IMX_REMOVALS ?= "vulkan wayland x11"
 
 PACKAGECONFIG:append = " ${PACKAGECONFIG_G2D} ${PACKAGECONFIG_PIPEWIRE}"
 PACKAGECONFIG_G2D ??= ""

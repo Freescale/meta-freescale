@@ -1,11 +1,11 @@
 # This recipe is modified for i.MX. For ease of maintenance the recipe itself
 # is a verbatim copy of a OE-core recipe, so it can be diffed against
 # upstream directly; the i.MX customization lives in the required
-# weston_14.0.2.imx.inc.
+# weston_15.0.1.imx.inc.
 ########### OE-core copy ##################
-# Upstream hash: fc108ddb18c4986c2d24a5e730c3a7fe9c79a4d7
+# Upstream hash: 8c008f36d7af1e63cb3f4a2ba763efd1f1e5fe4d
 
-# Overridden in the required weston_14.0.2.imx.inc; kept here to preserve the
+# Overridden in the required weston_15.0.1.imx.inc; kept here to preserve the
 # verbatim OE-core copy (see header). UPSTREAM-PARITY.
 # nooelint: oelint.var.override
 SUMMARY = "Weston, a Wayland compositor"
@@ -21,14 +21,14 @@ SRC_URI = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downlo
            file://weston.desktop \
            file://xwayland.weston-start \
            file://systemd-notify.weston-start \
-           file://0001-libweston-backend-drm-meson.build-allow-libdisplay-i.patch \
+           file://Allow-libdisplay-info-0.4.0.patch \
            "
 
 # The required .inc removes this tarball from SRC_URI and fetches the NXP git
 # fork instead, so this checksum and SRCREV never apply to the same item.
 # UPSTREAM-PARITY.
 # nooelint: oelint.vars.srcurimutualex
-SRC_URI[sha256sum] = "b47216b3530da76d02a3a1acbf1846a9cd41d24caa86448f9c46f78f20b6e0ac"
+SRC_URI[sha256sum] = "58c6186d29a5d2f0be0dec4882af71cc190a11da803f6ed1bf0b2c74120da973"
 
 UPSTREAM_CHECK_URI = "https://gitlab.freedesktop.org/wayland/weston/-/tags"
 UPSTREAM_CHECK_REGEX = "releases/(?P<pver>\d+\.\d+\.(?!9\d+)\d+)"
@@ -53,7 +53,7 @@ EXTRA_OEMESON += "-Dpipewire=false -Dtests=false"
 PACKAGECONFIG ??= "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'kms wayland egl clients', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
-    ${@bb.utils.filter('DISTRO_FEATURES', 'systemd x11', d)} \
+    ${@bb.utils.filter('DISTRO_FEATURES', 'systemd vulkan x11', d)} \
     ${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'headless', d)} \
     image-jpeg \
     screenshare \
@@ -80,9 +80,11 @@ PACKAGECONFIG[headless] = "-Dbackend-headless=true,-Dbackend-headless=false"
 # Weston on RDP
 PACKAGECONFIG[rdp] = "-Dbackend-rdp=true,-Dbackend-rdp=false,freerdp,freerdp"
 # VA-API desktop recorder
-PACKAGECONFIG[vaapi] = "-Dbackend-drm-screencast-vaapi=true,-Dbackend-drm-screencast-vaapi=false,libva"
+PACKAGECONFIG[vaapi] = "-Ddeprecated-backend-drm-screencast-vaapi=true,-Ddeprecated-backend-drm-screencast-vaapi=false,libva"
 # Weston with EGL support
 PACKAGECONFIG[egl] = "-Drenderer-gl=true,-Drenderer-gl=false,virtual/egl"
+# Weston with Vulkan support
+PACKAGECONFIG[vulkan] = "-Drenderer-vulkan=true,-Drenderer-vulkan=false,glslang-native vulkan-loader vulkan-headers"
 # Weston with lcms support
 PACKAGECONFIG[lcms] = "-Dcolor-management-lcms=true,-Dcolor-management-lcms=false,lcms"
 # Weston with webp support
@@ -96,21 +98,25 @@ PACKAGECONFIG[clients] = "-Dsimple-clients=${SIMPLECLIENTS} -Ddemo-clients=true,
 # Virtual remote output with GStreamer on DRM backend
 PACKAGECONFIG[remoting] = "-Dremoting=true,-Dremoting=false,gstreamer1.0 gstreamer1.0-plugins-base"
 # Weston with screen-share support
-PACKAGECONFIG[screenshare] = "-Dscreenshare=true,-Dscreenshare=false"
+PACKAGECONFIG[screenshare] = "-Ddeprecated-screenshare=true,-Ddeprecated-screenshare=false"
 # Traditional desktop shell
 PACKAGECONFIG[shell-desktop] = "-Dshell-desktop=true,-Dshell-desktop=false"
 # Fullscreen shell
-PACKAGECONFIG[shell-fullscreen] = "-Dshell-fullscreen=true,-Dshell-fullscreen=false"
+PACKAGECONFIG[shell-fullscreen] = "-Ddeprecated-shell-fullscreen=true,-Ddeprecated-shell-fullscreen=false"
 # In-Vehicle Infotainment (IVI) shell
 PACKAGECONFIG[shell-ivi] = "-Dshell-ivi=true,-Dshell-ivi=false"
 # Kiosk shell
 PACKAGECONFIG[shell-kiosk] = "-Dshell-kiosk=true,-Dshell-kiosk=false"
+# Lua shell
+PACKAGECONFIG[shell-lua] = "-Dshell-lua=true,-Dshell-lua=false,lua"
 # JPEG image loading support
 PACKAGECONFIG[image-jpeg] = "-Dimage-jpeg=true,-Dimage-jpeg=false, jpeg"
 # screencasting via PipeWire
 PACKAGECONFIG[pipewire] = "-Dbackend-pipewire=true,-Dbackend-pipewire=false,pipewire,pipewire"
 # VNC remote screensharing
 PACKAGECONFIG[vnc] = "-Dbackend-vnc=true,-Dbackend-vnc=false,neatvnc libpam"
+# Perfetto performance analysis support
+PACKAGECONFIG[perfetto] = "-Dperfetto=true,-Dperfetto=false,libperfetto"
 
 do_install:append() {
     # Weston doesn't need the .la files to load modules, so wipe them
@@ -178,4 +184,4 @@ GROUPADD_PARAM:${PN} = "--system weston-launch"
 
 ########### End of OE-core copy ###########
 
-require weston_14.0.2.imx.inc
+require weston_15.0.1.imx.inc
