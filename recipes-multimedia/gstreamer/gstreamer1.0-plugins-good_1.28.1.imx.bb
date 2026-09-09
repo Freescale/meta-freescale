@@ -23,6 +23,8 @@ SRC_URI[sha256sum] = "b67b31313a54c6929b82969d41d3cfdf2f58db573fb5f491e6bba5d84a
 # nooelint: oelint.var.override
 S = "${UNPACKDIR}/gst-plugins-good-${PV}"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.LICENSE
 LICENSE = "LGPL-2.1-or-later"
 # Overridden in gstreamer1.0-plugins-good_1.28.1.imx.inc; kept here to preserve
 # the verbatim OE-core copy (see header). UPSTREAM-PARITY.
@@ -33,10 +35,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
 DEPENDS += "gstreamer1.0-plugins-base libcap zlib"
 RPROVIDES:${PN}-pulseaudio += "${PN}-pulse"
 RPROVIDES:${PN}-soup += "${PN}-souphttpsrc"
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.RDEPENDS
 RDEPENDS:${PN}-soup += "${MLPREFIX}${@bb.utils.contains('PACKAGECONFIG', 'soup2', 'libsoup-2.4', 'libsoup', d)}"
 
 PACKAGECONFIG_SOUP ?= "soup3"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.PACKAGECONFIG
 PACKAGECONFIG ??= "\
     ${GSTREAMER_ORC} \
     ${PACKAGECONFIG_SOUP} \
