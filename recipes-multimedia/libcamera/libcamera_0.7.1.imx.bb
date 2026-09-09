@@ -1,7 +1,7 @@
-# This recipe is for the i.MX fork of libcamera. For ease of
-# maintenance, the top section is a verbatim copy of an OE-core
-# recipe. The second section customizes the recipe for i.MX.
-
+# This recipe is modified for i.MX. For ease of maintenance the recipe itself
+# is a verbatim copy of a meta-openembedded recipe, so it can be diffed against
+# upstream directly; the i.MX customization lives in the required
+# libcamera_0.7.1.imx.inc.
 ########### meta-openembedded copy ##################
 # Upstream hash: f4b9dfa0c903bc94c344c657917a3fbb229c322f
 
@@ -21,18 +21,23 @@ SRC_URI = "\
     git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV} \
 "
 
-# Re-set in the i.MX overrides section below for the nxp-imx fork; kept here
-# to preserve the verbatim meta-openembedded copy (see header). UPSTREAM-PARITY.
+# Re-set in the required libcamera_0.7.1.imx.inc for the nxp-imx fork; kept
+# here to preserve the verbatim meta-openembedded copy (see header).
+# UPSTREAM-PARITY.
 # nooelint: oelint.var.override
 SRCREV = "e2e7c015cee997b9f992376fd2c29fa2d8813e1b"
 
 PE = "1"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.DEPENDS
 DEPENDS = "chrpath-native gnutls libevent libyaml python3-jinja2-native python3-ply-native python3-pyyaml-native udev"
 DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'qt', 'qtbase qtbase-native', '', d)}"
 
 PACKAGES =+ "${PN}-gst ${PN}-pycamera"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.PACKAGECONFIG
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[dng] = ",,tiff"
 PACKAGECONFIG[gst] = "-Dgstreamer=enabled,-Dgstreamer=disabled,gstreamer1.0 gstreamer1.0-plugins-base"
@@ -87,6 +92,8 @@ do_package_recalculate_ipa_signatures() {
     ${S}/src/ipa/ipa-sign-install.sh ${B}/src/ipa-priv-key.pem "${modules}"
 }
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.FILES
 FILES:${PN} += "${libexecdir}/libcamera/v4l2-compat.so"
 # -gst/-pycamera are split packages with no default FILES, so '=' is a complete
 # definition. Kept byte-identical to meta-multimedia libcamera to avoid fork
@@ -101,25 +108,4 @@ FILES:${PN}-pycamera = "${PYTHON_SITEPACKAGES_DIR}/libcamera"
 GLIBC_64BIT_TIME_FLAGS = ""
 ########### End of meta-openembedded copy ###########
 
-########### i.MX overrides ################
-
-SRC_URI:remove = "git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV}"
-SRC_URI:prepend = "${LIBCAMERA_SRC};branch=${SRCBRANCH} "
-LIBCAMERA_SRC ?= "git://github.com/nxp-imx/libcamera.git;protocol=https"
-SRCBRANCH = "lf-6.18.20_2.0.0"
-SRCREV = "e2e7c015cee997b9f992376fd2c29fa2d8813e1b"
-
-PACKAGECONFIG = "gst pycamera dng"
-
-ARM_PIPELINES .= ",nxp/neo"
-
-EXTRA_OEMESON += "\
-    --python.platlibdir=${PYTHON_SITEPACKAGES_DIR} \
-"
-
-# Qt installs native tools to /usr/libexec, but this is not in PATH
-PATH:prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'qt', '${STAGING_LIBEXECDIR_NATIVE}:', '', d)}"
-
-COMPATIBLE_MACHINE = "(mx95-nxp-bsp|mx8mm-nxp-bsp|mx8ulp-nxp-bsp|mx8mq-nxp-bsp)"
-
-########### End of i.MX overrides #########
+require libcamera_0.7.1.imx.inc

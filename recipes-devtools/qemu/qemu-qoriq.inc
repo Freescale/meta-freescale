@@ -7,8 +7,6 @@ HOMEPAGE = "http://qemu.org"
 SECTION = "devel"
 LICENSE = "GPL-2.0-only AND LGPL-2.1-only"
 
-RDEPENDS:${PN}-ptest = "bash make"
-
 require qemu-targets.inc
 inherit pkgconfig ptest
 
@@ -47,6 +45,53 @@ do_install_ptest() {
 
 # QEMU_TARGETS is overridable variable
 QEMU_TARGETS ?= "arm aarch64 i386 mips mipsel mips64 mips64el ppc ppc64 ppc64le riscv32 riscv64 sh4 x86_64"
+
+# Disable kvm/virgl/mesa on targets that do not support it
+PACKAGECONFIG:remove:darwin = "kvm virglrenderer glx gtk+"
+PACKAGECONFIG:remove:mingw32 = "kvm virglrenderer glx gtk+"
+
+PACKAGECONFIG[sdl] = "--enable-sdl,--disable-sdl,libsdl2"
+PACKAGECONFIG[virtfs] = "--enable-virtfs --enable-attr --enable-cap-ng,--disable-virtfs,libcap-ng attr,"
+PACKAGECONFIG[aio] = "--enable-linux-aio,--disable-linux-aio,libaio,"
+PACKAGECONFIG[xfs] = "--enable-xfsctl,--disable-xfsctl,xfsprogs,"
+PACKAGECONFIG[xen] = "--enable-xen,--disable-xen,xen-tools,xen-tools-libxenstore xen-tools-libxenctrl xen-tools-libxenguest"
+PACKAGECONFIG[vnc-sasl] = "--enable-vnc --enable-vnc-sasl,--disable-vnc-sasl,cyrus-sasl,"
+PACKAGECONFIG[vnc-jpeg] = "--enable-vnc --enable-vnc-jpeg,--disable-vnc-jpeg,jpeg,"
+PACKAGECONFIG[vnc-png] = "--enable-vnc --enable-vnc-png,--disable-vnc-png,libpng,"
+PACKAGECONFIG[libcurl] = "--enable-curl,--disable-curl,curl,"
+PACKAGECONFIG[nss] = "--enable-smartcard,--disable-smartcard,nss,"
+PACKAGECONFIG[curses] = "--enable-curses,--disable-curses,ncurses,"
+PACKAGECONFIG[gtk+] = "--enable-gtk,--disable-gtk,gtk+3 gettext-native"
+PACKAGECONFIG[vte] = "--enable-vte,--disable-vte,vte gettext-native"
+PACKAGECONFIG[libcap-ng] = "--enable-cap-ng,--disable-cap-ng,libcap-ng,"
+PACKAGECONFIG[ssh] = "--enable-libssh,--disable-libssh,libssh,"
+PACKAGECONFIG[gcrypt] = "--enable-gcrypt,--disable-gcrypt,libgcrypt,"
+PACKAGECONFIG[nettle] = "--enable-nettle,--disable-nettle,nettle"
+PACKAGECONFIG[libusb] = "--enable-libusb,--disable-libusb,libusb1"
+PACKAGECONFIG[fdt] = "--enable-fdt,--disable-fdt,dtc"
+PACKAGECONFIG[alsa] = "--audio-drv-list='oss alsa',,alsa-lib"
+PACKAGECONFIG[glx] = "--enable-opengl,--disable-opengl,virtual/libgl"
+PACKAGECONFIG[lzo] = "--enable-lzo,--disable-lzo,lzo"
+PACKAGECONFIG[numa] = "--enable-numa,--disable-numa,numactl"
+PACKAGECONFIG[gnutls] = "--enable-gnutls,--disable-gnutls,gnutls"
+PACKAGECONFIG[bzip2] = "--enable-bzip2,--disable-bzip2,bzip2"
+PACKAGECONFIG[libiscsi] = "--enable-libiscsi,--disable-libiscsi"
+PACKAGECONFIG[kvm] = "--enable-kvm,--disable-kvm"
+PACKAGECONFIG[virglrenderer] = "--enable-virglrenderer,--disable-virglrenderer,virglrenderer"
+# spice will be in meta-networking layer
+PACKAGECONFIG[spice] = "--enable-spice,--disable-spice,spice"
+# usbredir will be in meta-networking layer
+PACKAGECONFIG[usb-redir] = "--enable-usb-redir,--disable-usb-redir,usbredir"
+PACKAGECONFIG[snappy] = "--enable-snappy,--disable-snappy,snappy"
+PACKAGECONFIG[glusterfs] = "--enable-glusterfs,--disable-glusterfs,glusterfs"
+PACKAGECONFIG[xkbcommon] = "--enable-xkbcommon,--disable-xkbcommon,libxkbcommon"
+PACKAGECONFIG[libudev] = "--enable-libudev,--disable-libudev,eudev"
+PACKAGECONFIG[libxml2] = "--enable-libxml2,--disable-libxml2,libxml2"
+PACKAGECONFIG[attr] = "--enable-attr,--disable-attr,attr,"
+PACKAGECONFIG[rbd] = "--enable-rbd,--disable-rbd,ceph,ceph"
+PACKAGECONFIG[vhost] = "--enable-vhost-net,--disable-vhost-net,,"
+PACKAGECONFIG[ust] = "--enable-trace-backend=ust,--enable-trace-backend=nop,lttng-ust,"
+PACKAGECONFIG[pie] = "--enable-pie,--disable-pie,,"
 
 EXTRA_OECONF = "\
     --prefix=${prefix} \
@@ -111,56 +156,11 @@ make_qemu_wrapper() {
 }
 make_qemu_wrapper[doc] = "Wrap the installed qemu-system-* binaries so they find the gdk-pixbuf loaders, fontconfig and GTK theme at runtime"
 
-# Disable kvm/virgl/mesa on targets that do not support it
-PACKAGECONFIG:remove:darwin = "kvm virglrenderer glx gtk+"
-PACKAGECONFIG:remove:mingw32 = "kvm virglrenderer glx gtk+"
-
-PACKAGECONFIG[sdl] = "--enable-sdl,--disable-sdl,libsdl2"
-PACKAGECONFIG[virtfs] = "--enable-virtfs --enable-attr --enable-cap-ng,--disable-virtfs,libcap-ng attr,"
-PACKAGECONFIG[aio] = "--enable-linux-aio,--disable-linux-aio,libaio,"
-PACKAGECONFIG[xfs] = "--enable-xfsctl,--disable-xfsctl,xfsprogs,"
-PACKAGECONFIG[xen] = "--enable-xen,--disable-xen,xen-tools,xen-tools-libxenstore xen-tools-libxenctrl xen-tools-libxenguest"
-PACKAGECONFIG[vnc-sasl] = "--enable-vnc --enable-vnc-sasl,--disable-vnc-sasl,cyrus-sasl,"
-PACKAGECONFIG[vnc-jpeg] = "--enable-vnc --enable-vnc-jpeg,--disable-vnc-jpeg,jpeg,"
-PACKAGECONFIG[vnc-png] = "--enable-vnc --enable-vnc-png,--disable-vnc-png,libpng,"
-PACKAGECONFIG[libcurl] = "--enable-curl,--disable-curl,curl,"
-PACKAGECONFIG[nss] = "--enable-smartcard,--disable-smartcard,nss,"
-PACKAGECONFIG[curses] = "--enable-curses,--disable-curses,ncurses,"
-PACKAGECONFIG[gtk+] = "--enable-gtk,--disable-gtk,gtk+3 gettext-native"
-PACKAGECONFIG[vte] = "--enable-vte,--disable-vte,vte gettext-native"
-PACKAGECONFIG[libcap-ng] = "--enable-cap-ng,--disable-cap-ng,libcap-ng,"
-PACKAGECONFIG[ssh] = "--enable-libssh,--disable-libssh,libssh,"
-PACKAGECONFIG[gcrypt] = "--enable-gcrypt,--disable-gcrypt,libgcrypt,"
-PACKAGECONFIG[nettle] = "--enable-nettle,--disable-nettle,nettle"
-PACKAGECONFIG[libusb] = "--enable-libusb,--disable-libusb,libusb1"
-PACKAGECONFIG[fdt] = "--enable-fdt,--disable-fdt,dtc"
-PACKAGECONFIG[alsa] = "--audio-drv-list='oss alsa',,alsa-lib"
-PACKAGECONFIG[glx] = "--enable-opengl,--disable-opengl,virtual/libgl"
-PACKAGECONFIG[lzo] = "--enable-lzo,--disable-lzo,lzo"
-PACKAGECONFIG[numa] = "--enable-numa,--disable-numa,numactl"
-PACKAGECONFIG[gnutls] = "--enable-gnutls,--disable-gnutls,gnutls"
-PACKAGECONFIG[bzip2] = "--enable-bzip2,--disable-bzip2,bzip2"
-PACKAGECONFIG[libiscsi] = "--enable-libiscsi,--disable-libiscsi"
-PACKAGECONFIG[kvm] = "--enable-kvm,--disable-kvm"
-PACKAGECONFIG[virglrenderer] = "--enable-virglrenderer,--disable-virglrenderer,virglrenderer"
-# spice will be in meta-networking layer
-PACKAGECONFIG[spice] = "--enable-spice,--disable-spice,spice"
-# usbredir will be in meta-networking layer
-PACKAGECONFIG[usb-redir] = "--enable-usb-redir,--disable-usb-redir,usbredir"
-PACKAGECONFIG[snappy] = "--enable-snappy,--disable-snappy,snappy"
-PACKAGECONFIG[glusterfs] = "--enable-glusterfs,--disable-glusterfs,glusterfs"
-PACKAGECONFIG[xkbcommon] = "--enable-xkbcommon,--disable-xkbcommon,libxkbcommon"
-PACKAGECONFIG[libudev] = "--enable-libudev,--disable-libudev,eudev"
-PACKAGECONFIG[libxml2] = "--enable-libxml2,--disable-libxml2,libxml2"
-PACKAGECONFIG[attr] = "--enable-attr,--disable-attr,attr,"
-PACKAGECONFIG[rbd] = "--enable-rbd,--disable-rbd,ceph,ceph"
-PACKAGECONFIG[vhost] = "--enable-vhost-net,--disable-vhost-net,,"
-PACKAGECONFIG[ust] = "--enable-trace-backend=ust,--enable-trace-backend=nop,lttng-ust,"
-PACKAGECONFIG[pie] = "--enable-pie,--disable-pie,,"
-
 # QEMU ships firmware and BIOS blobs built for guest architectures other than
 # the build target, so the arch QA check flags them by design.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "arch"
 
 FILES:${PN} += "${datadir}/icons"
+
+RDEPENDS:${PN}-ptest += "bash make"

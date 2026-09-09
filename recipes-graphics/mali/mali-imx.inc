@@ -29,15 +29,13 @@ PACKAGES =+ "\
     ${PN}-libvulkan  \
     ${PN}-opencl-icd ${PN}-opencl-icd-dev"
 
+# Consolidate GLES dev packages
+PACKAGES =+ "${PN}-libgles-dev"
+
 # Since libmali.so is loaded by dlopen, include it in the main package
 FILES:${PN} += "\
     ${libdir}/libmali.so \
     ${nonarch_base_libdir}/firmware"
-FILES_SOLIBSDEV = ""
-# libmali.so is shipped in the main package for dlopen consumers (above), so the
-# dev-so QA check does not apply.
-# nooelint: oelint.vars.insaneskip
-INSANE_SKIP:${PN} = "dev-so"
 FILES:${PN}-libegl += "\
     ${libdir}/libEGL${SOLIBS}"
 FILES:${PN}-libgbm += "\
@@ -48,14 +46,10 @@ FILES:${PN}-libgles2 += "\
     ${libdir}/libGLESv2${SOLIBS}"
 FILES:${PN}-opencl-icd += "\
     ${sysconfdir}/OpenCL"
-RPROVIDES:${PN}-opencl-icd = "virtual-opencl-icd"
 FILES:${PN}-libvulkan += "\
     ${sysconfdir}/vulkan"
-RDEPENDS:${PN}-libvulkan = "vulkan-wsi-layer"
-RPROVIDES:${PN}-libvulkan = "virtual-vulkan-icd"
-
 # ${PN}-dev is deliberately curated to just malisc; the headers and dev
-# symlinks ship in the per-library -dev packages above, so the standard -dev
+# symlinks ship in the per-library -dev packages below, so the standard -dev
 # default is intentionally replaced rather than extended.
 # nooelint: oelint.var.filesoverride
 FILES:${PN}-dev = "\
@@ -69,26 +63,34 @@ FILES:${PN}-libgbm-dev += "\
     ${includedir}/gbm.h \
     ${libdir}/libgbm${SOLIBSDEV} \
     ${libdir}/pkgconfig/gbm.pc"
-
-# Consolidate GLES dev packages
-PACKAGES =+ "${PN}-libgles-dev"
 FILES:${PN}-libgles-dev += "\
     ${includedir}/GLES* \
     ${libdir}/libGLES*${SOLIBSDEV} \
     ${libdir}/pkgconfig/gles*.pc"
-DEBIAN_NOAUTONAME:${PN}-libgles-dev = "1"
-RREPLACES:${PN}-libgles-dev = "libgles-dev"
-RPROVIDES:${PN}-libgles-dev = "libgles-dev"
-RCONFLICTS:${PN}-libgles-dev = "libgles-dev"
-ALLOW_EMPTY:${PN}-libgles1-dev = "1"
-ALLOW_EMPTY:${PN}-libgles2-dev = "1"
-ALLOW_EMPTY:${PN}-libgles3-dev = "1"
+FILES:${PN}-opencl-icd-dev += "\
+    ${bindir}/mali_clcc"
+
+RDEPENDS:${PN}-libvulkan = "vulkan-wsi-layer"
 RDEPENDS:${PN}-libgles1-dev = "${PN}-libgles-dev"
 RDEPENDS:${PN}-libgles2-dev = "${PN}-libgles-dev"
 RDEPENDS:${PN}-libgles3-dev = "${PN}-libgles-dev"
 
-FILES:${PN}-opencl-icd-dev += "\
-    ${bindir}/mali_clcc"
+RPROVIDES:${PN}-opencl-icd = "virtual-opencl-icd"
+RPROVIDES:${PN}-libvulkan = "virtual-vulkan-icd"
+RPROVIDES:${PN}-libgles-dev = "libgles-dev"
+
+RCONFLICTS:${PN}-libgles-dev = "libgles-dev"
+
+FILES_SOLIBSDEV = ""
+# libmali.so is shipped in the main package for dlopen consumers (above), so the
+# dev-so QA check does not apply.
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP:${PN} = "dev-so"
+DEBIAN_NOAUTONAME:${PN}-libgles-dev = "1"
+RREPLACES:${PN}-libgles-dev = "libgles-dev"
+ALLOW_EMPTY:${PN}-libgles1-dev = "1"
+ALLOW_EMPTY:${PN}-libgles2-dev = "1"
+ALLOW_EMPTY:${PN}-libgles3-dev = "1"
 
 python __anonymous() {
 

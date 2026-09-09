@@ -1,7 +1,7 @@
-# This recipe is for the i.MX fork of gstreamer1.0-plugins-good. For ease of
-# maintenance, the top section is a verbatim copy of an OE-core
-# recipe. The second section customizes the recipe for i.MX.
-
+# This recipe is modified for i.MX. For ease of maintenance the recipe itself
+# is a verbatim copy of a OE-core recipe, so it can be diffed against
+# upstream directly; the i.MX customization lives in the required
+# gstreamer1.0-plugins-good_1.28.1.imx.inc.
 ########### OE-core copy ##################
 # Upstream hash: 937817e5164f8af8452aec03ae3c45cb23d63df9
 
@@ -18,14 +18,16 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-go
 
 SRC_URI[sha256sum] = "b67b31313a54c6929b82969d41d3cfdf2f58db573fb5f491e6bba5d84aea0778"
 
-# Overridden in the i.MX overrides section below; kept here to preserve the
-# verbatim OE-core copy (see header). UPSTREAM-PARITY.
+# Overridden in gstreamer1.0-plugins-good_1.28.1.imx.inc; kept here to preserve
+# the verbatim OE-core copy (see header). UPSTREAM-PARITY.
 # nooelint: oelint.var.override
 S = "${UNPACKDIR}/gst-plugins-good-${PV}"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.LICENSE
 LICENSE = "LGPL-2.1-or-later"
-# Overridden in the i.MX overrides section below; kept here to preserve the
-# verbatim OE-core copy (see header). UPSTREAM-PARITY.
+# Overridden in gstreamer1.0-plugins-good_1.28.1.imx.inc; kept here to preserve
+# the verbatim OE-core copy (see header). UPSTREAM-PARITY.
 # nooelint: oelint.var.override
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
                     file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
@@ -33,10 +35,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
 DEPENDS += "gstreamer1.0-plugins-base libcap zlib"
 RPROVIDES:${PN}-pulseaudio += "${PN}-pulse"
 RPROVIDES:${PN}-soup += "${PN}-souphttpsrc"
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.RDEPENDS
 RDEPENDS:${PN}-soup += "${MLPREFIX}${@bb.utils.contains('PACKAGECONFIG', 'soup2', 'libsoup-2.4', 'libsoup', d)}"
 
 PACKAGECONFIG_SOUP ?= "soup3"
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.PACKAGECONFIG
 PACKAGECONFIG ??= "\
     ${GSTREAMER_ORC} \
     ${PACKAGECONFIG_SOUP} \
@@ -96,42 +102,4 @@ FILES:${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"
 
 ########### End of OE-core copy ###########
 
-########### i.MX overrides ################
-
-DEFAULT_PREFERENCE = "-1"
-
-LIC_FILES_CHKSUM = "\
-    file://LICENSE.txt;md5=69333daa044cb77e486cc36129f7a770 \
-    file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe \
-"
-# Enable pulsesink in gstreamer
-PACKAGECONFIG:append = " pulseaudio"
-
-# fb implementation of v4l2 uses libdrm
-DEPENDS:append = " ${@bb.utils.contains('PACKAGECONFIG', 'v4l2', '${DEPENDS_V4L2}', '', d)}"
-DEPENDS_V4L2 = "${@bb.utils.contains_any('DISTRO_FEATURES', 'wayland x11', '', 'libdrm', d)}"
-
-# FIXME: imx93/943 DISTRO_FEATURES contains x11 but v4l2 implement by libdrm ?
-DEPENDS:append:mx93-nxp-bsp = " libdrm"
-DEPENDS:append:mx943-nxp-bsp = " libdrm"
-
-SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
-                  file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
-                  file://0001-v4l2-Define-ioctl_req_t-for-posix-linux-case.patch \
-"
-
-SRC_URI:prepend = "${GST1.0-PLUGINS-GOOD_SRC};branch=${SRCBRANCH} "
-GST1.0-PLUGINS-GOOD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-good.git;protocol=https"
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
-SRCREV = "59dc51ce285f65dfde65c4484eb1da8b51c18841"
-
-S = "${UNPACKDIR}/${BP}"
-
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
-
-# The per-plugin split packages (${PN}-*, libgst*) are created dynamically by
-# PACKAGES_DYNAMIC, which OE-core sets in gstreamer1.0-plugins-packaging.inc
-# (pulled in through the required gstreamer1.0-plugins-common.inc above).
-PACKAGES_DYNAMIC = "^${PN}-.* ^libgst.*"
-
-########### End of i.MX overrides #########
+require gstreamer1.0-plugins-good_1.28.1.imx.inc

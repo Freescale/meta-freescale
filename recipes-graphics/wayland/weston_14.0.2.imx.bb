@@ -1,11 +1,11 @@
-# This recipe is for the i.MX fork of weston. For ease of
-# maintenance, the top section is a verbatim copy of an OE-core
-# recipe. The second section customizes the recipe for i.MX.
-
+# This recipe is modified for i.MX. For ease of maintenance the recipe itself
+# is a verbatim copy of a OE-core recipe, so it can be diffed against
+# upstream directly; the i.MX customization lives in the required
+# weston_14.0.2.imx.inc.
 ########### OE-core copy ##################
 # Upstream hash: fc108ddb18c4986c2d24a5e730c3a7fe9c79a4d7
 
-# Overridden in the i.MX overrides section below; kept here to preserve the
+# Overridden in the required weston_14.0.2.imx.inc; kept here to preserve the
 # verbatim OE-core copy (see header). UPSTREAM-PARITY.
 # nooelint: oelint.var.override
 SUMMARY = "Weston, a Wayland compositor"
@@ -35,6 +35,8 @@ inherit meson pkgconfig useradd
 #
 require ${THISDIR}/required-distro-features.inc
 
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.DEPENDS
 DEPENDS = "cairo gdk-pixbuf glib-2.0 libdisplay-info libinput libxkbcommon \
            pango pixman virtual/egl wayland wayland-native wayland-protocols"
 
@@ -150,6 +152,8 @@ FILES:${PN} = "${sysconfdir} ${bindir}/weston ${bindir}/weston-terminal ${bindir
 # fork drift; suppress the append-preference warning.
 # nooelint: oelint.var.filesoverride
 FILES:libweston-${WESTON_MAJOR_VERSION} = "${libdir}/lib*${SOLIBS} ${libdir}/libweston-${WESTON_MAJOR_VERSION}/*.so"
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.SUMMARY
 SUMMARY:libweston-${WESTON_MAJOR_VERSION} = "Helper library for implementing 'wayland window managers'."
 
 # nooelint: oelint.var.filesoverride
@@ -161,6 +165,8 @@ RDEPENDS:${PN}-xwayland += "xwayland"
 
 RDEPENDS:${PN} += "xkeyboard-config"
 RRECOMMENDS:${PN} = "weston-init liberation-fonts"
+# Ordering comes from the upstream recipe at the header's Upstream hash.
+# nooelint: oelint.var.order.RDEPENDS
 RDEPENDS:${PN}-dev += "wayland-protocols-dev"
 
 USERADD_PACKAGES = "${PN}"
@@ -168,41 +174,4 @@ GROUPADD_PARAM:${PN} = "--system weston-launch"
 
 ########### End of OE-core copy ###########
 
-########### i.MX overrides ################
-
-SUMMARY = "Weston, a Wayland compositor, i.MX fork"
-LIC_FILES_CHKSUM:remove = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
-LIC_FILES_CHKSUM += "file://LICENSE;md5=d79ee9e66bb0f95d3386a7acae780b70"
-
-DEFAULT_PREFERENCE = "-1"
-
-SRC_URI:remove = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downloads/${BPN}-${PV}.tar.xz"
-SRC_URI:prepend = "${WESTON_SRC};branch=${SRCBRANCH} "
-WESTON_SRC ?= "git://github.com/nxp-imx/weston-imx.git;protocol=https"
-SRCBRANCH = "weston-imx-14.0.2"
-SRCREV = "be99fd1adad7e77c8c31926b09520ade5cdaca35"
-
-PACKAGECONFIG:remove = "${PACKAGECONFIG_IMX_REMOVALS}"
-PACKAGECONFIG_IMX_REMOVALS ?= "wayland x11"
-
-PACKAGECONFIG:append = " ${PACKAGECONFIG_G2D} ${PACKAGECONFIG_PIPEWIRE}"
-PACKAGECONFIG_G2D ??= ""
-PACKAGECONFIG_G2D:imxgpu2d ??= "imxg2d"
-PACKAGECONFIG_G2D:mx93-nxp-bsp ??= "imxg2d"
-PACKAGECONFIG_G2D:mx943-nxp-bsp ??= "imxg2d"
-
-PACKAGECONFIG_PIPEWIRE ??= ""
-PACKAGECONFIG_PIPEWIRE:mx8-nxp-bsp ??= "pipewire"
-PACKAGECONFIG_PIPEWIRE:mx9-nxp-bsp ??= "pipewire"
-
-# Weston with i.MX G2D renderer
-PACKAGECONFIG[imxg2d] = "-Drenderer-g2d=true,-Drenderer-g2d=false,virtual/libg2d"
-
-# links with imx-gpu libs which are pre-built for glibc
-# gcompat will address it during runtime
-LDFLAGS:append:imxgpu:libc-musl = " -Wl,--allow-shlib-undefined"
-
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
-COMPATIBLE_MACHINE = "(imx-nxp-bsp)"
-
-########### End of i.MX overrides #########
+require weston_14.0.2.imx.inc
