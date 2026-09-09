@@ -16,6 +16,10 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-go
            file://0001-qt-include-ext-qt-gstqtgl.h-instead-of-gst-gl-gstglf.patch \
            file://0001-v4l2-Define-ioctl_req_t-for-posix-linux-case.patch"
 
+# The required .inc removes this tarball from SRC_URI and fetches the NXP git
+# fork instead, so this checksum and SRCREV never apply to the same item.
+# UPSTREAM-PARITY.
+# nooelint: oelint.vars.srcurimutualex
 SRC_URI[sha256sum] = "b67b31313a54c6929b82969d41d3cfdf2f58db573fb5f491e6bba5d84aea0778"
 
 # Overridden in the i.MX overrides section below; kept here to preserve the
