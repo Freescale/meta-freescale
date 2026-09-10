@@ -92,30 +92,37 @@ ALLOW_EMPTY:${PN}-libgles1-dev = "1"
 ALLOW_EMPTY:${PN}-libgles2-dev = "1"
 ALLOW_EMPTY:${PN}-libgles3-dev = "1"
 
-python __anonymous() {
+# The GPU interface packages keep their ${PN}- prefix: Debian renaming would
+# drop it and collide with the generic mesa package names.
+DEBIAN_NOAUTONAME:${PN}-libegl = "1"
+DEBIAN_NOAUTONAME:${PN}-libegl-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgbm = "1"
+DEBIAN_NOAUTONAME:${PN}-libgbm-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles1 = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles1-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles2 = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles2-dev = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles3 = "1"
+DEBIAN_NOAUTONAME:${PN}-libgles3-dev = "1"
 
-    # Avoid Debian-renaming
-    for p in (("libegl",    "libegl1"      ),
-              ("libgbm",    "libgbm1"      ),
-              ("libgles1",  "libglesv1-cm1"),
-              ("libgles2",  "libglesv2-2"  ),
-              ("libgles3",                 )):
-        fullp = "${PN}-" + p[0]
-        pkgs = "".join(' %s' % i for i in p)
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:"  + fullp, pkgs)
-        d.appendVar("RPROVIDES:"  + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-        # libmali.so is loaded with dlopen, so an explicit runtime dependency is necessary
-        d.appendVar("RDEPENDS:"   + fullp, "${PN}")
+# libmali.so is loaded with dlopen, so an explicit runtime dependency is necessary
+RDEPENDS:${PN}-libegl += "${PN}"
+RDEPENDS:${PN}-libgbm += "${PN}"
+RDEPENDS:${PN}-libgles1 += "${PN}"
+RDEPENDS:${PN}-libgles2 += "${PN}"
+RDEPENDS:${PN}-libgles3 += "${PN}"
 
-        # For -dev, the first element is both the Debian and original name
-        fullp += "-dev"
-        pkgs = p[0] + "-dev"
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:"  + fullp, pkgs)
-        d.appendVar("RPROVIDES:"  + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-}
+# The generic names stay provided: consumers that dlopen a GL backend depend on
+# them by name rather than through shlibs, as cogl-1.0 does for libgles2.
+RPROVIDES:${PN}-libegl += "libegl"
+RPROVIDES:${PN}-libegl-dev += "libegl-dev"
+RPROVIDES:${PN}-libgbm += "libgbm"
+RPROVIDES:${PN}-libgbm-dev += "libgbm-dev"
+RPROVIDES:${PN}-libgles1 += "libgles1"
+RPROVIDES:${PN}-libgles1-dev += "libgles1-dev"
+RPROVIDES:${PN}-libgles2 += "libgles2"
+RPROVIDES:${PN}-libgles2-dev += "libgles2-dev"
+RPROVIDES:${PN}-libgles3 += "libgles3"
+RPROVIDES:${PN}-libgles3-dev += "libgles3-dev"
 
 COMPATIBLE_MACHINE = "(mx95-nxp-bsp)"

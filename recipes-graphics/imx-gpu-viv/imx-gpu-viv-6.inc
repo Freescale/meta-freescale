@@ -73,7 +73,8 @@ PACKAGECONFIG ?= ""
 # Enables valgrind annotations for libgal-imx
 PACKAGECONFIG[valgrind] = ""
 
-# Note : If you add a package here, to prevent a naming conflict see the python_anonymous() futher below
+# Note: if you add a package here, see the Debian-rename block at the end of
+# this file to prevent a naming conflict.
 PACKAGES =+ "\
     libgles1-imx libgles1-imx-dev \
     libgles2-imx libgles2-imx-dev \
@@ -115,6 +116,9 @@ PACKAGES_VULKAN:mx8mm-nxp-bsp = "libvulkan-imx libvulkan-imx-dev"
 # recognised even when the current parse does not activate those conditions.
 PACKAGES_DYNAMIC += "^libgbm-imx ^libvulkan-imx ^libopenvx-imx"
 
+# MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT is a machine capability flag that a
+# machine conf may set on its own, so COMPATIBLE_MACHINE cannot express this skip.
+# nooelint: oelint.task.noanonpython
 python __anonymous () {
         has_vivante_kernel_driver_support = (d.getVar('MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT') or '0')
         if has_vivante_kernel_driver_support != '1':
@@ -134,33 +138,10 @@ INHIBIT_SYSROOT_STRIP = "1"
 REALSOLIBS := "${SOLIBS}"
 SOLIBS = "${SOLIBSDEV}"
 
-python __anonymous() {
-    # FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
-    # the source we cannot fix it. Disable the insane check for now.
-    packages = d.getVar('PACKAGES').split()
-    for p in packages:
-        d.appendVar("INSANE_SKIP:%s" % p, " ldflags")
-
-    # For the packages that make up the OpenGL interfaces, inject variables so that
-    # they don't get Debian-renamed (which would remove the -imx suffix).
-    for p in (("libegl", "libegl1"),
-              ("libgles1", "libglesv1-cm1"), ("libgles2", "libglesv2-2"),
-              ("libgles3",), ("libgbm",)):
-        fullp = p[0] + "-imx"
-        pkgs = "".join(' %s' % i for i in p)
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:" + fullp, pkgs)
-        d.appendVar("RPROVIDES:" + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-
-        # For -dev, the first element is both the Debian and original name
-        fullp += "-dev"
-        pkgs = p[0] + "-dev"
-        d.setVar("DEBIAN_NOAUTONAME:" + fullp, "1")
-        d.appendVar("RREPLACES:" + fullp, pkgs)
-        d.appendVar("RPROVIDES:" + fullp, pkgs)
-        d.appendVar("RCONFLICTS:" + fullp, pkgs)
-}
+# FIXME: All binaries lack GNU_HASH in elf binary but as we don't have
+# the source we cannot fix it. Disable the insane check for now.
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP += "ldflags"
 
 IS_MX6SL = "0"
 IS_MX6SL:mx6sl-nxp-bsp = "1"
@@ -418,3 +399,26 @@ INSANE_SKIP:imx-gpu-viv-demos += "rpaths dev-deps"
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 
+# The OpenGL interface packages keep their -imx suffix: Debian renaming would
+# drop it and collide with the generic mesa package names.
+DEBIAN_NOAUTONAME:libegl-imx = "1"
+DEBIAN_NOAUTONAME:libegl-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgles1-imx = "1"
+DEBIAN_NOAUTONAME:libgles1-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgles2-imx = "1"
+DEBIAN_NOAUTONAME:libgles2-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgles3-imx-dev = "1"
+DEBIAN_NOAUTONAME:libgbm-imx = "1"
+DEBIAN_NOAUTONAME:libgbm-imx-dev = "1"
+
+# The generic names stay provided: consumers that dlopen a GL backend depend on
+# them by name rather than through shlibs, as cogl-1.0 does for libgles2.
+RPROVIDES:libegl-imx += "libegl"
+RPROVIDES:libegl-imx-dev += "libegl-dev"
+RPROVIDES:libgles1-imx += "libgles1"
+RPROVIDES:libgles1-imx-dev += "libgles1-dev"
+RPROVIDES:libgles2-imx += "libgles2"
+RPROVIDES:libgles2-imx-dev += "libgles2-dev"
+RPROVIDES:libgles3-imx-dev += "libgles3-dev"
+RPROVIDES:libgbm-imx += "libgbm"
+RPROVIDES:libgbm-imx-dev += "libgbm-dev"

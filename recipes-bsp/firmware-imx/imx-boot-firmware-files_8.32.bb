@@ -41,13 +41,9 @@ deploy_for_mx9() {
 }
 deploy_for_mx9[doc] = "Deploy the Synopsys DDR firmware used by the i.MX 9 boot container"
 
-python () {
-    # Manually add the required functions as dependencies otherwise they won't be included in the
-    # final run script.
-    deploy_for = d.getVar('DEPLOY_FOR', True).split()
-    for soc in deploy_for:
-        d.appendVarFlag('do_deploy', 'vardeps', ' deploy_for_%s' % soc)
-}
+# do_deploy calls deploy_for_$soc through the shell, so BitBake cannot see the
+# dependency on the function body by itself.
+do_deploy[vardeps] += "${@' '.join('deploy_for_' + soc for soc in d.getVar('DEPLOY_FOR').split())}"
 
 do_deploy () {
     for soc in ${DEPLOY_FOR}; do
