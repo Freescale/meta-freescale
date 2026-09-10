@@ -377,7 +377,7 @@ RDEPENDS:libopencl-imx = "libclc-imx"
 
 RRECOMMENDS:libgal-imx += "kernel-module-imx-gpu-viv"
 
-RPROVIDES:${PN}:imxgpu3d += "imx-gpu-viv"
+RPROVIDES:${PN}:append:imxgpu3d = " imx-gpu-viv"
 RPROVIDES:libgal-imx += "libgal-imx"
 RPROVIDES:libvulkan-imx = "virtual-vulkan-icd"
 RPROVIDES:libgles1-imx = "libgles-imx"
