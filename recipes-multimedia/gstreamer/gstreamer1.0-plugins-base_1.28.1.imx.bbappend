@@ -10,5 +10,5 @@ PACKAGECONFIG_GL:use-mainline-bsp = "${@bb.utils.contains('DISTRO_FEATURES', 'op
 # does not depend on the viv-fb feature. It used to, but that was actually a bug
 # which was fixed in GStreamer 1.22.5. Since then, the direct texture support is
 # detected by Meson by checking for direct texture symbols like "glTexDirectVIV".)
-PACKAGECONFIG_GL:imxgpu2d:append:mx6-nxp-bsp = " viv-fb"
-PACKAGECONFIG_GL:imxgpu2d:append:mx7-nxp-bsp = " viv-fb"
+PACKAGECONFIG_GL:append:imxgpu2d:mx6-nxp-bsp = " viv-fb"
+PACKAGECONFIG_GL:append:imxgpu2d:mx7-nxp-bsp = " viv-fb"
