@@ -47,6 +47,6 @@ do_install_ptest() {
 
 DISABLE_STATIC = ""
 
-RDEPENDS:${PN}:class-target += "bash"
+RDEPENDS:${PN}:append:class-target = " bash"
 
 BBCLASSEXTEND = ""
