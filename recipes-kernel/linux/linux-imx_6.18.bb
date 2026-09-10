@@ -37,6 +37,9 @@ KBUILD_DEFCONFIG:mx9-generic-bsp = "imx_v8_defconfig"
 
 DEFAULT_PREFERENCE = "1"
 
+# DELTA_KERNEL_DEFCONFIG is no longer supported. Testing that a key is defined at
+# all, and aborting the parse, have no declarative form in BitBake.
+# nooelint: oelint.task.noanonpython
 python __anonymous () {
     import bb
     # Fail fast if DELTA_KERNEL_DEFCONFIG is present in the datastore (even if empty)
