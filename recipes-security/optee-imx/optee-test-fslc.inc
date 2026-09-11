@@ -12,7 +12,7 @@ inherit python3native ptest
 inherit deploy
 require optee-fslc.inc
 
-DEPENDS = "openssl optee-client optee-os-tadevkit python3-cryptography-native"
+DEPENDS += "openssl optee-client optee-os-tadevkit python3-cryptography-native"
 DEPENDS:append:toolchain-clang = " lld-native"
 
 SRC_URI = "git://github.com/OP-TEE/optee_test.git;branch=master;protocol=https \

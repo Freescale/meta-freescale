@@ -9,7 +9,7 @@ LICENSE = "Apache-2.0 & BSD-3-Clause & Zlib"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ff20c8e51b28869d9cdec70a818d163f \
                     file://${PSA_ARCH_TESTS_SRC_PATH}/LICENSE.md;md5=2a944942e1496af1886903d274dedb13"
 
-DEPENDS = "\
+DEPENDS += "\
     json-c \
     optee-client \
     optee-os-tadevkit \

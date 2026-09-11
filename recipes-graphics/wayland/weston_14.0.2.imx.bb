@@ -39,8 +39,11 @@ inherit meson pkgconfig useradd
 #
 require ${THISDIR}/required-distro-features.inc
 
-# Ordering comes from the upstream recipe at the header's Upstream hash.
-# nooelint: oelint.var.order.DEPENDS
+# Ordering and placement both come from the upstream recipe at the header's
+# Upstream hash. The '=' discards nothing: meson, pkgconfig and useradd add to
+# DEPENDS only through :append/:prepend, which BitBake applies after plain
+# assignments. UPSTREAM-PARITY.
+# nooelint: oelint.var.order.DEPENDS,oelint.vars.dependsappend
 DEPENDS = "cairo gdk-pixbuf glib-2.0 libdisplay-info libinput libxkbcommon \
            pango pixman virtual/egl wayland wayland-native wayland-protocols"
 
