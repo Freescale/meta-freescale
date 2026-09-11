@@ -80,7 +80,7 @@ addtask unpack_extra after do_unpack before do_patch
 
 CMAKE_VERBOSE = "VERBOSE=1"
 
-EXTRA_OECMAKE = " \
+EXTRA_OECMAKE = "\
     -DOPENCV_EXTRA_MODULES_PATH=${S}/contrib/modules \
     -DWITH_1394=OFF \
     -DENABLE_PRECOMPILED_HEADERS=OFF \
@@ -100,7 +100,7 @@ LDFLAGS:append:riscv32 = " -Wl,--no-as-needed -latomic -Wl,--as-needed"
 EXTRA_OECMAKE:append:x86 = " -DX86=ON"
 EXTRA_OECMAKE:append:aarch64 = " -DKLEIDICV_SOURCE_PATH=${S}/3rdparty/kleidicv"
 
-PACKAGECONFIG ??= " \
+PACKAGECONFIG ??= "\
     python3 eigen jpeg png tiff v4l libv4l samples tbb \
     ${@bb.utils.contains_any('DISTRO_FEATURES', '${GTK3DISTROFEATURES}', 'gtk', '', d)}"
 PACKAGECONFIG:append:class-target = " \
