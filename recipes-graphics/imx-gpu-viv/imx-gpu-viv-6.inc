@@ -193,9 +193,6 @@ do_install () {
     # Install backend-specific drivers
     if [ "${BACKEND}" = "wayland" ]; then
         # Wayland backend
-        if ! ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'true', 'false', d)}; then
-            install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/gl.pc ${D}${libdir}/pkgconfig/gl.pc
-        fi
         install -m 0644 ${S}/gpu-core/usr/lib/pkgconfig/egl_wayland.pc ${D}${libdir}/pkgconfig/egl.pc
         cp --no-preserve=ownership -r ${S}/gpu-core/usr/lib/wayland/* ${D}${libdir}
     elif [ "${IS_MX8}" != "1" ]; then
@@ -253,8 +250,8 @@ do_install () {
                 rm -rf ${D}$f
             done
         else
-            install -Dm 0644 ${S}/gpu-core/etc/vulkan/icd.d/imx_icd.json ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
-            sed -i "s,/usr/lib,${libdir}," ${D}${sysconfdir}/vulkan/icd.d/imx_icd.json
+            install -Dm 0644 ${S}/gpu-core/usr/share/vulkan/icd.d/verisilicon_icd.json ${D}${datadir}/vulkan/icd.d/verisilicon_icd.json
+            sed -i "s,/usr/lib,${libdir}," ${D}${datadir}/vulkan/icd.d/verisilicon_icd.json
         fi
     fi
 
