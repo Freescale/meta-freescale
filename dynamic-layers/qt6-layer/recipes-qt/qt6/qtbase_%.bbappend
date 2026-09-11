@@ -5,7 +5,7 @@
 
 PACKAGECONFIG_GRAPHICS:imxpxp = "\
     gles2"
-PACKAGECONFIG_GRAPHICS:imxgpu2d = " \
+PACKAGECONFIG_GRAPHICS:imxgpu2d = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'gl', '', d)} \
     ${PACKAGECONFIG_GRAPHICS_IMX_GPU}"
 PACKAGECONFIG_GRAPHICS:imxgpu3d = "\
