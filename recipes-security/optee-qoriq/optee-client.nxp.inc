@@ -12,7 +12,7 @@ require recipes-security/optee-imx/optee-client-fslc.inc
 # nooelint: oelint.vars.outofcontext
 FILESEXTRAPATHS:prepend := "${THISDIR}/../optee-imx/optee-client:"
 
-DEPENDS = "util-linux-libuuid"
+DEPENDS += "util-linux-libuuid"
 
 SRC_URI:remove = "git://github.com/OP-TEE/optee_client.git;branch=master;protocol=https"
 SRC_URI:prepend = "${OPTEE_CLIENT_SRC};branch=${OPTEE_CLIENT_BRANCH} "

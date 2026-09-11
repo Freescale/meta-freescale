@@ -1,6 +1,6 @@
 # Set generic compiler for system manager core
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "${SM_COMPILER}"
+DEPENDS += "${SM_COMPILER}"
 DEPENDS:append:mx943-nxp-bsp = " srecord-native"
 SM_COMPILER ?= "gcc-arm-none-eabi-native"
 PROVIDES += "virtual/imx-system-manager"
