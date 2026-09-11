@@ -22,8 +22,8 @@ SCR = "SCR.txt"
 do_install () {
     install -d ${D}${D_SUBDIR}
     cp -r ${S}/* ${D}${D_SUBDIR}
-    if [ -d "${D}/usr/lib" ] && [ "${D}/usr/lib" != "${D}${libdir}" ]; then
-        mv ${D}/usr/lib ${D}${libdir}
+    if [ -d "${D}${nonarch_libdir}" ] && [ "${D}${nonarch_libdir}" != "${D}${libdir}" ]; then
+        mv ${D}${nonarch_libdir} ${D}${libdir}
     fi
     rm ${D}${D_SUBDIR}/COPYING
     if [ ! -f ${D}${D_SUBDIR}/${SCR} ]; then
