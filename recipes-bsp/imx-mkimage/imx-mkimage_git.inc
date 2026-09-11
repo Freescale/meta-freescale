@@ -9,8 +9,8 @@ SRC_URI = "${IMX_MKIMAGE_SRC};branch=${SRCBRANCH} \
            file://0001-iMX8M-soc.mak-use-native-mkimage-from-sysroot.patch \
 "
 IMX_MKIMAGE_SRC ?= "git://github.com/nxp-imx/imx-mkimage.git;protocol=https"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "c0debd7c0b4a125bd3ca66bc68f1915882b2bb62"
+SRCBRANCH = "lf-6.18.20_2.0.0"
+SRCREV = "1b577853ae1afe1f26cdef27548da52fb424af48"
 
 BOOT_TOOLS = "imx-boot-tools"
 SYSROOT_DIRS += "/boot"

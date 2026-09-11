@@ -10,22 +10,22 @@ read. The newer GCC version 16.1.0 treats the unused pointer as
 Upstream-Status: Pending
 Signed-off-by: Franz Schnyder <franz.schnyder@toradex.com>
 ---
- drivers/arm/css/scmi/vendor/scmi_imx9.c | 2 --
+ drivers/nxp/scmi/vendor/scmi_imx9.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/arm/css/scmi/vendor/scmi_imx9.c b/drivers/arm/css/scmi/vendor/scmi_imx9.c
-index 8319eeb69..3a0f5b95b 100644
---- a/drivers/arm/css/scmi/vendor/scmi_imx9.c
-+++ b/drivers/arm/css/scmi/vendor/scmi_imx9.c
-@@ -400,7 +400,6 @@ int scmi_per_lpm_mode_set(void *p, uint32_t cpu_id, uint32_t num_configs,
- 	unsigned int token = 0;
+diff --git a/drivers/nxp/scmi/vendor/scmi_imx9.c b/drivers/nxp/scmi/vendor/scmi_imx9.c
+index 36c043e..e0fc7ee 100644
+--- a/drivers/nxp/scmi/vendor/scmi_imx9.c
++++ b/drivers/nxp/scmi/vendor/scmi_imx9.c
+@@ -409,7 +409,6 @@ int scmi_per_lpm_mode_set(void *p, uint32_t cpu_id, uint32_t num_configs,
+ 	unsigned int token = 0U;
  	int ret;
  	scmi_channel_t *ch = (scmi_channel_t *)p;
 -	struct scmi_per_lpm_config *tmp = cfg;
  
  	validate_scmi_channel(ch);
  
-@@ -428,7 +427,6 @@ int scmi_per_lpm_mode_set(void *p, uint32_t cpu_id, uint32_t num_configs,
+@@ -442,7 +441,6 @@ int scmi_per_lpm_mode_set(void *p, uint32_t cpu_id, uint32_t num_configs,
  
  		if (num_configs > MAX_PER_LPI_CONFIGS_PER_CMD) {
  			num_configs -= MAX_PER_LPI_CONFIGS_PER_CMD;
@@ -35,4 +35,3 @@ index 8319eeb69..3a0f5b95b 100644
  		}
 -- 
 2.43.0
-

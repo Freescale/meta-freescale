@@ -35,7 +35,8 @@ PACKAGES =+ "${PN}-libgles-dev"
 # Since libmali.so is loaded by dlopen, include it in the main package
 FILES:${PN} += "\
     ${libdir}/libmali.so \
-    ${nonarch_base_libdir}/firmware"
+    ${nonarch_base_libdir}/firmware \
+    ${nonarch_libdir}/modules-load.d/*.conf"
 FILES:${PN}-libegl += "\
     ${libdir}/libEGL${SOLIBS}"
 FILES:${PN}-libgbm += "\
@@ -47,7 +48,7 @@ FILES:${PN}-libgles2 += "\
 FILES:${PN}-opencl-icd += "\
     ${sysconfdir}/OpenCL"
 FILES:${PN}-libvulkan += "\
-    ${sysconfdir}/vulkan"
+    ${datadir}/vulkan"
 # ${PN}-dev is deliberately curated to just malisc; the headers and dev
 # symlinks ship in the per-library -dev packages below, so the standard -dev
 # default is intentionally replaced rather than extended.

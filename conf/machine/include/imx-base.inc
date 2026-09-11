@@ -592,7 +592,7 @@ PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa-vulkan-drivers"
 PREFERRED_RPROVIDER_virtual-vulkan-icd:imxviv  ?= "libvulkan-imx"
 PREFERRED_RPROVIDER_virtual-vulkan-icd:imxmali ?= "mali-imx-libvulkan"
 
-PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "14.0.2.imx"
+PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "15.0.1.imx"
 # i.MX 6 & 7 stay on weston 10.0 for fbdev
 PREFERRED_VERSION_weston:mx6-nxp-bsp      ??= "10.0.5.imx"
 PREFERRED_VERSION_weston:mx7-nxp-bsp      ??= "10.0.5.imx"
@@ -611,10 +611,10 @@ PREFERRED_VERSION_vulkan-utility-libraries:imxvulkan ??= "1.3.275.0.imx"
 PREFERRED_VERSION_vulkan-validation-layers:imxvulkan ??= "1.3.275.0.imx"
 
 # Use i.MX optee Version
-PREFERRED_VERSION_optee-os:imx-nxp-bsp     ??= "4.8.0.imx"
-PREFERRED_VERSION_optee-client:imx-nxp-bsp ??= "4.8.0.imx"
-PREFERRED_VERSION_optee-test:imx-nxp-bsp   ??= "4.8.0.imx"
-PREFERRED_VERSION_optee-os-tadevkit:imx-nxp-bsp   ??= "4.8.0.imx"
+PREFERRED_VERSION_optee-os:imx-nxp-bsp     ??= "4.10.0.imx"
+PREFERRED_VERSION_optee-client:imx-nxp-bsp ??= "4.10.0.imx"
+PREFERRED_VERSION_optee-test:imx-nxp-bsp   ??= "4.10.0.imx"
+PREFERRED_VERSION_optee-os-tadevkit:imx-nxp-bsp   ??= "4.10.0.imx"
 
 # Use i.MX opencv Version
 PREFERRED_VERSION_opencv:mx8-nxp-bsp ??= "4.13.0.imx"
