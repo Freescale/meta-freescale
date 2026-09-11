@@ -144,18 +144,6 @@ do_install:append() {
 }
 # END of qemu-mips workaround
 
-make_qemu_wrapper() {
-        gdk_pixbuf_module_file=`pkg-config --variable=gdk_pixbuf_cache_file gdk-pixbuf-2.0`
-
-        for tool in `ls ${D}${bindir}/qemu-system-*`; do
-                create_wrapper $tool \
-                        GDK_PIXBUF_MODULE_FILE=$gdk_pixbuf_module_file \
-                        FONTCONFIG_PATH=/etc/fonts \
-                        GTK_THEME=Adwaita
-        done
-}
-make_qemu_wrapper[doc] = "Wrap the installed qemu-system-* binaries so they find the gdk-pixbuf loaders, fontconfig and GTK theme at runtime"
-
 # QEMU ships firmware and BIOS blobs built for guest architectures other than
 # the build target, so the arch QA check flags them by design.
 # nooelint: oelint.vars.insaneskip
