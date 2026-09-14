@@ -246,6 +246,9 @@ do_compile:prepend() {
     fi
 }
 
+# The literal /usr/lib below is upstream's, inside the verbatim copy; the i.MX
+# changes live in the required opencv_4.13.0.imx.inc. UPSTREAM-PARITY.
+# nooelint: oelint.vars.pathhardcode.libdir
 do_install:append() {
     # Move Python files into correct library folder (for multilib build)
     if [ "$libdir" != "/usr/lib" -a -d ${D}/usr/lib ]; then
