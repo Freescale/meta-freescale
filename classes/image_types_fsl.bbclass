@@ -11,25 +11,31 @@ MXSBOOT_NAND_ARGS ?= ""
 # U-Boot mxsboot generation for uSD
 do_image_uboot_mxsboot_sdcard[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                            u-boot:do_deploy"
-IMAGE_CMD:uboot-mxsboot-sdcard() {
+generate_uboot_mxsboot_sdcard() {
     mxsboot sd ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
                ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.uboot-mxsboot-sdcard
     ln -sf ${IMAGE_NAME}.uboot-mxsboot-sdcard \
            ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.uboot-mxsboot-sdcard
 }
-IMAGE_CMD:uboot-mxsboot-sdcard[doc] = "Wrap U-Boot in an mxs bootstream for SD card boot on the i.MX23 and i.MX28 families"
+generate_uboot_mxsboot_sdcard[doc] = "Wrap U-Boot in an mxs bootstream for SD card boot on the i.MX23 and i.MX28 families"
+# The override is an image type (an IMAGE_FSTYPES value), not a machine or distro.
+# nooelint: oelint.vars.specific
+IMAGE_CMD:uboot-mxsboot-sdcard = "generate_uboot_mxsboot_sdcard"
 
 # U-Boot mxsboot generation for NAND
 do_image_uboot_mxsboot_nand[depends] += "u-boot-mxsboot-native:do_populate_sysroot \
                                          u-boot:do_deploy"
-IMAGE_CMD:uboot-mxsboot-nand() {
+generate_uboot_mxsboot_nand() {
     mxsboot ${MXSBOOT_NAND_ARGS} nand \
             ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX} \
             ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.uboot-mxsboot-nand
     ln -sf ${IMAGE_NAME}.uboot-mxsboot-nand \
            ${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.uboot-mxsboot-nand
 }
-IMAGE_CMD:uboot-mxsboot-nand[doc] = "Wrap U-Boot in an mxs bootstream for NAND boot on the i.MX23 and i.MX28 families"
+generate_uboot_mxsboot_nand[doc] = "Wrap U-Boot in an mxs bootstream for NAND boot on the i.MX23 and i.MX28 families"
+# Likewise an image type, not a machine or distro.
+# nooelint: oelint.vars.specific
+IMAGE_CMD:uboot-mxsboot-nand = "generate_uboot_mxsboot_nand"
 
 # In case we are building for i.MX23 or i.MX28 we need to have the
 # image stream built before the wic generation
