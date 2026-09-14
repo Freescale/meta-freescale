@@ -5,6 +5,7 @@ SUMMARY = "'Ugly GStreamer plugins"
 DESCRIPTION = "GStreamer plugins with good quality code and correct functionality that can still be a problem to distribute, because the licence of the plugin or of a library it needs is a concern."
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-ugly/-/issues"
+SECTION = "multimedia"
 
 LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later"
 LICENSE_FLAGS = "commercial"
