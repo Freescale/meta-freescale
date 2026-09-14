@@ -4,6 +4,7 @@
 # OE-core original.
 
 SUMMARY = "Weston, a Wayland compositor, i.MX fork"
+SECTION = "graphics"
 LIC_FILES_CHKSUM:remove = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70"
 LIC_FILES_CHKSUM += "file://LICENSE;md5=d79ee9e66bb0f95d3386a7acae780b70"
 
