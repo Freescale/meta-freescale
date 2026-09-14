@@ -121,6 +121,7 @@
             "GST_PLUGIN_SET_HAS_EXAMPLES",
             "GST_WAYLAND_PACKAGES",
             "GST_X11_PACKAGES",
+            "IMAGE_CMD",
             "ISP_SYSTEMD_PATCH",
             "KBUILD_DEFCONFIG",
             "KCONFIG_MODE",
