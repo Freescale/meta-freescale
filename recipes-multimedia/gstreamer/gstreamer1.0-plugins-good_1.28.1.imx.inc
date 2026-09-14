@@ -3,6 +3,8 @@
 # it. Keeping it separate lets the .bb remain a verbatim copy of the
 # OE-core original.
 
+SECTION = "multimedia"
+
 DEFAULT_PREFERENCE = "-1"
 
 LIC_FILES_CHKSUM = "\
