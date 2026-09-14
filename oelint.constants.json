@@ -7,6 +7,9 @@
         "recipes-multimedia/gstreamer/gstreamer1.0-plugins-packaging.inc",
         "u-boot-fslc-common_${PV}.inc"
     ],
+    "oelint-inappropriate-status-classifiers": [
+        "\\s*[Oo][Ee][ -][Ss]pecific\\s*"
+    ],
     "functions": {
         "known": [
             "do_image_uboot_mxsboot_nand",
