@@ -108,7 +108,7 @@ do_install () {
 }
 
 FILES:${PN} += "/opt/${PN}"
-FILES:${PN}-dbg += "/opt/${PN}/*/*/.debug /usr/src/debug"
+FILES:${PN}-dbg += "/opt/${PN}/*/*/.debug"
 # The SDK demo binaries under /opt are shipped already stripped and carry vendor
 # rpaths, so the already-stripped and rpaths QA checks do not apply.
 # nooelint: oelint.vars.insaneskip
