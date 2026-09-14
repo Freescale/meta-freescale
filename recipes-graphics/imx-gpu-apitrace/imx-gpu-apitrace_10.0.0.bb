@@ -46,7 +46,6 @@ EXTRA_OECMAKE += "\
     -DENABLE_GUI=OFF \
     -DENABLE_STATIC_LIBGCC=OFF \
     -DENABLE_STATIC_LIBSTDCXX=OFF \
-    -DPython3_ROOT_DIR=/usr/bin/python3-native \
 "
 COMPATIBLE_MACHINE = "(imxgpu)"
 SECURITY_CFLAGS:toolchain-clang = ""
