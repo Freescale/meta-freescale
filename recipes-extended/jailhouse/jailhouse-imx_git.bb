@@ -88,6 +88,9 @@ do_install:append() {
 
 PACKAGE_BEFORE_PN += "pyjailhouse"
 
+# module.bbclass clears FILES:${PN}, so the bitbake.conf defaults (${sbindir}/*,
+# ${libexecdir}/*) do not apply here and the tool paths must be listed explicitly.
+# nooelint: oelint.vars.filessetting.double
 FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
 # Remove libdir/* appended by setuptools3-base.bbclass for module split to work correctly
 FILES:${PN}:remove = "${libdir}/*"
