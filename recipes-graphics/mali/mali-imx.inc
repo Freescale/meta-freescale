@@ -76,9 +76,29 @@ RDEPENDS:${PN}-libgles1-dev = "${PN}-libgles-dev"
 RDEPENDS:${PN}-libgles2-dev = "${PN}-libgles-dev"
 RDEPENDS:${PN}-libgles3-dev = "${PN}-libgles-dev"
 
+# libmali.so is loaded with dlopen, so an explicit runtime dependency is necessary
+RDEPENDS:${PN}-libegl += "${PN}"
+RDEPENDS:${PN}-libgbm += "${PN}"
+RDEPENDS:${PN}-libgles1 += "${PN}"
+RDEPENDS:${PN}-libgles2 += "${PN}"
+RDEPENDS:${PN}-libgles3 += "${PN}"
+
 RPROVIDES:${PN}-opencl-icd = "virtual-opencl-icd"
 RPROVIDES:${PN}-libvulkan = "virtual-vulkan-icd"
 RPROVIDES:${PN}-libgles-dev = "libgles-dev"
+
+# The generic names stay provided: consumers that dlopen a GL backend depend on
+# them by name rather than through shlibs, as cogl-1.0 does for libgles2.
+RPROVIDES:${PN}-libegl += "libegl"
+RPROVIDES:${PN}-libegl-dev += "libegl-dev"
+RPROVIDES:${PN}-libgbm += "libgbm"
+RPROVIDES:${PN}-libgbm-dev += "libgbm-dev"
+RPROVIDES:${PN}-libgles1 += "libgles1"
+RPROVIDES:${PN}-libgles1-dev += "libgles1-dev"
+RPROVIDES:${PN}-libgles2 += "libgles2"
+RPROVIDES:${PN}-libgles2-dev += "libgles2-dev"
+RPROVIDES:${PN}-libgles3 += "libgles3"
+RPROVIDES:${PN}-libgles3-dev += "libgles3-dev"
 
 RCONFLICTS:${PN}-libgles-dev = "libgles-dev"
 
@@ -105,25 +125,5 @@ DEBIAN_NOAUTONAME:${PN}-libgles2 = "1"
 DEBIAN_NOAUTONAME:${PN}-libgles2-dev = "1"
 DEBIAN_NOAUTONAME:${PN}-libgles3 = "1"
 DEBIAN_NOAUTONAME:${PN}-libgles3-dev = "1"
-
-# libmali.so is loaded with dlopen, so an explicit runtime dependency is necessary
-RDEPENDS:${PN}-libegl += "${PN}"
-RDEPENDS:${PN}-libgbm += "${PN}"
-RDEPENDS:${PN}-libgles1 += "${PN}"
-RDEPENDS:${PN}-libgles2 += "${PN}"
-RDEPENDS:${PN}-libgles3 += "${PN}"
-
-# The generic names stay provided: consumers that dlopen a GL backend depend on
-# them by name rather than through shlibs, as cogl-1.0 does for libgles2.
-RPROVIDES:${PN}-libegl += "libegl"
-RPROVIDES:${PN}-libegl-dev += "libegl-dev"
-RPROVIDES:${PN}-libgbm += "libgbm"
-RPROVIDES:${PN}-libgbm-dev += "libgbm-dev"
-RPROVIDES:${PN}-libgles1 += "libgles1"
-RPROVIDES:${PN}-libgles1-dev += "libgles1-dev"
-RPROVIDES:${PN}-libgles2 += "libgles2"
-RPROVIDES:${PN}-libgles2-dev += "libgles2-dev"
-RPROVIDES:${PN}-libgles3 += "libgles3"
-RPROVIDES:${PN}-libgles3-dev += "libgles3-dev"
 
 COMPATIBLE_MACHINE = "(mx95-nxp-bsp)"
