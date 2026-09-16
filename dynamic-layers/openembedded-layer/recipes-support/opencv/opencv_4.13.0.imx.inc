@@ -50,6 +50,8 @@ SRC_URI += "\
     file://OpenCV_DNN_examples.patch \
 "
 
+do_unpack_extra[doc] = "Build the download cache OpenCV expects at configure time"
+
 PACKAGECONFIG:remove = "eigen"
 
 PACKAGECONFIG:append = " \
