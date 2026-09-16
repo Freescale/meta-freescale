@@ -20,4 +20,8 @@ EXTRA_OEMESON += "\
 # Qt installs native tools to /usr/libexec, but this is not in PATH
 PATH:prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'qt', '${STAGING_LIBEXECDIR_NATIVE}:', '', d)}"
 
+# Documented here rather than beside the function, which sits in the verbatim
+# .bb copy. Not an addtask'd task: do_package:append runs it via exec_func.
+do_package_recalculate_ipa_signatures[doc] = "Re-sign the IPA modules after packaging"
+
 COMPATIBLE_MACHINE = "(mx95-nxp-bsp|mx8mm-nxp-bsp|mx8ulp-nxp-bsp|mx8mq-nxp-bsp)"
