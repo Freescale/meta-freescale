@@ -20,15 +20,15 @@ SRC_URI = "${LINUX_IMX_SRC}"
 LINUX_IMX_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.18.y"
 KBRANCH = "${SRCBRANCH}"
-LOCALVERSION = "-1.0.0"
-SRCREV = "f49f45233f7b10006ce7e9c826ee882bb14ac8b5"
+LOCALVERSION = "-2.0.0"
+SRCREV = "b096ce610e956cc2596006343df8a2a26ed6e019"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.18.2"
+LINUX_VERSION = "6.18.20"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
