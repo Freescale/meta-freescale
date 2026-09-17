@@ -1,9 +1,6 @@
 # Copyright (C) 2016 Freescale Semiconductor
 # Copyright 2017-2022,2026 NXP
 
-# NOTE: uses 'inherit native' directly, so a '-native' filename (as
-# oelint.var.nativefilename suggests) would double the class suffix and break PN.
-# That finding is a false positive here and is not inline-suppressible.
 require imx-mkimage_git.inc
 
 SUMMARY = "i.MX boot image generation tool"
