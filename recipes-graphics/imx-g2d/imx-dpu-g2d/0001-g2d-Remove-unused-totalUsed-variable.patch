@@ -1,0 +1,36 @@
+From 68f309e3e6469dd9782d91ed39b83cb0cf9861db Mon Sep 17 00:00:00 2001
+From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Date: Mon, 14 Sep 2026 15:16:07 +0200
+Subject: [PATCH] g2d: Remove unused totalUsed variable
+
+totalUsed in CacheGetPoolBufUnlocked() is summed up but never read.
+Newer GCC versions report this with -Wunused-but-set-variable, which
+fails the build because of -Werror:
+
+  g2d.c:3378:12: error: variable 'totalUsed' set but not used [-Werror=unused-but-set-variable=]
+
+Remove the variable.
+
+Upstream-Status: Pending
+Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+---
+ source/g2d.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/source/g2d.c b/source/g2d.c
+index 857f858..35f6c59 100644
+--- a/source/g2d.c
++++ b/source/g2d.c
+@@ -3375,9 +3375,7 @@ CacheGetPoolBufUnlocked(size_t const size)
+     }
+     size_t bestIndex = g2d_buf_cache.count;
+     size_t freeIndex = g2d_buf_cache.count;
+-    size_t totalUsed = 0;
+     for (size_t i = 0; i < g2d_buf_cache.count; ++i) {
+-        totalUsed += g2d_buf_cache.pool[i].size;
+         /* No poolBuf here, a free pool slot if we create a new buf */
+         if (!g2d_buf_cache.pool[i].bufPtr) {
+             freeIndex = i;
+-- 
+2.55.0
+
