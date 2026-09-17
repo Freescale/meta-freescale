@@ -3,7 +3,7 @@ DESCRIPTION = "Glslang is the official reference compiler front end for the \
                OpenGL ES and OpenGL shading languages. It implements a strict interpretation \
                of the specifications for these languages. It is open and free for anyone to use, \
                either from a command line or programmatically."
-HOMEPAGE = "https://www.khronos.org/opengles/sdk/tools/Reference-Compiler"
+HOMEPAGE = "https://github.com/KhronosGroup/glslang"
 SECTION = "graphics"
 LICENSE = "BSD-3-Clause & BSD-2-Clause & MIT & Apache-2.0 & GPL-3-with-bison-exception"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=2a2b5acd7bc4844964cfda45fe807dc3"
