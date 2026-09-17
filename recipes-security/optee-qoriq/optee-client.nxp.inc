@@ -9,7 +9,7 @@ require recipes-security/optee-imx/optee-client-fslc.inc
 # i.MX directory that holds tee-supplicant.sh is unreachable without this line.
 # The entry also keeps the files this include adds to SRC_URI reachable when a
 # recipe in another layer requires the include.
-# nooelint: oelint.vars.outofcontext
+# nooelint: oelint.vars.outofcontext, oelint.vars.fileextrapaths
 FILESEXTRAPATHS:prepend := "${THISDIR}/../optee-imx/optee-client:"
 
 DEPENDS += "util-linux-libuuid"
