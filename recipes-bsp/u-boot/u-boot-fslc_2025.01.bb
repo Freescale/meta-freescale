@@ -19,6 +19,11 @@ EXTRA_OEMAKE += 'HOSTCC="${BUILD_CC} ${BUILD_CPPFLAGS}" \
                 HOSTLDFLAGS="${BUILD_LDFLAGS}" \
                 HOSTSTRIP=true'
 
+# Ordering matters: imx-boot-container's do_deploy:append creates the flash.bin
+# symlink that uuu_bootloader_tag below copies to flash.bin.tagged, so it cannot
+# be deferred to end of parse (do_deploy then fails on imx8mq-evk). The flagged
+# trailing space is in the empty expansion of this line, not in the file.
+# nooelint: oelint.spaces.lineend oelint.var.inherit.inherit_defer
 inherit ${@oe.utils.ifelse(d.getVar('UBOOT_PROVIDES_BOOT_CONTAINER') == '1', 'imx-boot-container', '')}
 inherit uuu_bootloader_tag
 
