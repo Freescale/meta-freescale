@@ -62,6 +62,9 @@ do_configure:prepend() {
    fi
 }
 
+# setuptools3 is inherited after module, so its do_compile shadows
+# module_do_compile; this shell prepend builds the kernel module and tools.
+# nooelint: oelint.task.pythonprefix
 do_compile:prepend() {
     # explicity call make to build the kernel module and tools
     oe_runmake
