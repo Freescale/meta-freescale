@@ -43,6 +43,6 @@ ALLOW_EMPTY:${PN} = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-RDEPENDS:${PN} = "bash libcrypto libssl python3"
+RDEPENDS:${PN} = "bash libcrypto libssl"
 
 COMPATIBLE_MACHINE = "(qoriq-arm64)"
