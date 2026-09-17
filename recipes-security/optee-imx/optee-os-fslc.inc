@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 inherit deploy python3native
 require optee-fslc.inc
 
-CVE_PRODUCT = "linaro:op-tee op-tee:op-tee_os"
+CVE_PRODUCT = "linaro:op-tee op-tee:op-tee_os trustedfirmware:op-tee"
 
 DEPENDS:append = " python3-cryptography-native python3-pyelftools-native"
 
