@@ -22,11 +22,6 @@ COMPATIBLE_HOST:mipsarchn64 = "null"
 # upstream states qemu doesn't work without optimization
 DEBUG_BUILD = "0"
 
-do_install:append() {
-    # Prevent QA warnings about installed ${localstatedir}/run
-    if [ -d ${D}${localstatedir}/run ]; then rmdir ${D}${localstatedir}/run; fi
-}
-
 do_compile_ptest() {
     make buildtest-TESTS
 }
@@ -130,19 +125,21 @@ do_install () {
     oe_runmake 'DESTDIR=${D}' install
 }
 
-# The following fragment will create a wrapper for qemu-mips user emulation
-# binary in order to work around a segmentation fault issue. Basically, by
-# default, the reserved virtual address space for 32-on-64 bit is set to 4GB.
-# This will trigger a MMU access fault in the virtual CPU. With this change,
-# the qemu-mips works fine.
-# IMPORTANT: This piece needs to be removed once the root cause is fixed!
 do_install:append() {
+    # Prevent QA warnings about installed ${localstatedir}/run
+    if [ -d ${D}${localstatedir}/run ]; then rmdir ${D}${localstatedir}/run; fi
+
+    # Create a wrapper for qemu-mips user emulation binary in order to work
+    # around a segmentation fault issue. Basically, by default, the reserved
+    # virtual address space for 32-on-64 bit is set to 4GB. This will trigger a
+    # MMU access fault in the virtual CPU. With this change, the qemu-mips works
+    # fine.
+    # IMPORTANT: This piece needs to be removed once the root cause is fixed!
     if [ -e "${D}/${bindir}/qemu-mips" ]; then
         create_wrapper ${D}/${bindir}/qemu-mips \
             QEMU_RESERVED_VA=0x0
     fi
 }
-# END of qemu-mips workaround
 
 # QEMU ships firmware and BIOS blobs built for guest architectures other than
 # the build target, so the arch QA check flags them by design.
