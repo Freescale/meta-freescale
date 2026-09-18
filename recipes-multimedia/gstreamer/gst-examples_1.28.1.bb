@@ -2,7 +2,10 @@
 # downgrade version to compatible imx gstreamer version
 
 SUMMARY = "GStreamer examples (including gtk-play, gst-play)"
-DESCRIPTION = "GStreamer example applications"
+DESCRIPTION = "Example applications from the GStreamer source tree, built on \
+               the libgstplay playback library: gtk-play, a GTK+ 3 media \
+               player installed with a desktop entry, and gst-play, its \
+               command-line counterpart."
 HOMEPAGE = "https://gitlab.freedesktop.org/gstreamer/gst-examples"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-examples/-/issues"
 SECTION = "multimedia"
