@@ -26,7 +26,7 @@ IMX_DPU_G2D_SRC ?= "git://github.com/nxp-imx/imx-dpu-g2d.git;protocol=https"
 SRCBRANCH = "imx_2.5"
 SRCREV = "d9b70208ff7481406d27798fcb54c20a3eea26ad"
 
-S:append = "/source"
+S = "${UNPACKDIR}/${BP}/source"
 
 inherit use-imx-headers pkgconfig
 
