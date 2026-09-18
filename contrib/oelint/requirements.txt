@@ -1,0 +1,3 @@
+oelint-adv==9.11.2
+oelint-parser==8.13.1
+oelint-data==1.5.2
