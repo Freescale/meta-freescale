@@ -12,14 +12,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS += "bison-native rsync-native unifdef-native"
 
-SRC_URI = "${LINUX_IMX_SRC} \
-           file://0001-ipu-uapi-Do-not-redefine-standard-integer-types.patch \
-"
+SRC_URI = "${LINUX_IMX_SRC}"
 LINUX_IMX_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
 SRCBRANCH = "lf-6.18.y"
 LOCALVERSION = "-lts-${SRCBRANCH}"
 KBRANCH = "${SRCBRANCH}"
-SRCREV = "f49f45233f7b10006ce7e9c826ee882bb14ac8b5"
+SRCREV = "b096ce610e956cc2596006343df8a2a26ed6e019"
 
 do_configure[noexec] = "1"
 
@@ -73,6 +71,8 @@ do_install() {
         install -D -m 0644 ${B}${includedir}/$h \
                        ${D}${includedir}/imx/$h
     done
+    install -D -m 0644 ${B}${includedir}/drm/imx_drm.h \
+                   ${D}${includedir}/imx/drm/imx_drm.h
 }
 
 # Allow to build empty main package, this is required in order for -dev package
