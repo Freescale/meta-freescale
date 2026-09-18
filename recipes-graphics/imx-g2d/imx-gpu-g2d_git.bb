@@ -23,7 +23,7 @@ IMX_GPU_G2D_SRC ?= "git://github.com/nxp-imx/imx-gpu-g2d.git;protocol=https"
 SRCBRANCH = "imx_2.5"
 SRCREV = "d494271fcc8759c04467ec778c17ed5cb22141da"
 
-S:append = "/source"
+S = "${UNPACKDIR}/${BP}/source"
 
 inherit use-imx-headers
 
