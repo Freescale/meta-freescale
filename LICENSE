@@ -87,7 +87,6 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-extended/pktgen-dpdk/pktgen-dpdk_21.05.0.bb: LICENSE = "BSD-3-Clause"
 ./recipes-extended/secure-obj/secure-obj.inc: LICENSE = "BSD-3-Clause"
 ./recipes-extended/skmm-ep/skmm-ep_git.bb: LICENSE = "BSD-3-Clause OR GPL-2.0-or-later"
-./recipes-extended/testfloat/testfloat_2a.bb: LICENSE = "LicenseRef-TestFloat"
 ./recipes-extended/tsntool/tsntool_git.bb: LICENSE = "GPL-2.0-only"
 ./recipes-fsl/fsl-rc-local/fsl-rc-local_1.0.bb: LICENSE = "LGPL-2.0-only"
 ./recipes-fsl/images/fsl-image-machine-test.bb: LICENSE = "MIT"
