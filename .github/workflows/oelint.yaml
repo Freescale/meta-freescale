@@ -1,0 +1,39 @@
+name: OE Lint
+
+on:
+  pull_request:
+    branches:
+      - master
+  merge_group:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  oelint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: contrib/oelint/requirements.txt
+      - run: pip install -r contrib/oelint/requirements.txt
+      - run: >-
+          ./contrib/oelint/run-oelint.sh
+          --mode all
+          --quiet
+          --relpaths
+          --hide info
+          --suppress oelint.vars.homepageping
+          --output /dev/stdout
+          --messageformat '::{severity} file={path},line={line},title={id}::{msg} ({wikiurl})'
