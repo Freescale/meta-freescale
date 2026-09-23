@@ -7,6 +7,7 @@ DEPENDS += "\
     bc-native \
     bison-native \
     dtc-native \
+    efitools-native \
     flex-native \
     gnutls-native \
     xxd-native \
