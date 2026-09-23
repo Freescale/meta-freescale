@@ -98,6 +98,6 @@ FILES_SOLIBS_VERSIONED = "\
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "already-stripped"
 
-RDEPENDS:${PN} = "libdrm"
+RDEPENDS:${PN} = "libdrm coreutils"
 
 COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"
