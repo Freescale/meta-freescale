@@ -6,7 +6,6 @@ PREFERRED_PROVIDER_u-boot-tools-native ??= "u-boot-tools-native"
 PREFERRED_PROVIDER_u-boot-mkimage-native ??= "u-boot-tools-native"
 PREFERRED_PROVIDER_u-boot-mkimage ??= "u-boot-tools"
 PREFERRED_PROVIDER_nativesdk-u-boot-mkimage ??= "nativesdk-u-boot-tools"
-PREFERRED_VERSION_testfloat = "2a"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz"
 SOC_DEFAULT_IMAGE_FSTYPES:append:ls1043a = " wic.bz2"
