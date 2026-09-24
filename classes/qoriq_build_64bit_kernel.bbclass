@@ -13,9 +13,11 @@ python () {
         tc_options = d.getVar('TOOLCHAIN_OPTIONS', False) + '/../lib64-' + d.getVar("MACHINE", False)
         d.setVar('DEPENDS:append', ' lib64-gcc-cross-powerpc64 lib64-libgcc')
         d.setVar('PATH:append', ':' + d.getVar('STAGING_BINDIR_NATIVE', False) + '/' + sys_multilib)
-        d.setVar('KERNEL_CC', d.getVar('CCACHE', False) + sys_multilib + '-' + 'gcc' + d.getVar('HOST_CC_KERNEL_ARCH', False) + tc_options)
-        d.setVar('KERNEL_LD', d.getVar('CCACHE', False) + sys_multilib + '-' + 'ld.bfd' + d.getVar('HOST_LD_KERNEL_ARCH', False) + tc_options)
-        d.setVar('KERNEL_AR', d.getVar('CCACHE', False) + sys_multilib + '-' + 'ar' + d.getVar('HOST_AR_KERNEL_ARCH', False))
+        # oe-core dropped the HOST_*_KERNEL_ARCH aliases of these; referencing
+        # TARGET_* keeps the exact value they used to contribute.
+        d.setVar('KERNEL_CC', d.getVar('CCACHE', False) + sys_multilib + '-' + 'gcc' + '${TARGET_CC_KERNEL_ARCH}' + tc_options)
+        d.setVar('KERNEL_LD', d.getVar('CCACHE', False) + sys_multilib + '-' + 'ld.bfd' + '${TARGET_LD_KERNEL_ARCH}' + tc_options)
+        d.setVar('KERNEL_AR', d.getVar('CCACHE', False) + sys_multilib + '-' + 'ar' + '${TARGET_AR_KERNEL_ARCH}')
 
         error_qa = (d.getVar('ERROR_QA') or '').split()
         if 'arch' in error_qa:
