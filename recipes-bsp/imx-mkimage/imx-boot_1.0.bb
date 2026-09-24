@@ -491,3 +491,8 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILES:${PN} = "/boot"
 
 COMPATIBLE_MACHINE = "(mx8-generic-bsp|mx9-generic-bsp)"
+# Where IMX_EXTRA_FIRMWARE carries imx-system-manager and imx-oei, which are
+# built with the bare-metal Arm toolchain from dynamic-layers/arm-toolchain,
+# the boot container can only be built alongside that layer.
+COMPATIBLE_MACHINE:mx943-nxp-bsp = "${@bb.utils.contains('BBFILE_COLLECTIONS', 'arm-toolchain', '(mx943-nxp-bsp)', '(^$)', d)}"
+COMPATIBLE_MACHINE:mx95-generic-bsp = "${@bb.utils.contains('BBFILE_COLLECTIONS', 'arm-toolchain', '(mx95-generic-bsp)', '(^$)', d)}"
