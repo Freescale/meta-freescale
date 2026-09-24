@@ -23,8 +23,9 @@ SOC_TOOLS_GPU:append:imxgpu3d = " \
     imx-gpu-apitrace \
 "
 
+# imx-gpu-sdk is in dynamic-layers/openembedded-layer.
 SOC_TOOLS_GPU:append:imxgpu = " \
-    imx-gpu-sdk \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'imx-gpu-sdk', '', d)} \
 "
 
 SOC_TOOLS_GPU:append:imxviv = " \
