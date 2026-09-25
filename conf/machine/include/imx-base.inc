@@ -546,10 +546,10 @@ PREFERRED_VERSION_gstreamer1.0-vaapi:imx-nxp-bsp        ??= "1.26.6"
 # Use libcamera fork for certain SOCs
 PREFERRED_VERSION_libcamera ??= "${PREFERRED_VERSION_LIBCAMERA_IMX}"
 PREFERRED_VERSION_LIBCAMERA_IMX                = ""
-PREFERRED_VERSION_LIBCAMERA_IMX:mx95-nxp-bsp   = "0.6.0.imx"
-PREFERRED_VERSION_LIBCAMERA_IMX:mx8mm-nxp-bsp  = "0.6.0.imx"
-PREFERRED_VERSION_LIBCAMERA_IMX:mx8ulp-nxp-bsp = "0.6.0.imx"
-PREFERRED_VERSION_LIBCAMERA_IMX:mx8mq-nxp-bsp  = "0.6.0.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx95-nxp-bsp   = "0.7.1.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8mm-nxp-bsp  = "0.7.1.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8ulp-nxp-bsp = "0.7.1.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8mq-nxp-bsp  = "0.7.1.imx"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
