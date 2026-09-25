@@ -11,8 +11,8 @@ LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=bc649096ad3928ec06a8713b8d787eac"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "d7e4bb37b45bbf93faf888e0ca6763a29e28054a"
+SRCBRANCH = "lf-6.18.20_2.0.0"
+SRCREV = "cc78ca8b1ee28ff741bcc160246f61b008f6c89f"
 
 inherit allarch
 
@@ -50,6 +50,7 @@ PACKAGES =+ "\
     ${PN}-nxp9098-pcie \
     ${PN}-nxp9098-sdio \
     ${PN}-nxpaw693-pcie \
+    ${PN}-nxpaw693-sdio \
     ${PN}-nxpiw416-sdio \
     ${PN}-nxpiw610-sdio \
     ${PN}-nxpiw610-usb \
@@ -60,6 +61,7 @@ RDEPENDS:${PN}-all-sdio = "\
     ${PN}-nxp8987-sdio \
     ${PN}-nxp8997-sdio \
     ${PN}-nxp9098-sdio \
+    ${PN}-nxpaw693-sdio \
     ${PN}-nxpiw416-sdio \
     ${PN}-nxpiw610-sdio \
     ${PN}-nxpiw612-sdio \
@@ -181,3 +183,12 @@ RDEPENDS:${PN}-nxpiw612-sdio += "${PN}-nxp-common"
 RPROVIDES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RREPLACES:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
 RCONFLICTS:${PN}-nxpiw612-sdio = "linux-firmware-nxpiw612-sdio"
+
+# Per-package block; see the note above FILES:${PN}-nxp-common.
+# nooelint: oelint.var.order.FILES
+FILES:${PN}-nxpaw693-sdio += "\
+    ${nonarch_base_libdir}/firmware/nxp/sdiw693_wlan_v1.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/sduartiw693_combo_v1.bin.se \
+    ${nonarch_base_libdir}/firmware/nxp/uartiw693_bt_v1.bin.se \
+"
+RDEPENDS:${PN}-nxpaw693-sdio += "${PN}-nxp-common"
