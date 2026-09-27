@@ -21,6 +21,7 @@ PV = "2.5.0+git"
 SRC_URI = "\
     ${IMX_DPU_G2D_SRC};branch=${SRCBRANCH} \
     file://0001-g2d-Remove-unused-totalUsed-variable.patch;patchdir=.. \
+    file://0002-g2d_utils-Store-strtol-result-in-a-long.patch;patchdir=.. \
 "
 IMX_DPU_G2D_SRC ?= "git://github.com/nxp-imx/imx-dpu-g2d.git;protocol=https"
 SRCBRANCH = "imx_2.5"
