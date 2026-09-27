@@ -1,0 +1,49 @@
+From: Khem Raj <raj.khem@gmail.com>
+Date: Sat, 26 Sep 2026 12:00:00 -0700
+Subject: [PATCH] g2d_utils: Store strtol() result in a long
+
+getSystemEnvInt() assigns the result of strtol() to an int and then
+compares it with LONG_MAX/LONG_MIN. On LP64 targets the value is
+truncated before the comparison, so the ERANGE overflow check can never
+trigger. Clang diagnoses this:
+
+  os/linux/g2d_utils.c:33:31: error: result of comparison of constant
+  9223372036854775807 with expression of type 'int' is always false
+  [-Werror,-Wtautological-constant-out-of-range-compare]
+
+Keep the value in a long, reject values that do not fit in an int, and
+narrow explicitly on return.
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ source/os/linux/g2d_utils.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/source/os/linux/g2d_utils.c b/source/os/linux/g2d_utils.c
+index 1321f8a..c6079da 100644
+--- a/source/os/linux/g2d_utils.c
++++ b/source/os/linux/g2d_utils.c
+@@ -17,7 +17,7 @@ enum g2d_ocl_enabled { G2D_OCL_UNKNOWN, G2D_OCL_ENABLED, G2D_OCL_DISABLED };
+ static atomic_int g_g2d_ocl_status = G2D_OCL_UNKNOWN;
+ static int getSystemEnvInt(char *prop)
+ {
+-	int val;
++	long val;
+ #ifdef ANDROID
+ 	char env[PROPERTY_VALUE_MAX];
+ 	property_get("vendor.2d.ocl.enable", env, "1");
+@@ -31,10 +31,11 @@ static int getSystemEnvInt(char *prop)
+ 	errno = 0; /* To distinguish success/failure after call */
+ 	val = strtol(env, NULL, 10);
+ 	if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+-			|| (errno != 0 && val == 0)) {
++			|| (errno != 0 && val == 0)
++			|| val > INT_MAX || val < INT_MIN) {
+ 		return -EINVAL;
+ 	}
+-	return val;
++	return (int)val;
+ }
+ 
+ int isOCLEnabled()
