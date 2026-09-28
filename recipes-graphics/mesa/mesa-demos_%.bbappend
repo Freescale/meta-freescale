@@ -7,6 +7,11 @@
 # nooelint: oelint.vars.noncoreoverride
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+# A PACKAGECONFIG[glu] flag would change the recipe's signature on every
+# machine (each flag is a dependency of PACKAGECONFIG); it only ever added
+# this dependency, so add it directly.
+DEPENDS:append:imxgpu = " libglu"
+
 SRC_URI:append:imxgpu = " \
     file://Replace-glWindowPos2iARB-calls-with-glWindowPos2i.patch \
     file://fix-clear-build-break.patch \
@@ -16,30 +21,11 @@ SRC_URI:append:imxgpu = " \
 
 REQUIRED_DISTRO_FEATURES:remove:imxgpu = "x11"
 
-# Dispatch line consumes machine-specialized helper vars; the helpers below
-# default to "" and are overridden per i.MX GPU variant.
-# No-op off-target: the helper it consumes expands empty.
-# nooelint: oelint.vars.noncoreoverride
-PACKAGECONFIG:remove = "\
-    ${PACKAGECONFIG_REMOVE_IF_2D_ONLY} \
-    ${PACKAGECONFIG_REMOVE_IF_GPU}"
+# Scoped to imxgpu so the recipe is untouched elsewhere: an unscoped
+# dispatch left whitespace in PACKAGECONFIG on every machine.
+PACKAGECONFIG:remove:imxgpu = "${PACKAGECONFIG_REMOVE_IF_2D_ONLY} x11"
 # Fallback default for the machine overrides below.
 # nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG_REMOVE_IF_2D_ONLY = ""
 PACKAGECONFIG_REMOVE_IF_2D_ONLY:imxgpu2d = "gles1 gles2"
 PACKAGECONFIG_REMOVE_IF_2D_ONLY:imxgpu3d = ""
-# Fallback default for the machine overrides below.
-# nooelint: oelint.vars.noncoreoverride
-PACKAGECONFIG_REMOVE_IF_GPU = ""
-PACKAGECONFIG_REMOVE_IF_GPU:imxgpu = "x11"
-
-# No-op off-target: the helper it consumes expands empty.
-# nooelint: oelint.vars.noncoreoverride
-PACKAGECONFIG:append = " \
-    ${PACKAGECONFIG_APPEND_IF_GPU}"
-# Fallback default for the machine overrides below.
-# nooelint: oelint.vars.noncoreoverride
-PACKAGECONFIG_APPEND_IF_GPU = ""
-PACKAGECONFIG_APPEND_IF_GPU:imxgpu = "glu"
-
-PACKAGECONFIG[glu] = ",,libglu"
