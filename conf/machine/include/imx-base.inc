@@ -380,6 +380,8 @@ MACHINE_SOCARCH_FILTER:append:imxgpu = " \
     opencl-headers \
     opencv \
     pango \
+    qtbase \
+    qtdeclarative \
 "
 MACHINE_SOCARCH_FILTER:append:imxgpu2d = " \
     virtual/libg2d \
@@ -400,6 +402,7 @@ MACHINE_SOCARCH_FILTER:append:imx-mainline-bsp = " \
     cairo \
     pango \
     qtbase \
+    qtdeclarative \
 "
 MACHINE_SOCARCH_FILTER:append:mx8qm-nxp-bsp = " \
     virtual/libopenvx \
