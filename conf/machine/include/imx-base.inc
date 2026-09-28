@@ -579,6 +579,8 @@ PREFERRED_PROVIDER_opencl-clhpp:imxviv         ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-headers:imxviv       ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxviv    ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libopencl1:imxviv:mx7-nxp-bsp   = ""
+PREFERRED_PROVIDER_virtual/libopencl1:imxviv:mx8mm-nxp-bsp = ""
 
 # Set preferred OpenCL ICD runtime
 PREFERRED_RPROVIDER_virtual-opencl-icd         ?= "libopencl-mesa"
