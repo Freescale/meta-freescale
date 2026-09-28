@@ -28,7 +28,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.6.147
+#    tag: v6.6.157
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -42,7 +42,7 @@ Latest stable Kernel patchlevel is applied and maintained by Community."
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.6.147.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
+# $ git log --oneline  --no-merges v6.6.157.. ^mainline/linux-6.6.y ^NXP/lf-6.6.y
 # - 9b87d01b354c LF-18121: firmware: imx: ele: read_common_fuse() resp-buf-sz handling
 # - 89a6079731c6 arm64: dts: imx8x-mek: switch Type-C connector power-role to dual
 # - 91aee5ea4eef media: imx8-isi: add RAW Bayer and grayscale pixel formats
@@ -95,14 +95,14 @@ require linux-imx.inc
 
 KBRANCH = "6.6-2.2.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "e74e930ce3ffcfaf8bc7d1c1cfde4709a645b8e3"
+SRCREV = "18aed24234de446bab0dc23ce2314947e67a4c7b"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.6.147"
+LINUX_VERSION = "6.6.157"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
