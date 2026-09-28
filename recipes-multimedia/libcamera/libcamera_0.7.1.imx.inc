@@ -9,7 +9,8 @@ LIBCAMERA_SRC ?= "git://github.com/nxp-imx/libcamera.git;protocol=https"
 SRCBRANCH = "lf-6.18.20_2.0.0"
 SRCREV = "e2e7c015cee997b9f992376fd2c29fa2d8813e1b"
 
-PACKAGECONFIG = "gst pycamera dng"
+# pycamera needs python3-pybind11, from meta-python.
+PACKAGECONFIG = "gst ${@bb.utils.contains('BBFILE_COLLECTIONS', 'meta-python', 'pycamera', '', d)} dng"
 
 ARM_PIPELINES .= ",nxp/neo"
 
