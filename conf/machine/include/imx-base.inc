@@ -400,6 +400,7 @@ MACHINE_SOCARCH_FILTER:append:imx-mainline-bsp = " \
     cairo \
     pango \
     qtbase \
+    qtdeclarative \
 "
 MACHINE_SOCARCH_FILTER:append:mx8qm-nxp-bsp = " \
     virtual/libopenvx \
