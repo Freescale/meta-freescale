@@ -39,7 +39,8 @@ DEPENDS = "\
     stb \
     zlib \
 "
-DEPENDS:append:imxgpu2d = " virtual/libg2d virtual/libopenvg"
+DEPENDS:append:imxgpu2d = " virtual/libg2d"
+DEPENDS:append:imxviv:imxgpu2d = " virtual/libopenvg"
 DEPENDS:append:imxgpu3d = " virtual/libgles2"
 
 require imx-gpu-sdk-src.inc
