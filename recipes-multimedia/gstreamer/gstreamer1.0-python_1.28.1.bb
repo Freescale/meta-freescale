@@ -25,10 +25,17 @@ EXTRA_OEMESON += "\
 
 CFLAGS += "-Wno-error=implicit-function-declaration"
 
-inherit meson pkgconfig setuptools3-base upstream-version-is-even features_check
+inherit meson pkgconfig setuptools3-base upstream-version-is-even features_check gobject-introspection-data
 
 FILES:${PN} += "${libdir}/gstreamer-1.0"
 
 RDEPENDS:${PN} += "gstreamer1.0 gstreamer1.0-plugins-base python3-pygobject"
 
 REQUIRED_DISTRO_FEATURES = "gobject-introspection-data"
+
+# python3-pygobject is skipped without GI data, which also depends on
+# qemu-usermode in MACHINE_FEATURES, so skip along with it.
+python() {
+    if not bb.utils.to_boolean(d.getVar("GI_DATA_ENABLED")):
+        raise bb.parse.SkipRecipe("GI not available")
+}
