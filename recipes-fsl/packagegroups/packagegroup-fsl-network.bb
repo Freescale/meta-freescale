@@ -40,10 +40,11 @@ NETWORK_TOOLS:append:ls2088a = " \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'ofp', '', d)} \
 "
 
+# spc is in dynamic-layers/openembedded-layer.
 NETWORK_TOOLS:append:fsl-lsch3 = " \
     dce \
     restool \
-    spc \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'spc', '', d)} \
 "
 
 RDEPENDS:${PN} = "\
