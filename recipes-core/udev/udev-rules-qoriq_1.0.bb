@@ -36,5 +36,7 @@ do_install () {
 ALLOW_EMPTY:${PN} = "1"
 
 COMPATIBLE_MACHINE = "(qoriq)"
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+# RULE is picked by SoC overrides, and QorIQ's SOCARCH is per core, not
+# per SoC.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
