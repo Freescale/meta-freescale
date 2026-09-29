@@ -61,9 +61,12 @@ PACKAGECONFIG:append = " \
     ${PACKAGECONFIG_OPENCL} \
 "
 
+# Vivante GPUs use OpenCL only when their driver provides it (see
+# IMXGPU_OPENCL_PROVIDER), other GPUs rely on the standard ICD loader, which
+# needs the opencl distro feature.
 PACKAGECONFIG_OPENCL = ""
-PACKAGECONFIG_OPENCL:imxgpu = "opencl"
-PACKAGECONFIG_OPENCL:mx8mm-nxp-bsp = ""
+PACKAGECONFIG_OPENCL:imxgpu = "${@bb.utils.filter('DISTRO_FEATURES', 'opencl', d)}"
+PACKAGECONFIG_OPENCL:imxviv = "${@oe.utils.ifelse(d.getVar('IMXGPU_OPENCL_PROVIDER'), 'opencl', '')}"
 
 PACKAGECONFIG[openvx] = "-DWITH_OPENVX=ON -DOPENVX_ROOT=${STAGING_LIBDIR} -DOPENVX_LIB_CANDIDATES='OpenVX;OpenVXU',-DWITH_OPENVX=OFF,virtual/libopenvx,"
 PACKAGECONFIG[qt5] = "-DWITH_QT=ON -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE} -DCMAKE_PREFIX_PATH=${STAGING_BINDIR_NATIVE}/cmake,-DWITH_QT=OFF,qtbase qtbase-native,"

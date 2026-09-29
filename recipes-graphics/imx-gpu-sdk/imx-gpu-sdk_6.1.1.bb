@@ -5,24 +5,7 @@ SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://License.md;md5=9d58a2573275ce8c35d79576835dbeb8"
 
-DEPENDS_BACKEND = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', ' libxdg-shell wayland', \
-                      bb.utils.contains('DISTRO_FEATURES', 'x11', ' xrandr', '', d), d)}"
-DEPENDS_MX8 = ""
-DEPENDS_MX8:mx8-nxp-bsp = "\
-    glslang-native \
-    opencv \
-    rapidopencl \
-    rapidopenvx \
-    rapidvulkan \
-    vulkan-headers \
-    vulkan-loader \
-"
-DEPENDS_MX8:mx8mm-nxp-bsp = "\
-    opencv \
-"
 DEPENDS = "\
-    ${DEPENDS_BACKEND} \
-    ${DEPENDS_MX8} \
     assimp \
     cmake-native \
     devil \
@@ -39,39 +22,85 @@ DEPENDS = "\
     stb \
     zlib \
 "
-DEPENDS:append:imxgpu2d = " virtual/libg2d virtual/libopenvg"
-DEPENDS:append:imxgpu3d = " virtual/libgles2"
 
 require imx-gpu-sdk-src.inc
 
-WINDOW_SYSTEM = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'Wayland_XDG', \
-                    bb.utils.contains('DISTRO_FEATURES', 'x11', 'X11', 'FB', d), d)}"
+PACKAGECONFIG ??= "\
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
+       bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d), d)} \
+    ${PACKAGECONFIG_G2D} \
+    ${PACKAGECONFIG_GLES} \
+    ${PACKAGECONFIG_GPUTYPE} \
+    ${PACKAGECONFIG_OPENVG} \
+    ${PACKAGECONFIG_SOC} \
+"
+
+PACKAGECONFIG_G2D = ""
+PACKAGECONFIG_G2D:imxgpu2d = "g2d"
+
+PACKAGECONFIG_GLES = ""
+PACKAGECONFIG_GLES:imxgpu3d = "gles2"
+PACKAGECONFIG_GLES:imxgpu3d:imxmali = "gles2 gles3 gles32"
+PACKAGECONFIG_GLES:mx6q-nxp-bsp = "gles2 gles3"
+PACKAGECONFIG_GLES:mx6dl-nxp-bsp = "gles2 gles3"
+PACKAGECONFIG_GLES:mx8-nxp-bsp = "gles2 gles32"
+PACKAGECONFIG_GLES:mx8mm-nxp-bsp = "gles2"
+
+PACKAGECONFIG_GPUTYPE = ""
+PACKAGECONFIG_GPUTYPE:imxmali = "mali"
+PACKAGECONFIG_GPUTYPE:imxviv = "vivante"
+
+# OpenVG is only implemented by the Vivante GPU driver
+PACKAGECONFIG_OPENVG = ""
+PACKAGECONFIG_OPENVG:imxviv = "openvg"
+
+# The Vivante driver always provides OpenCL, while other GPUs rely on the
+# standard ICD loader, which, like the Vulkan loader, needs the distro feature.
+PACKAGECONFIG_SOC = ""
+PACKAGECONFIG_SOC:imxmali = "opencv ${@bb.utils.filter('DISTRO_FEATURES', 'opencl vulkan', d)}"
+PACKAGECONFIG_SOC:mx8-nxp-bsp = "opencl opencv openvx ${@bb.utils.filter('DISTRO_FEATURES', 'vulkan', d)}"
+PACKAGECONFIG_SOC:mx8mm-nxp-bsp = "opencv"
+
+PACKAGECONFIG[g2d] = "G2D,,virtual/libg2d"
+PACKAGECONFIG[gles2] = "OpenGLES2,,virtual/libgles2"
+PACKAGECONFIG[gles3] = "OpenGLES3,,virtual/libgles3"
+PACKAGECONFIG[gles32] = "OpenGLES3.2,,virtual/libgles3"
+PACKAGECONFIG[mali] = ""
+# rapidopencl, rapidopenvx and rapidvulkan are header-only, so they are added
+# to RDEPENDS for them to be included in the SDK
+PACKAGECONFIG[opencl] = "OpenCL1.2,,rapidopencl virtual/libopencl1,rapidopencl"
+PACKAGECONFIG[opencv] = "OpenCV4,,opencv"
+PACKAGECONFIG[openvg] = "OpenVG,,virtual/libopenvg"
+PACKAGECONFIG[openvx] = "OpenVX1.2,,rapidopenvx,rapidopenvx"
+PACKAGECONFIG[vivante] = "HW_GPU_VIVANTE"
+# vulkan-loader is dynamically loaded, so it needs an explicit RDEPENDS
+PACKAGECONFIG[vulkan] = "Vulkan1.2,,glslang-native rapidvulkan vulkan-headers vulkan-loader,rapidvulkan vulkan-loader vulkan-validation-layers"
+PACKAGECONFIG[wayland] = ",,libxdg-shell wayland,libxdg-shell,,x11"
+PACKAGECONFIG[x11] = ",,xrandr,,,wayland"
+
+WINDOW_SYSTEM = "${@bb.utils.contains('PACKAGECONFIG', 'wayland', 'Wayland_XDG', \
+                    bb.utils.contains('PACKAGECONFIG', 'x11', 'X11', 'FB', d), d)}"
 
 # FEATURES is a comma-separated list passed to FslBuild.py as
-# --UseFeatures [${FEATURES}], so each appended token starts with a comma
-# and must NOT start with a space. A leading space would inject an invalid
-# feature name into the build.
-FEATURES = "ConsoleHost,EarlyAccess,EGL,GoogleUnitTest,Lib_NlohmannJson,OpenVG,Test_RequireUserInputToExit,WindowHost"
-# nooelint: oelint.vars.inconspaces
-FEATURES:append:imxgpu = ",HW_GPU_VIVANTE"
-# nooelint: oelint.vars.inconspaces
-FEATURES:append:imxgpu2d = ",G2D"
-# nooelint: oelint.vars.inconspaces
-FEATURES:append:imxgpu3d = ",OpenGLES2"
-# nooelint: oelint.vars.inconspaces
-FEATURES:append = "${FEATURES_SOC}"
-
-FEATURES_SOC = ""
-FEATURES_SOC:mx6q-nxp-bsp = ",OpenGLES3"
-FEATURES_SOC:mx6dl-nxp-bsp = ",OpenGLES3"
-FEATURES_SOC:mx8-nxp-bsp = ",OpenCV4,Vulkan1.2,OpenGLES3.2,OpenCL1.2,OpenVX1.2"
-FEATURES_SOC:mx8mm-nxp-bsp = ",OpenCV4"
+# --UseFeatures [${FEATURES}], built from the fixed features below and the ones
+# enabled through PACKAGECONFIG.
+PACKAGECONFIG_CONFARGS = "\
+    ConsoleHost \
+    EarlyAccess \
+    EGL \
+    GoogleUnitTest \
+    Lib_NlohmannJson \
+    Test_RequireUserInputToExit \
+    WindowHost \
+"
+FEATURES = "${@','.join(d.getVar('PACKAGECONFIG_CONFARGS').split())}"
 
 EXTENSIONS = "*"
 EXTENSIONS:mx6q-nxp-bsp = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_geometry_shader,OpenGLES3:GL_EXT_tessellation_shader"
 EXTENSIONS:mx6dl-nxp-bsp = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_geometry_shader,OpenGLES3:GL_EXT_tessellation_shader"
 EXTENSIONS:mx8m-nxp-bsp = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_color_buffer_float"
 EXTENSIONS:mx8mm-nxp-bsp = "*"
+EXTENSIONS:imxmali = "OpenGLES3:GL_EXT_color_buffer_float,OpenGLES3:GL_EXT_geometry_shader,OpenGLES3:GL_EXT_tessellation_shader"
 
 do_compile () {
     export FSL_PLATFORM_NAME=Yocto
@@ -116,7 +145,7 @@ INSANE_SKIP:${PN} += "already-stripped rpaths"
 
 # Unfortunately recipes with an empty main package, like header-only libraries,
 # are not included in the SDK. Use RDEPENDS as a workaround.
-RDEPENDS_EMPTY_MAIN_PACKAGE = "\
+RDEPENDS:${PN} += "\
     fmt \
     gli \
     glm \
@@ -125,24 +154,6 @@ RDEPENDS_EMPTY_MAIN_PACKAGE = "\
     nlohmann-json \
     rapidjson \
     stb \
-"
-RDEPENDS_EMPTY_MAIN_PACKAGE_MX8 = ""
-RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8-nxp-bsp = "\
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'libxdg-shell', '', d)} \
-    rapidopencl \
-    rapidopenvx \
-    rapidvulkan \
-"
-RDEPENDS_EMPTY_MAIN_PACKAGE_MX8:mx8mm-nxp-bsp = ""
-# vulkan-loader is dynamically loaded, so need to add an explicit
-# dependency
-RDEPENDS_VULKAN_LOADER = ""
-RDEPENDS_VULKAN_LOADER:mx8-nxp-bsp = "vulkan-loader vulkan-validation-layers"
-RDEPENDS_VULKAN_LOADER:mx8mm-nxp-bsp = ""
-RDEPENDS:${PN} += "\
-    ${RDEPENDS_EMPTY_MAIN_PACKAGE_MX8} \
-    ${RDEPENDS_EMPTY_MAIN_PACKAGE} \
-    ${RDEPENDS_VULKAN_LOADER} \
 "
 
 # For backwards compatibility
