@@ -30,7 +30,10 @@ IMXTEST_SRC ?= "git://github.com/nxp-imx/imx-test.git;protocol=https"
 SRCBRANCH = "lf-6.18.2_1.0.0"
 SRCREV = "e5dad74f8defd6108cac5ba21bf4ff268445d3ff"
 
-inherit module-base pkgconfig use-imx-headers
+inherit kernel-arch pkgconfig use-imx-headers
+
+# kernel-arch exports ARCH, from which the Makefiles pick the arm or
+# arm64 test set
 
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
@@ -70,8 +73,6 @@ do_compile() {
                     -I${STAGING_INCDIR_IMX}" \
                CC="${CC} -L${STAGING_LIBDIR} ${LDFLAGS}" \
                SDKTARGETSYSROOT=${STAGING_DIR_HOST} \
-               LINUXPATH=${STAGING_KERNEL_DIR} \
-               KBUILD_OUTPUT=${STAGING_KERNEL_BUILDDIR} \
                PLATFORM=${PLATFORM}
 }
 
