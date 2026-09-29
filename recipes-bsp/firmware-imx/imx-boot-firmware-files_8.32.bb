@@ -54,7 +54,8 @@ do_deploy () {
 
 addtask deploy after do_install before do_build
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+# DDR_FIRMWARE_NAME is per board (its DDR type), not per SoC.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 COMPATIBLE_MACHINE = "(mx8-generic-bsp|mx9-generic-bsp)"
 COMPATIBLE_MACHINE:mx8x-generic-bsp = "(^$)"
