@@ -44,14 +44,10 @@ EXTRA_PROVIDES:append:mx8-nxp-bsp = " \
     virtual/libgbm \
 "
 
-PROVIDES_OPENCL = "\
-    opencl-headers \
-    opencl-clhpp \
-    opencl-icd-loader \
-    virtual/libopencl1 \
-"
-PROVIDES_OPENCL:mx7-nxp-bsp = ""
-PROVIDES_OPENCL:mx8mm-nxp-bsp = ""
+# OpenCL is only provided when the machine selects this recipe as its OpenCL
+# provider, see IMXGPU_OPENCL_PROVIDER in imx-base.inc.
+PROVIDES_OPENCL = "${@oe.utils.conditional('IMXGPU_OPENCL_PROVIDER', d.getVar('BPN'), \
+                      'opencl-headers opencl-clhpp opencl-icd-loader virtual/libopencl1', '', d)}"
 
 # Note: OpenVX is fully supported on i.MX 8 QuadMax and 8 QuadPlus.
 # However, only limited support is provided on other i.MX 8 machines
@@ -98,9 +94,8 @@ PACKAGES =+ "\
 PACKAGES_GBM = ""
 PACKAGES_GBM:mx8-nxp-bsp = "libgbm-imx libgbm-imx-dev"
 
-PACKAGES_OPENCL = "libclc-imx libopencl-imx libopencl-imx-dev"
-PACKAGES_OPENCL:mx7-nxp-bsp = ""
-PACKAGES_OPENCL:mx8mm-nxp-bsp = ""
+PACKAGES_OPENCL = "${@oe.utils.conditional('IMXGPU_OPENCL_PROVIDER', d.getVar('BPN'), \
+                      'libclc-imx libopencl-imx libopencl-imx-dev', '', d)}"
 
 PACKAGES_OPENVX = "${@bb.utils.contains("PROVIDES_OPENVX", "virtual/libopenvx", \
                       "libopenvx-imx libopenvx-imx-dev", "", d)}"
@@ -109,12 +104,13 @@ PACKAGES_VULKAN = ""
 PACKAGES_VULKAN:imxvulkan = "libvulkan-imx libvulkan-imx-dev"
 PACKAGES_VULKAN:mx8mm-nxp-bsp = "libvulkan-imx libvulkan-imx-dev"
 
-# libgbm-imx, libvulkan-imx and libopenvx-imx (and their -dev variants) enter
-# PACKAGES only through the machine-conditional PACKAGES_GBM/_VULKAN and the
-# PROVIDES_OPENVX-gated PACKAGES_OPENVX above. Declare them as potentially
-# present so their FILES/RDEPENDS/RPROVIDES/INSANE_SKIP assignments are
-# recognised even when the current parse does not activate those conditions.
-PACKAGES_DYNAMIC += "^libgbm-imx ^libvulkan-imx ^libopenvx-imx"
+# libgbm-imx, libvulkan-imx, libopenvx-imx, libopencl-imx and libclc-imx (and
+# their -dev variants) enter PACKAGES only through the machine-conditional
+# PACKAGES_GBM/_VULKAN and the PROVIDES_OPENVX- and IMXGPU_OPENCL_PROVIDER-gated
+# PACKAGES_OPENVX/_OPENCL above. Declare them as potentially present so their
+# FILES/RDEPENDS/RPROVIDES/INSANE_SKIP assignments are recognised even when the
+# current parse does not activate those conditions.
+PACKAGES_DYNAMIC += "^libgbm-imx ^libvulkan-imx ^libopenvx-imx ^libopencl-imx ^libclc-imx"
 
 # MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT is a machine capability flag that a
 # machine conf may set on its own, so COMPATIBLE_MACHINE cannot express this skip.
@@ -361,8 +357,6 @@ RPROVIDES:libvulkan-imx = "virtual-vulkan-icd"
 RPROVIDES:libgles1-imx = "libgles-imx"
 RPROVIDES:libgles1-imx-dev = "libgles-imx-dev"
 RPROVIDES:libopencl-imx = "virtual-opencl-icd"
-RPROVIDES:libopencl-imx:mx7-nxp-bsp = ""
-RPROVIDES:libopencl-imx:mx8mm-nxp-bsp = ""
 
 # libEGL.so is used by some demo apps from Freescale
 # nooelint: oelint.vars.insaneskip

@@ -574,15 +574,23 @@ PREFERRED_PROVIDER_virtual/libgles1:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles2:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles3:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 
-# The Vivante OpenCL implementation doesn't work with the standard headers and loader
-PREFERRED_PROVIDER_opencl-clhpp:imxviv         ?= "imx-gpu-viv"
-PREFERRED_PROVIDER_opencl-headers:imxviv       ?= "imx-gpu-viv"
-PREFERRED_PROVIDER_opencl-icd-loader:imxviv    ?= "imx-gpu-viv"
-PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "imx-gpu-viv"
+# Select the Vivante OpenCL implementation for the GPU cores supporting it.
+# It doesn't work with the standard headers and loader, so it provides them
+# too. imx-gpu-viv uses this to decide whether it provides OpenCL at all;
+# cores without OpenCL support fall back to the standard headers and loader.
+IMXGPU_OPENCL_PROVIDER                ?= ""
+IMXGPU_OPENCL_PROVIDER:imxviv         ?= "imx-gpu-viv"
+IMXGPU_OPENCL_PROVIDER:mx7ulp-nxp-bsp ?= ""
+IMXGPU_OPENCL_PROVIDER:mx8mm-nxp-bsp  ?= ""
+
+PREFERRED_PROVIDER_opencl-clhpp:imxviv         ?= "${@d.getVar('IMXGPU_OPENCL_PROVIDER') or 'opencl-clhpp'}"
+PREFERRED_PROVIDER_opencl-headers:imxviv       ?= "${@d.getVar('IMXGPU_OPENCL_PROVIDER') or 'opencl-headers'}"
+PREFERRED_PROVIDER_opencl-icd-loader:imxviv    ?= "${@d.getVar('IMXGPU_OPENCL_PROVIDER') or 'opencl-icd-loader'}"
+PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "${@d.getVar('IMXGPU_OPENCL_PROVIDER') or 'opencl-icd-loader'}"
 
 # Set preferred OpenCL ICD runtime
 PREFERRED_RPROVIDER_virtual-opencl-icd         ?= "libopencl-mesa"
-PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "libopencl-imx"
+PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "${@oe.utils.conditional('IMXGPU_OPENCL_PROVIDER', 'imx-gpu-viv', 'libopencl-imx', 'libopencl-mesa', d)}"
 PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-libopencl"
 
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-gpu-g2d"
