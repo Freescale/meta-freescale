@@ -42,14 +42,14 @@ PACKAGECONFIG[dpu95] = " \
 PACKAGECONFIG[gpu-drm] = " \
     BUILD_IMPLEMENTATION=gpu-drm, \
     , \
-    imx-gpu-g2d wayland-native wayland wayland-protocols, \
+    imx-g2d-gpu wayland-native wayland wayland-protocols, \
     , \
     , \
     dpu dpu95 gpu-fbdev pxp"
 PACKAGECONFIG[gpu-fbdev] = " \
     BUILD_IMPLEMENTATION=gpu-fbdev, \
     , \
-    imx-gpu-g2d, \
+    imx-g2d-gpu, \
     , \
     , \
     dpu dpu95 gpu-drm pxp"
