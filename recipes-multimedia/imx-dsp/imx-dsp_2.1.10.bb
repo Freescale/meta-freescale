@@ -43,7 +43,8 @@ do_install:append () {
     done
 }
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+# HIFI4_PLATFORM and UNSUPPORTED_TESTS are chosen per SoC.
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
 # Package only the proprietary DSP artifacts installed into non-default paths.
 # nooelint: oelint.var.filesoverride
