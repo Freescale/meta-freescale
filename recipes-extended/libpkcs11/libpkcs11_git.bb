@@ -12,6 +12,9 @@ SRC_URI = "git://github.com/nxp-qoriq/libpkcs11;protocol=https;nobranch=1 \
 "
 SRCREV = "8d85182b7a7cd393ab6dd72930f8d1b69468f741"
 
+# Built against secure-obj, which is per machine.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 WRAP_TARGET_PREFIX ?= "${TARGET_PREFIX}"
 export CROSS_COMPILE_HOST = "${CROSS_COMPILE}"
 export CROSS_COMPILE_TA = "${CROSS_COMPILE}"
@@ -45,6 +48,7 @@ PARALLEL_MAKE = ""
 # package, so the ldflags/dev-deps/dev-elf QA checks do not apply cleanly here.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "ldflags dev-deps"
+
 # Same reason as above, for the -dev package.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dev = "ldflags dev-elf"
