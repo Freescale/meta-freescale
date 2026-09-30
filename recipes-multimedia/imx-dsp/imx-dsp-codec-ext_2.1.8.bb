@@ -20,6 +20,9 @@ EXTRA_OECONF:append:mx8dx-nxp-bsp = " --enable-imx8qmqxp"
 EXTRA_OECONF:append:mx8mp-nxp-bsp = " --enable-imx8m"
 EXTRA_OECONF:append:mx8ulp-nxp-bsp = " --enable-imx8ulp"
 
+# The EXTRA_OECONF selection above is per SoC.
+PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
 # Fix strip command failed: 'Unable to recognise the format of the input file'
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
