@@ -594,7 +594,7 @@ PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "${@oe.utils.conditional('IMXG
 PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-libopencl"
 
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-g2d-gpu"
-PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-dpu-g2d"
+PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-g2d-dpu"
 PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-pxp-g2d"
 PREFERRED_PROVIDER_virtual/libg2d:mx943-nxp-bsp ?= "imx-pxp-g2d"
 
