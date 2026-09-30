@@ -34,4 +34,7 @@ FILES:${PN} = "${nonarch_base_libdir}/firmware/*"
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN} = "arch"
 
+# ETHOS_U_FIRMWARE is picked per board.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 COMPATIBLE_MACHINE = "(mx93-nxp-bsp)"
