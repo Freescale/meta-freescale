@@ -18,6 +18,10 @@ ARCH:qoriq-arm64 = "aarch64"
 ARCH:qoriq-arm = "arm"
 CFLAGS += "${TOOLCHAIN_OPTIONS}"
 
+# The securekey_lib apps compile with plain $(CC), ignoring CFLAGS, so the
+# debug prefix map rides on CC to keep build paths out of the binaries.
+CC:append = " ${DEBUG_PREFIX_MAP}"
+
 do_compile() {
         unset LDFLAGS
         export TA_DEV_KIT_DIR=${STAGING_INCDIR}/optee/export-user_ta/
