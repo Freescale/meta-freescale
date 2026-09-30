@@ -28,14 +28,14 @@ PACKAGECONFIG_IMPLEMENTATION:mx943-nxp-bsp = "pxp"
 PACKAGECONFIG[dpu] = " \
     BUILD_IMPLEMENTATION=dpu, \
     , \
-    imx-dpu-g2d wayland-native wayland wayland-protocols, \
+    imx-g2d-dpu wayland-native wayland wayland-protocols, \
     , \
     , \
     dpu95 gpu-drm gpu-fbdev pxp"
 PACKAGECONFIG[dpu95] = " \
     BUILD_IMPLEMENTATION=dpu95, \
     , \
-    imx-dpu-g2d wayland-native wayland wayland-protocols, \
+    imx-g2d-dpu wayland-native wayland wayland-protocols, \
     , \
     , \
     dpu gpu-drm gpu-fbdev pxp"
