@@ -25,6 +25,9 @@ SOC_TOOLS_GPU:append:imxgpu3d = " \
 
 SOC_TOOLS_GPU:append:imxgpu = " \
     imx-gpu-sdk \
+"
+
+SOC_TOOLS_GPU:append:imxviv = " \
     imx-gpu-viv-tools \
 "
 
