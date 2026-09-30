@@ -12,12 +12,16 @@ SRC_URI = "\
 
 S = "${UNPACKDIR}"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+inherit allarch
+
+# The environment is for the mainline etnaviv stack only. On NXP-BSP
+# machines it would cap GL at 2.1 under the Vivante driver.
+COMPATIBLE_MACHINE = "(use-mainline-bsp)"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
-do_install:use-mainline-bsp() {
+do_install() {
     # MESA global envirronment variables
 
     # systemd
