@@ -18,7 +18,10 @@ export CROSS_COMPILE_TA = "${CROSS_COMPILE}"
 
 CFLAGS += "-fPIC"
 
-EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}" CFLAGS="${CFLAGS}"'
+# The app target compiles with plain $(CC), ignoring CFLAGS, so what the
+# test apps need rides on CC: gnu17, as they predate C23 (false as an
+# identifier, () prototypes), and the debug prefix map for buildpaths.
+EXTRA_OEMAKE = 'CC="${CC} -std=gnu17 ${DEBUG_PREFIX_MAP}" LD="${CC}" CFLAGS="${CFLAGS}"'
 
 do_compile() {
         export OPENSSL_PATH="${RECIPE_SYSROOT}/usr"
