@@ -12,12 +12,12 @@ SRC_URI = "\
 
 S = "${UNPACKDIR}"
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+inherit allarch
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
-do_install:use-mainline-bsp() {
+do_install() {
     # MESA global envirronment variables
 
     # systemd
