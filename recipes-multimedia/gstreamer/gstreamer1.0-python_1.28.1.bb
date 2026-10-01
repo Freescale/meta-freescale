@@ -34,7 +34,9 @@ RDEPENDS:${PN} += "gstreamer1.0 gstreamer1.0-plugins-base python3-pygobject"
 REQUIRED_DISTRO_FEATURES = "gobject-introspection-data"
 
 # python3-pygobject is skipped without GI data, which also depends on
-# qemu-usermode in MACHINE_FEATURES, so skip along with it.
+# qemu-usermode in MACHINE_FEATURES, so skip along with it. Skipping on a
+# computed condition has no declarative form, so mirror its anonymous python.
+# nooelint: oelint.task.noanonpython
 python() {
     if not bb.utils.to_boolean(d.getVar("GI_DATA_ENABLED")):
         raise bb.parse.SkipRecipe("GI not available")
