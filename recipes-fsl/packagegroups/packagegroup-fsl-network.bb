@@ -27,16 +27,17 @@ NETWORK_TOOLS:append:fsl-lsch2 = " \
 "
 
 # 2nd generation Data Place Acceleration Architecture
+# ofp is in dynamic-layers/openembedded-layer.
 NETWORK_TOOLS:append:ls1088a = " \
     aiopsl \
     gpp-aioptool \
-    ofp \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'ofp', '', d)} \
 "
 
 NETWORK_TOOLS:append:ls2088a = " \
     aiopsl \
     gpp-aioptool \
-    ofp \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'ofp', '', d)} \
 "
 
 NETWORK_TOOLS:append:fsl-lsch3 = " \
