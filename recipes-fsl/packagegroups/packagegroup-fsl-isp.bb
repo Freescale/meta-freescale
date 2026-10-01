@@ -9,9 +9,9 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 ISP_PKGS ?= ""
+# isp-imx and basler-camera are in dynamic-layers/openembedded-layer.
 ISP_PKGS:mx8mp-nxp-bsp = "\
-    isp-imx \
-    basler-camera \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'isp-imx basler-camera', '', d)} \
     kernel-module-isp-vvcam \
 "
 RDEPENDS:${PN} = "\
