@@ -47,6 +47,10 @@ ATF_PLATFORM ??= "INVALID"
 # base address in source code.
 ATF_BOOT_UART_BASE ?= ""
 
+# Selects whether BL31 requests a full SoC/board power-down or reset via
+# SCMI (IMX9_SCMI_SYS_PWR_FULL_SHUTDOWN/_RESET).
+ATF_SYS_PWR_FULL_CTRL ?= "0"
+
 EXTRA_OEMAKE += "\
     CROSS_COMPILE=${TARGET_PREFIX} \
     PLAT=${ATF_PLATFORM} \
@@ -74,6 +78,8 @@ EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
 
 # Set the UART to use during the boot.
 EXTRA_OEMAKE += 'IMX_BOOT_UART_BASE=${ATF_BOOT_UART_BASE}'
+
+EXTRA_OEMAKE += 'SYS_PWR_FULL_CTRL=${ATF_SYS_PWR_FULL_CTRL}'
 
 do_configure[noexec] = "1"
 
