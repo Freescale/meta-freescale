@@ -23,5 +23,8 @@ inherit pkgconfig meson
 FILES:${PN} += "${datadir}/"
 
 COMPATIBLE_MACHINE = "(^$)"
-COMPATIBLE_MACHINE:imxgpu = "(mx8-nxp-bsp|mx95-nxp-bsp)"
+COMPATIBLE_MACHINE:imxgpu = "(mx8-nxp-bsp)"
+# Mali only ships the OpenCL ICD, so virtual/libopencl1 comes from meta-oe's
+# ICD loader, which also requires the opencl distro feature.
+COMPATIBLE_MACHINE:imxmali = "${@'(mx95-nxp-bsp)' if bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'opencl', True, False, d) else '(^$)'}"
 COMPATIBLE_MACHINE:mx8mm-nxp-bsp = "(^$)"
