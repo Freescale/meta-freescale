@@ -33,6 +33,8 @@ DEPENDS_IMX_OPENCL_CONVERTER = "imx-opencl-converter"
 DEPENDS_IMX_OPENCL_CONVERTER:mx6-nxp-bsp = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx7-nxp-bsp = ""
 DEPENDS_IMX_OPENCL_CONVERTER:mx8mm-nxp-bsp = ""
+# Follow imx-opencl-converter, which on Mali needs meta-oe and opencl
+DEPENDS_IMX_OPENCL_CONVERTER:imxmali = "${@'imx-opencl-converter' if bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'opencl', True, False, d) else ''}"
 
 PV = "4.11.0+git${SRCPV}"
 
