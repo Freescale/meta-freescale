@@ -23,7 +23,7 @@ DEPENDS = "\
     zlib \
 "
 
-require imx-gpu-sdk-src.inc
+require recipes-graphics/imx-gpu-sdk/imx-gpu-sdk-src.inc
 
 PACKAGECONFIG ??= "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
