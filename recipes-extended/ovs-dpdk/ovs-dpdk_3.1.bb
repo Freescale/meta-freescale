@@ -6,7 +6,7 @@ SECTION = "networking"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ce5d23a6429dff345518758f13aaeab"
 
-DEPENDS = "autoconf-native automake-native coreutils-native dpdk python3-six-native"
+DEPENDS = "autoconf-native automake-native coreutils-native dpdk"
 
 SRC_URI = "git://github.com/nxp-qoriq/ovs-dpdk;protocol=https;nobranch=1"
 SRCREV = "7b4861e1f77bbea5ff9952717b66362fdecbca4d"
