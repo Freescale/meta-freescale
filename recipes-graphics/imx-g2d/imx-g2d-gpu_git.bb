@@ -14,11 +14,14 @@ LIC_FILES_CHKSUM = "file://../LICENSE;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
 # available, the OpenCL headers and library used for color space conversion.
 DEPENDS = "libgal-imx"
 
-PROVIDES += "virtual/libg2d"
+PROVIDES += "virtual/libg2d imx-gpu-g2d"
 
 PV = "2.5.0+git"
 
-SRC_URI = "${IMX_GPU_G2D_SRC};branch=${SRCBRANCH}"
+SRC_URI = "${IMX_G2D_GPU_SRC};branch=${SRCBRANCH}"
+# IMX_GPU_G2D_SRC is the name used before the rename to imx-g2d-gpu; keep
+# honouring it so existing mirror overrides are not silently dropped.
+IMX_G2D_GPU_SRC ?= "${IMX_GPU_G2D_SRC}"
 IMX_GPU_G2D_SRC ?= "git://github.com/nxp-imx/imx-gpu-g2d.git;protocol=https"
 SRCBRANCH = "imx_2.5"
 SRCREV = "d494271fcc8759c04467ec778c17ed5cb22141da"
@@ -47,5 +50,10 @@ do_install () {
 }
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
+# Upgrade path for feeds and images built before the rename.
+RPROVIDES:${PN} = "imx-gpu-g2d"
+RREPLACES:${PN} = "imx-gpu-g2d"
+RCONFLICTS:${PN} = "imx-gpu-g2d"
 
 COMPATIBLE_MACHINE = "(imxgpu2d)"
