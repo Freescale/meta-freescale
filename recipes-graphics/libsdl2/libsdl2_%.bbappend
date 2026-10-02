@@ -1,9 +1,9 @@
 PACKAGECONFIG:append:imx-nxp-bsp = " ${PACKAGECONFIG_LIBDECOR}"
 # Fallback default for the machine overrides below; it cannot carry an
 # override for the machines it is the fallback for, and every consumer of it
-# is override-scoped, so it is inert off-target.
+# is override-scoped, so it is inert off-target. libdecor is only in meta-oe.
 # nooelint: oelint.vars.noncoreoverride
-PACKAGECONFIG_LIBDECOR ??= "libdecor"
+PACKAGECONFIG_LIBDECOR ??= "${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'libdecor', '', d)}"
 
 # what vivante driver does libsdl2 mean? Anyway it fails with missing functions as
 # VIVANTE_Create VIVANTE_GLES_GetProcAddress VIVANTE_GLES_UnloadLibrary ...
