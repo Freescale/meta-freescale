@@ -15,10 +15,14 @@ NETWORK_TOOLS = "\
 
 NETWORK_TOOLS:append:qoriq = " \
     ceetm \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'tsntool', '', d)} \
+"
+
+# DPDK and its users only support the 64-bit Arm QorIQ SoCs.
+NETWORK_TOOLS:append:qoriq-arm64 = " \
     dpdk \
     ovs-dpdk \
     pktgen-dpdk \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'tsntool', '', d)} \
 "
 
 # Data Place Acceleration Architecture
