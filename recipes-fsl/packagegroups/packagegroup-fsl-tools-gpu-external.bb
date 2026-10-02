@@ -12,14 +12,20 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 SOC_TOOLS_GPU_X11 = ""
-SOC_TOOLS_GPU_X11:imxgpu2d = "mesa-demos glmark2 gtkperf"
+SOC_TOOLS_GPU_X11:imxgpu2d = "\
+    mesa-demos \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'glmark2 gtkperf', '', d)} \
+"
 
 SOC_TOOLS_GPU_FB = ""
 
 SOC_TOOLS_GPU_WAYLAND = ""
 
 SOC_TOOLS_GPU_XWAYLAND = ""
-SOC_TOOLS_GPU_XWAYLAND:imxgpu2d = "mesa-demos gtkperf"
+SOC_TOOLS_GPU_XWAYLAND:imxgpu2d = "\
+    mesa-demos \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'gtkperf', '', d)} \
+"
 
 RDEPENDS:${PN} = "\
     ${@bb.utils.contains("DISTRO_FEATURES", "x11 wayland", "${SOC_TOOLS_GPU_XWAYLAND}", \
