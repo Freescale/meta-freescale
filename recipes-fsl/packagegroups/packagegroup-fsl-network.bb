@@ -18,7 +18,7 @@ NETWORK_TOOLS:append:qoriq = " \
     dpdk \
     ovs-dpdk \
     pktgen-dpdk \
-    tsntool \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', 'tsntool', '', d)} \
 "
 
 # Data Place Acceleration Architecture
