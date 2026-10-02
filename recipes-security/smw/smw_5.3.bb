@@ -77,7 +77,8 @@ EXTRA_OECMAKE = "\
 OECMAKE_TARGET_COMPILE += "build_tests"
 OECMAKE_TARGET_INSTALL += "install_tests"
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+# The TAs are built against the machine's optee-os-tadevkit.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PACKAGES =+ "${PN}-tests"
 
