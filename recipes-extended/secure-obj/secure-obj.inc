@@ -1,4 +1,4 @@
-DESCRIPTION = "OP-TEE trusted application, key management library and OpenSSL engine for storing and using cryptographic keys inside the QorIQ ARM TrustZone secure world"
+DESCRIPTION = "OP-TEE trusted application and key management library for storing and using cryptographic keys inside the QorIQ ARM TrustZone secure world"
 HOMEPAGE = "https://github.com/nxp-qoriq/secure_obj"
 LICENSE = "BSD-3-Clause"
 
