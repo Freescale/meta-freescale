@@ -26,6 +26,9 @@ do_install () {
     install -m 0644 ${S}/${ETHOS_U_FIRMWARE} ${D}${nonarch_base_libdir}/firmware/ethosu_firmware
 }
 
+# ETHOS_U_FIRMWARE is picked per board.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 # The package ships only the firmware blob installed above, so FILES is set
 # explicitly to the firmware directory.
 # nooelint: oelint.var.filesoverride

@@ -362,6 +362,9 @@ MACHINE_SOCARCH_FILTER:append:imxvpu = " \
     virtual/imxvpu \
 "
 MACHINE_SOCARCH_FILTER:append:imxvulkan = " \
+    glslang \
+    spirv-headers \
+    spirv-tools \
     vulkan-headers \
     vulkan-loader \
     vulkan-tools \

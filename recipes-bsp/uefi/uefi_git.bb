@@ -27,7 +27,9 @@ do_deploy () {
 }
 addtask deploy before do_build after do_install
 
-PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+# The firmware is picked from MACHINE, and QorIQ's SOCARCH is per core,
+# not per SoC.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PACKAGES += "${PN}-image"
 FILES:${PN}-image += "/uefi/*"
