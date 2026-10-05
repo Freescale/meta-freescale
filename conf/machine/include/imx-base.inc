@@ -353,6 +353,7 @@ MACHINE_ARCH_FILTER = "virtual/kernel"
 MACHINE_SOCARCH_FILTER:append:imx-nxp-bsp = " \
     alsa-lib \
     gstreamer1.0 \
+    wayland-protocols-imx \
     weston \
 "
 MACHINE_SOCARCH_FILTER:append:imxvpu = " \

@@ -16,6 +16,8 @@ WESTON_SRC ?= "git://github.com/nxp-imx/weston-imx.git;protocol=https"
 SRCBRANCH = "weston-imx-15.0.1"
 SRCREV = "82cf0ec8f3853e2cb754637da957dcd537c08be9"
 
+inherit use-imx-wayland-protocols
+
 PACKAGECONFIG:remove = "${PACKAGECONFIG_IMX_REMOVALS}"
 PACKAGECONFIG_IMX_REMOVALS ?= "vulkan wayland x11"
 
