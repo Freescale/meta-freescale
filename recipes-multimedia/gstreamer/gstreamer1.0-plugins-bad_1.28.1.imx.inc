@@ -27,7 +27,7 @@ GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protoc
 SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
 SRCREV = "ae93b57a6a238604c305ca79e25d6248b5bab5d6"
 
-inherit use-imx-headers
+inherit use-imx-headers use-imx-wayland-protocols
 
 PACKAGECONFIG_REMOVE ?= "\
     dtls vulkan \

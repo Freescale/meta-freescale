@@ -1,48 +1,26 @@
-From b514647ccdd4e833b2d8fbba1a39547b80657987 Mon Sep 17 00:00:00 2001
+From db59ea0f1e646cb9b1a80ca403208a4e5d4319ca Mon Sep 17 00:00:00 2001
 From: Haihua Hu <jared.hu@nxp.com>
 Date: Tue, 26 Jun 2018 15:30:18 +0800
-Subject: [PATCH 2/9] unstable: Add hdr10-metadata protocol
+Subject: [PATCH] unstable: Add hdr10-metadata protocol
 
 this protocol is used to support hdr10 video playback.
 HDR10 metadata is passed to compositor via this interface
+
+Trimmed to the protocol XML: the meson.build and README hunks are dropped
+because this applies to the installed protocol tree, not the source.
 
 Upstream-Status: Pending
 Signed-off-by: Haihua Hu <jared.hu@nxp.com>
 (cherry picked from commit 87ea413b40701fbb3d333264a1de3b168276bbcf)
 (cherry picked from commit 878f46b324fcefe5193d66c025c4c67bff09c253)
 ---
- meson.build                                   |  1 +
- unstable/hdr10-metadata/README                |  4 +
  .../hdr10-metadata-unstable-v1.xml            | 84 +++++++++++++++++++
- 3 files changed, 89 insertions(+)
- create mode 100644 unstable/hdr10-metadata/README
+ 1 file changed, 84 insertions(+)
  create mode 100644 unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml
 
-diff --git a/meson.build b/meson.build
-index 4eb37f0..c131e95 100644
---- a/meson.build
-+++ b/meson.build
-@@ -46,6 +46,7 @@ unstable_protocols = {
- 	'xdg-shell': {'v5': [], 'v6': []},
- 	'xwayland-keyboard-grab': {'v1': []},
- 	'alpha-compositing': {'v1': []},
-+	'hdr10-metadata': {'v1': []},
- }
- 
- staging_protocols = {
-diff --git a/unstable/hdr10-metadata/README b/unstable/hdr10-metadata/README
-new file mode 100644
-index 000000000000..58a82f802d12
---- /dev/null
-+++ b/unstable/hdr10-metadata/README
-@@ -0,0 +1,4 @@
-+hdr10 metadata protocol
-+
-+Maintainers:
-+Jared Hu <Jared Hu at nxp.com>
 diff --git a/unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml b/unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml
 new file mode 100644
-index 000000000000..5b1bac4aa29f
+index 0000000..5b1bac4
 --- /dev/null
 +++ b/unstable/hdr10-metadata/hdr10-metadata-unstable-v1.xml
 @@ -0,0 +1,84 @@
@@ -131,5 +109,5 @@ index 000000000000..5b1bac4aa29f
 +
 +</protocol>
 -- 
-2.42.0
+2.54.0
 
