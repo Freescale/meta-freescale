@@ -12,6 +12,9 @@ Add one more blending_equation "src_alpha / src_alpha"
 [1] https://chromium.googlesource.com/chromium/src/+/master/third_party/wayland-protocols/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 [2] https://lists.freedesktop.org/archives/wayland-devel/2017-August/034741.html
 
+Trimmed to the protocol XML: the meson.build and README hunks are dropped
+because this applies to the installed protocol tree, not the source.
+
 Upstream-Status: Pending
 Signed-off-by: Haihua Hu <jared.hu@nxp.com>
 
@@ -20,37 +23,10 @@ Conflicts:
 (cherry picked from commit ac5837440d587c88e7979b034ef54893dc45633f)
 (cherry picked from commit a521913cedf5d5f84a162c08768c52bfb841dc23)
 ---
- meson.build                                   |   1 +
- unstable/alpha-compositing/README             |   6 +
  .../alpha-compositing-unstable-v1.xml         | 136 ++++++++++++++++++
- 3 files changed, 143 insertions(+)
- create mode 100644 unstable/alpha-compositing/README
+ 1 file changed, 136 insertions(+)
  create mode 100644 unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 
-diff --git a/meson.build b/meson.build
-index 25d42ce..4eb37f0 100644
---- a/meson.build
-+++ b/meson.build
-@@ -45,6 +45,7 @@ unstable_protocols = {
- 	'xdg-output': {'v1': []},
- 	'xdg-shell': {'v5': [], 'v6': []},
- 	'xwayland-keyboard-grab': {'v1': []},
-+	'alpha-compositing': {'v1': []},
- }
- 
- staging_protocols = {
-diff --git a/unstable/alpha-compositing/README b/unstable/alpha-compositing/README
-new file mode 100644
-index 000000000000..d87415682961
---- /dev/null
-+++ b/unstable/alpha-compositing/README
-@@ -0,0 +1,6 @@
-+Alpha compositing protocol
-+
-+Maintainers:
-+David Reveman <reveman at chromium.org>
-+Alexandros Frantzis <alexandros.frantzis at collabora.com>
-+Jared Hu <Jared Hu at nxp.com>
 diff --git a/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml b/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 new file mode 100644
 index 000000000000..0844b3fd4ecf
