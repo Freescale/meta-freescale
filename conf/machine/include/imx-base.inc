@@ -376,13 +376,11 @@ MACHINE_SOCARCH_FILTER:append:imxgpu = " \
     virtual/mesa \
     virtual/libopencl1 \
     libdrm \
-    cairo \
     libgal-imx \
     opencl-icd-loader \
     opencl-clhpp \
     opencl-headers \
     opencv \
-    pango \
     qtbase \
     qtdeclarative \
 "
@@ -402,8 +400,6 @@ MACHINE_SOCARCH_FILTER:append:imx-mainline-bsp = " \
     virtual/libgles1 \
     virtual/libgles2 \
     virtual/mesa \
-    cairo \
-    pango \
     qtbase \
     qtdeclarative \
 "
