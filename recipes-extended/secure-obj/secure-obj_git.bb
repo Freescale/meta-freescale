@@ -6,6 +6,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=751419260aa954499f7abaabaa882bbe"
 
 DEPENDS:remove = "python3-pycryptodomex-native"
 DEPENDS:append = " python3-cryptography-native optee-os-qoriq-tadevkit"
+
+# The TA is built against the machine's optee-os-qoriq-tadevkit.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 FILES:${PN} += "${base_libdir}/optee_armtz"
 RDEPENDS:${PN} += "secure-obj-module"
 

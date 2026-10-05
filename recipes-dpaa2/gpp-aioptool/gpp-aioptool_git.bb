@@ -16,9 +16,7 @@ SRCREV = "6ead470dde043f3ca67f1ba19b313dd64ec199e1"
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
-EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}" KERNEL_PATH="${STAGING_KERNEL_DIR}"'
-
-do_configure[depends] += "virtual/kernel:do_shared_workdir"
+EXTRA_OEMAKE = 'CC="${CC}" LD="${CC}"'
 
 do_install () {
     oe_runmake install DESTDIR=${D}
