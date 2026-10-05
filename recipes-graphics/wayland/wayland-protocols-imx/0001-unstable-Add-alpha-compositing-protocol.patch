@@ -1,7 +1,7 @@
-From 50e14f75e9f42e7574a7f094d2e357124db9a588 Mon Sep 17 00:00:00 2001
+From f028ba9657b5bc7e6f70242b92c86024d0527462 Mon Sep 17 00:00:00 2001
 From: Haihua Hu <jared.hu@nxp.com>
 Date: Thu, 14 Jun 2018 13:54:08 +0800
-Subject: [PATCH 1/9] unstable: Add alpha-compositing protocol
+Subject: [PATCH] unstable: Add alpha-compositing protocol
 
 It's based on the Chromium Wayland protocol of the same name ([1])
 and Alexandros's modified version ([2])with a few changes
@@ -12,6 +12,9 @@ Add one more blending_equation "src_alpha / src_alpha"
 [1] https://chromium.googlesource.com/chromium/src/+/master/third_party/wayland-protocols/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 [2] https://lists.freedesktop.org/archives/wayland-devel/2017-August/034741.html
 
+Trimmed to the protocol XML: the meson.build and README hunks are dropped
+because this applies to the installed protocol tree, not the source.
+
 Upstream-Status: Pending
 Signed-off-by: Haihua Hu <jared.hu@nxp.com>
 
@@ -20,40 +23,13 @@ Conflicts:
 (cherry picked from commit ac5837440d587c88e7979b034ef54893dc45633f)
 (cherry picked from commit a521913cedf5d5f84a162c08768c52bfb841dc23)
 ---
- meson.build                                   |   1 +
- unstable/alpha-compositing/README             |   6 +
  .../alpha-compositing-unstable-v1.xml         | 136 ++++++++++++++++++
- 3 files changed, 143 insertions(+)
- create mode 100644 unstable/alpha-compositing/README
+ 1 file changed, 136 insertions(+)
  create mode 100644 unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 
-diff --git a/meson.build b/meson.build
-index a78d698a730b..99a555d53a09 100644
---- a/meson.build
-+++ b/meson.build
-@@ -42,6 +42,7 @@ unstable_protocols = {
- 	'xdg-output': ['v1'],
- 	'xdg-shell': ['v5', 'v6'],
- 	'xwayland-keyboard-grab': ['v1'],
-+	'alpha-compositing': ['v1'],
- }
- 
- staging_protocols = {
-diff --git a/unstable/alpha-compositing/README b/unstable/alpha-compositing/README
-new file mode 100644
-index 000000000000..d87415682961
---- /dev/null
-+++ b/unstable/alpha-compositing/README
-@@ -0,0 +1,6 @@
-+Alpha compositing protocol
-+
-+Maintainers:
-+David Reveman <reveman at chromium.org>
-+Alexandros Frantzis <alexandros.frantzis at collabora.com>
-+Jared Hu <Jared Hu at nxp.com>
 diff --git a/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml b/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 new file mode 100644
-index 000000000000..0844b3fd4ecf
+index 0000000..0844b3f
 --- /dev/null
 +++ b/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml
 @@ -0,0 +1,136 @@
@@ -195,5 +171,5 @@ index 000000000000..0844b3fd4ecf
 +</protocol>
 \ No newline at end of file
 -- 
-2.42.0
+2.54.0
 
