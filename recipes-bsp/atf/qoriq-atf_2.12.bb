@@ -21,7 +21,7 @@ PACKAGECONFIG ??= "\
 "
 PACKAGECONFIG[optee] = ",,optee-os-qoriq"
 
-COMPATIBLE_MACHINE = "(qoriq)"
+COMPATIBLE_MACHINE = "(qoriq-arm64)"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
