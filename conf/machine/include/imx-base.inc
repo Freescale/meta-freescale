@@ -407,6 +407,36 @@ MACHINE_SOCARCH_FILTER:append:mx8qm-nxp-bsp = " \
     virtual/libopenvx \
 "
 
+# fsl-dynamic-packagearch promotes only the direct consumers of the recipes
+# above, but a recipe built against one of those consumers differs per SoC as
+# well. List the consumers that other recipes build against, so that their
+# own consumers follow them instead of differing under the shared tune.
+#
+# On the NXP BSP libdrm is the per-SoC libdrm-imx even without a GPU, so the
+# GL stack built on it follows it there too.
+MACHINE_SOCARCH_FILTER:append:imx-nxp-bsp = " \
+    libdrm \
+    libsndfile1 \
+    mpg123 \
+    pulseaudio \
+    virtual/egl \
+    virtual/libgl \
+    virtual/libgles2 \
+    virtual/mesa \
+"
+MACHINE_SOCARCH_CONSUMERS = " \
+    gtk+3 \
+    gtk4 \
+    libepoxy \
+    libva \
+    packagegroup-self-hosted \
+    virtual/xserver \
+    vulkan-loader \
+    webkitgtk \
+"
+MACHINE_SOCARCH_FILTER:append:imx-nxp-bsp = " ${MACHINE_SOCARCH_CONSUMERS}"
+MACHINE_SOCARCH_FILTER:append:imx-mainline-bsp = " ${MACHINE_SOCARCH_CONSUMERS}"
+
 INHERIT += "fsl-dynamic-packagearch"
 
 SIGGEN_EXCLUDE_SAFE_RECIPE_DEPS:append = " \
