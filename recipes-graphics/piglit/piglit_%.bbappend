@@ -51,4 +51,6 @@ PIGLIT_USE_GBM:imxgpu:mx6-nxp-bsp = "0"
 PIGLIT_USE_GBM:imxgpu:mx7-nxp-bsp = "0"
 EXTRA_OECMAKE:append:imx-generic-bsp = " -DPIGLIT_USE_GBM=${PIGLIT_USE_GBM}"
 
-CFLAGS:append:imxgpu:toolchain-clang = " -Wno-error=int-conversion"
+# The X11 EGL tests pass X handles where the Vivante headers declare
+# Wayland types; GCC 14 and later, like clang, make those errors.
+CFLAGS:append:imxgpu = " -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
