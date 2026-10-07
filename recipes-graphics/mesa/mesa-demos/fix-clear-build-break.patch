@@ -8,14 +8,12 @@ Upstream-Status: Pending
 
 Signed-off-by: Khem Raj <raj.khem@gmail.com>
 ---
- src/egl/opengles1/clear.c | 2 +-
+ src/egl/opengles1/clear.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/egl/opengles1/clear.c b/src/egl/opengles1/clear.c
-index 9fe1b52..ca9954a 100644
 --- a/src/egl/opengles1/clear.c
 +++ b/src/egl/opengles1/clear.c
-@@ -34,7 +34,7 @@
+@@ -18,7 +18,7 @@
  #include <stdio.h>
  #include <EGL/egl.h>
  #include <GLES/gl.h>
