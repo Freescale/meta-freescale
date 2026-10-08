@@ -1,0 +1,219 @@
+name: Yocto Check Layer
+
+# A reduced yocto-check-layer run: contrib/check-layer/affected-machines.py
+# reads the change and picks the machines it reaches, plus signature peers and
+# a control. Its verdict covers only those machines; the full run over every
+# machine stays the sign-off (dispatch with an empty base to get it).
+#
+# The machines are split into small runs, one job each, that together compare
+# what a single run over all of them would (see `shards` in the script).
+
+on:
+  pull_request:
+    branches:
+      - master
+      - wrynose
+      - whinlatter
+      - walnascar
+      - scarthgap
+  merge_group:
+  workflow_dispatch:
+    inputs:
+      base:
+        description: 'Revision the change is based on; empty checks every machine'
+        default: 'origin/master'
+        required: false
+      max:
+        description: 'Keep at most this many machines (0: no limit)'
+        default: '16'
+        required: false
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  LAYER: ${{ github.workspace }}/meta-freescale
+
+jobs:
+  select:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      shards: ${{ steps.select.outputs.shards }}
+      oe: ${{ steps.release.outputs.oe }}
+      bitbake: ${{ steps.release.outputs.bitbake }}
+    steps:
+      # The OE-core and BitBake branches of the release the change targets. A
+      # dispatch from any other branch checks against master.
+      - name: Choose the release
+        id: release
+        env:
+          BRANCH: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+        run: |
+          oe=${BRANCH#refs/heads/}
+          case "$oe" in
+            wrynose)    bitbake=2.18 ;;
+            whinlatter) bitbake=2.16 ;;
+            walnascar)  bitbake=2.12 ;;
+            scarthgap)  bitbake=2.8 ;;
+            *)          oe=master bitbake=master ;;
+          esac
+          echo "oe=$oe" >> "$GITHUB_OUTPUT"
+          echo "bitbake=$bitbake" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          path: meta-freescale
+          # affected-machines.py diffs the change against its base.
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: openembedded/openembedded-core
+          ref: ${{ steps.release.outputs.oe }}
+          path: openembedded-core
+      - uses: actions/checkout@v4
+        with:
+          repository: openembedded/bitbake
+          ref: ${{ steps.release.outputs.bitbake }}
+          path: bitbake
+      - uses: ./meta-freescale/.github/actions/check-layer-host
+
+      # A selector bug would under-test every pull request.
+      - name: Test the selector
+        working-directory: meta-freescale
+        run: python3 -m unittest discover -s contrib/check-layer/tests
+
+      - name: Choose the base
+        id: base
+        env:
+          INPUT_BASE: ${{ inputs.base }}
+        run: |
+          case "${{ github.event_name }}" in
+            pull_request) base=${{ github.event.pull_request.base.sha }} ;;
+            merge_group)  base=${{ github.event.merge_group.base_sha }} ;;
+            *)            base=$INPUT_BASE ;;
+          esac
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+
+      # The table only changes with the machine configurations and OE-core.
+      - name: Key the machine table
+        id: key
+        run: |
+          echo "oe=$(git -C openembedded-core rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: table
+        with:
+          path: machines.tsv
+          key: check-layer-table-${{ steps.key.outputs.oe }}-${{ hashFiles('meta-freescale/conf/machine/**', 'meta-freescale/contrib/check-layer/affected-machines.py') }}
+
+      - name: Generate the machine table
+        if: steps.table.outputs.cache-hit != 'true'
+        run: |
+          . openembedded-core/oe-init-build-env build-table > /dev/null
+          bitbake-layers add-layer "$LAYER"
+          "$LAYER"/contrib/check-layer/affected-machines.py table > "$GITHUB_WORKSPACE"/machines.tsv
+
+      - name: Select the machines
+        id: select
+        working-directory: meta-freescale
+        env:
+          BASE: ${{ steps.base.outputs.base }}
+          MAX: ${{ inputs.max }}
+        run: |
+          table=$GITHUB_WORKSPACE/machines.tsv
+          if [ -z "$BASE" ]; then
+            set -- --all
+            reason="every machine (full run)"
+          else
+            set -- --base "$BASE" --max "${MAX:-16}"
+            reason="selected for the change since $BASE"
+          fi
+          contrib/check-layer/affected-machines.py select --table "$table" "$@" \
+              --explain 2> "$GITHUB_WORKSPACE"/explain.txt > /dev/null
+          shards=$(contrib/check-layer/affected-machines.py select --table "$table" "$@" \
+              --format shards)
+          echo "shards=$shards" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Machines"
+            echo
+            if [ "$shards" != "[]" ]; then
+              echo "$reason, in these runs:"
+              echo
+              jq -r '.[] | "- `\(.name)`: `\(.machines)`"' <<< "$shards"
+            else
+              echo 'Nothing BitBake parses changed: check-layer skipped.'
+            fi
+            echo
+            echo '```'
+            cat "$GITHUB_WORKSPACE"/explain.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # A BSP layer checked without --machines silently skips its machine tests,
+  # so an empty selection runs no job at all.
+  check-layer:
+    needs: select
+    if: needs.select.outputs.shards != '[]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.select.outputs.shards) }}
+    name: check-layer (${{ matrix.shard.name }})
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: meta-freescale
+      - uses: actions/checkout@v4
+        with:
+          repository: openembedded/openembedded-core
+          ref: ${{ needs.select.outputs.oe }}
+          path: openembedded-core
+      - uses: actions/checkout@v4
+        with:
+          repository: openembedded/bitbake
+          ref: ${{ needs.select.outputs.bitbake }}
+          path: bitbake
+      - uses: ./meta-freescale/.github/actions/check-layer-host
+
+      - name: Run yocto-check-layer
+        env:
+          MACHINES: ${{ matrix.shard.machines }}
+        run: |
+          . openembedded-core/oe-init-build-env build > /dev/null
+          set -o pipefail
+          # The wrapper deletes its build directory, log included, and its -o
+          # mangles multiple arguments: keep the log with tee.
+          # shellcheck disable=SC2086
+          yocto-check-layer-wrapper -- "$LAYER" --no-auto-dependency \
+              --machines $MACHINES \
+              2>&1 | tee "$GITHUB_WORKSPACE"/check-layer.log
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: check-layer-${{ matrix.shard.name }}
+          path: check-layer.log
+          if-no-files-found: ignore
+
+  # One check to require in branch protection and the merge queue: the
+  # check-layer job names follow the selection, and an empty one skips it.
+  status:
+    needs: [select, check-layer]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check the results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "select and check-layer: $RESULTS"
+          case " $RESULTS " in
+            *" failure "*|*" cancelled "*) exit 1 ;;
+          esac
