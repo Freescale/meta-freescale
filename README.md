@@ -16,12 +16,33 @@ This layer depends on:
 - Branch: master
 - Revision: HEAD
 
+## NXP End User License Agreement
+
+Some components, such as the boot and DDR firmware, the GPU and VPU drivers and the codecs, are distributed by NXP under the [NXP Software License Agreement](EULA). Those recipes fail to build until the EULA is accepted:
+
+```
+ERROR: firmware-imx-1_8.32-r0 do_unpack: To use 'firmware-imx' you need to accept the Freescale EULA at '.../meta-freescale/EULA'. Please read it and in case you accept it, write: ACCEPT_FSL_EULA = "1" in your local.conf.
+```
+
+i.MX 8 and i.MX 9 machines need it even for a minimal image, since their boot image includes NXP firmware.
+
+After reading the EULA, accept it by enabling the `eula/accept-fsl-eula` fragment:
+
+```sh
+bitbake-config-build enable-fragment freescale-layer/eula/accept-fsl-eula
+```
+
+or by adding to `conf/local.conf`:
+
+```
+ACCEPT_FSL_EULA = "1"
+```
+
 ## Branches
 
 - **master:** This is our primary development branch, receiving continuous bug fixes and BSP upgrades. It represents the latest and greatest version, ensuring compatibility with the most recent Yocto Project release.
-- **scarthgap:** Associated with Yocto Project 5.0 (LTS), maintained until April 2028 for bug fixes and until April 2026 for BSP backports.
-- **nanbield:** Corresponding to Yocto Project 4.3, it's maintained until May 2024 for bug fixes and BSP backports.
-- **kirkstone:** Tied to Yocto Project 4.0 (LTS), supported until April 2026 for bug fixes and until April 2024 for BSP backports.
+- **wrynose:** Associated with Yocto Project 6.0 (LTS), maintained until April 2030 for bug fixes and until April 2028 for BSP backports.
+- **scarthgap:** Associated with Yocto Project 5.0 (LTS), maintained until April 2028 for bug fixes. BSP backports ended in April 2026.
 
 ## Maintenance Policy
 
