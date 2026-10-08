@@ -632,10 +632,10 @@ PREFERRED_RPROVIDER_virtual-opencl-icd         ?= "libopencl-mesa"
 PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "${@oe.utils.conditional('IMXGPU_OPENCL_PROVIDER', 'imx-gpu-viv', 'libopencl-imx', 'libopencl-mesa', d)}"
 PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-libopencl"
 
-PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-gpu-g2d"
-PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-dpu-g2d"
-PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-pxp-g2d"
-PREFERRED_PROVIDER_virtual/libg2d:mx943-nxp-bsp ?= "imx-pxp-g2d"
+PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-g2d-gpu"
+PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-g2d-dpu"
+PREFERRED_PROVIDER_virtual/libg2d:mx93-nxp-bsp ?= "imx-g2d-pxp"
+PREFERRED_PROVIDER_virtual/libg2d:mx943-nxp-bsp ?= "imx-g2d-pxp"
 
 # Set preferred Vulkan ICD runtime
 PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa-vulkan-drivers"

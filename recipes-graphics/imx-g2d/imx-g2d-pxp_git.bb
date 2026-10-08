@@ -9,11 +9,14 @@ SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=0a977e480eb69a215e364c381ff61aec"
 
-PROVIDES += "virtual/libg2d"
+PROVIDES += "virtual/libg2d imx-pxp-g2d"
 
 PV = "2.5.0+git"
 
-SRC_URI = "${IMX_PXP_G2D_SRC};branch=${SRCBRANCH}"
+SRC_URI = "${IMX_G2D_PXP_SRC};branch=${SRCBRANCH}"
+# IMX_PXP_G2D_SRC is the name used before the rename to imx-g2d-pxp; keep
+# honouring it so existing mirror overrides are not silently dropped.
+IMX_G2D_PXP_SRC ?= "${IMX_PXP_G2D_SRC}"
 IMX_PXP_G2D_SRC ?= "git://github.com/nxp-imx/imx-g2d-pxp.git;protocol=https"
 SRCBRANCH = "imx_2.5"
 SRCREV = "9551dd7f97c37af80b42cd8845ffb5aa190145dc"
@@ -29,4 +32,9 @@ do_install() {
 }
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
+
+# Upgrade path for feeds and images built before the rename.
+RPROVIDES:${PN} = "imx-pxp-g2d"
+RREPLACES:${PN} = "imx-pxp-g2d"
+RCONFLICTS:${PN} = "imx-pxp-g2d"
 COMPATIBLE_MACHINE = "(mx93-nxp-bsp|mx943-nxp-bsp)"
