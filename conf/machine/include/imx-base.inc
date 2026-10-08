@@ -603,6 +603,16 @@ PREFERRED_PROVIDER_virtual/libgles1:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles2:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles3:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 
+# The Vivante stack provides virtual/libgbm only on i.MX 8, and mesa-gl does
+# not build it, so nothing provides it for the older Vivante GPUs. Skip the
+# recipes requiring it there instead of leaving them unbuildable.
+IMXGPU_LIBGBM_MISSING                 ?= ""
+IMXGPU_LIBGBM_MISSING:imxviv          ?= "virtual/libgbm is not provided by the Vivante GPU stack before i.MX 8"
+IMXGPU_LIBGBM_MISSING:mx8-nxp-bsp     ?= ""
+
+SKIP_RECIPE[kmscube]                  ?= "${IMXGPU_LIBGBM_MISSING}"
+SKIP_RECIPE[virglrenderer]            ?= "${IMXGPU_LIBGBM_MISSING}"
+
 # Select the Vivante OpenCL implementation for the GPU cores supporting it.
 # It doesn't work with the standard headers and loader, so it provides them
 # too. imx-gpu-viv uses this to decide whether it provides OpenCL at all;
