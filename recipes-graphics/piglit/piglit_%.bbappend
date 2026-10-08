@@ -27,7 +27,9 @@ PACKAGECONFIG:remove:imx-generic-bsp = "${PACKAGECONFIG_REMOVE}"
 # nooelint: oelint.vars.noncoreoverride
 PACKAGECONFIG_APPEND ?= ""
 PACKAGECONFIG_APPEND:imx-generic-bsp ?= "${@bb.utils.filter('DISTRO_FEATURES', 'vulkan', d)}"
-PACKAGECONFIG_APPEND:append:imxviv:mx8-nxp-bsp = " opencl"
+# The cl tests only where the Vivante stack provides OpenCL, see
+# IMXGPU_OPENCL_PROVIDER in imx-base.inc (not on i.MX 8M Mini).
+PACKAGECONFIG_APPEND:append:imxviv:mx8-nxp-bsp = " ${@'opencl' if d.getVar('IMXGPU_OPENCL_PROVIDER') else ''}"
 PACKAGECONFIG_APPEND:imxgpu:mx6-nxp-bsp = ""
 PACKAGECONFIG_APPEND:imxgpu:mx7-nxp-bsp = ""
 
