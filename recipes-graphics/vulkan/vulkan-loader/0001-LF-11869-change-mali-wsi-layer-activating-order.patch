@@ -11,18 +11,18 @@ Signed-off-by: Yuan Tian <yuan.tian@nxp.com>
  1 file changed, 9 insertions(+)
 
 diff --git a/loader/loader.c b/loader/loader.c
-index 53c8be0e586d..b5e7fd6915c2 100644
+index 7a547fd37200..10de24964dd9 100644
 --- a/loader/loader.c
 +++ b/loader/loader.c
-@@ -3441,6 +3441,7 @@ VkResult add_data_files(const struct loader_instance *inst, struct loader_string
+@@ -3465,6 +3465,7 @@ VkResult add_data_files(const struct loader_instance *inst, struct loader_string
                  if (NULL == dir_stream) {
                      continue;
                  }
 +                bool has_wsi_layer = false;
                  while (1) {
                      errno = 0;
-                     struct dirent *dir_entry = readdir(dir_stream);
-@@ -3459,6 +3460,10 @@ VkResult add_data_files(const struct loader_instance *inst, struct loader_string
+                     // NOLINTNEXTLINE(concurrency-mt-unsafe) - readdir is safe here since each thread uses its own dir_stream
+@@ -3488,6 +3489,10 @@ VkResult add_data_files(const struct loader_instance *inst, struct loader_string
                      name = full_path;
  
                      VkResult local_res;
@@ -33,7 +33,7 @@ index 53c8be0e586d..b5e7fd6915c2 100644
                      local_res = add_if_manifest_file(inst, name, out_files);
  
                      // Incomplete means this was not a valid data file.
-@@ -3469,6 +3474,10 @@ VkResult add_data_files(const struct loader_instance *inst, struct loader_string
+@@ -3499,6 +3504,10 @@ VkResult add_data_files(const struct loader_instance *inst, struct loader_string
                          break;
                      }
                  }
