@@ -135,8 +135,12 @@ jobs:
           fi
           contrib/check-layer/affected-machines.py select --table "$table" "$@" \
               --explain 2> "$GITHUB_WORKSPACE"/explain.txt > /dev/null
+          # The common tests ignore --machines: one run of them, and only the
+          # machine tests in the others.
           shards=$(contrib/check-layer/affected-machines.py select --table "$table" "$@" \
-              --format shards)
+              --format shards | jq -c 'if length > 0
+                then [{name: "common", machines: "", tests: "common"}] + map(. + {tests: "bsp"})
+                else . end')
           echo "shards=$shards" >> "$GITHUB_OUTPUT"
           {
             echo "## Machines"
@@ -144,7 +148,8 @@ jobs:
             if [ "$shards" != "[]" ]; then
               echo "$reason, in these runs:"
               echo
-              jq -r '.[] | "- `\(.name)`: `\(.machines)`"' <<< "$shards"
+              jq -r '.[] | "- `\(.name)`: " + if .machines == "" then "the common tests"
+                else "`\(.machines)`" end' <<< "$shards"
             else
               echo 'Nothing BitBake parses changed: check-layer skipped.'
             fi
@@ -190,14 +195,14 @@ jobs:
       - name: Run yocto-check-layer
         env:
           MACHINES: ${{ matrix.shard.machines }}
+          TESTS: ${{ matrix.shard.tests }}
         run: |
+          # A fresh build directory, as yocto-check-layer-wrapper would make.
           . openembedded-core/oe-init-build-env build > /dev/null
           set -o pipefail
-          # The wrapper deletes its build directory, log included, and its -o
-          # mangles multiple arguments: keep the log with tee.
           # shellcheck disable=SC2086
-          yocto-check-layer-wrapper -- "$LAYER" --no-auto-dependency \
-              --machines $MACHINES \
+          "$LAYER"/contrib/check-layer/check-layer.py --tests "$TESTS" \
+              "$LAYER" --no-auto-dependency ${MACHINES:+--machines $MACHINES} \
               2>&1 | tee "$GITHUB_WORKSPACE"/check-layer.log
 
       - uses: actions/upload-artifact@v4

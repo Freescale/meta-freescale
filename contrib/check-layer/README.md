@@ -76,6 +76,25 @@ contrib/check-layer/affected-machines.py annotate --table machines.tsv \
     --base origin/master --summary summary.md run-*/check-layer.log
 ```
 
+## check-layer.py
+
+Runs `yocto-check-layer` (same arguments), saving two kinds of repeated work:
+
+- `--tests common` or `--tests bsp` runs only the common tests or only the
+  machine ones. The common tests, and the signatures they compare against,
+  ignore `--machines`: CI runs them once, and the machine tests in each run of
+  machines.
+- A world signature dump with the same layers, configuration and machine is
+  reused when the earlier one succeeded: test_world reuses test_signatures',
+  and test_machine_world reuses test_machine_signatures'.
+
+Run it in a build directory from `oe-init-build-env`, as the wrapper would:
+
+```sh
+contrib/check-layer/check-layer.py --tests bsp "$PWD" --no-auto-dependency \
+    --machines imx8mm-ddr4-evk imx8mp-ddr4-evk
+```
+
 Tests (no BitBake, no network):
 
 ```sh
