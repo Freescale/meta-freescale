@@ -222,6 +222,12 @@ class Selection:
         self.nowhere = []
         self.untested = []
         self.ignored = []
+        # The changed lines and what they reach, for `annotate`: {path, line
+        # (None: the whole file), machines (None: any), head, recipe}.
+        self.lines = []
+
+    def record(self, path, line, machines, head=None):
+        self.lines.append({"path": path, "line": line, "machines": machines, "head": head})
 
     def reach(self, machines, reason):
         for m in sorted(machines):
@@ -384,11 +390,21 @@ def known_overrides(sel):
     return known
 
 
-def judge_lines(sel, rev, path, numbers, scope, what, scope_label="COMPATIBLE_MACHINE"):
-    """Record the machines each changed line can affect, within `scope`."""
+def judge_lines(sel, rev, path, numbers, scope, what, scope_label="COMPATIBLE_MACHINE",
+                record=True):
+    """Record the machines each changed line can affect, within `scope`.
+    Returns the machines reached, None when any machine can be."""
     text = show(rev, path)
+    reached = set()
     if text is None or not numbers:
-        return
+        return reached
+
+    def note(n, machines, head):
+        nonlocal reached
+        reached = None if reached is None or machines is None else reached | machines
+        if record:
+            # A removed line has no line to point at in the change.
+            sel.record(path, n if what == "added" else None, machines, head)
     lines, heads = text.split("\n"), statement_heads(text)
     known = set()
     for t in sel.table.values():
@@ -404,6 +420,7 @@ def judge_lines(sel, rev, path, numbers, scope, what, scope_label="COMPATIBLE_MA
         head = heads[i]
         if head is None:
             sel.everywhere(f"{path}:{n} ({what}): python code, conditions unknown")
+            note(n, None, None)
             continue
         ovr = [o for o in head_overrides(head) if o in known]
         m = COMPAT_RE.match(head)
@@ -416,8 +433,10 @@ def judge_lines(sel, rev, path, numbers, scope, what, scope_label="COMPATIBLE_MA
                     sel.everywhere(f"{path}:{n} ({what}): {why}")
                 else:
                     sel.uniform_reasons.append(f"{path}:{n} ({what})")
+                note(n, None, head)
             elif scope:
                 sel.reach(scope, f"{path} ({what}, {scope_label})")
+                note(n, set(scope), head)
             else:
                 sel.nowhere.append(f"{path}:{n} ({what}): {scope_label} allows no machine in the table")
             continue
@@ -427,8 +446,10 @@ def judge_lines(sel, rev, path, numbers, scope, what, scope_label="COMPATIBLE_MA
             hit &= scope
         if hit:
             sel.reach(hit, f"{path} (:{':'.join(sorted(set(ovr)))})")
+            note(n, hit, head)
         else:
             sel.nowhere.append(f"{path}:{n} ({what}): :{':'.join(sorted(set(ovr)))} applies to no machine in the table")
+    return reached
 
 
 def collect(sel, base, head):
@@ -459,6 +480,7 @@ def collect(sel, base, head):
         if m:
             if m.group(1) in sel.table:
                 sel.direct.setdefault(m.group(1), []).append(f"{path} changed")
+                record_lines(sel, head, new, added, {m.group(1)})
             elif new is None:
                 sel.ignored.append(f"{path} (machine removed)")
             else:
@@ -471,6 +493,7 @@ def collect(sel, base, head):
                 continue
             if not (added or removed):
                 sel.reach(includers, f"{path} (included)")
+                sel.record(path, None, set(includers))
             label = f"included by {len(includers)} machine(s)"
             if new:
                 judge_lines(sel, head, new, added, includers, "added", label)
@@ -487,6 +510,7 @@ def collect(sel, base, head):
                                 "removed", "inherited by restricted recipes")
             else:
                 sel.everywhere(f"{path}: global configuration")
+                record_lines(sel, head, new, added, None)
             continue
         if matches(path, METADATA):
             if not (added or removed):
@@ -495,6 +519,7 @@ def collect(sel, base, head):
                     sel.everywhere(f"{path}: renamed, and the recipe is not restricted")
                 else:
                     sel.reach(scope, f"{path} (renamed, COMPATIBLE_MACHINE)")
+                sel.record(path, None, scope)
                 continue
             if new:
                 judge_lines(sel, head, new, added, recipe_scope(head, new, sel.table), "added")
@@ -505,28 +530,52 @@ def collect(sel, base, head):
         # which machines, else the statements naming the file do.
         dirs = [c for c in path.split("/")[:-1] if c in known_overrides(sel)]
         if dirs:
-            sel.reach({m for m, t in sel.table.items()
-                       if any(d in t["overrides"] or d == m for d in dirs)},
-                      f"{path} (in {'/'.join(dirs)}/)")
+            hit = {m for m, t in sel.table.items()
+                   if any(d in t["overrides"] or d == m for d in dirs)}
+            sel.reach(hit, f"{path} (in {'/'.join(dirs)}/)")
+            sel.record(path, None, hit)
             continue
         refs = referencing_lines(head, path) or referencing_lines(mb, path)
         if not refs:
             sel.everywhere(f"{path}: not referenced by name, assumed to reach every machine")
+            sel.record(path, None, None)
+        # The file changed, not the lines naming it: point at the file, as
+        # part of the recipes naming it.
+        reached, users = set(), []
         for rev, f, numbers in refs:
             what = f"uses {os.path.basename(path)}"
+            users.append(f)
             mm = re.match(r"conf/machine/([^/]+)\.conf$", f)
             if mm:
                 if mm.group(1) in sel.table:
                     sel.reach({mm.group(1)}, f"{f} ({what})")
+                    r = {mm.group(1)}
+                else:
+                    r = set()
             elif f.startswith("conf/machine/include/"):
                 graph = graph_new if rev == head else graph_old
                 inc = graph.get(f, set())
-                judge_lines(sel, rev, f, numbers, inc, what, f"included by {len(inc)} machine(s)")
+                r = judge_lines(sel, rev, f, numbers, inc, what, f"included by {len(inc)} machine(s)",
+                                record=False)
             elif f.endswith(".bbclass"):
-                judge_lines(sel, rev, f, numbers, class_scope(rev, f, sel.table), what,
-                            "inherited by restricted recipes")
+                r = judge_lines(sel, rev, f, numbers, class_scope(rev, f, sel.table), what,
+                                "inherited by restricted recipes", record=False)
             else:
-                judge_lines(sel, rev, f, numbers, recipe_scope(rev, f, sel.table), what)
+                r = judge_lines(sel, rev, f, numbers, recipe_scope(rev, f, sel.table), what,
+                                record=False)
+            reached = None if reached is None or r is None else reached | r
+        if refs:
+            sel.record(path, None, reached)
+            sel.lines[-1]["users"] = users
+
+
+def record_lines(sel, rev, path, numbers, machines):
+    """Record changed lines that reach `machines` as a whole (None: any)."""
+    if path is None:
+        return
+    heads = statement_heads(show(rev, path) or "")
+    for n in sorted(numbers) or [None]:
+        sel.record(path, n, machines, heads[n - 1] if n and n <= len(heads) else None)
 
 
 def referencing_lines(rev, path):
@@ -709,6 +758,286 @@ def cmd_select(args):
     return 0
 
 
+# A failed test in the final report: `INFO: FAIL: test_x (module.Class.test_x)`
+# up to the next `====` rule.
+REPORT_RE = re.compile(r"^(?:INFO: )?(FAIL|ERROR): (test_\w+) \(")
+RULE_RE = re.compile(r"^(?:INFO: )?(?:={20,}|Ran \d+ tests)")
+# test_machine_signatures: `   <tune> <pn>:<task>: <sig> (m1, m2) != <sig> (m3)`
+MACHINE_SIG_RE = re.compile(r"^   (\S+) (\S+):(do_\w+): ([0-9a-f]{16,} \(.*)$")
+SIG_GROUP_RE = re.compile(r"[0-9a-f]{16,} \(([^)]*)\)")
+# test_signatures: `   <pn>:<task>: <old> -> <new>`
+LAYER_SIG_RE = re.compile(r"^   (\S+):(do_\w+): [0-9a-f]{16,} -> [0-9a-f]{16,}$")
+DIFFSIGS_RE = re.compile(r"bitbake-diffsigs (?:-t|--task) (\S+) (do_\w+)")
+DIFFSIG_VAR_RE = re.compile(
+    r"Variable (\S+) value changed|Dependency on [Vv]ariable (\S+) was (?:added|removed)"
+    r"|List of dependencies for variable (\S+) changed")
+WORLD_MACHINE_RE = re.compile(r"\bMACHINE=(\S+) bitbake\b")
+PATH_RE = re.compile(r"(/[^\s'\"():,]+\.(?:bb|bbappend|inc|bbclass|conf|patch|diff))\b")
+# BitBake's follow-up to an error naming what is missing: no cause of its own.
+KNOCK_ON_RE = re.compile(r"^Required build target '[^']*' has no buildable providers\.")
+ASSIGNED_RE = re.compile(r"^\s*(?:export\s+|python\s+|fakeroot\s+)*([A-Za-z_][\w-]*)")
+
+
+def layer_path(p):
+    """`p`, an absolute path from the log, relative to the layer; None outside it."""
+    p = re.sub(r"^.*?:(?=/)", "", p)         # virtual:multilib:lib64:/...
+    if p.startswith(LAYER + "/"):
+        return p[len(LAYER) + 1:]
+    seg = f"/{os.path.basename(LAYER)}/"   # another checkout of the same layer
+    return p.rsplit(seg, 1)[1] if seg in p else None
+
+
+def parse_log(text):
+    """The failures in a yocto-check-layer log: [{test, kind, entries}], each
+    entry {pn, task, machines (None: not machine specific), vars, paths, text}."""
+    lines = text.split("\n")
+    out = []
+    i = 0
+    while i < len(lines):
+        m = REPORT_RE.match(lines[i])
+        if not m:
+            i += 1
+            continue
+        kind, test = m.groups()
+        i += 1
+        block = []
+        while i < len(lines) and not (RULE_RE.match(lines[i]) or REPORT_RE.match(lines[i])):
+            block.append(lines[i])
+            i += 1
+        out.append({"test": test, "kind": kind, "entries": parse_block(test, block)})
+    return out
+
+
+def shorten(text):
+    """Absolute paths in a log line, made relative to their layer."""
+    def one(m):
+        p = re.sub(r"^.*?:(?=/)", "", m.group(1))
+        lp = layer_path(p)
+        if lp:
+            return lp
+        parts = p.split("/")
+        src = next((i for i, c in enumerate(parts) if c in ("sources", "layers", "work")), None)
+        return "/".join(parts[src + 1:]) if src is not None and src + 2 < len(parts) else p
+    return PATH_RE.sub(one, text)
+
+
+def few(machines, n=4):
+    ms = sorted(machines)
+    return ", ".join(ms[:n]) + (f" +{len(ms) - n}" if len(ms) > n else "")
+
+
+def parse_block(test, block):
+    entries = []
+    header = None
+    # The diffsigs explanation follows the entry it explains.
+    target = None
+    machine = None
+    for line in block:
+        m = MACHINE_SIG_RE.match(line)
+        if m:
+            groups = [{x.strip() for x in g.split(",") if x.strip()}
+                      for g in SIG_GROUP_RE.findall(m.group(4))]
+            entries.append({"pn": m.group(2), "task": m.group(3),
+                            "machines": set().union(*groups) if groups else None,
+                            "vars": set(), "paths": set(),
+                            "text": f"{m.group(2)}:{m.group(3)} differs between "
+                                    + " and ".join(f"({few(g)})" for g in groups)})
+            continue
+        m = LAYER_SIG_RE.match(line)
+        if m:
+            entries.append({"pn": m.group(1), "task": m.group(2), "machines": None,
+                            "vars": set(), "paths": set(),
+                            "text": f"{m.group(1)}:{m.group(2)} changed signature when the layer was added"})
+            continue
+        m = DIFFSIGS_RE.search(line)
+        if m:
+            target = next((e for e in reversed(entries)
+                           if (e["pn"], e["task"]) == m.groups()), None)
+            continue
+        m = DIFFSIG_VAR_RE.search(line)
+        if m and target is not None:
+            target["vars"].add(next(g for g in m.groups() if g).split(":")[0])
+            continue
+        m = WORLD_MACHINE_RE.search(line)
+        if m:
+            machine = m.group(1)
+            continue
+        if line.startswith("AssertionError: "):
+            # The test's own wording: only when nothing more specific follows.
+            header = header or line[len("AssertionError: "):]
+            continue
+        if line.startswith("ERROR: ") or test == "test_patches_upstream_status" and line.strip():
+            paths = {lp for lp in (layer_path(p) for p in PATH_RE.findall(line)) if lp}
+            if not line.startswith("ERROR: ") and not paths:
+                continue
+            msg = shorten(line[len("ERROR: "):] if line.startswith("ERROR: ") else line.strip())
+            # Repeated per machine: one entry, its machines merged.
+            same = next((e for e in entries if e["pn"] is None and e["text"] == msg), None)
+            if same:
+                if machine and same["machines"] is not None:
+                    same["machines"].add(machine)
+                same["paths"] |= paths
+                continue
+            entries.append({"pn": None, "task": None,
+                            "machines": {machine} if machine else None,
+                            "vars": set(), "paths": paths, "text": msg})
+    # Drop the follow-up where the same machine has the error it follows.
+    for e in [e for e in entries if KNOCK_ON_RE.match(e["text"])]:
+        others = [o for o in entries if o["pn"] is None and not KNOCK_ON_RE.match(o["text"])]
+        if e["machines"] is None:
+            if others:
+                entries.remove(e)
+            continue
+        e["machines"] -= {m for o in others if o["machines"] for m in o["machines"]}
+        if not e["machines"]:
+            entries.remove(e)
+    if not entries:
+        # An exception says what in its last `SomeError: ...` line.
+        exc = next((ln.strip() for ln in reversed(block)
+                    if re.match(r"^[\w.]+(?:Error|Exception)\b", ln)), None)
+        text = header or exc or f"{test} failed"
+        entries.append({"pn": None, "task": None, "machines": None, "vars": set(),
+                        "paths": {lp for lp in (layer_path(p) for p in PATH_RE.findall(text)) if lp},
+                        "text": shorten(text)})
+    return entries
+
+
+def recipe_names(pn):
+    """The recipe file names a task's PN can come from."""
+    base = re.sub(r"^(?:lib32-|lib64-|libx32-|nativesdk-)", "", pn)
+    return {pn, base,
+            re.sub(r"-native$", "", base),
+            re.sub(r"-(cross|crosssdk|cross-canadian)-[^-]+$", r"-\1", base)}
+
+
+def file_recipes(rev, path):
+    """The PNs a changed file belongs to, from its name or its requirers."""
+    m = re.match(r"([^_/]+?)(?:_[^/]*)?\.(?:bb|bbappend)$", os.path.basename(path))
+    if m:
+        return {m.group(1)}
+    if path.endswith(".inc"):
+        name = re.escape(os.path.basename(path))
+        users = [f.split(":", 1)[1] for f in git(
+            "grep", "-l", "-E", rf"^\s*(require|include)\s+(\S*/)?{name}\s*$", rev,
+            "--", "*.bb", "*.bbappend", check=False).split("\n") if ":" in f]
+        names = set().union(*(file_recipes(rev, u) for u in users)) if users else set()
+        return names or {os.path.basename(path).split("_")[0].split(".")[0]}
+    return set()
+
+
+def attribute(sel, failures, head):
+    """Tie each failure entry to the changed lines it can come from.
+    Returns ({(path, line): [notes]}, [untraced notes])."""
+    for r in sel.lines:
+        r["recipes"] = set().union(*(file_recipes(head, u) for u in r.get("users", [r["path"]])))
+        m = ASSIGNED_RE.match(r["head"] or "")
+        r["var"] = m.group(1).split(":")[0] if m else None
+    changed = {r["path"] for r in sel.lines}
+    pinned, untraced = OrderedDict(), []
+
+    def overlaps(r, machines):
+        return machines is None or r["machines"] is None or bool(r["machines"] & machines)
+
+    for f in failures:
+        for e in f["entries"]:
+            note = f"{f['test']}: {e['text']}"
+            why, hits = None, []
+            # 1. The error names a file of the change.
+            paths = e["paths"] & changed
+            if paths:
+                why = "names this file"
+                hits = [r for r in sel.lines if r["path"] in paths]
+            # 2. The failing recipe is one the change touches, on a machine
+            # the line reaches.
+            if not hits and e["pn"]:
+                names = recipe_names(e["pn"])
+                hits = [r for r in sel.lines if r["recipes"] & names and overlaps(r, e["machines"])]
+                why = f"changes {e['pn']}"
+            # 3. diffsigs names a variable a changed line sets.
+            if not hits and e["vars"]:
+                hits = [r for r in sel.lines if r["var"] in e["vars"] and overlaps(r, e["machines"])]
+                why = f"sets {', '.join(sorted(e['vars'] & {r['var'] for r in hits}))}"
+            if not hits:
+                untraced.append(note)
+                continue
+            for r in hits:
+                reach = "any machine" if r["machines"] is None else ", ".join(sorted(r["machines"]))
+                pinned.setdefault((r["path"], r["line"]), []).append(
+                    f"{note} [this line {why}; it reaches {reach}]")
+    return pinned, untraced
+
+
+def escape(s, prop=False):
+    s = s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+    return s.replace(":", "%3A").replace(",", "%2C") if prop else s
+
+
+def cmd_annotate(args):
+    table = load_table(args.table)
+    sel = Selection(table)
+    if args.base:   # a full run has no change to point at
+        collect(sel, args.base, args.head)
+    failures = []
+    for path in args.log:
+        with open(path, errors="replace") as f:
+            failures += parse_log(f.read())
+    # Shards repeat the tests that compare every machine: report each once.
+    seen, unique = set(), []
+    for f in failures:
+        f["entries"] = [e for e in f["entries"] if (f["test"], e["text"]) not in seen
+                        and not seen.add((f["test"], e["text"]))]
+        if f["entries"]:
+            unique.append(f)
+    pinned, untraced = attribute(sel, unique, args.head)
+    # Adjacent lines blamed for the same failures (one statement) are one range.
+    spans = []
+    for (p, n), notes in sorted(pinned.items(), key=lambda kv: (kv[0][0], kv[0][1] or 0)):
+        last = spans[-1] if spans else None
+        if last and n and last["path"] == p and last["end_line"] and n == last["end_line"] + 1 \
+                and notes == last["notes"]:
+            last["end_line"] = n
+        else:
+            spans.append({"path": p, "line": n, "end_line": n, "notes": notes})
+    # A removed line points at its whole file: drop what the file's lines say.
+    for sp in spans:
+        if sp["line"] is None:
+            said = {x for o in spans if o["path"] == sp["path"] and o["line"] for x in o["notes"]}
+            sp["notes"] = [x for x in sp["notes"] if x not in said]
+    spans = [sp for sp in spans if sp["notes"]]
+
+    if args.format == "json":
+        print(json.dumps({"pinned": spans, "untraced": untraced}, indent=2))
+        return 0
+    # GitHub shows at most 10 error annotations per step: the rest go to the summary.
+    def listed(notes):
+        more = f"\n... and {len(notes) - args.notes} more" if len(notes) > args.notes else ""
+        return "\n".join(notes[:args.notes]) + more
+    for sp in spans[:args.max - 1 if untraced else args.max]:
+        where = f"file={escape(sp['path'], True)}"
+        if sp["line"]:
+            where += f",line={sp['line']},endLine={sp['end_line']}"
+        print(f"::error {where},title=check-layer::{escape(listed(sp['notes']))}")
+    if untraced:
+        print(f"::error title=check-layer: {len(untraced)} failure(s) not traced to this change::"
+              + escape(listed(untraced) + "\nNo changed line explains them: they may predate this change."))
+    if args.summary:
+        with open(args.summary, "a") as out:
+            out.write("## check-layer failures\n\n")
+            for sp in spans:
+                at = f":{sp['line']}" + (f"-{sp['end_line']}" if sp["end_line"] != sp["line"] else "") \
+                    if sp["line"] else ""
+                out.write(f"- `{sp['path']}{at}`\n")
+                out.writelines(f"  - {x}\n" for x in sp["notes"])
+            if untraced:
+                out.write("\nNot traced to a changed line (they may predate this change):\n\n")
+                out.writelines(f"- {x}\n" for x in untraced[:args.untraced])
+                if len(untraced) > args.untraced:
+                    out.write(f"- ... and {len(untraced) - args.untraced} more, in the logs\n")
+            if not spans and not untraced:
+                out.write("No failures found in the logs.\n")
+    return 0
+
+
 def main(argv=None):
     global LAYER
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -728,9 +1057,21 @@ def main(argv=None):
     s.add_argument("--explain", action="store_true", help="say why, on stderr")
     s.add_argument("--reasons", type=int, default=5,
                    help="with --explain: list this many lines that can reach any machine")
+    a = sub.add_parser("annotate", help="point check-layer failures at the changed lines")
+    a.add_argument("--table", required=True, help="the output of `table`")
+    a.add_argument("--base", help="the revision the change is based on (none: a full run)")
+    a.add_argument("--head", default="HEAD")
+    a.add_argument("--format", choices=("github", "json"), default="github",
+                   help="github: workflow commands for annotations")
+    a.add_argument("--max", type=int, default=10, help="emit at most this many annotations")
+    a.add_argument("--notes", type=int, default=5, help="failures listed per annotation")
+    a.add_argument("--summary", help="append a Markdown summary to this file")
+    a.add_argument("--untraced", type=int, default=20,
+                   help="with --summary: list this many untraced failures")
+    a.add_argument("log", nargs="+", help="yocto-check-layer logs")
     args = ap.parse_args(argv)
     LAYER = os.path.abspath(args.layer)
-    return cmd_table(args) if args.cmd == "table" else cmd_select(args)
+    return {"table": cmd_table, "select": cmd_select, "annotate": cmd_annotate}[args.cmd](args)
 
 
 if __name__ == "__main__":

@@ -44,6 +44,7 @@ jobs:
     timeout-minutes: 30
     outputs:
       shards: ${{ steps.select.outputs.shards }}
+      base: ${{ steps.base.outputs.base }}
       oe: ${{ steps.release.outputs.oe }}
       bitbake: ${{ steps.release.outputs.bitbake }}
     steps:
@@ -152,6 +153,11 @@ jobs:
             cat "$GITHUB_WORKSPACE"/explain.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      # For pointing the failures at the change.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: machine-table
+          path: machines.tsv
 
   # A BSP layer checked without --machines silently skips its machine tests,
   # so an empty selection runs no job at all.
@@ -203,12 +209,38 @@ jobs:
 
   # One check to require in branch protection and the merge queue: the
   # check-layer job names follow the selection, and an empty one skips it.
+  # It also points the failures at the changed lines they can come from.
   status:
     needs: [select, check-layer]
     if: always()
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
+      - if: needs.check-layer.result == 'failure'
+        uses: actions/checkout@v4
+        with:
+          path: meta-freescale
+          fetch-depth: 0
+      - if: needs.check-layer.result == 'failure'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: check-layer-*
+          path: logs
+      - if: needs.check-layer.result == 'failure'
+        uses: actions/download-artifact@v4
+        with:
+          name: machine-table
+      - name: Point the failures at the change
+        if: needs.check-layer.result == 'failure'
+        # Only a report: the result below decides.
+        continue-on-error: true
+        working-directory: meta-freescale
+        env:
+          BASE: ${{ needs.select.outputs.base }}
+        run: |
+          contrib/check-layer/affected-machines.py annotate \
+              --table "$GITHUB_WORKSPACE"/machines.tsv ${BASE:+--base "$BASE"} \
+              --summary "$GITHUB_STEP_SUMMARY" "$GITHUB_WORKSPACE"/logs/*/check-layer.log
       - name: Check the results
         env:
           RESULTS: ${{ join(needs.*.result, ' ') }}

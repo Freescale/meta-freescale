@@ -122,6 +122,47 @@ class Layer:
             raise AssertionError(p.stderr)
         return json.loads(p.stdout)
 
+    def annotate(self, *logs, fmt="json"):
+        paths = []
+        for n, text in enumerate(logs):
+            paths.append(os.path.join(self.path, f".check-layer-{n}.log"))
+            with open(paths[-1], "w") as f:
+                f.write(text)
+        p = subprocess.run([sys.executable, SCRIPT, "--layer", self.path, "annotate",
+                            "--table", self.table, "--base", "base", "--format", fmt] + paths,
+                           capture_output=True, text=True)
+        if p.returncode != 0:
+            raise AssertionError(p.stderr)
+        return json.loads(p.stdout) if fmt == "json" else p.stdout
+
+
+SIG = "0123456789abcdef" * 4
+OTHER = "fedcba9876543210" * 4
+
+
+def report(test, body, header="The machines have conflicting signatures for some shared tasks:"):
+    """A yocto-check-layer failure report, as the final unittest summary prints it."""
+    return textwrap.dedent(f"""\
+        INFO: ======================================================================
+        INFO: FAIL: {test} (bsp.BSPCheckLayer.{test})
+        INFO: ----------------------------------------------------------------------
+        INFO: Traceback (most recent call last):
+          File "checklayer/cases/bsp.py", line 206, in {test}
+            self.fail('\\n'.join(msg))
+        AssertionError: {header}
+        """) + body + textwrap.dedent("""\
+
+        ======================================================================
+        INFO: Ran 13 tests in 1.0s
+        INFO: FAILED
+        """)
+
+
+def machine_sig(pn, task, *groups):
+    sigs = (SIG, OTHER)
+    return "   tunea %s:%s: %s\n" % (pn, task, " != ".join(
+        f"{sigs[i % 2]} ({', '.join(g)})" for i, g in enumerate(groups)))
+
 
 class StatementHeads(unittest.TestCase):
     def test_task_body_continuation_and_def(self):
@@ -369,6 +410,147 @@ class Select(unittest.TestCase):
         j = self.layer.select()
         self.assertEqual(j["machines"][:2], ["p1", "p2"])
         self.assertEqual(j["roles"]["p2"]["role"], "pair")
+
+
+class Annotate(unittest.TestCase):
+    def setUp(self):
+        self.layer = Layer()
+
+    def tearDown(self):
+        self.layer.tmp.cleanup()
+
+    def pinned(self, j):
+        return {(x["path"], x["line"]): x["notes"] for x in j["pinned"]}
+
+    def test_statement_is_one_range(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "do_install:append:socb() {",
+                        "do_compile:append:socb() {\n    true\n}\n\ndo_install:append:socb() {")
+        self.layer.commit()
+        j = self.layer.annotate(report("test_machine_signatures",
+                                       machine_sig("foo", "do_compile", ["b1"], ["a1"])))
+        self.assertEqual([(x["line"], x["end_line"]) for x in j["pinned"]], [(11, 13)])
+
+    def test_signature_failure_of_a_changed_recipe_points_at_its_line(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "${D}/b", "${D}/bb")
+        self.layer.commit()
+        j = self.layer.annotate(report("test_machine_signatures",
+                                       machine_sig("foo", "do_install", ["b1"], ["a1", "c1"])))
+        notes = self.pinned(j)[("recipes-x/foo/foo.bb", 12)]
+        self.assertIn("foo:do_install differs between (b1) and (a1, c1)", notes[0])
+        self.assertIn("changes foo", notes[0])
+        self.assertEqual(j["untraced"], [])
+
+    def test_multilib_and_native_tasks_belong_to_their_recipe(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "${D}/b", "${D}/bb")
+        self.layer.commit()
+        j = self.layer.annotate(report("test_machine_signatures",
+                                       machine_sig("lib32-foo", "do_install", ["b1"], ["a1"])))
+        self.assertIn(("recipes-x/foo/foo.bb", 12), self.pinned(j))
+
+    def test_line_not_reaching_the_failing_machines_is_not_blamed(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "${D}/b", "${D}/bb")
+        self.layer.commit()
+        # The line is under :socb (b1); the failure is between PowerPC machines.
+        j = self.layer.annotate(report("test_machine_signatures",
+                                       machine_sig("foo", "do_install", ["p1"], ["p2"])))
+        self.assertEqual(j["pinned"], [])
+        self.assertEqual(len(j["untraced"]), 1)
+
+    def test_diffsigs_variable_points_at_the_line_setting_it(self):
+        self.layer.edit("conf/machine/include/soca.inc", 'X = "1"', 'X = "2"')
+        self.layer.commit()
+        body = (machine_sig("zap", "do_compile", ["a1"], ["c1"])
+                + "\nTo investigate, run bitbake-diffsigs -t recipename taskname -s fromsig tosig.\n"
+                + f"Command: bitbake-diffsigs -t zap do_compile -s {SIG} {OTHER}\n"
+                + "   basehash changed from 1 to 2\n"
+                + "   Variable X value changed from '1' to '2'\n")
+        j = self.layer.annotate(report("test_machine_signatures", body))
+        notes = self.pinned(j)[("conf/machine/include/soca.inc", 2)]
+        self.assertIn("sets X", notes[0])
+
+    def test_world_error_naming_a_changed_file_points_at_it(self):
+        self.layer.edit("recipes-x/bar/bar.bb", 'V = "1"', 'V = "2"')
+        self.layer.commit()
+        body = textwrap.dedent(f"""\
+            Generating signatures failed. This might be due to some parse error and/or general layer incompatibilities.
+            Command: BB_SIGNATURE_HANDLER="OEBasicHash" MACHINE=b1 bitbake -S lockedsigs world
+            Output:
+            ERROR: Nothing PROVIDES 'q' (but {self.layer.path}/recipes-x/bar/bar.bb DEPENDS on or otherwise requires it)
+            """)
+        j = self.layer.annotate(report("test_machine_world", body,
+                                       "The following machines broke a world build:"))
+        notes = self.pinned(j)[("recipes-x/bar/bar.bb", 4)]
+        self.assertIn("Nothing PROVIDES 'q' (but recipes-x/bar/bar.bb DEPENDS", notes[0])
+        self.assertIn("names this file", notes[0])
+
+    def test_world_knock_on_error_is_dropped_only_after_its_cause(self):
+        self.layer.edit("recipes-x/bar/bar.bb", 'V = "1"', 'V = "2"')
+        self.layer.commit()
+        def world(machine, *errors):
+            return (f'Command: BB_SIGNATURE_HANDLER="OEBasicHash" MACHINE={machine} bitbake -S lockedsigs world\n'
+                    "Output:\n" + "".join(f"ERROR: {e}\n" for e in errors))
+        knock = "Required build target 'meta-world-pkgdata' has no buildable providers."
+        body = (world("b1", f"Nothing PROVIDES 'q' (but {self.layer.path}/recipes-x/bar/bar.bb DEPENDS on or otherwise requires it)", knock)
+                + world("p1", knock))
+        j = self.layer.annotate(report("test_machine_world", body,
+                                       "The following machines broke a world build:"))
+        self.assertEqual(len(self.pinned(j)[("recipes-x/bar/bar.bb", 4)]), 1)
+        # p1 has no other error: its follow-up is all there is to report.
+        self.assertEqual(j["untraced"], [f"test_machine_world: {knock}"])
+
+    def test_changed_patch_is_pointed_at_as_a_file(self):
+        self.layer.edit("recipes-x/foo/files/fix.patch", "+++ b", "+++ c")
+        self.layer.commit()
+        j = self.layer.annotate(report("test_machine_signatures",
+                                       machine_sig("foo", "do_patch", ["a1"], ["b1"])))
+        self.assertIn(("recipes-x/foo/files/fix.patch", None), self.pinned(j))
+
+    def test_untraced_failure_is_reported_without_a_file(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "${D}/b", "${D}/bb")
+        self.layer.commit()
+        out = self.layer.annotate(report("test_machine_signatures",
+                                         machine_sig("gcc-cross-powerpc", "do_compile", ["p1"], ["p2"])),
+                                  fmt="github")
+        self.assertIn("::error title=check-layer: 1 failure(s) not traced to this change::", out)
+        self.assertNotIn("file=", out)
+
+    def test_untraced_failures_share_one_annotation(self):
+        body = "".join(machine_sig(f"r{n}", "do_compile", ["p1"], ["p2"]) for n in range(8))
+        out = self.layer.annotate(report("test_machine_signatures", body), fmt="github")
+        self.assertEqual(out.count("::error"), 1)
+        self.assertIn("8 failure(s) not traced", out)
+        self.assertIn("... and 3 more", out)
+
+    def test_github_annotation_names_file_and_line(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "${D}/b", "${D}/bb")
+        self.layer.commit()
+        out = self.layer.annotate(report("test_machine_signatures",
+                                         machine_sig("foo", "do_install", ["b1"], ["a1"])),
+                                  fmt="github")
+        self.assertTrue(out.startswith("::error file=recipes-x/foo/foo.bb,line=12,endLine=12,title=check-layer::"), out)
+
+    def test_same_failure_in_two_shards_is_reported_once(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "${D}/b", "${D}/bb")
+        self.layer.commit()
+        log = report("test_machine_signatures", machine_sig("foo", "do_install", ["b1"], ["a1"]))
+        j = self.layer.annotate(log, log)
+        self.assertEqual(len(self.pinned(j)[("recipes-x/foo/foo.bb", 12)]), 1)
+
+    def test_exception_reports_its_error_line(self):
+        self.layer.edit("recipes-x/foo/foo.bb", "${D}/b", "${D}/bb")
+        self.layer.commit()
+        log = textwrap.dedent("""\
+            INFO: ======================================================================
+            INFO: ERROR: test_parse (common.CommonCheckLayer.test_parse)
+            INFO: ----------------------------------------------------------------------
+            INFO: Traceback (most recent call last):
+              File "checklayer/__init__.py", line 1, in check_command
+            RuntimeError: Layer parsing failed.
+            Initialising tasks...
+            ======================================================================
+            """)
+        j = self.layer.annotate(log)
+        self.assertEqual(j["untraced"], ["test_parse: RuntimeError: Layer parsing failed."])
 
 
 class Shards(unittest.TestCase):
