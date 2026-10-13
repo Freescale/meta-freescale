@@ -83,8 +83,12 @@ do_install:append() {
     if ${@bb.utils.contains('PACKAGECONFIG', 'tests-imx', 'true', 'false', d)}; then
         cp -r share/opencv4/testdata/cv/face/* ${D}${datadir}/opencv4/testdata/cv/face/
     fi
-    # Rename cpp folder to avoid collision with GCC /usr/bin/cpp.
-    mv ${D}${bindir}/cpp ${D}${bindir}/opencv_cpp
+    # Rename cpp folder to avoid collision with GCC /usr/bin/cpp. It only
+    # exists when the C++ samples are built, which needs all of their
+    # module dependencies (e.g. gapi).
+    if [ -d ${D}${bindir}/cpp ]; then
+        mv ${D}${bindir}/cpp ${D}${bindir}/opencv_cpp
+    fi
 }
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
