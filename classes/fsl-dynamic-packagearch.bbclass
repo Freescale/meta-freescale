@@ -82,3 +82,24 @@ MACHINE_SOCARCH = "${TUNE_PKGARCH}${MACHINE_SOCARCH_SUFFIX}"
 
 ARM_EXTRA_SOCARCH = "${ARMPKGARCH}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
 THUMB_EXTRA_SOCARCH = "${ARMPKGARCH}${ARM_THUMB_SUFFIX}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
+
+# The SoC architectures are added per recipe, so list them here too: OE-core
+# only removes stale sysroot manifests for the architectures in SSTATE_ARCHS.
+SSTATE_ARCHS:append = " ${@fsl_dynamic_packagearch_sstate_archs(d)}"
+
+def fsl_dynamic_packagearch_sstate_archs(d):
+    arch_suffix = d.getVar("MACHINE_SOCARCH_SUFFIX") or ""
+    archs = [d.getVar("MACHINE_SOCARCH")]
+
+    for variant in (d.getVar("MULTILIB_VARIANTS") or "").split():
+        defaulttune = d.getVar("DEFAULTTUNE:virtclass-multilib-" + variant)
+        if defaulttune:
+            for arch in (d.getVar("PACKAGE_EXTRA_ARCHS:tune-" + defaulttune) or "").split():
+                archs.append(arch + arch_suffix)
+
+    if d.getVar("TUNE_ARCH") == "arm":
+        archs += [d.getVar("ARM_EXTRA_SOCARCH"), d.getVar("THUMB_EXTRA_SOCARCH")]
+
+    # Within a recipe the anonymous function has already added them
+    cur_package_archs = (d.getVar("PACKAGE_ARCHS") or "").split()
+    return " ".join(arch for arch in dict.fromkeys(archs) if arch and arch not in cur_package_archs)
