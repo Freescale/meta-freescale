@@ -19,6 +19,8 @@ SRC_URI += "file://0001-Revert-protocol-no-found-wayland-scanner-with-Yocto-.pat
 SRCBRANCH = "weston-imx-10.0.5"
 SRCREV = "5223a3c86177709d25f86a96622c0829da955a0e"
 
+inherit use-imx-wayland-protocols
+
 # Disable OpenGL for parts with GPU support for 2D but not 3D. Only remove
 # it, keeping the rest of required-distro-features.inc, so weston skips on
 # the same condition as the weston-init it recommends (weston-init.bbappend).
