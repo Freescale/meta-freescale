@@ -22,6 +22,10 @@ SRC_URI = "\
 
 S = "${UNPACKDIR}/wayland-protocols"
 
+python do_unpack:append() {
+    bb.utils.mkdirhier(d.getVar("S"))
+}
+
 do_stage_wayland_protocols() {
     rm -rf ${S}
     cp -R ${STAGING_DATADIR}/wayland-protocols ${S}
