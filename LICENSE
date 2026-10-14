@@ -116,6 +116,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-graphics/rapidvulkan/rapidvulkan_1.2.162.0.bb: LICENSE = "BSD-3-Clause"
 ./recipes-graphics/vulkan/assimp_5.4.3.bb: LICENSE = "BSD-3-Clause"
 ./recipes-graphics/vulkan/vulkan-wsi-layer_git.bb: LICENSE = "MIT"
+./recipes-graphics/wayland/wayland-protocols-imx_1.49.bb: LICENSE = "MIT"
 ./recipes-graphics/wayland/weston_10.0.5.imx.bb: LICENSE = "MIT"
 ./recipes-graphics/wayland/weston_15.0.1.imx.bb: LICENSE = "MIT"
 ./recipes-kernel/ceetm/ceetm_git.bb: LICENSE = "GPL-2.0-only"
