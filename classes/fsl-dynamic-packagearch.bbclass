@@ -53,29 +53,8 @@ python __anonymous () {
             bb.debug(1, "Use '%s' as package architecture for '%s'" % (package_arch, PN))
             d.setVar("PACKAGE_ARCH", package_arch)
 
-    cur_package_archs = (d.getVar("PACKAGE_ARCHS") or "").split()
-    machine_socarch = (d.getVar("MACHINE_SOCARCH") or "")
-    if not machine_socarch in cur_package_archs:
-        d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % machine_socarch)
-
-    multilib_variants = (d.getVar("MULTILIB_VARIANTS") or "").split()
-    for variant in multilib_variants:
-        defaulttune = d.getVar("DEFAULTTUNE:virtclass-multilib-" + variant)
-        if defaulttune:
-            package_extra_archs_tune_archs = (d.getVar("PACKAGE_EXTRA_ARCHS:tune-" + defaulttune) or "").split()
-            arch_suffix = d.getVar("MACHINE_SOCARCH_SUFFIX")
-            for arch in package_extra_archs_tune_archs:
-                socarch = arch + arch_suffix
-                if not socarch in cur_package_archs:
-                    d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % socarch )
-
-    if d.getVar("TUNE_ARCH") == "arm":
-        # For ARM we have two possible machine_socarch values, one for the arm and one for the thumb instruction set
-        # add the other value to extra archs also, so that a image recipe searches both for packages.
-        if  d.getVar("ARM_INSTRUCTION_SET") == "thumb":
-            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("ARM_EXTRA_SOCARCH"))
-        else:
-            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("THUMB_EXTRA_SOCARCH"))
+    for arch in fsl_dynamic_packagearch_extra_archs(d):
+        d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % arch)
 }
 
 MACHINE_SOCARCH = "${TUNE_PKGARCH}${MACHINE_SOCARCH_SUFFIX}"
@@ -87,19 +66,38 @@ THUMB_EXTRA_SOCARCH = "${ARMPKGARCH}${ARM_THUMB_SUFFIX}${ARMPKGSFX_DSP}${ARMPKGS
 # only removes stale sysroot manifests for the architectures in SSTATE_ARCHS.
 SSTATE_ARCHS:append = " ${@fsl_dynamic_packagearch_sstate_archs(d)}"
 
-def fsl_dynamic_packagearch_sstate_archs(d):
-    arch_suffix = d.getVar("MACHINE_SOCARCH_SUFFIX") or ""
-    archs = [d.getVar("MACHINE_SOCARCH")]
+# The SoC architectures to add to PACKAGE_EXTRA_ARCHS, in order
+def fsl_dynamic_packagearch_extra_archs(d):
+    cur_package_archs = (d.getVar("PACKAGE_ARCHS") or "").split()
+    archs = []
 
-    for variant in (d.getVar("MULTILIB_VARIANTS") or "").split():
+    machine_socarch = (d.getVar("MACHINE_SOCARCH") or "")
+    if not machine_socarch in cur_package_archs:
+        archs.append(machine_socarch)
+
+    multilib_variants = (d.getVar("MULTILIB_VARIANTS") or "").split()
+    for variant in multilib_variants:
         defaulttune = d.getVar("DEFAULTTUNE:virtclass-multilib-" + variant)
         if defaulttune:
-            for arch in (d.getVar("PACKAGE_EXTRA_ARCHS:tune-" + defaulttune) or "").split():
-                archs.append(arch + arch_suffix)
+            package_extra_archs_tune_archs = (d.getVar("PACKAGE_EXTRA_ARCHS:tune-" + defaulttune) or "").split()
+            arch_suffix = d.getVar("MACHINE_SOCARCH_SUFFIX")
+            for arch in package_extra_archs_tune_archs:
+                socarch = arch + arch_suffix
+                if not socarch in cur_package_archs:
+                    archs.append(socarch)
 
     if d.getVar("TUNE_ARCH") == "arm":
-        archs += [d.getVar("ARM_EXTRA_SOCARCH"), d.getVar("THUMB_EXTRA_SOCARCH")]
+        # For ARM we have two possible machine_socarch values, one for the arm and one for the thumb instruction set
+        # add the other value to extra archs also, so that a image recipe searches both for packages.
+        if  d.getVar("ARM_INSTRUCTION_SET") == "thumb":
+            archs.append(d.getVar("ARM_EXTRA_SOCARCH"))
+        else:
+            archs.append(d.getVar("THUMB_EXTRA_SOCARCH"))
 
+    return archs
+
+def fsl_dynamic_packagearch_sstate_archs(d):
     # Within a recipe the anonymous function has already added them
     cur_package_archs = (d.getVar("PACKAGE_ARCHS") or "").split()
+    archs = fsl_dynamic_packagearch_extra_archs(d)
     return " ".join(arch for arch in dict.fromkeys(archs) if arch and arch not in cur_package_archs)
