@@ -14,15 +14,18 @@ DEPENDS = "libdrm"
 # color space conversion.
 DEPENDS:append:imxviv = " opencl-headers"
 
-PROVIDES += "virtual/libg2d"
+PROVIDES += "virtual/libg2d imx-dpu-g2d"
 
 PV = "2.5.0+git"
 
 SRC_URI = "\
-    ${IMX_DPU_G2D_SRC};branch=${SRCBRANCH} \
+    ${IMX_G2D_DPU_SRC};branch=${SRCBRANCH} \
     file://0001-g2d-Remove-unused-totalUsed-variable.patch;patchdir=.. \
     file://0002-g2d_utils-Store-strtol-result-in-a-long.patch;patchdir=.. \
 "
+# IMX_DPU_G2D_SRC is the name used before the rename to imx-g2d-dpu; keep
+# honouring it so existing mirror overrides are not silently dropped.
+IMX_G2D_DPU_SRC ?= "${IMX_DPU_G2D_SRC}"
 IMX_DPU_G2D_SRC ?= "git://github.com/nxp-imx/imx-dpu-g2d.git;protocol=https"
 SRCBRANCH = "imx_2.5"
 SRCREV = "d9b70208ff7481406d27798fcb54c20a3eea26ad"
@@ -47,5 +50,10 @@ PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:append:libc-musl = " file-rdeps"
 RDEPENDS:${PN}:append:libc-musl = " gcompat"
+
+# Upgrade path for feeds and images built before the rename.
+RPROVIDES:${PN} = "imx-dpu-g2d"
+RREPLACES:${PN} = "imx-dpu-g2d"
+RCONFLICTS:${PN} = "imx-dpu-g2d"
 
 COMPATIBLE_MACHINE = "(imxdpu)"
