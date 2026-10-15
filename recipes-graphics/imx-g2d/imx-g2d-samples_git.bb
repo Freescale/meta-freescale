@@ -28,35 +28,35 @@ PACKAGECONFIG_IMPLEMENTATION:mx943-nxp-bsp = "pxp"
 PACKAGECONFIG[dpu] = " \
     BUILD_IMPLEMENTATION=dpu, \
     , \
-    imx-dpu-g2d wayland-native wayland wayland-protocols, \
+    imx-g2d-dpu wayland-native wayland wayland-protocols, \
     , \
     , \
     dpu95 gpu-drm gpu-fbdev pxp"
 PACKAGECONFIG[dpu95] = " \
     BUILD_IMPLEMENTATION=dpu95, \
     , \
-    imx-dpu-g2d wayland-native wayland wayland-protocols, \
+    imx-g2d-dpu wayland-native wayland wayland-protocols, \
     , \
     , \
     dpu gpu-drm gpu-fbdev pxp"
 PACKAGECONFIG[gpu-drm] = " \
     BUILD_IMPLEMENTATION=gpu-drm, \
     , \
-    imx-gpu-g2d wayland-native wayland wayland-protocols, \
+    imx-g2d-gpu wayland-native wayland wayland-protocols, \
     , \
     , \
     dpu dpu95 gpu-fbdev pxp"
 PACKAGECONFIG[gpu-fbdev] = " \
     BUILD_IMPLEMENTATION=gpu-fbdev, \
     , \
-    imx-gpu-g2d, \
+    imx-g2d-gpu, \
     , \
     , \
     dpu dpu95 gpu-drm pxp"
 PACKAGECONFIG[pxp] = " \
     BUILD_IMPLEMENTATION=pxp, \
     , \
-    imx-pxp-g2d wayland-native wayland wayland-protocols, \
+    imx-g2d-pxp wayland-native wayland wayland-protocols, \
     , \
     , \
     dpu dpu95 gpu-drm gpu-fbdev"
