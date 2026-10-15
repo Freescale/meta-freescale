@@ -4,7 +4,7 @@ SUMMARY = "i.MX PDM-to-PCM software decimation library"
 DESCRIPTION = "NXP PDM to PCM Software Decimation SIMD Library"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
-LICENSE = "Proprietary"
+LICENSE = "LicenseRef-Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
 
 PV = "1.0.3+git"
