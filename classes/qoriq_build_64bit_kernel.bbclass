@@ -1,4 +1,8 @@
 inherit features_check
+# Default to empty so features_check sees the variable on every machine;
+# only e6500 adds a requirement.
+# nooelint: oelint.vars.noncoreoverride
+REQUIRED_DISTRO_FEATURES ??= ""
 REQUIRED_DISTRO_FEATURES:append:e6500 = " multiarch"
 
 # BUILD_64BIT_KERNEL is this class's interface: a QorIQ PowerPC machine that
