@@ -16,5 +16,3 @@ do_deploy:append:arm() {
     cp ${B}/core/uTee ${DEPLOYDIR}/${MLPREFIX}optee/uTee-${OPTEE_BIN_EXT}
     ln -sf ${MLPREFIX}optee/uTee-${OPTEE_BIN_EXT} ${DEPLOYDIR}/uTee-${OPTEE_BIN_EXT}
 }
-
-FILES:${PN} += "${nonarch_base_libdir}/optee_armtz"
