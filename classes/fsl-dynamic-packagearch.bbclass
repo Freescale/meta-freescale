@@ -53,10 +53,27 @@ python __anonymous () {
             bb.debug(1, "Use '%s' as package architecture for '%s'" % (package_arch, PN))
             d.setVar("PACKAGE_ARCH", package_arch)
 
+    for arch in fsl_dynamic_packagearch_extra_archs(d):
+        d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % arch)
+}
+
+MACHINE_SOCARCH = "${TUNE_PKGARCH}${MACHINE_SOCARCH_SUFFIX}"
+
+ARM_EXTRA_SOCARCH = "${ARMPKGARCH}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
+THUMB_EXTRA_SOCARCH = "${ARMPKGARCH}${ARM_THUMB_SUFFIX}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
+
+# The SoC architectures are added per recipe, so list them here too: OE-core
+# only removes stale sysroot manifests for the architectures in SSTATE_ARCHS.
+SSTATE_ARCHS:append = " ${@fsl_dynamic_packagearch_sstate_archs(d)}"
+
+# The SoC architectures to add to PACKAGE_EXTRA_ARCHS, in order
+def fsl_dynamic_packagearch_extra_archs(d):
     cur_package_archs = (d.getVar("PACKAGE_ARCHS") or "").split()
+    archs = []
+
     machine_socarch = (d.getVar("MACHINE_SOCARCH") or "")
     if not machine_socarch in cur_package_archs:
-        d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % machine_socarch)
+        archs.append(machine_socarch)
 
     multilib_variants = (d.getVar("MULTILIB_VARIANTS") or "").split()
     for variant in multilib_variants:
@@ -67,18 +84,20 @@ python __anonymous () {
             for arch in package_extra_archs_tune_archs:
                 socarch = arch + arch_suffix
                 if not socarch in cur_package_archs:
-                    d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % socarch )
+                    archs.append(socarch)
 
     if d.getVar("TUNE_ARCH") == "arm":
         # For ARM we have two possible machine_socarch values, one for the arm and one for the thumb instruction set
         # add the other value to extra archs also, so that a image recipe searches both for packages.
         if  d.getVar("ARM_INSTRUCTION_SET") == "thumb":
-            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("ARM_EXTRA_SOCARCH"))
+            archs.append(d.getVar("ARM_EXTRA_SOCARCH"))
         else:
-            d.appendVar("PACKAGE_EXTRA_ARCHS", " %s" % d.getVar("THUMB_EXTRA_SOCARCH"))
-}
+            archs.append(d.getVar("THUMB_EXTRA_SOCARCH"))
 
-MACHINE_SOCARCH = "${TUNE_PKGARCH}${MACHINE_SOCARCH_SUFFIX}"
+    return archs
 
-ARM_EXTRA_SOCARCH = "${ARMPKGARCH}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
-THUMB_EXTRA_SOCARCH = "${ARMPKGARCH}${ARM_THUMB_SUFFIX}${ARMPKGSFX_DSP}${ARMPKGSFX_EABI}${ARMPKGSFX_ENDIAN}${ARMPKGSFX_FPU}${MACHINE_SOCARCH_SUFFIX}"
+def fsl_dynamic_packagearch_sstate_archs(d):
+    # Within a recipe the anonymous function has already added them
+    cur_package_archs = (d.getVar("PACKAGE_ARCHS") or "").split()
+    archs = fsl_dynamic_packagearch_extra_archs(d)
+    return " ".join(arch for arch in dict.fromkeys(archs) if arch and arch not in cur_package_archs)
