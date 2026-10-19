@@ -12,14 +12,20 @@ It reads the diff, not the build:
 | Change | Machines it reaches |
 | --- | --- |
 | `conf/machine/<machine>.conf` | that machine, always selected |
-| `conf/machine/include/*.inc` | the machines that include it |
-| a line under a machine override (`SRC_URI:append:mx8-nxp-bsp`, `do_install:append:qoriq-ppc() { ... }`) | the machines whose `MACHINEOVERRIDES` carry it |
-| a line in a recipe restricted by a plain `COMPATIBLE_MACHINE` (an `.inc` takes its requirers') | the machines it is compatible with |
+| a line under a machine override (`SRC_URI:append:mx8-nxp-bsp`, `do_install:append:qoriq-ppc() { ... }`) | the machines whose `MACHINEOVERRIDES` carry it, within the file's scope |
+| a line in a recipe | the recipe's scope: what its `COMPATIBLE_MACHINE`/`COMPATIBLE_HOST` allow, wherever the recipe pulls them from |
+| a line in an `.inc`, a class, a machine include | the union of the scopes of the recipes and machines pulling it in |
 | a file in an override-named directory (`files/mx8mp-nxp-bsp/`) | the machines carrying that override |
 | another file in a recipe directory (a patch) | as the recipe lines naming it, else as the recipes beside it |
-| any other line BitBake parses (an unconditional line in an unrestricted recipe, a class, `conf/layer.conf`) | any machine: a pair per tune |
+| a line without a scope (an unrestricted recipe, a class a configuration inherits, `conf/layer.conf`) | any machine |
 | documentation, CI, `contrib/`, `scripts/` | none |
 | `dynamic-layers/`, `conf/fragments/` | none in this run (reported as not exercised) |
+
+A recipe's scope is read as BitBake parses it: what it requires, includes
+and inherits from this layer is inlined where it does, `${PN}`, `${PV}`,
+`${BP}`, `${BPN}` and `${THISDIR}` are taken from the file name, and `=`, `?=`
+and `??=` apply in order. A pull naming another variable counts as a user
+of every file it could name, so a change there is never narrowed by it.
 
 A renamed file counts as changed throughout: a recipe's version is in its
 name, and a move into or out of `dynamic-layers/` adds or removes it.
@@ -29,12 +35,12 @@ or `COMPATIBLE_MACHINE`. They do not guess which variables differ between
 machines, so a line they cannot place reaches every tune.
 
 From the reached machines it keeps one per tune (`TUNE_PKGARCH`), then a
-second machine of that tune, because `test_machine_signatures` compares
+second machine of each tune, because `test_machine_signatures` compares
 machines of one architecture with each other: an unreached machine if there
-is one, else the reached machine least like the first (another SoC). It adds
-a machine of another tune as a control for allarch and native recipes. Tunes
-reached by the narrowest change rank first, so `--max` drops the weakest
-evidence.
+is one. Without a line reaching any machine, it adds a machine of another
+tune as a control for allarch and native recipes. Under `--max`, tunes come
+before second machines, since most `test_machine_world` failures show on a
+single tune, and tunes reached by the narrowest change come first.
 
 The machine table comes from BitBake, since `MACHINEOVERRIDES` is assembled
 across several includes. Generate it in a build directory with this layer in
