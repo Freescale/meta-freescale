@@ -11,15 +11,22 @@ It reads the diff, not the build:
 
 | Change | Machines it reaches |
 | --- | --- |
-| a line under a machine override (`SRC_URI:append:mx8-nxp-bsp`, `do_install:append:qoriq-ppc() { ... }`) | the machines whose `MACHINEOVERRIDES` carry it |
-| an unconditional line in a recipe restricted by `COMPATIBLE_MACHINE` | the machines it is compatible with |
-| an `.inc` or a class | the scope of the recipes that require or inherit it |
 | `conf/machine/<machine>.conf` | that machine, always selected |
 | `conf/machine/include/*.inc` | the machines that include it |
-| a patch or installed file | wherever the statement naming it applies |
-| any other line BitBake parses (`conf/layer.conf`, a python condition, an unrestricted recipe) | any machine: one per tune is sampled |
+| a line under a machine override (`SRC_URI:append:mx8-nxp-bsp`, `do_install:append:qoriq-ppc() { ... }`) | the machines whose `MACHINEOVERRIDES` carry it |
+| a line in a recipe restricted by a plain `COMPATIBLE_MACHINE` (an `.inc` takes its requirers') | the machines it is compatible with |
+| a file in an override-named directory (`files/mx8mp-nxp-bsp/`) | the machines carrying that override |
+| another file in a recipe directory (a patch) | as the recipe lines naming it, else as the recipes beside it |
+| any other line BitBake parses (an unconditional line in an unrestricted recipe, a class, `conf/layer.conf`) | any machine: a pair per tune |
 | documentation, CI, `contrib/`, `scripts/` | none |
-| `dynamic-layers/` | none in this run (reported as not exercised); a recipe moved into or out of one counts as removed or added |
+| `dynamic-layers/`, `conf/fragments/` | none in this run (reported as not exercised) |
+
+A renamed file counts as changed throughout: a recipe's version is in its
+name, and a move into or out of `dynamic-layers/` adds or removes it.
+
+The rules only narrow what BitBake itself can tell from a name: an override
+or `COMPATIBLE_MACHINE`. They do not guess which variables differ between
+machines, so a line they cannot place reaches every tune.
 
 From the reached machines it keeps one per tune (`TUNE_PKGARCH`), then a
 second machine of that tune, because `test_machine_signatures` compares
@@ -55,26 +62,6 @@ machine-tuned task is still compared across its tune, and an allarch or
 native task across every machine, through those two. A task whose tune spans
 several machine tunes (a multilib's) is compared only within each run.
 `--all` selects every machine in the table, for the full run.
-
-`annotate` reads the `yocto-check-layer` logs of a failed run and points each
-failure at the changed lines it can come from, as GitHub annotations
-(`--format json` for the raw result). A failure is pinned to a line only when
-one of these links holds, tried in order:
-
-| Link | Example |
-| --- | --- |
-| the error names a changed file | `Nothing PROVIDES 'x' (but .../foo_1.0.bb DEPENDS on ...)` |
-| the failing task's recipe is a changed one, on a machine the line reaches | `foo:do_install differs between (a) and (b)`, `lib32-foo` and `foo-native` included |
-| `bitbake-diffsigs` names a variable a changed line sets | `Variable X value changed`, on a machine the line reaches |
-
-Anything else is reported on its own, as not traced to the change: failures
-that predate a change are common, and blaming a nearby line would mislead. A
-failure repeated by several runs is reported once.
-
-```sh
-contrib/check-layer/affected-machines.py annotate --table machines.tsv \
-    --base origin/master --summary summary.md run-*/check-layer.log
-```
 
 ## check-layer.py
 
