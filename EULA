@@ -1,4 +1,4 @@
-LA_OPT_NXP_Software_License v63 May 2025
+LA_OPT_NXP_Software_License v64.2 May 2026
 IMPORTANT.  Read the following NXP Software License Agreement ("Agreement")
 completely. By selecting the "I Accept" button at the end of this page, or by
 downloading, installing, or using the Licensed Software, you indicate that you
@@ -821,6 +821,14 @@ for demonstration to third parties in integrated form on a board package
 containing an NXP S32V234 device. Licensee may not distribute or sublicense the
 TES software. Your license to the TES software may be terminated at any time
 upon notice.
+
+Vector Informatik GmbH (“Vector”): The Licensed Software may include
+software components provided by Vector (“Vector Software”). Your use of the
+Vector Software is subject to the Vector Embedded Software Terms and Conditions
+available at:
+https://cdn.vector.com/cms/content/corporate/terms-and-conditions/TC_Embedded-So
+ftware_EN.pdf. By using the Vector Software, you agree to comply with such
+terms.
 
 Vivante: Distribution of Vivante software must be a part of, or embedded
 within, Authorized Systems that include a Vivante Graphics Processing Unit.
