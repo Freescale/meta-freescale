@@ -265,7 +265,7 @@ class Select(unittest.TestCase):
         self.layer.commit()
         j = self.layer.select()
         self.assertEqual(j["machines"], [])
-        self.assertEqual(j["nowhere"], ["recipes-x/none/none.bb:2 (COMPATIBLE_MACHINE)"])
+        self.assertEqual(j["nowhere"], ["recipes-x/none/none.bb:2 (restricted)"])
 
     def test_fragment_is_not_exercised(self):
         self.layer.write("conf/fragments/x/y.conf", 'A = "1"\n')
@@ -307,8 +307,47 @@ class Select(unittest.TestCase):
         # p2's tune has another machine: it is the pair to compare against
         self.assertIn("p1", j["machines"])
 
-    def test_class_reaches_any_machine(self):
+    def test_class_is_scoped_by_its_inheriters(self):
         self.layer.edit("classes/k.bbclass", 'K = "1"', 'K = "2"')
+        self.layer.commit()
+        self.assertEqual(self.layer.select()["reached"], ["b1"])
+
+    def test_restriction_set_by_a_class_applies(self):
+        self.layer.write("classes/ppconly.bbclass", "COMPATIBLE_HOST = '(null)'\nCOMPATIBLE_HOST:ppc = '.*'\n")
+        self.layer.write("recipes-x/cls/cls.bb", 'inherit ppconly\nC = "1"\n')
+        self.layer.commit()
+        self.layer.git("tag", "-f", "base")
+        self.layer.edit("recipes-x/cls/cls.bb", 'C = "1"', 'C = "2"')
+        self.layer.commit()
+        self.assertEqual((self.layer.select()["reached"], self.layer.select()["global"]), (["p1", "p2"], []))
+
+    def test_require_named_by_version_is_resolved(self):
+        self.layer.write("recipes-x/ver/ver-common_2.0.inc", 'R = "1"\n')
+        self.layer.write("recipes-x/ver/ver_2.0.bb", 'COMPATIBLE_MACHINE = "(ppc)"\nrequire ver-common_${PV}.inc\n')
+        self.layer.commit()
+        self.layer.git("tag", "-f", "base")
+        self.layer.edit("recipes-x/ver/ver-common_2.0.inc", 'R = "1"', 'R = "2"')
+        self.layer.commit()
+        self.assertEqual(self.layer.select()["reached"], ["p1", "p2"])
+
+    def test_weak_default_deep_in_includes_yields_to_the_recipe(self):
+        # optee-os: the chain sets "(ppc)", a deeper include `?= "invalid"`.
+        self.layer.write("recipes-x/op/op-base.inc", 'COMPATIBLE_MACHINE ?= "invalid"\n')
+        self.layer.write("recipes-x/op/op-common.inc", 'COMPATIBLE_MACHINE = "(ppc)"\nrequire op-base.inc\n')
+        self.layer.write("recipes-x/op/op.inc", 'O = "1"\n')
+        self.layer.write("recipes-x/op/op_1.0.bb", "require op.inc\nrequire op-common.inc\n")
+        self.layer.commit()
+        self.layer.git("tag", "-f", "base")
+        self.layer.edit("recipes-x/op/op.inc", 'O = "1"', 'O = "2"')
+        self.layer.commit()
+        self.assertEqual(self.layer.select()["reached"], ["p1", "p2"])
+
+    def test_unresolved_require_counts_every_possible_user(self):
+        # baz.inc may be what ${FOO} names, and dyn.bb is unrestricted.
+        self.layer.write("recipes-x/dyn/dyn.bb", "require recipes-x/baz/${FOO}.inc\n")
+        self.layer.commit()
+        self.layer.git("tag", "-f", "base")
+        self.layer.edit("recipes-x/baz/baz.inc", 'W = "1"', 'W = "2"')
         self.layer.commit()
         self.assertTrue(self.layer.select()["global"])
 
@@ -358,12 +397,13 @@ class Select(unittest.TestCase):
         self.assertEqual(self.layer.select()["reached"], ["a1", "a2", "b1"])
 
     def test_narrowest_change_ranks_first_under_a_cap(self):
-        # :fam reaches four machines, :ppc two: the cap keeps the ppc pair.
+        # :fam reaches four machines, :ppc two: the cap keeps a ppc machine
+        # first, then one of the next tune before a second ppc one.
         self.layer.edit("recipes-x/foo/foo.bb", 'LICENSE = "MIT"\n',
                         'LICENSE = "MIT"\nF:fam = "1"\nG:ppc = "1"\n')
         self.layer.commit()
         j = self.layer.select("--max", "2")
-        self.assertEqual(sorted(j["machines"]), ["p1", "p2"])
+        self.assertEqual(j["machines"], ["p1", "a1"])
         self.assertTrue(j["capped"])
 
     def test_same_tune_pair_when_every_machine_is_reached(self):
