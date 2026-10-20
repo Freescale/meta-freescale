@@ -1,4 +1,4 @@
 require optee-client-fslc-imx.inc
 
-SRCBRANCH = "lf-6.18.20_2.0.0"
-SRCREV = "5ac1e19a41d8f7e43a7ddfefc83708030103e7ff"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "0a2b1e95ba338b79c2a96cd343a96ea3e6157cb0"
