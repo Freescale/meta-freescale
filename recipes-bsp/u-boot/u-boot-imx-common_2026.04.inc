@@ -12,14 +12,17 @@ DEPENDS += "\
     xxd-native \
 "
 
-SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
+SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH} \
+           file://0001-Add-support-for-OpenSSL-Provider-API.patch \
+           file://disable-efi-capsule-update.cfg \
+"
 UBOOT_SRC ?= "git://github.com/nxp-imx/uboot-imx.git;protocol=https"
-SRCBRANCH = "lf_v2025.04"
+SRCBRANCH = "lf_v2026.04"
 LOCALVERSION ?= "-${SRCBRANCH}"
-SRCREV = "99518e6b6f20cb6a2bf19115e355db9f58100af8"
+SRCREV = "bb41975aeb4cbd153b49c9fd62da1d64cd65968d"
 
 B = "${WORKDIR}/build"
 
-inherit fsl-u-boot-localversion
+inherit fsl-u-boot-localversion pkgconfig
 
 BOOT_TOOLS = "imx-boot-tools"
