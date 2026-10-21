@@ -51,7 +51,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-bsp/qe-ucode/qe-ucode_git.bb: LICENSE = "LicenseRef-NXP-Binary-EULA"
 ./recipes-bsp/rcw/rcw_git.bb: LICENSE = "BSD-3-Clause"
 ./recipes-bsp/u-boot/u-boot-fslc-common_2025.01.inc: LICENSE = "GPL-2.0-or-later"
-./recipes-bsp/u-boot/u-boot-imx-common_2025.04.inc: LICENSE = "GPL-2.0-or-later"
+./recipes-bsp/u-boot/u-boot-imx-common_2026.04.inc: LICENSE = "GPL-2.0-or-later"
 ./recipes-bsp/u-boot/u-boot-qoriq_2025.04.bb: LICENSE = "BSD-2-Clause AND BSD-3-Clause AND GPL-2.0-only AND LGPL-2.0-only AND LGPL-2.1-only"
 ./recipes-bsp/uefi/uefi_git.bb: LICENSE = "LicenseRef-NXP-Binary-EULA"
 ./recipes-connectivity/mbedtls/mbedtls_3.6.5.bb: LICENSE = "Apache-2.0 OR GPL-2.0-or-later"
