@@ -19,18 +19,13 @@ DEPENDS += "\
 
 SRC_URI = "${SMW_LIB_SRC};branch=${SRCBRANCH_smw};name=smw \
            ${PSA_LIB_SRC};branch=${SRCBRANCH_psa};name=psa;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/${PSA_ARCH_TESTS_SRC_PATH}"
-# The qualifiers fix carries no Signed-off-by, and no From: header either, so
-# there is no author to recover one from. A sign-off is a certification the
-# signer makes, so inventing one here would be wrong.
-# nooelint: oelint.file.patchsignedoff
-SRC_URI += "file://0001-Fixed-discarded-qualifiers-error.patch"
 SMW_LIB_SRC ?= "git://github.com/nxp-imx/imx-smw.git;protocol=https"
 PSA_LIB_SRC ?= "git://github.com/ARM-software/psa-arch-tests.git;protocol=https"
 PSA_ARCH_TESTS_SRC_PATH = "../psa-arch-tests"
 
 SRCBRANCH_smw = "release/version_5.x"
 SRCBRANCH_psa = "main"
-SRCREV_smw = "c643587073584057700f39098ab12f536a21600d"
+SRCREV_smw = "c751c1ea7fbdcbbcd773841789e8ef1d363870bc"
 SRCREV_psa = "463cb95ada820bc6f758d50066cf8c0ed5cc3a02"
 SRCREV_FORMAT = "smw_psa"
 
@@ -44,17 +39,20 @@ PACKAGECONFIG_DRIVERS:mx8x-nxp-bsp = "ele-seco"
 PACKAGECONFIG_DRIVERS:mx8ulp-nxp-bsp = "ele"
 PACKAGECONFIG_DRIVERS:mx91-nxp-bsp = "ele"
 PACKAGECONFIG_DRIVERS:mx93-nxp-bsp = "ele"
-PACKAGECONFIG_DRIVERS:mx943-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx943-nxp-bsp = "ele ela"
 PACKAGECONFIG_DRIVERS:mx95-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx952-nxp-bsp = "ele ela"
 
 PACKAGECONFIG_FEATURES = ""
 PACKAGECONFIG_FEATURES:mx91-nxp-bsp = "tls"
 PACKAGECONFIG_FEATURES:mx93-nxp-bsp = "tls"
 PACKAGECONFIG_FEATURES:mx943-nxp-bsp = "tls"
 PACKAGECONFIG_FEATURES:mx95-nxp-bsp = "tls"
+PACKAGECONFIG_FEATURES:mx952-nxp-bsp = "tls"
 
 PACKAGECONFIG[ele] = "-DELE_ROOT=${STAGING_DIR_HOST},,imx-secure-enclave,,,ele-seco"
 PACKAGECONFIG[ele-seco] = "-DSECO_ROOT=${STAGING_DIR_HOST},,imx-secure-enclave-seco,,,ele"
+PACKAGECONFIG[ela] = "-DENABLE_ELA=ON,-DENABLE_ELA=OFF,imx-secure-enclave-prime"
 PACKAGECONFIG[tls] = "-DENABLE_TLS=ON,-DENABLE_TLS=OFF,openssl"
 
 CFLAGS[unexport] = "1"
@@ -82,14 +80,20 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PACKAGES =+ "${PN}-tests"
 
-FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/*"
+FILES:${PN} += "\
+    ${datadir}/${BPN}-cli/* \
+    ${nonarch_base_libdir}/optee_armtz/* \
+"
 
 # The debug package and the test binaries embed build paths that the upstream
 # build does not sanitize, so the buildpaths QA check cannot pass for them.
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-dbg = "buildpaths"
 
-FILES:${PN}-tests += "${bindir}/* ${datadir}/${BPN}/*"
+# Only the test executables, the CLI tools stay in the main package
+FILES:${PN}-tests += "${bindir}/*test* ${datadir}/${BPN}/*"
+# The CLI tools use bash for their command line completion
+RDEPENDS:${PN} = "bash"
 RDEPENDS:${PN}-tests = "cmake"
 # nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-tests = "buildpaths"
