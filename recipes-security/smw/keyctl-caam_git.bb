@@ -9,10 +9,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=8636bd68fc00cc6a3809b7b58b45f982"
 
 DEPENDS = "openssl"
 
-SRCBRANCH = "lf-6.18.2_1.0.0"
+SRCBRANCH = "lf-6.18.37_2.1.0"
 SRC_URI = "git://github.com/nxp-imx/keyctl_caam.git;protocol=https;branch=${SRCBRANCH}"
 
-SRCREV = "71cb18f17d766145217a5517748e37e250b055bf"
+SRCREV = "fc0fb26be28f645d155c69245ec0fb93d9414662"
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
