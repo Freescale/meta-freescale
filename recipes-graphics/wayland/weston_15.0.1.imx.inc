@@ -14,7 +14,7 @@ SRC_URI:remove = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}
 SRC_URI:prepend = "${WESTON_SRC};branch=${SRCBRANCH} "
 WESTON_SRC ?= "git://github.com/nxp-imx/weston-imx.git;protocol=https"
 SRCBRANCH = "weston-imx-15.0.1"
-SRCREV = "82cf0ec8f3853e2cb754637da957dcd537c08be9"
+SRCREV = "bfd5abc894b10bc0941024ca5b9254d95a0628ae"
 
 inherit use-imx-wayland-protocols
 
