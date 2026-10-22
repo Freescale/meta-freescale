@@ -12,14 +12,14 @@ registered.
 Upstream-Status: Pending
 Signed-off-by: Franz Schnyder <franz.schnyder@toradex.com>
 ---
- mlinux/moal_main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ mlinux/moal_main.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/mlinux/moal_main.c b/mlinux/moal_main.c
-index 0214fc3..2d765b8 100644
+index 90a7342..2f49e06 100644
 --- a/mlinux/moal_main.c
 +++ b/mlinux/moal_main.c
-@@ -14331,6 +14331,11 @@ void woal_regist_oob_wakeup_irq(moal_handle *handle)
+@@ -14819,6 +14819,11 @@ void woal_regist_oob_wakeup_irq(moal_handle *handle)
  		goto err_exit;
  	}
  
@@ -31,15 +31,19 @@ index 0214fc3..2d765b8 100644
  	disable_irq(handle->irq_oob_wakeup);
  
  	LEAVE();
-@@ -14353,6 +14358,7 @@ void woal_unregist_oob_wakeup_irq(moal_handle *handle)
+@@ -14840,8 +14845,10 @@ void woal_unregist_oob_wakeup_irq(moal_handle *handle)
+ 	struct device *dev = handle->hotplug_device;
  
  	ENTER();
- 	if (handle->irq_oob_wakeup >= 0) {
+-	if (handle->irq_oob_wakeup >= 0)
++	if (handle->irq_oob_wakeup >= 0) {
 +		device_init_wakeup(dev, false);
  		devm_free_irq(dev, handle->irq_oob_wakeup, handle);
- 	}
++	}
  	LEAVE();
-@@ -14829,7 +14835,6 @@ moal_handle *woal_add_card(void *card, struct device *dev, moal_if_ops *if_ops,
+ }
+ 
+@@ -15457,7 +15464,6 @@ moal_handle *woal_add_card(void *card, struct device *dev, moal_if_ops *if_ops,
  		PRINTM(MFATAL, "Firmware Init Failed\n");
  		goto err_init_fw;
  	}
