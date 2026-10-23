@@ -9,8 +9,21 @@ LICENSE = "Apache-2.0 & MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=cd3c0bc366cd9b6a906e22f0bcb5910f"
 DEPENDS = "glslang spirv-headers spirv-tools vulkan-headers vulkan-loader vulkan-utility-libraries"
 
-SRC_URI = "git://github.com/KhronosGroup/Vulkan-ValidationLayers.git;branch=vulkan-sdk-1.3.275;protocol=https"
+SRC_URI = "git://github.com/KhronosGroup/Vulkan-ValidationLayers.git;branch=vulkan-sdk-1.3.275;protocol=https \
+           file://0001-custom_containers.h-Fix-build-issues-related-to-GCC-.patch \
+           "
 SRCREV = "780c65337e111c7385109c7b720d757a778e4fe2"
+
+# The NXP BSP releases for this branch (meta-imx wrynose-6.18.*) add this same
+# patch from their own bbappend; listed twice, do_patch fails on the second
+# copy. Keep one, so it applies once with or without those layers.
+python __anonymous () {
+    patch = "file://0001-custom_containers.h-Fix-build-issues-related-to-GCC-.patch"
+    src_uri = d.getVar("SRC_URI").split()
+    if src_uri.count(patch) > 1:
+        first = src_uri.index(patch) + 1
+        d.setVar("SRC_URI", " ".join(src_uri[:first] + [u for u in src_uri[first:] if u != patch]))
+}
 
 REQUIRED_DISTRO_FEATURES = "vulkan"
 
