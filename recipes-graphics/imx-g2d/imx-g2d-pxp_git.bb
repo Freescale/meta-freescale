@@ -11,15 +11,15 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=0a977e480eb69a215e364c381ff61aec"
 
 PROVIDES += "virtual/libg2d imx-pxp-g2d"
 
-PV = "2.5.0+git"
+PV = "2.6.0+git"
 
 SRC_URI = "${IMX_G2D_PXP_SRC};branch=${SRCBRANCH}"
 # IMX_PXP_G2D_SRC is the name used before the rename to imx-g2d-pxp; keep
 # honouring it so existing mirror overrides are not silently dropped.
 IMX_G2D_PXP_SRC ?= "${IMX_PXP_G2D_SRC}"
 IMX_PXP_G2D_SRC ?= "git://github.com/nxp-imx/imx-g2d-pxp.git;protocol=https"
-SRCBRANCH = "imx_2.5"
-SRCREV = "9551dd7f97c37af80b42cd8845ffb5aa190145dc"
+SRCBRANCH = "imx_2.6"
+SRCREV = "93218ee1c6cca174b00dcf228f11f174679cb788"
 
 inherit use-imx-headers
 
