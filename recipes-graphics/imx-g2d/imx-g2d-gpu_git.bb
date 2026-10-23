@@ -16,15 +16,15 @@ DEPENDS = "libgal-imx"
 
 PROVIDES += "virtual/libg2d imx-gpu-g2d"
 
-PV = "2.5.0+git"
+PV = "2.6.0+git"
 
 SRC_URI = "${IMX_G2D_GPU_SRC};branch=${SRCBRANCH}"
 # IMX_GPU_G2D_SRC is the name used before the rename to imx-g2d-gpu; keep
 # honouring it so existing mirror overrides are not silently dropped.
 IMX_G2D_GPU_SRC ?= "${IMX_GPU_G2D_SRC}"
 IMX_GPU_G2D_SRC ?= "git://github.com/nxp-imx/imx-gpu-g2d.git;protocol=https"
-SRCBRANCH = "imx_2.5"
-SRCREV = "d494271fcc8759c04467ec778c17ed5cb22141da"
+SRCBRANCH = "imx_2.6"
+SRCREV = "5ecb63be00048b6cbb1c3e7094538ae102a07b4c"
 
 S = "${UNPACKDIR}/${BP}/source"
 
