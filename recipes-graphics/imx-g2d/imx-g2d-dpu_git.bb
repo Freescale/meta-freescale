@@ -7,7 +7,7 @@ DESCRIPTION = "G2D library using i.MX DPU"
 HOMEPAGE = "https://github.com/nxp-imx/imx-dpu-g2d"
 SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://../LICENSE;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
+LIC_FILES_CHKSUM = "file://../LICENSE.txt;md5=0858ec9c7a80c4a2cf16e4f825a2cc91"
 
 DEPENDS = "libdrm"
 # DPU v1 (i.MX 8QM/8QXP) uses OpenCL from the Vivante GPU driver for
@@ -16,7 +16,7 @@ DEPENDS:append:imxviv = " opencl-headers"
 
 PROVIDES += "virtual/libg2d imx-dpu-g2d"
 
-PV = "2.5.0+git"
+PV = "2.6.0+git"
 
 SRC_URI = "\
     ${IMX_G2D_DPU_SRC};branch=${SRCBRANCH} \
@@ -27,8 +27,8 @@ SRC_URI = "\
 # honouring it so existing mirror overrides are not silently dropped.
 IMX_G2D_DPU_SRC ?= "${IMX_DPU_G2D_SRC}"
 IMX_DPU_G2D_SRC ?= "git://github.com/nxp-imx/imx-dpu-g2d.git;protocol=https"
-SRCBRANCH = "imx_2.5"
-SRCREV = "d9b70208ff7481406d27798fcb54c20a3eea26ad"
+SRCBRANCH = "imx_2.6"
+SRCREV = "56a5417b39977d4121aaf5f677651296953c00b7"
 
 S = "${UNPACKDIR}/${BP}/source"
 
