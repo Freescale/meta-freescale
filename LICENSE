@@ -109,7 +109,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-graphics/imx-gpu-apitrace/imx-gpu-apitrace_10.0.0.bb: LICENSE = "MIT"
 ./recipes-graphics/imx-gpu-sdk/libxdg-shell_1.0.bb: LICENSE = "BSD-3-Clause"
 ./recipes-graphics/imx-gpu-viv/imx-gpu-viv-6.inc: LICENSE = "LicenseRef-Proprietary"
-./recipes-graphics/mali/mali-imx_r54p1.6.bb: LICENSE = "LicenseRef-Proprietary"
+./recipes-graphics/mali/mali-imx_r56p0.0.bb: LICENSE = "LicenseRef-Proprietary"
 ./recipes-graphics/mesa/mesa-etnaviv-env_0.1.bb: LICENSE = "MIT"
 ./recipes-graphics/rapidopencl/rapidopencl_1.1.0.1.bb: LICENSE = "BSD-3-Clause"
 ./recipes-graphics/rapidopenvx/rapidopenvx_1.1.0.bb: LICENSE = "BSD-3-Clause"
