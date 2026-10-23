@@ -1,0 +1,79 @@
+From 14b398d9ff968f0638e540bdf903fc524db108f4 Mon Sep 17 00:00:00 2001
+From: Ryan Zhang <ryan.zhang@nxp.com>
+Date: Fri, 31 Jul 2026 14:08:58 +0800
+Subject: [PATCH 7/7] MGS-6283 [#nxp] fix segfault in opaque alpha init on OOM
+ or missing compositor
+
+The opaque region setup code added by MGS-6283 does not check for
+NULL returns from wl_display_get_registry, wl_registry_bind (via
+roundtrip callback), or wl_compositor_create_region. When any of
+these fail (e.g. during simulate_oom tests), subsequent calls on
+NULL pointers cause a segfault in wl_proxy_get_version.
+
+Add NULL checks for wlc.registry, wlc.wl_compositor, and
+wlc.opaque_region. On failure, clean up any partially created
+objects and return VK_SUCCESS to allow the swapchain to proceed
+without opaque region support.
+
+Fixes: dEQP-VK.wsi.wayland.swapchain.simulate_oom.*
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Prabhu Sundararaj <prabhu.sundararaj@nxp.com>
+---
+ wsi/wayland/swapchain.cpp | 31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
+
+diff --git a/wsi/wayland/swapchain.cpp b/wsi/wayland/swapchain.cpp
+index a92e6c5..5face8e 100644
+--- a/wsi/wayland/swapchain.cpp
++++ b/wsi/wayland/swapchain.cpp
+@@ -283,24 +283,35 @@ VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKH
+    {
+       wlc.wl_queue = m_buffer_queue;
+       wlc.registry = wl_display_get_registry(m_display);
++      if (wlc.registry == nullptr)
++      {
++         return VK_SUCCESS;
++      }
+       wl_proxy_set_queue((struct wl_proxy *)wlc.registry, m_buffer_queue);
+       wl_registry_add_listener(wlc.registry, &registry_listener, &wlc);
+ 
+       wl_display_roundtrip_queue(m_display, m_buffer_queue);
+ 
+-      if (wlc.wl_compositor)
++      if (wlc.wl_compositor == nullptr)
++      {
++         wl_registry_destroy(wlc.registry);
++         wlc.registry = nullptr;
++         return VK_SUCCESS;
++      }
++
++      wlc.opaque_region = wl_compositor_create_region(wlc.wl_compositor);
++      if (wlc.opaque_region == nullptr)
+       {
+-         wlc.opaque_region = wl_compositor_create_region(wlc.wl_compositor);
+-         wl_proxy_set_queue((struct wl_proxy *)wlc.opaque_region, m_buffer_queue);
+-         wl_region_add(wlc.opaque_region, 0, 0,
+-                 (int32_t)swapchain_create_info->imageExtent.width,
+-                 (int32_t)swapchain_create_info->imageExtent.height);
+-      } else {
+-         WSI_LOG_WARNING("Error adding to pending present feedback list");
++         wl_compositor_destroy(wlc.wl_compositor);
++         wlc.wl_compositor = nullptr;
+          wl_registry_destroy(wlc.registry);
+-         wlc = {};
+-         // fallback: continue without opaque
++         wlc.registry = nullptr;
++         return VK_SUCCESS;
+       }
++      wl_proxy_set_queue((struct wl_proxy *)wlc.opaque_region, m_buffer_queue);
++      wl_region_add(wlc.opaque_region, 0, 0,
++              (int32_t)swapchain_create_info->imageExtent.width,
++              (int32_t)swapchain_create_info->imageExtent.height);
+    }
+ 
+    return init_image_factory(*swapchain_create_info);
+-- 
+2.43.0
+

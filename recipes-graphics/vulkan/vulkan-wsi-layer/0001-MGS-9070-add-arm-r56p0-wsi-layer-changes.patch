@@ -1,0 +1,1244 @@
+From b93b676cf60577d496f026d820215b14f9973030 Mon Sep 17 00:00:00 2001
+From: Joshua Wienecke <joshua.wienecke_1@nxp.com>
+Date: Mon, 3 Aug 2026 11:24:22 -0500
+Subject: [PATCH 1/7] MGS-9070 add arm r56p0 wsi layer changes
+
+https://developer.arm.com/downloads/-/Vulkan%20WSI%20Layer
+VX501X08X-SW-99009-r56p0-18eac0
+
+Upstream-Status: Pending
+
+Signed-off-by: Joshua Wienecke <joshua.wienecke_1@nxp.com>
+---
+ CMakeLists.txt                          | 30 +++++++++++++------------
+ README.md                               |  5 +----
+ layer/calibrated_timestamps_api.cpp     |  4 +++-
+ layer/calibrated_timestamps_api.hpp     |  4 +++-
+ layer/layer.cpp                         | 17 +++++++++-----
+ layer/present_timing_api.cpp            | 13 +++++++----
+ layer/private_data.cpp                  |  4 +++-
+ layer/private_data.hpp                  | 18 ++++++++++-----
+ layer/surface_api.cpp                   |  4 +++-
+ layer/swapchain_api.cpp                 |  7 ++++--
+ layer/wsi_layer_experimental.hpp        | 18 +++++++++++++++
+ wsi/display/surface_properties.cpp      |  2 ++
+ wsi/display/surface_properties.hpp      |  4 +++-
+ wsi/extensions/present_timing.cpp       | 27 +++++++---------------
+ wsi/extensions/present_timing.hpp       |  6 +++--
+ wsi/headless/present_timing_handler.cpp |  7 ++++--
+ wsi/headless/present_timing_handler.hpp |  6 ++++-
+ wsi/headless/surface_properties.cpp     |  8 ++++++-
+ wsi/headless/surface_properties.hpp     |  4 +++-
+ wsi/headless/swapchain.cpp              | 11 +++++++--
+ wsi/surface_properties.cpp              |  2 ++
+ wsi/surface_properties.hpp              |  6 ++++-
+ wsi/swapchain_base.cpp                  |  8 +++++--
+ wsi/swapchain_base.hpp                  |  4 ++++
+ wsi/wayland/present_id_wayland.cpp      |  5 ++++-
+ wsi/wayland/present_id_wayland.hpp      |  6 ++++-
+ wsi/wayland/present_timing_handler.hpp  |  6 ++++-
+ wsi/wayland/surface_properties.cpp      |  7 +++++-
+ wsi/wayland/surface_properties.hpp      |  4 +++-
+ wsi/wayland/swapchain.cpp               | 24 ++++++++++++++++++--
+ 30 files changed, 193 insertions(+), 78 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e383aef..04e66c3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -51,12 +51,7 @@ string(APPEND CMAKE_C_FLAGS
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+-if ("${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS} ${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS}" MATCHES "(^| )-fsanitize=")
+-   message(STATUS "Sanitizer-enabled build detected; not forcing -Wl,--no-undefined")
+-else()
+-   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+-endif()
+-
++set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+ set(CMAKE_C_VISIBILITY_PRESET hidden)
+ set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
+@@ -157,14 +152,17 @@ if(BUILD_WSI_WAYLAND)
+       wsi/wayland/surface_properties.cpp
+       wsi/wayland/surface.cpp
+       wsi/wayland/wl_helpers.cpp
+-      wsi/wayland/present_id_wayland.cpp
+-      wsi/wayland/present_timing_handler.cpp
+-      wsi/wayland/present_wait_wayland.cpp
+       wsi/wayland/swapchain.cpp
+-      wsi/wayland/wp_presentation_feedback.cpp
++      wsi/wayland/present_wait_wayland.cpp
+       wsi/extensions/external_memory_extension.cpp
+       wsi/image_backing_memory_external.cpp)
+ 
++   if(VULKAN_WSI_LAYER_EXPERIMENTAL)
++      target_sources(wayland_wsi PRIVATE wsi/wayland/present_id_wayland.cpp)
++      target_sources(wayland_wsi PRIVATE wsi/wayland/present_timing_handler.cpp)
++      target_sources(wayland_wsi PRIVATE wsi/wayland/wp_presentation_feedback.cpp)
++   endif()
++
+    pkg_check_modules(WAYLAND_CLIENT REQUIRED wayland-client)
+    message(STATUS "Using Wayland client include directories: ${WAYLAND_CLIENT_INCLUDE_DIRS}")
+    message(STATUS "Using Wayland client cflags: ${WAYLAND_CLIENT_CFLAGS}")
+@@ -245,10 +243,13 @@ if(BUILD_WSI_HEADLESS)
+       wsi/headless/surface_properties.cpp
+       wsi/headless/surface.cpp
+       wsi/headless/swapchain.cpp
+-      wsi/headless/present_timing_handler.cpp
+       wsi/headless/present_wait_headless.cpp
+       wsi/image_backing_memory_device.cpp)
+ 
++   if(VULKAN_WSI_LAYER_EXPERIMENTAL)
++      target_sources(wsi_headless PRIVATE wsi/headless/present_timing_handler.cpp)
++   endif()
++
+    target_include_directories(wsi_headless PRIVATE
+       ${PROJECT_SOURCE_DIR}
+       ${VULKAN_CXX_INCLUDE}
+@@ -306,7 +307,6 @@ add_library(${PROJECT_NAME} SHARED
+    layer/surface_api.cpp
+    layer/swapchain_api.cpp
+    layer/swapchain_maintenance_api.cpp
+-   layer/present_timing_api.cpp
+    layer/present_wait_api.cpp
+    util/timed_semaphore.cpp
+    util/custom_allocator.cpp
+@@ -320,7 +320,6 @@ add_library(${PROJECT_NAME} SHARED
+    wsi/extensions/present_wait.cpp
+    wsi/extensions/frame_boundary.cpp
+    wsi/extensions/mutable_format_extension.cpp
+-   wsi/extensions/present_timing.cpp
+    util/wsi_extension.cpp
+    wsi/extensions/swapchain_maintenance.cpp
+    wsi/surface_properties.cpp
+@@ -330,13 +329,16 @@ add_library(${PROJECT_NAME} SHARED
+    wsi/vulkan_image_handle_creator.cpp
+    wsi/swapchain_image_factory.cpp
+    wsi/swapchain_image.cpp)
+-
+ if (VULKAN_WSI_LAYER_EXPERIMENTAL)
++   target_sources(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/layer/present_timing_api.cpp)
++   target_sources(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/wsi/extensions/present_timing.cpp)
+    add_definitions("-DVULKAN_WSI_LAYER_EXPERIMENTAL=1")
+ else()
++   list(APPEND JSON_COMMANDS COMMAND sed -Ei '/VK_EXT_present_timing/d' ${CMAKE_CURRENT_BINARY_DIR}/VkLayer_window_system_integration.json)
+    add_definitions("-DVULKAN_WSI_LAYER_EXPERIMENTAL=0")
+ endif()
+ 
++
+ if((CMAKE_BUILD_TYPE MATCHES "^[Dd]ebug$") OR (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"))
+    target_sources(${PROJECT_NAME} PUBLIC util/debug.cpp)
+ endif()
+diff --git a/README.md b/README.md
+index ab82e53..082677a 100644
+--- a/README.md
++++ b/README.md
+@@ -35,8 +35,7 @@ implements the following extensions:
+   * VK_EXT_present_mode_fifo_latest_ready (For Headless and Wayland only)
+   * VK_KHR_present_mode_fifo_latest_ready (For Headless and Wayland only)
+   * VK_KHR_swapchain_mutable_format (For Headless and Wayland only)
+-  * VK_EXT_present_timing (For Headless and Wayland only)
+-
++  
+ ## Building
+ 
+ ### Dependencies
+@@ -53,8 +52,6 @@ The ICDs installed in the system are required to support the following extension
+   * VK_KHR_external_fence_capabilities
+   * VK_KHR_external_semaphore_capabilities
+   * VK_KHR_external_memory_capabilities
+-* Device extensions (required when Headless/Wayland support is enabled):
+-  * VK_KHR_calibrated_timestamps
+ * Device extensions (only required when Wayland support is enabled):
+   * VK_EXT_image_drm_format_modifier
+   * VK_KHR_image_format_list
+diff --git a/layer/calibrated_timestamps_api.cpp b/layer/calibrated_timestamps_api.cpp
+index cc9c174..4ca5aa0 100644
+--- a/layer/calibrated_timestamps_api.cpp
++++ b/layer/calibrated_timestamps_api.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2025-2026 Arm Limited.
++ * Copyright (c) 2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -31,6 +31,7 @@
+ #include <wsi/extensions/present_timing.hpp>
+ #include <wsi/swapchain_base.hpp>
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ VWL_VKAPI_CALL(VkResult)
+ wsi_layer_vkGetCalibratedTimestampsKHR(VkDevice device, uint32_t timestampCount,
+                                        const VkCalibratedTimestampInfoKHR *pTimestampInfos, uint64_t *pTimestamps,
+@@ -172,3 +173,4 @@ wsi_layer_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(VkPhysicalDevice physic
+ {
+    return wsi_layer_vkGetPhysicalDeviceCalibrateableTimeDomainsKHR(physicalDevice, pTimeDomainCount, pTimeDomains);
+ }
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+diff --git a/layer/calibrated_timestamps_api.hpp b/layer/calibrated_timestamps_api.hpp
+index d1eee9c..fbe6e0e 100644
+--- a/layer/calibrated_timestamps_api.hpp
++++ b/layer/calibrated_timestamps_api.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2025-2026 Arm Limited.
++ * Copyright (c) 2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -32,6 +32,7 @@
+ #pragma once
+ #include "util/macros.hpp"
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ VWL_VKAPI_CALL(VkResult)
+ wsi_layer_vkGetCalibratedTimestampsEXT(VkDevice device, uint32_t timestampCount,
+                                        const VkCalibratedTimestampInfoKHR *pTimestampInfos, uint64_t *pTimestamps,
+@@ -48,3 +49,4 @@ wsi_layer_vkGetPhysicalDeviceCalibrateableTimeDomainsKHR(VkPhysicalDevice physic
+ VWL_VKAPI_CALL(VkResult)
+ wsi_layer_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(VkPhysicalDevice physicalDevice, uint32_t *pTimeDomainCount,
+                                                          VkTimeDomainEXT *pTimeDomains) VWL_API_POST;
++#endif
+diff --git a/layer/layer.cpp b/layer/layer.cpp
+index 6117c15..106000d 100644
+--- a/layer/layer.cpp
++++ b/layer/layer.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2016-2026 Arm Limited.
++ * Copyright (c) 2016-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -31,8 +31,8 @@
+ #include <vulkan/vulkan.h>
+ 
+ #include "layer/calibrated_timestamps_api.hpp"
+-#include "present_timing_api.hpp"
+ #include "present_wait_api.hpp"
++#include "wsi_layer_experimental.hpp"
+ #include "private_data.hpp"
+ #include "surface_api.hpp"
+ #include "swapchain_api.hpp"
+@@ -246,13 +246,16 @@ VKAPI_ATTR VkResult create_device(VkPhysicalDevice physicalDevice, const VkDevic
+    util::vector<const char *> modified_enabled_extensions{ allocator };
+    util::extension_list enabled_extensions{ allocator };
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    VkPhysicalDeviceMaintenance9FeaturesKHR maintenance9_features = {};
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+    const util::wsi_platform_set &enabled_platforms = inst_data.get_enabled_platforms();
+    if (!enabled_platforms.empty())
+    {
+       TRY_LOG_CALL(enabled_extensions.add(pCreateInfo->ppEnabledExtensionNames, pCreateInfo->enabledExtensionCount));
+       TRY_LOG_CALL(wsi::add_device_extensions_required_by_layer(physicalDevice, enabled_platforms, enabled_extensions,
+                                                                 inst_data.api_version));
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+       auto present_timing_supported = wsi::present_timing_dependencies_supported(physicalDevice);
+       if (std::holds_alternative<VkResult>(present_timing_supported))
+       {
+@@ -283,6 +286,7 @@ VKAPI_ATTR VkResult create_device(VkPhysicalDevice physicalDevice, const VkDevic
+             modified_info.pNext = &maintenance9_features;
+          }
+       }
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+ 
+       TRY_LOG_CALL(enabled_extensions.get_extension_strings(modified_enabled_extensions));
+ 
+@@ -594,6 +598,7 @@ wsi_layer_vkGetPhysicalDeviceFeatures2(VkPhysicalDevice physical_device,
+       }
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    auto *present_timing_features = util::find_extension<VkPhysicalDevicePresentTimingFeaturesEXT>(
+       VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_TIMING_FEATURES_EXT, pFeatures->pNext);
+    if (present_timing_features != nullptr)
+@@ -610,6 +615,7 @@ wsi_layer_vkGetPhysicalDeviceFeatures2(VkPhysicalDevice physical_device,
+       present_timing_features->presentAtAbsoluteTime = VK_TRUE;
+       present_timing_features->presentAtRelativeTime = VK_TRUE;
+    }
++#endif
+ 
+    auto *present_mode_fifo_latest_ready_features =
+       util::find_extension<VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT>(
+@@ -673,7 +679,7 @@ wsi_layer_vkGetDeviceProcAddr(VkDevice device, const char *funcName) VWL_API_POS
+    {
+       GET_PROC_ADDR(vkGetSwapchainStatusKHR);
+    }
+-
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    if (device_data.is_device_extension_enabled(VK_EXT_PRESENT_TIMING_EXTENSION_NAME))
+    {
+       GET_PROC_ADDR(vkSetSwapchainPresentTimingQueueSizeEXT);
+@@ -686,7 +692,7 @@ wsi_layer_vkGetDeviceProcAddr(VkDevice device, const char *funcName) VWL_API_POS
+          GET_PROC_ADDR(vkGetCalibratedTimestampsEXT);
+       }
+    }
+-
++#endif
+    GET_PROC_ADDR(vkDestroyDevice);
+    GET_PROC_ADDR(vkCreateImage);
+ 
+@@ -803,9 +809,10 @@ wsi_layer_vkGetInstanceProcAddr(VkInstance instance, const char *funcName) VWL_A
+          GET_PROC_ADDR(vkGetPhysicalDeviceSurfaceCapabilities2KHR);
+          GET_PROC_ADDR(vkGetPhysicalDeviceSurfaceFormats2KHR);
+       }
+-
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+       GET_PROC_ADDR(vkGetPhysicalDeviceCalibrateableTimeDomainsKHR);
+       GET_PROC_ADDR(vkGetPhysicalDeviceCalibrateableTimeDomainsEXT);
++#endif
+ 
+       if (instance_data.is_instance_extension_enabled(VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME))
+       {
+diff --git a/layer/present_timing_api.cpp b/layer/present_timing_api.cpp
+index 376e39f..16dce6f 100644
+--- a/layer/present_timing_api.cpp
++++ b/layer/present_timing_api.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2024-2026 Arm Limited.
++ * Copyright (c) 2024-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -28,12 +28,13 @@
+  * @brief Contains the Vulkan entrypoints for the present timing.
+  */
+ #include <cassert>
++#include "wsi_layer_experimental.hpp"
+ 
+-#include "present_timing_api.hpp"
+ #include <wsi/extensions/present_timing.hpp>
+ #include <wsi/swapchain_base.hpp>
+ #include "util/macros.hpp"
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ /**
+  * @brief Implements vkSetSwapchainPresentTimingQueueSizeEXT Vulkan entrypoint.
+  */
+@@ -92,8 +93,11 @@ wsi_layer_vkGetSwapchainTimeDomainPropertiesEXT(VkDevice device, VkSwapchainKHR
+       return device_data.disp.GetSwapchainTimeDomainPropertiesEXT(device, swapchain, pSwapchainTimeDomainProperties,
+                                                                   pTimeDomainsCounter);
+    }
+-   return wsi::swapchain_time_domains::get_swapchain_time_domain_properties(pSwapchainTimeDomainProperties,
+-                                                                            pTimeDomainsCounter);
++
++   auto *sc = reinterpret_cast<wsi::swapchain_base *>(swapchain);
++   auto *ext = sc->get_swapchain_extension<wsi::wsi_ext_present_timing>(true);
++   return ext->get_swapchain_time_domains().get_swapchain_time_domain_properties(pSwapchainTimeDomainProperties,
++                                                                                 pTimeDomainsCounter);
+ }
+ 
+ /**
+@@ -115,3 +119,4 @@ wsi_layer_vkGetPastPresentationTimingEXT(
+    auto *ext = sc->get_swapchain_extension<wsi::wsi_ext_present_timing>(true);
+    return ext->get_past_presentation_results(pPastPresentationTimingProperties, pPastPresentationTimingInfo->flags);
+ }
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+diff --git a/layer/private_data.cpp b/layer/private_data.cpp
+index 973a60c..30464ca 100644
+--- a/layer/private_data.cpp
++++ b/layer/private_data.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2018-2026 Arm Limited.
++ * Copyright (c) 2018-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -472,7 +472,9 @@ device_private_data::device_private_data(instance_private_data &inst_data, VkPhy
+    , compression_control_enabled{ false }
+    , present_id_enabled { false }
+    , swapchain_maintenance1_enabled{ false }
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    , present_timing_enabled { true }
++#endif
+    , present_wait2_enabled { false }
+    , present_id2_enabled { false }
+    , present_mode_fifo_latest_ready_enabled { false }
+diff --git a/layer/private_data.hpp b/layer/private_data.hpp
+index dcf1bfa..edb1526 100644
+--- a/layer/private_data.hpp
++++ b/layer/private_data.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2018-2026 Arm Limited.
++ * Copyright (c) 2018-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -24,7 +24,7 @@
+ 
+ #pragma once
+ 
+-#include <layer/present_timing_api.hpp>
++#include <layer/wsi_layer_experimental.hpp>
+ 
+ #include <util/platform_set.hpp>
+ #include <util/custom_allocator.hpp>
+@@ -379,7 +379,15 @@ private:
+  * alias: Name of the promoted entrypoint alias if different to entrypoint_name.
+  */
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++#define DEVICE_ENTRYPOINTS_LIST_EXPERIMENTAL(EP)                                                             \
++   EP(GetSwapchainTimeDomainPropertiesEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, )   \
++   EP(GetSwapchainTimingPropertiesEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, )       \
++   EP(SetSwapchainPresentTimingQueueSizeEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, ) \
++   EP(GetPastPresentationTimingEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, )
++#else
+ #define DEVICE_ENTRYPOINTS_LIST_EXPERIMENTAL(EP)
++#endif
+ 
+ /* Define a list of custom entrypoints that might rely on preprocessor conditions and similar */
+ #define DEVICE_ENTRYPOINTS_LIST_EXPANSION(EP) DEVICE_ENTRYPOINTS_LIST_EXPERIMENTAL(EP)
+@@ -473,10 +481,6 @@ private:
+    EP(WaitForPresentKHR, VK_KHR_PRESENT_WAIT_EXTENSION_NAME, API_VERSION_MAX, false, )                                      \
+    /* VK_KHR_present_wait2 */                                                                                               \
+    EP(WaitForPresent2KHR, VK_KHR_PRESENT_WAIT_2_EXTENSION_NAME, API_VERSION_MAX, false, )                                   \
+-   EP(GetSwapchainTimeDomainPropertiesEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, )                  \
+-   EP(GetSwapchainTimingPropertiesEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, )                      \
+-   EP(SetSwapchainPresentTimingQueueSizeEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, )                \
+-   EP(GetPastPresentationTimingEXT, VK_EXT_PRESENT_TIMING_EXTENSION_NAME, API_VERSION_MAX, false, )                         \
+    /* Custom entrypoints */                                                                                                 \
+    DEVICE_ENTRYPOINTS_LIST_EXPANSION(EP)
+ 
+@@ -1095,10 +1099,12 @@ private:
+     */
+    bool present_wait_enabled{ false };
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    /**
+     * @brief Stores whether the device has enabled support for the present timing features.
+     */
+    bool present_timing_enabled{ false };
++#endif
+ 
+    /**
+     * @brief Stores whether the device supports the present wait2 feature.
+diff --git a/layer/surface_api.cpp b/layer/surface_api.cpp
+index 7a7e24f..dde362d 100644
+--- a/layer/surface_api.cpp
++++ b/layer/surface_api.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2016-2017, 2019, 2021-2022, 2024-2026 Arm Limited.
++ * Copyright (c) 2016-2017, 2019, 2021-2022, 2024-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -119,12 +119,14 @@ wsi_layer_vkGetPhysicalDeviceSurfaceCapabilities2KHR(VkPhysicalDevice physicalDe
+       wsi::surface_properties *props = wsi::get_surface_properties(instance, pSurfaceInfo->surface);
+       assert(props != nullptr);
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+       auto *surf_caps_ext = util::find_extension<VkPresentTimingSurfaceCapabilitiesEXT>(
+          VK_STRUCTURE_TYPE_PRESENT_TIMING_SURFACE_CAPABILITIES_EXT, pSurfaceCapabilities);
+       if (surf_caps_ext != nullptr)
+       {
+          TRY_LOG_CALL(props->get_present_timing_surface_caps(physicalDevice, surf_caps_ext));
+       }
++#endif
+ 
+       auto shared_present_surface_cap_struct = util::find_extension<VkSharedPresentSurfaceCapabilitiesKHR>(
+          VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR, pSurfaceCapabilities);
+diff --git a/layer/swapchain_api.cpp b/layer/swapchain_api.cpp
+index 9a4f8f9..2c5dbd8 100644
+--- a/layer/swapchain_api.cpp
++++ b/layer/swapchain_api.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2017, 2019, 2021-2026 Arm Limited.
++ * Copyright (c) 2017, 2019, 2021-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -218,13 +218,14 @@ wsi_layer_vkQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR *pPresentInfo)
+       VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT, present_info->pNext);
+    const auto swapchain_present_mode_info = util::find_extension<VkSwapchainPresentModeInfoEXT>(
+       VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT, present_info->pNext);
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    const auto present_timings_info =
+       util::find_extension<VkPresentTimingsInfoEXT>(VK_STRUCTURE_TYPE_PRESENT_TIMINGS_INFO_EXT, present_info->pNext);
+    if (present_timings_info)
+    {
+       assert(present_timings_info->swapchainCount == pPresentInfo->swapchainCount);
+    }
+-
++#endif
+    for (uint32_t i = 0; i < pPresentInfo->swapchainCount; ++i)
+    {
+       VkSwapchainKHR swapc = pPresentInfo->pSwapchains[i];
+@@ -259,11 +260,13 @@ wsi_layer_vkQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR *pPresentInfo)
+       present_params.use_image_present_semaphore = use_image_present_semaphore;
+       present_params.handle_present_frame_boundary_event = frame_boundary_event_handled;
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+       if (present_timings_info)
+       {
+          present_params.m_present_timing_info = present_timings_info->pTimingInfos[i];
+          present_params.m_present_timing_info.pNext = nullptr;
+       }
++#endif
+       VkResult res = sc->queue_present(queue, present_info, present_params);
+       if (pPresentInfo->pResults != nullptr)
+       {
+diff --git a/layer/wsi_layer_experimental.hpp b/layer/wsi_layer_experimental.hpp
+index 8e86520..d7251a5 100644
+--- a/layer/wsi_layer_experimental.hpp
++++ b/layer/wsi_layer_experimental.hpp
+@@ -34,4 +34,22 @@
+ 
+ #if VULKAN_WSI_LAYER_EXPERIMENTAL
+ 
++VWL_VKAPI_CALL(VkResult)
++wsi_layer_vkSetSwapchainPresentTimingQueueSizeEXT(VkDevice device, VkSwapchainKHR swapchain,
++                                                  uint32_t size) VWL_API_POST;
++
++VWL_VKAPI_CALL(VkResult)
++wsi_layer_vkGetSwapchainTimingPropertiesEXT(VkDevice device, VkSwapchainKHR swapchain,
++                                            VkSwapchainTimingPropertiesEXT *pSwapchainTimingProperties,
++                                            uint64_t *pSwapchainTimingPropertiesCounter) VWL_API_POST;
++VWL_VKAPI_CALL(VkResult)
++wsi_layer_vkGetSwapchainTimeDomainPropertiesEXT(VkDevice device, VkSwapchainKHR swapchain,
++                                                VkSwapchainTimeDomainPropertiesEXT *pSwapchainTimeDomainProperties,
++                                                uint64_t *pTimeDomainsCounter) VWL_API_POST;
++
++VWL_VKAPI_CALL(VkResult)
++wsi_layer_vkGetPastPresentationTimingEXT(
++   VkDevice device, const VkPastPresentationTimingInfoEXT *pPastPresentationTimingInfo,
++   VkPastPresentationTimingPropertiesEXT *pPastPresentationTimingProperties) VWL_API_POST;
++
+ #endif
+diff --git a/wsi/display/surface_properties.cpp b/wsi/display/surface_properties.cpp
+index b8b54b0..8139130 100644
+--- a/wsi/display/surface_properties.cpp
++++ b/wsi/display/surface_properties.cpp
+@@ -569,6 +569,7 @@ bool surface_properties::is_surface_extension_enabled(const layer::instance_priv
+    return instance_data.is_instance_extension_enabled(VK_KHR_SURFACE_EXTENSION_NAME);
+ }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ VkResult surface_properties::get_present_timing_surface_caps_internal(
+    VkPhysicalDevice, VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps)
+ {
+@@ -579,6 +580,7 @@ VkResult surface_properties::get_present_timing_surface_caps_internal(
+ 
+    return VK_SUCCESS;
+ }
++#endif
+ 
+ surface_properties &surface_properties::get_instance()
+ {
+diff --git a/wsi/display/surface_properties.hpp b/wsi/display/surface_properties.hpp
+index 3ef8300..c8e68b5 100644
+--- a/wsi/display/surface_properties.hpp
++++ b/wsi/display/surface_properties.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2024-2026 Arm Limited.
++ * Copyright (c) 2024-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -82,8 +82,10 @@ private:
+    void get_surface_present_scaling_and_gravity(VkSurfacePresentScalingCapabilitiesEXT *scaling_capabilities) override;
+    void populate_present_mode_compatibilities() override;
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    VkResult get_present_timing_surface_caps_internal(
+       VkPhysicalDevice physical_device, VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps) override;
++#endif
+ };
+ 
+ } /* namespace display */
+diff --git a/wsi/extensions/present_timing.cpp b/wsi/extensions/present_timing.cpp
+index d0335c4..4b6aa1a 100644
+--- a/wsi/extensions/present_timing.cpp
++++ b/wsi/extensions/present_timing.cpp
+@@ -34,6 +34,7 @@
+ 
+ #include "present_timing.hpp"
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ namespace wsi
+ {
+ /* VK_PRESENT_STAGE_QUEUE_OPERATIONS_END_BIT_EXT,
+@@ -131,10 +132,7 @@ swapchain_presentation_timing *wsi_ext_present_timing::get_pending_stage_timing(
+ {
+    if (auto *entry = get_pending_stage_entry(image_index, stage))
+    {
+-      if (auto stage_timing_optional = entry->get_stage_timing(stage))
+-      {
+-         return &stage_timing_optional->get();
+-      }
++      return &entry->get_stage_timing(stage)->get();
+    }
+    return nullptr;
+ }
+@@ -386,8 +384,7 @@ VkResult wsi_ext_present_timing::get_past_presentation_results(
+       return VK_SUCCESS;
+    }
+ 
+-   uint64_t timing_count = 0;
+-   uint64_t removed_entries = 0;
++   uint64_t timing_count = 0, removed_entries = 0;
+    VkPastPresentationTimingEXT *timings = past_present_timing_properties->pPresentationTimings;
+    const bool allow_partial = (flags & VK_PAST_PRESENTATION_TIMING_ALLOW_PARTIAL_RESULTS_BIT_EXT) != 0;
+    const bool allow_out_of_order = (flags & VK_PAST_PRESENTATION_TIMING_ALLOW_OUT_OF_ORDER_RESULTS_BIT_EXT) != 0;
+@@ -508,11 +505,7 @@ std::optional<bool> swapchain_presentation_entry::is_complete(VkPresentStageFlag
+ bool swapchain_presentation_entry::is_pending(VkPresentStageFlagBitsEXT stage)
+ {
+    auto stage_timing_optional = get_stage_timing(stage);
+-   if (!stage_timing_optional.has_value())
+-   {
+-      return false;
+-   }
+-   return !stage_timing_optional->get().m_set;
++   return stage_timing_optional.has_value() ? !stage_timing_optional->get().m_set : false;
+ }
+ 
+ bool swapchain_presentation_entry::has_outstanding_stages()
+@@ -579,17 +572,11 @@ std::optional<std::reference_wrapper<swapchain_presentation_timing>> swapchain_p
+ void swapchain_presentation_entry::set_stage_timing(VkPresentStageFlagBitsEXT stage, uint64_t time)
+ {
+    auto stage_timing_optional = get_stage_timing(stage);
+-   if (!stage_timing_optional.has_value())
+-   {
+-      return;
+-   }
+-
+-   auto &stage_timing = stage_timing_optional->get();
+-   if (stage_timing.m_set)
++   if (stage_timing_optional->get().m_set)
+    {
+       return;
+    }
+-   stage_timing.set_time(time);
++   stage_timing_optional->get().set_time(time);
+ }
+ 
+ void swapchain_presentation_entry::populate(VkPastPresentationTimingEXT &timing)
+@@ -745,3 +732,5 @@ std::variant<bool, VkResult> present_timing_dependencies_supported(VkPhysicalDev
+    return maintenance9.maintenance9 != VK_FALSE;
+ }
+ } /* namespace wsi */
++
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+diff --git a/wsi/extensions/present_timing.hpp b/wsi/extensions/present_timing.hpp
+index 0e590a7..98e2467 100644
+--- a/wsi/extensions/present_timing.hpp
++++ b/wsi/extensions/present_timing.hpp
+@@ -42,14 +42,15 @@
+ #include <variant>
+ #include <cmath>
+ 
++#include <layer/wsi_layer_experimental.hpp>
+ #include <layer/private_data.hpp>
+-#include <layer/present_timing_api.hpp>
+ #include <util/custom_allocator.hpp>
+ #include <util/custom_mutex.hpp>
+ #include <util/macros.hpp>
+ #include <util/wsi_extension.hpp>
+ #include <wsi/swapchain_base.hpp>
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ namespace wsi
+ {
+ 
+@@ -145,7 +146,7 @@ struct swapchain_presentation_entry
+     * keeps the status of whether the slot had already been copied to
+     * the results.
+     */
+-   bool copied{ false };
++   bool copied;
+ 
+    /**
+     * The variables to keep timing stages.
+@@ -845,3 +846,4 @@ inline uint64_t ticks_to_ns(uint64_t ticks, const float &timestamp_period)
+ }
+ 
+ } /* namespace wsi */
++#endif
+diff --git a/wsi/headless/present_timing_handler.cpp b/wsi/headless/present_timing_handler.cpp
+index 246a76e..8f7bfdb 100644
+--- a/wsi/headless/present_timing_handler.cpp
++++ b/wsi/headless/present_timing_handler.cpp
+@@ -27,6 +27,7 @@
+  *
+  * @brief Contains the functionality to implement features for present timing extension.
+  */
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ #include <cstdint>
+ #include <array>
+ #include <algorithm>
+@@ -153,7 +154,7 @@ std::optional<uint64_t> wsi_ext_present_timing_headless::get_current_clock_time_
+       return std::nullopt;
+    }
+ 
+-   return (static_cast<uint64_t>(now.tv_sec) * static_cast<uint64_t>(1e9)) + static_cast<uint64_t>(now.tv_nsec);
++   return static_cast<uint64_t>(now.tv_sec) * static_cast<uint64_t>(1e9) + static_cast<uint64_t>(now.tv_nsec);
+ }
+ 
+ std::optional<uint64_t> wsi_ext_present_timing_headless::get_first_pixel_visible_timestamp_for_last_image() const
+@@ -162,7 +163,7 @@ std::optional<uint64_t> wsi_ext_present_timing_headless::get_first_pixel_visible
+    {
+       return std::nullopt;
+    }
+-   return m_first_pixel_visible_timestamp_for_last_image;
++   return m_first_pixel_visible_timestamp_for_last_image.value();
+ }
+ 
+ void wsi_ext_present_timing_headless::set_first_pixel_visible_timestamp_for_last_image(uint64_t timestamp)
+@@ -182,3 +183,5 @@ VkPresentStageFlagsEXT wsi_ext_present_timing_headless::stages_supported()
+    }
+    return stages;
+ }
++
++#endif
+diff --git a/wsi/headless/present_timing_handler.hpp b/wsi/headless/present_timing_handler.hpp
+index f2d58c2..dd5396c 100644
+--- a/wsi/headless/present_timing_handler.hpp
++++ b/wsi/headless/present_timing_handler.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2025-2026 Arm Limited.
++ * Copyright (c) 2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -29,6 +29,8 @@
+  */
+ #pragma once
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++
+ #include <wsi/extensions/present_timing.hpp>
+ #include <wsi/swapchain_base.hpp>
+ 
+@@ -107,3 +109,5 @@ private:
+     */
+    bool m_is_swapchain_using_shared_present_mode;
+ };
++
++#endif
+diff --git a/wsi/headless/surface_properties.cpp b/wsi/headless/surface_properties.cpp
+index 3bfe538..2c39518 100644
+--- a/wsi/headless/surface_properties.cpp
++++ b/wsi/headless/surface_properties.cpp
+@@ -34,11 +34,15 @@
+ #include <vulkan/vulkan.h>
+ 
+ #include <layer/private_data.hpp>
+-#include "present_timing_handler.hpp"
++
+ #include "surface_properties.hpp"
+ #include "surface.hpp"
+ #include "util/macros.hpp"
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++#include "present_timing_handler.hpp"
++#endif
++
+ namespace wsi
+ {
+ namespace headless
+@@ -245,6 +249,7 @@ bool surface_properties::is_compatible_present_modes(VkPresentModeKHR present_mo
+    return m_compatible_present_modes.is_compatible_present_modes(present_mode_a, present_mode_b);
+ }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ VkResult surface_properties::get_present_timing_surface_caps_internal(
+    VkPhysicalDevice physical_device, VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps)
+ {
+@@ -275,6 +280,7 @@ VkResult surface_properties::get_present_timing_surface_caps_internal(
+ 
+    return VK_SUCCESS;
+ }
++#endif
+ 
+ } /* namespace headless */
+ } /* namespace wsi */
+diff --git a/wsi/headless/surface_properties.hpp b/wsi/headless/surface_properties.hpp
+index 51e80f6..82cd693 100644
+--- a/wsi/headless/surface_properties.hpp
++++ b/wsi/headless/surface_properties.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2017-2019, 2022-2026 Arm Limited.
++ * Copyright (c) 2017-2019, 2022-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -75,8 +75,10 @@ private:
+ 
+    void get_surface_present_scaling_and_gravity(VkSurfacePresentScalingCapabilitiesEXT *scaling_capabilities) override;
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    VkResult get_present_timing_surface_caps_internal(
+       VkPhysicalDevice physical_device, VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps) override;
++#endif
+ };
+ 
+ } /* namespace headless */
+diff --git a/wsi/headless/swapchain.cpp b/wsi/headless/swapchain.cpp
+index bf15d73..09a6dbf 100644
+--- a/wsi/headless/swapchain.cpp
++++ b/wsi/headless/swapchain.cpp
+@@ -99,6 +99,7 @@ VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCr
+       }
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    bool swapchain_support_enabled = swapchain_create_info->flags & VK_SWAPCHAIN_CREATE_PRESENT_TIMING_BIT_EXT;
+    if (swapchain_support_enabled)
+    {
+@@ -108,6 +109,7 @@ VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCr
+          return VK_ERROR_OUT_OF_HOST_MEMORY;
+       }
+    }
++#endif
+ 
+    bool present_wait2;
+    constexpr VkSwapchainCreateFlagsKHR present_wait2_mask =
+@@ -174,6 +176,7 @@ VkResult swapchain::allocate_and_bind_swapchain_image(swapchain_image &image)
+ 
+ void swapchain::present_image(const pending_present_request &pending_present)
+ {
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    auto *ext_present_timing = get_swapchain_extension<wsi_ext_present_timing_headless>();
+    if (ext_present_timing)
+    {
+@@ -199,19 +202,20 @@ void swapchain::present_image(const pending_present_request &pending_present)
+             absolute_future_present_time_ns = presentation_target->m_target_present_time;
+          }
+          auto current_time_ns = ext_present_timing->get_current_clock_time_ns();
+-         if (current_time_ns.has_value() && current_time_ns.value() < absolute_future_present_time_ns)
++         if (*current_time_ns < absolute_future_present_time_ns)
+          {
+             /* Sleep until we can schedule the image for completion.
+              * This is OK as the sleep should only be dispatched on the page_flip thread and not on main. */
+             assert(m_page_flip_thread_run);
+ 
+-            const auto time_diff = static_cast<int64_t>(absolute_future_present_time_ns - current_time_ns.value());
++            int64_t time_diff = static_cast<int64_t>(absolute_future_present_time_ns - *current_time_ns);
+             std::this_thread::sleep_for(std::chrono::nanoseconds(time_diff));
+          }
+       }
+ 
+       ext_present_timing->remove_presentation_target_entry(pending_present.image_index);
+    }
++#endif
+ 
+    auto *ext = get_swapchain_extension<wsi_ext_present_id>();
+    if (ext != nullptr)
+@@ -219,6 +223,7 @@ void swapchain::present_image(const pending_present_request &pending_present)
+       ext->mark_delivered(pending_present.present_id);
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    if (ext_present_timing && ext_present_timing->get_monotonic_domain().has_value())
+    {
+       auto current_time = ext_present_timing->get_current_clock_time_ns();
+@@ -239,6 +244,8 @@ void swapchain::present_image(const pending_present_request &pending_present)
+          ext_present_timing->set_pending_stage_time(pending_present.image_index, stage, *current_time);
+       }
+    }
++#endif
++
+    unpresent_image(pending_present.image_index);
+ }
+ 
+diff --git a/wsi/surface_properties.cpp b/wsi/surface_properties.cpp
+index 673bc5a..0299c9e 100644
+--- a/wsi/surface_properties.cpp
++++ b/wsi/surface_properties.cpp
+@@ -141,6 +141,7 @@ void get_surface_capabilities_common(VkPhysicalDevice physical_device, VkSurface
+       VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+ }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ /**
+  * @brief Get the present timing surface capabilities for the specific VkSurface type.
+  */
+@@ -162,5 +163,6 @@ VkResult surface_properties::get_present_timing_surface_caps(
+ 
+    return VK_SUCCESS;
+ }
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+ 
+ } /* namespace wsi */
+diff --git a/wsi/surface_properties.hpp b/wsi/surface_properties.hpp
+index 92d270a..ce996a9 100644
+--- a/wsi/surface_properties.hpp
++++ b/wsi/surface_properties.hpp
+@@ -31,7 +31,7 @@
+ #pragma once
+ 
+ #include <vulkan/vulkan.h>
+-#include "layer/present_timing_api.hpp"
++#include "layer/wsi_layer_experimental.hpp"
+ #include "layer/private_data.hpp"
+ #include "util/custom_allocator.hpp"
+ #include "util/drm/drm_utils.hpp"
+@@ -119,11 +119,13 @@ public:
+ 
+    virtual bool is_compatible_present_modes(VkPresentModeKHR present_mode_a, VkPresentModeKHR present_mode_b) = 0;
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    /**
+     * @brief Get the present timing surface capabilities for the specific VkSurface type.
+     */
+    VkResult get_present_timing_surface_caps(VkPhysicalDevice physical_device,
+                                             VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps);
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+ 
+    /**
+     * @brief Virtual destructor.
+@@ -136,11 +138,13 @@ private:
+     */
+    virtual void populate_present_mode_compatibilities() = 0;
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    /**
+     * @brief Get the present timing surface capabilities for the specific VkSurface type.
+     */
+    virtual VkResult get_present_timing_surface_caps_internal(
+       VkPhysicalDevice physical_device, VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps) = 0;
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+ };
+ 
+ class surface_format_properties
+diff --git a/wsi/swapchain_base.cpp b/wsi/swapchain_base.cpp
+index eb5f0f1..eaf4ff4 100644
+--- a/wsi/swapchain_base.cpp
++++ b/wsi/swapchain_base.cpp
+@@ -597,6 +597,7 @@ VkResult swapchain_base::queue_present(VkQueue queue, const VkPresentInfoKHR *pr
+       }
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    const VkPresentTimingInfoEXT *present_timing_info = nullptr;
+    const auto *present_timings_info =
+       util::find_extension<VkPresentTimingsInfoEXT>(VK_STRUCTURE_TYPE_PRESENT_TIMINGS_INFO_EXT, present_info->pNext);
+@@ -610,7 +611,7 @@ VkResult swapchain_base::queue_present(VkQueue queue, const VkPresentInfoKHR *pr
+          TRY(ext_present_timing->queue_has_space());
+       }
+    }
+-
++#endif
+    if (submit_info.switch_presentation_mode)
+    {
+       /* Assert when a presentation mode switch is requested and the swapchain_maintenance1 extension which implements this is not available */
+@@ -651,6 +652,7 @@ VkResult swapchain_base::queue_present(VkQueue queue, const VkPresentInfoKHR *pr
+       signal_semaphores[count_signal_semaphores++] =
+          m_swapchain_images[submit_info.pending_present.image_index].get_present_fence_wait_semaphore();
+    }
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    if ((present_timing_info != nullptr) &&
+        (present_timing_info->presentStageQueries & VK_PRESENT_STAGE_QUEUE_OPERATIONS_END_BIT_EXT))
+    {
+@@ -661,7 +663,7 @@ VkResult swapchain_base::queue_present(VkQueue queue, const VkPresentInfoKHR *pr
+             ext_present_timing->get_image_present_semaphore(submit_info.pending_present.image_index);
+       }
+    }
+-
++#endif
+    queue_submit_semaphores semaphores = {
+       wait_semaphores,
+       sem_count,
+@@ -683,12 +685,14 @@ VkResult swapchain_base::queue_present(VkQueue queue, const VkPresentInfoKHR *pr
+       TRY(sync_queue_submit(m_device_data, queue, submit_info.present_fence, present_fence_semaphores));
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    if (present_timing_info != nullptr)
+    {
+       auto *ext_present_timing = get_swapchain_extension<wsi::wsi_ext_present_timing>(true);
+       TRY_LOG_CALL(ext_present_timing->add_presentation_entry(
+          queue, submit_info.pending_present.present_id, submit_info.pending_present.image_index, *present_timing_info));
+    }
++#endif
+    TRY(notify_presentation_engine(submit_info.pending_present));
+ 
+    return VK_SUCCESS;
+diff --git a/wsi/swapchain_base.hpp b/wsi/swapchain_base.hpp
+index 0847248..f23669f 100644
+--- a/wsi/swapchain_base.hpp
++++ b/wsi/swapchain_base.hpp
+@@ -100,16 +100,20 @@ struct swapchain_presentation_parameters
+     */
+    VkBool32 handle_present_frame_boundary_event{ true };
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    /**
+     * The present timing info.
+     */
+    VkPresentTimingInfoEXT m_present_timing_info;
++#endif
+ };
+ 
+ enum signal_semaphores_type
+ {
+    SIGNAL_SEMAPHORE_PRESENT_FENCE,
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    SIGNAL_SEMAPHORE_PRESENT_TIMING,
++#endif
+    SIGNAL_SEMAPHORE_MAX_NUM,
+ };
+ 
+diff --git a/wsi/wayland/present_id_wayland.cpp b/wsi/wayland/present_id_wayland.cpp
+index aa4e227..0804da1 100644
+--- a/wsi/wayland/present_id_wayland.cpp
++++ b/wsi/wayland/present_id_wayland.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2025-2026 Arm Limited.
++ * Copyright (c) 2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -27,6 +27,7 @@
+  *
+  * @brief Contains the functionality to implement Wayland specific features for present ID extension.
+  */
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ 
+ #include <util/custom_mutex.hpp>
+ #include "present_id_wayland.hpp"
+@@ -104,3 +105,5 @@ void wsi_ext_present_id_wayland::remove_from_pending_present_feedback_list(uint6
+ 
+ } // namespace wayland
+ } // namespace wsi
++
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+diff --git a/wsi/wayland/present_id_wayland.hpp b/wsi/wayland/present_id_wayland.hpp
+index af7d87f..2d27f8d 100644
+--- a/wsi/wayland/present_id_wayland.hpp
++++ b/wsi/wayland/present_id_wayland.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2025-2026 Arm Limited.
++ * Copyright (c) 2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -29,6 +29,8 @@
+  */
+ #pragma once
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++
+ #include <wsi/extensions/present_id.hpp>
+ #include <util/ring_buffer.hpp>
+ #include "surface_properties.hpp"
+@@ -95,3 +97,5 @@ private:
+ 
+ } // namespace wayland
+ } // namespace wsi
++
++#endif /* VULKAN_WSI_LAYER_EXPERIMENTAL */
+diff --git a/wsi/wayland/present_timing_handler.hpp b/wsi/wayland/present_timing_handler.hpp
+index 4e1c202..343c3ea 100644
+--- a/wsi/wayland/present_timing_handler.hpp
++++ b/wsi/wayland/present_timing_handler.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2025-2026 Arm Limited.
++ * Copyright (c) 2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -29,6 +29,8 @@
+  */
+ #pragma once
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++
+ #include <optional>
+ #include <array>
+ 
+@@ -176,3 +178,5 @@ private:
+ 
+ } // namespace wayland
+ } // namespace wsi
++
++#endif
+diff --git a/wsi/wayland/surface_properties.cpp b/wsi/wayland/surface_properties.cpp
+index 72602d1..1dcbf07 100644
+--- a/wsi/wayland/surface_properties.cpp
++++ b/wsi/wayland/surface_properties.cpp
+@@ -36,7 +36,6 @@
+ #include <algorithm>
+ #include <array>
+ #include <cstring>
+-#include "present_timing_handler.hpp"
+ #include "surface_properties.hpp"
+ #include "surface.hpp"
+ #include "layer/private_data.hpp"
+@@ -47,6 +46,10 @@
+ #include "util/macros.hpp"
+ #include "util/helpers.hpp"
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
++#include "present_timing_handler.hpp"
++#endif
++
+ namespace wsi
+ {
+ namespace wayland
+@@ -451,6 +454,7 @@ bool surface_properties::is_compatible_present_modes(VkPresentModeKHR present_mo
+    return m_compatible_present_modes.is_compatible_present_modes(present_mode_a, present_mode_b);
+ }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+ VkResult surface_properties::get_present_timing_surface_caps_internal(
+    VkPhysicalDevice physical_device, VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps)
+ {
+@@ -499,6 +503,7 @@ VkResult surface_properties::get_present_timing_surface_caps_internal(
+ 
+    return VK_SUCCESS;
+ }
++#endif
+ 
+ } // namespace wayland
+ } // namespace wsi
+diff --git a/wsi/wayland/surface_properties.hpp b/wsi/wayland/surface_properties.hpp
+index 034f567..4953e6d 100644
+--- a/wsi/wayland/surface_properties.hpp
++++ b/wsi/wayland/surface_properties.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2017-2019, 2021-2026 Arm Limited.
++ * Copyright (c) 2017-2019, 2021-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -95,8 +95,10 @@ private:
+ 
+    void get_surface_present_scaling_and_gravity(VkSurfacePresentScalingCapabilitiesEXT *scaling_capabilities) override;
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    VkResult get_present_timing_surface_caps_internal(
+       VkPhysicalDevice physical_device, VkPresentTimingSurfaceCapabilitiesEXT *present_timing_surface_caps) override;
++#endif
+ };
+ 
+ } // namespace wayland
+diff --git a/wsi/wayland/swapchain.cpp b/wsi/wayland/swapchain.cpp
+index 4346d69..62ce5ce 100644
+--- a/wsi/wayland/swapchain.cpp
++++ b/wsi/wayland/swapchain.cpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2017-2026 Arm Limited.
++ * Copyright (c) 2017-2025 Arm Limited.
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -123,7 +123,11 @@ VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCr
+    if (m_device_data.is_present_id_enabled() ||
+        (swapchain_create_info->flags & VK_SWAPCHAIN_CREATE_PRESENT_ID_2_BIT_KHR))
+    {
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+       if (!add_swapchain_extension(m_allocator.make_unique<wsi_ext_present_id_wayland>()))
++#else
++      if (!add_swapchain_extension(m_allocator.make_unique<wsi_ext_present_id>()))
++#endif
+       {
+          return VK_ERROR_OUT_OF_HOST_MEMORY;
+       }
+@@ -159,6 +163,7 @@ VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCr
+       }
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    bool swapchain_support_enabled = swapchain_create_info->flags & VK_SWAPCHAIN_CREATE_PRESENT_TIMING_BIT_EXT;
+    if (swapchain_support_enabled)
+    {
+@@ -182,6 +187,8 @@ VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCr
+          return VK_ERROR_OUT_OF_HOST_MEMORY;
+       }
+    }
++#endif
++
+    return VK_SUCCESS;
+ }
+ 
+@@ -218,12 +225,13 @@ VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKH
+    {
+       present_wait->set_wayland_dispatcher(m_display, m_buffer_queue);
+    }
+-
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    auto *present_timing_ext = get_swapchain_extension<wsi_ext_present_timing_wayland>();
+    if (present_timing_ext != nullptr)
+    {
+       present_timing_ext->init(m_display, m_buffer_queue);
+    }
++#endif
+ 
+    auto wsi_allocator = swapchain_wsialloc_allocator::create();
+    if (!wsi_allocator.has_value())
+@@ -296,6 +304,7 @@ void swapchain::release_buffer(struct wl_buffer *wayl_buffer)
+       auto data = m_swapchain_images[i].get_data<wayland_image_data>();
+       if (data && data->get_buffer() == wayl_buffer)
+       {
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+          /* Some compositors might not deliver wp_presentation_feedback events if the images are pushed to compositor quick enough
+           * in presentation modes that allow it (mailbox). If that happens, double check if these images were submitted for feedback
+           * and handle it as a 'image discarded' event. */
+@@ -309,6 +318,8 @@ void swapchain::release_buffer(struct wl_buffer *wayl_buffer)
+          {
+             present_id_ext->mark_buffer_release(i);
+          }
++#endif
++
+          unpresent_image(i);
+          break;
+       }
+@@ -422,6 +433,7 @@ void swapchain::present_image(const pending_present_request &pending_present)
+       }
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    auto *present_id_ext = get_swapchain_extension<wsi_ext_present_id_wayland>();
+    if (present_id_ext != nullptr)
+    {
+@@ -462,6 +474,7 @@ void swapchain::present_image(const pending_present_request &pending_present)
+          register_wp_presentation_feedback_listener(feedback, feedback_obj);
+       }
+    }
++#endif
+ 
+    wl_surface_commit(m_surface);
+    int res = wl_display_flush(m_display);
+@@ -472,14 +485,21 @@ void swapchain::present_image(const pending_present_request &pending_present)
+       set_error_state(VK_ERROR_SURFACE_LOST_KHR);
+    }
+ 
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    auto *ext = get_swapchain_extension<wsi_ext_present_id_wayland>();
+    if (ext != nullptr)
+    {
+       if (m_wsi_surface->get_presentation_time_interface() == nullptr)
++#else
++   auto *ext = get_swapchain_extension<wsi_ext_present_id>();
++   if (ext != nullptr)
++#endif
+       {
+          ext->mark_delivered(pending_present.present_id);
+       }
++#if VULKAN_WSI_LAYER_EXPERIMENTAL
+    }
++#endif
+ }
+ 
+ bool swapchain::free_image_found()
+-- 
+2.43.0
+
