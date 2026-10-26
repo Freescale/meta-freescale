@@ -190,6 +190,7 @@ IMX_SOC_REV:mx8ulp-generic-bsp ??= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
                                                            'A2', d)}"
 IMX_SOC_REV:mx93-generic-bsp   ??= "A1"
+IMX_SOC_REV:mx943-generic-bsp  ??= "A1"
 IMX_SOC_REV:mx95-generic-bsp   ??= "B0"
 
 IMX_SOC_REV_LOWER   = "${@d.getVar('IMX_SOC_REV').lower()}"
@@ -461,6 +462,11 @@ PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
 PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
 IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
 
+# The System Manager firmware name selects the binary imx-boot takes from the
+# deploy folder; imx-system-manager deploys it as
+# ${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}.bin.
+SYSTEM_MANAGER_FIRMWARE_NAME ?= "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
+
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE:append:mx51-generic-bsp     = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
@@ -540,7 +546,7 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 SECOEXT_FIRMWARE_NAME ?= ""
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img"
-SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx943${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx94${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
 
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN                ?= ""
@@ -763,7 +769,7 @@ TOOLCHAIN_HOST_TASK:append:imx-generic-bsp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'nativesdk-wayland', '', d)} \
 "
 
-SECO_FIRMWARE_NAME:mx943-generic-bsp ?= "mx943${IMX_SOC_REV_LOWER}-ahab-container.img"
+SECO_FIRMWARE_NAME:mx943-generic-bsp ?= "mx94${IMX_SOC_REV_LOWER}-ahab-container.img"
 
 # Allow meta-imx to add NIP devices information until upstreamed.
 include conf/machine/include/imx-base-extend.inc
