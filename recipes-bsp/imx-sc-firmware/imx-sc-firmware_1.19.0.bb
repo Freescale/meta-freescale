@@ -1,18 +1,18 @@
 # Copyright (C) 2016 Freescale Semiconductor
-# Copyright (C) 2017-2024 NXP
+# Copyright (C) 2017-2024,2026 NXP
 
 SUMMARY = "i.MX System Controller firmware"
 DESCRIPTION = "System Controller Unit (SCU) firmware for i.MX8 QuadMax/QuadXPlus SoCs."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "bsp"
 LICENSE = "LicenseRef-Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=c0fb372b5d7f12181de23ef480f225f3"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ef4f968b9dae8ba406390cd617c2301d"
 
 inherit fsl-eula-unpack pkgconfig deploy
 
 SRC_URI = "${FSL_MIRROR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-SRC_URI[sha256sum] = "392f1e5cdf1c8d7ed75409a2c46b00a332ace677f0e2700b587fe9ae800a1ff3"
-IMX_SRCREV_ABBREV = "654907b"
+SRC_URI[sha256sum] = "39814e0f7d83bc1ab0a7a4e03cc20a0ddd4ab00e96fbbc2d059b791d117a6917"
+IMX_SRCREV_ABBREV = "1c41cd8"
 
 S = "${UNPACKDIR}/${BPN}-${PV}-${IMX_SRCREV_ABBREV}"
 
