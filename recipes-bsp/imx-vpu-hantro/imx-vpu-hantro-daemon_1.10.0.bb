@@ -1,4 +1,4 @@
-# Copyright 2021 NXP
+# Copyright 2021-2026 NXP
 SUMMARY = "i.MX Hantro V4L2 daemon"
 DESCRIPTION = "V4L2 userspace daemon for the Hantro VPU on i.MX SoCs."
 HOMEPAGE = "https://www.nxp.com/"
@@ -10,9 +10,9 @@ DEPENDS = "imx-vpu-hantro"
 DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.tar.gz"
-IMX_SRCREV_ABBREV = "a4cefcc"
+IMX_SRCREV_ABBREV = "dd94ffe"
 
-SRC_URI[sha256sum] = "629087dd3e9ae0f4c00a75a2f2b715b7e24918b7401b26137e9270d6ac0fa90c"
+SRC_URI[sha256sum] = "e561576f66e3a131e4345294c43b66a7333b491f4573e451ce9c489be8cf73ec"
 
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
