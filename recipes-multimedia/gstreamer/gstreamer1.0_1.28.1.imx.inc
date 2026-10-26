@@ -18,9 +18,9 @@ SRC_URI:remove = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV
                   file://0004-tests-add-helper-script-to-run-the-installed_tests.patch;striplevel=3 \
 "
 SRC_URI:prepend = "${GST1.0_SRC};branch=${SRCBRANCH} "
-GST1.0_SRC ?= "gitsm://github.com/nxp-imx/gstreamer.git;protocol=https"
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
-SRCREV = "c95d8ba246d60779d8ffd7864f97dfa44e8b7386"
+GST1.0_SRC ?= "git://github.com/nxp-imx/gstreamer.git;protocol=https"
+SRCBRANCH = "MM_04.11.01_2608_L6.18.37"
+SRCREV = "ac230c2b6d93c1c63e34a98f1f3fea6cb26fd094"
 
 PACKAGECONFIG[tests] = "-Dtests=enabled,-Dtests=disabled"
 
