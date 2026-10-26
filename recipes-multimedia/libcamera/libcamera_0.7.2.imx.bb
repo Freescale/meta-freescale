@@ -1,9 +1,10 @@
+
 # This recipe is modified for i.MX. For ease of maintenance the recipe itself
 # is a verbatim copy of a meta-openembedded recipe, so it can be diffed against
 # upstream directly; the i.MX customization lives in the required
-# libcamera_0.7.1.imx.inc.
+# libcamera_0.7.2.imx.inc.
 ########### meta-openembedded copy ##################
-# Upstream hash: f4b9dfa0c903bc94c344c657917a3fbb229c322f
+# Upstream hash: 0938f25dc906413ebf54a3e22cd2ebebec79c196
 
 SUMMARY = "Linux libcamera framework"
 DESCRIPTION = "A camera stack for Linux that hides the complexity of modern camera hardware, and gives applications one interface for capture, 3A control and pipeline handling."
@@ -19,36 +20,50 @@ LIC_FILES_CHKSUM = "\
 
 SRC_URI = "\
     git://git.libcamera.org/libcamera/libcamera.git;protocol=https;branch=master;tag=v${PV} \
+    file://0001-ipa_data_serializer-Mark-vector-readPOD-overload-as-m.patch \
+    file://0002-libcamera-egl-Don-t-redefine-EGL_NO_X11.patch \
 "
 
-# Re-set in the required libcamera_0.7.1.imx.inc for the nxp-imx fork; kept
+# Re-set in the required libcamera_0.7.2.imx.inc for the nxp-imx fork; kept
 # here to preserve the verbatim meta-openembedded copy (see header).
 # UPSTREAM-PARITY.
 # nooelint: oelint.var.override
-SRCREV = "e2e7c015cee997b9f992376fd2c29fa2d8813e1b"
+SRCREV = "191e202178f02430b5942397c70d215cdd2056fa"
 
 PE = "1"
 
 # Ordering comes from the upstream recipe at the header's Upstream hash.
 # nooelint: oelint.var.order.DEPENDS
-DEPENDS = "chrpath-native gnutls libevent libyaml python3-jinja2-native python3-ply-native python3-pyyaml-native udev"
+DEPENDS = "chrpath-native gnutls libevent libyaml libyuv python3-jinja2-native python3-ply-native python3-pyyaml-native udev"
 DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'qt', 'qtbase qtbase-native', '', d)}"
 
-PACKAGES =+ "${PN}-gst ${PN}-pycamera"
+PACKAGES =+ "${PN}-compliance ${PN}-gst ${PN}-pycamera"
 
 # Ordering comes from the upstream recipe at the header's Upstream hash.
 # nooelint: oelint.var.order.PACKAGECONFIG
-PACKAGECONFIG ??= ""
-PACKAGECONFIG[dng] = ",,tiff"
-PACKAGECONFIG[gst] = "-Dgstreamer=enabled,-Dgstreamer=disabled,gstreamer1.0 gstreamer1.0-plugins-base"
-PACKAGECONFIG[pycamera] = "-Dpycamera=enabled,-Dpycamera=disabled,python3 python3-pybind11"
-PACKAGECONFIG[raspberrypi] = ",,libpisp"
+PACKAGECONFIG ??= "\
+    ${@bb.utils.filter('DISTRO_FEATURES', 'opengl', d)} \
+"
 
+PACKAGECONFIG[dng] = "-Dapps-output-dng=enabled,-Dapps-output-dng=disabled,tiff"
+PACKAGECONFIG[dw] = "-Dlibdw=enabled,-Dlibdw=disabled,elfutils,libdw"
+PACKAGECONFIG[compliance] = "-Dlc-compliance=enabled,-Dlc-compliance=disabled,gtest"
+PACKAGECONFIG[gst] = "-Dgstreamer=enabled,-Dgstreamer=disabled,gstreamer1.0 gstreamer1.0-plugins-base"
+PACKAGECONFIG[jpeg] = "-Dcam-jpeg=enabled,-Dcam-jpeg=disabled,libjpeg-turbo"
+PACKAGECONFIG[kms] = "-Dcam-output-kms=enabled,-Dcam-output-kms=disabled,libdrm"
+PACKAGECONFIG[opengl] = "-Dsoftisp-gpu=enabled,-Dsoftisp-gpu=disabled,virtual/egl virtual/libgles2"
+PACKAGECONFIG[python] = "-Dpycamera=enabled,-Dpycamera=disabled,python3-pybind11"
+PACKAGECONFIG[raspberrypi] = ",,libpisp"
+PACKAGECONFIG[sdl] = "-Dcam-output-sdl2=enabled,-Dcam-output-sdl2=disabled,virtual/libsdl2"
+PACKAGECONFIG[unwind] = "-Dlibunwind=enabled,-Dlibunwind=disabled,libunwind"
+PACKAGECONFIG[vimc] = ",,"
+
+ARM_PIPELINES = "imx8-isi,mali-c55,simple,uvcvideo"
 # Raspberry Pi requires the meta-raspberrypi layer
 # These values are coming from the project's meson.build file,
 # which lists the supported values by arch.
-ARM_PIPELINES = "${@bb.utils.contains('PACKAGECONFIG', 'raspberrypi', 'rpi/pisp,rpi/vc4,', '', d)}"
-ARM_PIPELINES .= "imx8-isi,mali-c55,simple,uvcvideo"
+ARM_PIPELINES .= "${@bb.utils.contains('PACKAGECONFIG', 'raspberrypi', ',rpi/pisp,rpi/vc4', '', d)}"
+ARM_PIPELINES .= "${@bb.utils.contains('PACKAGECONFIG', 'vimc', ',vimc', '', d)}"
 
 LIBCAMERA_PIPELINES ??= "auto"
 LIBCAMERA_PIPELINES:arm ??= "${ARM_PIPELINES}"
@@ -56,11 +71,11 @@ LIBCAMERA_PIPELINES:aarch64 ??= "${ARM_PIPELINES}"
 
 EXTRA_OEMESON = "\
     -Dpipelines=${LIBCAMERA_PIPELINES} \
-    -Dv4l2=true \
+    -Dv4l2=enabled \
     -Dcam=enabled \
-    -Dlc-compliance=disabled \
     -Dtest=false \
     -Ddocumentation=disabled \
+    -Drpi-awb-nn=disabled \
 "
 
 RDEPENDS:${PN} = "${@bb.utils.contains('DISTRO_FEATURES', 'wayland qt', 'qtwayland', '', d)}"
@@ -95,17 +110,22 @@ do_package_recalculate_ipa_signatures() {
 # Ordering comes from the upstream recipe at the header's Upstream hash.
 # nooelint: oelint.var.order.FILES
 FILES:${PN} += "${libexecdir}/libcamera/v4l2-compat.so"
-# -gst/-pycamera are split packages with no default FILES, so '=' is a complete
-# definition. Kept byte-identical to meta-multimedia libcamera to avoid fork
-# drift; suppress the append-preference warning.
+# -compliance/-gst/-pycamera are split packages with no default FILES, so '='
+# is a complete definition. Kept byte-identical to meta-multimedia libcamera to
+# avoid fork drift; suppress the append-preference warning.
+# nooelint: oelint.var.filesoverride
+FILES:${PN}-compliance = "${bindir}/lc-compliance"
 # nooelint: oelint.var.filesoverride
 FILES:${PN}-gst = "${libdir}/gstreamer-1.0"
 # nooelint: oelint.var.filesoverride
 FILES:${PN}-pycamera = "${PYTHON_SITEPACKAGES_DIR}/libcamera"
 
-# libcamera-v4l2 explicitly sets _FILE_OFFSET_BITS=32 to get access to
-# both 32 and 64 bit file APIs.
-GLIBC_64BIT_TIME_FLAGS = ""
+# v4l2-compat.so is built with 32-bit file and time APIs on purpose, so it
+# can wrap both the 32 and 64-bit calls. The rest of libcamera uses 64-bit time.
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP += "32bit-time"
+
+CXXFLAGS += "-Wno-error=array-bounds"
 ########### End of meta-openembedded copy ###########
 
-require libcamera_0.7.1.imx.inc
+require libcamera_0.7.2.imx.inc
