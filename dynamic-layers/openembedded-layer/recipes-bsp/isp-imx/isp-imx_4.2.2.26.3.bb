@@ -1,21 +1,21 @@
-# Copyright 2020-2025 NXP
+# Copyright 2020-2026 NXP
 
 SUMMARY = "i.MX VeriSilicon software ISP"
 DESCRIPTION = "VeriSilicon image signal processing (ISP) software stack for i.MX SoCs."
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "multimedia"
 LICENSE = "LicenseRef-Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
+LIC_FILES_CHKSUM = "file://COPYING;md5=ef4f968b9dae8ba406390cd617c2301d"
 
-DEPENDS = "boost jsoncpp libdrm libtinyxml2 patchelf-native virtual/libg2d"
+DEPENDS = "boost jsoncpp libdrm libtinyxml2 virtual/libg2d"
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '${ISP_SYSTEMD_PATCH}', '', d)}"
 ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
 
-SRC_URI[sha256sum] = "ab04d9eae4917591ca21f4ae13269c4e5a6f1b8e2f357cca1693682fa9a87249"
+SRC_URI[sha256sum] = "3269f2815da65ad2462732440e448ea05d0ddbb29aecdb5ca653989dbbd725d3"
 
-IMX_SRCREV_ABBREV = "3cbd4a2"
+IMX_SRCREV_ABBREV = "e4002a7"
 
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
@@ -65,13 +65,6 @@ do_install() {
     if ${@bb.utils.contains('PACKAGECONFIG','tuningext','false','true',d)}; then
         rm ${D}/opt/imx8-isp/bin/tuningext
     fi
-
-    # The prebuilt ISP components were linked against jsoncpp 1.9.6
-    # (SONAME 26). jsoncpp 1.9.7 ships SONAME 27, so update the dynamic
-    # dependency.
-    patchelf --replace-needed libjsoncpp.so.26 libjsoncpp.so.27 \
-        ${D}${libdir}/libmedia_server.so \
-        ${D}/opt/imx8-isp/bin/isp_media_server
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}${systemd_system_unitdir}
