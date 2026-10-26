@@ -14,8 +14,8 @@ DEPENDS:append:mx8mp-nxp-bsp = " imx-vpu-hantro-vc"
 
 SRC_URI = "${IMX_VPUWRAP_SRC};branch=${SRCBRANCH}"
 IMX_VPUWRAP_SRC ?= "git://github.com/NXP/imx-vpuwrap.git;protocol=https"
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
-SRCREV = "49adeca51746d6b3f89a32687c98df61a56a52ae"
+SRCBRANCH = "MM_04.11.01_2608_L6.18.37"
+SRCREV = "15c98d82384589d5e7902b8e3701af19b490c5f2"
 
 inherit autotools pkgconfig
 
