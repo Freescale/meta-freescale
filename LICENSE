@@ -3,7 +3,7 @@
 This file lists all licenses used by recipes in the meta-freescale layer.
 
 ./dynamic-layers/arm-toolchain/recipes-bsp/imx-oei/imx-oei_1.0.0.bb: LICENSE = "BSD-3-Clause"
-./dynamic-layers/arm-toolchain/recipes-bsp/imx-system-manager/imx-system-manager_2026q1.bb: LICENSE = "BSD-3-Clause"
+./dynamic-layers/arm-toolchain/recipes-bsp/imx-system-manager/imx-system-manager_2026q3.bb: LICENSE = "BSD-3-Clause"
 ./dynamic-layers/meta-python/recipes-libraries/ethos-u-driver-stack/ethos-u-driver-stack_24.05.bb: LICENSE = "Apache-2.0"
 ./dynamic-layers/openembedded-layer/recipes-bsp/isp-imx/basler-camera_4.2.2.26.1.bb: LICENSE = "LicenseRef-Proprietary"
 ./dynamic-layers/openembedded-layer/recipes-bsp/isp-imx/isp-imx_4.2.2.26.3.bb: LICENSE = "LicenseRef-Proprietary"
