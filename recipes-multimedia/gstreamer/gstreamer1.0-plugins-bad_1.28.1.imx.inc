@@ -23,9 +23,9 @@ SRC_URI:prepend = "${GST1.0-PLUGINS-BAD_SRC};branch=${SRCBRANCH} "
 SRC_URI:append:mx93-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
 SRC_URI:append:mx943-nxp-bsp = " file://0001-MMFMWK-9590-gstcuda-disable-gir-build-for-cuda-plugi.patch"
 
-GST1.0-PLUGINS-BAD_SRC ?= "gitsm://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
-SRCREV = "ae93b57a6a238604c305ca79e25d6248b5bab5d6"
+GST1.0-PLUGINS-BAD_SRC ?= "git://github.com/nxp-imx/gst-plugins-bad.git;protocol=https"
+SRCBRANCH = "MM_04.11.01_2608_L6.18.37"
+SRCREV = "9a9bbef19e14c6136eb7351333a4f8e15ec53a49"
 
 inherit use-imx-headers use-imx-wayland-protocols
 
