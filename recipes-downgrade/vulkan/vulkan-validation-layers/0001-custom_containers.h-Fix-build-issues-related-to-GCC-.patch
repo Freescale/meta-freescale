@@ -1,0 +1,31 @@
+From 16df7ff22e50b74229c39ac3b0463ee2b7936df8 Mon Sep 17 00:00:00 2001
+From: Neena Busireddy <neenareddy.busireddy@nxp.com>
+Date: Wed, 24 Sep 2025 14:04:49 -0500
+Subject: [PATCH] custom_containers.h: Fix build issues related to GCC 15
+
+https://gcc.gnu.org/gcc-15/porting_to.html#cxx
+Some C++ Standard Library headers have been changed to
+no longer include other headers that were being used
+internally by the library.
+
+Upstream-Status: Pending
+Signed-off-by: Neena Busireddy <neenareddy.busireddy@nxp.com>
+---
+ layers/containers/custom_containers.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/layers/containers/custom_containers.h b/layers/containers/custom_containers.h
+index 935573628..ee655976f 100644
+--- a/layers/containers/custom_containers.h
++++ b/layers/containers/custom_containers.h
+@@ -31,6 +31,7 @@
+ #include <type_traits>
+ #include <optional>
+ #include <utility>
++#include <cstdint>
+ 
+ #ifdef USE_ROBIN_HOOD_HASHING
+ #include "robin_hood.h"
+-- 
+2.34.1
+
