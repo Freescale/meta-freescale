@@ -462,6 +462,11 @@ PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
 PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
 IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
 
+# The System Manager firmware name selects the binary imx-boot takes from the
+# deploy folder; imx-system-manager deploys it as
+# ${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}.bin.
+SYSTEM_MANAGER_FIRMWARE_NAME ?= "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
+
 # Firmware
 MACHINE_FIRMWARE ?= ""
 MACHINE_FIRMWARE:append:mx51-generic-bsp     = " firmware-imx-vpu-imx51 firmware-imx-sdma-imx51"
