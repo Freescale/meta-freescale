@@ -1,4 +1,4 @@
-# Copyright 2019-2022 NXP
+# Copyright 2019-2025 NXP
 
 SUMMARY = "i.MX VC8000E encoder library"
 DESCRIPTION = "Hantro VC8000E video encoder library for i.MX SoCs."
@@ -10,9 +10,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
 inherit fsl-eula-unpack
 
 SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
-IMX_SRCREV_ABBREV = "5e18a84"
+IMX_SRCREV_ABBREV = "1fd0ec5"
 
-SRC_URI[sha256sum] = "04d2a9c5c75804a11a4500a0133dfc7d8e84f74254cee52c42075f5ecc229550"
+SRC_URI[sha256sum] = "0bb6a5ca9e7df546650ea1247f4cade7debcf6e8549ed92c98c8412d80b1676b"
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
 # SCR is the location and name of the Software Content Register file
