@@ -38,7 +38,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-bsp/imx-test/imx-test_00.00.00.bb: LICENSE = "MIT"
 ./recipes-bsp/imx-test/imx-test_git.bb: LICENSE = "GPL-2.0-or-later"
 ./recipes-bsp/imx-uuc/imx-uuc_git.bb: LICENSE = "GPL-2.0-only"
-./recipes-bsp/imx-vpu-hantro-vc/imx-vpu-hantro-vc_1.11.0.bb: LICENSE = "LicenseRef-Proprietary"
+./recipes-bsp/imx-vpu-hantro-vc/imx-vpu-hantro-vc_1.12.0.bb: LICENSE = "LicenseRef-Proprietary"
 ./recipes-bsp/imx-vpu-hantro/imx-vpu-hantro-daemon_1.10.0.bb: LICENSE = "MIT"
 ./recipes-bsp/imx-vpu-hantro/imx-vpu-hantro_1.40.0.bb: LICENSE = "LicenseRef-Proprietary"
 ./recipes-bsp/imx-vpu/imx-vpu_5.4.39.3.bb: LICENSE = "LicenseRef-Proprietary"
