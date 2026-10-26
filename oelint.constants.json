@@ -285,6 +285,7 @@
             "mx94-nxp-bsp",
             "mx95-generic-bsp",
             "mx95-nxp-bsp",
+            "mx952-generic-bsp",
             "mx952-nxp-bsp",
             "mxs-generic-bsp",
             "p1020",

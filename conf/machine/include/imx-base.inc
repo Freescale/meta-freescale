@@ -192,6 +192,7 @@ IMX_SOC_REV:mx8ulp-generic-bsp ??= \
 IMX_SOC_REV:mx93-generic-bsp   ??= "A1"
 IMX_SOC_REV:mx943-generic-bsp  ??= "A1"
 IMX_SOC_REV:mx95-generic-bsp   ??= "B0"
+IMX_SOC_REV:mx952-generic-bsp  ??= "A1"
 
 IMX_SOC_REV_LOWER   = "${@d.getVar('IMX_SOC_REV').lower()}"
 IMX_SOC_REV_UPPER   = "${@d.getVar('IMX_SOC_REV').upper()}"
@@ -235,6 +236,7 @@ MACHINEOVERRIDES_EXTENDER:mx91:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdr
 MACHINEOVERRIDES_EXTENDER:mx93:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx93-generic-bsp:mx93-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx943:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx94-generic-bsp:mx94-nxp-bsp:mx943-generic-bsp:mx943-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx95:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx952:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp:mx952-generic-bsp:mx952-nxp-bsp"
 
 #######
 ### Mainline BSP specific overrides
@@ -315,6 +317,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx93 \
     mx943 \
     mx95 \
+    mx952 \
 "
 
 MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR = "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
@@ -346,6 +349,7 @@ MACHINE_SOCARCH_SUFFIX:mx91-nxp-bsp    = "-mx91"
 MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp    = "-mx93"
 MACHINE_SOCARCH_SUFFIX:mx943-nxp-bsp   = "-mx943"
 MACHINE_SOCARCH_SUFFIX:mx95-nxp-bsp    = "-mx95"
+MACHINE_SOCARCH_SUFFIX:mx952-nxp-bsp   = "-mx952"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
 MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
@@ -459,6 +463,7 @@ IMX_EXTRA_FIRMWARE:mx91-generic-bsp   = "imx-boot-firmware-files firmware-ele-im
 IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx943-nxp-bsp      = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
 IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
+IMX_EXTRA_FIRMWARE:mx952-generic-bsp  = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
 
 PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
 PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
@@ -469,6 +474,7 @@ PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
 SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT = ""
 SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT:mx943-generic-bsp = "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
 SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT:mx95-generic-bsp  = "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
+SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT:mx952-generic-bsp = "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
 SYSTEM_MANAGER_FIRMWARE_NAME ?= "${SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT}"
 
 # Firmware
@@ -492,6 +498,7 @@ MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " linux-firmware-imx-sdma-imx7d f
 MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave"
 MACHINE_FIRMWARE:append:mx95-mainline-bsp    = " linux-firmware-mali-csffw-arch1012"
+MACHINE_FIRMWARE:append:mx952-nxp-bsp        = " firmware-imx-vpu-coda980 firmware-imx-vpu-wave511 firmware-imx-ld"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
@@ -551,6 +558,7 @@ SECOEXT_FIRMWARE_NAME ?= ""
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx94${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx952-generic-bsp  ?= "mx952a0runtime-ahab-container.img mx952a1runtime-ahab-container.img"
 
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN                ?= ""
