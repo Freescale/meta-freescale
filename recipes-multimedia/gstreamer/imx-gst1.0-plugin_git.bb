@@ -36,12 +36,12 @@ DEPENDS_IMX_OPENCL_CONVERTER:mx8mm-nxp-bsp = ""
 # Follow imx-opencl-converter, which on Mali needs meta-oe and opencl
 DEPENDS_IMX_OPENCL_CONVERTER:imxmali = "${@'imx-opencl-converter' if bb.utils.contains('BBFILE_COLLECTIONS', 'openembedded-layer', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'opencl', True, False, d) else ''}"
 
-PV = "4.11.0+git${SRCPV}"
+PV = "4.11.1+git${SRCPV}"
 
 SRC_URI = "${IMXGST_SRC};branch=${SRCBRANCH}"
 IMXGST_SRC ?= "git://github.com/nxp-imx/imx-gst1.0-plugin.git;protocol=https"
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
-SRCREV = "e0b7f80ac98c866e9396aff8cd93221b65ba8667"
+SRCBRANCH = "MM_04.11.01_2608_L6.18.37"
+SRCREV = "f308aef88c29dbcfe10b211b3db8f109832a36db"
 
 inherit meson pkgconfig use-imx-headers
 
