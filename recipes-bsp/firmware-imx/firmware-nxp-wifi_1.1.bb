@@ -8,11 +8,11 @@ HOMEPAGE = "https://github.com/nxp-imx/imx-firmware"
 
 SECTION = "kernel"
 LICENSE = "LicenseRef-Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=bc649096ad3928ec06a8713b8d787eac"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=ef4f968b9dae8ba406390cd617c2301d"
 
 SRC_URI = "git://github.com/nxp-imx/imx-firmware.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.18.20_2.0.0"
-SRCREV = "cc78ca8b1ee28ff741bcc160246f61b008f6c89f"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "07dd4579523496db967107397695958ff80b6c51"
 
 inherit allarch
 
