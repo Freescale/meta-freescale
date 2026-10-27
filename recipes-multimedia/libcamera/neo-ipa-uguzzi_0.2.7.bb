@@ -8,7 +8,7 @@ HOMEPAGE = "https://github.com/nxp-imx/neo-ipa-uguzzi"
 SECTION = "libs"
 LICENSE = "Apache-2.0 AND BSD-2-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND LicenseRef-Proprietary"
 # Put EULA on separate line for automated recipe updates
-LIC_FILES_CHKSUM = "file://LICENSES/LA_OPT_NXP_Software_License.txt;md5=bc649096ad3928ec06a8713b8d787eac"
+LIC_FILES_CHKSUM = "file://LICENSES/LA_OPT_NXP_Software_License.txt;md5=9bf7a7a3afc85074e3b45201010588e1"
 LIC_FILES_CHKSUM += "\
     file://COPYING;md5=6462e06298403caf09a22e67a7cc551a \
     file://LICENSES/Apache-2.0.txt;md5=3b83ef96387f14655fc854ddc3c6bd57 \
@@ -20,8 +20,8 @@ DEPENDS = "libcamera"
 
 SRC_URI = "${NEO_IPA_UGUZZI_SRC};branch=${SRCBRANCH}"
 NEO_IPA_UGUZZI_SRC ?= "git://github.com/nxp-imx/neo-ipa-uguzzi;protocol=https"
-SRCBRANCH = "lf-6.18.20_2.0.0"
-SRCREV = "23fdfc14330253b789f24c35e53786bc46d35703"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "8bdbe773aeace2459d52f90d3fb21a8b908c9f6a"
 
 inherit meson pkgconfig
 
