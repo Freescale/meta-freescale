@@ -1,0 +1,155 @@
+From 60858fce9e0c1a4dc3421e479b5633c140aa2191 Mon Sep 17 00:00:00 2001
+From: jiajia Qian <jiajia.qian@nxp.com>
+Date: Wed, 29 Apr 2026 16:19:00 +0800
+Subject: [PATCH] core: implement OpenCL kernel for UMat::diag to avoid
+ aliasing races
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The previous OpenCL implementation of UMat::diag() relied on a sequence of
+operations involving buffer initialization followed by copy/transpose on
+an aliased diag() view. Although these operations were enqueued on an
+in-order command queue, this implicitly assumed memory visibility between
+kernels operating on aliased regions of the same buffer.
+
+According to the OpenCL specification, in-order command queues only guarantee
+command scheduling order, while memory visibility between commands is only
+established through explicit command-level synchronization points (e.g.
+events, barriers, or clFinish).Under OpenCL’s relaxed memory model, such
+assumptions are not guaranteed without an explicit command-level synchronization
+point, and can lead to data races and incorrect results, especially for very
+small matrices (e.g. 1x1). The issue is more likely to be exposed on Mesa-based drivers
+when the GPU is running at lower frequencies (e.g. 500 MHz).
+
+This change introduces a dedicated OpenCL kernel to construct the diagonal
+matrix in a single kernel invocation, avoiding intermediate aliasing and
+eliminating the need for implicit ordering assumptions. If the OpenCL path
+is unavailable or unsupported, the implementation transparently falls back
+to the CPU path.
+
+Upstream-Status: Backport [https://github.com/opencv/opencv/commit/60858fce9e0c1a4dc3421e479b5633c140aa2191]
+Signed-off-by: jiajia Qian <jiajia.qian@nxp.com>
+---
+ modules/core/src/opencl/copyset.cl | 44 ++++++++++++++++++++++++++++
+ modules/core/src/umatrix.cpp       | 46 +++++++++++++++++++++++++++++-
+ 2 files changed, 89 insertions(+), 1 deletion(-)
+
+diff --git a/modules/core/src/opencl/copyset.cl b/modules/core/src/opencl/copyset.cl
+index beeccffed8..17aec71b5b 100644
+--- a/modules/core/src/opencl/copyset.cl
++++ b/modules/core/src/opencl/copyset.cl
+@@ -98,6 +98,50 @@ __kernel void copyToMask(__global const uchar * srcptr, int src_step, int src_of
+     }
+ }
+ 
++#elif defined(SET_DIAG)
++
++#ifdef cl_khr_fp64
++#pragma OPENCL EXTENSION cl_khr_fp64 : enable
++#endif
++
++__kernel void setDiag(__global uchar* dst, int dst_step, int dst_offset,
++                      int dst_rows, int dst_cols,
++                      __global const uchar* src, int src_step, int src_offset,
++                      int len)
++{
++    int x = get_global_id(0);
++    int y = get_global_id(1);
++
++    if (x < dst_cols && y < dst_rows)
++    {
++        int elem_size = (int)sizeof(T1) * cn;
++        int dst_idx = mad24(y, dst_step, mad24(x, elem_size, dst_offset));
++
++        if (x == y && x < len)
++        {
++#if IS_ROW_VECTOR
++            int src_idx = src_offset + x * elem_size;
++#else
++            int src_idx = mad24(x, src_step, src_offset);
++#endif
++            __global T1* dst_ptr = (__global T1*)(dst + dst_idx);
++            __global const T1* src_ptr = (__global const T1*)(src + src_idx);
++
++            #pragma unroll
++            for (int c = 0; c < cn; ++c)
++                dst_ptr[c] = src_ptr[c];
++        }
++        else
++        {
++            __global T1* dst_ptr = (__global T1*)(dst + dst_idx);
++
++            #pragma unroll
++            for (int c = 0; c < cn; ++c)
++                dst_ptr[c] = (T1)0;
++        }
++    }
++}
++
+ #else
+ 
+ #ifndef dstST
+diff --git a/modules/core/src/umatrix.cpp b/modules/core/src/umatrix.cpp
+index ceb4c064ec..f8845442d3 100644
+--- a/modules/core/src/umatrix.cpp
++++ b/modules/core/src/umatrix.cpp
+@@ -993,10 +993,54 @@ UMat UMat::reshape(int new_cn, int new_rows) const
+     return hdr;
+ }
+ 
++#ifdef HAVE_OPENCL
++namespace {
++static bool ocl_setDiag(const UMat& d, UMat& m, int len)
++{
++    int cn = d.channels();
++    int depth = d.depth();
++
++    if (depth == CV_64F && !ocl::Device::getDefault().doubleFPConfig())
++        return false;
++
++    String opts = format("-D SET_DIAG -D T1=%s -D cn=%d -D IS_ROW_VECTOR=%d",
++                         ocl::memopTypeToStr(depth),
++                         cn,
++                         (d.rows == 1) ? 1 : 0);
++
++    ocl::Kernel k("setDiag", ocl::core::copyset_oclsrc, opts);
++    if (k.empty())
++        return false;
++
++    k.args(ocl::KernelArg::WriteOnly(m),
++           ocl::KernelArg::ReadOnlyNoSize(d),
++           len);
++
++    size_t globalsize[2] = { (size_t)len, (size_t)len };
++    return k.run(2, globalsize, NULL, false);
++}
++}
++#endif
++
+ UMat UMat::diag(const UMat& d, UMatUsageFlags usageFlags)
+ {
+-    CV_Assert( d.cols == 1 || d.rows == 1 );
++    CV_INSTRUMENT_REGION();
++
++    CV_Assert(d.cols == 1 || d.rows == 1);
+     int len = d.rows + d.cols - 1;
++
++#ifdef HAVE_OPENCL
++    if (ocl::useOpenCL())
++    {
++        UMat m(len, len, d.type(), usageFlags);
++        if (ocl_setDiag(d, m, len))
++        {
++            CV_IMPL_ADD(CV_IMPL_OCL);
++            return m;
++        }
++    }
++#endif
++
+     UMat m(len, len, d.type(), Scalar(0), usageFlags);
+     UMat md = m.diag();
+     if( d.cols == 1 )
+-- 
+2.34.1
+
