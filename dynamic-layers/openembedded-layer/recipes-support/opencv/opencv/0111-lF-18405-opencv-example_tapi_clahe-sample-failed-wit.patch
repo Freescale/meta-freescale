@@ -1,0 +1,54 @@
+From 19be131ad53f835a2b569b05556bc4a12aa415c8 Mon Sep 17 00:00:00 2001
+From: Chingling Wang <chingling.wang@nxp.com>
+Date: Tue, 4 Aug 2026 15:55:15 -0700
+Subject: [PATCH] lF-18405 opencv example_tapi_clahe sample failed with
+ segmentation fault for imx8 platform
+
+gpu viv is asynchonous SVM mapping. imread() allocated memory is temp, may be deleted before mapping to
+GPU memory. need a temp Mat src to store the image data. Otheweise, may cause memory corruption leading to
+segmenation fault.
+
+Upstream-Status: Pending
+Signed-off-by: Chingling Wang <chingling.wang@nxp.com>
+---
+ samples/tapi/clahe.cpp | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/samples/tapi/clahe.cpp b/samples/tapi/clahe.cpp
+index ebef65f4e4..406102fd8d 100644
+--- a/samples/tapi/clahe.cpp
++++ b/samples/tapi/clahe.cpp
+@@ -52,6 +52,7 @@ int main(int argc, char** argv)
+     createTrackbar("Tile Size", "CLAHE", &tilesize, 32, (TrackbarCallback)TSize_Callback);
+     createTrackbar("Clip Limit", "CLAHE", &cliplimit, 20, (TrackbarCallback)Clip_Callback);
+ 
++    Mat src;
+     UMat frame, outframe;
+ 
+     int cur_clip;
+@@ -66,7 +67,8 @@ int main(int argc, char** argv)
+     if(!infile.empty())
+     {
+         infile = samples::findFile(infile);
+-        imread(infile).copyTo(frame);
++        src = imread(infile);
++        src.copyTo(frame);
+         if(frame.empty())
+         {
+             cout << "error read image: " << infile << endl;
+@@ -85,8 +87,10 @@ int main(int argc, char** argv)
+     {
+         if(capture.isOpened())
+             capture.read(frame);
+-        else
+-            imread(infile).copyTo(frame);
++        else{
++            src = imread(infile);
++            src.copyTo(frame);
++        }
+         if(frame.empty())
+         {
+             waitKey();
+-- 
+2.43.0
+
