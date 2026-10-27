@@ -15,8 +15,8 @@ SRC_URI = "${ETHOS_U_SRC};branch=${SRCBRANCH} \
 "
 
 ETHOS_U_SRC ?= "git://github.com/nxp-imx/ethos-u-driver-stack-imx.git;protocol=https"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "94658d758ef1116e574aa7cf16f96c9546fe932e"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "9d50bada85fe232af1a4a52812addaba974713cd"
 
 inherit cmake setuptools3
 
