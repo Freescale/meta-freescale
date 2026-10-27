@@ -11,7 +11,7 @@ DEPENDS += "alsa-lib"
 
 PV = "1.0+git"
 
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+SRCBRANCH = "MM_04.11.01_2608_L6.18.37"
 NXPAFE_SRC ?= "git://github.com/nxp-imx/nxp-afe.git;protocol=https"
 
 SRC_URI = "${NXPAFE_SRC};branch=${SRCBRANCH}"
