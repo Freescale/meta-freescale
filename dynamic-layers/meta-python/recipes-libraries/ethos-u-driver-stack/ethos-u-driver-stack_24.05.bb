@@ -15,10 +15,14 @@ SRC_URI = "${ETHOS_U_SRC};branch=${SRCBRANCH} \
 "
 
 ETHOS_U_SRC ?= "git://github.com/nxp-imx/ethos-u-driver-stack-imx.git;protocol=https"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "94658d758ef1116e574aa7cf16f96c9546fe932e"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "9d50bada85fe232af1a4a52812addaba974713cd"
 
 inherit cmake setuptools3
+
+# CMakeLists.txt still asks for CMake 3.0.2, and CMake 4 no longer accepts a
+# minimum below 3.5.
+EXTRA_OECMAKE += "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 SETUPTOOLS_BUILD_ARGS = "build_ext --library-dirs ${B}/driver_library"
 

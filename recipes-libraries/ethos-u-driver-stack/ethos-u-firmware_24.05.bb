@@ -13,8 +13,8 @@ LIC_FILES_CHKSUM = "\
 
 SRC_URI = "${ETHOS_U_FIRMWARE_SRC};branch=${SRCBRANCH}"
 ETHOS_U_FIRMWARE_SRC ?= "git://github.com/nxp-imx/ethos-u-firmware.git;protocol=https"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "5c14790b7ed63a52afd2ba6d917070e4c7b4265e"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "a048dc452774568f2e84b620fae849ebb975be4c"
 
 ETHOS_U_FIRMWARE = "ethosu_firmware"
 ETHOS_U_FIRMWARE:imx93-9x9-lpddr4-qsb = "ethosu_firmware_9x9"
