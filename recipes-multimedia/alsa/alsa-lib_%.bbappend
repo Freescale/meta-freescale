@@ -14,6 +14,7 @@ IMX_PATCH = "\
     file://0005-add-ak4458-conf-for-multichannel-support.patch \
     file://0006-add-conf-for-iMX-XCVR-sound-card.patch \
     file://0007-add-conf-for-imx-cs42448-sound-card.patch \
+    file://0008-add-conf-for-audmix-cs42448-in-aliases.conf.patch \
 "
 SRC_URI:append:imx-nxp-bsp = " ${IMX_PATCH}"
 

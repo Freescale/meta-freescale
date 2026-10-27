@@ -1,0 +1,135 @@
+From 90c7b9afb13f951b915c2f4eedbb45e014caae2e Mon Sep 17 00:00:00 2001
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
+Date: Fri, 17 Jul 2026 14:40:51 +0800
+Subject: [PATCH] add conf for audmix-cs42448
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream-Status: Inappropriate [i.MX specific]
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ src/conf/cards/AUDMIX-CS42448.conf | 84 ++++++++++++++++++++++++++++++
+ src/conf/cards/Makefile.am         |  1 +
+ src/conf/cards/aliases.conf        |  1 +
+ 3 files changed, 86 insertions(+)
+ create mode 100644 src/conf/cards/AUDMIX-CS42448.conf
+
+diff --git a/src/conf/cards/AUDMIX-CS42448.conf b/src/conf/cards/AUDMIX-CS42448.conf
+new file mode 100644
+index 00000000..0800ffab
+--- /dev/null
++++ b/src/conf/cards/AUDMIX-CS42448.conf
+@@ -0,0 +1,84 @@
++#
++# Configuration for the AUDMIX-CS42448 chip
++#
++
++# default with dmix & dsnoop
++AUDMIX-CS42448.pcm.default {
++        @args [ CARD ]
++        @args.CARD {
++                type string
++        }
++        type asym
++        playback.pcm {
++                type plug
++                slave.pcm {
++                        @func concat
++                        strings [ "dmix:" $CARD ",FORMAT=S32_LE" ]
++                }
++        }
++        capture.pcm {
++                type plug
++                slave.pcm {
++                        @func concat
++                        strings [ "dsnoop:" $CARD ",FORMAT=S32_LE" ]
++                }
++        }
++}
++
++<confdir:pcm/surround51.conf>
++
++AUDMIX-CS42448.pcm.surround51.0 {
++        @args [ CARD ]
++        @args.CARD {
++                type string
++        }
++        type asym
++        playback.pcm {
++                type plug
++                slave.pcm {
++                        type hw
++                        card $CARD
++                        device 0
++                }
++                slave.channels 6
++        }
++        capture.pcm {
++                type plug
++                slave.pcm {
++                        type hw
++                        card $CARD
++                        device 3
++                }
++                slave.channels 6
++        }
++}
++
++<confdir:pcm/surround71.conf>
++
++AUDMIX-CS42448.pcm.surround71.0 {
++        @args [ CARD ]
++        @args.CARD {
++                type string
++        }
++        type asym
++        playback.pcm {
++                type plug
++                slave.pcm {
++                        type hw
++                        card $CARD
++                        device 0
++                }
++                slave.channels 8
++        }
++        capture.pcm {
++                type plug
++                slave.pcm {
++                        type hw
++                        card $CARD
++                        device 3
++                }
++                slave.channels 8
++        }
++}
++
++# vim: ft=alsaconf
+diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
+index da2def3a..fbbb00db 100644
+--- a/src/conf/cards/Makefile.am
++++ b/src/conf/cards/Makefile.am
+@@ -17,6 +17,7 @@ cfg_files = aliases.conf \
+ 	Audigy2.conf \
+ 	Aureon51.conf \
+ 	Aureon71.conf \
++	AUDMIX-CS42448.conf \
+ 	CA0106.conf \
+ 	CMI8338.conf \
+ 	CMI8338-SWIEC.conf \
+diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
+index a97ed9c2..9d350f7a 100644
+--- a/src/conf/cards/aliases.conf
++++ b/src/conf/cards/aliases.conf
+@@ -63,6 +63,7 @@ imx-hdmi-soc cards.IMX-HDMI
+ ak4458-audio cards.AK4458
+ imx-audio-xcvr cards.IMX-XCVR
+ imx-cs42448 cards.CS42448
++audmix-cs42448 cards.AUDMIX-CS42448
+ 
+ <confdir:ctl/default.conf>
+ <confdir:pcm/default.conf>
+-- 
+2.34.1
+
