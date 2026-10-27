@@ -459,9 +459,10 @@ IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx91-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx943-nxp-bsp      = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
+IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
+
 PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
 PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
-IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
 
 # The System Manager firmware name selects the binary imx-boot takes from the
 # deploy folder; imx-system-manager deploys it as
@@ -492,7 +493,7 @@ MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx8ulp-nxp-bsp       = " firmware-ele-imx"
 MACHINE_FIRMWARE:append:mx943-nxp-bsp        = " firmware-ele-imx"
-MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave" 
+MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave"
 MACHINE_FIRMWARE:append:mx95-mainline-bsp    = " linux-firmware-mali-csffw-arch1012"
 MACHINE_FIRMWARE:append:mx95-nxp-bsp         = " firmware-ele-imx"
 
@@ -552,8 +553,8 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 # to a single rootfs.
 SECOEXT_FIRMWARE_NAME ?= ""
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
-SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img mx95b1runtime-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx94${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img mx95b1runtime-ahab-container.img"
 
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN                ?= ""
