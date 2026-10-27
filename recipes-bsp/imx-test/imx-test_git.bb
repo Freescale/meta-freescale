@@ -27,8 +27,8 @@ SRC_URI = "${IMXTEST_SRC};branch=${SRCBRANCH} \
            file://memtool_profile"
 
 IMXTEST_SRC ?= "git://github.com/nxp-imx/imx-test.git;protocol=https"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "e5dad74f8defd6108cac5ba21bf4ff268445d3ff"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "2fc0289de5422905d2b19ba3e94c945eea489b42"
 
 inherit kernel-arch pkgconfig use-imx-headers
 
