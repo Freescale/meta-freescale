@@ -20,6 +20,10 @@ SRCREV = "94658d758ef1116e574aa7cf16f96c9546fe932e"
 
 inherit cmake setuptools3
 
+# CMakeLists.txt still asks for CMake 3.0.2, and CMake 4 no longer accepts a
+# minimum below 3.5.
+EXTRA_OECMAKE += "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+
 SETUPTOOLS_BUILD_ARGS = "build_ext --library-dirs ${B}/driver_library"
 
 do_configure() {
