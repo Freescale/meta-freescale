@@ -73,6 +73,7 @@ BOOT_STAGING:mx91-generic-bsp = "${S}/iMX91"
 BOOT_STAGING:mx93-generic-bsp = "${S}/iMX93"
 BOOT_STAGING:mx943-generic-bsp = "${S}/iMX94"
 BOOT_STAGING:mx95-generic-bsp = "${S}/iMX95"
+BOOT_STAGING:mx952-generic-bsp = "${S}/iMX952"
 
 SOC_FAMILY = "INVALID"
 SOC_FAMILY:mx8-generic-bsp = "mx8"
@@ -83,6 +84,7 @@ SOC_FAMILY:mx91-generic-bsp = "mx91"
 SOC_FAMILY:mx93-generic-bsp = "mx93"
 SOC_FAMILY:mx943-generic-bsp = "mx943"
 SOC_FAMILY:mx95-generic-bsp = "mx95"
+SOC_FAMILY:mx952-generic-bsp = "mx952"
 
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 
@@ -106,6 +108,10 @@ MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin ?= "\
     QSPI_HEADER=./scripts/fspi_header_133"
 MKIMAGE_EXTRA_ARGS:imx95-a1-19x19-verdin ?= "\
     ${MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin} \
+"
+MKIMAGE_EXTRA_ARGS:mx952-nxp-bsp ?= "\
+    OEI=YES \
+    LPDDR_TYPE=${DDR_TYPE} \
 "
 
 UBOOT_DTB_BINARY ?= "u-boot.dtb"
@@ -231,6 +237,12 @@ compile_mx95() {
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
 }
 compile_mx95[doc] = "Stage the i.MX 93 binaries plus the OEI and System Manager firmware for the i.MX 95 boot container"
+
+compile_mx952() {
+    bbnote i.MX 952 boot binary build
+    compile_mx95
+}
+compile_mx952[doc] = "Stage the i.MX 952 boot container binaries, which are the same as for i.MX 95"
 
 do_compile() {
     # mkimage for i.MX8
@@ -420,6 +432,14 @@ deploy_mx95() {
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
 }
 deploy_mx95[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 95"
+
+deploy_mx952() {
+    deploy_mx93
+    install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
+                ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
+}
+deploy_mx952[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 952"
 
 do_deploy() {
     deploy_${SOC_FAMILY}
