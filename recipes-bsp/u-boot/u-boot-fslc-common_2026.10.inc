@@ -9,12 +9,14 @@ LIC_FILES_CHKSUM = "file://Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
 
 DEPENDS += "bison-native flex-native"
 
-PV = "2025.01+fslc+git${SRCPV}"
+PV = "2026.10+fslc+git${SRCPV}"
 
-SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH};protocol=https"
+SRC_URI = "git://github.com/Freescale/u-boot-fslc.git;branch=${SRCBRANCH};protocol=https \
+           file://0001-Add-support-for-OpenSSL-Provider-API.patch \
+"
 
-SRCREV = "aa4bc52d08c342df83e3c576e2c108d7c8816e0e"
-SRCBRANCH = "2025.01+fslc"
+SRCREV = "322904a1db22d45b9a7f4627e1093fe4f6befaba"
+SRCBRANCH = "2026.10+fslc"
 
 CVE_PRODUCT = "denx:u-boot"
 
