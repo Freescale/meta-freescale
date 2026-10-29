@@ -31,7 +31,7 @@ SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=
 LINUX_VERSION = "7.2.13"
 
 KBRANCH = "7.2.x+fslc"
-SRCREV = "3c172eede0d6b889ead876f45cc843070209208f"
+SRCREV = "83cf78561fc399ac869fc139a46ed4ae7aa74b28"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
