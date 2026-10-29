@@ -1,5 +1,9 @@
 MACHINEOVERRIDES =. "mx93:"
 
+# To avoid unexpected changes for existing users, maintain the historical
+# default of the vendor BSP, despite mainline support being available.
+IMX_DEFAULT_BSP ?= "nxp"
+
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8-2a/tune-cortexa55.inc
 
@@ -49,5 +53,3 @@ IMX_BOOT_SEEK = "32"
 
 # We have to disable SERIAL_CONSOLE due to auto-serial-console
 SERIAL_CONSOLES = "115200;ttyLP0"
-
-IMX_DEFAULT_BSP = "nxp"
