@@ -106,6 +106,7 @@ UBOOT_PROVIDES_BOOT_CONTAINER = "0"
 # The boot container should be used only if we're not using u-boot-imx as
 # IMX_DEFAULT_BOOTLOADER.
 UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "${@oe.utils.ifelse(d.getVar('IMX_DEFAULT_BOOTLOADER') == 'u-boot-imx', '0', '1')}"
+UBOOT_PROVIDES_BOOT_CONTAINER:mx93-generic-bsp = "${@oe.utils.ifelse(d.getVar('IMX_DEFAULT_BOOTLOADER') == 'u-boot-imx', '0', '1')}"
 
 # i.MX95 mainline U-Boot uses binman to assemble the boot container.
 UBOOT_PROVIDES_BOOT_CONTAINER:mx95-mainline-bsp = "1"
