@@ -1,0 +1,39 @@
+From 73737cbdf6fd3a74b8798c4b46e436cddf258bdb Mon Sep 17 00:00:00 2001
+From: "Rodrigo M. Duarte" <rodrigo.duarte@ossystems.com.br>
+Date: Thu, 29 Oct 2026 14:41:05 -0300
+Subject: [PATCH] mlinux: moal_sta_cfg80211: fix probe_client build on 7.2
+ kernels
+
+The driver assumes the probe_client cfg80211 op was renamed to
+probe_peer in Linux 7.2, but the rename landed in v7.3-rc1; v7.2
+still has probe_client. Building against a mainline-based 7.2 kernel
+fails with:
+
+  moal_sta_cfg80211.c: error: 'struct cfg80211_ops' has no member
+  named 'probe_peer'
+
+Move the version check to 7.3.0, so 7.2 kernels use probe_client.
+Older kernels are not affected.
+
+Upstream-Status: Pending
+Signed-off-by: Rodrigo M. Duarte <rodrigo.duarte@ossystems.com.br>
+---
+ mlinux/moal_sta_cfg80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mlinux/moal_sta_cfg80211.c b/mlinux/moal_sta_cfg80211.c
+index 2605630..e246aeb 100644
+--- a/mlinux/moal_sta_cfg80211.c
++++ b/mlinux/moal_sta_cfg80211.c
+@@ -12247,7 +12247,7 @@ mlan_status woal_register_cfg80211(moal_private *priv)
+ 		woal_cfg80211_ops.disconnect = NULL;
+ 		woal_cfg80211_ops.connect = NULL;
+ #ifdef UAP_SUPPORT
+-#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
+ 		woal_cfg80211_ops.probe_peer = woal_cfg80211_probe_client;
+ #else
+ 		woal_cfg80211_ops.probe_client = woal_cfg80211_probe_client;
+-- 
+2.54.0
+
