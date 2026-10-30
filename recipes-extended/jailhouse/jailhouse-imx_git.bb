@@ -71,7 +71,12 @@ do_compile:prepend() {
 }
 
 do_install:append() {
-    oe_runmake DESTDIR=${D} install
+    # pyjailhouse is already installed by setuptools3_do_install. With
+    # python3-pip-native in the sysroot the Makefile would also run
+    # "pip install .", which fetches build dependencies from the network.
+    # PIP=true keeps PYTHON_PIP_USABLE set, so the Python helpers are still
+    # installed, and turns that pip call into a no-op.
+    oe_runmake DESTDIR=${D} PIP=true install
 
     install -d ${D}${CELL_DIR}
     install ${B}/configs/${JH_ARCH}/*.cell ${D}${CELL_DIR}/
