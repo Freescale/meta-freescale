@@ -7,6 +7,7 @@ DEPENDS += "\
     bc-native \
     bison-native \
     dtc-native \
+    efitools-native \
     flex-native \
     gnutls-native \
     xxd-native \
@@ -14,7 +15,6 @@ DEPENDS += "\
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH} \
            file://0001-Add-support-for-OpenSSL-Provider-API.patch \
-           file://disable-efi-capsule-update.cfg \
 "
 UBOOT_SRC ?= "git://github.com/nxp-imx/uboot-imx.git;protocol=https"
 SRCBRANCH = "lf_v2026.04"
