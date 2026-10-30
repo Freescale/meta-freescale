@@ -25,12 +25,12 @@ PROVIDES = "jailhouse"
 
 PV = "2023.03+git${SRCPV}"
 
-SRCBRANCH = "lf-6.18.20_2.0.0"
+SRCBRANCH = "lf-6.18.37_2.1.0"
 IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
 SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
            file://arm-arm64-Makefile-Remove-march-option-from-Makefile.patch \
            "
-SRCREV = "8d6d397f7f88f4bd0d9f99933a13163266d09099"
+SRCREV = "8ce492bb2c69e486b8afb655f87d8b4708c79d89"
 
 inherit module bash-completion deploy setuptools3
 
@@ -71,7 +71,12 @@ do_compile:prepend() {
 }
 
 do_install:append() {
-    oe_runmake DESTDIR=${D} install
+    # pyjailhouse is already installed by setuptools3_do_install. With
+    # python3-pip-native in the sysroot the Makefile would also run
+    # "pip install .", which fetches build dependencies from the network.
+    # PIP=true keeps PYTHON_PIP_USABLE set, so the Python helpers are still
+    # installed, and turns that pip call into a no-op.
+    oe_runmake DESTDIR=${D} PIP=true install
 
     install -d ${D}${CELL_DIR}
     install ${B}/configs/${JH_ARCH}/*.cell ${D}${CELL_DIR}/
