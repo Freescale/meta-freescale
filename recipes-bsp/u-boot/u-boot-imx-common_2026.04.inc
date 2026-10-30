@@ -7,13 +7,13 @@ DEPENDS += "\
     bc-native \
     bison-native \
     dtc-native \
+    efitools-native \
     flex-native \
     gnutls-native \
     xxd-native \
 "
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH} \
-           file://disable-efi-capsule-update.cfg \
 "
 UBOOT_SRC ?= "git://github.com/nxp-imx/uboot-imx.git;protocol=https"
 SRCBRANCH = "lf_v2026.04"
