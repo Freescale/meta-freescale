@@ -14,9 +14,6 @@ SRC_URI:append:imx-nxp-bsp = " \
     file://0001-systemd-allow-pipewire-user-services-for-root.patch \
     file://0001-YOCIMX-9095-pipewiresrc-set-rank-to-secondary.patch \
 "
-SRC_URI:append:mx95-nxp-bsp = " \
-    file://0003-pipewiresrc-update-per-plane-stride-and-offset-accor.patch \
-"
 
 # Dispatch line consumes the machine-specialized helper var below.
 # No-op off-target: the helper it consumes expands empty.
