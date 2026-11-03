@@ -4,7 +4,7 @@
 # opencv_4.13.0.imx.inc.
 
 ########## meta-openembedded copy ###########
-# Upstream hash: 9b77eae6988e98adbec5323d2491afc6b327c91a
+# Upstream hash: bd832a8962b790fc562bfd973c069e836a3f5d45
 
 SUMMARY = "Opencv : The Open Computer Vision Library"
 DESCRIPTION = "A computer vision and machine learning library that gives applications a common infrastructure for image processing, video analysis, camera calibration, object detection and machine learning."
@@ -138,7 +138,7 @@ PACKAGECONFIG[tests] = "-DBUILD_TESTS=ON -DINSTALL_TESTS=ON,-DBUILD_TESTS=OFF,,"
 PACKAGECONFIG[text] = "-DBUILD_opencv_text=ON,-DBUILD_opencv_text=OFF,tesseract,"
 PACKAGECONFIG[tiff] = "-DWITH_TIFF=ON,-DWITH_TIFF=OFF,tiff,"
 PACKAGECONFIG[v4l] = "-DWITH_V4L=ON,-DWITH_V4L=OFF,v4l-utils,"
-PACKAGECONFIG[fastcv] = "-DWITH_FASTCV=ON ,-DWITH_FASTCV=OFF,qcom-fastcv-binaries,"
+PACKAGECONFIG[fastcv] = "-DWITH_FASTCV=ON ,-DWITH_FASTCV=OFF,"
 
 inherit pkgconfig cmake setuptools3-base python3native
 
@@ -186,7 +186,7 @@ python populate_packages:prepend () {
     fastcv_pkgs = ["libopencv-core", "libopencv-fastcv", "libopencv-imgproc"]
     if bb.utils.contains('PACKAGECONFIG', 'fastcv', True, False, d):
         for pkg in fastcv_pkgs:
-            d.appendVar('RDEPENDS:' + pkg, " qcom-fastcv-binaries")
+            d.appendVar('RRECOMMENDS:' + pkg, " qcom-fastcv-binaries")
 }
 
 PACKAGES_DYNAMIC += "^libopencv-.*"
