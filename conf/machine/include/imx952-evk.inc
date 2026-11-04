@@ -34,6 +34,8 @@ OEI_BOARD  ?= "mx95lp5"
 
 DDR_TYPE   ?= "lpddr5"
 
+SYSTEM_MANAGER_FIRMWARE_BASENAME = "m33_image"
+
 IMXBOOT_VARIANTS = "alt jailhouse netc rpmsg"
 
 # Multiple system manager configs by IMXBOOT_VARIANT
