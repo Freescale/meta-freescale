@@ -279,6 +279,8 @@
             "mx91-nxp-bsp",
             "mx93-generic-bsp",
             "mx93-nxp-bsp",
+            "mx937-generic-bsp",
+            "mx937-nxp-bsp",
             "mx943-generic-bsp",
             "mx943-nxp-bsp",
             "mx94-generic-bsp",
