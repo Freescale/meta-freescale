@@ -18,6 +18,7 @@ DEPENDS = "\
     gstreamer1.0-plugins-base \
     imx-codec \
     imx-parser \
+    libdrm \
     libinput \
 "
 DEPENDS:append:mx6-nxp-bsp = " imx-lib"
@@ -26,7 +27,6 @@ DEPENDS:append:mx8ulp-nxp-bsp = " imx-lib"
 DEPENDS:append:mx93-nxp-bsp = " imx-lib"
 DEPENDS:append:mx943-nxp-bsp = " imx-lib"
 DEPENDS:append:imxvpu = " imx-vpuwrap"
-DEPENDS:append:imxfbdev:imxgpu = " libdrm"
 DEPENDS_IMXGPU = ""
 DEPENDS_IMXGPU:imxgpu = "${DEPENDS_IMX_OPENCL_CONVERTER}"
 DEPENDS_IMX_OPENCL_CONVERTER = "imx-opencl-converter"
