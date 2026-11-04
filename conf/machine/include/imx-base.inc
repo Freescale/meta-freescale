@@ -191,6 +191,7 @@ IMX_SOC_REV:mx8ulp-generic-bsp ??= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
                                                            'A2', d)}"
 IMX_SOC_REV:mx93-generic-bsp   ??= "A1"
+IMX_SOC_REV:mx937-generic-bsp  ??= "A1"
 IMX_SOC_REV:mx943-generic-bsp  ??= "A1"
 IMX_SOC_REV:mx95-generic-bsp   ??= "B0"
 IMX_SOC_REV:mx952-generic-bsp  ??= "A1"
@@ -238,6 +239,7 @@ MACHINEOVERRIDES_EXTENDER:mx93:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdr
 MACHINEOVERRIDES_EXTENDER:mx943:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx94-generic-bsp:mx94-nxp-bsp:mx943-generic-bsp:mx943-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx95:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx952:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp:mx952-generic-bsp:mx952-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx937:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp:mx937-generic-bsp:mx937-nxp-bsp"
 
 #######
 ### Mainline BSP specific overrides
@@ -316,6 +318,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8ulp \
     mx91 \
     mx93 \
+    mx937 \
     mx943 \
     mx95 \
     mx952 \
@@ -348,6 +351,7 @@ MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp  = "-mx8xl"
 MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp  = "-mx8ulp"
 MACHINE_SOCARCH_SUFFIX:mx91-nxp-bsp    = "-mx91"
 MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp    = "-mx93"
+MACHINE_SOCARCH_SUFFIX:mx937-nxp-bsp   = "-mx937"
 MACHINE_SOCARCH_SUFFIX:mx943-nxp-bsp   = "-mx943"
 MACHINE_SOCARCH_SUFFIX:mx95-nxp-bsp    = "-mx95"
 MACHINE_SOCARCH_SUFFIX:mx952-nxp-bsp   = "-mx952"
@@ -498,6 +502,7 @@ MACHINE_FIRMWARE:append:mx8mq-generic-bsp    = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx8ulp-nxp-bsp       = " firmware-ele-imx"
+MACHINE_FIRMWARE:append:mx937-nxp-bsp        = " firmware-imx-vpu-coda980 firmware-imx-vpu-wave511"
 MACHINE_FIRMWARE:append:mx943-nxp-bsp        = " firmware-ele-imx"
 MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave"
 MACHINE_FIRMWARE:append:mx95-mainline-bsp    = " linux-firmware-mali-csffw-arch1012"
@@ -506,6 +511,7 @@ MACHINE_FIRMWARE:append:mx952-nxp-bsp        = " firmware-imx-vpu-coda980 firmwa
 # The i.MX 95 derivatives select the i.MX 95 overrides, but have Wave511 and
 # CODA980 VPUs instead of the i.MX 95 Wave633C.
 MACHINE_FIRMWARE:remove:mx952-generic-bsp    = "firmware-imx-vpu-wave"
+MACHINE_FIRMWARE:remove:mx937-generic-bsp    = "firmware-imx-vpu-wave"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
@@ -563,6 +569,7 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 # to a single rootfs.
 SECOEXT_FIRMWARE_NAME ?= ""
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx937-generic-bsp  ?= "mx937${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx94${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img mx95b1runtime-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx952-generic-bsp  ?= "mx952a0runtime-ahab-container.img mx952a1runtime-ahab-container.img"
