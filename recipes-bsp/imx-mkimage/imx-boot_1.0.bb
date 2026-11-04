@@ -32,7 +32,7 @@ CRRM_DEPLOY_DEPENDS ?= "\
     ${CRRM_INITRAMFS}"
 CRRM_INITRAMFS ??= "imx-image-crrm-initramfs"
 
-# The imx-mkimage flash_all target of i.MX 952 packs an M7 image,
+# The imx-mkimage flash_all targets of i.MX 952 and i.MX 937 pack an M7 image,
 # m7_image.bin, taken from the imx-m7-demos firmware the machine names in
 # M4_DEFAULT_IMAGE.
 M4_DEFAULT_IMAGE ?= ""
@@ -77,6 +77,7 @@ BOOT_STAGING:mx8m-generic-bsp = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
 BOOT_STAGING:mx91-generic-bsp = "${S}/iMX91"
 BOOT_STAGING:mx93-generic-bsp = "${S}/iMX93"
+BOOT_STAGING:mx937-generic-bsp = "${S}/iMX937"
 BOOT_STAGING:mx943-generic-bsp = "${S}/iMX94"
 BOOT_STAGING:mx95-generic-bsp = "${S}/iMX95"
 BOOT_STAGING:mx952-generic-bsp = "${S}/iMX952"
