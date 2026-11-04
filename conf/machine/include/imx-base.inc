@@ -558,7 +558,7 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 SECOEXT_FIRMWARE_NAME ?= ""
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx94${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
-SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img mx95b1runtime-ahab-container.img"
 SECOEXT_FIRMWARE_NAME:mx952-generic-bsp  ?= "mx952a0runtime-ahab-container.img mx952a1runtime-ahab-container.img"
 
 # GStreamer 1.0 plugins
