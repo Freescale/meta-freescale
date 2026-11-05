@@ -473,12 +473,9 @@ deploy_mx95() {
 deploy_mx95[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 95"
 
 deploy_mx952() {
-    deploy_mx93
-    install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
-                ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
+    deploy_mx95
 }
-deploy_mx952[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 952"
+deploy_mx952[doc] = "Deploy the i.MX 952 boot tools, which are the same as for i.MX 95"
 
 do_deploy() {
     deploy_${SOC_FAMILY}
