@@ -227,6 +227,15 @@ compile_mx93() {
 }
 compile_mx93[doc] = "Stage the DDR, SECO/ELE, ATF and U-Boot binaries for the i.MX 93 boot container"
 
+# The i.MX 943 flash_all target packs the M33S, M70 and M71 images the
+# machine names in M33_IMAGE, M70_IMAGE and M71_IMAGE, which
+# imx-mcore-demos provides. Each image is optional: set its variable to
+# an empty value to leave it out, together with the imx-mcore-demos
+# dependency once all three are empty.
+IMX_MCORE_DEMOS_DEPENDS = ""
+IMX_MCORE_DEMOS_DEPENDS:mx943-nxp-bsp = "${@'imx-mcore-demos:do_deploy' if (d.getVar('M33_IMAGE') or d.getVar('M70_IMAGE') or d.getVar('M71_IMAGE')) else ''}"
+do_compile[depends] += "${IMX_MCORE_DEMOS_DEPENDS}"
+
 compile_mx943() {
     bbnote i.MX 943 boot binary build
     compile_mx93
@@ -234,8 +243,17 @@ compile_mx943() {
     cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
+    if [ -n "${M33_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE} ${BOOT_STAGING}/m33s_image.bin
+    fi
+    if [ -n "${M70_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE} ${BOOT_STAGING}/m70_image.bin
+    fi
+    if [ -n "${M71_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE} ${BOOT_STAGING}/m71_image.bin
+    fi
 }
-compile_mx943[doc] = "Stage the i.MX 93 binaries plus the OEI and System Manager firmware for the i.MX 943 boot container"
+compile_mx943[doc] = "Stage the i.MX 93 binaries plus the OEI, System Manager, M33S, M70 and M71 firmware for the i.MX 943 boot container"
 
 compile_mx95() {
     bbnote i.MX 95 boot binary build
@@ -434,8 +452,17 @@ deploy_mx943() {
     install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
+    if [ -n "${M33_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+    if [ -n "${M70_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+    if [ -n "${M71_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx943[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 943"
+deploy_mx943[doc] = "Deploy the i.MX 93 boot tools plus the OEI, System Manager, M33S, M70 and M71 firmware for i.MX 943"
 
 deploy_mx95() {
     deploy_mx93
