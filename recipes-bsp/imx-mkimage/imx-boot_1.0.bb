@@ -32,6 +32,12 @@ CRRM_DEPLOY_DEPENDS ?= "\
     ${CRRM_INITRAMFS}"
 CRRM_INITRAMFS ??= "imx-image-crrm-initramfs"
 
+# The imx-mkimage flash_all target of i.MX 952 packs an M7 image,
+# m7_image.bin, taken from the imx-m7-demos firmware the machine names in
+# M4_DEFAULT_IMAGE.
+M4_DEFAULT_IMAGE ?= ""
+do_compile[depends] += "${@'imx-m7-demos:do_deploy' if d.getVar('M4_DEFAULT_IMAGE') else ''}"
+
 inherit use-imx-security-controller-firmware uboot-config
 inherit deploy uuu_bootloader_tag
 
@@ -262,8 +268,11 @@ compile_mx95() {
     cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE} ${BOOT_STAGING}/m7_image.bin
+    fi
 }
-compile_mx95[doc] = "Stage the i.MX 93 binaries plus the OEI and System Manager firmware for the i.MX 95 boot container"
+compile_mx95[doc] = "Stage the i.MX 93 binaries plus the OEI, System Manager and optional M7 firmware for the i.MX 95 boot container"
 
 compile_mx952() {
     bbnote i.MX 952 boot binary build
@@ -469,8 +478,11 @@ deploy_mx95() {
     install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx95[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 95"
+deploy_mx95[doc] = "Deploy the i.MX 93 boot tools plus the OEI, System Manager and optional M7 firmware for i.MX 95"
 
 deploy_mx952() {
     deploy_mx95
