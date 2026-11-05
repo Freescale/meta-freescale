@@ -48,12 +48,12 @@ IMXBOOT_VARIANTS = "alt jailhouse rpmsg netc netc_reset netc_standalone"
 #| M70 | imx943evk_cm7_core0_TCM_power_mode_switch.bin | imx943evk_cm7_core0_TCM_power_mode_switch.bin | imx943evk_cm7_core0_TCM_power_mode_switch.bin | imx943evk_cm7_core0_TCM_power_mode_switch.bin |
 #| M71 | imx943evk_cm7_core1_TCM_power_mode_switch.bin | imx943evk_cm7_core1_TCM_power_mode_switch.bin | imx943evk_cm7_core1_TCM_all_reset_but_netc_trigger.bin | imx943evk_cm7_core1_TCM_power_mode_switch.bin |
 
-M33_IMAGE = "${@bb.utils.contains('IMXBOOT_VARIANT', 'netc',            'imx943evk_cm33_core1_TCM_netc_share.bin', \
+M33_IMAGE ?= "${@bb.utils.contains('IMXBOOT_VARIANT', 'netc',            'imx943evk_cm33_core1_TCM_netc_share.bin', \
                 bb.utils.contains('IMXBOOT_VARIANT', 'netc_reset',      'imx943evk_cm33_core1_TCM_all_reset_but_netc_switch.bin', \
                 bb.utils.contains('IMXBOOT_VARIANT', 'netc_standalone', 'imx943evk_cm33_core1_TCM_netc_switch_standalone.bin', \
                                                                         'imx943evk_cm33_core1_TCM_power_mode_switch.bin', d), d), d)}"
-M70_IMAGE = "imx943evk_cm7_core0_TCM_power_mode_switch.bin"
-M71_IMAGE = "${@bb.utils.contains('IMXBOOT_VARIANT', 'netc_reset', 'imx943evk_cm7_core1_TCM_all_reset_but_netc_trigger.bin', \
+M70_IMAGE ?= "imx943evk_cm7_core0_TCM_power_mode_switch.bin"
+M71_IMAGE ?= "${@bb.utils.contains('IMXBOOT_VARIANT', 'netc_reset', 'imx943evk_cm7_core1_TCM_all_reset_but_netc_trigger.bin', \
                                                                    'imx943evk_cm7_core1_TCM_power_mode_switch.bin', d)}"
 
 # Multiple system manager configs by IMXBOOT_VARIANT
