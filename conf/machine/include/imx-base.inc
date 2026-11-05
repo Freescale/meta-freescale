@@ -503,6 +503,9 @@ MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave"
 MACHINE_FIRMWARE:append:mx95-mainline-bsp    = " linux-firmware-mali-csffw-arch1012"
 MACHINE_FIRMWARE:append:mx95-nxp-bsp         = " firmware-ele-imx"
 MACHINE_FIRMWARE:append:mx952-nxp-bsp        = " firmware-imx-vpu-coda980 firmware-imx-vpu-wave511 firmware-imx-ld"
+# The i.MX 95 derivatives select the i.MX 95 overrides, but have Wave511 and
+# CODA980 VPUs instead of the i.MX 95 Wave633C.
+MACHINE_FIRMWARE:remove:mx952-generic-bsp    = "firmware-imx-vpu-wave"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
