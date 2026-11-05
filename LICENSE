@@ -58,6 +58,7 @@ This file lists all licenses used by recipes in the meta-freescale layer.
 ./recipes-core/udev/udev-rules-imx_1.0.bb: LICENSE = "MIT"
 ./recipes-core/udev/udev-rules-qoriq_1.0.bb: LICENSE = "MIT"
 ./recipes-devtools/devregs/devregs_git.bb: LICENSE = "GPL-2.0-only"
+./recipes-devtools/efitools/efitools-native_1.9.2.bb: LICENSE = "GPL-2.0-only"
 ./recipes-devtools/half/half_2.1.0.bb: LICENSE = "MIT"
 ./recipes-devtools/imx-usb-loader/imx-usb-loader_git.bb: LICENSE = "LGPL-2.1-only"
 ./recipes-devtools/qemu/qemu-qoriq.inc: LICENSE = "GPL-2.0-only AND LGPL-2.1-only"
