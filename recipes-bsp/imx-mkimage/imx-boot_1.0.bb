@@ -182,6 +182,12 @@ compile_mx8x() {
 }
 compile_mx8x[doc] = "Stage the SECO, SCFW, ATF and U-Boot binaries for the i.MX 8QX boot container"
 
+# The i.MX 8ULP *_m33 targets pack the M33 image the machine names in
+# M33_IMAGE, which imx-m33-demos provides.
+IMX_M33_DEMOS_DEPENDS = ""
+IMX_M33_DEMOS_DEPENDS:mx8ulp-nxp-bsp = "imx-m33-demos:do_deploy"
+do_compile[depends] += "${IMX_M33_DEMOS_DEPENDS}"
+
 compile_mx8ulp() {
     bbnote 8ULP boot binary build
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
@@ -192,8 +198,11 @@ compile_mx8ulp() {
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
+    if [ -n "${IMX_M33_DEMOS_DEPENDS}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE}      ${BOOT_STAGING}/m33_image.bin
+    fi
 }
-compile_mx8ulp[doc] = "Stage the SECO, ATF, uPower and U-Boot binaries for the i.MX 8ULP boot container"
+compile_mx8ulp[doc] = "Stage the SECO, ATF, uPower, U-Boot and M33 binaries for the i.MX 8ULP boot container"
 
 compile_mx91() {
     bbnote i.MX 91 boot binary build
@@ -393,8 +402,11 @@ deploy_mx8ulp() {
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
+    if [ -n "${IMX_M33_DEMOS_DEPENDS}" ]; then
+        install -m 0644 ${BOOT_STAGING}/m33_image.bin        ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx8ulp[doc] = "Deploy the i.MX 8ULP SECO firmware, mkimage tool and SPL to the boot tools folder"
+deploy_mx8ulp[doc] = "Deploy the i.MX 8ULP SECO firmware, mkimage tool, SPL and M33 image to the boot tools folder"
 
 deploy_mx91() {
     deploy_mx93
