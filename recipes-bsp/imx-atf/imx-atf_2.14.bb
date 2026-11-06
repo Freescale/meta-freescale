@@ -24,7 +24,10 @@ DEPENDS:append:toolchain-clang = " clang-cross-${TARGET_ARCH}"
 
 PV .= "+git${SRCPV}"
 
-SRC_URI = "${ATF_SRC};branch=${SRCBRANCH}"
+SRC_URI = "\
+    ${ATF_SRC};branch=${SRCBRANCH} \
+    file://0001-feat-imx952-support-full-system-power-control-option.patch \
+"
 ATF_SRC ?= "git://github.com/nxp-imx/imx-atf.git;protocol=https"
 SRCBRANCH = "lf_v2.14"
 SRCREV = "af9eb2c1748ee3abc0ead7dc76e462f50c573036"
