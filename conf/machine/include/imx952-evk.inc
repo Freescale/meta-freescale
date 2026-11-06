@@ -61,8 +61,8 @@ IMXBOOT_TARGETS = " \
                                                    '${IMXBOOT_TARGETS_SD}', d), d), d)} \
 "
 
-M4_DEFAULT_IMAGE_MX952 = "${@bb.utils.contains('IMXBOOT_VARIANT', 'netc', 'imx952evk_m7_TCM_netc_share.bin', \
-                                                                          'imx952evk_m7_TCM_power_mode_switch.bin', d)}"
+M4_DEFAULT_IMAGE = "${@bb.utils.contains('IMXBOOT_VARIANT', 'netc', 'imx952evk_m7_TCM_netc_share.bin', \
+                                                                      'imx952evk_m7_TCM_power_mode_switch.bin', d)}"
 
 IMX_BOOT_SOC_TARGET = "iMX952"
 IMX_BOOT_SEEK = "32"
