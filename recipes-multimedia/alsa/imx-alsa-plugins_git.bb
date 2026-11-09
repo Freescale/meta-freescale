@@ -28,6 +28,7 @@ CFLAGS:append = " -I${STAGING_INCDIR_IMX}"
 PACKAGECONFIG ??= "${PACKAGECONFIG_SWPDM}"
 PACKAGECONFIG_SWPDM = ""
 PACKAGECONFIG_SWPDM:mx8-nxp-bsp = "swpdm"
+PACKAGECONFIG_SWPDM:mx9-nxp-bsp = "swpdm"
 
 PACKAGECONFIG[swpdm] = "--enable-swpdm,--disable-swpdm,imx-sw-pdm"
 
