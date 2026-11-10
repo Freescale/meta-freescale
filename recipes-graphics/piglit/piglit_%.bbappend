@@ -5,12 +5,11 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 # GBM needs virtual/libgbm; PIGLIT_USE_GBM is set below.
 DEPENDS:append:imx-generic-bsp = " ${@oe.utils.conditional('PIGLIT_USE_GBM', '1', 'virtual/libgbm', '', d)}"
 
-# Both fix upstream cl tests generally, but applied unscoped they changed the
-# recipe on machines this layer does not own; the cl tests are only built
-# here on i.MX (opencl, below). Both are filed upstream.
+# It fixes the upstream cl tests generally, but applied unscoped it changed
+# the recipe on machines this layer does not own; the cl tests are only built
+# here on i.MX (opencl, below). It is filed upstream.
 SRC_URI:append:imx-generic-bsp = " \
     file://0001-tests-Fix-cl-test-Include-Directories-error-Error-0-.patch \
-    file://0002-cl-Add-mutually-exclusive-memory-flags-for-CL_MEM_KE.patch \
 "
 
 # Dispatch lines consume machine-specialized helper vars below. Scoped to
