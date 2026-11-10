@@ -5,11 +5,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 # GBM needs virtual/libgbm; PIGLIT_USE_GBM is set below.
 DEPENDS:append:imx-generic-bsp = " ${@oe.utils.conditional('PIGLIT_USE_GBM', '1', 'virtual/libgbm', '', d)}"
 
-# It fixes the upstream cl tests generally, but applied unscoped it changed
+# These fix upstream cl tests generally, but applied unscoped they changed
 # the recipe on machines this layer does not own; the cl tests are only built
-# here on i.MX (opencl, below). It is filed upstream.
+# here on i.MX (opencl, below).
 SRC_URI:append:imx-generic-bsp = " \
     file://0001-tests-Fix-cl-test-Include-Directories-error-Error-0-.patch \
+    file://0002-cl-store-hi16-generic-fix-incompatible-pointer-type.patch \
 "
 
 # Dispatch lines consume machine-specialized helper vars below. Scoped to
