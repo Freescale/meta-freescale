@@ -10,6 +10,7 @@ LIC_FILES_CHKSUM = "file://readme.md;beginline=19;endline=20;md5=ab03b667ee630c1
 
 SRC_URI = "\
     git://github.com/g-truc/gli;protocol=https;branch=master \
+    file://0001-CMakeLists.txt-Update-cmake_minimum_required-to-3.5.patch \
 "
 SRCREV = "0c171ee87fcfe35a7e0e0445adef06f92e0b6a91"
 

@@ -8,7 +8,10 @@ PR = "r0"
 
 DEPENDS = "jpeg libpng tiff xz"
 
-SRC_URI = "http://sourceforge.net/projects/openil/files/DevIL/${PV}/DevIL-${PV}.zip"
+SRC_URI = "\
+    http://sourceforge.net/projects/openil/files/DevIL/${PV}/DevIL-${PV}.zip \
+    file://0001-cmake-Update-cmake_minimum_required-to-3.5.patch \
+"
 SRC_URI[sha256sum] = "451337f392c65bfb83698a781370534dc63d7bafca21e9b37178df0518f7e895"
 
 S = "${UNPACKDIR}/DevIL/DevIL"
