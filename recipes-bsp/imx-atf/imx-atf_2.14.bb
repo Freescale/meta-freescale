@@ -24,12 +24,19 @@ DEPENDS:append:toolchain-clang = " clang-cross-${TARGET_ARCH}"
 
 PV .= "+git${SRCPV}"
 
-SRC_URI = "${ATF_SRC};branch=${SRCBRANCH} \
-           file://0001-scmi-imx9-Remove-unused-tmp-pointer.patch \
+SRC_URI = "\
+    ${ATF_SRC};branch=${SRCBRANCH} \
+    file://0001-feat-imx952-support-full-system-power-control-option.patch \
 "
 ATF_SRC ?= "git://github.com/nxp-imx/imx-atf.git;protocol=https"
 SRCBRANCH = "lf_v2.14"
-SRCREV = "0779f89a5475a03193f7707f3bbb50cec11707c0"
+SRCREV = "af9eb2c1748ee3abc0ead7dc76e462f50c573036"
+
+# Build out of tree and from scratch: the TF-A Makefile does not track
+# build options such as SPD, so an incremental build after a
+# PACKAGECONFIG change would relink nothing and deploy a stale bl31.bin.
+B = "${WORKDIR}/build"
+do_compile[cleandirs] = "${B}"
 
 inherit deploy
 
@@ -54,6 +61,7 @@ ATF_SYS_PWR_FULL_CTRL ?= "0"
 EXTRA_OEMAKE += "\
     CROSS_COMPILE=${TARGET_PREFIX} \
     PLAT=${ATF_PLATFORM} \
+    BUILD_BASE=${B} \
     ${PACKAGECONFIG_CONFARGS} \
     bl31 \
 "
@@ -83,6 +91,11 @@ EXTRA_OEMAKE += 'SYS_PWR_FULL_CTRL=${ATF_SYS_PWR_FULL_CTRL}'
 
 do_configure[noexec] = "1"
 
+# The Makefile is in ${S}, while the build output goes to ${B}.
+do_compile() {
+    oe_runmake -C ${S}
+}
+
 do_install[noexec] = "1"
 
 # The appends join without a leading space to build the contiguous bl31
@@ -99,7 +112,7 @@ addtask deploy after do_compile
 do_deploy() {
     OUTPUT_FOLDER="${@bb.utils.contains('PACKAGECONFIG', 'debug', 'debug', 'release', d)}"
     for deploydir in ${DEPLOYDIR} ${DEPLOYDIR}/imx-boot-tools; do
-        install -Dm 0644 ${S}/build/${ATF_PLATFORM}/${OUTPUT_FOLDER}/bl31.bin $deploydir/${ANNOTATED_NAME}
+        install -Dm 0644 ${B}/${ATF_PLATFORM}/${OUTPUT_FOLDER}/bl31.bin $deploydir/${ANNOTATED_NAME}
     done
     ln -sf ${ANNOTATED_NAME} ${DEPLOYDIR}/bl31.bin
 }

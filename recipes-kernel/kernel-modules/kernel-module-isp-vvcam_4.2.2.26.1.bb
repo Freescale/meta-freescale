@@ -11,8 +11,8 @@ SRC_URI = "${ISP_KERNEL_SRC};branch=${SRCBRANCH} \
            file://0001-video-add-v4l2-fh-compat-for-pre-6.18-kernels.patch \
 "
 ISP_KERNEL_SRC ?= "git://github.com/nxp-imx/isp-vvcam.git;protocol=https"
-SRCBRANCH = "lf-6.18.y_1.0.0"
-SRCREV = "5484bc99a258562c3893808736dd67af22ac355e"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "e6453233e67f5d2f180d6ec277158dd54fa67a25"
 
 S = "${UNPACKDIR}/${BP}/vvcam/v4l2"
 

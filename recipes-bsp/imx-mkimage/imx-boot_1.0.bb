@@ -32,6 +32,12 @@ CRRM_DEPLOY_DEPENDS ?= "\
     ${CRRM_INITRAMFS}"
 CRRM_INITRAMFS ??= "imx-image-crrm-initramfs"
 
+# The imx-mkimage flash_all targets of i.MX 952 and i.MX 937 pack an M7 image,
+# m7_image.bin, taken from the imx-m7-demos firmware the machine names in
+# M4_DEFAULT_IMAGE.
+M4_DEFAULT_IMAGE ?= ""
+do_compile[depends] += "${@'imx-m7-demos:do_deploy' if d.getVar('M4_DEFAULT_IMAGE') else ''}"
+
 inherit use-imx-security-controller-firmware uboot-config
 inherit deploy uuu_bootloader_tag
 
@@ -71,8 +77,10 @@ BOOT_STAGING:mx8m-generic-bsp = "${S}/iMX8M"
 BOOT_STAGING:mx8dx-generic-bsp = "${S}/iMX8QX"
 BOOT_STAGING:mx91-generic-bsp = "${S}/iMX91"
 BOOT_STAGING:mx93-generic-bsp = "${S}/iMX93"
+BOOT_STAGING:mx937-generic-bsp = "${S}/iMX937"
 BOOT_STAGING:mx943-generic-bsp = "${S}/iMX94"
 BOOT_STAGING:mx95-generic-bsp = "${S}/iMX95"
+BOOT_STAGING:mx952-generic-bsp = "${S}/iMX952"
 
 SOC_FAMILY = "INVALID"
 SOC_FAMILY:mx8-generic-bsp = "mx8"
@@ -83,6 +91,7 @@ SOC_FAMILY:mx91-generic-bsp = "mx91"
 SOC_FAMILY:mx93-generic-bsp = "mx93"
 SOC_FAMILY:mx943-generic-bsp = "mx943"
 SOC_FAMILY:mx95-generic-bsp = "mx95"
+SOC_FAMILY:mx952-generic-bsp = "mx952"
 
 REV_OPTION ?= "REV=${IMX_SOC_REV_UPPER}"
 
@@ -106,6 +115,10 @@ MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin ?= "\
     QSPI_HEADER=./scripts/fspi_header_133"
 MKIMAGE_EXTRA_ARGS:imx95-a1-19x19-verdin ?= "\
     ${MKIMAGE_EXTRA_ARGS:imx95-19x19-verdin} \
+"
+MKIMAGE_EXTRA_ARGS:mx952-nxp-bsp ?= "\
+    OEI=YES \
+    LPDDR_TYPE=${DDR_TYPE} \
 "
 
 UBOOT_DTB_BINARY ?= "u-boot.dtb"
@@ -176,6 +189,12 @@ compile_mx8x() {
 }
 compile_mx8x[doc] = "Stage the SECO, SCFW, ATF and U-Boot binaries for the i.MX 8QX boot container"
 
+# The i.MX 8ULP *_m33 targets pack the M33 image the machine names in
+# M33_IMAGE, which imx-m33-demos provides.
+IMX_M33_DEMOS_DEPENDS = ""
+IMX_M33_DEMOS_DEPENDS:mx8ulp-nxp-bsp = "imx-m33-demos:do_deploy"
+do_compile[depends] += "${IMX_M33_DEMOS_DEPENDS}"
+
 compile_mx8ulp() {
     bbnote 8ULP boot binary build
     cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
@@ -186,8 +205,11 @@ compile_mx8ulp() {
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
+    if [ -n "${IMX_M33_DEMOS_DEPENDS}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE}      ${BOOT_STAGING}/m33_image.bin
+    fi
 }
-compile_mx8ulp[doc] = "Stage the SECO, ATF, uPower and U-Boot binaries for the i.MX 8ULP boot container"
+compile_mx8ulp[doc] = "Stage the SECO, ATF, uPower, U-Boot and M33 binaries for the i.MX 8ULP boot container"
 
 compile_mx91() {
     bbnote i.MX 91 boot binary build
@@ -212,6 +234,15 @@ compile_mx93() {
 }
 compile_mx93[doc] = "Stage the DDR, SECO/ELE, ATF and U-Boot binaries for the i.MX 93 boot container"
 
+# The i.MX 943 flash_all target packs the M33S, M70 and M71 images the
+# machine names in M33_IMAGE, M70_IMAGE and M71_IMAGE, which
+# imx-mcore-demos provides. Each image is optional: set its variable to
+# an empty value to leave it out, together with the imx-mcore-demos
+# dependency once all three are empty.
+IMX_MCORE_DEMOS_DEPENDS = ""
+IMX_MCORE_DEMOS_DEPENDS:mx943-nxp-bsp = "${@'imx-mcore-demos:do_deploy' if (d.getVar('M33_IMAGE') or d.getVar('M70_IMAGE') or d.getVar('M71_IMAGE')) else ''}"
+do_compile[depends] += "${IMX_MCORE_DEMOS_DEPENDS}"
+
 compile_mx943() {
     bbnote i.MX 943 boot binary build
     compile_mx93
@@ -219,8 +250,17 @@ compile_mx943() {
     cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
+    if [ -n "${M33_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE} ${BOOT_STAGING}/m33s_image.bin
+    fi
+    if [ -n "${M70_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE} ${BOOT_STAGING}/m70_image.bin
+    fi
+    if [ -n "${M71_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE} ${BOOT_STAGING}/m71_image.bin
+    fi
 }
-compile_mx943[doc] = "Stage the i.MX 93 binaries plus the OEI and System Manager firmware for the i.MX 943 boot container"
+compile_mx943[doc] = "Stage the i.MX 93 binaries plus the OEI, System Manager, M33S, M70 and M71 firmware for the i.MX 943 boot container"
 
 compile_mx95() {
     bbnote i.MX 95 boot binary build
@@ -229,8 +269,17 @@ compile_mx95() {
     cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE} ${BOOT_STAGING}/m7_image.bin
+    fi
 }
-compile_mx95[doc] = "Stage the i.MX 93 binaries plus the OEI and System Manager firmware for the i.MX 95 boot container"
+compile_mx95[doc] = "Stage the i.MX 93 binaries plus the OEI, System Manager and optional M7 firmware for the i.MX 95 boot container"
+
+compile_mx952() {
+    bbnote i.MX 952 boot binary build
+    compile_mx95
+}
+compile_mx952[doc] = "Stage the i.MX 952 boot container binaries, which are the same as for i.MX 95"
 
 do_compile() {
     # mkimage for i.MX8
@@ -381,8 +430,11 @@ deploy_mx8ulp() {
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
+    if [ -n "${IMX_M33_DEMOS_DEPENDS}" ]; then
+        install -m 0644 ${BOOT_STAGING}/m33_image.bin        ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx8ulp[doc] = "Deploy the i.MX 8ULP SECO firmware, mkimage tool and SPL to the boot tools folder"
+deploy_mx8ulp[doc] = "Deploy the i.MX 8ULP SECO firmware, mkimage tool, SPL and M33 image to the boot tools folder"
 
 deploy_mx91() {
     deploy_mx93
@@ -410,16 +462,33 @@ deploy_mx943() {
     install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
+    if [ -n "${M33_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+    if [ -n "${M70_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M70_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+    if [ -n "${M71_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M71_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx943[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 943"
+deploy_mx943[doc] = "Deploy the i.MX 93 boot tools plus the OEI, System Manager, M33S, M70 and M71 firmware for i.MX 943"
 
 deploy_mx95() {
     deploy_mx93
     install -m 0644 ${BOOT_STAGING}/${OEI_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
     install -m 0644 ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
                 ${DEPLOYDIR}/${BOOT_TOOLS}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE} ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx95[doc] = "Deploy the i.MX 93 boot tools plus the OEI and System Manager firmware for i.MX 95"
+deploy_mx95[doc] = "Deploy the i.MX 93 boot tools plus the OEI, System Manager and optional M7 firmware for i.MX 95"
+
+deploy_mx952() {
+    deploy_mx95
+}
+deploy_mx952[doc] = "Deploy the i.MX 952 boot tools, which are the same as for i.MX 95"
 
 do_deploy() {
     deploy_${SOC_FAMILY}
