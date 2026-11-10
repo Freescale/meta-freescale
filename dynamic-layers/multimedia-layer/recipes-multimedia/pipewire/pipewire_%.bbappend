@@ -12,6 +12,7 @@ DEPENDS:append:mx95-nxp-bsp = " libdrm"
 
 SRC_URI:append:imx-nxp-bsp = " \
     file://0001-systemd-allow-pipewire-user-services-for-root.patch \
+    file://0001-systemd-Allow-pipewire-pulse-user-services-for-root-.patch \
     file://0001-YOCIMX-9095-pipewiresrc-set-rank-to-secondary.patch \
 "
 
