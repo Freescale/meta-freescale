@@ -25,7 +25,9 @@ do_install() {
 
 do_deploy () {
     # Deploy the related firmware to be packaged by imx-boot
-    install -m 0644 ${S}/${SECO_FIRMWARE_NAME}  ${DEPLOYDIR}
+    for fw in ${SECO_FIRMWARE_NAME}; do
+        install -m 0644 ${S}/$fw ${DEPLOYDIR}
+    done
 }
 addtask deploy after do_install before do_build
 

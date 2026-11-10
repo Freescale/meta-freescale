@@ -25,7 +25,9 @@ SECO_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}-ahab-contai
 SECO_FIRMWARE_NAME:mx91-generic-bsp ?= "mx91${IMX_SOC_REV_LOWER}-ahab-container.img"
 SECO_FIRMWARE_NAME:mx93-generic-bsp ?= "mx93${IMX_SOC_REV_LOWER}-ahab-container.img"
 SECO_FIRMWARE_NAME:mx937-generic-bsp ?= "mx937${IMX_SOC_REV_LOWER}-ahab-container.img"
-SECO_FIRMWARE_NAME:mx95-generic-bsp ?= "mx95${IMX_SOC_REV_LOWER}-ahab-container.img"
+# i.MX 95 ships the B0 and B1 boot containers together, as in the NXP BSP;
+# imx-mkimage picks the one that matches REV (IMX_SOC_REV).
+SECO_FIRMWARE_NAME:mx95-generic-bsp ?= "mx95b0-ahab-container.img mx95b1-ahab-container.img"
 SECO_FIRMWARE_NAME:mx952-generic-bsp ?= "mx952${IMX_SOC_REV_LOWER}-ahab-container.img"
 
 # Parse-time guard: SoCs that require a SECO firmware must fail parsing early

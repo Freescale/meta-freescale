@@ -168,7 +168,9 @@ compile_mx8() {
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
-    cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+    done
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
@@ -178,7 +180,9 @@ compile_mx8[doc] = "Stage the SCFW, ATF, SECO and U-Boot binaries for the i.MX 8
 
 compile_mx8x() {
     bbnote 8QX boot binary build
-    cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+    done
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
@@ -197,7 +201,9 @@ do_compile[depends] += "${IMX_M33_DEMOS_DEPENDS}"
 
 compile_mx8ulp() {
     bbnote 8ULP boot binary build
-    cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+    done
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/upower.bin          ${BOOT_STAGING}/upower.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
@@ -224,7 +230,9 @@ compile_mx93() {
         cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}
     done
 
-    cp ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+    done
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
@@ -402,7 +410,9 @@ deploy_mx8m[doc] = "Deploy the i.MX 8M DDR and HDMI/DP firmware together with th
 
 deploy_mx8() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        install -m 0644 ${BOOT_STAGING}/${seco_firmware}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    done
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
@@ -413,7 +423,9 @@ deploy_mx8[doc] = "Deploy the i.MX 8QM SECO firmware, mkimage tool and SPL to th
 
 deploy_mx8x() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        install -m 0644 ${BOOT_STAGING}/${seco_firmware}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    done
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
@@ -424,7 +436,9 @@ deploy_mx8x[doc] = "Deploy the i.MX 8QX SECO firmware, mkimage tool and SPL to t
 
 deploy_mx8ulp() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        install -m 0644 ${BOOT_STAGING}/${seco_firmware}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    done
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
@@ -448,7 +462,9 @@ deploy_mx93() {
         install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
     done
 
-    install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    for seco_firmware in ${SECO_FIRMWARE_NAME}; do
+        install -m 0644 ${BOOT_STAGING}/${seco_firmware}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    done
     install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} ] ; then
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
