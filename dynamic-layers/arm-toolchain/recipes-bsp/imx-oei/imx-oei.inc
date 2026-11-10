@@ -21,12 +21,14 @@ OEI_BOARD ?= "UNDEFINED"
 OEI_DDR_CONFIG ?= ""
 OEI_DDR_CONFIG_ECC ?= ""
 OEI_DEBUG ?= "0"
+OEI_IEE ?= "0"
 
 LDFLAGS[unexport] = "1"
 
 EXTRA_OEMAKE = "\
     board=${OEI_BOARD} \
     DEBUG=${OEI_DEBUG} \
+    iee=${OEI_IEE} \
     OEI_CROSS_COMPILE=arm-none-eabi-"
 
 EXTRA_OEMAKE:append:mx95-generic-bsp = " r=${IMX_SOC_REV}"
@@ -65,4 +67,4 @@ do_deploy() {
 FILES:${PN} = "/firmware"
 SYSROOT_DIRS += "/firmware"
 
-COMPATIBLE_MACHINE = "(mx95-generic-bsp|mx943-generic-bsp)"
+COMPATIBLE_MACHINE = "(mx95-generic-bsp|mx943-generic-bsp|mx952-generic-bsp)"

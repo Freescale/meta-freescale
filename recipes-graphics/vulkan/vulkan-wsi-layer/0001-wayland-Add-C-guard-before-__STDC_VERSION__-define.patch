@@ -1,4 +1,4 @@
-From aa5d634a607d58f45cc9ccbdc1f80c94685a45a2 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Franz Schnyder <franz.schnyder@toradex.com>
 Date: Wed, 3 Jun 2026 10:00:55 +0200
 Subject: [PATCH] wayland: Add C++ guard before __STDC_VERSION__ define
@@ -18,7 +18,7 @@ Signed-off-by: Franz Schnyder <franz.schnyder@toradex.com>
  5 files changed, 14 insertions(+)
 
 diff --git a/wsi/wayland/surface.hpp b/wsi/wayland/surface.hpp
-index f060f00..92aa598 100644
+index a882782..6557161 100644
 --- a/wsi/wayland/surface.hpp
 +++ b/wsi/wayland/surface.hpp
 @@ -28,9 +28,12 @@
@@ -31,11 +31,11 @@ index f060f00..92aa598 100644
  #endif
 +#endif
 +
+ #include <sys/types.h>
  #include <wayland-client.h>
  
- #include "wsi/surface.hpp"
 diff --git a/wsi/wayland/surface_properties.cpp b/wsi/wayland/surface_properties.cpp
-index e6435b9..caf840d 100644
+index 92faa57..3102a55 100644
 --- a/wsi/wayland/surface_properties.cpp
 +++ b/wsi/wayland/surface_properties.cpp
 @@ -24,9 +24,11 @@
@@ -51,10 +51,10 @@ index e6435b9..caf840d 100644
  #include <wayland-client.h>
  #include <linux-dmabuf-unstable-v1-client-protocol.h>
 diff --git a/wsi/wayland/swapchain.hpp b/wsi/wayland/swapchain.hpp
-index 7667324..95096f8 100644
+index ac645fd..6af628f 100644
 --- a/wsi/wayland/swapchain.hpp
 +++ b/wsi/wayland/swapchain.hpp
-@@ -31,9 +31,12 @@ extern "C" {
+@@ -32,9 +32,12 @@ extern "C" {
  #include <vulkan/vk_icd.h>
  }
  
@@ -66,9 +66,9 @@ index 7667324..95096f8 100644
 +
  #include <wayland-client.h>
  #include <linux-dmabuf-unstable-v1-client-protocol.h>
- #include "util/wsialloc/wsialloc.h"
+ #include "surface.hpp"
 diff --git a/wsi/wayland/wl_helpers.hpp b/wsi/wayland/wl_helpers.hpp
-index 1f6bad6..2ca131b 100644
+index 5bf507a..28eafbd 100644
 --- a/wsi/wayland/wl_helpers.hpp
 +++ b/wsi/wayland/wl_helpers.hpp
 @@ -26,9 +26,12 @@
@@ -85,7 +85,7 @@ index 1f6bad6..2ca131b 100644
  
  #include "util/custom_allocator.hpp"
 diff --git a/wsi/wayland/wl_object_owner.hpp b/wsi/wayland/wl_object_owner.hpp
-index d317e28..564fd5a 100644
+index a3befef..654e1c5 100644
 --- a/wsi/wayland/wl_object_owner.hpp
 +++ b/wsi/wayland/wl_object_owner.hpp
 @@ -24,9 +24,12 @@
@@ -101,6 +101,3 @@ index d317e28..564fd5a 100644
  #include <wayland-client.h>
  #include <linux-dmabuf-unstable-v1-client-protocol.h>
  #include <linux-explicit-synchronization-unstable-v1-protocol.h>
--- 
-2.43.0
-

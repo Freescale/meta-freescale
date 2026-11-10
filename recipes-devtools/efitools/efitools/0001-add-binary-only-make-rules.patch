@@ -1,0 +1,39 @@
+From 77ce20597eb0283f1a089c0cf4923346338bde8b Mon Sep 17 00:00:00 2001
+From: Ross Burton <ross.burton@arm.com>
+Date: Wed, 27 Nov 2024 17:15:33 +0000
+Subject: [PATCH] add binary-only make rules
+
+Add rules to build and install just the binaries, for the native recipe.
+
+Upstream-Status: Pending
+Signed-off-by: Ross Burton <ross.burton@arm.com>
+---
+ Makefile | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 66f5d2e..e42de67 100644
+--- a/Makefile
++++ b/Makefile
+@@ -29,15 +29,18 @@ EFISIGNED = $(patsubst %.efi,%-signed.efi,$(EFIFILES))
+ all: $(EFIFILES) $(BINARIES) noPK.auth $(KEYAUTH) DBX.auth \
+ 	$(KEYUPDATEAUTH) $(KEYBLACKLISTAUTH) $(KEYHASHBLACKLISTAUTH)
+ 
++binaries: $(BINARIES)
+ 
+-install: all
++install: all install-binaries
+ 	$(INSTALL) -m 755 -d $(EFIDIR)
+ 	$(INSTALL) -m 755 $(EFIFILES) $(EFIDIR)
++	$(INSTALL) -m 755 -d $(DOCDIR)
++	$(INSTALL) -m 644 README COPYING $(DOCDIR)
++
++install-binaries: binaries
+ 	$(INSTALL) -m 755 -d $(BINDIR)
+ 	$(INSTALL) -m 755 $(BINARIES) $(BINDIR)
+ 	$(INSTALL) -m 755 mkusb.sh $(BINDIR)/efitool-mkusb
+-	$(INSTALL) -m 755 -d $(DOCDIR)
+-	$(INSTALL) -m 644 README COPYING $(DOCDIR)
+ 
+ lib/lib.a lib/lib-efi.a: FORCE
+ 	$(MAKE) -C lib $(notdir $@)

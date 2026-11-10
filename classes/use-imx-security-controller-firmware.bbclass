@@ -24,7 +24,9 @@ SECO_FIRMWARE_NAME:mx8dxl-generic-bsp ?= "mx8dxl${IMX_SOC_REV_LOWER}-ahab-contai
 SECO_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}-ahab-container.img"
 SECO_FIRMWARE_NAME:mx91-generic-bsp ?= "mx91${IMX_SOC_REV_LOWER}-ahab-container.img"
 SECO_FIRMWARE_NAME:mx93-generic-bsp ?= "mx93${IMX_SOC_REV_LOWER}-ahab-container.img"
+SECO_FIRMWARE_NAME:mx937-generic-bsp ?= "mx937${IMX_SOC_REV_LOWER}-ahab-container.img"
 SECO_FIRMWARE_NAME:mx95-generic-bsp ?= "mx95${IMX_SOC_REV_LOWER}-ahab-container.img"
+SECO_FIRMWARE_NAME:mx952-generic-bsp ?= "mx952${IMX_SOC_REV_LOWER}-ahab-container.img"
 
 # Parse-time guard: SoCs that require a SECO firmware must fail parsing early
 # (SkipRecipe) when SECO_FIRMWARE_NAME is undefined, which needs anonymous python.
