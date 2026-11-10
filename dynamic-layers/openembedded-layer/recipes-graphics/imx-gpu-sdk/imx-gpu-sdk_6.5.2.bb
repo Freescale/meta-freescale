@@ -3,7 +3,7 @@ DESCRIPTION = "Set of sample applications for i.MX GPU"
 HOMEPAGE = "https://github.com/nxp-imx/gtec-demo-framework"
 SECTION = "graphics"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://License.md;md5=9d58a2573275ce8c35d79576835dbeb8"
+LIC_FILES_CHKSUM = "file://License.md;md5=f989c2fba947eb886cd6cb09cee89518"
 
 DEPENDS = "\
     assimp \
@@ -18,12 +18,20 @@ DEPENDS = "\
     half \
     ninja-native \
     nlohmann-json \
+    pugixml \
     rapidjson \
     stb \
     zlib \
 "
 
-require recipes-graphics/imx-gpu-sdk/imx-gpu-sdk-src.inc
+SRC_URI = "${GPU_SDK_SRC};branch=${SRCBRANCH}"
+GPU_SDK_SRC ?= "git://github.com/nxp-imx/gtec-demo-framework.git;protocol=https"
+SRCBRANCH = "6.5"
+SRCREV = "74778e7e04ab89e7f94929019a4b428c0791fcdd"
+
+# The bundled Wayland_XDG recipe looks up wayland-protocols and
+# wayland-scanner through pkg-config.
+inherit pkgconfig
 
 PACKAGECONFIG ??= "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', \
@@ -75,10 +83,10 @@ PACKAGECONFIG[openvx] = "OpenVX1.2,,rapidopenvx,rapidopenvx"
 PACKAGECONFIG[vivante] = "HW_GPU_VIVANTE"
 # vulkan-loader is dynamically loaded, so it needs an explicit RDEPENDS
 PACKAGECONFIG[vulkan] = "Vulkan1.2,,glslang-native rapidvulkan vulkan-headers vulkan-loader,rapidvulkan vulkan-loader vulkan-validation-layers"
-PACKAGECONFIG[wayland] = ",,libxdg-shell wayland,libxdg-shell,,x11"
+PACKAGECONFIG[wayland] = ",,wayland-native wayland wayland-protocols,,,x11"
 PACKAGECONFIG[x11] = ",,xrandr,,,wayland"
 
-WINDOW_SYSTEM = "${@bb.utils.contains('PACKAGECONFIG', 'wayland', 'Wayland_XDG', \
+WINDOW_SYSTEM = "${@bb.utils.contains('PACKAGECONFIG', 'wayland', 'Wayland', \
                     bb.utils.contains('PACKAGECONFIG', 'x11', 'X11', 'FB', d), d)}"
 
 # FEATURES is a comma-separated list passed to FslBuild.py as
@@ -90,10 +98,18 @@ PACKAGECONFIG_CONFARGS = "\
     EGL \
     GoogleUnitTest \
     Lib_NlohmannJson \
+    Lib_pugixml \
     Test_RequireUserInputToExit \
     WindowHost \
 "
 FEATURES = "${@','.join(d.getVar('PACKAGECONFIG_CONFARGS').split())}"
+
+# Many SDK sources use the fixed-width integer types and std::memcpy without
+# including <cstdint> or <cstring>, relying on other standard headers to pull
+# them in, which GCC 16 no longer does ("'uint32_t' does not name a type",
+# "'memcpy' is not a member of 'std'"). Include both headers in every
+# translation unit instead of patching each file.
+CXXFLAGS += "-include cstdint -include cstring"
 
 EXTENSIONS = "*"
 EXTENSIONS:mx6q-nxp-bsp = "OpenGLES:GL_VIV_direct_texture,OpenGLES3:GL_EXT_geometry_shader,OpenGLES3:GL_EXT_tessellation_shader"
@@ -105,6 +121,7 @@ EXTENSIONS:imxmali = "OpenGLES3:GL_EXT_color_buffer_float,OpenGLES3:GL_EXT_geome
 do_compile () {
     export FSL_PLATFORM_NAME=Yocto
     export ROOTFS=${STAGING_DIR_HOST}
+    export FSL_HOST_ROOTFS=${STAGING_DIR_NATIVE}
     . ./prepare.sh
     FslBuild.py -vvvvv -t sdk --UseFeatures [${FEATURES}] --UseExtensions [${EXTENSIONS}] --Variants [WindowSystem=${WINDOW_SYSTEM}] --BuildThreads ${@oe.utils.parallel_make(d)} -c install --CMakeInstallPrefix ${S}
 }
@@ -152,6 +169,7 @@ RDEPENDS:${PN} += "\
     googletest \
     half \
     nlohmann-json \
+    pugixml \
     rapidjson \
     stb \
 "
