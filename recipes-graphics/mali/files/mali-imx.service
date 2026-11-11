@@ -1,0 +1,15 @@
+[Unit]
+Description=Apply Mali/Mesa GPU driver configuration
+Before=display-manager.service weston.service wayland.service
+After=local-fs.target systemd-modules-load.service
+ConditionPathExists=/etc/mali-imx/mali-imx.conf
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/mali-imx-boot
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
