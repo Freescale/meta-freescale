@@ -1,0 +1,224 @@
+#!/bin/sh
+# mali-imx-boot - Apply Mali/Mesa GPU driver configuration at boot
+# Copyright (C) 2026 NXP
+#
+# This script is called automatically by mali-imx.service at boot time.
+# Do not run this script directly - use 'mali-imx' command instead.
+
+set -e
+
+MALI_LIB_DIR="/usr/lib/mali-imx"
+MESA_LIB_DIR="/usr/lib"
+VULKAN_ICD_DIR="/usr/share/vulkan/icd.d"
+VULKAN_LAYER_DIR="/etc/vulkan/implicit_layer.d"
+OPENCL_ICD_DIR="/etc/OpenCL/vendors"
+CONFIG_DIR="/etc/mali-imx"
+CONFIG_FILE="${CONFIG_DIR}/mali-imx.conf"
+
+# Source the configuration file
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Warning: Configuration file not found: $CONFIG_FILE"
+    echo "No driver configuration will be applied."
+    exit 0
+fi
+
+# Source the config file to get MALI_IMX_DEFAULT_DRIVER
+. "$CONFIG_FILE"
+
+if [ -z "$MALI_IMX_DEFAULT_DRIVER" ]; then
+    echo "Warning: MALI_IMX_DEFAULT_DRIVER not set in $CONFIG_FILE"
+    echo "No driver configuration will be applied."
+    exit 0
+fi
+
+echo "Applying GPU driver configuration: $MALI_IMX_DEFAULT_DRIVER"
+
+apply_mali_ddk() {
+    echo "Configuring Arm Mali DDK driver..."
+
+    # Update SONAME symlinks for EGL/GLES/GBM to point to Mali
+    echo "  Configuring userspace libraries..."
+
+    # First, create symlinks for libmali.so and its SONAME versions
+    if [ -e "${MALI_LIB_DIR}/libmali.so" ]; then
+        rm -f "${MESA_LIB_DIR}/libmali.so"
+        ln -sf "${MALI_LIB_DIR}/libmali.so" "${MESA_LIB_DIR}/libmali.so"
+        echo "    ✓ Linked libmali.so → ${MALI_LIB_DIR}/libmali.so"
+        rm -f "${MESA_LIB_DIR}/libmali.so.0"
+        ln -sf "${MALI_LIB_DIR}/libmali.so" "${MESA_LIB_DIR}/libmali.so.0"
+        echo "    ✓ Linked libmali.so.0 → ${MALI_LIB_DIR}/libmali.so"
+    fi
+
+    # Then create symlinks for the SONAME libraries
+    for lib in libEGL.so.1 libGLESv1_CM.so.1 libGLESv2.so.2 libgbm.so.1; do
+        if [ -e "${MALI_LIB_DIR}/$lib" ]; then
+            rm -f "${MESA_LIB_DIR}/$lib"
+            ln -sf "${MALI_LIB_DIR}/$lib" "${MESA_LIB_DIR}/$lib"
+            echo "    ✓ Linked $lib → ${MALI_LIB_DIR}/$lib"
+        fi
+    done
+
+    # Configure Mesa GL to use software rendering when Mali DDK is active
+    echo "  Configuring Mesa GL for software rendering..."
+    mkdir -p /etc/profile.d
+    cat > /etc/profile.d/mesa-gl-software.sh << 'EOF'
+# Force Mesa GL to software rendering when Mali DDK is active
+# This prevents conflicts with Mali DDK's GPU usage
+export LIBGL_ALWAYS_SOFTWARE=1
+export GALLIUM_DRIVER=llvmpipe
+EOF
+    chmod 644 /etc/profile.d/mesa-gl-software.sh
+    echo "    ✓ Configured Mesa GL for software rendering"
+
+    # Enable Mali Vulkan ICD, disable Mesa Vulkan ICD
+    if [ -d "$VULKAN_ICD_DIR" ]; then
+        echo "  Configuring Vulkan ICDs..."
+        for icd in "$VULKAN_ICD_DIR"/*.json; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "$icd.disabled" 2>/dev/null || true
+        done
+
+        for icd in "$VULKAN_ICD_DIR"/*mali*.json.disabled; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "${icd%.disabled}" 2>/dev/null || true
+            echo "    ✓ Enabled $(basename "${icd%.disabled}")"
+        done
+    fi
+
+    # Enable Vulkan WSI layer for Mali DDK
+    echo "  Configuring Vulkan WSI layer..."
+    if [ -d "$VULKAN_LAYER_DIR" ]; then
+        for layer in "$VULKAN_LAYER_DIR"/*VkLayer_window_system_integration*.json.disabled; do
+            [ -f "$layer" ] || continue
+            mv "$layer" "${layer%.disabled}" 2>/dev/null || true
+            echo "    ✓ Enabled $(basename "${layer%.disabled}")"
+        done
+    fi
+
+    # Enable Mali OpenCL ICD, disable Mesa OpenCL ICD
+    if [ -d "$OPENCL_ICD_DIR" ]; then
+        echo "  Configuring OpenCL ICDs..."
+        for icd in "$OPENCL_ICD_DIR"/*.icd; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "$icd.disabled" 2>/dev/null || true
+        done
+
+        for icd in "$OPENCL_ICD_DIR"/*mali*.icd.disabled; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "${icd%.disabled}" 2>/dev/null || true
+            echo "    ✓ Enabled $(basename "${icd%.disabled}")"
+        done
+    fi
+
+    echo "✓ Arm Mali DDK driver configured successfully"
+}
+
+apply_mesa() {
+    echo "Configuring Mesa driver..."
+
+    # Remove Mali SONAME symlinks and restore Mesa symlinks
+    echo "  Configuring userspace libraries..."
+
+    # Remove libmali.so symlinks if they exist
+    if [ -L "${MESA_LIB_DIR}/libmali.so" ]; then
+        rm -f "${MESA_LIB_DIR}/libmali.so"
+        echo "    ✓ Removed libmali.so symlink"
+    fi
+    if [ -L "${MESA_LIB_DIR}/libmali.so.0" ]; then
+        rm -f "${MESA_LIB_DIR}/libmali.so.0"
+        echo "    ✓ Removed libmali.so.0 symlink"
+    fi
+
+    if [ -f "${MESA_LIB_DIR}/libEGL.so.1.0.0" ]; then
+        rm -f "${MESA_LIB_DIR}/libEGL.so.1"
+        ln -sf libEGL.so.1.0.0 "${MESA_LIB_DIR}/libEGL.so.1"
+        echo "    ✓ Restored libEGL.so.1 → libEGL.so.1.0.0"
+    fi
+
+    if [ -f "${MESA_LIB_DIR}/libGLESv2.so.2.0.0" ]; then
+        rm -f "${MESA_LIB_DIR}/libGLESv2.so.2"
+        ln -sf libGLESv2.so.2.0.0 "${MESA_LIB_DIR}/libGLESv2.so.2"
+        echo "    ✓ Restored libGLESv2.so.2 → libGLESv2.so.2.0.0"
+    fi
+
+    if [ -f "${MESA_LIB_DIR}/libgbm.so.1.0.0" ]; then
+        rm -f "${MESA_LIB_DIR}/libgbm.so.1"
+        ln -sf libgbm.so.1.0.0 "${MESA_LIB_DIR}/libgbm.so.1"
+        echo "    ✓ Restored libgbm.so.1 → libgbm.so.1.0.0"
+    fi
+
+    # GLESv1_CM might have different versioning
+    if [ -f "${MESA_LIB_DIR}/libGLESv1_CM.so.1.1.0" ]; then
+        rm -f "${MESA_LIB_DIR}/libGLESv1_CM.so.1"
+        ln -sf libGLESv1_CM.so.1.1.0 "${MESA_LIB_DIR}/libGLESv1_CM.so.1"
+        echo "    ✓ Restored libGLESv1_CM.so.1 → libGLESv1_CM.so.1.1.0"
+    elif [ -f "${MESA_LIB_DIR}/libGLESv1_CM.so.1.0.0" ]; then
+        rm -f "${MESA_LIB_DIR}/libGLESv1_CM.so.1"
+        ln -sf libGLESv1_CM.so.1.0.0 "${MESA_LIB_DIR}/libGLESv1_CM.so.1"
+        echo "    ✓ Restored libGLESv1_CM.so.1 → libGLESv1_CM.so.1.0.0"
+    fi
+
+    # Remove Mesa GL software rendering configuration
+    echo "  Configuring Mesa GL for hardware acceleration..."
+    rm -f /etc/profile.d/mesa-gl-software.sh
+    echo "    ✓ Enabled Mesa GL hardware acceleration"
+
+    # Enable Mesa Vulkan ICD, disable Mali Vulkan ICD
+    if [ -d "$VULKAN_ICD_DIR" ]; then
+        echo "  Configuring Vulkan ICDs..."
+        for icd in "$VULKAN_ICD_DIR"/*.json; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "$icd.disabled" 2>/dev/null || true
+        done
+
+        for icd in "$VULKAN_ICD_DIR"/*panfrost*.json.disabled; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "${icd%.disabled}" 2>/dev/null || true
+            echo "    ✓ Enabled $(basename "${icd%.disabled}")"
+        done
+    fi
+
+    # Disable Vulkan WSI layer for Mesa
+    echo "  Configuring Vulkan WSI layer..."
+    if [ -d "$VULKAN_LAYER_DIR" ]; then
+        for layer in "$VULKAN_LAYER_DIR"/*VkLayer_window_system_integration*.json; do
+            [ -f "$layer" ] || continue
+            mv "$layer" "$layer.disabled" 2>/dev/null || true
+            echo "    ✓ Disabled $(basename "$layer")"
+        done
+    fi
+
+    # Enable Mesa OpenCL ICD, disable Mali OpenCL ICD
+    if [ -d "$OPENCL_ICD_DIR" ]; then
+        echo "  Configuring OpenCL ICDs..."
+        for icd in "$OPENCL_ICD_DIR"/*.icd; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "$icd.disabled" 2>/dev/null || true
+        done
+
+        for icd in "$OPENCL_ICD_DIR"/*rusticl*.icd.disabled; do
+            [ -f "$icd" ] || continue
+            mv "$icd" "${icd%.disabled}" 2>/dev/null || true
+            echo "    ✓ Enabled $(basename "${icd%.disabled}")"
+        done
+    fi
+
+    echo "✓ Mesa driver configured successfully"
+}
+
+# Apply the configured driver
+case "$MALI_IMX_DEFAULT_DRIVER" in
+    arm-ddk)
+        apply_mali_ddk
+        ;;
+    mesa)
+        apply_mesa
+        ;;
+    *)
+        echo "Error: Unknown driver configuration: $MALI_IMX_DEFAULT_DRIVER"
+        echo "Valid options are: arm-ddk, mesa"
+        exit 1
+        ;;
+esac
+
+exit 0
