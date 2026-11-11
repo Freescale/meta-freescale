@@ -1,5 +1,7 @@
 SUMMARY = "Graphics libraries and driver for i.MX Mali GPU"
+SUMMARY:${PN}-dual = "Mali/Mesa dual-driver switcher utility"
 DESCRIPTION = "Arm Mali GPU user-space graphics libraries and driver for i.MX SoCs."
+DESCRIPTION:${PN}-dual = "Utility to switch between Mali DDK and Mesa GPU drivers at runtime"
 HOMEPAGE = "https://www.nxp.com/"
 SECTION = "libs"
 DEPENDS += "\
@@ -7,7 +9,10 @@ DEPENDS += "\
     vulkan-loader \
     wayland \
     wayland-protocols"
-PROVIDES = "\
+# In dual-driver mode, Mesa provides the build-time API, and the Mali DDK
+# libraries are only installed beside it.
+PROVIDES = "${@'' if d.getVar('IMX_MALI_DUAL_DRIVER') == '1' else '${MALI_IMX_PROVIDES}'}"
+MALI_IMX_PROVIDES = "\
     virtual/egl \
     virtual/libgbm \
     virtual/libgles1 \
@@ -32,19 +37,30 @@ PACKAGES =+ "\
 # Consolidate GLES dev packages
 PACKAGES =+ "${PN}-libgles-dev"
 
+# Dual-driver switcher, empty unless in dual-driver mode
+PACKAGES =+ "${PN}-dual"
+
+# In dual-driver mode, the libraries go in ${libdir}/mali-imx, beside Mesa's
+IMX_MALI_DUAL_SUBDIR = "${@'/mali-imx' if d.getVar('IMX_MALI_DUAL_DRIVER') == '1' else ''}"
+
 # Since libmali.so is loaded by dlopen, include it in the main package
 FILES:${PN} += "\
-    ${libdir}/libmali.so \
+    ${libdir}${IMX_MALI_DUAL_SUBDIR}/libmali.so \
     ${nonarch_base_libdir}/firmware \
     ${nonarch_libdir}/modules-load.d/*.conf"
 FILES:${PN}-libegl += "\
-    ${libdir}/libEGL${SOLIBS}"
+    ${libdir}${IMX_MALI_DUAL_SUBDIR}/libEGL${SOLIBS}"
 FILES:${PN}-libgbm += "\
-    ${libdir}/libgbm${SOLIBS}"
+    ${libdir}${IMX_MALI_DUAL_SUBDIR}/libgbm${SOLIBS}"
 FILES:${PN}-libgles1 += "\
-    ${libdir}/libGLESv1_CM${SOLIBS}"
+    ${libdir}${IMX_MALI_DUAL_SUBDIR}/libGLESv1_CM${SOLIBS}"
 FILES:${PN}-libgles2 += "\
-    ${libdir}/libGLESv2${SOLIBS}"
+    ${libdir}${IMX_MALI_DUAL_SUBDIR}/libGLESv2${SOLIBS}"
+FILES:${PN}-dual += "\
+    ${bindir}/mali-imx \
+    ${libexecdir}/mali-imx-boot \
+    ${sysconfdir}/mali-imx \
+    ${systemd_system_unitdir}/mali-imx.service"
 FILES:${PN}-opencl-icd += "\
     ${sysconfdir}/OpenCL"
 FILES:${PN}-libvulkan += "\
@@ -71,6 +87,8 @@ FILES:${PN}-libgles-dev += "\
 FILES:${PN}-opencl-icd-dev += "\
     ${bindir}/mali_clcc"
 
+RDEPENDS:${PN} = "${@'${PN}-dual' if d.getVar('IMX_MALI_DUAL_DRIVER') == '1' else ''}"
+RDEPENDS:${PN}-dual = "${PN}"
 RDEPENDS:${PN}-libvulkan = "vulkan-wsi-layer"
 RDEPENDS:${PN}-libgles1-dev = "${PN}-libgles-dev"
 RDEPENDS:${PN}-libgles2-dev = "${PN}-libgles-dev"
@@ -89,16 +107,19 @@ RPROVIDES:${PN}-libgles-dev = "libgles-dev"
 
 # The generic names stay provided: consumers that dlopen a GL backend depend on
 # them by name rather than through shlibs, as cogl-1.0 does for libgles2.
-RPROVIDES:${PN}-libegl += "libegl"
-RPROVIDES:${PN}-libegl-dev += "libegl-dev"
-RPROVIDES:${PN}-libgbm += "libgbm"
-RPROVIDES:${PN}-libgbm-dev += "libgbm-dev"
-RPROVIDES:${PN}-libgles1 += "libgles1"
-RPROVIDES:${PN}-libgles1-dev += "libgles1-dev"
-RPROVIDES:${PN}-libgles2 += "libgles2"
-RPROVIDES:${PN}-libgles2-dev += "libgles2-dev"
-RPROVIDES:${PN}-libgles3 += "libgles3"
-RPROVIDES:${PN}-libgles3-dev += "libgles3-dev"
+# In dual-driver mode Mesa provides them, and the Mesa packages depend on
+# these ones, so providing them here too would make a dependency loop.
+MALI_IMX_RPROVIDES_GENERIC = "${@'0' if d.getVar('IMX_MALI_DUAL_DRIVER') == '1' else '1'}"
+RPROVIDES:${PN}-libegl += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libegl', '', d)}"
+RPROVIDES:${PN}-libegl-dev += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libegl-dev', '', d)}"
+RPROVIDES:${PN}-libgbm += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgbm', '', d)}"
+RPROVIDES:${PN}-libgbm-dev += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgbm-dev', '', d)}"
+RPROVIDES:${PN}-libgles1 += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgles1', '', d)}"
+RPROVIDES:${PN}-libgles1-dev += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgles1-dev', '', d)}"
+RPROVIDES:${PN}-libgles2 += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgles2', '', d)}"
+RPROVIDES:${PN}-libgles2-dev += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgles2-dev', '', d)}"
+RPROVIDES:${PN}-libgles3 += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgles3', '', d)}"
+RPROVIDES:${PN}-libgles3-dev += "${@oe.utils.conditional('MALI_IMX_RPROVIDES_GENERIC', '1', 'libgles3-dev', '', d)}"
 
 RCONFLICTS:${PN}-libgles-dev = "libgles-dev"
 

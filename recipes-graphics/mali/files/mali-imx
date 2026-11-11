@@ -1,0 +1,437 @@
+#!/bin/sh
+# mali-imx - Switch between Mali DDK and Mesa GPU drivers
+# Copyright (C) 2026 NXP
+
+set -e
+
+MALI_LIB_DIR="/usr/lib/mali-imx"
+MESA_LIB_DIR="/usr/lib"
+VULKAN_ICD_DIR="/usr/share/vulkan/icd.d"
+VULKAN_LAYER_DIR="/etc/vulkan/implicit_layer.d"
+OPENCL_ICD_DIR="/etc/OpenCL/vendors"
+MODPROBE_DIR="/etc/modprobe.d"
+MODULES_LOAD_DIR="/usr/lib/modules-load.d"
+CONFIG_DIR="/etc/mali-imx"
+CONFIG_FILE="${CONFIG_DIR}/mali-imx.conf"
+MALI_MODULE="mali_kbase"
+MESA_MODULE="panthor"
+
+usage() {
+    cat << USAGE
+Usage: $0 [arm-ddk|mesa]
+
+Switch between Mali DDK and Mesa GPU drivers on i.MX platforms.
+This affects EGL, GLES, GBM, Vulkan, OpenCL, and kernel modules.
+
+Commands:
+    arm-ddk  - Configure system to use Arm Mali DDK proprietary driver on next boot
+    mesa     - Configure system to use Mesa open-source driver on next boot
+    (no args) - Show currently active driver status
+
+Examples:
+    $0 arm-ddk   # Configure Arm Mali DDK (requires reboot)
+    $0 mesa      # Configure Mesa (requires reboot)
+    $0           # Check current driver status
+
+Note: A reboot is required for all changes to take effect.
+
+USAGE
+    exit 1
+}
+
+check_root() {
+    if [ "$(id -u)" != "0" ]; then
+        echo "Error: This script must be run as root" >&2
+        exit 1
+    fi
+}
+
+configure_module_loading() {
+    driver=$1
+
+    mkdir -p "$MODULES_LOAD_DIR"
+    mkdir -p "$MODPROBE_DIR"
+
+    # Remove old module-load configurations
+    rm -f "$MODULES_LOAD_DIR/mali_kbase.conf"
+    rm -f "$MODULES_LOAD_DIR/panthor.conf"
+
+    if [ "$driver" = "arm-ddk" ]; then
+        # Configure Mali DDK module to load at boot
+        cat > "$MODULES_LOAD_DIR/mali_kbase.conf" << EOF
+# Load Mali DDK kernel module at boot
+$MALI_MODULE
+EOF
+        echo "  ✓ Created module-load config: $MODULES_LOAD_DIR/mali_kbase.conf"
+
+        # Blacklist Mesa module
+        cat > "$MODPROBE_DIR/mali-imx.conf" << EOF
+# Mali DDK configuration - blacklist Mesa Panthor driver
+blacklist $MESA_MODULE
+EOF
+        echo "  ✓ Configured module blacklist for Mali DDK (blacklisted: $MESA_MODULE)"
+    else
+        # Configure Mesa Panthor module to load at boot
+        cat > "$MODULES_LOAD_DIR/panthor.conf" << EOF
+# Load Mesa Panthor kernel module at boot
+$MESA_MODULE
+EOF
+        echo "  ✓ Created module-load config: $MODULES_LOAD_DIR/panthor.conf"
+
+        # Blacklist Mali module
+        cat > "$MODPROBE_DIR/mali-imx.conf" << EOF
+# Mesa configuration - blacklist Mali DDK driver
+blacklist $MALI_MODULE
+EOF
+        echo "  ✓ Configured module blacklist for Mesa (blacklisted: $MALI_MODULE)"
+    fi
+
+    # Update initramfs if update-initramfs is available
+    if command -v update-initramfs >/dev/null 2>&1; then
+        echo "  Updating initramfs..."
+        update-initramfs -u -k all 2>/dev/null || true
+    fi
+}
+
+# Helper function to resolve symlinks (POSIX-compliant)
+resolve_symlink() {
+    target="$1"
+    # Follow symlinks manually
+    while [ -L "$target" ]; do
+        link=$(readlink "$target")
+        case "$link" in
+            /*) target="$link" ;;
+            *) target="$(dirname "$target")/$link" ;;
+        esac
+    done
+    echo "$target"
+}
+
+get_current_driver() {
+    if [ -L "${MESA_LIB_DIR}/libEGL.so.1" ]; then
+        target=$(resolve_symlink "${MESA_LIB_DIR}/libEGL.so.1")
+        case "$target" in
+            */mali-imx/*)
+                echo "arm-ddk"
+                ;;
+            *)
+                echo "mesa"
+                ;;
+        esac
+    else
+        echo "unknown"
+    fi
+}
+
+update_config_file() {
+    driver=$1
+
+    mkdir -p "$CONFIG_DIR"
+
+    # Create or update the config file
+    cat > "$CONFIG_FILE" << EOF
+# i.MX Mali GPU driver configuration
+# This file is sourced by mali-imx.service at boot
+
+# Default driver to use at boot
+
+# Options: arm-ddk or mesa
+MALI_IMX_DEFAULT_DRIVER=$driver
+
+# Additional environment variables for debugging
+# Uncomment to enable verbose logging
+
+# OpenGL/EGL debugging
+#LIBGL_DEBUG=verbose
+#EGL_LOG_LEVEL=debug
+#MESA_DEBUG=1
+
+# Vulkan debugging
+#VK_LOADER_DEBUG=all
+
+# OpenCL debugging
+#OCL_ICD_DEBUG=7
+
+# Mali DDK specific debugging
+#MALI_DEBUG=1
+EOF
+
+    echo "✓ Updated configuration file: $CONFIG_FILE"
+    echo "  MALI_IMX_DEFAULT_DRIVER=$driver"
+}
+
+is_module_loaded() {
+    module=$1
+    lsmod | grep -q "^${module} " && return 0 || return 1
+}
+
+switch_to_mali() {
+    echo "Configuring system to use Arm Mali DDK driver..."
+    echo ""
+
+    # Update configuration file for persistence
+    update_config_file "arm-ddk"
+    echo ""
+
+    # Configure module loading and blacklist
+    echo "Configuring kernel module loading..."
+    configure_module_loading "arm-ddk"
+    echo ""
+
+    echo "=========================================="
+    echo "✓ System configured for Arm Mali DDK driver"
+    echo "=========================================="
+    echo "  - Kernel module: $MALI_MODULE"
+    echo "  - Module load config: $MODULES_LOAD_DIR/mali_kbase.conf"
+    echo "  - EGL/GLES/GBM: Mali ($MALI_LIB_DIR)"
+    echo "  - GL: Mesa (software rendering via llvmpipe)"
+    echo "  - Vulkan: Mali (with WSI layer)"
+    echo "  - OpenCL: Mali"
+    echo ""
+    echo "⚠ REBOOT REQUIRED for changes to take effect"
+    echo "=========================================="
+}
+
+switch_to_mesa() {
+    echo "Configuring system to use Mesa driver..."
+    echo ""
+
+    # Update configuration file for persistence
+    update_config_file "mesa"
+    echo ""
+
+    # Configure module loading and blacklist
+    echo "Configuring kernel module loading..."
+    configure_module_loading "mesa"
+    echo ""
+
+    echo "=========================================="
+    echo "✓ System configured for Mesa driver"
+    echo "=========================================="
+    echo "  - Kernel module: $MESA_MODULE"
+    echo "  - Module load config: $MODULES_LOAD_DIR/panthor.conf"
+    echo "  - EGL/GLES/GBM: Mesa (GPU-accelerated via panthor)"
+    echo "  - GL: Mesa (panthor)"
+    echo "  - Vulkan: Mesa (panfrost)"
+    echo "  - OpenCL: Mesa (Rusticl)"
+    echo ""
+    echo "⚠ REBOOT REQUIRED for changes to take effect"
+    echo "=========================================="
+}
+
+show_status() {
+    current=$(get_current_driver)
+    echo "=========================================="
+    echo "  GPU Driver Status"
+    echo "=========================================="
+    echo ""
+    echo "Current driver: $current"
+    echo ""
+
+    # Configuration file status
+    echo "Configuration File:"
+    if [ -f "$CONFIG_FILE" ]; then
+        echo "  Config: $CONFIG_FILE"
+        default_driver=$(grep "^MALI_IMX_DEFAULT_DRIVER=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2 || true)
+        if [ -n "$default_driver" ]; then
+            echo "  Default driver on boot: $default_driver"
+            if [ "$default_driver" != "$current" ]; then
+                echo "  ⚠ Configuration mismatch - reboot pending"
+            fi
+        fi
+    else
+        echo "  (No configuration file found)"
+    fi
+    echo ""
+
+    # Kernel module status
+    echo "Kernel Modules:"
+    if is_module_loaded "$MALI_MODULE"; then
+        echo "  ✓ $MALI_MODULE (loaded)"
+    else
+        echo "  ✗ $MALI_MODULE (not loaded)"
+    fi
+
+    if is_module_loaded "$MESA_MODULE"; then
+        echo "  ✓ $MESA_MODULE (loaded)"
+    else
+        echo "  ✗ $MESA_MODULE (not loaded)"
+    fi
+
+    # Module load configuration
+    echo ""
+    echo "Module Load Configuration:"
+    if [ -f "$MODULES_LOAD_DIR/mali_kbase.conf" ]; then
+        echo "  ✓ Mali DDK: $MODULES_LOAD_DIR/mali_kbase.conf"
+        echo "    Module: $(grep -v '^#' "$MODULES_LOAD_DIR/mali_kbase.conf" | grep -v '^$' | head -n1)"
+    else
+        echo "  ✗ Mali DDK: (no module-load config)"
+    fi
+
+    if [ -f "$MODULES_LOAD_DIR/panthor.conf" ]; then
+        echo "  ✓ Mesa Panthor: $MODULES_LOAD_DIR/panthor.conf"
+        echo "    Module: $(grep -v '^#' "$MODULES_LOAD_DIR/panthor.conf" | grep -v '^$' | head -n1)"
+    else
+        echo "  ✗ Mesa Panthor: (no module-load config)"
+    fi
+
+    # Module blacklist configuration
+    echo ""
+    echo "Module Blacklist Configuration:"
+    if [ -f "$MODPROBE_DIR/mali-imx.conf" ]; then
+        echo "  Config file: $MODPROBE_DIR/mali-imx.conf"
+        blacklisted=$(grep "^blacklist" "$MODPROBE_DIR/mali-imx.conf" 2>/dev/null | awk '{print $2}' || true)
+        if [ -n "$blacklisted" ]; then
+            echo "  Blacklisted: $blacklisted"
+        fi
+    else
+        echo "  (No blacklist configuration found)"
+    fi
+
+    # EGL/GLES/GBM status
+    echo ""
+    echo "EGL/GLES/GBM Libraries:"
+
+    if [ "$current" = "arm-ddk" ]; then
+        echo "  ✓ Active: Arm Mali DDK"
+        echo "    Location: $MALI_LIB_DIR"
+    elif [ "$current" = "mesa" ]; then
+        echo "  ✓ Active: Mesa"
+        echo "    Location: $MESA_LIB_DIR (system default)"
+    else
+        echo "  ✗ Status: Unknown/Not configured"
+    fi
+
+    # Show actual SONAME symlink targets
+    echo ""
+    echo "SONAME symlinks (runtime):"
+    for lib in libEGL.so.1 libGLESv2.so.2 libgbm.so.1; do
+        if [ -L "${MESA_LIB_DIR}/$lib" ]; then
+            target=$(readlink "${MESA_LIB_DIR}/$lib")
+            real_target=$(readlink -f "${MESA_LIB_DIR}/$lib")
+            echo "  $lib → $target"
+            echo "    (resolves to: $real_target)"
+        elif [ -f "${MESA_LIB_DIR}/$lib" ]; then
+            echo "  $lib (regular file, not a symlink)"
+        else
+            echo "  $lib (not found)"
+        fi
+    done
+
+    # Mesa GL configuration
+    echo ""
+    echo "Mesa GL Configuration:"
+    if [ -f "/etc/profile.d/mesa-gl-software.sh" ]; then
+        echo "  ✓ Software rendering enabled (llvmpipe)"
+        echo "    Config: /etc/profile.d/mesa-gl-software.sh"
+    else
+        echo "  ✓ Hardware acceleration enabled (panthor)"
+        echo "    No software rendering override"
+    fi
+
+    # Vulkan status
+    echo ""
+    echo "Vulkan ICDs:"
+    if [ -d "$VULKAN_ICD_DIR" ]; then
+        active_count=0
+        disabled_count=0
+
+        for icd in "$VULKAN_ICD_DIR"/*.json; do
+            [ -f "$icd" ] || continue
+            echo "  ✓ Active: $(basename "$icd")"
+            active_count=$((active_count + 1))
+        done
+
+        for icd in "$VULKAN_ICD_DIR"/*.json.disabled; do
+            [ -f "$icd" ] || continue
+            echo "  ✗ Disabled: $(basename "$icd" .disabled)"
+            disabled_count=$((disabled_count + 1))
+        done
+
+        if [ $active_count -eq 0 ] && [ $disabled_count -eq 0 ]; then
+            echo "  (No Vulkan ICDs found)"
+        fi
+    else
+        echo "  (Vulkan ICD directory not found)"
+    fi
+
+    # Vulkan WSI Layer status
+    echo ""
+    echo "Vulkan WSI Layer:"
+    if [ -d "$VULKAN_LAYER_DIR" ]; then
+        wsi_enabled=false
+        wsi_disabled=false
+        for layer in "$VULKAN_LAYER_DIR"/*VkLayer_window_system_integration*.json; do
+            [ -f "$layer" ] || continue
+            wsi_enabled=true
+            echo "  ✓ Enabled (for Mali DDK)"
+            echo "    Layer: $(basename "$layer")"
+        done
+        for layer in "$VULKAN_LAYER_DIR"/*VkLayer_window_system_integration*.json.disabled; do
+            [ -f "$layer" ] || continue
+            wsi_disabled=true
+            if [ "$wsi_enabled" = "false" ]; then
+                echo "  ✗ Disabled (Mesa native WSI)"
+                echo "    Layer: $(basename "$layer")"
+            fi
+        done
+        if [ "$wsi_enabled" = "false" ] && [ "$wsi_disabled" = "false" ]; then
+            echo "  (No WSI layer found)"
+        fi
+    else
+        echo "  (Vulkan layer directory not found)"
+    fi
+
+    # OpenCL status
+    echo ""
+    echo "OpenCL ICDs:"
+    if [ -d "$OPENCL_ICD_DIR" ]; then
+        active_count=0
+        disabled_count=0
+
+        for icd in "$OPENCL_ICD_DIR"/*.icd; do
+            [ -f "$icd" ] || continue
+            echo "  ✓ Active: $(basename "$icd")"
+            lib_path=$(head -n 1 "$icd" 2>/dev/null || true)
+            if [ -n "$lib_path" ]; then
+                echo "      → $lib_path"
+            fi
+            active_count=$((active_count + 1))
+        done
+
+        for icd in "$OPENCL_ICD_DIR"/*.icd.disabled; do
+            [ -f "$icd" ] || continue
+            echo "  ✗ Disabled: $(basename "$icd" .disabled)"
+            disabled_count=$((disabled_count + 1))
+        done
+
+        if [ $active_count -eq 0 ] && [ $disabled_count -eq 0 ]; then
+            echo "  (No OpenCL ICDs found)"
+        fi
+    else
+        echo "  (OpenCL ICD directory not found)"
+    fi
+
+    echo ""
+    echo "=========================================="
+}
+
+# Main
+case "${1:-}" in
+    arm-ddk)
+        check_root
+        switch_to_mali
+        ;;
+    mesa)
+        check_root
+        switch_to_mesa
+        ;;
+    "")
+        show_status
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+exit 0
