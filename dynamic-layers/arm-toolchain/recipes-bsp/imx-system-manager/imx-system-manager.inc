@@ -27,7 +27,17 @@ EXTRA_OEMAKE = "\
 
 do_configure() {
     oe_runmake clean
-    oe_runmake cfg
+    # Some configurations, such as mx95frdm-pro and the i.MX 95 rpmsg and
+    # jailhouse ones, are only provided under configs/other, which the cfg
+    # target does not search.
+    if [ ! -e ${S}/configs/${SYSTEM_MANAGER_CONFIG}.cfg ] && \
+       [ -e ${S}/configs/other/${SYSTEM_MANAGER_CONFIG}.cfg ]; then
+        ${S}/configs/configtool.pl \
+            -i ${S}/configs/other/${SYSTEM_MANAGER_CONFIG}.cfg \
+            -o ${S}/configs/${SYSTEM_MANAGER_CONFIG}
+    else
+        oe_runmake cfg
+    fi
 }
 
 do_install[noexec] = "1"
