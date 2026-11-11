@@ -14,3 +14,8 @@ CFLAGS:append:imxgpu = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', '-DEGL_API_FB', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', '-DWL_EGL_PLATFORM', '', d)} \
 "
+
+# In Mali dual-driver mode, Mesa provides libGL at build time, but GL may be
+# served by the Mali DDK at runtime, which has no desktop GL; using it breaks
+# SDL clients such as qemu. Build without desktop GL, as the NXP BSP does.
+PACKAGECONFIG:remove:imxmali = "${@oe.utils.conditional('IMX_MALI_DUAL_DRIVER', '1', 'opengl', '', d)}"
