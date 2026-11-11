@@ -666,7 +666,7 @@ PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "${@d.getVar('IMXGPU_OPENCL_PR
 # Set preferred OpenCL ICD runtime
 PREFERRED_RPROVIDER_virtual-opencl-icd         ?= "libopencl-mesa"
 PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "${@oe.utils.conditional('IMXGPU_OPENCL_PROVIDER', 'imx-gpu-viv', 'libopencl-imx', 'libopencl-mesa', d)}"
-PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-libopencl"
+PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-opencl-icd"
 
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-g2d-gpu"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-g2d-dpu"
