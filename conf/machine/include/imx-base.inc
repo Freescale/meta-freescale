@@ -628,9 +628,20 @@ SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT:imxgpu = "1"
 #   1 - machine has Vivante GPU driver support
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ?= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
 
+# Drivers for the i.MX Mali GPU: mali-imx (Arm Mali DDK), mesa (Panfrost),
+# or both. With both, the dual-driver mode installs them side by side, Mesa
+# provides the build-time API, and the mali-imx tool switches between them
+# at runtime; IMX_MALI_DEFAULT_DRIVER (mali-imx or mesa) is used at first
+# boot.
+IMX_MALI_DRIVERS        ??= "mali-imx"
+IMX_MALI_DEFAULT_DRIVER ??= "mali-imx"
+IMX_MALI_DUAL_DRIVER          = "0"
+IMX_MALI_DUAL_DRIVER:imxmali  = "${@bb.utils.contains('IMX_MALI_DRIVERS', 'mali-imx mesa', '1', '0', d)}"
+IMX_MALI_PROVIDER             = "${@bb.utils.contains('IMX_MALI_DRIVERS', 'mesa', 'mesa', 'mali-imx', d)}"
+
 # Override graphics for i.MX GPU
 IMXGPU_GRAPHICS_PROVIDER:imxviv  ?= "imx-gpu-viv"
-IMXGPU_GRAPHICS_PROVIDER:imxmali ?= "mali-imx"
+IMXGPU_GRAPHICS_PROVIDER:imxmali ?= "${IMX_MALI_PROVIDER}"
 
 PREFERRED_PROVIDER_virtual/egl:imxgpu          ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgl:imxgpu        ?= "mesa-gl"
@@ -638,6 +649,14 @@ PREFERRED_PROVIDER_virtual/mesa:imxgpu         ?= "mesa-gl"
 PREFERRED_PROVIDER_virtual/libgles1:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles2:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles3:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
+
+# With Mesa on the Mali GPU, the full Mesa, built from the NXP fork, also
+# provides desktop GL and GBM.
+PREFERRED_PROVIDER_virtual/libgl:imxmali       ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'mesa', 'mesa-gl', d)}"
+PREFERRED_PROVIDER_virtual/mesa:imxmali        ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'mesa', 'mesa-gl', d)}"
+PREFERRED_PROVIDER_virtual/libgbm:imxmali      ?= "${IMX_MALI_PROVIDER}"
+PREFERRED_VERSION_mesa:imxmali                 ??= "26.2.0.imx"
+PREFERRED_VERSION_mesa-tools-native:imxmali    ??= "26.2.0.imx"
 
 # The Vivante stack provides virtual/libgbm only on i.MX 8, and mesa-gl does
 # not build it, so nothing provides it for the older Vivante GPUs. Skip the
@@ -666,7 +685,7 @@ PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "${@d.getVar('IMXGPU_OPENCL_PR
 # Set preferred OpenCL ICD runtime
 PREFERRED_RPROVIDER_virtual-opencl-icd         ?= "libopencl-mesa"
 PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "${@oe.utils.conditional('IMXGPU_OPENCL_PROVIDER', 'imx-gpu-viv', 'libopencl-imx', 'libopencl-mesa', d)}"
-PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-opencl-icd"
+PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'libopencl-mesa', 'mali-imx-opencl-icd', d)}"
 
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-g2d-gpu"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-g2d-dpu"
@@ -676,7 +695,7 @@ PREFERRED_PROVIDER_virtual/libg2d:mx943-nxp-bsp ?= "imx-g2d-pxp"
 # Set preferred Vulkan ICD runtime
 PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa-vulkan-drivers"
 PREFERRED_RPROVIDER_virtual-vulkan-icd:imxviv  ?= "libvulkan-imx"
-PREFERRED_RPROVIDER_virtual-vulkan-icd:imxmali ?= "mali-imx-libvulkan"
+PREFERRED_RPROVIDER_virtual-vulkan-icd:imxmali ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'mesa-vulkan-drivers', 'mali-imx-libvulkan', d)}"
 
 PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "15.0.1.imx"
 # i.MX 6 & 7 stay on weston 10.0 for fbdev
