@@ -22,6 +22,7 @@ SRC_URI = "https://gitlab.freedesktop.org/wayland/weston/-/releases/${PV}/downlo
            file://xwayland.weston-start \
            file://systemd-notify.weston-start \
            file://Allow-libdisplay-info-0.4.0.patch \
+           file://0001-backend-vnc-Use-aml-v1.patch \
            "
 
 # The required .inc removes this tarball from SRC_URI and fetches the NXP git
@@ -117,7 +118,7 @@ PACKAGECONFIG[image-jpeg] = "-Dimage-jpeg=true,-Dimage-jpeg=false, jpeg"
 # screencasting via PipeWire
 PACKAGECONFIG[pipewire] = "-Dbackend-pipewire=true,-Dbackend-pipewire=false,pipewire,pipewire"
 # VNC remote screensharing
-PACKAGECONFIG[vnc] = "-Dbackend-vnc=true,-Dbackend-vnc=false,neatvnc libpam"
+PACKAGECONFIG[vnc] = "-Dbackend-vnc=true,-Dbackend-vnc=false,neatvnc aml libpam"
 # Perfetto performance analysis support
 PACKAGECONFIG[perfetto] = "-Dperfetto=true,-Dperfetto=false,libperfetto"
 
