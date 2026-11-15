@@ -69,9 +69,26 @@ native task across every machine, through those two. A task whose tune spans
 several machine tunes (a multilib's) is compared only within each run.
 `--all` selects every machine in the table, for the full run.
 
+## Running the tests
+
+OE-core master's `yocto-check-layer` selects the tests with `--run-tests` and
+shares each world signature dump between the tests needing it, so CI runs it
+directly: `--run-tests common distro` once, and `--run-tests bsp` in each run
+of machines.
+
+```sh
+yocto-check-layer "$PWD" --run-tests bsp --no-auto-dependency \
+    --machines imx8mm-ddr4-evk imx8mp-ddr4-evk
+```
+
+`--run-tests` takes several names, so give the layer before it.
+
 ## check-layer.py
 
-Runs `yocto-check-layer` (same arguments), saving two kinds of repeated work:
+For the releases whose `yocto-check-layer` has no `--run-tests` (wrynose and
+older), CI runs `check-layer.py` instead. It runs `yocto-check-layer` (same
+arguments), saving the same two kinds of repeated work, and refuses to run on
+a `yocto-check-layer` that has `--run-tests`:
 
 - `--tests common` or `--tests bsp` runs only the common tests or only the
   machine ones. The common tests, and the signatures they compare against,

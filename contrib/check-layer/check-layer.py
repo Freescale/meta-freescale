@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run yocto-check-layer, with two savings for CI.
+"""Run yocto-check-layer, with two savings for CI, on OE-core releases without --run-tests.
 
     check-layer.py [--tests all|common|bsp] <yocto-check-layer arguments>
 
@@ -11,6 +11,10 @@ ask for the same dump twice, with and without -k.
 
 Run it where yocto-check-layer would: in an oe-init-build-env build directory,
 with the layer under test out of BBLAYERS.
+
+OE-core master does both itself (--run-tests, and one world dump shared by the
+tests needing it), and its get_signatures() no longer takes failsafe: use
+"yocto-check-layer --run-tests common distro" or "--run-tests bsp" there.
 """
 
 import argparse
@@ -76,6 +80,9 @@ def main():
     if not script:
         sys.exit("check-layer.py: yocto-check-layer not found: source oe-init-build-env first")
     script = os.path.realpath(script)
+    with open(script) as f:
+        if "'--run-tests'" in f.read():
+            sys.exit("check-layer.py: this yocto-check-layer has --run-tests: run it directly")
     sys.path.append(os.path.join(os.path.dirname(script), "lib"))
     sys.argv = [script] + rest
 
