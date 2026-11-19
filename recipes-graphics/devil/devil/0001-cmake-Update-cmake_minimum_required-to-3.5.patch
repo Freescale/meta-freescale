@@ -1,0 +1,52 @@
+From: Neena Busireddy <neenareddy.busireddy@nxp.com>
+Date: Wed, 24 Sep 2025 15:35:58 -0500
+Subject: [PATCH] cmake: Update cmake_minimum_required to 3.5
+
+CMake 4 removed compatibility with versions before 3.5:
+
+| CMake Error at src-ILUT/CMakeLists.txt:1 (cmake_minimum_required):
+|   Compatibility with CMake < 3.5 has been removed from CMake.
+
+Raise the minimum in all four CMakeLists.txt files. Taken from meta-imx
+LF6.18.37_2.1.0 (YOCIMX-9348), which carries the change without a
+patch header.
+
+Upstream-Status: Pending
+Signed-off-by: Rodrigo M. Duarte <rodrigo.duarte@ossystems.com.br>
+---
+diff -Naur DevIL_org/CMakeLists.txt DevIL/CMakeLists.txt
+--- DevIL_org/CMakeLists.txt	2025-09-24 15:30:30.245865820 -0500
++++ DevIL/CMakeLists.txt	2025-09-24 15:30:44.000000000 -0500
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ project(ImageLib)
+ 
+diff -Naur DevIL_org/src-IL/CMakeLists.txt DevIL/src-IL/CMakeLists.txt
+--- DevIL_org/src-IL/CMakeLists.txt	2025-09-24 15:30:30.253865862 -0500
++++ DevIL/src-IL/CMakeLists.txt	2025-09-24 15:30:55.000000000 -0500
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ project(DevIL)
+ 
+diff -Naur DevIL_org/src-ILU/CMakeLists.txt DevIL/src-ILU/CMakeLists.txt
+--- DevIL_org/src-ILU/CMakeLists.txt	2025-09-24 15:30:30.251865851 -0500
++++ DevIL/src-ILU/CMakeLists.txt	2025-09-24 15:31:05.000000000 -0500
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ project(ILU)
+ 
+diff -Naur DevIL_org/src-ILUT/CMakeLists.txt DevIL/src-ILUT/CMakeLists.txt
+--- DevIL_org/src-ILUT/CMakeLists.txt	2025-09-24 15:30:30.249865841 -0500
++++ DevIL/src-ILUT/CMakeLists.txt	2025-09-24 15:31:18.000000000 -0500
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.6)
++cmake_minimum_required(VERSION 3.5)
+ 
+ project(ILUT)
+ 

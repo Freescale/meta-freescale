@@ -18,7 +18,7 @@ PV = "1.0.26+${SRCPV}"
 
 SRC_URI = "${IMXALSA_SRC};branch=${SRCBRANCH}"
 IMXALSA_SRC ?= "git://github.com/nxp-imx/imx-alsa-plugins.git;protocol=https"
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+SRCBRANCH = "MM_04.11.01_2608_L6.18.37"
 SRCREV = "ec87e3d701047980e5e723811413ce47b9f4012e"
 
 inherit autotools pkgconfig use-imx-headers
@@ -28,6 +28,7 @@ CFLAGS:append = " -I${STAGING_INCDIR_IMX}"
 PACKAGECONFIG ??= "${PACKAGECONFIG_SWPDM}"
 PACKAGECONFIG_SWPDM = ""
 PACKAGECONFIG_SWPDM:mx8-nxp-bsp = "swpdm"
+PACKAGECONFIG_SWPDM:mx9-nxp-bsp = "swpdm"
 
 PACKAGECONFIG[swpdm] = "--enable-swpdm,--disable-swpdm,imx-sw-pdm"
 

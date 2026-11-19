@@ -34,6 +34,9 @@ IMXBOOT_TARGETS = "${@bb.utils.contains('UBOOT_CONFIG',   'sd', '${IMXBOOT_TARGE
                       bb.utils.contains('UBOOT_CONFIG', 'fspi', '${IMXBOOT_TARGETS_FSPI}', \
                                                                 '${IMXBOOT_TARGETS_ND}', d), d)}"
 
+# M33 image packed as m33_image.bin by the *_m33 boot container targets
+M33_IMAGE = "imx8ulp_m33_TCM_power_mode_switch.bin"
+
 IMX_BOOT_SOC_TARGET = "iMX8ULP"
 IMX_BOOT_SEEK = "32"
 

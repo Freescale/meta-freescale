@@ -10,4 +10,4 @@ do_install:append() {
     rm ${D}${datadir}/se/README
 }
 
-COMPATIBLE_MACHINE = "(mx943-nxp-bsp|mx952-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx937-nxp-bsp|mx943-nxp-bsp|mx952-nxp-bsp)"
