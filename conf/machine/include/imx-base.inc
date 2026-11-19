@@ -107,7 +107,8 @@ UBOOT_PROVIDES_BOOT_CONTAINER = "0"
 # IMX_DEFAULT_BOOTLOADER.
 UBOOT_PROVIDES_BOOT_CONTAINER:mx8m-generic-bsp = "${@oe.utils.ifelse(d.getVar('IMX_DEFAULT_BOOTLOADER') == 'u-boot-imx', '0', '1')}"
 
-# i.MX95 mainline U-Boot uses binman to assemble the boot container.
+# i.MX93 and i.MX95 mainline U-Boot use binman to assemble the boot container.
+UBOOT_PROVIDES_BOOT_CONTAINER:mx93-mainline-bsp = "1"
 UBOOT_PROVIDES_BOOT_CONTAINER:mx95-mainline-bsp = "1"
 
 # Trusted Firmware for Cortex-A (TF-A) can have different providers, either
@@ -190,7 +191,10 @@ IMX_SOC_REV:mx8ulp-generic-bsp ??= \
     "${@bb.utils.contains('MACHINE_FEATURES', 'soc-reva0', 'A0', \
                                                            'A2', d)}"
 IMX_SOC_REV:mx93-generic-bsp   ??= "A1"
+IMX_SOC_REV:mx937-generic-bsp  ??= "A1"
+IMX_SOC_REV:mx943-generic-bsp  ??= "A1"
 IMX_SOC_REV:mx95-generic-bsp   ??= "B0"
+IMX_SOC_REV:mx952-generic-bsp  ??= "A1"
 
 IMX_SOC_REV_LOWER   = "${@d.getVar('IMX_SOC_REV').lower()}"
 IMX_SOC_REV_UPPER   = "${@d.getVar('IMX_SOC_REV').upper()}"
@@ -222,6 +226,7 @@ MACHINEOVERRIDES_EXTENDER:mx8mm:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxd
 MACHINEOVERRIDES_EXTENDER:mx8mn:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxgpu:imxviv:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mn-generic-bsp:mx8mn-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mnul:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mnul-generic-bsp:mx8mnul-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mp:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxviv:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mpul:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mpul-generic-bsp:mx8mpul-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mq:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxvpu:imxgpu:imxviv:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mq-generic-bsp:mx8mq-nxp-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8qxp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxviv:imxgpu2d:imxgpu3d:imxvulkan:mx8-generic-bsp:mx8-nxp-bsp:mx8x-generic-bsp:mx8x-nxp-bsp:mx8qxp-generic-bsp:mx8qxp-nxp-bsp"
@@ -232,8 +237,11 @@ MACHINEOVERRIDES_EXTENDER:mx8ulp:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxd
 
 MACHINEOVERRIDES_EXTENDER:mx91:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:mx9-generic-bsp:mx9-nxp-bsp:mx91-generic-bsp:mx91-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx93:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx93-generic-bsp:mx93-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx93w:use-nxp-bsp = "mx93w-generic-bsp:mx93w-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx943:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx94-generic-bsp:mx94-nxp-bsp:mx943-generic-bsp:mx943-nxp-bsp"
 MACHINEOVERRIDES_EXTENDER:mx95:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx952:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp:mx952-generic-bsp:mx952-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx937:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxdpu:imxgpu:imxmali:imxgpu2d:imxgpu3d:mx9-generic-bsp:mx9-nxp-bsp:mx95-generic-bsp:mx95-nxp-bsp:mx937-generic-bsp:mx937-nxp-bsp"
 
 #######
 ### Mainline BSP specific overrides
@@ -268,6 +276,7 @@ MACHINEOVERRIDES_EXTENDER:mx8mm:use-mainline-bsp  = "imx-generic-bsp:imx-mainlin
 MACHINEOVERRIDES_EXTENDER:mx8mn:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mn-generic-bsp:mx8mn-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mnul:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mnul-generic-bsp:mx8mnul-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mp:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mp-generic-bsp:mx8mp-mainline-bsp"
+MACHINEOVERRIDES_EXTENDER:mx8mpul:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mpul-generic-bsp:mx8mpul-mainline-bsp"
 MACHINEOVERRIDES_EXTENDER:mx8mq:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8m-generic-bsp:mx8m-mainline-bsp:mx8mq-generic-bsp:mx8mq-mainline-bsp"
 
 MACHINEOVERRIDES_EXTENDER:mx8qxp:use-mainline-bsp = "imx-generic-bsp:imx-mainline-bsp:mx8-generic-bsp:mx8-mainline-bsp:mx8x-generic-bsp:mx8x-mainline-bsp:mx8qxp-generic-bsp:mx8qxp-mainline-bsp"
@@ -305,6 +314,7 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8mn \
     mx8mnul \
     mx8mp \
+    mx8mpul \
     mx8mq \
     mx8qxp \
     mx8dx \
@@ -312,8 +322,11 @@ MACHINEOVERRIDES_EXTENDER_FILTER_OUT = " \
     mx8ulp \
     mx91 \
     mx93 \
+    mx93w \
+    mx937 \
     mx943 \
     mx95 \
+    mx952 \
 "
 
 MACHINEOVERRIDES_FILTERED_OUT_QA_ERROR = "%s overrides cannot be used and need conversion to use the new BSP-specific overrides. Check 'meta-freescale/scripts/convert-bsp-specific-overrides'."
@@ -336,6 +349,7 @@ MACHINE_SOCARCH_SUFFIX:mx8mm-nxp-bsp   = "-mx8mm"
 MACHINE_SOCARCH_SUFFIX:mx8mn-nxp-bsp   = "-mx8mn"
 MACHINE_SOCARCH_SUFFIX:mx8mnul-nxp-bsp = "-mx8mnl"
 MACHINE_SOCARCH_SUFFIX:mx8mp-nxp-bsp   = "-mx8mp"
+MACHINE_SOCARCH_SUFFIX:mx8mpul-nxp-bsp = "-mx8mpul"
 MACHINE_SOCARCH_SUFFIX:mx8mq-nxp-bsp   = "-mx8m"
 MACHINE_SOCARCH_SUFFIX:mx8qxp-nxp-bsp  = "-mx8"
 MACHINE_SOCARCH_SUFFIX:mx8dx-nxp-bsp   = "-mx8"
@@ -343,8 +357,10 @@ MACHINE_SOCARCH_SUFFIX:mx8dxl-nxp-bsp  = "-mx8xl"
 MACHINE_SOCARCH_SUFFIX:mx8ulp-nxp-bsp  = "-mx8ulp"
 MACHINE_SOCARCH_SUFFIX:mx91-nxp-bsp    = "-mx91"
 MACHINE_SOCARCH_SUFFIX:mx93-nxp-bsp    = "-mx93"
+MACHINE_SOCARCH_SUFFIX:mx937-nxp-bsp   = "-mx937"
 MACHINE_SOCARCH_SUFFIX:mx943-nxp-bsp   = "-mx943"
 MACHINE_SOCARCH_SUFFIX:mx95-nxp-bsp    = "-mx95"
+MACHINE_SOCARCH_SUFFIX:mx952-nxp-bsp   = "-mx952"
 
 # For Mainline we use a single SoC suffix as we don't have different build options
 MACHINE_SOCARCH_SUFFIX:imx-mainline-bsp = "-imx"
@@ -457,9 +473,20 @@ IMX_EXTRA_FIRMWARE:mx8ulp-generic-bsp = "firmware-upower firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx91-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx93-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx"
 IMX_EXTRA_FIRMWARE:mx943-nxp-bsp      = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
+IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
+IMX_EXTRA_FIRMWARE:mx952-generic-bsp  = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
+
 PREFERRED_PROVIDER_virtual/imx-system-manager ??= "imx-system-manager"
 PREFERRED_PROVIDER_virtual/imx-oei ??= "imx-oei"
-IMX_EXTRA_FIRMWARE:mx95-generic-bsp   = "imx-boot-firmware-files firmware-ele-imx virtual/imx-system-manager virtual/imx-oei"
+
+# The System Manager firmware name selects the binary imx-boot takes from the
+# deploy folder; imx-system-manager deploys it as
+# ${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}.bin.
+SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT = ""
+SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT:mx943-generic-bsp = "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
+SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT:mx95-generic-bsp  = "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
+SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT:mx952-generic-bsp = "${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}"
+SYSTEM_MANAGER_FIRMWARE_NAME ?= "${SYSTEM_MANAGER_FIRMWARE_NAME_DEFAULT}"
 
 # Firmware
 MACHINE_FIRMWARE ?= ""
@@ -472,16 +499,26 @@ MACHINE_FIRMWARE:append:mx6sl-generic-bsp    = " firmware-imx-epdc"
 MACHINE_FIRMWARE:append:mx6sll-generic-bsp   = " firmware-imx-epdc"
 MACHINE_FIRMWARE:append:mx6ull-generic-bsp   = " firmware-imx-epdc"
 MACHINE_FIRMWARE:append:mx7d-generic-bsp     = " linux-firmware-imx-sdma-imx7d firmware-imx-epdc"
-MACHINE_FIRMWARE:append:mx8qm-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
+MACHINE_FIRMWARE:append:mx8qm-generic-bsp    = " firmware-imx-vpu-amphion"
 MACHINE_FIRMWARE:append:mx8mm-generic-bsp    = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE:append:mx8mn-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn"
 MACHINE_FIRMWARE:append:mx8mnul-generic-bsp  = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn"
 MACHINE_FIRMWARE:append:mx8mp-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-easrc-imx8mn firmware-imx-xcvr-imx8mp firmware-sof-imx"
+MACHINE_FIRMWARE:append:mx8mpul-generic-bsp  = " linux-firmware-imx-sdma-imx7d"
 MACHINE_FIRMWARE:append:mx8mq-generic-bsp    = " linux-firmware-imx-sdma-imx7d"
-MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
-MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " linux-firmware-imx-sdma-imx7d firmware-imx-vpu-amphion"
-MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave" 
+MACHINE_FIRMWARE:append:mx8qxp-generic-bsp   = " firmware-imx-vpu-amphion"
+MACHINE_FIRMWARE:append:mx8dx-generic-bsp    = " firmware-imx-vpu-amphion"
+MACHINE_FIRMWARE:append:mx8ulp-nxp-bsp       = " firmware-ele-imx"
+MACHINE_FIRMWARE:append:mx937-nxp-bsp        = " firmware-imx-vpu-coda980 firmware-imx-vpu-wave511"
+MACHINE_FIRMWARE:append:mx943-nxp-bsp        = " firmware-ele-imx"
+MACHINE_FIRMWARE:append:mx95-generic-bsp     = " firmware-imx-vpu-wave"
 MACHINE_FIRMWARE:append:mx95-mainline-bsp    = " linux-firmware-mali-csffw-arch1012"
+MACHINE_FIRMWARE:append:mx95-nxp-bsp         = " firmware-ele-imx"
+MACHINE_FIRMWARE:append:mx952-nxp-bsp        = " firmware-imx-vpu-coda980 firmware-imx-vpu-wave511 firmware-imx-ld"
+# The i.MX 95 derivatives select the i.MX 95 overrides, but have Wave511 and
+# CODA980 VPUs instead of the i.MX 95 Wave633C.
+MACHINE_FIRMWARE:remove:mx952-generic-bsp    = "firmware-imx-vpu-wave"
+MACHINE_FIRMWARE:remove:mx937-generic-bsp    = "firmware-imx-vpu-wave"
 
 MACHINE_EXTRA_RRECOMMENDS += "${MACHINE_FIRMWARE}"
 
@@ -539,8 +576,10 @@ MACHINE_EXTRA_RRECOMMENDS += " \
 # to a single rootfs.
 SECOEXT_FIRMWARE_NAME ?= ""
 SECOEXT_FIRMWARE_NAME:mx8ulp-generic-bsp ?= "mx8ulp${IMX_SOC_REV_LOWER}ext-ahab-container.img"
-SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img"
-SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx943${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx937-generic-bsp  ?= "mx937${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx943-generic-bsp  ?= "mx94${IMX_SOC_REV_LOWER}runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx95-generic-bsp   ?= "mx95a0runtime-ahab-container.img mx95b0runtime-ahab-container.img mx95b1runtime-ahab-container.img"
+SECOEXT_FIRMWARE_NAME:mx952-generic-bsp  ?= "mx952a0runtime-ahab-container.img mx952a1runtime-ahab-container.img"
 
 # GStreamer 1.0 plugins
 MACHINE_GSTREAMER_1_0_PLUGIN                ?= ""
@@ -580,10 +619,10 @@ PREFERRED_VERSION_gstreamer1.0-vaapi:imx-nxp-bsp        ??= "1.26.6"
 # Use libcamera fork for certain SOCs
 PREFERRED_VERSION_libcamera ??= "${PREFERRED_VERSION_LIBCAMERA_IMX}"
 PREFERRED_VERSION_LIBCAMERA_IMX                = ""
-PREFERRED_VERSION_LIBCAMERA_IMX:mx95-nxp-bsp   = "0.7.1.imx"
-PREFERRED_VERSION_LIBCAMERA_IMX:mx8mm-nxp-bsp  = "0.7.1.imx"
-PREFERRED_VERSION_LIBCAMERA_IMX:mx8ulp-nxp-bsp = "0.7.1.imx"
-PREFERRED_VERSION_LIBCAMERA_IMX:mx8mq-nxp-bsp  = "0.7.1.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx95-nxp-bsp   = "0.7.2.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8mm-nxp-bsp  = "0.7.2.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8ulp-nxp-bsp = "0.7.2.imx"
+PREFERRED_VERSION_LIBCAMERA_IMX:mx8mq-nxp-bsp  = "0.7.2.imx"
 
 # Determines if the SoC has support for Vivante kernel driver
 SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT        = "0"
@@ -594,9 +633,20 @@ SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT:imxgpu = "1"
 #   1 - machine has Vivante GPU driver support
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT ?= "${SOC_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT}"
 
+# Drivers for the i.MX Mali GPU: mali-imx (Arm Mali DDK), mesa (Panfrost),
+# or both. With both, the dual-driver mode installs them side by side, Mesa
+# provides the build-time API, and the mali-imx tool switches between them
+# at runtime; IMX_MALI_DEFAULT_DRIVER (mali-imx or mesa) is used at first
+# boot.
+IMX_MALI_DRIVERS        ??= "mali-imx"
+IMX_MALI_DEFAULT_DRIVER ??= "mali-imx"
+IMX_MALI_DUAL_DRIVER          = "0"
+IMX_MALI_DUAL_DRIVER:imxmali  = "${@bb.utils.contains('IMX_MALI_DRIVERS', 'mali-imx mesa', '1', '0', d)}"
+IMX_MALI_PROVIDER             = "${@bb.utils.contains('IMX_MALI_DRIVERS', 'mesa', 'mesa', 'mali-imx', d)}"
+
 # Override graphics for i.MX GPU
 IMXGPU_GRAPHICS_PROVIDER:imxviv  ?= "imx-gpu-viv"
-IMXGPU_GRAPHICS_PROVIDER:imxmali ?= "mali-imx"
+IMXGPU_GRAPHICS_PROVIDER:imxmali ?= "${IMX_MALI_PROVIDER}"
 
 PREFERRED_PROVIDER_virtual/egl:imxgpu          ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgl:imxgpu        ?= "mesa-gl"
@@ -604,6 +654,14 @@ PREFERRED_PROVIDER_virtual/mesa:imxgpu         ?= "mesa-gl"
 PREFERRED_PROVIDER_virtual/libgles1:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles2:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
 PREFERRED_PROVIDER_virtual/libgles3:imxgpu3d   ?= "${IMXGPU_GRAPHICS_PROVIDER}"
+
+# With Mesa on the Mali GPU, the full Mesa, built from the NXP fork, also
+# provides desktop GL and GBM.
+PREFERRED_PROVIDER_virtual/libgl:imxmali       ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'mesa', 'mesa-gl', d)}"
+PREFERRED_PROVIDER_virtual/mesa:imxmali        ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'mesa', 'mesa-gl', d)}"
+PREFERRED_PROVIDER_virtual/libgbm:imxmali      ?= "${IMX_MALI_PROVIDER}"
+PREFERRED_VERSION_mesa:imxmali                 ??= "26.2.0.imx"
+PREFERRED_VERSION_mesa-tools-native:imxmali    ??= "26.2.0.imx"
 
 # The Vivante stack provides virtual/libgbm only on i.MX 8, and mesa-gl does
 # not build it, so nothing provides it for the older Vivante GPUs. Skip the
@@ -632,7 +690,7 @@ PREFERRED_PROVIDER_virtual/libopencl1:imxviv   ?= "${@d.getVar('IMXGPU_OPENCL_PR
 # Set preferred OpenCL ICD runtime
 PREFERRED_RPROVIDER_virtual-opencl-icd         ?= "libopencl-mesa"
 PREFERRED_RPROVIDER_virtual-opencl-icd:imxviv  ?= "${@oe.utils.conditional('IMXGPU_OPENCL_PROVIDER', 'imx-gpu-viv', 'libopencl-imx', 'libopencl-mesa', d)}"
-PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "mali-imx-libopencl"
+PREFERRED_RPROVIDER_virtual-opencl-icd:imxmali ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'libopencl-mesa', 'mali-imx-opencl-icd', d)}"
 
 PREFERRED_PROVIDER_virtual/libg2d              ?= "imx-g2d-gpu"
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu       ?= "imx-g2d-dpu"
@@ -642,7 +700,7 @@ PREFERRED_PROVIDER_virtual/libg2d:mx943-nxp-bsp ?= "imx-g2d-pxp"
 # Set preferred Vulkan ICD runtime
 PREFERRED_RPROVIDER_virtual-vulkan-icd         ?= "mesa-vulkan-drivers"
 PREFERRED_RPROVIDER_virtual-vulkan-icd:imxviv  ?= "libvulkan-imx"
-PREFERRED_RPROVIDER_virtual-vulkan-icd:imxmali ?= "mali-imx-libvulkan"
+PREFERRED_RPROVIDER_virtual-vulkan-icd:imxmali ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'mesa-vulkan-drivers', 'mali-imx-libvulkan', d)}"
 
 PREFERRED_VERSION_weston:imx-nxp-bsp      ??= "15.0.1.imx"
 # i.MX 6 & 7 stay on weston 10.0 for fbdev
@@ -763,7 +821,7 @@ TOOLCHAIN_HOST_TASK:append:imx-generic-bsp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'nativesdk-wayland', '', d)} \
 "
 
-SECO_FIRMWARE_NAME:mx943-generic-bsp ?= "mx943${IMX_SOC_REV_LOWER}-ahab-container.img"
+SECO_FIRMWARE_NAME:mx943-generic-bsp ?= "mx94${IMX_SOC_REV_LOWER}-ahab-container.img"
 
 # Allow meta-imx to add NIP devices information until upstreamed.
 include conf/machine/include/imx-base-extend.inc

@@ -10,12 +10,12 @@ DEPENDS += "imx-parser"
 
 inherit pkgconfig meson
 
-PV = "4.11.0+git"
+PV = "4.11.1+git"
 
-SRCBRANCH = "MM_04.11.00_2605_L6.18.20"
+SRCBRANCH = "MM_04.11.01_2608_L6.18.37"
 IMXMP4PARSER_SRC ?= "git://github.com/nxp-imx/imx-mp4-parser.git;protocol=https"
 SRC_URI = "${IMXMP4PARSER_SRC};branch=${SRCBRANCH}"
-SRCREV = "549385967c668f4f43f4c1b58d15f583fceecbed"
+SRCREV = "04126f9a0f38169b892bb9d2c426e834645e1aed"
 
 # Choose between 32-bit and 64-bit binaries and between Soft Float-Point and Hard Float-Point
 EXTRA_OECONF = "${@bb.utils.contains('TUNE_FEATURES', 'aarch64', '--enable-armv8', \

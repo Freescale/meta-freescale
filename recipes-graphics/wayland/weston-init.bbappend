@@ -168,8 +168,18 @@ do_install:append:imx-generic-bsp() {
 
 do_install:append:mx6-nxp-bsp() {
     update_file "--no-resizeable" "--no-clients-resize" ${D}${sysconfdir}/xdg/weston/weston.ini
+
+    if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
+        # Don't start weston if no display hardware is available
+        insert_line_after "^\[Unit\]" "ConditionPathExists=/dev/fb0" ${D}${systemd_system_unitdir}/weston.service
+    fi
 }
 
 do_install:append:mx7-nxp-bsp() {
     update_file "--no-resizeable" "--no-clients-resize" ${D}${sysconfdir}/xdg/weston/weston.ini
+
+    if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
+        # Don't start weston if no display hardware is available
+        insert_line_after "^\[Unit\]" "ConditionPathExists=/dev/fb0" ${D}${systemd_system_unitdir}/weston.service
+    fi
 }

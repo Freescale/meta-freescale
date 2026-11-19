@@ -30,12 +30,12 @@ SECTION = "kernel"
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.18.24
+#    tag: v6.18.56
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: lf-6.18-1.0.x-imx
+#    tag: lf-6.18.37-2.1.0
 #
 # ------------------------------------------------------------------------------
 # 3. Critical patches (SHA(s))
@@ -44,14 +44,22 @@ SECTION = "kernel"
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.18.24.. ^mainline/linux-6.18.y ^NXP/lf-6.18.y
-# - 6e811374f6340 drm/imx: lcdifv3: Fix videomode settings
-# - 40b594773feaf drm: of: Fix build without CONFIG_OF
-# - 40d5cc16c304a arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
-# - eff109d884f3b gpu: drm: cadence: select hdmi helper
-# - ddfe8741dab43 of: enable using OF_DYNAMIC without OF_UNITTEST
-# - 1b982f1a29bbc arm64: dts: imx8mq: drop cpu-idle-states
-# - de4b96e987407 hwrng: optee: support generic crypto
+# $ git log --oneline  --no-merges v6.18.56.. ^mainline/linux-6.18.y ^NXP/lf-6.18.y
+# - ecf00fd8280f3 Remove imx7d_src_init function
+# - e351e675ed4fd arm64: dts: imx8mp: align dts for Olimex with NXP's rename of gpu labels
+# - a42563621d1d1 media: imx8-isi: add RAW Bayer and grayscale pixel formats
+# - 4ae13bfc6ca2c media: imx8-isi: fix source format negotiation
+# - ff80ed1598c4a media: imx8mp-csi: clear GASKET data type before updating format
+# - e41fea806a2e9 arm64: dts: imx8mp: CANbus transciever control for Olimex
+# - 5c928f76b2998 arm64: dts: imx8mp: Fix Olimex EVK/SOM CSI pins
+# - 28ecd525460cd imx8mp-olimex.dts: Olimex iMX8MP-SOM-EVB-IND
+# - 799b8cdc006e4 drm/imx: lcdifv3: Fix videomode settings
+# - e8d7910da8fac drm: of: Fix build without CONFIG_OF
+# - 900dbbfc0d8d8 arm64: dts: imx8mm-evk-qca-wifi: enable support for bluetooth
+# - b94dd9478717e gpu: drm: cadence: select hdmi helper
+# - 7f6f66990e131 of: enable using OF_DYNAMIC without OF_UNITTEST
+# - 0e87674352943 arm64: dts: imx8mq: drop cpu-idle-states
+# - 0190cfd1945a8 hwrng: optee: support generic crypto
 
 #
 # NOTE to upgraders:
@@ -62,16 +70,16 @@ SECTION = "kernel"
 
 require linux-imx.inc
 
-KBRANCH = "6.18-1.0.x-imx"
+KBRANCH = "6.18-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "1d08c2fc5b376a84a3e7092651289fb8e8ffc1af"
+SRCREV = "4ce72be4ed55a5d6e1beba28d07078fa13742389"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.18.24"
+LINUX_VERSION = "6.18.56"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
