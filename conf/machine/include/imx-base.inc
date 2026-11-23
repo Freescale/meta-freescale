@@ -444,6 +444,7 @@ MACHINE_SOCARCH_FILTER:append:imx-nxp-bsp = " \
 MACHINE_SOCARCH_CONSUMERS = " \
     gtk+3 \
     gtk4 \
+    libcamera \
     libepoxy \
     libva \
     packagegroup-self-hosted \
