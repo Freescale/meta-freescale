@@ -1,0 +1,27 @@
+From c801d06c23ca455a1a34f6c0a28d7c71c04d88bb Mon Sep 17 00:00:00 2001
+From: Joshua Wienecke <joshua.wienecke_1@nxp.com>
+Date: Fri, 14 Aug 2026 10:37:21 -0500
+Subject: [PATCH] LF-18747 cl/store-hi16-generic: fix incompatible pointer type
+ cast
+
+Upstream-Status: Pending
+Signed-off-by: Joshua Wienecke <joshua.wienecke_1@nxp.com>
+---
+ tests/cl/program/execute/store-hi16-generic.cl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/cl/program/execute/store-hi16-generic.cl b/tests/cl/program/execute/store-hi16-generic.cl
+index 807818971..58d117c31 100644
+--- a/tests/cl/program/execute/store-hi16-generic.cl
++++ b/tests/cl/program/execute/store-hi16-generic.cl
+@@ -46,6 +46,6 @@ kernel void truncstorei8_hi16_generic(volatile global uchar* out, volatile globa
+     int gid = get_global_id(0);
+     uint value = in[gid];
+ 
+-    volatile generic uchar* generic_out = (volatile generic ushort*)out;
++    volatile generic uchar* generic_out = (volatile generic uchar*)out;
+     generic_out[gid] = (uchar)(value >> 16);
+ }
+-- 
+2.43.0
+

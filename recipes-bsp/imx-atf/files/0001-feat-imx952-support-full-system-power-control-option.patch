@@ -1,0 +1,35 @@
+From 6905ae516d5d287f0eb99610c7a657df182fe462 Mon Sep 17 00:00:00 2001
+From: Matheus Barbosa <matheus.barbosa@toradex.com>
+Date: Fri, 6 Nov 2026 10:50:09 -0300
+Subject: [PATCH] feat(imx952): support full system power control option
+
+Add an optional build-time configuration to enable full system
+shutdown and reset control through SCMI.
+
+Bring imx952 in line with imx95 and imx94 so SYS_PWR_FULL_CTRL
+takes effect.
+
+Upstream-Status: Submitted [https://review.trustedfirmware.org/c/TF-A/trusted-firmware-a/+/56250]
+Change-Id: Ie5deddbe3450deb1dfbdb5b0e86a2330429fcf4d
+Signed-off-by: Matheus Barbosa <matheus.barbosa@toradex.com>
+---
+ plat/imx/imx9/imx952/platform.mk | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/plat/imx/imx9/imx952/platform.mk b/plat/imx/imx9/imx952/platform.mk
+index 0cb69957e4ce..f823f0bca416 100644
+--- a/plat/imx/imx9/imx952/platform.mk
++++ b/plat/imx/imx9/imx952/platform.mk
+@@ -55,6 +55,9 @@ PROGRAMMABLE_RESET_ADDRESS := 1
+ COLD_BOOT_SINGLE_CPU := 1
+ ERRATA_A55_1530923 := 1
+ 
++SYS_PWR_FULL_CTRL ?= 0
++$(eval $(call add_define,SYS_PWR_FULL_CTRL))
++
+ HAS_XSPI_SUPPORT := 1
+ $(eval $(call assert_boolean,HAS_XSPI_SUPPORT))
+ $(eval $(call add_define,HAS_XSPI_SUPPORT))
+-- 
+2.53.0
+
