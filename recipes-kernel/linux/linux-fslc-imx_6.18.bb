@@ -30,7 +30,7 @@ SECTION = "kernel"
 # ------------------------------------------------------------------------------
 # 1. Stable (tag or SHA(s))
 # ------------------------------------------------------------------------------
-#    tag: v6.18.56
+#    tag: v6.18.65
 #
 # ------------------------------------------------------------------------------
 # 2. NXP-specific (tag or SHA(s))
@@ -44,7 +44,13 @@ SECTION = "kernel"
 # conflicts, prioritizing NXP BSP source code as the latest vendor updates.
 # Additional commits may exist to better acommodate yocto builds.
 #
-# $ git log --oneline  --no-merges v6.18.56.. ^mainline/linux-6.18.y ^NXP/lf-6.18.y
+# $ git log --oneline  --no-merges v6.18.65.. ^mainline/linux-6.18.y ^NXP/lf-6.18.y
+# - 3c483647d1e01 arm64: dts: imx95: Avoid 32-bit PCIe window System RAM overlap
+# - d47d72b90c9cb drm/imx: dpu95: add dependency on IMX_DISPMU
+# - 05029082c3962 mxc: vpu: hantroenc: Add guard for compat ioctl
+# - 292082ad56da7 regulator: pf1550-rpmsg: combine module init paths
+# - b3a2acf4b0b9b fix: mfd driver does not compile properly as module
+# - f294b40e64ac7 Resolve more conflicts trying to make allyesconfig work
 # - ecf00fd8280f3 Remove imx7d_src_init function
 # - e351e675ed4fd arm64: dts: imx8mp: align dts for Olimex with NXP's rename of gpu labels
 # - a42563621d1d1 media: imx8-isi: add RAW Bayer and grayscale pixel formats
@@ -72,14 +78,14 @@ require linux-imx.inc
 
 KBRANCH = "6.18-2.1.x-imx"
 SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=https"
-SRCREV = "4ce72be4ed55a5d6e1beba28d07078fa13742389"
+SRCREV = "0eb3d176cb8c8ea0d6f6cbb0d39ea4699246b144"
 
 # PV is defined in the base in linux-imx.inc file and uses the LINUX_VERSION definition
 # required by kernel-yocto.bbclass.
 #
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
-LINUX_VERSION = "6.18.56"
+LINUX_VERSION = "6.18.65"
 
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v7_defconfig"
 KBUILD_DEFCONFIG:mx7-generic-bsp = "imx_v7_defconfig"
