@@ -36,7 +36,7 @@ do_deploy () {
     install -d ${DEPLOYDIR}/ddr-phy
     install -m 755 ${S}/${REGLEX}/*.bin ${DEPLOYDIR}/ddr-phy
 }
-addtask deploy before do_populate_sysroot after do_install
+addtask deploy after do_install before do_build
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
