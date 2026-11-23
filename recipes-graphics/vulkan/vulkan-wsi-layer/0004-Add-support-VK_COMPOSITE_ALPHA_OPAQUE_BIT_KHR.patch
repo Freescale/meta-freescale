@@ -1,0 +1,155 @@
+From 9ae01fc4d5f2b015568007728dc1bae30ec7880e Mon Sep 17 00:00:00 2001
+From: Yuan Tian <yuan.tian@nxp.com>
+Date: Sat, 25 Jul 2026 14:16:23 +0800
+Subject: [PATCH 4/7] Add support VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
+
+Mali vulkan driver doesn't support VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR. It
+caused unwanted blending effect in many vulkan cases. Add support of this
+feature to solve the problem.
+
+JIRA#MGS-6823/MGS-6828
+
+Upstream-Status: Pending
+
+Signed-off-by: Yuan Tian <yuan.tian@nxp.com>
+Signed-off-by: Jiyu Yang <jiyu.yang@nxp.com>
+---
+ wsi/wayland/swapchain.cpp | 64 ++++++++++++++++++++++++++++++++++++++-
+ wsi/wayland/swapchain.hpp | 10 ++++++
+ 2 files changed, 73 insertions(+), 1 deletion(-)
+
+diff --git a/wsi/wayland/swapchain.cpp b/wsi/wayland/swapchain.cpp
+index 62ce5ce..a6fc962 100644
+--- a/wsi/wayland/swapchain.cpp
++++ b/wsi/wayland/swapchain.cpp
+@@ -1,5 +1,6 @@
+ /*
+- * Copyright (c) 2017-2025 Arm Limited.
++ * Copyright (c) 2017-2026 Arm Limited.
++ * Copyright (c) 2026 NXP
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -112,10 +113,43 @@ swapchain::~swapchain()
+       }
+ 
+       wl_display_roundtrip_queue(m_display, m_buffer_queue);
++      if (wlc.opaque_region)
++      {
++         wl_region_destroy(wlc.opaque_region);
++         wl_compositor_destroy(wlc.wl_compositor);
++         wl_registry_destroy(wlc.registry);
++         wlc = {};
++      }
+       wl_event_queue_destroy(m_buffer_queue);
+    }
+ }
+ 
++static void
++registry_handle_global_remove(void * /* data */, struct wl_registry * /* registry */,
++         uint32_t /* name */)
++{
++   /* nothing to do */
++}
++
++static void
++registry_handle_global(void *data, struct wl_registry *registry, uint32_t name,
++         const char *interface, uint32_t /* version */)
++{
++   wl_context *pwlc = (wl_context *)data;
++
++   if (!pwlc->wl_compositor && strcmp(interface, wl_compositor_interface.name) == 0)
++   {
++      pwlc->wl_compositor = (struct wl_compositor *)wl_registry_bind(registry, name,
++            &wl_compositor_interface, 1);
++      wl_proxy_set_queue((struct wl_proxy *)pwlc->wl_compositor, pwlc->wl_queue);
++   }
++}
++
++static const struct wl_registry_listener registry_listener = {
++    registry_handle_global,
++    registry_handle_global_remove
++};
++
+ VkResult swapchain::add_required_extensions(VkDevice device, const VkSwapchainCreateInfoKHR *swapchain_create_info)
+ {
+    UNUSED(device);
+@@ -245,6 +279,30 @@ VkResult swapchain::init_platform(VkDevice device, const VkSwapchainCreateInfoKH
+       return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+ 
++   if (swapchain_create_info->compositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
++   {
++      wlc.wl_queue = m_buffer_queue;
++      wlc.registry = wl_display_get_registry(m_display);
++      wl_proxy_set_queue((struct wl_proxy *)wlc.registry, m_buffer_queue);
++      wl_registry_add_listener(wlc.registry, &registry_listener, &wlc);
++
++      wl_display_roundtrip_queue(m_display, m_buffer_queue);
++
++      if (wlc.wl_compositor)
++      {
++         wlc.opaque_region = wl_compositor_create_region(wlc.wl_compositor);
++         wl_proxy_set_queue((struct wl_proxy *)wlc.opaque_region, m_buffer_queue);
++         wl_region_add(wlc.opaque_region, 0, 0,
++                 (int32_t)swapchain_create_info->imageExtent.width,
++                 (int32_t)swapchain_create_info->imageExtent.height);
++      } else {
++         WSI_LOG_WARNING("Error adding to pending present feedback list");
++         wl_registry_destroy(wlc.registry);
++         wlc = {};
++         // fallback: continue without opaque
++      }
++   }
++
+    return init_image_factory(*swapchain_create_info);
+ }
+ 
+@@ -408,6 +466,10 @@ void swapchain::present_image(const pending_present_request &pending_present)
+       set_error_state(VK_ERROR_SURFACE_LOST_KHR);
+    }
+ 
++   if (wlc.opaque_region)
++   {
++       wl_surface_set_opaque_region(m_surface, wlc.opaque_region);
++   }
+    wl_surface_attach(m_surface, image_data->get_buffer(), 0, 0);
+ 
+    auto present_sync_fd = static_cast<sync_fd_fence_sync *>(image.get_present_fence())->export_sync_fd();
+diff --git a/wsi/wayland/swapchain.hpp b/wsi/wayland/swapchain.hpp
+index 5fabb5c..ac645fd 100644
+--- a/wsi/wayland/swapchain.hpp
++++ b/wsi/wayland/swapchain.hpp
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright (c) 2017-2025 Arm Limited.
++ * Copyright (c) 2026 NXP
+  *
+  * SPDX-License-Identifier: MIT
+  *
+@@ -51,6 +52,14 @@ namespace wsi
+ namespace wayland
+ {
+ 
++struct wl_context
++{
++   struct wl_event_queue *wl_queue;
++   struct wl_compositor *wl_compositor;
++   struct wl_registry *registry;
++   struct wl_region *opaque_region;
++};
++
+ class swapchain : public wsi::swapchain_base
+ {
+ public:
+@@ -156,6 +165,7 @@ private:
+       const VkSwapchainCreateInfoKHR &swapchain_create_info);
+ 
+    struct wl_display *m_display;
++   struct wl_context wlc{};
+    struct wl_surface *m_surface;
+    /** Raw pointer to the WSI Surface that this swapchain was created from. The Vulkan specification ensures that the
+     * surface is valid until swapchain is destroyed. */
+-- 
+2.43.0
+

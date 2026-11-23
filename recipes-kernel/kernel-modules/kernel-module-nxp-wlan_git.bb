@@ -12,8 +12,8 @@ SRC_URI = "\
     file://0001-mlinux-moal_main-fix-device-wakeup-capability.patch \
 "
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "a5fe4e194bf99315e349d81d77d6dfacec70757a"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "44f90628e368de23e9991de424fc2a1799c81044"
 
 RREPLACES:${PN} = "kernel-module-nxp89xx"
 RPROVIDES:${PN} = "kernel-module-nxp89xx"

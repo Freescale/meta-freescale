@@ -15,8 +15,8 @@ PE = "1"
 PV = "5.9+${SRCPV}"
 
 SRC_URI = "git://github.com/nxp-imx/imx-lib.git;protocol=https;branch=${SRCBRANCH}"
-SRCBRANCH = "lf-6.18.2_1.0.0"
-SRCREV = "6cad1ba39d16247088f6a45dc07bbbf2cf96a332"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+SRCREV = "56df2c4665c311a63e9eb6dc254773167a60b1ef"
 
 inherit use-imx-headers
 

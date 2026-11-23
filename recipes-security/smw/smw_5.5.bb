@@ -1,0 +1,101 @@
+# Copyright 2020-2026 NXP
+require recipes-security/optee-imx/optee-fslc.inc
+
+SUMMARY = "NXP i.MX Security Middleware Library"
+DESCRIPTION = "NXP i.MX Security Middleware (SMW) library providing a unified API to the i.MX platform hardware security subsystems (e.g. EdgeLock Enclave and SECO) for key management and cryptographic operations."
+HOMEPAGE = "https://github.com/nxp-imx/imx-smw"
+SECTION = "base"
+LICENSE = "Apache-2.0 & BSD-3-Clause & Zlib"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=ff20c8e51b28869d9cdec70a818d163f \
+                    file://${PSA_ARCH_TESTS_SRC_PATH}/LICENSE.md;md5=2a944942e1496af1886903d274dedb13"
+
+DEPENDS += "\
+    json-c \
+    optee-client \
+    optee-os-tadevkit \
+    python3-cryptography-native \
+    sqlite3 \
+"
+
+SRC_URI = "${SMW_LIB_SRC};branch=${SRCBRANCH_smw};name=smw \
+           ${PSA_LIB_SRC};branch=${SRCBRANCH_psa};name=psa;destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}/${PSA_ARCH_TESTS_SRC_PATH}"
+SMW_LIB_SRC ?= "git://github.com/nxp-imx/imx-smw.git;protocol=https"
+PSA_LIB_SRC ?= "git://github.com/ARM-software/psa-arch-tests.git;protocol=https"
+PSA_ARCH_TESTS_SRC_PATH = "../psa-arch-tests"
+
+SRCBRANCH_smw = "release/version_5.x"
+SRCBRANCH_psa = "main"
+SRCREV_smw = "c751c1ea7fbdcbbcd773841789e8ef1d363870bc"
+SRCREV_psa = "463cb95ada820bc6f758d50066cf8c0ed5cc3a02"
+SRCREV_FORMAT = "smw_psa"
+
+inherit cmake features_check python3native
+
+REQUIRED_MACHINE_FEATURES = "optee"
+
+PACKAGECONFIG ??= "${PACKAGECONFIG_DRIVERS} ${PACKAGECONFIG_FEATURES}"
+PACKAGECONFIG_DRIVERS = ""
+PACKAGECONFIG_DRIVERS:mx8x-nxp-bsp = "ele-seco"
+PACKAGECONFIG_DRIVERS:mx8ulp-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx91-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx93-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx943-nxp-bsp = "ele ela"
+PACKAGECONFIG_DRIVERS:mx95-nxp-bsp = "ele"
+PACKAGECONFIG_DRIVERS:mx952-nxp-bsp = "ele ela"
+
+PACKAGECONFIG_FEATURES = ""
+PACKAGECONFIG_FEATURES:mx91-nxp-bsp = "tls"
+PACKAGECONFIG_FEATURES:mx93-nxp-bsp = "tls"
+PACKAGECONFIG_FEATURES:mx943-nxp-bsp = "tls"
+PACKAGECONFIG_FEATURES:mx95-nxp-bsp = "tls"
+PACKAGECONFIG_FEATURES:mx952-nxp-bsp = "tls"
+
+PACKAGECONFIG[ele] = "-DELE_ROOT=${STAGING_DIR_HOST},,imx-secure-enclave,,,ele-seco"
+PACKAGECONFIG[ele-seco] = "-DSECO_ROOT=${STAGING_DIR_HOST},,imx-secure-enclave-seco,,,ele"
+PACKAGECONFIG[ela] = "-DENABLE_ELA=ON,-DENABLE_ELA=OFF,imx-secure-enclave-prime"
+PACKAGECONFIG[tls] = "-DENABLE_TLS=ON,-DENABLE_TLS=OFF,openssl"
+
+CFLAGS[unexport] = "1"
+CPPFLAGS[unexport] = "1"
+AS[unexport] = "1"
+LD[unexport] = "1"
+
+# setting the linker options
+TARGET_LDFLAGS:remove = "${DEBUG_PREFIX_MAP}"
+
+EXTRA_OECMAKE = "\
+    -DYOCTO_BUILD=ON \
+    -DTA_DEV_KIT_ROOT=${TA_DEV_KIT_DIR} \
+    -DTEEC_ROOT=${STAGING_DIR_HOST} \
+    -DJSONC_ROOT="${COMPONENTS_DIR}/${TARGET_ARCH}/json-c/usr"\
+    -DPSA_ARCH_TESTS_SRC_PATH=${PSA_ARCH_TESTS_SRC_PATH} \
+    -DTEE_TA_DESTDIR=${nonarch_base_libdir} \
+"
+
+OECMAKE_TARGET_COMPILE += "build_tests"
+OECMAKE_TARGET_INSTALL += "install_tests"
+
+# The TAs are built against the machine's optee-os-tadevkit.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+PACKAGES =+ "${PN}-tests"
+
+FILES:${PN} += "\
+    ${datadir}/${BPN}-cli/* \
+    ${nonarch_base_libdir}/optee_armtz/* \
+"
+
+# The debug package and the test binaries embed build paths that the upstream
+# build does not sanitize, so the buildpaths QA check cannot pass for them.
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP:${PN}-dbg = "buildpaths"
+
+# Only the test executables, the CLI tools stay in the main package
+FILES:${PN}-tests += "${bindir}/*test* ${datadir}/${BPN}/*"
+# The CLI tools use bash for their command line completion
+RDEPENDS:${PN} = "bash"
+RDEPENDS:${PN}-tests = "cmake"
+# nooelint: oelint.vars.insaneskip
+INSANE_SKIP:${PN}-tests = "buildpaths"
+
+COMPATIBLE_MACHINE = "(imx-nxp-bsp)"

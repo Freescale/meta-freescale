@@ -1,0 +1,53 @@
+From dd35a08cb11eccf49e6cca8fd0a1d8d4af3cf4bb Mon Sep 17 00:00:00 2001
+From: Yuan Tian <yuan.tian@nxp.com>
+Date: Thu, 23 Nov 2023 01:55:05 +0800
+Subject: [PATCH 5/7] MGS-7487 [#nxp] fix Vulkan test report warning msg
+
+destroy wl_compositor and wl_registry attached to opaque region for VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR to fix warnings.
+
+warning: queue 0xaaaaa6940 destroyed while proxies still attached:
+wl_compositor@18 still attached
+wl_registry@16 still attached
+
+Upstream-Status: Pending
+
+Signed-off-by: Yuan Tian <yuan.tian@nxp.com>
+---
+ wsi/wayland/swapchain.cpp | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/wsi/wayland/swapchain.cpp b/wsi/wayland/swapchain.cpp
+index a6fc962..a92e6c5 100644
+--- a/wsi/wayland/swapchain.cpp
++++ b/wsi/wayland/swapchain.cpp
+@@ -101,6 +101,13 @@ swapchain::~swapchain()
+ {
+    teardown();
+ 
++   if (wlc.opaque_region)
++   {
++      wl_compositor_destroy(wlc.wl_compositor);
++      wl_registry_destroy(wlc.registry);
++      wl_region_destroy(wlc.opaque_region);
++      wlc = {};
++   }
+    if (m_buffer_queue != nullptr)
+    {
+       for (auto &img : m_swapchain_images)
+@@ -113,13 +120,6 @@ swapchain::~swapchain()
+       }
+ 
+       wl_display_roundtrip_queue(m_display, m_buffer_queue);
+-      if (wlc.opaque_region)
+-      {
+-         wl_region_destroy(wlc.opaque_region);
+-         wl_compositor_destroy(wlc.wl_compositor);
+-         wl_registry_destroy(wlc.registry);
+-         wlc = {};
+-      }
+       wl_event_queue_destroy(m_buffer_queue);
+    }
+ }
+-- 
+2.43.0
+
