@@ -26,12 +26,12 @@ SRC_URI = "git://github.com/Freescale/linux-fslc.git;branch=${KBRANCH};protocol=
 # LINUX_VERSION define should match to the kernel version referenced by SRC_URI and
 # should be updated once patchlevel is merged.
 #
-# Linux kernel stable 7.2.15 changelog:
-# https://cdn.kernel.org/pub/linux/kernel/v7.x/ChangeLog-7.2.15
-LINUX_VERSION = "7.2.15"
+# Linux kernel stable 7.3.6 changelog:
+# https://cdn.kernel.org/pub/linux/kernel/v7.x/ChangeLog-7.3.6
+LINUX_VERSION = "7.3.6"
 
-KBRANCH = "7.2.x+fslc"
-SRCREV = "6cd955857115a8f594265399bb8fe7d54b8c2c19"
+KBRANCH = "7.3.x+fslc"
+SRCREV = "b9158fb42e1b94dbc30d27fd1bd802f9295a6ca7"
 
 KBUILD_DEFCONFIG:mx5-generic-bsp = "imx_v6_v7_defconfig"
 KBUILD_DEFCONFIG:mx6-generic-bsp = "imx_v6_v7_defconfig"
