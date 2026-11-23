@@ -54,10 +54,13 @@ do_install:append() {
 
 PACKAGE_ARCH = "${MACHINE_SOCARCH}"
 
-# The fork is only meant for the i.MX Mali GPU. Not set for
-# mesa-tools-native, as native recipes do not see machine overrides; it is
-# selected with PREFERRED_VERSION on the Mali machines instead.
+# The fork is only meant for the i.MX Mali GPU.
 COMPATIBLE_MACHINE = "(imxmali)"
+
+# The precompiled shaders must come from the fork's own mesa_clc and
+# precomp compiler, so take them from mesa-imx-tools-native, built from
+# the same tree, rather than OE-core's mesa-tools-native.
+PACKAGECONFIG[libclc] = "-Dmesa-clc=system -Dprecomp-compiler=system,,mesa-imx-tools-native"
 
 # The packages below are defined in OE-core's mesa.inc, which oelint cannot
 # read (see oelint.constants.json), so it does not know them.
