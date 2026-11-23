@@ -1,7 +1,7 @@
 # This recipe is modified for i.MX. For ease of maintenance the recipe itself
 # is a verbatim copy of a OE-core recipe, so it can be diffed against
 # upstream directly; the i.MX customization lives in the required
-# mesa-tools-native_26.2.0.imx.inc.
+# mesa-imx-tools-native_26.2.0.imx.inc.
 ########### OE-core copy ##################
 # Upstream hash: cf443571444c98bcf7d5daeaa310e01b0ca6e199
 
@@ -32,4 +32,4 @@ EXTRA_OEMESON += " \
 "
 ########### End of OE-core copy ###########
 
-require mesa-tools-native_26.2.0.imx.inc
+require mesa-imx-tools-native_26.2.0.imx.inc

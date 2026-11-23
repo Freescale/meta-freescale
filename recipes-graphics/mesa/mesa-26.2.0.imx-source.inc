@@ -1,5 +1,5 @@
 # NXP mesa-imx source, shared by mesa_26.2.0.imx.bb and
-# mesa-tools-native_26.2.0.imx.bb so both build the same tree.
+# mesa-imx-tools-native_26.2.0.imx.bb so both build the same tree.
 # Not a standalone recipe: required by their .inc files.
 
 # Also set by OE-core's mesa.inc, which oelint cannot read; restated here
