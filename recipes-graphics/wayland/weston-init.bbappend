@@ -1,3 +1,17 @@
+# weston-init customisation for i.MX
+#
+# - Mainline BSP (use-mainline-bsp): nothing in this file applies. Those
+#   machines use the OE-core weston-init recipe unchanged, exactly as any
+#   other machine does (weston user, OE-core weston.ini, xwayland following
+#   the x11 DISTRO_FEATURE, etc.).
+#
+# - NXP BSP (use-nxp-bsp): every setting that changes the result is scoped
+#   to imx-nxp-bsp, or to SoC/GPU overrides (mxN-nxp-bsp, imxgpu2d, ...)
+#   that only exist with the NXP BSP. It adapts weston-init to the NXP
+#   weston fork and to the defaults NXP ships and tests in its BSP releases.
+#   The few unscoped lines are fallback defaults and PACKAGECONFIG flag
+#   declarations, which have no effect on their own.
+#
 # The oelint.vars.noncoreoverride suppressions below are the layer's
 # machine-gated dispatch idiom: none of it can carry an override of its own,
 # and all of it is inert off-target -- measured on qemuarm64 with bitbake -e,
@@ -19,9 +33,8 @@ REQUIRED_DISTRO_FEATURES:remove = "${IMX_REQUIRED_DISTRO_FEATURES_REMOVE}"
 
 SRC_URI:append:mx6sl-nxp-bsp = " file://weston.config"
 
-# Scoped to imx-generic-bsp: unscoped this re-defaulted oe-core's PACKAGECONFIG
-# on every machine, adding 'no-idle-timeout' to ones this layer does not own.
-PACKAGECONFIG:imx-generic-bsp ??= "\
+# NXP BSP only: the mainline BSP keeps oe-core's PACKAGECONFIG default.
+PACKAGECONFIG:imx-nxp-bsp ??= "\
     no-idle-timeout \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xwayland', '', d)} \
     ${PACKAGECONFIG_GBM_FORMAT} \
@@ -29,9 +42,6 @@ PACKAGECONFIG:imx-generic-bsp ??= "\
     ${PACKAGECONFIG_SIZE} \
     ${PACKAGECONFIG_USE_G2D} \
 "
-
-# Mainline BSPs dont support xwayland
-PACKAGECONFIG:remove:use-mainline-bsp = "xwayland"
 
 # Fallback default for the machine overrides below.
 # nooelint: oelint.vars.noncoreoverride
@@ -83,31 +93,30 @@ PACKAGECONFIG[size] = ",,"
 PACKAGECONFIG[use-g2d] = ",,"
 PACKAGECONFIG[xwayland] = ",,"
 
-# Only reached from the imx-scoped do_install:append.
+# Only reached from the NXP BSP-scoped do_install:append.
 # nooelint: oelint.vars.noncoreoverride
 update_file() {
     sed -i -e "s,$1,$2," $3
 }
 update_file[doc] = "Replace occurrences of pattern (arg1) with text (arg2) in file (arg3)"
 
-# Only reached from the imx-scoped do_install:append.
+# Only reached from the NXP BSP-scoped do_install:append.
 # nooelint: oelint.vars.noncoreoverride
 insert_line_before() {
     sed -i -e "/$1/i $2" $3
 }
 insert_line_before[doc] = "Insert line (arg2) before lines matching pattern (arg1) in file (arg3)"
 
-# Only reached from the imx-scoped do_install:append.
+# Only reached from the NXP BSP-scoped do_install:append.
 # nooelint: oelint.vars.noncoreoverride
 insert_line_after() {
     sed -i -e "/$1/a $2" $3
 }
 insert_line_after[doc] = "Insert line (arg2) after lines matching pattern (arg1) in file (arg3)"
 
-# Scoped to imx-generic-bsp: unscoped this ran everywhere and roughly doubled
-# oe-core's do_install. Every branch is driven by an i.MX PACKAGECONFIG or by
-# the i.MX weston.config.
-do_install:append:imx-generic-bsp() {
+# NXP BSP only: adapts weston.ini and weston.service to the NXP BSP defaults.
+# The mainline BSP keeps oe-core's files unchanged.
+do_install:append:imx-nxp-bsp() {
     # Replace the template variables
     sed -i -e 's,@bindir@,${bindir},g' ${D}${sysconfdir}/xdg/weston/weston.ini
 
