@@ -9,8 +9,6 @@ on:
     branches:
       - master
       - wrynose
-      - whinlatter
-      - walnascar
       - scarthgap
   merge_group:
   workflow_dispatch:
@@ -52,8 +50,6 @@ jobs:
           oe=${BRANCH#refs/heads/}
           case "$oe" in
             wrynose)    bitbake=2.18 ;;
-            whinlatter) bitbake=2.16 ;;
-            walnascar)  bitbake=2.12 ;;
             scarthgap)  bitbake=2.8 ;;
             *)          oe=master bitbake=master ;;
           esac
