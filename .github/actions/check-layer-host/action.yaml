@@ -1,0 +1,14 @@
+name: check-layer host setup
+description: Prepare an Ubuntu runner to run BitBake for yocto-check-layer
+runs:
+  using: composite
+  steps:
+    - name: Install host tools
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+            chrpath cpio diffstat file gawk lz4 zstd
+        # BitBake isolates tasks in user namespaces, which Ubuntu 24.04
+        # restricts by default.
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
