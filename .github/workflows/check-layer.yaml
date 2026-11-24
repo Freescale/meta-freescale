@@ -40,21 +40,28 @@ jobs:
       shards: ${{ steps.select.outputs.shards }}
       oe: ${{ steps.release.outputs.oe }}
       bitbake: ${{ steps.release.outputs.bitbake }}
+      tool: ${{ steps.release.outputs.tool }}
     steps:
       # The release the change targets; any other branch checks against master.
+      # A release's yocto-check-layer has no --run-tests, so the check jobs
+      # run master's at "tool", the commit adding the last of it.
       - name: Choose the release
         id: release
         env:
           BRANCH: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
         run: |
           oe=${BRANCH#refs/heads/}
+          tool=530be0c29e906a312a61322e73e20309731c4569
           case "$oe" in
-            wrynose)    bitbake=2.18 ;;
-            scarthgap)  bitbake=2.8 ;;
-            *)          oe=master bitbake=master ;;
+            wrynose)   bitbake=2.18 ;;
+            scarthgap) bitbake=2.8 ;;
+            *)         oe=master bitbake=master tool= ;;
           esac
-          echo "oe=$oe" >> "$GITHUB_OUTPUT"
-          echo "bitbake=$bitbake" >> "$GITHUB_OUTPUT"
+          {
+            echo "oe=$oe"
+            echo "bitbake=$bitbake"
+            echo "tool=$tool"
+          } >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v4
         with:
@@ -128,7 +135,7 @@ jobs:
           # The common tests ignore --machines: run them once.
           shards=$(contrib/check-layer/affected-machines.py select --table "$table" "$@" \
               --format shards | jq -c 'if length > 0
-                then [{name: "common", machines: "", tests: "common"}] + map(. + {tests: "bsp"})
+                then [{name: "common", machines: "", tests: "common distro"}] + map(. + {tests: "bsp"})
                 else . end')
           echo "shards=$shards" >> "$GITHUB_OUTPUT"
           {
@@ -173,6 +180,19 @@ jobs:
           repository: openembedded/bitbake
           ref: ${{ needs.select.outputs.bitbake }}
           path: bitbake
+      - uses: actions/checkout@v4
+        if: needs.select.outputs.tool != ''
+        with:
+          repository: openembedded/openembedded-core
+          ref: ${{ needs.select.outputs.tool }}
+          path: check-layer-tool
+          sparse-checkout: scripts/lib/checklayer
+      - name: Use master's yocto-check-layer
+        if: needs.select.outputs.tool != ''
+        run: |
+          cp check-layer-tool/scripts/yocto-check-layer openembedded-core/scripts/
+          rm -r openembedded-core/scripts/lib/checklayer
+          cp -r check-layer-tool/scripts/lib/checklayer openembedded-core/scripts/lib/
       - uses: ./meta-freescale/.github/actions/check-layer-host
 
       - name: Run yocto-check-layer
@@ -182,24 +202,10 @@ jobs:
         run: |
           . openembedded-core/oe-init-build-env build > /dev/null
           set -o pipefail
-          # OE-core with --run-tests (master) selects the tests itself; the
-          # releases without it go through check-layer.py.
-          if grep -q -- "'--run-tests'" "$(command -v yocto-check-layer)"; then
-            case "$TESTS" in
-              common) tests="common distro" ;;
-              bsp)    tests=bsp ;;
-              *)      tests= ;;
-            esac
-            # --run-tests takes several names, so the layer goes first.
-            # shellcheck disable=SC2086
-            yocto-check-layer "$LAYER" ${tests:+--run-tests $tests} --no-auto-dependency \
-                ${MACHINES:+--machines $MACHINES} 2>&1 | tee "$GITHUB_WORKSPACE"/check-layer.log
-          else
-            # shellcheck disable=SC2086
-            "$LAYER"/contrib/check-layer/check-layer.py --tests "$TESTS" \
-                "$LAYER" --no-auto-dependency ${MACHINES:+--machines $MACHINES} \
-                2>&1 | tee "$GITHUB_WORKSPACE"/check-layer.log
-          fi
+          # --run-tests takes several names, so the layer goes first.
+          # shellcheck disable=SC2086
+          yocto-check-layer "$LAYER" --run-tests $TESTS --no-auto-dependency \
+              ${MACHINES:+--machines $MACHINES} 2>&1 | tee "$GITHUB_WORKSPACE"/check-layer.log
 
       - uses: actions/upload-artifact@v4
         if: always()

@@ -83,27 +83,12 @@ yocto-check-layer "$PWD" --run-tests bsp --no-auto-dependency \
 
 `--run-tests` takes several names, so give the layer before it.
 
-## check-layer.py
-
-For the releases whose `yocto-check-layer` has no `--run-tests` (wrynose and
-older), CI runs `check-layer.py` instead. It runs `yocto-check-layer` (same
-arguments), saving the same two kinds of repeated work, and refuses to run on
-a `yocto-check-layer` that has `--run-tests`:
-
-- `--tests common` or `--tests bsp` runs only the common tests or only the
-  machine ones. The common tests, and the signatures they compare against,
-  ignore `--machines`: CI runs them once, and the machine tests in each run of
-  machines.
-- A world signature dump with the same layers, configuration and machine is
-  reused when the earlier one succeeded: test_world reuses test_signatures',
-  and test_machine_world reuses test_machine_signatures'.
-
-Run it in a build directory from `oe-init-build-env`, as the wrapper would:
-
-```sh
-contrib/check-layer/check-layer.py --tests bsp "$PWD" --no-auto-dependency \
-    --machines imx8mm-ddr4-evk imx8mp-ddr4-evk
-```
+The release branches' `yocto-check-layer` has neither, so CI checks them with
+master's, pinned to the commit completing it: it replaces
+`scripts/yocto-check-layer` and `scripts/lib/checklayer` in the release's
+OE-core. On wrynose both run the
+same tests, with the same results. On scarthgap master's also runs
+`test_security`.
 
 Tests (no BitBake, no network):
 
