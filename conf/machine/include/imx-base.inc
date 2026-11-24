@@ -443,6 +443,7 @@ MACHINE_SOCARCH_FILTER:append:imx-nxp-bsp = " \
 MACHINE_SOCARCH_CONSUMERS = " \
     gtk+3 \
     gtk4 \
+    libcamera \
     libepoxy \
     libva \
     packagegroup-self-hosted \
@@ -660,7 +661,6 @@ PREFERRED_PROVIDER_virtual/libgl:imxmali       ?= "${@oe.utils.conditional('IMX_
 PREFERRED_PROVIDER_virtual/mesa:imxmali        ?= "${@oe.utils.conditional('IMX_MALI_PROVIDER', 'mesa', 'mesa', 'mesa-gl', d)}"
 PREFERRED_PROVIDER_virtual/libgbm:imxmali      ?= "${IMX_MALI_PROVIDER}"
 PREFERRED_VERSION_mesa:imxmali                 ??= "26.2.0.imx"
-PREFERRED_VERSION_mesa-tools-native:imxmali    ??= "26.2.0.imx"
 
 # The Vivante stack provides virtual/libgbm only on i.MX 8, and mesa-gl does
 # not build it, so nothing provides it for the older Vivante GPUs. Skip the
