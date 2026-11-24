@@ -10,7 +10,6 @@ on:
       - master
       - wrynose
       - scarthgap
-  merge_group:
   workflow_dispatch:
     inputs:
       base:
@@ -48,7 +47,7 @@ jobs:
       - name: Choose the release
         id: release
         env:
-          BRANCH: ${{ github.base_ref || github.event.merge_group.base_ref || github.ref_name }}
+          BRANCH: ${{ github.base_ref || github.ref_name }}
         run: |
           oe=${BRANCH#refs/heads/}
           tool=530be0c29e906a312a61322e73e20309731c4569
@@ -88,13 +87,16 @@ jobs:
       - name: Choose the base
         id: base
         env:
+          EVENT: ${{ github.event_name }}
           INPUT_BASE: ${{ inputs.base }}
         run: |
-          case "${{ github.event_name }}" in
-            pull_request) base=${{ github.event.pull_request.base.sha }} ;;
-            merge_group)  base=${{ github.event.merge_group.base_sha }} ;;
-            *)            base=$INPUT_BASE ;;
-          esac
+          # A pull request checks out its merge commit, whose first parent is
+          # the base it was built on; the event's base.sha can be older.
+          if [ "$EVENT" = pull_request ]; then
+            base=$(git -C meta-freescale rev-parse HEAD^1)
+          else
+            base=$INPUT_BASE
+          fi
           echo "base=$base" >> "$GITHUB_OUTPUT"
 
       # The table only changes with the machine configurations and OE-core.
