@@ -133,12 +133,12 @@ CRRM_FILES = "\
 compile_mx8m() {
     bbnote 8MQ/8MM/8MN/8MP boot binary build
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING} "
-        cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}
+        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${RECIPE_SYSROOT}/firmware -> ${BOOT_STAGING} "
+        cp ${RECIPE_SYSROOT}/firmware/${ddr_firmware}        ${BOOT_STAGING}
     done
 
-    cp ${DEPLOY_DIR_IMAGE}/signed_dp_imx8m.bin               ${BOOT_STAGING}
-    cp ${DEPLOY_DIR_IMAGE}/signed_hdmi_imx8m.bin             ${BOOT_STAGING}
+    cp ${RECIPE_SYSROOT}/firmware/signed_dp_imx8m.bin        ${BOOT_STAGING}
+    cp ${RECIPE_SYSROOT}/firmware/signed_hdmi_imx8m.bin      ${BOOT_STAGING}
     cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
 
@@ -226,8 +226,8 @@ compile_mx91[doc] = "Stage the i.MX 91 boot container binaries, which are the sa
 compile_mx93() {
     bbnote i.MX 93 boot binary build
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING} "
-        cp ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}
+        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${RECIPE_SYSROOT}/firmware -> ${BOOT_STAGING} "
+        cp ${RECIPE_SYSROOT}/firmware/${ddr_firmware}        ${BOOT_STAGING}
     done
 
     for seco_firmware in ${SECO_FIRMWARE_NAME}; do
