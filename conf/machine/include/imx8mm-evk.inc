@@ -30,6 +30,10 @@ KERNEL_DEVICETREE:append:use-nxp-bsp = " \
 "
 UBOOT_DTB_NAME = "${KERNEL_DEVICETREE_BASENAME}.dtb"
 
+# The NXP BSP uses the NXP U-Boot fork, as the other i.MX 8M EVKs do. The
+# mainline BSP keeps the imx-base.inc default (u-boot-fslc).
+IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-imx"
+
 UBOOT_SUFFIX = "bin"
 
 UBOOT_CONFIG ??= "sd"
