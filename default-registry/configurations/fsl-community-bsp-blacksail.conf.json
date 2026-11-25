@@ -71,18 +71,6 @@
                 "rev": "blacksail"
             },
             "path": "meta-freescale-3rdparty"
-        },
-        "meta-freescale-distro": {
-            "git-remote": {
-                "remotes": {
-                    "origin": {
-                        "uri": "https://github.com/Freescale/meta-freescale-distro"
-                    }
-                },
-                "branch": "blacksail",
-                "rev": "blacksail"
-            },
-            "path": "meta-freescale-distro"
         }
     },
     "bitbake-setup": {
@@ -92,8 +80,7 @@
                 "openembedded-core/meta",
                 "meta-yocto/meta-poky",
                 "meta-freescale",
-                "meta-freescale-3rdparty",
-                "meta-freescale-distro"
+                "meta-freescale-3rdparty"
             ],
             "setup-dir-name": "$distro-$machine-blacksail",
             "oe-fragments-one-of": {
