@@ -1,5 +1,5 @@
 {
-    "description": "NXP/Freescale Community BSP - master branch configurations",
+    "description": "NXP/Freescale Community BSP - blacksail branch configurations",
     "sources": {
         "bitbake": {
             "git-remote": {
@@ -8,8 +8,8 @@
                         "uri": "https://git.openembedded.org/bitbake"
                     }
                 },
-                "branch": "master",
-                "rev": "master"
+                "branch": "2.20",
+                "rev": "2.20"
             }
         },
         "openembedded-core": {
@@ -19,8 +19,8 @@
                         "uri": "https://github.com/openembedded/openembedded-core"
                     }
                 },
-                "branch": "master",
-                "rev": "master"
+                "branch": "blacksail",
+                "rev": "blacksail"
             },
             "path": "openembedded-core"
         },
@@ -31,8 +31,8 @@
                         "uri": "https://git.yoctoproject.org/meta-yocto"
                     }
                 },
-                "branch": "master",
-                "rev": "master"
+                "branch": "blacksail",
+                "rev": "blacksail"
             },
             "path": "meta-yocto"
         },
@@ -43,8 +43,8 @@
                         "uri": "https://github.com/openembedded/meta-openembedded"
                     }
                 },
-                "branch": "master",
-                "rev": "master"
+                "branch": "blacksail",
+                "rev": "blacksail"
             },
             "path": "meta-openembedded"
         },
@@ -55,8 +55,8 @@
                         "uri": "https://github.com/Freescale/meta-freescale"
                     }
                 },
-                "branch": "master",
-                "rev": "master"
+                "branch": "blacksail",
+                "rev": "blacksail"
             },
             "path": "meta-freescale"
         },
@@ -67,8 +67,8 @@
                         "uri": "https://github.com/Freescale/meta-freescale-3rdparty"
                     }
                 },
-                "branch": "master",
-                "rev": "master"
+                "branch": "blacksail",
+                "rev": "blacksail"
             },
             "path": "meta-freescale-3rdparty"
         },
@@ -79,8 +79,8 @@
                         "uri": "https://github.com/Freescale/meta-freescale-distro"
                     }
                 },
-                "branch": "master",
-                "rev": "master"
+                "branch": "blacksail",
+                "rev": "blacksail"
             },
             "path": "meta-freescale-distro"
         }
@@ -95,7 +95,7 @@
                 "meta-freescale-3rdparty",
                 "meta-freescale-distro"
             ],
-            "setup-dir-name": "$distro-$machine-master",
+            "setup-dir-name": "$distro-$machine-blacksail",
             "oe-fragments-one-of": {
                 "machine": {
                     "description": "Target machines",
