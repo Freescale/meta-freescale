@@ -11,10 +11,14 @@ SRC_URI = "\
     ${MRVL_SRC};branch=${SRCBRANCH} \
     file://0001-mlinux-moal_main-fix-device-wakeup-capability.patch \
     file://0002-mlinux-moal_sta_cfg80211-fix-probe_client-build-on-7.2-kernels.patch \
+    file://nxp-wlan-btnxpuart.conf \
 "
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
 SRCBRANCH = "lf-6.18.37_2.1.0"
 SRCREV = "44f90628e368de23e9991de424fc2a1799c81044"
+
+FILES:${PN} += "${modprobedir}/nxp-wlan-btnxpuart.conf"
+CONFFILES:${PN} += "${modprobedir}/nxp-wlan-btnxpuart.conf"
 
 RREPLACES:${PN} = "kernel-module-nxp89xx"
 RPROVIDES:${PN} = "kernel-module-nxp89xx"
@@ -28,3 +32,7 @@ inherit module
 EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_BUILDDIR} -C ${STAGING_KERNEL_BUILDDIR} M=${S}"
 
 KERNEL_MODULE_AUTOLOAD += "moal"
+
+do_install:append() {
+    install -D -m 0644 ${UNPACKDIR}/nxp-wlan-btnxpuart.conf ${D}${modprobedir}/nxp-wlan-btnxpuart.conf
+}
