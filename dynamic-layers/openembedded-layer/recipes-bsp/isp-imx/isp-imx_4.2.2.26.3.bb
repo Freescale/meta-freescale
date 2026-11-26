@@ -9,7 +9,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=ef4f968b9dae8ba406390cd617c2301d"
 
 DEPENDS = "boost jsoncpp libdrm libtinyxml2 virtual/libg2d"
 
-SRC_URI = "${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true"
+SRC_URI = "\
+    ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
+    file://0002-isp-imx-run.sh-Make-it-work-with-a-POSIX-shell-and-BusyBox.patch \
+"
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '${ISP_SYSTEMD_PATCH}', '', d)}"
 ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
 
