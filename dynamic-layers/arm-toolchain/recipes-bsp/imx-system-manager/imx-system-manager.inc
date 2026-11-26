@@ -40,13 +40,20 @@ do_configure() {
     fi
 }
 
-do_install[noexec] = "1"
-
-addtask deploy after do_compile
-do_deploy() {
+do_install() {
     install -D -p -m 0644 \
         ${B}/build/${SYSTEM_MANAGER_CONFIG}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin \
-        ${DEPLOYDIR}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}.bin
+        ${D}/firmware/${SYSTEM_MANAGER_FIRMWARE_BASENAME}-${SYSTEM_MANAGER_CONFIG}.bin
 }
+
+addtask deploy after do_install
+do_deploy() {
+    install -p -m 0644 ${D}/firmware/* ${DEPLOYDIR}/
+}
+
+# Firmware-only package; the single custom path deliberately replaces defaults.
+# nooelint: oelint.var.filesoverride
+FILES:${PN} = "/firmware"
+SYSROOT_DIRS += "/firmware"
 
 COMPATIBLE_MACHINE = "(mx95-generic-bsp|mx943-generic-bsp|mx952-generic-bsp)"
