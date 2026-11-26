@@ -1,0 +1,311 @@
+From: Otavio Salvador <otavio@ossystems.tech>
+Subject: [PATCH] isp-imx: run.sh: Make it work with a POSIX shell and BusyBox
+
+The script starts with "#!/bin/sh", but it uses bash features and tool
+options that BusyBox does not support. On images without bash,
+coreutils and procps, the imx8-isp service fails.
+
+Changes:
+
+- Use space-separated lists instead of bash arrays for the modules.
+  Module names have no spaces. Remove the modules in reverse order as
+  before.
+- Use "USAGE=${USAGE}..." instead of "+=", "printf '%b\n'" instead of
+  "echo -e", and "=" instead of "==" in tests.
+- "realpath -s": BusyBox realpath has no options. Get the script path
+  with "cd" and "pwd", which also does not resolve symbolic links.
+- "head -1": BusyBox head accepts only "head -n 1" by default.
+- "pgrep -f" and "pkill -f": BusyBox does not enable pgrep and pkill by
+  default. Use pidof and kill.
+
+The initial report and fix are from Oleksiy Protas in
+https://github.com/Freescale/meta-freescale/pull/2508.
+
+Upstream-Status: Pending
+Signed-off-by: Otavio Salvador <otavio@ossystems.tech>
+---
+--- a/imx/run.sh
++++ b/imx/run.sh
+@@ -5,7 +5,7 @@
+ # (c) Basler 2020
+ #
+ 
+-RUN_SCRIPT=`realpath -s $0`
++RUN_SCRIPT="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+ RUN_SCRIPT_PATH=`dirname $RUN_SCRIPT`
+ echo "RUN_SCRIPT=$RUN_SCRIPT"
+ echo "RUN_SCRIPT_PATH=$RUN_SCRIPT_PATH"
+@@ -14,25 +14,25 @@
+ LOCAL_RUN="0" # search modules in /lib/modules and libraries in /usr/lib
+ RUN_OPTION=""
+ LOCAL_RUN="0"
+-# an array with the modules to load, insertion order
+-declare -a MODULES=("imx8-media-dev" "vvcam-dwe" "vvcam-isp" "vvcam-video")
++# the modules to load, in insertion order
++MODULES="imx8-media-dev vvcam-dwe vvcam-isp vvcam-video"
+ 
+ USAGE="Usage:\n"
+-USAGE+="run.sh -c <isp_config> &\n"
+-USAGE+="Supported configurations:\n"
+-USAGE+="\tbasler_1080p60         - single basler camera on MIPI-CSI1, 1920x1080, 60 fps\n"
+-USAGE+="\tdual_basler_1080p60    - dual basler cameras on MIPI-CSI1/2, 1920x1080, 60 fps\n"
+-USAGE+="\tbasler_4k              - single basler camera on MIPI-CSI1, 3840x2160, 30 fps\n"
+-USAGE+="\tbasler_1080p60hdr      - single basler camera on MIPI-CSI1, 1920x1080, 60 fps, HDR configuration\n"
+-USAGE+="\tdual_basler_1080p60hdr - dual basler cameras on MIPI-CSI1/2, 1920x1080, 60 fps, HDR configuration\n"
+-USAGE+="\tbasler_4khdr           - single basler camera on MIPI-CSI1, 3840x2160, 30 fps, HDR configuration\n"
+-
+-USAGE+="\tos08a20_1080p60         - single os08a20 camera on MIPI-CSI1, 1920x1080, 60 fps\n"
+-USAGE+="\tdual_os08a20_1080p60    - dual os08a20 cameras on MIPI-CSI1/2, 1920x1080, 60 fps\n"
+-USAGE+="\tos08a20_4k              - single os08a20 camera on MIPI-CSI1, 3840x2160, 30 fps\n"
+-USAGE+="\tos08a20_1080p30hdr      - single os08a20 camera on MIPI-CSI1, 1920x1080, 30 fps, HDR configuration\n"
+-USAGE+="\tdual_os08a20_1080p30hdr - dual os08a20 cameras on MIPI-CSI1/2, 1920x1080, 30 fps, HDR configuration\n"
+-USAGE+="\tos08a20_4khdr           - single os08a20 camera on MIPI-CSI1, 3840x2160, 15 fps, HDR configuration\n"
++USAGE="${USAGE}run.sh -c <isp_config> &\n"
++USAGE="${USAGE}Supported configurations:\n"
++USAGE="${USAGE}\tbasler_1080p60         - single basler camera on MIPI-CSI1, 1920x1080, 60 fps\n"
++USAGE="${USAGE}\tdual_basler_1080p60    - dual basler cameras on MIPI-CSI1/2, 1920x1080, 60 fps\n"
++USAGE="${USAGE}\tbasler_4k              - single basler camera on MIPI-CSI1, 3840x2160, 30 fps\n"
++USAGE="${USAGE}\tbasler_1080p60hdr      - single basler camera on MIPI-CSI1, 1920x1080, 60 fps, HDR configuration\n"
++USAGE="${USAGE}\tdual_basler_1080p60hdr - dual basler cameras on MIPI-CSI1/2, 1920x1080, 60 fps, HDR configuration\n"
++USAGE="${USAGE}\tbasler_4khdr           - single basler camera on MIPI-CSI1, 3840x2160, 30 fps, HDR configuration\n"
++
++USAGE="${USAGE}\tos08a20_1080p60         - single os08a20 camera on MIPI-CSI1, 1920x1080, 60 fps\n"
++USAGE="${USAGE}\tdual_os08a20_1080p60    - dual os08a20 cameras on MIPI-CSI1/2, 1920x1080, 60 fps\n"
++USAGE="${USAGE}\tos08a20_4k              - single os08a20 camera on MIPI-CSI1, 3840x2160, 30 fps\n"
++USAGE="${USAGE}\tos08a20_1080p30hdr      - single os08a20 camera on MIPI-CSI1, 1920x1080, 30 fps, HDR configuration\n"
++USAGE="${USAGE}\tdual_os08a20_1080p30hdr - dual os08a20 cameras on MIPI-CSI1/2, 1920x1080, 30 fps, HDR configuration\n"
++USAGE="${USAGE}\tos08a20_4khdr           - single os08a20 camera on MIPI-CSI1, 3840x2160, 15 fps, HDR configuration\n"
+ 
+ # parse command line arguments
+ while [ "$1" != "" ]; do
+@@ -51,7 +51,7 @@
+ 			LOAD_MODULES="1"
+ 			;;
+ 		* )
+-			echo -e "$USAGE" >&2
++			printf '%b\n' "$USAGE" >&2
+ 			exit 1
+ 	esac
+ 	shift
+@@ -116,9 +116,9 @@
+ # write the sensonr config file
+ set_libs_path () {
+ 	local ONE_LIB="$1"
+-	LIB_PATH=`find $RUN_SCRIPT_PATH -name $ONE_LIB | head -1`
++	LIB_PATH=`find $RUN_SCRIPT_PATH -name $ONE_LIB | head -n 1`
+ 	if [ ! -f "$LIB_PATH" ]; then
+-		LIB_PATH=`find $RUN_SCRIPT_PATH/../../../usr -name $ONE_LIB | head -1`
++		LIB_PATH=`find $RUN_SCRIPT_PATH/../../../usr -name $ONE_LIB | head -n 1`
+ 		if [ ! -f "$LIB_PATH" ]; then
+ 			echo "$ONE_LIB not found in $RUN_SCRIPT_PATH"
+ 			echo "$ONE_LIB not found in $RUN_SCRIPT_PATH/../../../usr"
+@@ -142,13 +142,13 @@
+ 		return 0
+ 	fi
+ 
+-	if [ "$LOCAL_RUN" == "1" ]; then
++	if [ "$LOCAL_RUN" = "1" ]; then
+ 		MODULE_SEARCH=$RUN_SCRIPT_PATH
+-		MODULE_PATH=`find $MODULE_SEARCH -name $MODULE | head -1`
+-		if [ "$MODULE_PATH" == "" ]; then
++		MODULE_PATH=`find $MODULE_SEARCH -name $MODULE | head -n 1`
++		if [ "$MODULE_PATH" = "" ]; then
+ 			MODULE_SEARCH=$RUN_SCRIPT_PATH/../../../modules
+-			MODULE_PATH=`find $MODULE_SEARCH -name $MODULE | head -1`
+-			if [ "$MODULE_PATH" == "" ]; then
++			MODULE_PATH=`find $MODULE_SEARCH -name $MODULE | head -n 1`
++			if [ "$MODULE_PATH" = "" ]; then
+ 				echo "Module $MODULE not found in $RUN_SCRIPT_PATH"
+ 				echo "Module $MODULE not found in $MODULE_SEARCH"
+ 				exit 1
+@@ -157,8 +157,8 @@
+ 		MODULE_PATH=`realpath $MODULE_PATH`
+ 	else
+ 		MODULE_SEARCH=/lib/modules/`uname -r`/
+-		MODULE_PATH=`find $MODULE_SEARCH -name $MODULE | head -1`
+-		if [ "$MODULE_PATH" == "" ]; then
++		MODULE_PATH=`find $MODULE_SEARCH -name $MODULE | head -n 1`
++		if [ "$MODULE_PATH" = "" ]; then
+ 			echo "Module $MODULE not found in $MODULE_SEARCH"
+ 			exit 1
+ 		fi
+@@ -169,22 +169,24 @@
+ }
+ 
+ load_modules () {
+-	# remove any previous instances of the modules
+-	n=${#MODULES_TO_REMOVE[*]}
+-	for (( i = n-1; i >= 0; i-- ))
++	# remove any previous instances of the modules, in reverse order
++	REVERSED_MODULES=""
++	for i in $MODULES_TO_REMOVE
+ 	do
+-		echo "Removing ${MODULES_TO_REMOVE[i]}..."
+-		rmmod ${MODULES_TO_REMOVE[i]} &>/dev/null
+-		#LSMOD_STATUS=`lsmod | grep "${MODULES[i]}"`
+-		#echo "LSMOD_STATUS=$LSMOD_STATUS"
+-		if lsmod | grep "${MODULES_TO_REMOVE[i]}" ; then
+-			echo "Removing ${MODULES_TO_REMOVE[i]} failed!"
++		REVERSED_MODULES="$i $REVERSED_MODULES"
++	done
++	for i in $REVERSED_MODULES
++	do
++		echo "Removing $i..."
++		rmmod $i >/dev/null 2>&1
++		if lsmod | grep "$i" ; then
++			echo "Removing $i failed!"
+ 			exit 1
+ 		fi
+ 	done
+ 
+ 	# and now clean load the modules
+-	for i in "${MODULES[@]}"
++	for i in $MODULES
+ 	do
+ 		echo "Loading module $i ..."
+ 		load_module $i
+@@ -194,10 +196,10 @@
+ write_default_mode_files
+ 
+ echo "Trying configuration \"$ISP_CONFIG\"..."
+-MODULES_TO_REMOVE=("basler-camera-driver-vvcam" "os08a20" "ov2775" "${MODULES[@]}")
++MODULES_TO_REMOVE="basler-camera-driver-vvcam os08a20 ov2775 $MODULES"
+ case "$ISP_CONFIG" in
+ 		basler_4k )
+-			MODULES=("basler-camera-driver-vvcam" "${MODULES[@]}")
++			MODULES="basler-camera-driver-vvcam $MODULES"
+ 			RUN_OPTION="CAMERA0"
+ 			CAM_NAME="basler-vvcam"
+ 			DRV_FILE="daA3840_30mc.drv"
+@@ -206,7 +208,7 @@
+ 			write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+ 		basler_1080p60 )
+-			MODULES=("basler-camera-driver-vvcam" "${MODULES[@]}")
++			MODULES="basler-camera-driver-vvcam $MODULES"
+ 			RUN_OPTION="CAMERA0"
+ 			CAM_NAME="basler-vvcam"
+ 			DRV_FILE="daA3840_30mc.drv"
+@@ -215,7 +217,7 @@
+ 			write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+ 		dual_basler_1080p60 )
+-			MODULES=("basler-camera-driver-vvcam" "${MODULES[@]}")
++			MODULES="basler-camera-driver-vvcam $MODULES"
+ 			RUN_OPTION="DUAL_CAMERA"
+ 			CAM_NAME="basler-vvcam"
+ 			DRV_FILE="daA3840_30mc.drv"
+@@ -225,7 +227,7 @@
+ 			write_sensor_cfg_file "Sensor1_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+ 		basler_4khdr )
+-			MODULES=("basler-camera-driver-vvcam" "${MODULES[@]}")
++			MODULES="basler-camera-driver-vvcam $MODULES"
+ 			RUN_OPTION="CAMERA0"
+ 			CAM_NAME="basler-vvcam"
+ 			DRV_FILE="daA3840_30mc.drv"
+@@ -234,7 +236,7 @@
+ 			write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+ 		basler_1080p60hdr )
+-			MODULES=("basler-camera-driver-vvcam" "${MODULES[@]}")
++			MODULES="basler-camera-driver-vvcam $MODULES"
+ 			RUN_OPTION="CAMERA0"
+ 			CAM_NAME="basler-vvcam"
+ 			DRV_FILE="daA3840_30mc.drv"
+@@ -243,7 +245,7 @@
+ 			write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+ 		dual_basler_1080p60hdr )
+-			MODULES=("basler-camera-driver-vvcam" "${MODULES[@]}")
++			MODULES="basler-camera-driver-vvcam $MODULES"
+ 			RUN_OPTION="DUAL_CAMERA"
+ 			CAM_NAME="basler-vvcam"
+ 			DRV_FILE="daA3840_30mc.drv"
+@@ -253,7 +255,7 @@
+ 			write_sensor_cfg_file "Sensor1_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+ 		 os08a20_4k )
+-			MODULES=("os08a20" "${MODULES[@]}")
++			MODULES="os08a20 $MODULES"
+ 			RUN_OPTION="CAMERA0"
+ 			CAM_NAME="os08a20"
+ 			DRV_FILE="os08a20.drv"
+@@ -262,7 +264,7 @@
+ 			write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			;;
+ 		 os08a20_4khdr )
+-			 MODULES=("os08a20" "${MODULES[@]}")
++			 MODULES="os08a20 $MODULES"
+                          RUN_OPTION="CAMERA0"
+                          CAM_NAME="os08a20"
+                          DRV_FILE="os08a20.drv"
+@@ -271,7 +273,7 @@
+                          write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+ 			 ;;
+ 		 os08a20_1080p60 )
+-			 MODULES=("os08a20" "${MODULES[@]}")
++			 MODULES="os08a20 $MODULES"
+                          RUN_OPTION="CAMERA0"
+                          CAM_NAME="os08a20"
+                          DRV_FILE="os08a20.drv"
+@@ -280,7 +282,7 @@
+                          write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+                          ;;
+                  dual_os08a20_1080p60 )
+-			 MODULES=("os08a20" "${MODULES[@]}")
++			 MODULES="os08a20 $MODULES"
+                          RUN_OPTION="DUAL_CAMERA"
+                          CAM_NAME="os08a20"
+                          DRV_FILE="os08a20.drv"
+@@ -290,7 +292,7 @@
+                          write_sensor_cfg_file "Sensor1_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+                          ;;
+ 		 os08a20_1080p30hdr )
+-			 MODULES=("os08a20" "${MODULES[@]}")
++			 MODULES="os08a20 $MODULES"
+                          RUN_OPTION="CAMERA0"
+                          CAM_NAME="os08a20"
+                          DRV_FILE="os08a20.drv"
+@@ -299,7 +301,7 @@
+                          write_sensor_cfg_file "Sensor0_Entry.cfg" $CAM_NAME $DRV_FILE $MODE_FILE $MODE
+                          ;;
+ 		 dual_os08a20_1080p30hdr )
+-			 MODULES=("os08a20" "${MODULES[@]}")
++			 MODULES="os08a20 $MODULES"
+                          RUN_OPTION="DUAL_CAMERA"
+                          CAM_NAME="os08a20"
+                          DRV_FILE="os08a20.drv"
+@@ -310,27 +312,27 @@
+                          ;;
+ 		 *)
+ 			echo "ISP configuration \"$ISP_CONFIG\" unsupported."
+-			echo -e "$USAGE" >&2
++			printf '%b\n' "$USAGE" >&2
+ 			exit 1
+ 			;;
+ 	esac
+ 
+-PIDS_TO_KILL=`pgrep -f video_test\|isp_media_server`
++PIDS_TO_KILL=`pidof video_test isp_media_server`
+ if [ ! -z "$PIDS_TO_KILL" ]
+ then
+ 	echo "Killing preexisting instances of video_test and isp_media_server:"
+-	echo `ps $PIDS_TO_KILL`
+-	pkill -f video_test\|isp_media_server
++	echo $PIDS_TO_KILL
++	kill $PIDS_TO_KILL
+ fi
+ 
+ # Need a sure way to wait untill all the above processes terminated
+ sleep 1
+ 
+-if [ "$LOAD_MODULES" == "1" ]; then
++if [ "$LOAD_MODULES" = "1" ]; then
+ 	load_modules
+ fi
+ 
+-if [ "$LOCAL_RUN" == "1" ]; then
++if [ "$LOCAL_RUN" = "1" ]; then
+ 	set_libs_path "libmedia_server.so"
+ fi
