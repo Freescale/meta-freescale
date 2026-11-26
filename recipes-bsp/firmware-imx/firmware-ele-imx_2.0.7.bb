@@ -21,19 +21,29 @@ do_install() {
     for fw in ${SECO_FIRMWARE_NAME} ${SECOEXT_FIRMWARE_NAME}; do
         install -m 0644 ${S}/$fw ${D}${nonarch_base_libdir}/firmware/imx/ele
     done
+
+    # The boot container firmware, for imx-boot and the U-Boot boot container
+    install -d ${D}/firmware
+    for fw in ${SECO_FIRMWARE_NAME}; do
+        install -m 0644 ${S}/$fw ${D}/firmware
+    done
 }
 
 do_deploy () {
     # Deploy the related firmware to be packaged by imx-boot
-    for fw in ${SECO_FIRMWARE_NAME}; do
-        install -m 0644 ${S}/$fw ${DEPLOYDIR}
-    done
+    install -m 0644 -t ${DEPLOYDIR} ${D}/firmware/*
 }
 addtask deploy after do_install before do_build
+
+# The boot container firmware goes into a separate package, which images
+# do not install.
+PACKAGES =+ "${PN}-boot"
 
 # Package the deployed ELE firmware blob explicitly (filesoverride).
 # nooelint: oelint.var.filesoverride
 FILES:${PN} = "${nonarch_base_libdir}/firmware"
+FILES:${PN}-boot += "/firmware"
+SYSROOT_DIRS += "/firmware"
 
 RREPLACES:${PN} = "firmware-sentinel"
 RPROVIDES:${PN} = "firmware-sentinel"
