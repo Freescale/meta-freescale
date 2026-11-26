@@ -34,33 +34,32 @@ ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-o
 
 OEI_NAME ?= "oei-${OEI_CORE}-*.bin"
 
-# Firmware files that the recipes in IMX_EXTRA_FIRMWARE deploy.
-# do_resolve_and_populate_binaries copies them from DEPLOY_DIR_IMAGE.
-IMX_BOOT_CONTAINER_FIRMWARE_SOC ?= ""
-IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx91-generic-bsp = "\
-    ${SECO_FIRMWARE_NAME} \
-"
-IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx93-generic-bsp = "\
-    ${SECO_FIRMWARE_NAME} \
-"
-IMX_BOOT_CONTAINER_FIRMWARE_SOC:mx95-generic-bsp = "\
-    ${SECO_FIRMWARE_NAME} \
-    ${OEI_NAME} \
-"
-IMX_BOOT_CONTAINER_FIRMWARE ?= "${IMX_BOOT_CONTAINER_FIRMWARE_SOC}"
+# Additional firmware files to copy from DEPLOY_DIR_IMAGE.
+IMX_BOOT_CONTAINER_FIRMWARE ?= ""
 
-# Firmware files that imx-boot-firmware-files installs into /firmware.
-# do_resolve_and_populate_binaries copies them from the recipe sysroot.
+# Firmware files that the recipes in IMX_EXTRA_FIRMWARE install into
+# /firmware. do_resolve_and_populate_binaries copies them from the recipe
+# sysroot.
 IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE_SOC ?= ""
 IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE_SOC:mx8mq-generic-bsp = "\
     signed_dp_imx8m.bin \
     signed_hdmi_imx8m.bin \
 "
+IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE_SOC:mx91-generic-bsp = "\
+    ${SECO_FIRMWARE_NAME} \
+"
+IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE_SOC:mx93-generic-bsp = "\
+    ${SECO_FIRMWARE_NAME} \
+"
+IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE_SOC:mx95-generic-bsp = "\
+    ${SECO_FIRMWARE_NAME} \
+    ${OEI_NAME} \
+"
 IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE ?= "\
     ${IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE_SOC} \
     ${DDR_FIRMWARE_NAME} \
 "
-DEPENDS:append = " ${@'imx-boot-firmware-files' if d.getVar('IMX_BOOT_CONTAINER_SYSROOT_FIRMWARE').split() else ''}"
+DEPENDS:append = " ${IMX_EXTRA_FIRMWARE}"
 
 # This package aggregates output deployed by other packages, so set the
 # appropriate dependencies for populate binaries task
@@ -98,7 +97,7 @@ do_resolve_and_populate_binaries() {
                         cp ${DEPLOY_DIR_IMAGE}/${OPTEE_BOOT_IMAGE} ${B}/${builddir}/
                     fi
                     if [ -n "${SYSTEM_MANAGER_FIRMWARE_NAME}" ]; then
-                        cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin ${B}/${builddir}/m33_image.bin
+                        cp ${RECIPE_SYSROOT}/firmware/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin ${B}/${builddir}/m33_image.bin
                     fi
                 fi
             done
