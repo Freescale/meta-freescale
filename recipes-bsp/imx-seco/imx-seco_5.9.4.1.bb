@@ -21,16 +21,26 @@ do_compile[noexec] = "1"
 do_install:append() {
     install -d ${D}${base_libdir}/firmware/${PN}
     install -m 0644 ${S}/firmware/seco/${SECO_FIRMWARE_NAME} ${D}${base_libdir}/firmware/${PN}
+
+    # The boot container firmware, for imx-boot
+    install -d ${D}/firmware
+    install -m 0644 ${S}/firmware/seco/${SECO_FIRMWARE_NAME} ${D}/firmware
 }
 
 addtask deploy after do_install
 do_deploy () {
     # Deploy i.MX8 SECO firmware files
-    install -m 0644 ${S}/firmware/seco/${SECO_FIRMWARE_NAME} ${DEPLOYDIR}
+    install -m 0644 -t ${DEPLOYDIR} ${D}/firmware/*
 }
+
+# The boot container firmware goes into a separate package, which images
+# do not install. It comes before ${PN}, which takes all files.
+PACKAGES =+ "${PN}-boot"
 
 # The prebuilt SECO firmware is deployed under /lib/firmware, so the main
 # package claims the root path explicitly (filesoverride).
 # nooelint: oelint.var.filesoverride
 FILES:${PN} = "/"
+FILES:${PN}-boot += "/firmware"
+SYSROOT_DIRS += "/firmware"
 COMPATIBLE_MACHINE = "(mx8qm-generic-bsp|mx8qxp-generic-bsp|mx8dxl-generic-bsp|mx8dx-generic-bsp)"
