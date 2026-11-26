@@ -18,15 +18,22 @@ do_configure[noexec] = "1"
 
 do_compile[noexec] = "1"
 
-do_install[noexec] = "1"
+do_install() {
+    install -Dm 0644 ${S}/${UPOWER_FIRMWARE_NAME} ${D}/firmware/upower.bin
+}
 
 BOOT_TOOLS = "imx-boot-tools"
 
 do_deploy () {
     # Deploy the related firmware to be package by imx-boot
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0644 ${S}/${UPOWER_FIRMWARE_NAME}  ${DEPLOYDIR}/${BOOT_TOOLS}/upower.bin
+    install -m 0644 ${D}/firmware/upower.bin ${DEPLOYDIR}/${BOOT_TOOLS}/upower.bin
 }
 addtask deploy after do_install before do_build
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+FILES:${PN} += "/firmware"
+SYSROOT_DIRS += "/firmware"
 
 COMPATIBLE_MACHINE = "(mx8ulp-nxp-bsp)"
