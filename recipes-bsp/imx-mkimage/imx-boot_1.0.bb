@@ -165,11 +165,11 @@ compile_mx8m[doc] = "Stage the DDR, HDMI/DP, SPL, ATF and U-Boot binaries for th
 
 compile_mx8() {
     bbnote 8QM boot binary build
-    cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
+    cp ${RECIPE_SYSROOT}/firmware/${SC_FIRMWARE_NAME}       ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
     for seco_firmware in ${SECO_FIRMWARE_NAME}; do
-        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+        cp ${RECIPE_SYSROOT}/firmware/${seco_firmware}        ${BOOT_STAGING}/
     done
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
@@ -181,9 +181,9 @@ compile_mx8[doc] = "Stage the SCFW, ATF, SECO and U-Boot binaries for the i.MX 8
 compile_mx8x() {
     bbnote 8QX boot binary build
     for seco_firmware in ${SECO_FIRMWARE_NAME}; do
-        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+        cp ${RECIPE_SYSROOT}/firmware/${seco_firmware}        ${BOOT_STAGING}/
     done
-    cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
+    cp ${RECIPE_SYSROOT}/firmware/${SC_FIRMWARE_NAME}       ${BOOT_STAGING}/scfw_tcm.bin
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME}               ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
@@ -202,10 +202,10 @@ do_compile[depends] += "${IMX_M33_DEMOS_DEPENDS}"
 compile_mx8ulp() {
     bbnote 8ULP boot binary build
     for seco_firmware in ${SECO_FIRMWARE_NAME}; do
-        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+        cp ${RECIPE_SYSROOT}/firmware/${seco_firmware}        ${BOOT_STAGING}/
     done
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
-    cp ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/upower.bin          ${BOOT_STAGING}/upower.bin
+    cp ${RECIPE_SYSROOT}/firmware/upower.bin                ${BOOT_STAGING}/upower.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
     if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} ] ; then
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
@@ -231,7 +231,7 @@ compile_mx93() {
     done
 
     for seco_firmware in ${SECO_FIRMWARE_NAME}; do
-        cp ${DEPLOY_DIR_IMAGE}/${seco_firmware}               ${BOOT_STAGING}/
+        cp ${RECIPE_SYSROOT}/firmware/${seco_firmware}        ${BOOT_STAGING}/
     done
     cp ${DEPLOY_DIR_IMAGE}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     cp ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME_EXTRA}                     ${BOOT_STAGING}/u-boot.bin
@@ -255,8 +255,8 @@ compile_mx943() {
     bbnote i.MX 943 boot binary build
     compile_mx93
 
-    cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
-    cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
+    cp ${RECIPE_SYSROOT}/firmware/${OEI_NAME} ${BOOT_STAGING}
+    cp ${RECIPE_SYSROOT}/firmware/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
     if [ -n "${M33_IMAGE}" ]; then
         cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M33_IMAGE} ${BOOT_STAGING}/m33s_image.bin
@@ -274,8 +274,8 @@ compile_mx95() {
     bbnote i.MX 95 boot binary build
     compile_mx93
 
-    cp ${DEPLOY_DIR_IMAGE}/${OEI_NAME} ${BOOT_STAGING}
-    cp ${DEPLOY_DIR_IMAGE}/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
+    cp ${RECIPE_SYSROOT}/firmware/${OEI_NAME} ${BOOT_STAGING}
+    cp ${RECIPE_SYSROOT}/firmware/${SYSTEM_MANAGER_FIRMWARE_NAME}.bin \
        ${BOOT_STAGING}/${SYSTEM_MANAGER_FIRMWARE_BASENAME}.bin
     if [ -n "${M4_DEFAULT_IMAGE}" ]; then
         cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE} ${BOOT_STAGING}/m7_image.bin
@@ -398,7 +398,7 @@ do_install () {
 deploy_mx8m() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -m 0644 ${RECIPE_SYSROOT}/firmware/${ddr_firmware} ${DEPLOYDIR}/${BOOT_TOOLS}
     done
 
     install -m 0644 ${BOOT_STAGING}/signed_dp_imx8m.bin      ${DEPLOYDIR}/${BOOT_TOOLS}
@@ -459,7 +459,7 @@ deploy_mx93() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
 
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -m 0644 ${RECIPE_SYSROOT}/firmware/${ddr_firmware} ${DEPLOYDIR}/${BOOT_TOOLS}
     done
 
     for seco_firmware in ${SECO_FIRMWARE_NAME}; do
