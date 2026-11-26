@@ -32,16 +32,22 @@ LDFLAGS:append = " -fuse-ld=bfd"
 
 do_compile[noexec] = "1"
 
-do_install[noexec] = "1"
+do_install() {
+    install -Dm 0644 ${S}/${SC_FIRMWARE_NAME} ${D}/firmware/${SC_FIRMWARE_NAME}
+    ln -sf ${SC_FIRMWARE_NAME} ${D}/firmware/${symlink_name}
+}
 
 do_deploy() {
-    install -Dm 0644 ${S}/${SC_FIRMWARE_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME}
-    ln -sf ${SC_FIRMWARE_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}/${symlink_name}
+    install -d ${DEPLOYDIR}/${BOOT_TOOLS}
+    cp -P ${D}/firmware/* ${DEPLOYDIR}/${BOOT_TOOLS}/
 }
 addtask deploy after do_install
 
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+FILES:${PN} += "/firmware"
+SYSROOT_DIRS += "/firmware"
 
 COMPATIBLE_MACHINE = "(mx8qm-generic-bsp|mx8qxp-generic-bsp|mx8dxl-generic-bsp|mx8dx-generic-bsp)"
