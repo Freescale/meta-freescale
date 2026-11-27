@@ -35,8 +35,22 @@ CRRM_INITRAMFS ??= "imx-image-crrm-initramfs"
 # The imx-mkimage flash_all targets of i.MX 952 and i.MX 937 pack an M7 image,
 # m7_image.bin, taken from the imx-m7-demos firmware the machine names in
 # M4_DEFAULT_IMAGE.
+#
+# The *_linux_m4 targets of i.MX 8QM, 8QXP, 8DX and 8DXL pack M4 images,
+# m4_image.bin and, for the second M4 core of i.MX 8QM, m4_1_image.bin,
+# taken from the imx-m4-demos firmware named in M4_DEFAULT_IMAGE and
+# M4_1_DEFAULT_IMAGE.
 M4_DEFAULT_IMAGE ?= ""
-do_compile[depends] += "${@'imx-m7-demos:do_deploy' if d.getVar('M4_DEFAULT_IMAGE') else ''}"
+M4_DEFAULT_IMAGE:mx8qm-nxp-bsp ?= "imx8qm_m4_TCM_power_mode_switch_m40.bin"
+M4_DEFAULT_IMAGE:mx8qxp-nxp-bsp ?= "imx8qx_m4_TCM_power_mode_switch.bin"
+M4_DEFAULT_IMAGE:mx8dx-nxp-bsp ?= "imx8qx_m4_TCM_power_mode_switch.bin"
+M4_DEFAULT_IMAGE:mx8dxl-nxp-bsp ?= "imx8dxl_m4_TCM_power_mode_switch.bin"
+M4_1_DEFAULT_IMAGE ?= ""
+M4_1_DEFAULT_IMAGE:mx8qm-nxp-bsp ?= "imx8qm_m4_TCM_power_mode_switch_m41.bin"
+M4_DEFAULT_IMAGE_PROVIDER ?= "imx-m7-demos"
+M4_DEFAULT_IMAGE_PROVIDER:mx8qm-nxp-bsp ?= "imx-m4-demos"
+M4_DEFAULT_IMAGE_PROVIDER:mx8x-nxp-bsp ?= "imx-m4-demos"
+do_compile[depends] += "${@'${M4_DEFAULT_IMAGE_PROVIDER}:do_deploy' if d.getVar('M4_DEFAULT_IMAGE') else ''}"
 
 inherit use-imx-security-controller-firmware uboot-config
 inherit deploy uuu_bootloader_tag
@@ -175,8 +189,14 @@ compile_mx8() {
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE} ${BOOT_STAGING}/m4_image.bin
+    fi
+    if [ -n "${M4_1_DEFAULT_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_1_DEFAULT_IMAGE} ${BOOT_STAGING}/m4_1_image.bin
+    fi
 }
-compile_mx8[doc] = "Stage the SCFW, ATF, SECO and U-Boot binaries for the i.MX 8QM boot container"
+compile_mx8[doc] = "Stage the SCFW, ATF, SECO, U-Boot and M4 binaries for the i.MX 8QM boot container"
 
 compile_mx8x() {
     bbnote 8QX boot binary build
@@ -190,8 +210,11 @@ compile_mx8x() {
         cp ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${BOOT_STAGING}/u-boot-spl.bin
     fi
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        cp ${DEPLOY_DIR_IMAGE}/mcore-demos/${M4_DEFAULT_IMAGE} ${BOOT_STAGING}/m4_image.bin
+    fi
 }
-compile_mx8x[doc] = "Stage the SECO, SCFW, ATF and U-Boot binaries for the i.MX 8QX boot container"
+compile_mx8x[doc] = "Stage the SECO, SCFW, ATF, U-Boot and M4 binaries for the i.MX 8QX boot container"
 
 # The i.MX 8ULP *_m33 targets pack the M33 image the machine names in
 # M33_IMAGE, which imx-m33-demos provides.
@@ -418,8 +441,14 @@ deploy_mx8() {
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG_EXTRA} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        install -m 0644 ${BOOT_STAGING}/m4_image.bin        ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
+    if [ -n "${M4_1_DEFAULT_IMAGE}" ]; then
+        install -m 0644 ${BOOT_STAGING}/m4_1_image.bin      ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx8[doc] = "Deploy the i.MX 8QM SECO firmware, mkimage tool and SPL to the boot tools folder"
+deploy_mx8[doc] = "Deploy the i.MX 8QM SECO firmware, mkimage tool, SPL and M4 images to the boot tools folder"
 
 deploy_mx8x() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
@@ -431,8 +460,11 @@ deploy_mx8x() {
         install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${UBOOT_CONFIG} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
+    if [ -n "${M4_DEFAULT_IMAGE}" ]; then
+        install -m 0644 ${BOOT_STAGING}/m4_image.bin        ${DEPLOYDIR}/${BOOT_TOOLS}
+    fi
 }
-deploy_mx8x[doc] = "Deploy the i.MX 8QX SECO firmware, mkimage tool and SPL to the boot tools folder"
+deploy_mx8x[doc] = "Deploy the i.MX 8QX SECO firmware, mkimage tool, SPL and M4 image to the boot tools folder"
 
 deploy_mx8ulp() {
     install -d ${DEPLOYDIR}/${BOOT_TOOLS}
