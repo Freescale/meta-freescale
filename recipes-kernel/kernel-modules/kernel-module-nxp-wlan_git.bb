@@ -36,5 +36,8 @@ EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_BUILDDIR} -C ${STAGING_KERNEL_BUILDDI
 KERNEL_MODULE_AUTOLOAD += "moal"
 
 do_install:append() {
-    install -D -m 0644 ${UNPACKDIR}/nxp-wlan-btnxpuart.conf ${D}${modprobedir}/nxp-wlan-btnxpuart.conf
+    # A bbappend can replace SRC_URI and drop this file (meta-imx does).
+    if [ -e ${UNPACKDIR}/nxp-wlan-btnxpuart.conf ]; then
+        install -D -m 0644 ${UNPACKDIR}/nxp-wlan-btnxpuart.conf ${D}${modprobedir}/nxp-wlan-btnxpuart.conf
+    fi
 }
