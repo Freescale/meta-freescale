@@ -1,0 +1,136 @@
+From: Otavio Salvador <otavio@ossystems.tech>
+Subject: [PATCH] mlinux: Take the cfg80211 cookie as input on Linux 7.3
+
+Linux v7.3-rc1 commit 914781c72813 ("wifi: cfg80211: convert cookie
+output to input parameter") changed the mgmt_tx, remain_on_channel and
+probe_peer operations: cfg80211 now assigns the cookie and passes it by
+value, and the driver must use it. The build against Linux 7.3 fails:
+
+  moal_sta_cfg80211.c: error: initialization of 'int (*)(struct wiphy *,
+  struct wireless_dev *, struct cfg80211_mgmt_tx_params *, u64)' from
+  incompatible pointer type '... u64 *)' [-Wincompatible-pointer-types]
+
+On 7.3 and later, take the cookie by value and use it instead of a
+random one. Older kernels are not affected.
+
+Upstream-Status: Pending
+Signed-off-by: Otavio Salvador <otavio@ossystems.tech>
+---
+diff --git a/mlinux/moal_cfg80211.c b/mlinux/moal_cfg80211.c
+--- a/mlinux/moal_cfg80211.c
++++ b/mlinux/moal_cfg80211.c
+@@ -3503,8 +3503,16 @@
+ 			  bool dont_wait_for_ack,
+ #endif
+ #endif
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
++			  u64 cookie_in)
++#else
+ 			  u64 *cookie)
++#endif
+ {
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
++	/* cfg80211 assigns the cookie and passes it in */
++	u64 *cookie = &cookie_in;
++#endif
+ #if KERNEL_VERSION(3, 6, 0) <= CFG80211_VERSION_CODE
+ 	struct net_device *dev = wdev->netdev;
+ #endif
+@@ -3731,6 +3739,7 @@
+ 	}
+ #endif
+ 
++#if !(CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0))
+ #if KERNEL_VERSION(3, 8, 0) > LINUX_VERSION_CODE
+ 	*cookie = random32() | 1;
+ #else
+@@ -3740,6 +3749,7 @@
+ 	*cookie = get_random_u32() | 1;
+ #endif
+ #endif
++#endif
+ 
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(5, 3, 0)
+ 	if (len > sizeof(moal_802_11_action_header) &&
+diff --git a/mlinux/moal_cfg80211.h b/mlinux/moal_cfg80211.h
+--- a/mlinux/moal_cfg80211.h
++++ b/mlinux/moal_cfg80211.h
+@@ -351,8 +351,12 @@
+ 			  bool dont_wait_for_ack,
+ #endif
+ #endif
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
++			  u64 cookie_in);
++#else
+ 			  u64 *cookie);
+ #endif
++#endif
+ 
+ mlan_status woal_register_cfg80211(moal_private *priv);
+ 
+diff --git a/mlinux/moal_sta_cfg80211.c b/mlinux/moal_sta_cfg80211.c
+--- a/mlinux/moal_sta_cfg80211.c
++++ b/mlinux/moal_sta_cfg80211.c
+@@ -274,7 +274,11 @@
+ #if CFG80211_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
+ 				enum nl80211_channel_type channel_type,
+ #endif
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
++				unsigned int duration, u64 cookie_in
++#else
+ 				unsigned int duration, u64 *cookie
++#endif
+ #if (defined(ANDROID_SDK_VERSION) && (ANDROID_SDK_VERSION >= 36) &&            \
+      (CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 18, 21))) ||                  \
+ 	(CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 1, 0))
+@@ -7938,7 +7942,11 @@
+ #if CFG80211_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
+ 				enum nl80211_channel_type channel_type,
+ #endif
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
++				unsigned int duration, u64 cookie_in
++#else
+ 				unsigned int duration, u64 *cookie
++#endif
+ #if (defined(ANDROID_SDK_VERSION) && (ANDROID_SDK_VERSION >= 36) &&            \
+      (CFG80211_VERSION_CODE >= KERNEL_VERSION(6, 18, 21))) ||                  \
+ 	(CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 1, 0))
+@@ -7972,6 +7980,10 @@
+ )
+ #endif
+ {
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
++	/* cfg80211 assigns the cookie and passes it in */
++	u64 *cookie = &cookie_in;
++#endif
+ #if CFG80211_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
+ 	struct net_device *dev = wdev->netdev;
+ #endif
+@@ -8035,6 +8047,7 @@
+ 	}
+ 
+ 	/* remain on channel operation success */
++#if !(CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0))
+ 	/* we need update the value cookie */
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
+ 	*cookie = (u64)random32() | 1;
+@@ -8045,6 +8058,7 @@
+ 	*cookie = (u64)get_random_u32() | 1;
+ #endif
+ #endif
++#endif
+ 	priv->phandle->remain_on_channel = MTRUE;
+ 	priv->phandle->remain_bss_index = priv->bss_index;
+ 	priv->phandle->cookie = *cookie;
+@@ -11561,7 +11575,11 @@
+  */
+ static int woal_cfg80211_probe_client(struct wiphy *wiphy,
+ 				      struct net_device *dev, const u8 *peer,
++#if CFG80211_VERSION_CODE >= KERNEL_VERSION(7, 3, 0)
++				      u64 cookie)
++#else
+ 				      u64 *cookie)
++#endif
+ {
+ 	return -1;
+ }

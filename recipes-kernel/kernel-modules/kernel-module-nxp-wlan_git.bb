@@ -11,6 +11,7 @@ SRC_URI = "\
     ${MRVL_SRC};branch=${SRCBRANCH} \
     file://0001-mlinux-moal_main-fix-device-wakeup-capability.patch \
     file://0002-mlinux-moal_sta_cfg80211-fix-probe_client-build-on-7.2-kernels.patch \
+    file://0003-mlinux-Take-the-cfg80211-cookie-as-input-on-Linux-7.3.patch \
     file://nxp-wlan-btnxpuart.conf \
 "
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
