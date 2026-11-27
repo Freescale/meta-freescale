@@ -10,13 +10,15 @@ PROVIDES += "kernel-module-nxp89xx"
 SRC_URI = "\
     ${MRVL_SRC};branch=${SRCBRANCH} \
     file://0001-mlinux-moal_main-fix-device-wakeup-capability.patch \
+    file://0003-mlinux-Take-the-cfg80211-cookie-as-input-on-Linux-7.3.patch \
     file://nxp-wlan-btnxpuart.conf \
 "
 MRVL_SRC ?= "git://github.com/nxp-imx/mwifiex.git;protocol=https"
 SRCBRANCH = "lf-6.18.37_2.1.0"
 SRCREV = "44f90628e368de23e9991de424fc2a1799c81044"
 
-FILES:${PN} += "${modprobedir}/nxp-wlan-btnxpuart.conf"
+# module.bbclass sets FILES:${PN} = "" after this point, so append.
+FILES:${PN}:append = " ${modprobedir}/nxp-wlan-btnxpuart.conf"
 CONFFILES:${PN} += "${modprobedir}/nxp-wlan-btnxpuart.conf"
 
 RREPLACES:${PN} = "kernel-module-nxp89xx"
@@ -33,5 +35,8 @@ EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_BUILDDIR} -C ${STAGING_KERNEL_BUILDDI
 KERNEL_MODULE_AUTOLOAD += "moal"
 
 do_install:append() {
-    install -D -m 0644 ${UNPACKDIR}/nxp-wlan-btnxpuart.conf ${D}${modprobedir}/nxp-wlan-btnxpuart.conf
+    # A bbappend can replace SRC_URI and drop this file (meta-imx does).
+    if [ -e ${UNPACKDIR}/nxp-wlan-btnxpuart.conf ]; then
+        install -D -m 0644 ${UNPACKDIR}/nxp-wlan-btnxpuart.conf ${D}${modprobedir}/nxp-wlan-btnxpuart.conf
+    fi
 }
