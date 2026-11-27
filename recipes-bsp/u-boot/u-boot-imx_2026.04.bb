@@ -41,23 +41,22 @@ do_deploy:append:mx8m-generic-bsp() {
                         if [ "$type_key" = "$type" ]
                         then
                             bbnote "UBOOT_CONFIG = $type, UBOOT_DTB_NAME = $dtb_name"
+                            # Locate the DTB of this config
+                            if [ -f "${B}/${builddir}/arch/arm/dts/${dtb_name}" ]; then
+                                dtb_path="arch/arm/dts"
+                            elif [ -f "${B}/${builddir}/dts/upstream/src/arm64/freescale/${dtb_name}" ]; then
+                                dtb_path="dts/upstream/src/arm64/freescale"
+                            else
+                                bbfatal "DTB '${dtb_name}' not found in expected locations"
+                            fi
+                            bbnote "DTB found at ${B}/${builddir}/${dtb_path}/${dtb_name}"
                             # There is only one ${dtb_name}, the first one. All the other are with the type appended
                             if [ ! -f "${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}" ]; then
-                                if [ -f "${B}/${builddir}/arch/arm/dts/${dtb_name}" ]; then
-                                    dtb_path="arch/arm/dts"
-                                elif [ -f "${B}/${builddir}/dts/upstream/src/arm64/freescale/${dtb_name}" ]; then
-                                    dtb_path="dts/upstream/src/arm64/freescale"
-                                else
-                                    bbfatal "DTB '${dtb_name}' not found in expected locations"
-                                fi
-                                bbnote "DTB found at ${B}/${builddir}/${dtb_path}/${dtb_name}"
                                 install -m 0644 ${B}/${builddir}/${dtb_path}/${dtb_name} ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}
                             else
                                 bbwarn "Use custom wks.in for $dtb_name = $type"
                             fi
-                            if [ -f "${B}/${builddir}/${dtb_path}/${dtb_name}" ]; then
-                                install -m 0644 ${B}/${builddir}/${dtb_path}/${dtb_name} ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}-${type}
-                            fi
+                            install -m 0644 ${B}/${builddir}/${dtb_path}/${dtb_name} ${DEPLOYDIR}/${BOOT_TOOLS}/${dtb_name}-${type}
                         fi
                         unset type_key
                         unset dtb_name
